@@ -36,8 +36,12 @@
         <a href="#experience">Experience</a>
         <a href="#journey">Guest journey</a>
         <a href="#evening-service">Evening service</a>
+        <a href="#hospitality-analytics">Analytics</a>
+        <a href="#executive-command-center">Executive view</a>
         <a href="#guest-intelligence">Guest Intelligence</a>
-        <a href="#guest-intelligence">Guest Intelligence</a>
+        <a href="#hospitality-analytics">Analytics</a>
+      <a href="#executive-command-center">Executive view</a>
+      <a href="#guest-intelligence">Guest Intelligence</a>
       <a href="#host-stand">Host stand</a>
         <a href="#operator-dashboard">Operator view</a>
         <a href="#portfolio">Portfolio</a>
@@ -567,6 +571,529 @@
 
 
     
+
+    
+    <section class="analytics-section" id="hospitality-analytics">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow"><span></span> Hospitality analytics</p>
+          <h2>Answers for operators—not another wall of data.</h2>
+          <p>
+            Blue Current translates guest demand, call activity, reservations, wait times,
+            and repeat visits into practical operating decisions.
+          </p>
+        </div>
+
+        <div class="analytics-shell reveal">
+          <div class="analytics-header">
+            <div>
+              <small>Portfolio intelligence</small>
+              <h3>Performance overview</h3>
+            </div>
+
+            <div class="analytics-controls">
+              <select id="analyticsLocation" aria-label="Analytics location">
+                <option>All locations</option>
+                <option>Marina Grille</option>
+                <option>The Wharfside</option>
+                <option>Rod's Tavern</option>
+                <option>Captain's Inn</option>
+              </select>
+
+              <div class="analytics-period">
+                <button class="active" type="button" data-period="7">7 days</button>
+                <button type="button" data-period="30">30 days</button>
+                <button type="button" data-period="90">90 days</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-kpis">
+            <article>
+              <span>Call-to-reservation conversion</span>
+              <strong id="analyticsConversion">42.6%</strong>
+              <small>+4.8 points</small>
+            </article>
+            <article>
+              <span>Average answer time</span>
+              <strong id="analyticsAnswer">8 sec</strong>
+              <small>Within target</small>
+            </article>
+            <article>
+              <span>Average wait time</span>
+              <strong id="analyticsWait">13 min</strong>
+              <small>-3 min vs prior period</small>
+            </article>
+            <article>
+              <span>Repeat guest rate</span>
+              <strong id="analyticsRepeat">31%</strong>
+              <small>+6% this quarter</small>
+            </article>
+          </div>
+
+          <div class="analytics-grid">
+            <section class="analytics-panel analytics-trend-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Reservation demand</small>
+                  <strong>Calls that became reservations</strong>
+                </div>
+                <span id="analyticsTrendLabel">Last 7 days</span>
+              </div>
+
+              <div class="line-chart" id="conversionChart" aria-label="Illustrative conversion trend chart">
+                <svg viewBox="0 0 700 250" role="img">
+                  <defs>
+                    <linearGradient id="analyticsArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="currentColor" stop-opacity=".28"></stop>
+                      <stop offset="100%" stop-color="currentColor" stop-opacity="0"></stop>
+                    </linearGradient>
+                  </defs>
+                  <g class="chart-grid-lines">
+                    <line x1="30" y1="40" x2="680" y2="40"></line>
+                    <line x1="30" y1="95" x2="680" y2="95"></line>
+                    <line x1="30" y1="150" x2="680" y2="150"></line>
+                    <line x1="30" y1="205" x2="680" y2="205"></line>
+                  </g>
+                  <path class="conversion-area" d="M35,185 C110,165 130,155 190,160 C250,165 275,125 340,132 C405,139 430,105 490,98 C550,91 585,64 665,72 L665,220 L35,220 Z"></path>
+                  <path class="conversion-line" d="M35,185 C110,165 130,155 190,160 C250,165 275,125 340,132 C405,139 430,105 490,98 C550,91 585,64 665,72"></path>
+                  <g class="chart-points">
+                    <circle cx="35" cy="185" r="5"></circle>
+                    <circle cx="140" cy="157" r="5"></circle>
+                    <circle cx="245" cy="156" r="5"></circle>
+                    <circle cx="350" cy="130" r="5"></circle>
+                    <circle cx="455" cy="107" r="5"></circle>
+                    <circle cx="560" cy="86" r="5"></circle>
+                    <circle cx="665" cy="72" r="6"></circle>
+                  </g>
+                </svg>
+
+                <div class="line-chart-labels">
+                  <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-opportunity-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Opportunity analysis</small>
+                  <strong>Where demand is being lost</strong>
+                </div>
+                <span>Illustrative</span>
+              </div>
+
+              <div class="opportunity-list">
+                <article>
+                  <div>
+                    <strong>After-hours reservation calls</strong>
+                    <small>Most common between 10:15 PM and midnight</small>
+                  </div>
+                  <span>18%</span>
+                </article>
+                <article>
+                  <div>
+                    <strong>Unavailable 7:00–8:00 PM requests</strong>
+                    <small>Guests often accept 8:30 PM when offered</small>
+                  </div>
+                  <span>14%</span>
+                </article>
+                <article>
+                  <div>
+                    <strong>Private event inquiries</strong>
+                    <small>Follow-up takes longer than one business day</small>
+                  </div>
+                  <span>9%</span>
+                </article>
+                <article>
+                  <div>
+                    <strong>Large-party requests</strong>
+                    <small>Manual approval required above eight guests</small>
+                  </div>
+                  <span>7%</span>
+                </article>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-heatmap-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Demand pattern</small>
+                  <strong>Reservation request heatmap</strong>
+                </div>
+                <span>Darker = greater demand</span>
+              </div>
+
+              <div class="analytics-heatmap">
+                <div class="heatmap-label"></div>
+                <div class="heatmap-label">5 PM</div>
+                <div class="heatmap-label">6 PM</div>
+                <div class="heatmap-label">7 PM</div>
+                <div class="heatmap-label">8 PM</div>
+                <div class="heatmap-label">9 PM</div>
+
+                <div class="heatmap-label">Mon</div>
+                <button style="--v:.15"></button><button style="--v:.28"></button><button style="--v:.48"></button><button style="--v:.35"></button><button style="--v:.18"></button>
+                <div class="heatmap-label">Tue</div>
+                <button style="--v:.18"></button><button style="--v:.32"></button><button style="--v:.53"></button><button style="--v:.39"></button><button style="--v:.19"></button>
+                <div class="heatmap-label">Wed</div>
+                <button style="--v:.21"></button><button style="--v:.4"></button><button style="--v:.62"></button><button style="--v:.44"></button><button style="--v:.25"></button>
+                <div class="heatmap-label">Thu</div>
+                <button style="--v:.27"></button><button style="--v:.51"></button><button style="--v:.74"></button><button style="--v:.58"></button><button style="--v:.31"></button>
+                <div class="heatmap-label">Fri</div>
+                <button style="--v:.41"></button><button style="--v:.69"></button><button style="--v:1"></button><button style="--v:.83"></button><button style="--v:.52"></button>
+                <div class="heatmap-label">Sat</div>
+                <button style="--v:.5"></button><button style="--v:.78"></button><button style="--v:.94"></button><button style="--v:.88"></button><button style="--v:.61"></button>
+                <div class="heatmap-label">Sun</div>
+                <button style="--v:.31"></button><button style="--v:.55"></button><button style="--v:.71"></button><button style="--v:.49"></button><button style="--v:.28"></button>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-channel-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Reservation source</small>
+                  <strong>How guests are booking</strong>
+                </div>
+                <span id="analyticsBookings">1,486 bookings</span>
+              </div>
+
+              <div class="channel-layout">
+                <div class="channel-donut" aria-label="Reservation source distribution">
+                  <div class="channel-donut-center"><strong>42%</strong><span>Phone</span></div>
+                </div>
+
+                <div class="channel-legend">
+                  <div><i class="phone"></i><span>Phone</span><strong>42%</strong></div>
+                  <div><i class="web"></i><span>Website</span><strong>31%</strong></div>
+                  <div><i class="walkin"></i><span>Walk-in</span><strong>18%</strong></div>
+                  <div><i class="other"></i><span>Other</span><strong>9%</strong></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-insights-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Operator insights</small>
+                  <strong>Recommended actions</strong>
+                </div>
+                <button type="button" id="regenerateInsights">Regenerate</button>
+              </div>
+
+              <div class="insight-list" id="analyticsInsights">
+                <article>
+                  <span>01</span>
+                  <div>
+                    <strong>Offer 8:30 PM more proactively</strong>
+                    <p>Nearly one in three guests declined at 7:30 PM would accept 8:30 PM when offered immediately.</p>
+                  </div>
+                </article>
+                <article>
+                  <span>02</span>
+                  <div>
+                    <strong>Extend automated coverage after closing</strong>
+                    <p>After-hours callers show strong reservation intent and often call before searching elsewhere.</p>
+                  </div>
+                </article>
+                <article>
+                  <span>03</span>
+                  <div>
+                    <strong>Flag high-value repeat guests earlier</strong>
+                    <p>Premier guests are most likely to book Friday and Saturday waterfront tables.</p>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-repeat-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Guest retention</small>
+                  <strong>Repeat-guest growth</strong>
+                </div>
+                <span>Quarter to date</span>
+              </div>
+
+              <div class="repeat-guest-score">
+                <div class="repeat-ring"><strong id="repeatRingValue">31%</strong><span>Repeat rate</span></div>
+                <div class="repeat-copy">
+                  <strong>Returning guests are growing.</strong>
+                  <p>Recognition notes and preference capture are contributing to more consistent repeat-guest experiences.</p>
+                  <div><span>Premier guests</span><b>428</b></div>
+                  <div><span>Milestone visits</span><b>96</b></div>
+                  <div><span>Celebrations recognized</span><b>214</b></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <p class="analytics-disclaimer">
+          Analytics and attribution shown are illustrative product concepts and do not represent audited operating results.
+        </p>
+      </div>
+    </section>
+
+
+<section class="executive-section" id="executive-command-center">
+      <div class="container">
+        <div class="section-heading section-heading-light reveal">
+          <p class="eyebrow eyebrow-light"><span></span> Executive command center</p>
+          <h2>One operating picture across every location.</h2>
+          <p>
+            A portfolio-level view of guest demand, service pressure, call performance,
+            reservations, and the moments that need leadership attention.
+          </p>
+        </div>
+
+        <div class="exec-shell reveal">
+          <div class="exec-topbar">
+            <div class="exec-brand">
+              <img src="assets/logo-mark.svg" alt="">
+              <div>
+                <strong>Blue Current</strong>
+                <span>Executive Command Center</span>
+              </div>
+            </div>
+
+            <div class="exec-topbar-actions">
+              <div class="exec-live"><i></i> Live portfolio view</div>
+              <button type="button" id="execRefresh">Refresh</button>
+              <button class="primary" type="button">Download briefing</button>
+            </div>
+          </div>
+
+          <div class="exec-toolbar">
+            <div>
+              <small>Friday dinner service</small>
+              <h3>Chefs International concept portfolio</h3>
+            </div>
+
+            <div class="exec-range" role="tablist" aria-label="Executive reporting range">
+              <button class="active" type="button" data-range="Tonight">Tonight</button>
+              <button type="button" data-range="7 Days">7 days</button>
+              <button type="button" data-range="30 Days">30 days</button>
+            </div>
+          </div>
+
+          <div class="exec-kpis">
+            <article>
+              <span>Expected guests</span>
+              <strong id="execGuests">1,026</strong>
+              <small>Across four locations</small>
+            </article>
+            <article>
+              <span>Reservations</span>
+              <strong id="execReservations">220</strong>
+              <small>+11% vs last Friday</small>
+            </article>
+            <article>
+              <span>Calls answered</span>
+              <strong id="execCalls">176</strong>
+              <small>98.9% answer rate</small>
+            </article>
+            <article>
+              <span>Estimated revenue influenced</span>
+              <strong id="execRevenue">$31.8K</strong>
+              <small>Illustrative attribution</small>
+            </article>
+          </div>
+
+          <div class="exec-grid">
+            <section class="exec-panel exec-locations">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Portfolio occupancy</small>
+                  <strong>Location performance</strong>
+                </div>
+                <span id="execRangeLabel">Tonight</span>
+              </div>
+
+              <div class="location-performance-list">
+                <article class="location-performance-row active" data-location="Marina Grille">
+                  <div class="location-name">
+                    <i class="location-status healthy"></i>
+                    <div><strong>Marina Grille</strong><small>Waterfront dining</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:98%"></span></div>
+                  <strong class="location-percent">98%</strong>
+                  <span class="location-wait">11 min wait</span>
+                </article>
+
+                <article class="location-performance-row" data-location="The Wharfside">
+                  <div class="location-name">
+                    <i class="location-status healthy"></i>
+                    <div><strong>The Wharfside</strong><small>Coastal dining</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:84%"></span></div>
+                  <strong class="location-percent">84%</strong>
+                  <span class="location-wait">16 min wait</span>
+                </article>
+
+                <article class="location-performance-row" data-location="Rod's Tavern">
+                  <div class="location-name">
+                    <i class="location-status watch"></i>
+                    <div><strong>Rod's Tavern</strong><small>Neighborhood tavern</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:91%"></span></div>
+                  <strong class="location-percent">91%</strong>
+                  <span class="location-wait">8 min wait</span>
+                </article>
+
+                <article class="location-performance-row" data-location="Captain's Inn">
+                  <div class="location-name">
+                    <i class="location-status healthy"></i>
+                    <div><strong>Captain's Inn</strong><small>Harbor dining</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:76%"></span></div>
+                  <strong class="location-percent">76%</strong>
+                  <span class="location-wait">No wait</span>
+                </article>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-demand">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Live demand</small>
+                  <strong>Reservations by hour</strong>
+                </div>
+                <span class="exec-insight">Peak: 7:30 PM</span>
+              </div>
+
+              <div class="exec-chart" aria-label="Illustrative reservations by hour chart">
+                <div class="exec-chart-grid"></div>
+                <div class="exec-bar" style="--h:34%"><span>5:30</span></div>
+                <div class="exec-bar" style="--h:52%"><span>6:00</span></div>
+                <div class="exec-bar" style="--h:72%"><span>6:30</span></div>
+                <div class="exec-bar" style="--h:88%"><span>7:00</span></div>
+                <div class="exec-bar active" style="--h:100%"><span>7:30</span></div>
+                <div class="exec-bar" style="--h:82%"><span>8:00</span></div>
+                <div class="exec-bar" style="--h:58%"><span>8:30</span></div>
+                <div class="exec-bar" style="--h:31%"><span>9:00</span></div>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-alerts">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Leadership attention</small>
+                  <strong>Service alerts</strong>
+                </div>
+                <span class="exec-alert-count">3</span>
+              </div>
+
+              <article class="exec-alert critical">
+                <i>!</i>
+                <div>
+                  <strong>Marina Grille near capacity</strong>
+                  <small>Waterfront tables are fully committed through 8:30 PM.</small>
+                </div>
+                <span>Now</span>
+              </article>
+
+              <article class="exec-alert warning">
+                <i>↗</i>
+                <div>
+                  <strong>Rod's Tavern call volume elevated</strong>
+                  <small>Calls are running 23% above the normal Friday pattern.</small>
+                </div>
+                <span>6m</span>
+              </article>
+
+              <article class="exec-alert">
+                <i>i</i>
+                <div>
+                  <strong>Private event opportunity</strong>
+                  <small>Captain's Inn received three qualified inquiries tonight.</small>
+                </div>
+                <span>18m</span>
+              </article>
+            </section>
+
+            <section class="exec-panel exec-guest-moments">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Guest experience</small>
+                  <strong>Tonight's moments</strong>
+                </div>
+                <button type="button">View guest intelligence</button>
+              </div>
+
+              <div class="guest-moment-grid">
+                <article>
+                  <span>🎂</span>
+                  <div><strong>14 birthdays</strong><small>Across the portfolio</small></div>
+                </article>
+                <article>
+                  <span>♡</span>
+                  <div><strong>8 anniversaries</strong><small>Special notes confirmed</small></div>
+                </article>
+                <article>
+                  <span>★</span>
+                  <div><strong>22 premier guests</strong><small>Returning tonight</small></div>
+                </article>
+                <article>
+                  <span>◇</span>
+                  <div><strong>5 milestone visits</strong><small>10th visit or higher</small></div>
+                </article>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-summary">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Executive briefing</small>
+                  <strong>What leadership should know</strong>
+                </div>
+                <span class="exec-generated">Updated <b id="execUpdated">just now</b></span>
+              </div>
+
+              <p id="execSummaryText">
+                Portfolio demand is strong and currently tracking above last Friday. Marina Grille
+                is the only location approaching hard capacity, while Captain's Inn has additional
+                room and may absorb overflow demand. Call coverage remains healthy across the group.
+              </p>
+
+              <div class="exec-summary-actions">
+                <span><i>✓</i> No unanswered-call issue</span>
+                <span><i>✓</i> Wait times within target</span>
+                <span><i>!</i> Marina Grille capacity risk</span>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-detail">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Selected location</small>
+                  <strong id="execLocationName">Marina Grille</strong>
+                </div>
+                <span id="execLocationStatus">Healthy service</span>
+              </div>
+
+              <div class="exec-detail-metrics">
+                <div><span>Occupancy</span><strong id="execLocationOccupancy">98%</strong></div>
+                <div><span>Reservations</span><strong id="execLocationReservations">69</strong></div>
+                <div><span>Calls</span><strong id="execLocationCalls">54</strong></div>
+                <div><span>Waitlist</span><strong id="execLocationWaitlist">2</strong></div>
+              </div>
+
+              <p id="execLocationNarrative">
+                Demand is concentrated between 7:00 and 8:30 PM. Waterfront inventory is the primary
+                constraint, but current wait times remain within the operating target.
+              </p>
+            </section>
+          </div>
+        </div>
+
+        <p class="exec-disclaimer">
+          Concept deployment shown for demonstration. Names, operating metrics, and revenue attribution are illustrative.
+        </p>
+      </div>
+    </section>
+
+
 <section id="guest-intelligence" class="guest-intelligence-section">
 <div class="container">
 <div class="section-heading">

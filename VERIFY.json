@@ -1,7 +1,7 @@
 {
   "README.md": {
-    "bytes": 1663,
-    "sha256": "27fc367e08bbf5af5e1375c3669ff5c8acc14d6982a879ce5a9022bfb16cb7bd"
+    "bytes": 2337,
+    "sha256": "f79fca8996eed448283e9e6e1b9e3a5a661e686d655b2922f4bb7d3ace4c0eb4"
   },
   "assets/favicon.svg": {
     "bytes": 282,
@@ -12,8 +12,8 @@
     "sha256": "8d7eb817a3e99c6e4b94b552463317c29622466912d303d18710e13bb25e6995"
   },
   "index.html": {
-    "bytes": 45875,
-    "sha256": "64a0516c08110a5df023486784efc5b6c79e5b6cdc4e3d713a99795d691b5b81"
+    "bytes": 71578,
+    "sha256": "b694dc2b38f3c479353c49cd0e121b4f4a357802617a818ffe4c6e917674d7aa"
   },
   "netlify.toml": {
     "bytes": 199,
@@ -24,12 +24,12 @@
     "sha256": "577bb3de1a462002eb843af7bebbc23f1cc3a98be0a82a93cb00c9c93d469a48"
   },
   "script.js": {
-    "bytes": 13947,
-    "sha256": "19c309c465f995881b9997b1fe1c59c3ca4cf088387d9e75f33521a15c8e4725"
+    "bytes": 22060,
+    "sha256": "4abadaef4ab6d7dfdd62442eb064940219898fa32f26a07e28832819832c8c8a"
   },
   "styles.css": {
-    "bytes": 49473,
-    "sha256": "ddd6e16bbec9386fdcecc4697b1b3b151f5cb8f4ac946ebe62a462e88278d44d"
+    "bytes": 66534,
+    "sha256": "c9503d6f546441102564564bee09fae0d38eb166f7f11dfe17676385b18cd7a2"
   },
   "terms.html": {
     "bytes": 1127,

@@ -351,3 +351,206 @@ if(gs){
    names.filter(n=>n.toLowerCase().includes(q)).join('<br>');
  });
 }
+
+
+// V5.5 — Executive Command Center
+const executiveRanges = {
+  "Tonight": {
+    guests: "1,026",
+    reservations: "220",
+    calls: "176",
+    revenue: "$31.8K",
+    summary: "Portfolio demand is strong and currently tracking above last Friday. Marina Grille is the only location approaching hard capacity, while Captain's Inn has additional room and may absorb overflow demand. Call coverage remains healthy across the group."
+  },
+  "7 Days": {
+    guests: "6,942",
+    reservations: "1,486",
+    calls: "1,208",
+    revenue: "$218K",
+    summary: "Seven-day portfolio performance is ahead of the prior period. Weekend demand remains concentrated at Marina Grille and Rod's Tavern, while Captain's Inn has the greatest capacity for incremental reservations."
+  },
+  "30 Days": {
+    guests: "28,410",
+    reservations: "6,172",
+    calls: "4,936",
+    revenue: "$891K",
+    summary: "Thirty-day demand is stable with improving call-to-reservation conversion. Guest celebrations and repeat-guest activity are strongest at Marina Grille. The largest growth opportunity is after-hours reservation capture."
+  }
+};
+
+const executiveLocations = {
+  "Marina Grille": {
+    status: "Healthy service",
+    occupancy: "98%",
+    reservations: "69",
+    calls: "54",
+    waitlist: "2",
+    narrative: "Demand is concentrated between 7:00 and 8:30 PM. Waterfront inventory is the primary constraint, but current wait times remain within the operating target."
+  },
+  "The Wharfside": {
+    status: "Healthy service",
+    occupancy: "84%",
+    reservations: "61",
+    calls: "47",
+    waitlist: "4",
+    narrative: "Demand is pacing close to forecast. Outdoor seating requests are elevated, and the current waitlist is averaging 16 minutes with no open escalations."
+  },
+  "Rod's Tavern": {
+    status: "Watch call volume",
+    occupancy: "91%",
+    reservations: "48",
+    calls: "39",
+    waitlist: "1",
+    narrative: "Dining-room performance is healthy, but incoming call volume is above the normal Friday pattern. Coverage remains intact and no calls are currently waiting."
+  },
+  "Captain's Inn": {
+    status: "Available capacity",
+    occupancy: "76%",
+    reservations: "42",
+    calls: "36",
+    waitlist: "0",
+    narrative: "The location has healthy table availability and may absorb overflow demand. Three private-event inquiries were qualified and routed to management tonight."
+  }
+};
+
+document.querySelectorAll(".exec-range button").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".exec-range button").forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+
+    const data = executiveRanges[button.dataset.range];
+    if (!data) return;
+
+    document.getElementById("execGuests").textContent = data.guests;
+    document.getElementById("execReservations").textContent = data.reservations;
+    document.getElementById("execCalls").textContent = data.calls;
+    document.getElementById("execRevenue").textContent = data.revenue;
+    document.getElementById("execSummaryText").textContent = data.summary;
+    document.getElementById("execRangeLabel").textContent = button.dataset.range;
+  });
+});
+
+document.querySelectorAll(".location-performance-row").forEach((row) => {
+  row.addEventListener("click", () => {
+    document.querySelectorAll(".location-performance-row").forEach((item) => item.classList.remove("active"));
+    row.classList.add("active");
+
+    const location = row.dataset.location;
+    const data = executiveLocations[location];
+    if (!data) return;
+
+    document.getElementById("execLocationName").textContent = location;
+    document.getElementById("execLocationStatus").textContent = data.status;
+    document.getElementById("execLocationOccupancy").textContent = data.occupancy;
+    document.getElementById("execLocationReservations").textContent = data.reservations;
+    document.getElementById("execLocationCalls").textContent = data.calls;
+    document.getElementById("execLocationWaitlist").textContent = data.waitlist;
+    document.getElementById("execLocationNarrative").textContent = data.narrative;
+  });
+});
+
+document.getElementById("execRefresh")?.addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  button.textContent = "Refreshing…";
+  setTimeout(() => {
+    button.textContent = "Refresh";
+    document.getElementById("execUpdated").textContent = "just now";
+  }, 650);
+});
+
+
+// V5.6 — Hospitality Analytics
+const analyticsPeriods = {
+  7: {
+    conversion: "42.6%",
+    answer: "8 sec",
+    wait: "13 min",
+    repeat: "31%",
+    bookings: "1,486 bookings",
+    label: "Last 7 days"
+  },
+  30: {
+    conversion: "40.9%",
+    answer: "9 sec",
+    wait: "14 min",
+    repeat: "29%",
+    bookings: "6,172 bookings",
+    label: "Last 30 days"
+  },
+  90: {
+    conversion: "38.7%",
+    answer: "10 sec",
+    wait: "15 min",
+    repeat: "27%",
+    bookings: "18,244 bookings",
+    label: "Last 90 days"
+  }
+};
+
+document.querySelectorAll(".analytics-period button").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".analytics-period button").forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+
+    const data = analyticsPeriods[button.dataset.period];
+    if (!data) return;
+
+    document.getElementById("analyticsConversion").textContent = data.conversion;
+    document.getElementById("analyticsAnswer").textContent = data.answer;
+    document.getElementById("analyticsWait").textContent = data.wait;
+    document.getElementById("analyticsRepeat").textContent = data.repeat;
+    document.getElementById("analyticsBookings").textContent = data.bookings;
+    document.getElementById("analyticsTrendLabel").textContent = data.label;
+    document.getElementById("repeatRingValue").textContent = data.repeat;
+  });
+});
+
+const analyticsLocationData = {
+  "All locations": ["42.6%", "8 sec", "13 min", "31%"],
+  "Marina Grille": ["46.2%", "7 sec", "11 min", "36%"],
+  "The Wharfside": ["41.4%", "9 sec", "16 min", "29%"],
+  "Rod's Tavern": ["39.8%", "8 sec", "8 min", "27%"],
+  "Captain's Inn": ["43.1%", "9 sec", "0 min", "30%"]
+};
+
+document.getElementById("analyticsLocation")?.addEventListener("change", (event) => {
+  const data = analyticsLocationData[event.target.value];
+  if (!data) return;
+  document.getElementById("analyticsConversion").textContent = data[0];
+  document.getElementById("analyticsAnswer").textContent = data[1];
+  document.getElementById("analyticsWait").textContent = data[2];
+  document.getElementById("analyticsRepeat").textContent = data[3];
+  document.getElementById("repeatRingValue").textContent = data[3];
+});
+
+document.getElementById("regenerateInsights")?.addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  button.textContent = "Updating…";
+
+  setTimeout(() => {
+    document.getElementById("analyticsInsights").innerHTML = `
+      <article>
+        <span>01</span>
+        <div>
+          <strong>Protect the 7:30 PM inventory window</strong>
+          <p>Shift flexible callers toward 6:45 PM or 8:30 PM before the peak window becomes constrained.</p>
+        </div>
+      </article>
+      <article>
+        <span>02</span>
+        <div>
+          <strong>Follow up on private-event inquiries faster</strong>
+          <p>Qualified event inquiries have a materially higher value but currently wait longest for human follow-up.</p>
+        </div>
+      </article>
+      <article>
+        <span>03</span>
+        <div>
+          <strong>Use repeat-guest recognition at check-in</strong>
+          <p>Premier guests respond positively when seating and celebration preferences are surfaced before arrival.</p>
+        </div>
+      </article>
+    `;
+    button.textContent = "Regenerate";
+  }, 650);
+});

@@ -1,4 +1,4 @@
-# Blue Current V5.3 — Host Stand
+# Blue Current V5.6 — Hospitality Analytics
 
 A deploy-ready static website for Blue Current's hospitality product concept.
 
@@ -45,3 +45,26 @@ Interactive six-stage Friday evening service simulation.
 - Add-walk-in interaction
 - Table assignment workflow
 - Live service feed and special-occasion notes
+
+
+## V5.5 additions
+- Portfolio-level executive command center
+- Interactive time-range switching
+- Location performance and occupancy comparison
+- Live reservation demand chart
+- Leadership alerts and guest-experience moments
+- Executive briefing summary
+- Interactive location drill-down
+- Illustrative revenue-influence reporting
+
+
+## V5.6 additions
+- Hospitality analytics workspace
+- Interactive 7-day, 30-day, and 90-day reporting
+- Location-level analytics filtering
+- Conversion trend visualization
+- Reservation-demand heatmap
+- Reservation source distribution
+- Opportunity analysis
+- Repeat-guest growth metrics
+- Regenerating operator recommendations
