@@ -35,6 +35,9 @@
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="#experience">Experience</a>
         <a href="#journey">Guest journey</a>
+        <a href="#evening-service">Evening service</a>
+        <a href="#host-stand">Host stand</a>
+        <a href="#operator-dashboard">Operator view</a>
         <a href="#portfolio">Portfolio</a>
         <a href="#pilot">Pilot</a>
       </nav>
@@ -49,6 +52,9 @@
     <nav class="mobile-nav" aria-label="Mobile navigation" hidden>
       <a href="#experience">Experience</a>
       <a href="#journey">Guest journey</a>
+      <a href="#evening-service">Evening service</a>
+      <a href="#host-stand">Host stand</a>
+      <a href="#operator-dashboard">Operator view</a>
       <a href="#portfolio">Portfolio</a>
       <a href="#pilot">Pilot</a>
     </nav>
@@ -260,6 +266,53 @@
       </div>
     </section>
 
+    <section class="evening-service" id="evening-service">
+      <div class="container">
+        <div class="section-heading section-heading-light reveal">
+          <p class="eyebrow eyebrow-light"><span></span> A live evening service</p>
+          <h2>Watch Blue Current quietly orchestrate the dinner rush.</h2>
+          <p>Follow one Friday evening—from opening preparation to a guest’s arrival—and see every call, table, and detail stay connected.</p>
+        </div>
+        <div class="evening-simulator reveal">
+          <div class="evening-header">
+            <div><small>Marina Grille · Friday</small><strong id="eveningTime">5:55 PM</strong></div>
+            <div class="evening-live"><i></i><span id="eveningStatus">Preparing for dinner</span></div>
+          </div>
+          <div class="evening-timeline">
+            <button class="evening-stop active" data-evening-scene="0"><span>5:55</span><i></i><b>Opening</b></button>
+            <button class="evening-stop" data-evening-scene="1"><span>6:08</span><i></i><b>Birthday</b></button>
+            <button class="evening-stop" data-evening-scene="2"><span>6:21</span><i></i><b>Waitlist</b></button>
+            <button class="evening-stop" data-evening-scene="3"><span>6:45</span><i></i><b>Capacity</b></button>
+            <button class="evening-stop" data-evening-scene="4"><span>7:15</span><i></i><b>Opening</b></button>
+            <button class="evening-stop" data-evening-scene="5"><span>8:00</span><i></i><b>Arrival</b></button>
+          </div>
+          <div class="evening-content">
+            <div class="evening-copy">
+              <p id="eveningKicker">Before the doors open</p>
+              <h3 id="eveningTitle">The team begins with a clear view.</h3>
+              <div id="eveningDescription">Managers see expected covers, special occasions, and reservation pacing before the first guest arrives.</div>
+              <div class="evening-highlight"><span id="eveningIcon">☀</span><div><small id="eveningLabel">Service preparation</small><strong id="eveningDetail">48 reservations · 184 guests expected</strong></div></div>
+            </div>
+            <div class="evening-dashboard">
+              <div class="evening-metrics">
+                <div><span>Guests</span><strong id="eveningGuests">184</strong></div>
+                <div><span>Reservations</span><strong id="eveningReservations">48</strong></div>
+                <div><span>Waitlist</span><strong id="eveningWaitlist">0</strong></div>
+                <div><span>Occupancy</span><strong id="eveningOccupancy">12%</strong></div>
+              </div>
+              <div class="evening-feed">
+                <div class="evening-feed-title"><span>Live service feed</span><small id="eveningFeedTime">5:55 PM</small></div>
+                <article class="evening-feed-item primary"><i>✓</i><div><small id="feedOneLabel">Opening brief</small><strong id="feedOneDetail">Special occasions shared with host team</strong></div></article>
+                <article class="evening-feed-item"><i>•</i><div><small id="feedTwoLabel">Dining room</small><strong id="feedTwoDetail">Waterfront section prepared</strong></div></article>
+                <article class="evening-feed-item"><i>•</i><div><small id="feedThreeLabel">Guest line</small><strong id="feedThreeDetail">AI host ready</strong></div></article>
+              </div>
+            </div>
+          </div>
+          <p class="demo-caption">Illustrative service simulation. Times and figures are sample content.</p>
+        </div>
+      </div>
+    </section>
+
     <section class="guest-profile-section">
       <div class="container guest-profile-grid">
         <div class="section-heading section-heading-light reveal">
@@ -306,6 +359,378 @@
         </div>
       </div>
     </section>
+
+
+
+    <section class="host-stand-section" id="host-stand">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow"><span></span> The host stand</p>
+          <h2>A live dining room view built for the rush.</h2>
+          <p>
+            Reservations, walk-ins, table turns, celebrations, and guest notes come together
+            in one focused interface designed for an iPad at the front door.
+          </p>
+        </div>
+
+        <div class="host-device reveal">
+          <div class="device-camera"></div>
+
+          <div class="host-app">
+            <aside class="host-sidebar">
+              <div class="host-brand">
+                <img src="assets/logo-mark.svg" alt="">
+                <div><strong>Blue Current</strong><span>Host Stand</span></div>
+              </div>
+
+              <div class="host-service-card">
+                <small>Friday dinner</small>
+                <strong id="hostClock">6:38 PM</strong>
+                <span><i></i> Service live</span>
+              </div>
+
+              <nav class="host-nav" aria-label="Host stand navigation">
+                <button class="active" type="button"><span>▦</span> Floor</button>
+                <button type="button"><span>◷</span> Reservations</button>
+                <button type="button"><span>≋</span> Waitlist</button>
+                <button type="button"><span>◇</span> Guests</button>
+              </nav>
+
+              <div class="host-quick-stats">
+                <div><span>Seated</span><strong id="hostSeated">42</strong></div>
+                <div><span>Waiting</span><strong id="hostWaiting">3</strong></div>
+                <div><span>Open</span><strong id="hostOpen">4</strong></div>
+              </div>
+
+              <button class="host-add-button" type="button" id="addWalkIn">+ Add walk-in</button>
+            </aside>
+
+            <main class="host-main">
+              <div class="host-topbar">
+                <div>
+                  <small>Marina Grille · Waterfront dining</small>
+                  <h3>Dining room</h3>
+                </div>
+                <div class="host-top-actions">
+                  <button type="button">Search guest</button>
+                  <button class="primary" type="button">+ Reservation</button>
+                </div>
+              </div>
+
+              <div class="host-status-bar">
+                <div><i class="status-dot available"></i><span>Available</span><strong id="availableCount">4</strong></div>
+                <div><i class="status-dot reserved"></i><span>Reserved</span><strong id="reservedCount">5</strong></div>
+                <div><i class="status-dot seated"></i><span>Seated</span><strong id="seatedCount">8</strong></div>
+                <div><i class="status-dot cleaning"></i><span>Cleaning</span><strong id="cleaningCount">1</strong></div>
+              </div>
+
+              <div class="host-workspace">
+                <section class="host-floor-panel">
+                  <div class="host-floor-toolbar">
+                    <div>
+                      <button class="active" type="button">Main floor</button>
+                      <button type="button">Waterfront</button>
+                      <button type="button">Private dining</button>
+                    </div>
+                    <span id="hostRecommendation">AI suggestion: Table 14 opens in 12 minutes</span>
+                  </div>
+
+                  <div class="host-floor-map" id="hostFloorMap">
+                    <div class="host-table round seated" data-table="2" style="--x:10%;--y:14%">
+                      <span>2</span><small>6:12</small>
+                    </div>
+                    <div class="host-table reserved" data-table="4" style="--x:37%;--y:12%">
+                      <span>4</span><small>7:00</small>
+                    </div>
+                    <div class="host-table round available" data-table="6" style="--x:70%;--y:14%">
+                      <span>6</span><small>Open</small>
+                    </div>
+                    <div class="host-table seated" data-table="8" style="--x:12%;--y:44%">
+                      <span>8</span><small>6:28</small>
+                    </div>
+                    <div class="host-table cleaning" data-table="14" id="hostFeaturedTable" style="--x:40%;--y:44%">
+                      <span>14</span><small>12 min</small>
+                    </div>
+                    <div class="host-table reserved" data-table="16" style="--x:72%;--y:44%">
+                      <span>16</span><small>7:30</small>
+                    </div>
+                    <div class="host-table round available" data-table="18" style="--x:12%;--y:76%">
+                      <span>18</span><small>Open</small>
+                    </div>
+                    <div class="host-table seated" data-table="20" style="--x:42%;--y:76%">
+                      <span>20</span><small>6:05</small>
+                    </div>
+                    <div class="host-table round reserved" data-table="22" style="--x:73%;--y:76%">
+                      <span>22</span><small>8:00</small>
+                    </div>
+
+                    <div class="host-water-line">Waterfront windows</div>
+
+                    <div class="host-table-detail" id="hostTableDetail">
+                      <div class="host-table-detail-head">
+                        <div><small>Selected table</small><strong>Table 14</strong></div>
+                        <span class="cleaning-chip">Cleaning</span>
+                      </div>
+                      <div class="host-table-detail-grid">
+                        <div><span>Seats</span><strong>4</strong></div>
+                        <div><span>Ready in</span><strong>12 min</strong></div>
+                        <div><span>Next guest</span><strong>Anthony Russo</strong></div>
+                      </div>
+                      <p>Birthday reservation · Waterfront preference · 7:30 PM</p>
+                      <button type="button" id="assignTableButton">Assign when ready</button>
+                    </div>
+                  </div>
+                </section>
+
+                <aside class="host-queue-panel">
+                  <div class="queue-tabs">
+                    <button class="active" type="button" data-queue="waitlist">Waitlist <span id="waitlistBadge">3</span></button>
+                    <button type="button" data-queue="arrivals">Arrivals <span>4</span></button>
+                  </div>
+
+                  <div class="queue-list" id="waitlistQueue">
+                    <article class="queue-item priority">
+                      <span class="queue-time">18m</span>
+                      <div><strong>Sarah Coleman</strong><small>Party of 3 · Flexible</small></div>
+                      <button type="button">Seat</button>
+                    </article>
+                    <article class="queue-item">
+                      <span class="queue-time">11m</span>
+                      <div><strong>Mark Ellis</strong><small>Party of 2 · Bar okay</small></div>
+                      <button type="button">Seat</button>
+                    </article>
+                    <article class="queue-item">
+                      <span class="queue-time">4m</span>
+                      <div><strong>Priya Shah</strong><small>Party of 4 · High chair</small></div>
+                      <button type="button">Seat</button>
+                    </article>
+                  </div>
+
+                  <div class="queue-list hidden" id="arrivalQueue">
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">7:15</span>
+                      <div><strong>Melissa Grant</strong><small>Party of 2 · Anniversary</small></div>
+                      <span class="arrival-chip">Arrived</span>
+                    </article>
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">7:30</span>
+                      <div><strong>Anthony Russo</strong><small>Party of 4 · Birthday</small></div>
+                      <span class="arrival-chip pending">Expected</span>
+                    </article>
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">7:45</span>
+                      <div><strong>Daniel Cho</strong><small>Party of 6</small></div>
+                      <span class="arrival-chip pending">Expected</span>
+                    </article>
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">8:00</span>
+                      <div><strong>Alyssa Moore</strong><small>Party of 3 · High chair</small></div>
+                      <span class="arrival-chip pending">Expected</span>
+                    </article>
+                  </div>
+
+                  <div class="host-note-card">
+                    <div class="host-note-head"><span>Tonight’s moments</span><small>2</small></div>
+                    <div><i>✦</i><p><strong>Birthday</strong><span>Anthony Russo · 7:30 PM</span></p></div>
+                    <div><i>♡</i><p><strong>Anniversary</strong><span>Melissa Grant · 7:15 PM</span></p></div>
+                  </div>
+                </aside>
+              </div>
+
+              <div class="host-bottom-feed">
+                <div class="host-feed-item">
+                  <span>☎</span>
+                  <div><small>6:36 PM</small><strong>Reservation confirmed for party of 4</strong></div>
+                </div>
+                <div class="host-feed-item">
+                  <span>≋</span>
+                  <div><small>6:34 PM</small><strong>Walk-in added to 18-minute wait</strong></div>
+                </div>
+                <div class="host-feed-item">
+                  <span>✓</span>
+                  <div><small>6:31 PM</small><strong>Table 8 seated</strong></div>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+
+        <p class="host-stand-note">
+          Illustrative host-stand concept for product demonstration. Guest names, times, and table data are sample content.
+        </p>
+      </div>
+    </section>
+
+
+    <section class="operator-section" id="operator-dashboard">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow"><span></span> The operator view</p>
+          <h2>One calm dashboard for the people running service.</h2>
+          <p>
+            Hosts, managers, and group leadership each see the information they need,
+            without turning the dining room into another control room.
+          </p>
+        </div>
+
+        <div class="operator-shell reveal">
+          <aside class="operator-sidebar">
+            <div class="operator-logo">
+              <img src="assets/logo-mark.svg" alt="">
+              <div><strong>Blue Current</strong><span>Operator Console</span></div>
+            </div>
+
+            <nav class="operator-nav" aria-label="Operator dashboard navigation">
+              <button class="active" type="button"><span>⌂</span> Overview</button>
+              <button type="button"><span>◷</span> Reservations</button>
+              <button type="button"><span>☎</span> Calls</button>
+              <button type="button"><span>≋</span> Waitlist</button>
+              <button type="button"><span>◇</span> Guests</button>
+              <button type="button"><span>▦</span> Locations</button>
+              <button type="button"><span>↗</span> Analytics</button>
+            </nav>
+
+            <div class="operator-user">
+              <div class="operator-avatar">KM</div>
+              <div><strong>Keith Mazza</strong><span>Group administrator</span></div>
+            </div>
+          </aside>
+
+          <div class="operator-main">
+            <div class="operator-topbar">
+              <div>
+                <small>Friday · Dinner service</small>
+                <h3>Good evening, Keith.</h3>
+              </div>
+              <div class="operator-actions">
+                <button type="button">Export report</button>
+                <button class="primary" type="button">+ Add reservation</button>
+              </div>
+            </div>
+
+            <div class="operator-location-tabs" role="tablist" aria-label="Restaurant locations">
+              <button class="active" type="button" data-location="Marina Grille">Marina Grille</button>
+              <button type="button" data-location="The Wharfside">The Wharfside</button>
+              <button type="button" data-location="Rod's Tavern">Rod's Tavern</button>
+              <button type="button" data-location="Captain's Inn">Captain's Inn</button>
+            </div>
+
+            <div class="operator-summary">
+              <article>
+                <span>Expected guests</span>
+                <strong id="opGuests">318</strong>
+                <small>+12% from last Friday</small>
+              </article>
+              <article>
+                <span>Reservations</span>
+                <strong id="opReservations">69</strong>
+                <small>9 added by phone</small>
+              </article>
+              <article>
+                <span>Calls answered</span>
+                <strong id="opCalls">54</strong>
+                <small>100% answer rate</small>
+              </article>
+              <article>
+                <span>Waitlist</span>
+                <strong id="opWaitlist">2</strong>
+                <small>11 minute average</small>
+              </article>
+            </div>
+
+            <div class="operator-grid">
+              <section class="operator-card reservations-card">
+                <div class="operator-card-head">
+                  <div><small>Tonight</small><strong>Upcoming reservations</strong></div>
+                  <button type="button">View all</button>
+                </div>
+
+                <div class="reservation-row highlighted">
+                  <span class="reservation-time">7:30</span>
+                  <div class="reservation-guest"><strong>Anthony Russo</strong><small>Party of 4 · Birthday</small></div>
+                  <span class="reservation-tag">Waterfront</span>
+                  <span class="reservation-status confirmed">Confirmed</span>
+                </div>
+                <div class="reservation-row">
+                  <span class="reservation-time">7:45</span>
+                  <div class="reservation-guest"><strong>Melissa Grant</strong><small>Party of 2 · Anniversary</small></div>
+                  <span class="reservation-tag">Window</span>
+                  <span class="reservation-status seated">Arrived</span>
+                </div>
+                <div class="reservation-row">
+                  <span class="reservation-time">8:00</span>
+                  <div class="reservation-guest"><strong>Daniel Cho</strong><small>Party of 6</small></div>
+                  <span class="reservation-tag">Main room</span>
+                  <span class="reservation-status confirmed">Confirmed</span>
+                </div>
+                <div class="reservation-row">
+                  <span class="reservation-time">8:15</span>
+                  <div class="reservation-guest"><strong>Alyssa Moore</strong><small>Party of 3 · High chair</small></div>
+                  <span class="reservation-tag">Flexible</span>
+                  <span class="reservation-status pending">Pending</span>
+                </div>
+              </section>
+
+              <section class="operator-card call-activity-card">
+                <div class="operator-card-head">
+                  <div><small>Guest line</small><strong>Recent call activity</strong></div>
+                  <span class="operator-live"><i></i> Live</span>
+                </div>
+
+                <div class="call-activity-item">
+                  <span class="call-activity-icon">✓</span>
+                  <div><strong>Reservation confirmed</strong><small>Party of 4 · 7:30 PM · 1m ago</small></div>
+                </div>
+                <div class="call-activity-item">
+                  <span class="call-activity-icon">☎</span>
+                  <div><strong>Hours and dress code answered</strong><small>General inquiry · 4m ago</small></div>
+                </div>
+                <div class="call-activity-item">
+                  <span class="call-activity-icon">≋</span>
+                  <div><strong>Guest added to waitlist</strong><small>Party of 3 · 6m ago</small></div>
+                </div>
+                <div class="call-activity-item">
+                  <span class="call-activity-icon">↗</span>
+                  <div><strong>Manager escalation completed</strong><small>Private event inquiry · 12m ago</small></div>
+                </div>
+              </section>
+
+              <section class="operator-card alerts-card">
+                <div class="operator-card-head">
+                  <div><small>Attention</small><strong>Service alerts</strong></div>
+                  <span class="alert-count">2</span>
+                </div>
+
+                <div class="alert-item warning">
+                  <i>!</i>
+                  <div><strong>Waterfront section near capacity</strong><small>Only one table remains before 8:30 PM.</small></div>
+                </div>
+                <div class="alert-item">
+                  <i>i</i>
+                  <div><strong>Birthday arrival in 14 minutes</strong><small>Anthony Russo · Table 14</small></div>
+                </div>
+              </section>
+
+              <section class="operator-card manager-summary-card">
+                <div class="operator-card-head">
+                  <div><small>AI summary</small><strong>What management should know</strong></div>
+                </div>
+                <p id="managerSummary">
+                  Dinner service is pacing ahead of last Friday. Call volume increased during the 6:30–7:00 rush,
+                  but every call was answered. Waterfront availability is limited through 8:30 PM.
+                </p>
+                <div class="summary-points">
+                  <span><i>✓</i> No unanswered calls</span>
+                  <span><i>✓</i> Wait time under target</span>
+                  <span><i>!</i> Waterfront nearly full</span>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
 
     <section class="portfolio-section" id="portfolio">
       <div class="container portfolio-grid">
@@ -396,6 +821,85 @@
         </article>
       </div>
     </section>
+
+
+    <section class="rollout-section" id="pilot-plan">
+      <div class="container">
+        <div class="section-heading section-heading-light reveal">
+          <p class="eyebrow eyebrow-light"><span></span> A practical first deployment</p>
+          <h2>Start with one location. Prove the value. Then expand.</h2>
+          <p>
+            The first pilot is intentionally controlled, measurable, and designed around
+            the way the restaurant already operates.
+          </p>
+        </div>
+
+        <div class="rollout-grid">
+          <article class="rollout-card reveal">
+            <span class="rollout-week">Week 1</span>
+            <div class="rollout-icon">01</div>
+            <h3>Observe</h3>
+            <p>Map incoming calls, reservation rules, peak periods, staff handoffs, and common guest questions.</p>
+            <ul>
+              <li>Call-flow review</li>
+              <li>Reservation policy map</li>
+              <li>Success metrics agreed</li>
+            </ul>
+          </article>
+
+          <article class="rollout-card reveal">
+            <span class="rollout-week">Week 2</span>
+            <div class="rollout-icon">02</div>
+            <h3>Configure</h3>
+            <p>Build the greeting, location knowledge, escalation rules, SMS confirmations, and manager view.</p>
+            <ul>
+              <li>Location-specific voice</li>
+              <li>Availability rules</li>
+              <li>Staff alerts and routing</li>
+            </ul>
+          </article>
+
+          <article class="rollout-card reveal">
+            <span class="rollout-week">Week 3</span>
+            <div class="rollout-icon">03</div>
+            <h3>Pilot</h3>
+            <p>Launch during selected hours with clear fallback rules and daily review with the operating team.</p>
+            <ul>
+              <li>Controlled service window</li>
+              <li>Manager escalation available</li>
+              <li>Daily transcript review</li>
+            </ul>
+          </article>
+
+          <article class="rollout-card reveal">
+            <span class="rollout-week">Week 4</span>
+            <div class="rollout-icon">04</div>
+            <h3>Measure</h3>
+            <p>Review calls answered, reservations captured, staff workload, guest outcomes, and expansion readiness.</p>
+            <ul>
+              <li>Answer-rate report</li>
+              <li>Reservation attribution</li>
+              <li>Go-forward recommendation</li>
+            </ul>
+          </article>
+        </div>
+
+        <div class="pilot-scorecard reveal">
+          <div class="pilot-scorecard-copy">
+            <small>Sample pilot scorecard</small>
+            <h3>Success is defined before launch.</h3>
+            <p>Every pilot begins with agreed operational targets rather than vague promises.</p>
+          </div>
+          <div class="pilot-scorecard-metrics">
+            <div><span>Calls answered</span><strong>95%+</strong></div>
+            <div><span>Reservations captured</span><strong>Trackable</strong></div>
+            <div><span>Staff interruptions</span><strong>Reduced</strong></div>
+            <div><span>Guest experience</span><strong>Protected</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
 
     <section class="pilot-section container" id="pilot">
       <div class="pilot-card reveal">
