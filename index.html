@@ -36,10 +36,12 @@
         <a href="#experience">Experience</a>
         <a href="#journey">Guest journey</a>
         <a href="#evening-service">Evening service</a>
+        <a href="#ai-concierge">AI Concierge</a>
         <a href="#hospitality-analytics">Analytics</a>
         <a href="#executive-command-center">Executive view</a>
         <a href="#guest-intelligence">Guest Intelligence</a>
-        <a href="#hospitality-analytics">Analytics</a>
+        <a href="#ai-concierge">AI Concierge</a>
+      <a href="#hospitality-analytics">Analytics</a>
       <a href="#executive-command-center">Executive view</a>
       <a href="#guest-intelligence">Guest Intelligence</a>
       <a href="#host-stand">Host stand</a>
@@ -573,7 +575,162 @@
     
 
     
-    <section class="analytics-section" id="hospitality-analytics">
+    
+    <section class="concierge-section" id="ai-concierge">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow"><span></span> AI concierge</p>
+          <h2>From guest conversation to confirmed reservation.</h2>
+          <p>
+            A hospitality-first booking experience that captures the request, understands the occasion,
+            checks availability, and prepares the host team before the guest arrives.
+          </p>
+        </div>
+
+        <div class="concierge-shell reveal">
+          <div class="concierge-topbar">
+            <div class="concierge-identity">
+              <div class="concierge-avatar">BC</div>
+              <div>
+                <strong>Blue Current Concierge</strong>
+                <span><i></i> Available now</span>
+              </div>
+            </div>
+
+            <div class="concierge-actions">
+              <button type="button" id="conciergeReset">Start over</button>
+              <button type="button" id="conciergeAutoplay" class="primary">Play demo</button>
+            </div>
+          </div>
+
+          <div class="concierge-layout">
+            <section class="concierge-conversation">
+              <div class="conversation-header">
+                <div>
+                  <small>Live guest conversation</small>
+                  <strong id="conversationGuest">New reservation inquiry</strong>
+                </div>
+                <span id="conversationStage">Step 1 of 5</span>
+              </div>
+
+              <div class="conversation-thread" id="conversationThread">
+                <article class="message assistant-message">
+                  <div class="message-avatar">BC</div>
+                  <div class="message-bubble">
+                    <p>Good evening. Thank you for calling Marina Grille. How may I help you tonight?</p>
+                    <span>Blue Current Concierge • now</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="conversation-quick-replies" id="quickReplies">
+                <button type="button" data-reply="I'd like to make a dinner reservation.">Make a reservation</button>
+                <button type="button" data-reply="I'm calling about a private event.">Private event</button>
+                <button type="button" data-reply="Can you tell me tonight's availability?">Tonight's availability</button>
+              </div>
+
+              <form class="conversation-input" id="conciergeForm">
+                <input id="conciergeInput" type="text" placeholder="Type a guest response..." autocomplete="off">
+                <button type="submit">Send</button>
+              </form>
+            </section>
+
+            <aside class="concierge-reservation-panel">
+              <div class="reservation-panel-head">
+                <div>
+                  <small>Reservation in progress</small>
+                  <strong id="reservationStatus">Waiting for guest</strong>
+                </div>
+                <span class="reservation-status-dot"></span>
+              </div>
+
+              <div class="reservation-progress">
+                <span class="active"></span><span></span><span></span><span></span><span></span>
+              </div>
+
+              <div class="reservation-details">
+                <div>
+                  <span>Guest</span>
+                  <strong id="reservationGuest">—</strong>
+                </div>
+                <div>
+                  <span>Date</span>
+                  <strong id="reservationDate">—</strong>
+                </div>
+                <div>
+                  <span>Time</span>
+                  <strong id="reservationTime">—</strong>
+                </div>
+                <div>
+                  <span>Party size</span>
+                  <strong id="reservationParty">—</strong>
+                </div>
+                <div>
+                  <span>Occasion</span>
+                  <strong id="reservationOccasion">—</strong>
+                </div>
+                <div>
+                  <span>Seating preference</span>
+                  <strong id="reservationSeating">—</strong>
+                </div>
+              </div>
+
+              <div class="availability-card" id="availabilityCard">
+                <div>
+                  <small>Availability check</small>
+                  <strong>Not started</strong>
+                </div>
+                <span>—</span>
+              </div>
+
+              <div class="guest-memory-card" id="guestMemoryCard">
+                <div class="guest-memory-icon">✦</div>
+                <div>
+                  <small>Guest intelligence</small>
+                  <strong>No guest matched yet</strong>
+                  <p>Preferences and visit history will appear when the guest is identified.</p>
+                </div>
+              </div>
+
+              <button class="confirm-reservation-button" id="confirmReservationButton" type="button" disabled>
+                Confirm reservation
+              </button>
+            </aside>
+          </div>
+
+          <div class="concierge-impact-grid">
+            <article>
+              <span>01</span>
+              <div>
+                <strong>Understands the request</strong>
+                <p>Recognizes reservation intent, private events, availability questions, and service requests.</p>
+              </div>
+            </article>
+            <article>
+              <span>02</span>
+              <div>
+                <strong>Checks the operation</strong>
+                <p>Matches the guest's preferred time, party size, and seating request against available inventory.</p>
+              </div>
+            </article>
+            <article>
+              <span>03</span>
+              <div>
+                <strong>Prepares the host team</strong>
+                <p>Creates a reservation record, celebration note, and guest-recognition brief before arrival.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <p class="concierge-disclaimer">
+          Concept workflow shown for demonstration. Live deployment would connect to the restaurant's approved reservation and operating systems.
+        </p>
+      </div>
+    </section>
+
+
+<section class="analytics-section" id="hospitality-analytics">
       <div class="container">
         <div class="section-heading reveal">
           <p class="eyebrow"><span></span> Hospitality analytics</p>

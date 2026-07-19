@@ -554,3 +554,219 @@ document.getElementById("regenerateInsights")?.addEventListener("click", (event)
     button.textContent = "Regenerate";
   }, 650);
 });
+
+
+// V6 — AI Concierge
+const conciergeDemo = [
+  {
+    user: "I'd like to make a dinner reservation.",
+    assistant: "Absolutely. May I have the name for the reservation?",
+    stage: 2,
+    updates: { status: "Collecting guest details" }
+  },
+  {
+    user: "Anthony Russo.",
+    assistant: "Welcome back, Anthony. I found your guest profile. What date and time would you prefer?",
+    stage: 3,
+    updates: { guest: "Anthony Russo", memory: true }
+  },
+  {
+    user: "This Friday at 7:30 PM for four people.",
+    assistant: "I can help with that. Are you celebrating anything, and do you have a seating preference?",
+    stage: 4,
+    updates: { date: "Friday, July 24", time: "7:30 PM", party: "4 guests", availability: "Checking nearby options" }
+  },
+  {
+    user: "It's my wife's birthday. We'd love a quiet waterfront table.",
+    assistant: "Thank you. Your preferred waterfront section is fully committed at 7:30 PM, but I can offer 7:15 PM at Table 14 or 8:30 PM in the waterfront section. Which would you prefer?",
+    stage: 5,
+    updates: { occasion: "Birthday", seating: "Quiet waterfront", availability: "7:15 PM • Table 14" }
+  },
+  {
+    user: "7:15 PM at Table 14 works.",
+    assistant: "Perfect. I have Anthony Russo for four guests this Friday at 7:15 PM at Table 14. I added the birthday note and your tree nut allergy. Shall I confirm it?",
+    stage: 5,
+    updates: { time: "7:15 PM", availability: "Table 14 available", ready: true }
+  }
+];
+
+let conciergeStep = 0;
+let conciergeAutoplayTimer = null;
+
+function conciergeAddMessage(text, role) {
+  const thread = document.getElementById("conversationThread");
+  if (!thread) return;
+
+  const article = document.createElement("article");
+  article.className = `message ${role === "user" ? "user-message" : "assistant-message"}`;
+  article.innerHTML = `
+    <div class="message-avatar">${role === "user" ? "AR" : "BC"}</div>
+    <div class="message-bubble">
+      <p>${text}</p>
+      <span>${role === "user" ? "Guest" : "Blue Current Concierge"} • now</span>
+    </div>
+  `;
+  thread.appendChild(article);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+function conciergeSetStage(stage) {
+  document.getElementById("conversationStage").textContent = `Step ${stage} of 5`;
+  document.querySelectorAll(".reservation-progress span").forEach((item, index) => {
+    item.classList.toggle("active", index < stage);
+  });
+}
+
+function conciergeApplyUpdates(updates = {}) {
+  if (updates.status) document.getElementById("reservationStatus").textContent = updates.status;
+  if (updates.guest) {
+    document.getElementById("reservationGuest").textContent = updates.guest;
+    document.getElementById("conversationGuest").textContent = updates.guest;
+  }
+  if (updates.date) document.getElementById("reservationDate").textContent = updates.date;
+  if (updates.time) document.getElementById("reservationTime").textContent = updates.time;
+  if (updates.party) document.getElementById("reservationParty").textContent = updates.party;
+  if (updates.occasion) document.getElementById("reservationOccasion").textContent = updates.occasion;
+  if (updates.seating) document.getElementById("reservationSeating").textContent = updates.seating;
+
+  if (updates.availability) {
+    const card = document.getElementById("availabilityCard");
+    card.querySelector("strong").textContent = updates.availability;
+    card.querySelector("span").textContent = updates.ready ? "Ready" : "Live";
+  }
+
+  if (updates.memory) {
+    document.getElementById("guestMemoryCard").innerHTML = `
+      <div class="guest-memory-icon">✦</div>
+      <div>
+        <small>Guest intelligence</small>
+        <strong>Anthony Russo • Premier Guest</strong>
+        <p>11 visits this year • Table 14 preferred • Tree nut allergy • Cabernet preference • Birthday celebration tonight</p>
+      </div>
+    `;
+  }
+
+  if (updates.ready) {
+    document.getElementById("reservationStatus").textContent = "Ready to confirm";
+    document.getElementById("confirmReservationButton").disabled = false;
+  }
+}
+
+function conciergeRunStep(step) {
+  if (!conciergeDemo[step]) return;
+  const item = conciergeDemo[step];
+
+  conciergeAddMessage(item.user, "user");
+  conciergeSetStage(item.stage);
+  conciergeApplyUpdates(item.updates);
+
+  setTimeout(() => {
+    conciergeAddMessage(item.assistant, "assistant");
+  }, 450);
+}
+
+function conciergeReset() {
+  clearInterval(conciergeAutoplayTimer);
+  conciergeAutoplayTimer = null;
+  conciergeStep = 0;
+
+  const thread = document.getElementById("conversationThread");
+  if (thread) {
+    thread.innerHTML = `
+      <article class="message assistant-message">
+        <div class="message-avatar">BC</div>
+        <div class="message-bubble">
+          <p>Good evening. Thank you for calling Marina Grille. How may I help you tonight?</p>
+          <span>Blue Current Concierge • now</span>
+        </div>
+      </article>
+    `;
+  }
+
+  document.getElementById("conversationGuest").textContent = "New reservation inquiry";
+  document.getElementById("reservationStatus").textContent = "Waiting for guest";
+  document.getElementById("reservationGuest").textContent = "—";
+  document.getElementById("reservationDate").textContent = "—";
+  document.getElementById("reservationTime").textContent = "—";
+  document.getElementById("reservationParty").textContent = "—";
+  document.getElementById("reservationOccasion").textContent = "—";
+  document.getElementById("reservationSeating").textContent = "—";
+  document.getElementById("availabilityCard").innerHTML = `
+    <div><small>Availability check</small><strong>Not started</strong></div><span>—</span>
+  `;
+  document.getElementById("guestMemoryCard").innerHTML = `
+    <div class="guest-memory-icon">✦</div>
+    <div>
+      <small>Guest intelligence</small>
+      <strong>No guest matched yet</strong>
+      <p>Preferences and visit history will appear when the guest is identified.</p>
+    </div>
+  `;
+  document.getElementById("confirmReservationButton").disabled = true;
+  document.getElementById("confirmReservationButton").textContent = "Confirm reservation";
+  document.getElementById("conciergeAutoplay").textContent = "Play demo";
+  conciergeSetStage(1);
+}
+
+document.querySelectorAll("#quickReplies button").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (conciergeStep === 0 && button.dataset.reply.includes("reservation")) {
+      conciergeRunStep(0);
+      conciergeStep = 1;
+    } else {
+      conciergeAddMessage(button.dataset.reply, "user");
+      setTimeout(() => {
+        conciergeAddMessage("I can help with that. For this concept demo, select “Play demo” to see the full reservation workflow.", "assistant");
+      }, 350);
+    }
+  });
+});
+
+document.getElementById("conciergeForm")?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = document.getElementById("conciergeInput");
+  const value = input.value.trim();
+  if (!value) return;
+
+  conciergeAddMessage(value, "user");
+  input.value = "";
+
+  setTimeout(() => {
+    conciergeAddMessage("Thank you. I’ve added that to the guest request. Use the demo controls to continue the full reservation flow.", "assistant");
+  }, 350);
+});
+
+document.getElementById("conciergeAutoplay")?.addEventListener("click", (event) => {
+  if (conciergeAutoplayTimer) {
+    clearInterval(conciergeAutoplayTimer);
+    conciergeAutoplayTimer = null;
+    event.currentTarget.textContent = "Resume demo";
+    return;
+  }
+
+  if (conciergeStep >= conciergeDemo.length) conciergeReset();
+  event.currentTarget.textContent = "Pause demo";
+
+  conciergeRunStep(conciergeStep);
+  conciergeStep += 1;
+
+  conciergeAutoplayTimer = setInterval(() => {
+    if (conciergeStep >= conciergeDemo.length) {
+      clearInterval(conciergeAutoplayTimer);
+      conciergeAutoplayTimer = null;
+      event.currentTarget.textContent = "Replay demo";
+      return;
+    }
+    conciergeRunStep(conciergeStep);
+    conciergeStep += 1;
+  }, 1500);
+});
+
+document.getElementById("conciergeReset")?.addEventListener("click", conciergeReset);
+
+document.getElementById("confirmReservationButton")?.addEventListener("click", (event) => {
+  if (event.currentTarget.disabled) return;
+  event.currentTarget.textContent = "Reservation confirmed ✓";
+  document.getElementById("reservationStatus").textContent = "Confirmed";
+  conciergeAddMessage("Your reservation is confirmed. A confirmation has been sent, and the host team has your birthday and seating notes. We look forward to welcoming you.", "assistant");
+});

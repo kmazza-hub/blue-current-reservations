@@ -1,4 +1,4 @@
-# Blue Current V5.6 — Hospitality Analytics
+# Blue Current V6 — AI Concierge
 
 A deploy-ready static website for Blue Current's hospitality product concept.
 
@@ -68,3 +68,15 @@ Interactive six-stage Friday evening service simulation.
 - Opportunity analysis
 - Repeat-guest growth metrics
 - Regenerating operator recommendations
+
+
+## V6 additions
+- Interactive AI concierge reservation workflow
+- Guest conversation simulation
+- Live reservation detail capture
+- Availability and alternative-time handling
+- Guest Intelligence matching
+- Celebration and allergy-note capture
+- Autoplay demo controls
+- Reservation confirmation state
+- Responsive desktop and mobile layouts

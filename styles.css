@@ -1874,3 +1874,378 @@ img,svg{display:block}
   .channel-layout,.repeat-guest-score{grid-template-columns:1fr}
   .channel-donut,.repeat-ring{margin:auto}
 }
+
+
+/* V6 — AI Concierge */
+.concierge-section{
+  padding:120px 0;
+  background:
+    radial-gradient(circle at 80% 10%,rgba(216,179,108,.13),transparent 24%),
+    radial-gradient(circle at 10% 85%,rgba(70,132,137,.13),transparent 30%),
+    linear-gradient(180deg,#071c25,#0b3340);
+  color:#edf5f2;
+}
+.concierge-section .section-heading p{color:#a8bebc}
+.concierge-section .section-heading h2{color:#f7faf8}
+.concierge-shell{
+  margin-top:58px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:30px;
+  background:#f6f4ee;
+  color:#16363d;
+  box-shadow:0 40px 110px rgba(0,0,0,.28);
+}
+.concierge-topbar,
+.concierge-identity,
+.concierge-actions,
+.conversation-header,
+.reservation-panel-head,
+.availability-card{
+  display:flex;
+  align-items:center;
+}
+.concierge-topbar{
+  justify-content:space-between;
+  gap:18px;
+  padding:18px 22px;
+  border-bottom:1px solid rgba(13,48,59,.1);
+  background:#fff;
+}
+.concierge-identity{gap:11px}
+.concierge-avatar,
+.message-avatar{
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  color:#fff;
+  background:linear-gradient(145deg,#2f7075,#1f4f59);
+  font-weight:800;
+}
+.concierge-avatar{width:40px;height:40px;font-size:10px}
+.concierge-identity strong,.concierge-identity span{display:block}
+.concierge-identity strong{font-size:12px}
+.concierge-identity span{
+  margin-top:3px;
+  color:#6e888a;
+  font-size:8px;
+}
+.concierge-identity span i{
+  display:inline-block;
+  width:7px;height:7px;
+  margin-right:5px;
+  border-radius:50%;
+  background:#67b793;
+  animation:pulse 1.8s infinite;
+}
+.concierge-actions{gap:8px}
+.concierge-actions button{
+  min-height:36px;
+  padding:0 14px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:#34565c;
+  background:#fff;
+  font-size:8px;
+  font-weight:700;
+}
+.concierge-actions button.primary{
+  color:#fff;
+  border-color:#2f7075;
+  background:#2f7075;
+}
+.concierge-layout{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  min-height:660px;
+}
+.concierge-conversation{
+  display:flex;
+  flex-direction:column;
+  padding:24px;
+  border-right:1px solid rgba(13,48,59,.1);
+  background:#f8f7f2;
+}
+.conversation-header{
+  justify-content:space-between;
+  gap:15px;
+  padding-bottom:17px;
+  border-bottom:1px solid rgba(13,48,59,.09);
+}
+.conversation-header small,.conversation-header strong{display:block}
+.conversation-header small{
+  color:#7b8f91;
+  font-size:7px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.conversation-header strong{margin-top:4px;font-size:11px}
+.conversation-header>span{
+  color:#4f7b79;
+  font-size:7px;
+}
+.conversation-thread{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:13px;
+  overflow-y:auto;
+  padding:22px 3px;
+  max-height:430px;
+}
+.message{
+  display:flex;
+  gap:9px;
+  align-items:flex-end;
+}
+.message-avatar{
+  width:28px;height:28px;
+  flex:0 0 auto;
+  font-size:7px;
+}
+.message.user-message{
+  justify-content:flex-end;
+}
+.message.user-message .message-avatar{
+  order:2;
+  color:#304f55;
+  background:#e7ece8;
+}
+.message-bubble{
+  max-width:76%;
+  padding:12px 14px;
+  border-radius:14px 14px 14px 4px;
+  background:#fff;
+  box-shadow:0 5px 18px rgba(21,58,65,.06);
+}
+.user-message .message-bubble{
+  color:#fff;
+  border-radius:14px 14px 4px 14px;
+  background:#2f7075;
+}
+.message-bubble p{
+  margin:0;
+  font-size:9px;
+  line-height:1.55;
+}
+.message-bubble span{
+  display:block;
+  margin-top:6px;
+  color:#829497;
+  font-size:6px;
+}
+.user-message .message-bubble span{color:#c8dcda}
+.conversation-quick-replies{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:12px;
+}
+.conversation-quick-replies button{
+  padding:8px 10px;
+  border:1px solid rgba(47,112,117,.18);
+  border-radius:999px;
+  color:#37666a;
+  background:#eef4f1;
+  font-size:7px;
+}
+.conversation-input{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:8px;
+  padding-top:12px;
+  border-top:1px solid rgba(13,48,59,.09);
+}
+.conversation-input input{
+  min-height:42px;
+  padding:0 13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  font-size:9px;
+}
+.conversation-input button{
+  min-width:70px;
+  border:0;
+  border-radius:12px;
+  color:#fff;
+  background:#2f7075;
+  font-size:8px;
+  font-weight:800;
+}
+.concierge-reservation-panel{
+  padding:24px;
+  background:#fff;
+}
+.reservation-panel-head{
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:13px;
+}
+.reservation-panel-head small,.reservation-panel-head strong{display:block}
+.reservation-panel-head small{
+  color:#7b8f91;
+  font-size:7px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.reservation-panel-head strong{margin-top:4px;font-size:12px}
+.reservation-status-dot{
+  width:9px;height:9px;
+  border-radius:50%;
+  background:#d8b36c;
+  box-shadow:0 0 0 6px rgba(216,179,108,.12);
+}
+.reservation-progress{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:5px;
+  margin-bottom:20px;
+}
+.reservation-progress span{
+  height:5px;
+  border-radius:999px;
+  background:#e5e8e4;
+}
+.reservation-progress span.active{background:#2f7075}
+.reservation-details{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+}
+.reservation-details>div{
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#faf9f5;
+}
+.reservation-details span,.reservation-details strong{display:block}
+.reservation-details span{
+  color:#7b8f91;
+  font-size:6px;
+  text-transform:uppercase;
+}
+.reservation-details strong{
+  margin-top:5px;
+  font-size:9px;
+}
+.availability-card{
+  justify-content:space-between;
+  gap:12px;
+  margin-top:12px;
+  padding:14px;
+  border-radius:12px;
+  color:#fff;
+  background:#193f49;
+}
+.availability-card small,.availability-card strong{display:block}
+.availability-card small{
+  color:#9db9b6;
+  font-size:6px;
+  text-transform:uppercase;
+}
+.availability-card strong{margin-top:4px;font-size:9px}
+.availability-card>span{
+  font-size:9px;
+  font-weight:800;
+}
+.guest-memory-card{
+  display:grid;
+  grid-template-columns:34px 1fr;
+  gap:11px;
+  margin-top:12px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#f8f5ed;
+}
+.guest-memory-icon{
+  width:32px;height:32px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  color:#8b6428;
+  background:#f0e2c5;
+  font-size:12px;
+}
+.guest-memory-card small,.guest-memory-card strong{display:block}
+.guest-memory-card small{
+  color:#7b8f91;
+  font-size:6px;
+  text-transform:uppercase;
+}
+.guest-memory-card strong{margin-top:4px;font-size:9px}
+.guest-memory-card p{
+  margin:5px 0 0;
+  color:#74888a;
+  font-size:7px;
+  line-height:1.5;
+}
+.confirm-reservation-button{
+  width:100%;
+  min-height:43px;
+  margin-top:14px;
+  border:0;
+  border-radius:12px;
+  color:#fff;
+  background:#2f7075;
+  font-size:8px;
+  font-weight:800;
+}
+.confirm-reservation-button:disabled{
+  cursor:not-allowed;
+  color:#9ba7a5;
+  background:#e4e7e3;
+}
+.concierge-impact-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  padding:0 24px 24px;
+  background:#fff;
+}
+.concierge-impact-grid article{
+  display:grid;
+  grid-template-columns:32px 1fr;
+  gap:10px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#faf9f5;
+}
+.concierge-impact-grid article>span{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  color:#fff;
+  background:#2f7075;
+  font-size:7px;
+  font-weight:800;
+}
+.concierge-impact-grid strong{font-size:8px}
+.concierge-impact-grid p{
+  margin:4px 0 0;
+  color:#74888b;
+  font-size:7px;
+  line-height:1.5;
+}
+.concierge-disclaimer{
+  margin:14px 0 0;
+  color:#829b9d;
+  font-size:8px;
+  text-align:right;
+}
+
+@media(max-width:900px){
+  .concierge-layout{grid-template-columns:1fr}
+  .concierge-conversation{border-right:0;border-bottom:1px solid var(--line)}
+}
+@media(max-width:650px){
+  .concierge-section{padding-block:85px}
+  .concierge-topbar{align-items:flex-start;flex-direction:column}
+  .concierge-actions{width:100%}
+  .concierge-actions button{flex:1}
+  .concierge-conversation,.concierge-reservation-panel{padding:16px}
+  .reservation-details{grid-template-columns:1fr 1fr}
+  .concierge-impact-grid{grid-template-columns:1fr;padding-inline:16px}
+  .message-bubble{max-width:84%}
+}
