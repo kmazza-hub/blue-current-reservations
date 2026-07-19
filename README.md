@@ -1,55 +1,57 @@
-# Blue Current Launch V3
+# Blue Current Product Demo V4
 
-This is the launch-ready website package for Blue Current.
+This package replaces the marketing-style homepage with a product-first software launch experience.
 
-## Improvements in this version
+## Included
 
-- Stronger restaurant-specific hero message
-- Clear product proof points
-- More convincing live service dashboard
-- Old-way versus Blue Current comparison
-- Pilot and restaurant-group pricing
-- Premium responsive motion
-- Netlify form connected to the existing `contact` form
-- Direct business email shown in the CTA
-- Founder-led credibility section
-- Mobile and desktop optimization
+- Fullscreen cinematic hero
+- Live AI reservation call simulation
+- Animated transcript and call states
+- Real-time dashboard metric updates
+- Reservation timeline
+- SMS confirmation animation
+- Recovered-revenue notification
+- Guest history and preference interface
+- Animated owner analytics
+- Pilot and multi-location pricing
+- Existing Netlify `contact` form integration
+- Desktop and mobile navigation
+- Responsive layouts and reduced-motion support
 
 ## Install
 
-Replace these three files in your existing repository:
+Copy these three files into your current `blue-current-reservations` repository:
 
 - `index.html`
 - `styles.css`
 - `script.js`
 
-## Commit and deploy
+Replace the existing versions.
+
+## Preview
+
+Open `index.html` with Live Server.
+
+The animation works locally. Netlify form submission only works on the deployed website.
+
+## Deploy
 
 ```powershell
 git add .
-git commit -m "Publish Blue Current launch website"
+git commit -m "Launch interactive Blue Current product demo"
 git push
 ```
 
-## Netlify
+Netlify should deploy automatically if the repository is connected.
 
-This version submits to the existing Netlify form named:
+## Lead notifications
+
+The form name remains:
 
 `contact`
 
-That means new submissions should continue appearing in the same form area already visible in your Netlify dashboard.
+Your existing Netlify notification to `keith@bluecurrentco.com` should therefore continue working.
 
-To receive email alerts:
+## Important
 
-1. Open the Netlify project.
-2. Go to **Forms**.
-3. Click **Form notifications**.
-4. Add an email notification for `keith@bluecurrentco.com`.
-
-## Local testing note
-
-The website can be previewed with Live Server, but successful form submission requires the deployed Netlify site.
-
-## Claims note
-
-The interface names and performance figures are illustrative product mockups. Use verified customer results once pilot data is available.
+The restaurant names, metrics, recovered revenue, reservation counts, and guest data are illustrative interface mockups. Replace them with verified pilot results before presenting them as actual performance data.

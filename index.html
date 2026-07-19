@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Blue Current | AI Reservations for Restaurants</title>
+  <title>Blue Current | Restaurant Reservation Operating System</title>
   <meta
     name="description"
-    content="Blue Current answers restaurant calls, books reservations, sends confirmations, and keeps the host stand organized in one modern platform."
+    content="Blue Current answers restaurant calls, books tables, sends confirmations, and keeps the host stand synchronized in real time."
   />
-  <meta name="theme-color" content="#0a1f1a" />
-  <meta property="og:title" content="Blue Current | AI Reservations for Restaurants" />
-  <meta property="og:description" content="Answer every call, capture every reservation, and keep service organized." />
+  <meta name="theme-color" content="#071b18" />
+
+  <meta property="og:title" content="Blue Current | The AI Host That Never Misses a Reservation" />
+  <meta property="og:description" content="Turn every reservation call into a booked table." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://bluecurrentco.com" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%230e725e%22/><path d=%22M20 55c15-24 27 24 60-10%22 fill=%22none%22 stroke=%22white%22 stroke-width=%2210%22 stroke-linecap=%22round%22/></svg>" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,697 +27,572 @@
 </head>
 
 <body>
-  <div class="page-noise" aria-hidden="true"></div>
-  <div class="ambient-grid" aria-hidden="true"></div>
+  <div class="noise" aria-hidden="true"></div>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="cursor-glow" aria-hidden="true"></div>
 
-  <header class="site-header" id="top">
-    <div class="container nav-shell">
+  <header class="site-header">
+    <div class="container nav">
       <a class="brand" href="#top" aria-label="Blue Current home">
-        <span class="brand-mark" aria-hidden="true">
-          <span></span>
-        </span>
-        <span class="brand-name">Blue Current</span>
+        <span class="brand-mark"><i></i></span>
+        <span>Blue Current</span>
       </a>
 
-      <button
-        class="menu-button"
-        type="button"
-        aria-label="Open navigation"
-        aria-expanded="false"
-        aria-controls="site-navigation"
-      >
+      <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false">
         <span></span>
         <span></span>
       </button>
 
-      <nav class="site-nav" id="site-navigation" aria-label="Primary navigation">
-        <a href="#product">Product</a>
-        <a href="#how-it-works">How it works</a>
-        <a href="#features">Features</a>
-        <a href="#faq">FAQ</a>
-        <a class="nav-button" href="#early-access">Book a product preview</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#demo">Live Demo</a>
+        <a href="#platform">Platform</a>
+        <a href="#analytics">Analytics</a>
+        <a href="#pricing">Pricing</a>
+        <a class="nav-cta" href="#contact">Book a Demo</a>
       </nav>
     </div>
   </header>
 
-  <main>
-    <section class="hero section-pad">
-      <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
-      <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
+  <main id="top">
+    <section class="hero">
+      <div class="hero-orb orb-one" aria-hidden="true"></div>
+      <div class="hero-orb orb-two" aria-hidden="true"></div>
 
-      <div class="container hero-layout">
+      <div class="container hero-grid">
         <div class="hero-copy reveal">
           <div class="eyebrow">
-            <span class="eyebrow-dot"></span>
-            AI reservation platform for restaurants
+            <span class="pulse-dot"></span>
+            Restaurant reservation operating system
           </div>
 
           <h1>
-            Turn every call into
-            <span>a booked table.</span>
+            The AI host that
+            <span>never misses</span>
+            a reservation.
           </h1>
 
           <p class="hero-lead">
-            Blue Current answers reservation calls, checks availability, confirms the booking, and updates your team instantly—so busy service never means lost revenue.
+            Blue Current answers calls, checks availability, books the table,
+            sends confirmation, and updates your host stand in real time.
           </p>
 
           <div class="hero-actions">
-            <a class="button button-primary" href="#early-access">
-              Request early access
-              <span aria-hidden="true">→</span>
-            </a>
-
-            <button class="button button-ghost demo-trigger" type="button">
-              <span class="play-icon" aria-hidden="true">▶</span>
-              Watch the flow
+            <button class="button primary live-demo-trigger" type="button">
+              Watch the live demo
+              <span>▶</span>
             </button>
+
+            <a class="button secondary" href="#contact">
+              Book a product preview
+              <span>→</span>
+            </a>
           </div>
 
-          <div class="hero-proof-grid">
+          <div class="hero-proof">
             <div>
               <strong>24/7</strong>
-              <span>Reservation coverage</span>
+              <span>Call coverage</span>
             </div>
             <div>
               <strong>&lt; 5 sec</strong>
-              <span>Typical answer time</span>
+              <span>Answer time</span>
             </div>
             <div>
-              <strong>1 dashboard</strong>
+              <strong>1 system</strong>
               <span>Every reservation channel</span>
-            </div>
-          </div>
-
-          <div class="trust-row">
-            <div class="trust-stack" aria-hidden="true">
-              <span>CI</span>
-              <span>JR</span>
-              <span>BC</span>
-            </div>
-
-            <div>
-              <strong>Built with restaurant operators</strong>
-              <span>Designed for real service, not a software demo.</span>
             </div>
           </div>
         </div>
 
-        <div class="hero-product reveal" id="product">
-          <div class="product-frame">
-            <div class="product-toolbar">
-              <div class="toolbar-brand">
-                <span class="mini-logo"></span>
-                <span>Blue Current</span>
+        <div class="hero-stage reveal" id="demo">
+          <div class="stage-glow"></div>
+
+          <div class="app-window">
+            <div class="app-topbar">
+              <div class="app-brand">
+                <span class="app-logo"></span>
+                <div>
+                  <strong>Marina Point</strong>
+                  <span>Friday dinner service</span>
+                </div>
               </div>
 
-              <div class="toolbar-status">
-                <span class="live-dot"></span>
-                AI answering
+              <div class="system-status">
+                <span></span>
+                AI host online
               </div>
             </div>
 
-            <div class="dashboard-grid">
-              <aside class="dashboard-sidebar">
-                <div class="restaurant-profile">
-                  <div class="restaurant-avatar">MP</div>
-                  <div>
-                    <strong>Marina Point</strong>
-                    <span>Spring Lake, NJ</span>
-                  </div>
-                </div>
+            <div class="app-body">
+              <aside class="app-sidebar">
+                <button class="active" type="button"><span>◫</span> Reservations</button>
+                <button type="button"><span>☎</span> Calls</button>
+                <button type="button"><span>◷</span> Waitlist</button>
+                <button type="button"><span>◎</span> Guests</button>
+                <button type="button"><span>⌁</span> Analytics</button>
 
-                <nav class="dashboard-nav" aria-label="Dashboard preview navigation">
-                  <button class="active" type="button">
-                    <span>◫</span>
-                    Reservations
-                  </button>
-                  <button type="button">
-                    <span>◷</span>
-                    Waitlist
-                  </button>
-                  <button type="button">
-                    <span>☎</span>
-                    Calls
-                  </button>
-                  <button type="button">
-                    <span>◎</span>
-                    Guests
-                  </button>
-                </nav>
-
-                <div class="sidebar-card">
-                  <span>Calls handled today</span>
-                  <strong>37</strong>
-                  <small>9 reservations captured</small>
+                <div class="sidebar-health">
+                  <span>System health</span>
+                  <strong>All systems live</strong>
+                  <div><i></i><i></i><i></i><i></i></div>
                 </div>
               </aside>
 
-              <div class="dashboard-main">
-                <div class="dashboard-heading">
+              <section class="app-main">
+                <div class="app-heading">
                   <div>
-                    <span class="dashboard-date">Friday, July 17</span>
+                    <span>Friday, July 19</span>
                     <h2>Live dinner service</h2>
                   </div>
-
-                  <button class="dashboard-add" type="button">+ Add reservation</button>
+                  <button type="button">+ Add reservation</button>
                 </div>
 
-                <div class="dashboard-stats">
+                <div class="metrics-row">
                   <article>
                     <span>Reservations</span>
-                    <strong>48</strong>
-                    <small><b>+8</b> captured by AI</small>
+                    <strong id="metric-reservations">48</strong>
+                    <small><b id="metric-reservations-delta">+8</b> captured by AI</small>
                   </article>
 
                   <article>
                     <span>Expected guests</span>
-                    <strong>126</strong>
-                    <small>Peak service at 7:15 PM</small>
+                    <strong id="metric-guests">126</strong>
+                    <small>Peak service 7:15 PM</small>
                   </article>
 
                   <article>
-                    <span>Table utilization</span>
-                    <strong>86%</strong>
-                    <small>12 tables available</small>
+                    <span>Recovered revenue</span>
+                    <strong id="metric-revenue">$3,840</strong>
+                    <small>This month</small>
                   </article>
                 </div>
 
-                <div class="reservation-panel">
-                  <div class="panel-heading">
-                    <div class="service-tabs">
-                      <button class="active" type="button">Dinner</button>
-                      <button type="button">Lunch</button>
-                      <button type="button">All day</button>
+                <div class="timeline-card">
+                  <div class="timeline-top">
+                    <div>
+                      <strong>Tonight</strong>
+                      <span>Reservation timeline</span>
                     </div>
-
-                    <button class="panel-filter" type="button">Filter</button>
+                    <div class="occupancy">
+                      <span>86% capacity</span>
+                      <div><i></i></div>
+                    </div>
                   </div>
 
-                  <div class="reservation-list">
-                    <article class="reservation-item">
-                      <div class="reservation-time">6:30</div>
-                      <div class="guest-avatar sage">JE</div>
-                      <div class="guest-info">
-                        <strong>Jordan Ellis</strong>
-                        <span>4 guests · Main dining room</span>
-                      </div>
-                      <div class="guest-note">Birthday</div>
-                      <div class="status-badge confirmed">Confirmed</div>
-                    </article>
+                  <div class="timeline-hours">
+                    <span>5:00</span>
+                    <span>6:00</span>
+                    <span>7:00</span>
+                    <span>8:00</span>
+                    <span>9:00</span>
+                  </div>
 
-                    <article class="reservation-item">
-                      <div class="reservation-time">7:00</div>
-                      <div class="guest-avatar sand">MC</div>
-                      <div class="guest-info">
-                        <strong>Maya Chen</strong>
-                        <span>2 guests · Window requested</span>
-                      </div>
-                      <div class="guest-note">Anniversary</div>
-                      <div class="status-badge confirmed">Confirmed</div>
+                  <div class="reservation-timeline">
+                    <article style="--start: 8%; --width: 18%;">
+                      <span>5:30</span>
+                      <strong>Ellis · 4</strong>
                     </article>
-
-                    <article class="reservation-item reservation-highlight">
-                      <div class="reservation-time">7:15</div>
-                      <div class="guest-avatar blue">AR</div>
-                      <div class="guest-info">
-                        <strong>Anthony Russo</strong>
-                        <span>6 guests · Patio requested</span>
-                      </div>
-                      <div class="guest-note">New guest</div>
-                      <div class="status-badge new">AI booked</div>
+                    <article style="--start: 31%; --width: 16%;">
+                      <span>6:30</span>
+                      <strong>Chen · 2</strong>
                     </article>
-
-                    <article class="reservation-item">
-                      <div class="reservation-time">7:30</div>
-                      <div class="guest-avatar rose">SK</div>
-                      <div class="guest-info">
-                        <strong>Sarah Kim</strong>
-                        <span>3 guests · High chair needed</span>
-                      </div>
-                      <div class="guest-note">Returning</div>
-                      <div class="status-badge pending">Pending</div>
+                    <article class="timeline-live" style="--start: 49%; --width: 22%;">
+                      <span>7:15</span>
+                      <strong>Russo · 6</strong>
+                    </article>
+                    <article style="--start: 73%; --width: 15%;">
+                      <span>8:15</span>
+                      <strong>Kim · 3</strong>
                     </article>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div class="activity-toast" aria-live="polite">
-              <div class="activity-icon">✓</div>
-              <div>
-                <strong>Reservation captured</strong>
-                <span>AI booked a party of 6 and updated the host stand</span>
-              </div>
+                <div class="reservation-table">
+                  <div class="table-head">
+                    <span>Time</span>
+                    <span>Guest</span>
+                    <span>Party</span>
+                    <span>Request</span>
+                    <span>Status</span>
+                  </div>
+
+                  <div class="table-row">
+                    <span>6:30</span>
+                    <span><b>Jordan Ellis</b><small>Returning guest</small></span>
+                    <span>4</span>
+                    <span>Birthday</span>
+                    <span><i class="badge confirmed">Confirmed</i></span>
+                  </div>
+
+                  <div class="table-row">
+                    <span>7:00</span>
+                    <span><b>Maya Chen</b><small>Window requested</small></span>
+                    <span>2</span>
+                    <span>Anniversary</span>
+                    <span><i class="badge confirmed">Confirmed</i></span>
+                  </div>
+
+                  <div class="table-row live-row" id="live-reservation-row">
+                    <span>7:15</span>
+                    <span><b>Anthony Russo</b><small>Booked by AI</small></span>
+                    <span>6</span>
+                    <span>Patio</span>
+                    <span><i class="badge ai">AI booked</i></span>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
 
-          <div class="floating-call-card">
-            <div class="call-status">
-              <span></span>
-              Live AI call
+          <div class="floating-call-panel" id="call-panel">
+            <div class="call-header">
+              <div>
+                <span class="call-live-dot"></span>
+                Live reservation call
+              </div>
+              <span id="call-timer">00:00</span>
             </div>
 
-            <div class="call-contact">
-              <div class="caller-icon">AR</div>
+            <div class="caller">
+              <div class="caller-avatar">AR</div>
               <div>
                 <strong>Anthony Russo</strong>
-                <span>00:42</span>
+                <span>Incoming caller</span>
               </div>
-              <div class="audio-bars" aria-hidden="true">
-                <i></i><i></i><i></i><i></i><i></i>
+              <div class="waveform" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
               </div>
             </div>
 
-            <p>
-              “I found a table for six at 7:15. Would you like me to confirm that reservation?”
-            </p>
+            <div class="transcript-box">
+              <span id="speaker-label">AI host</span>
+              <p id="transcript-text">Good evening, Marina Point. How can I help you?</p>
+            </div>
+
+            <div class="call-state">
+              <span class="state-icon" id="call-state-icon">☎</span>
+              <div>
+                <strong id="call-state-title">Call connected</strong>
+                <span id="call-state-subtitle">AI host is listening</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="sms-phone" id="sms-phone">
+            <div class="phone-notch"></div>
+            <div class="phone-header">
+              <span>Messages</span>
+              <strong>Marina Point</strong>
+            </div>
+            <div class="sms-bubble">
+              <span>Reservation confirmed</span>
+              <strong>Friday · 7:15 PM</strong>
+              <small>Party of 6 · Patio requested</small>
+            </div>
+            <div class="sms-status">Delivered now</div>
+          </div>
+
+          <div class="revenue-chip" id="revenue-chip">
+            <span>Reservation recovered</span>
+            <strong>+$276</strong>
           </div>
         </div>
       </div>
-    </section>
 
-    <section class="channel-strip">
-      <div class="container channel-inner">
-        <p>One system for every reservation channel</p>
-
-        <div class="channel-items">
-          <span><b>☎</b> Phone calls</span>
-          <span><b>◫</b> Website</span>
-          <span><b>↪</b> Walk-ins</span>
-          <span><b>✉</b> Text messages</span>
-          <span><b>＋</b> Staff entries</span>
-        </div>
+      <div class="hero-scroll">
+        <span>Scroll to explore the platform</span>
+        <i></i>
       </div>
     </section>
 
-    
-    <section class="proof-marquee" aria-label="Product benefits">
+    <section class="marquee" aria-label="Platform benefits">
       <div class="marquee-track">
-        <span>24/7 call answering</span><b>•</b>
-        <span>Automatic confirmations</span><b>•</b>
-        <span>Live reservation dashboard</span><b>•</b>
-        <span>Guest history and notes</span><b>•</b>
+        <span>Phone reservations</span><b>•</b>
+        <span>Real-time availability</span><b>•</b>
+        <span>SMS confirmations</span><b>•</b>
         <span>Waitlist management</span><b>•</b>
-        <span>Restaurant-specific rules</span><b>•</b>
-        <span>24/7 call answering</span><b>•</b>
-        <span>Automatic confirmations</span><b>•</b>
-        <span>Live reservation dashboard</span><b>•</b>
-        <span>Guest history and notes</span><b>•</b>
+        <span>Guest history</span><b>•</b>
+        <span>Multi-location analytics</span><b>•</b>
+        <span>Phone reservations</span><b>•</b>
+        <span>Real-time availability</span><b>•</b>
+        <span>SMS confirmations</span><b>•</b>
         <span>Waitlist management</span><b>•</b>
-        <span>Restaurant-specific rules</span><b>•</b>
+        <span>Guest history</span><b>•</b>
+        <span>Multi-location analytics</span><b>•</b>
       </div>
     </section>
 
-<section class="section-pad workflow-section" id="how-it-works">
+    <section class="story-section" id="platform">
       <div class="container">
         <div class="section-heading center reveal">
-          <span class="section-kicker">How it works</span>
-          <h2>From ringing phone to confirmed table.</h2>
+          <span class="section-kicker">The reservation journey</span>
+          <h2>One call. One system. Zero lost details.</h2>
           <p>
-            Every reservation is handled, recorded, and communicated automatically.
+            Blue Current turns a live conversation into a confirmed reservation
+            without pulling your team away from service.
           </p>
         </div>
 
-        <div class="workflow-grid">
-          <article class="workflow-card reveal">
-            <div class="workflow-number">01</div>
-            <div class="workflow-visual phone-visual">
-              <div class="ring-one"></div>
-              <div class="ring-two"></div>
-              <div class="phone-circle">☎</div>
+        <div class="story-grid">
+          <article class="story-card reveal">
+            <span class="story-number">01</span>
+            <div class="story-visual ring-visual">
+              <div class="ring-circle outer"></div>
+              <div class="ring-circle inner"></div>
+              <div class="phone-icon">☎</div>
             </div>
             <h3>The guest calls</h3>
-            <p>
-              Your AI host answers naturally, even during your busiest service hours.
-            </p>
+            <p>Your AI host answers immediately, even during the busiest part of dinner service.</p>
           </article>
 
-          <article class="workflow-card reveal">
-            <div class="workflow-number">02</div>
-            <div class="workflow-visual availability-visual">
-              <div class="mini-calendar">
-                <span></span><span></span><span class="selected"></span><span></span>
-                <span></span><span></span><span></span><span></span>
+          <article class="story-card reveal">
+            <span class="story-number">02</span>
+            <div class="story-visual calendar-visual">
+              <div class="mini-grid">
+                <i></i><i></i><i class="selected"></i><i></i>
+                <i></i><i></i><i></i><i></i>
+                <i></i><i></i><i></i><i></i>
               </div>
             </div>
             <h3>Availability is checked</h3>
-            <p>
-              Blue Current follows your hours, seating rules, table limits, and blackout dates.
-            </p>
+            <p>The system follows hours, party-size limits, seating rules, and blackout dates.</p>
           </article>
 
-          <article class="workflow-card reveal">
-            <div class="workflow-number">03</div>
-            <div class="workflow-visual message-visual">
-              <div class="message-bubble">Reservation confirmed ✓</div>
-              <div class="message-line"></div>
+          <article class="story-card reveal">
+            <span class="story-number">03</span>
+            <div class="story-visual confirm-visual">
+              <div class="confirm-card">
+                <span>✓</span>
+                <strong>Table confirmed</strong>
+                <small>Friday · 7:15 PM</small>
+              </div>
             </div>
             <h3>Everyone is updated</h3>
-            <p>
-              The guest receives confirmation and the booking appears instantly for staff.
-            </p>
+            <p>The guest receives confirmation and your reservation list updates instantly.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="section-pad feature-section" id="features">
-      <div class="container feature-layout">
-        <div class="feature-copy reveal">
-          <span class="section-kicker light">Built for real service</span>
-          <h2>Powerful enough for management. Simple enough for the host stand.</h2>
+    <section class="platform-section">
+      <div class="container platform-layout">
+        <div class="platform-copy reveal">
+          <span class="section-kicker light">Built for service</span>
+          <h2>A host stand your team can trust.</h2>
           <p>
-            No complicated software and no scattered notes. Your team gets one clear
-            picture of who is coming, when they are arriving, and what they need.
+            Every call, guest note, special request, table assignment, and status change
+            stays synchronized in one operating view.
           </p>
 
-          <ul class="check-list">
-            <li>
-              <span>✓</span>
-              AI phone answering and reservation capture
-            </li>
-            <li>
-              <span>✓</span>
-              Live reservation dashboard
-            </li>
-            <li>
-              <span>✓</span>
-              SMS confirmations and reminders
-            </li>
-            <li>
-              <span>✓</span>
-              Guest notes, preferences, and special requests
-            </li>
-            <li>
-              <span>✓</span>
-              Easy edits, cancellations, and waitlist management
-            </li>
+          <ul>
+            <li><span>✓</span> Add, edit, seat, or cancel reservations</li>
+            <li><span>✓</span> Manage phone, web, and walk-in demand</li>
+            <li><span>✓</span> Track guest preferences and special occasions</li>
+            <li><span>✓</span> See call transcripts and AI decisions</li>
           </ul>
         </div>
 
-        <div class="feature-showcase reveal">
-          <div class="call-demo-card">
-            <div class="call-demo-top">
+        <div class="platform-demo reveal">
+          <div class="mini-app">
+            <div class="mini-app-top">
+              <strong>Guest profile</strong>
+              <span>Anthony Russo</span>
+            </div>
+
+            <div class="guest-profile">
+              <div class="guest-profile-avatar">AR</div>
               <div>
-                <span>Incoming call</span>
-                <strong>Reservation request</strong>
-              </div>
-              <span class="call-time">00:42</span>
-            </div>
-
-            <div class="caller-large">
-              <div class="caller-large-avatar">JR</div>
-              <h3>Jamie Rivera</h3>
-              <span>Calling Marina Point</span>
-            </div>
-
-            <div class="conversation">
-              <div class="conversation-row ai">
-                <span>AI</span>
-                <p>
-                  Absolutely. What date, time, and party size were you looking for?
-                </p>
-              </div>
-
-              <div class="conversation-row guest">
-                <p>Friday around 7:30 for four people.</p>
-                <span>JR</span>
+                <h3>Anthony Russo</h3>
+                <span>4 visits · Last visit 28 days ago</span>
               </div>
             </div>
 
-            <div class="checking-status">
-              <span class="checking-pulse"></span>
-              Checking Friday availability
+            <div class="guest-tags">
+              <span>Patio preferred</span>
+              <span>Usually party of 4–6</span>
+              <span>Friday evenings</span>
+            </div>
+
+            <div class="guest-history">
+              <article>
+                <span>Jul 19</span>
+                <strong>Party of 6 · 7:15 PM</strong>
+                <small>Booked by AI · Patio requested</small>
+              </article>
+              <article>
+                <span>Jun 21</span>
+                <strong>Party of 4 · 7:30 PM</strong>
+                <small>Anniversary dinner</small>
+              </article>
             </div>
           </div>
 
-          <div class="mini-insight-card">
-            <span>Recovered revenue</span>
-            <strong>$3,840</strong>
-            <small>Estimated from AI-booked reservations this month</small>
+          <div class="floating-note">
+            <span>Guest intelligence</span>
+            <strong>Recognized returning caller</strong>
+            <small>Preferences applied automatically</small>
           </div>
         </div>
       </div>
     </section>
 
-    
-    <section class="section-pad comparison-section">
-      <div class="container comparison-layout">
-        <div class="comparison-copy reveal">
-          <span class="section-kicker">Replace the chaos</span>
-          <h2>From handwritten notes to one intelligent reservation system.</h2>
+    <section class="analytics-section" id="analytics">
+      <div class="container">
+        <div class="section-heading reveal">
+          <span class="section-kicker">Owner analytics</span>
+          <h2>See the demand your restaurant used to miss.</h2>
           <p>
-            Blue Current brings phone calls, web requests, walk-ins, guest notes,
-            and confirmations into a single operational view.
+            Understand call volume, reservation conversion, recovered revenue,
+            busy periods, and guest behavior at a glance.
           </p>
         </div>
 
-        <div class="comparison-board reveal">
-          <div class="comparison-column old-way">
-            <span class="comparison-label">The old way</span>
-            <article><b>Missed call</b><small>Guest hangs up during service</small></article>
-            <article><b>Paper notes</b><small>Details get lost or misread</small></article>
-            <article><b>Manual callbacks</b><small>Staff follows up after the rush</small></article>
-            <article><b>No guest history</b><small>Preferences start from zero</small></article>
-          </div>
-
-          <div class="comparison-arrow" aria-hidden="true">→</div>
-
-          <div class="comparison-column new-way">
-            <span class="comparison-label">With Blue Current</span>
-            <article><b>Answered instantly</b><small>Every reservation call is handled</small></article>
-            <article><b>Booked automatically</b><small>Availability and rules are checked</small></article>
-            <article><b>Confirmed by text</b><small>Guests and staff stay synchronized</small></article>
-            <article><b>Guest intelligence</b><small>Notes and preferences are retained</small></article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-<section class="section-pad outcomes-section">
-      <div class="container">
-        <div class="section-heading reveal">
-          <span class="section-kicker">Built for every side of service</span>
-          <h2>Better for owners, staff, and guests.</h2>
-        </div>
-
-        <div class="outcomes-grid">
-          <article class="outcome-card large reveal">
-            <div>
-              <span class="card-kicker">For owners</span>
-              <h3>See the demand your team used to miss.</h3>
-              <p>
-                Track call volume, reservation demand, busy time slots, guest counts,
-                and missed opportunities from one place.
-              </p>
+        <div class="analytics-grid">
+          <article class="analytics-card large reveal">
+            <div class="analytics-card-top">
+              <div>
+                <span>Reservation demand</span>
+                <strong>Last 7 days</strong>
+              </div>
+              <div class="trend-up">↑ 18.4%</div>
             </div>
 
-            <div class="metric-row">
-              <div>
-                <strong>94%</strong>
-                <span>Calls answered</span>
-              </div>
-              <div>
-                <strong>18</strong>
-                <span>Bookings recovered</span>
-              </div>
-              <div>
-                <strong>6.4 hrs</strong>
-                <span>Staff time saved</span>
-              </div>
+            <div class="chart-shell">
+              <svg viewBox="0 0 700 250" role="img" aria-label="Illustrative reservation demand chart">
+                <defs>
+                  <linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#7ee0bd" stop-opacity="0.65"/>
+                    <stop offset="100%" stop-color="#7ee0bd" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path
+                  class="area-path"
+                  d="M0,210 C70,190 90,150 160,165 C220,178 240,110 310,122 C375,135 395,62 465,82 C525,98 555,28 620,54 C655,68 675,43 700,38 L700,250 L0,250 Z"
+                  fill="url(#areaFill)"
+                />
+                <path
+                  class="line-path"
+                  d="M0,210 C70,190 90,150 160,165 C220,178 240,110 310,122 C375,135 395,62 465,82 C525,98 555,28 620,54 C655,68 675,43 700,38"
+                  fill="none"
+                  stroke="#0e725e"
+                  stroke-width="5"
+                  stroke-linecap="round"
+                />
+              </svg>
             </div>
 
-            <div class="mini-chart" aria-label="Illustrative reservation demand chart">
-              <div style="height: 34%"></div>
-              <div style="height: 52%"></div>
-              <div style="height: 44%"></div>
-              <div style="height: 69%"></div>
-              <div style="height: 82%"></div>
-              <div style="height: 64%"></div>
-              <div style="height: 91%"></div>
-              <div style="height: 76%"></div>
+            <div class="chart-labels">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span>
+              <span>Fri</span><span>Sat</span><span>Sun</span>
             </div>
           </article>
 
-          <article class="outcome-card reveal">
-            <div class="outcome-icon">◫</div>
-            <span class="card-kicker">For staff</span>
-            <h3>One clean reservation list.</h3>
-            <p>
-              Add, edit, seat, cancel, or search any reservation without digging through notes.
-            </p>
+          <article class="analytics-card reveal">
+            <span>Calls answered</span>
+            <strong class="big-number" data-count="94">0</strong>
+            <small>% of reservation calls handled</small>
+            <div class="progress-ring">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="48"></circle>
+                <circle class="progress" cx="60" cy="60" r="48"></circle>
+              </svg>
+            </div>
           </article>
 
-          <article class="outcome-card reveal">
-            <div class="outcome-icon">✉</div>
-            <span class="card-kicker">For guests</span>
-            <h3>Fast, clear confirmations.</h3>
-            <p>
-              Guests receive text updates and can manage their booking without another call.
-            </p>
+          <article class="analytics-card reveal">
+            <span>Recovered bookings</span>
+            <strong class="big-number" data-count="18">0</strong>
+            <small>This month</small>
+            <div class="recovered-bars">
+              <i style="height: 36%"></i>
+              <i style="height: 54%"></i>
+              <i style="height: 47%"></i>
+              <i style="height: 70%"></i>
+              <i style="height: 82%"></i>
+              <i style="height: 94%"></i>
+            </div>
+          </article>
+
+          <article class="analytics-card reveal">
+            <span>Staff time saved</span>
+            <strong class="big-number" data-count="6.4">0</strong>
+            <small>Hours this week</small>
+            <div class="time-chip">≈ 77 fewer call minutes per day</div>
           </article>
         </div>
       </div>
     </section>
 
-    <section class="section-pad testimonial-section">
-      <div class="container testimonial-card reveal">
-        <div class="quote-mark">“</div>
-
-        <blockquote>
-          Restaurants should not have to choose between answering the phone and serving the guests already in the building. Blue Current is being built to handle both.
-        </blockquote>
-
-        <div class="testimonial-person">
-          <div class="testimonial-avatar">BC</div>
-          <div>
-            <strong>Built around real restaurant operations</strong>
-            <span>Designed with working operators and host teams</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    
-    <section class="section-pad pricing-section" id="pricing">
+    <section class="pricing-section" id="pricing">
       <div class="container">
         <div class="section-heading center reveal">
-          <span class="section-kicker">Simple launch pricing</span>
-          <h2>Built to pay for itself in recovered reservations.</h2>
-          <p>Early partners receive direct onboarding, setup support, and preferred pricing.</p>
+          <span class="section-kicker">Early partner program</span>
+          <h2>Launch with us before the wider release.</h2>
+          <p>Early partners receive direct onboarding, custom setup, and preferred pricing.</p>
         </div>
 
         <div class="pricing-grid">
           <article class="pricing-card reveal">
-            <span class="plan-label">Pilot</span>
-            <h3>Single location</h3>
-            <p class="plan-copy">For an independent restaurant ready to stop missing calls.</p>
-            <div class="price-line">
+            <span class="plan-label">Single location</span>
+            <h3>Independent restaurant</h3>
+            <p>For restaurants ready to capture more calls without adding pressure to staff.</p>
+
+            <div class="price-block">
               <span>Early partner</span>
               <strong>Custom pilot</strong>
             </div>
+
             <ul>
-              <li><span>✓</span> AI phone reservation capture</li>
-              <li><span>✓</span> Reservation dashboard</li>
+              <li><span>✓</span> AI reservation answering</li>
+              <li><span>✓</span> Live reservation dashboard</li>
               <li><span>✓</span> SMS confirmations</li>
-              <li><span>✓</span> Restaurant rules and hours</li>
-              <li><span>✓</span> Direct founder onboarding</li>
+              <li><span>✓</span> Restaurant-specific rules</li>
+              <li><span>✓</span> Founder-led onboarding</li>
             </ul>
-            <a class="button button-primary" href="#early-access">Apply for pilot <span>→</span></a>
+
+            <a class="button primary" href="#contact">Apply for pilot <span>→</span></a>
           </article>
 
           <article class="pricing-card featured reveal">
-            <div class="featured-tag">Best for restaurant groups</div>
-            <span class="plan-label">Group</span>
-            <h3>Multiple locations</h3>
-            <p class="plan-copy">Centralized visibility with a tailored setup for every restaurant.</p>
-            <div class="price-line">
-              <span>Multi-location</span>
-              <strong>Custom rollout</strong>
+            <span class="featured-pill">Restaurant groups</span>
+            <span class="plan-label">Multiple locations</span>
+            <h3>Hospitality group</h3>
+            <p>Centralized visibility with a tailored reservation workflow for every location.</p>
+
+            <div class="price-block">
+              <span>Group rollout</span>
+              <strong>Custom program</strong>
             </div>
+
             <ul>
               <li><span>✓</span> Everything in the pilot plan</li>
-              <li><span>✓</span> Multi-location management</li>
+              <li><span>✓</span> Multi-location oversight</li>
               <li><span>✓</span> Shared guest intelligence</li>
-              <li><span>✓</span> Location-level reporting</li>
+              <li><span>✓</span> Location-level analytics</li>
               <li><span>✓</span> Priority implementation</li>
             </ul>
-            <a class="button button-light" href="#early-access">Discuss a rollout <span>→</span></a>
+
+            <a class="button light" href="#contact">Discuss rollout <span>→</span></a>
           </article>
         </div>
       </div>
     </section>
 
-<section class="section-pad faq-section" id="faq">
-      <div class="container faq-layout">
-        <div class="faq-heading reveal">
-          <span class="section-kicker">Frequently asked questions</span>
-          <h2>Everything restaurants need to know.</h2>
-          <p>
-            Blue Current is being developed with early restaurant partners before a wider release.
-          </p>
-        </div>
-
-        <div class="faq-list reveal">
-          <article class="faq-item">
-            <button type="button" aria-expanded="true">
-              <span>Does the AI sound natural?</span>
-              <i>−</i>
-            </button>
-            <div class="faq-answer">
-              <p>
-                Yes. It speaks conversationally, follows the restaurant’s policies, and
-                collects the same details a trained host would request.
-              </p>
-            </div>
-          </article>
-
-          <article class="faq-item">
-            <button type="button" aria-expanded="false">
-              <span>Can staff add and change reservations manually?</span>
-              <i>+</i>
-            </button>
-            <div class="faq-answer">
-              <p>
-                Yes. Staff can add walk-ins, edit bookings, cancel reservations, record notes,
-                and manage the schedule from the same dashboard.
-              </p>
-            </div>
-          </article>
-
-          <article class="faq-item">
-            <button type="button" aria-expanded="false">
-              <span>Can it follow our table and seating rules?</span>
-              <i>+</i>
-            </button>
-            <div class="faq-answer">
-              <p>
-                The system is designed around restaurant-specific hours, party-size limits,
-                dining durations, seating areas, and blackout dates.
-              </p>
-            </div>
-          </article>
-
-          <article class="faq-item">
-            <button type="button" aria-expanded="false">
-              <span>What happens when a request needs a manager?</span>
-              <i>+</i>
-            </button>
-            <div class="faq-answer">
-              <p>
-                Calls outside the system’s rules can be transferred, flagged, or recorded
-                for a manager to review and return.
-              </p>
-            </div>
-          </article>
-
-          <article class="faq-item">
-            <button type="button" aria-expanded="false">
-              <span>When will Blue Current be available?</span>
-              <i>+</i>
-            </button>
-            <div class="faq-answer">
-              <p>
-                A limited number of restaurants are being selected for the early partner
-                program while the first production release is completed.
-              </p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="cta-section" id="early-access">
+    <section class="cta-section" id="contact">
       <div class="container">
         <div class="cta-card reveal">
-          <div class="cta-glow" aria-hidden="true"></div>
-
           <div class="cta-copy">
-            <span class="section-kicker light">Early partner program</span>
-            <h2>Stop losing reservations to missed calls.</h2>
+            <span class="section-kicker light">See it running your restaurant</span>
+            <h2>Turn missed calls into booked tables.</h2>
             <p>
-              Join the restaurants helping shape the next generation of reservation software. You can also reach us directly at keith@bluecurrentco.com.
+              Tell us how your restaurant handles reservations today.
+              We will show you exactly how Blue Current would fit into your service.
             </p>
+
+            <div class="contact-direct">
+              <span>Prefer email?</span>
+              <a href="mailto:keith@bluecurrentco.com">keith@bluecurrentco.com</a>
+            </div>
           </div>
 
           <form
@@ -735,48 +610,25 @@
 
             <label>
               <span>Restaurant name</span>
-              <input
-                type="text"
-                name="restaurant"
-                placeholder="Your restaurant"
-                autocomplete="organization"
-                required
-              />
+              <input type="text" name="restaurant" placeholder="Your restaurant" required />
             </label>
 
-            <div class="form-split">
+            <div class="form-row">
               <label>
                 <span>Your name</span>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Full name"
-                  autocomplete="name"
-                  required
-                />
+                <input type="text" name="name" placeholder="Full name" required />
               </label>
 
               <label>
                 <span>Work email</span>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="you@restaurant.com"
-                  autocomplete="email"
-                  required
-                />
+                <input type="email" name="email" placeholder="you@restaurant.com" required />
               </label>
             </div>
 
-            <div class="form-split">
+            <div class="form-row">
               <label>
                 <span>Phone</span>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="(732) 555-0123"
-                  autocomplete="tel"
-                />
+                <input type="tel" name="phone" placeholder="(732) 555-0123" />
               </label>
 
               <label>
@@ -790,126 +642,84 @@
             </div>
 
             <label>
-              <span>What happens to reservation calls today?</span>
+              <span>Current reservation process</span>
               <textarea
                 name="workflow"
                 rows="3"
-                placeholder="Tell us briefly about your current process."
+                placeholder="How do you handle reservation calls today?"
               ></textarea>
             </label>
 
-            <button class="button button-light" type="submit">
+            <button class="button light" type="submit">
               Book a product preview
-              <span aria-hidden="true">→</span>
+              <span>→</span>
             </button>
 
-            <p class="form-note">
-              No commitment. We will contact you personally at the email provided.
-            </p>
+            <p class="form-note">No commitment. We will contact you personally.</p>
           </form>
         </div>
       </div>
     </section>
   </main>
 
-  
-    <section class="credibility-band">
-      <div class="container credibility-grid">
-        <div>
-          <span>Built in New Jersey</span>
-          <strong>Created for independent restaurants and growing hospitality groups.</strong>
-        </div>
-        <div>
-          <span>Founder-led onboarding</span>
-          <strong>Direct setup support from the team building the product.</strong>
-        </div>
-        <div>
-          <span>Early partner access</span>
-          <strong>Shape the product before the wider public launch.</strong>
-        </div>
-      </div>
-    </section>
-
-<footer class="site-footer">
-    <div class="container footer-layout">
-      <div class="footer-brand-block">
+  <footer>
+    <div class="container footer-grid">
+      <div>
         <a class="brand" href="#top">
-          <span class="brand-mark" aria-hidden="true">
-            <span></span>
-          </span>
-          <span class="brand-name">Blue Current</span>
+          <span class="brand-mark"><i></i></span>
+          <span>Blue Current</span>
         </a>
-
-        <p>AI-powered reservations for modern restaurants.</p>
+        <p>Restaurant reservation operating software, built in New Jersey.</p>
       </div>
 
       <div class="footer-links">
-        <div>
-          <strong>Product</strong>
-          <a href="#product">Dashboard</a>
-          <a href="#how-it-works">How it works</a>
-          <a href="#features">Features</a>
-        </div>
-
-        <div>
-          <strong>Company</strong>
-          <a href="#early-access">Early access</a>
-          <a href="mailto:hello@bluecurrentco.com">Contact</a>
-          <a href="#faq">FAQ</a>
-        </div>
+        <a href="#demo">Live Demo</a>
+        <a href="#platform">Platform</a>
+        <a href="#analytics">Analytics</a>
+        <a href="#pricing">Pricing</a>
       </div>
     </div>
 
     <div class="container footer-bottom">
       <span>© <span id="year"></span> Blue Current Services LLC</span>
-      <span>Built in New Jersey.</span>
+      <span>keith@bluecurrentco.com</span>
     </div>
   </footer>
 
-  <div class="demo-modal" role="dialog" aria-modal="true" aria-labelledby="demo-title" hidden>
+  <div class="demo-modal" hidden>
     <div class="modal-backdrop"></div>
-
     <div class="modal-card">
       <button class="modal-close" type="button" aria-label="Close demo">×</button>
+      <span class="section-kicker">Live call simulation</span>
+      <h2>Watch the reservation happen.</h2>
 
-      <span class="section-kicker">Live reservation flow</span>
-      <h2 id="demo-title">See Blue Current handle a call.</h2>
+      <div class="modal-call">
+        <div class="modal-call-top">
+          <span class="call-live-dot"></span>
+          <strong id="modal-stage-label">Incoming call</strong>
+          <span id="modal-timer">00:00</span>
+        </div>
 
-      <div class="demo-flow">
-        <article class="demo-step active">
-          <span>01</span>
-          <div>
-            <strong>Guest calls</strong>
-            <p>AI answers immediately.</p>
-          </div>
-        </article>
+        <div class="modal-transcript">
+          <span id="modal-speaker">AI host</span>
+          <p id="modal-copy">Good evening, Marina Point. How can I help you?</p>
+        </div>
 
-        <article class="demo-step">
-          <span>02</span>
-          <div>
-            <strong>Availability checked</strong>
-            <p>Rules and table inventory are reviewed.</p>
-          </div>
-        </article>
+        <div class="modal-steps">
+          <article class="active"><span>1</span><strong>Call answered</strong></article>
+          <article><span>2</span><strong>Availability checked</strong></article>
+          <article><span>3</span><strong>Reservation confirmed</strong></article>
+          <article><span>4</span><strong>Guest notified</strong></article>
+        </div>
 
-        <article class="demo-step">
-          <span>03</span>
-          <div>
-            <strong>Reservation confirmed</strong>
-            <p>Staff and guest are updated instantly.</p>
-          </div>
-        </article>
-      </div>
-
-      <div class="demo-progress">
-        <span></span>
+        <div class="modal-progress"><i></i></div>
       </div>
     </div>
   </div>
 
-  <div class="form-toast" role="status" aria-live="polite">
+  <div class="success-toast" role="status" aria-live="polite">
     <strong>Request received</strong>
-    <span>Thanks. We will contact you shortly.</span>
+    <span>Blue Current will contact you shortly.</span>
   </div>
 
   <script src="script.js"></script>
