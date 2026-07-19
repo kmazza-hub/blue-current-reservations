@@ -1,57 +1,25 @@
-# Blue Current Product Demo V4
+# Blue Current V5 Premium
 
-This package replaces the marketing-style homepage with a product-first software launch experience.
+A deploy-ready static website for Blue Current's hospitality product concept.
 
-## Included
+## Quick start
+1. Extract the ZIP.
+2. Open the extracted folder in VS Code.
+3. Confirm `index.html`, `styles.css`, `script.js`, and the `assets` folder are together.
+4. Open `index.html` in a browser or deploy the entire folder to Netlify.
 
-- Fullscreen cinematic hero
-- Live AI reservation call simulation
-- Animated transcript and call states
-- Real-time dashboard metric updates
-- Reservation timeline
-- SMS confirmation animation
-- Recovered-revenue notification
-- Guest history and preference interface
-- Animated owner analytics
-- Pilot and multi-location pricing
-- Existing Netlify `contact` form integration
-- Desktop and mobile navigation
-- Responsive layouts and reduced-motion support
-
-## Install
-
-Copy these three files into your current `blue-current-reservations` repository:
-
-- `index.html`
-- `styles.css`
-- `script.js`
-
-Replace the existing versions.
-
-## Preview
-
-Open `index.html` with Live Server.
-
-The animation works locally. Netlify form submission only works on the deployed website.
-
-## Deploy
-
-```powershell
-git add .
-git commit -m "Launch interactive Blue Current product demo"
-git push
-```
-
-Netlify should deploy automatically if the repository is connected.
-
-## Lead notifications
-
-The form name remains:
-
-`contact`
-
-Your existing Netlify notification to `keith@bluecurrentco.com` should therefore continue working.
+## Netlify
+- Publish directory: `.`
+- The contact form is named `contact`.
+- The existing LeadConnector booking URL is included.
+- `privacy.html` and `terms.html` are included.
 
 ## Important
+All guest names, phone numbers, reservation data, dashboard figures, and portfolio statistics are illustrative demonstration content.
 
-The restaurant names, metrics, recovered revenue, reservation counts, and guest data are illustrative interface mockups. Replace them with verified pilot results before presenting them as actual performance data.
+This package uses Blue Current's own branding and original interface design. It does not copy third-party logos, website layouts, photography, or proprietary brand assets.
+
+## Troubleshooting
+If VS Code shows only a number in `index.html`, the file has been overwritten locally. Delete that file and extract a fresh copy from this ZIP. The real `index.html` begins with:
+
+`<!doctype html>`
