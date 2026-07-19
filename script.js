@@ -223,3 +223,21 @@ if (window.matchMedia("(pointer: fine)").matches) {
     });
   });
 }
+
+
+const heroProduct = document.querySelector(".hero-product");
+
+if (heroProduct && window.matchMedia("(pointer: fine)").matches) {
+  heroProduct.addEventListener("mousemove", (event) => {
+    const rect = heroProduct.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+    heroProduct.style.transform =
+      `perspective(1200px) rotateY(${x * 2.2}deg) rotateX(${y * -1.6}deg)`;
+  });
+
+  heroProduct.addEventListener("mouseleave", () => {
+    heroProduct.style.transform = "";
+  });
+}

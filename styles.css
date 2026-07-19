@@ -2461,3 +2461,229 @@ h1 span {
     padding: 27px;
   }
 }
+
+
+/* Launch V3 refinements */
+
+.hero-proof-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.hero-proof-grid > div {
+  padding: 14px 16px;
+  border: 1px solid rgba(14, 114, 94, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.66);
+  backdrop-filter: blur(10px);
+}
+
+.hero-proof-grid strong,
+.hero-proof-grid span {
+  display: block;
+}
+
+.hero-proof-grid strong {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+.hero-proof-grid span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.comparison-section {
+  background:
+    radial-gradient(circle at 85% 20%, rgba(168, 232, 208, 0.28), transparent 25%),
+    var(--surface);
+}
+
+.comparison-layout {
+  display: grid;
+  grid-template-columns: 0.72fr 1.28fr;
+  gap: 70px;
+  align-items: center;
+}
+
+.comparison-copy h2 {
+  margin: 18px 0;
+  font-size: clamp(42px, 5vw, 60px);
+}
+
+.comparison-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.comparison-board {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: #f7faf9;
+  box-shadow: var(--shadow-md);
+}
+
+.comparison-column {
+  display: grid;
+  gap: 10px;
+}
+
+.comparison-column article {
+  padding: 15px;
+  border-radius: 14px;
+}
+
+.comparison-column article b,
+.comparison-column article small {
+  display: block;
+}
+
+.comparison-column article b {
+  font-size: 13px;
+}
+
+.comparison-column article small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.old-way article {
+  border: 1px solid #eadfdc;
+  background: #fff8f6;
+}
+
+.new-way article {
+  border: 1px solid rgba(14, 114, 94, 0.14);
+  background: var(--mint-soft);
+}
+
+.comparison-label {
+  padding: 0 2px 6px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
+
+.new-way .comparison-label {
+  color: var(--green);
+}
+
+.comparison-arrow {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--white);
+  background: var(--green);
+  font-weight: 900;
+  box-shadow: 0 10px 24px rgba(14, 114, 94, 0.24);
+}
+
+.credibility-band {
+  padding: 26px 0;
+  color: var(--white);
+  background: var(--green-dark);
+}
+
+.credibility-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.credibility-grid > div {
+  padding: 6px 18px;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.credibility-grid span,
+.credibility-grid strong {
+  display: block;
+}
+
+.credibility-grid span {
+  color: var(--mint);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.credibility-grid strong {
+  margin-top: 4px;
+  color: #eaf4f0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.dashboard-main,
+.product-frame,
+.call-demo-card,
+.comparison-board,
+.pricing-card,
+.outcome-card,
+.workflow-card {
+  will-change: transform;
+}
+
+.product-frame {
+  animation: dashboardEnter 900ms cubic-bezier(.2,.7,.2,1) both;
+}
+
+@keyframes dashboardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98) rotateY(-2deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateY(-1.5deg);
+  }
+}
+
+@media (max-width: 1060px) {
+  .comparison-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-proof-grid,
+  .credibility-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-board {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-arrow {
+    transform: rotate(90deg);
+    margin-inline: auto;
+  }
+
+  .credibility-grid > div {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 15px 0;
+  }
+
+  .credibility-grid > div:first-child {
+    border-top: 0;
+  }
+}
