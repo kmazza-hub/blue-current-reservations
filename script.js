@@ -341,3 +341,13 @@ $("#assignTableButton")?.addEventListener("click", () => {
   $("#cleaningCount").textContent = "0";
   $("#reservedCount").textContent = "6";
 });
+
+const gs=document.getElementById('guestSearch');
+if(gs){
+ gs.addEventListener('input',()=>{
+  const names=['Anthony Russo','Anthony Miller','Anthony Romano'];
+  const q=gs.value.toLowerCase();
+  document.getElementById('guestResults').innerHTML=
+   names.filter(n=>n.toLowerCase().includes(q)).join('<br>');
+ });
+}
