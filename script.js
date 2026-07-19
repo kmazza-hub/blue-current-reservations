@@ -163,29 +163,63 @@ if ("IntersectionObserver" in window) {
   revealElements.forEach((element) => element.classList.add("visible"));
 }
 
-leadForm?.addEventListener("submit", (event) => {
+leadForm?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const formData = new FormData(leadForm);
-  const restaurant = String(formData.get("restaurant") || "").trim();
-  const email = String(formData.get("email") || "").trim();
+  const submitButton = leadForm.querySelector('button[type="submit"]');
+  const originalText = submitButton?.innerHTML;
 
-  const subject = encodeURIComponent(
-    `Blue Current early access request — ${restaurant}`
-  );
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting…";
+  }
 
-  const body = encodeURIComponent(
-    `Restaurant: ${restaurant}\nContact email: ${email}\n\nI am interested in learning more about Blue Current's early restaurant partner program.`
-  );
+  try {
+    const formData = new FormData(leadForm);
 
-  formToast?.classList.add("show");
+    const response = await fetch("/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(formData).toString(),
+    });
 
-  window.setTimeout(() => {
-    window.location.href =
-      `mailto:hello@bluecurrentco.com?subject=${subject}&body=${body}`;
-  }, 450);
+    if (!response.ok) {
+      throw new Error("Submission failed");
+    }
 
-  window.setTimeout(() => {
-    formToast?.classList.remove("show");
-  }, 4200);
+    leadForm.reset();
+    formToast?.classList.add("show");
+
+    window.setTimeout(() => {
+      formToast?.classList.remove("show");
+    }, 4500);
+  } catch (error) {
+    window.alert(
+      "The form could not be submitted locally. Once the site is deployed on Netlify, submissions will work automatically."
+    );
+  } finally {
+    if (submitButton) {
+      submitButton.disabled = false;
+      submitButton.innerHTML = originalText;
+    }
+  }
 });
+
+
+if (window.matchMedia("(pointer: fine)").matches) {
+  document.querySelectorAll(".button").forEach((button) => {
+    button.addEventListener("mousemove", (event) => {
+      const rect = button.getBoundingClientRect();
+      const x = event.clientX - rect.left - rect.width / 2;
+      const y = event.clientY - rect.top - rect.height / 2;
+
+      button.style.transform = `translate(${x * 0.06}px, ${y * 0.08}px) translateY(-2px)`;
+    });
+
+    button.addEventListener("mouseleave", () => {
+      button.style.transform = "";
+    });
+  });
+}

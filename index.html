@@ -10,6 +10,11 @@
     content="Blue Current answers restaurant calls, books reservations, sends confirmations, and keeps the host stand organized in one modern platform."
   />
   <meta name="theme-color" content="#0a1f1a" />
+  <meta property="og:title" content="Blue Current | AI Reservations for Restaurants" />
+  <meta property="og:description" content="Answer every call, capture every reservation, and keep service organized." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://bluecurrentco.com" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%230e725e%22/><path d=%22M20 55c15-24 27 24 60-10%22 fill=%22none%22 stroke=%22white%22 stroke-width=%2210%22 stroke-linecap=%22round%22/></svg>" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,6 +28,7 @@
 
 <body>
   <div class="page-noise" aria-hidden="true"></div>
+  <div class="ambient-grid" aria-hidden="true"></div>
 
   <header class="site-header" id="top">
     <div class="container nav-shell">
@@ -49,7 +55,7 @@
         <a href="#how-it-works">How it works</a>
         <a href="#features">Features</a>
         <a href="#faq">FAQ</a>
-        <a class="nav-button" href="#early-access">Request early access</a>
+        <a class="nav-button" href="#early-access">Book a product preview</a>
       </nav>
     </div>
   </header>
@@ -290,7 +296,25 @@
       </div>
     </section>
 
-    <section class="section-pad workflow-section" id="how-it-works">
+    
+    <section class="proof-marquee" aria-label="Product benefits">
+      <div class="marquee-track">
+        <span>24/7 call answering</span><b>•</b>
+        <span>Automatic confirmations</span><b>•</b>
+        <span>Live reservation dashboard</span><b>•</b>
+        <span>Guest history and notes</span><b>•</b>
+        <span>Waitlist management</span><b>•</b>
+        <span>Restaurant-specific rules</span><b>•</b>
+        <span>24/7 call answering</span><b>•</b>
+        <span>Automatic confirmations</span><b>•</b>
+        <span>Live reservation dashboard</span><b>•</b>
+        <span>Guest history and notes</span><b>•</b>
+        <span>Waitlist management</span><b>•</b>
+        <span>Restaurant-specific rules</span><b>•</b>
+      </div>
+    </section>
+
+<section class="section-pad workflow-section" id="how-it-works">
       <div class="container">
         <div class="section-heading center reveal">
           <span class="section-kicker">How it works</span>
@@ -508,7 +532,57 @@
       </div>
     </section>
 
-    <section class="section-pad faq-section" id="faq">
+    
+    <section class="section-pad pricing-section" id="pricing">
+      <div class="container">
+        <div class="section-heading center reveal">
+          <span class="section-kicker">Simple launch pricing</span>
+          <h2>Built to pay for itself in recovered reservations.</h2>
+          <p>Early partners receive direct onboarding, setup support, and preferred pricing.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="pricing-card reveal">
+            <span class="plan-label">Pilot</span>
+            <h3>Single location</h3>
+            <p class="plan-copy">For an independent restaurant ready to stop missing calls.</p>
+            <div class="price-line">
+              <span>Early partner</span>
+              <strong>Custom pilot</strong>
+            </div>
+            <ul>
+              <li><span>✓</span> AI phone reservation capture</li>
+              <li><span>✓</span> Reservation dashboard</li>
+              <li><span>✓</span> SMS confirmations</li>
+              <li><span>✓</span> Restaurant rules and hours</li>
+              <li><span>✓</span> Direct founder onboarding</li>
+            </ul>
+            <a class="button button-primary" href="#early-access">Apply for pilot <span>→</span></a>
+          </article>
+
+          <article class="pricing-card featured reveal">
+            <div class="featured-tag">Best for restaurant groups</div>
+            <span class="plan-label">Group</span>
+            <h3>Multiple locations</h3>
+            <p class="plan-copy">Centralized visibility with a tailored setup for every restaurant.</p>
+            <div class="price-line">
+              <span>Multi-location</span>
+              <strong>Custom rollout</strong>
+            </div>
+            <ul>
+              <li><span>✓</span> Everything in the pilot plan</li>
+              <li><span>✓</span> Multi-location management</li>
+              <li><span>✓</span> Shared guest intelligence</li>
+              <li><span>✓</span> Location-level reporting</li>
+              <li><span>✓</span> Priority implementation</li>
+            </ul>
+            <a class="button button-light" href="#early-access">Discuss a rollout <span>→</span></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+<section class="section-pad faq-section" id="faq">
       <div class="container faq-layout">
         <div class="faq-heading reveal">
           <span class="section-kicker">Frequently asked questions</span>
@@ -600,7 +674,19 @@
             </p>
           </div>
 
-          <form class="lead-form" id="lead-form">
+          <form
+            class="lead-form"
+            id="lead-form"
+            name="early-access"
+            method="POST"
+            data-netlify="true"
+            netlify-honeypot="bot-field"
+          >
+            <input type="hidden" name="form-name" value="early-access" />
+            <p class="hidden-field">
+              <label>Do not fill this out: <input name="bot-field" /></label>
+            </p>
+
             <label>
               <span>Restaurant name</span>
               <input
@@ -612,24 +698,67 @@
               />
             </label>
 
+            <div class="form-split">
+              <label>
+                <span>Your name</span>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Full name"
+                  autocomplete="name"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>Work email</span>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="you@restaurant.com"
+                  autocomplete="email"
+                  required
+                />
+              </label>
+            </div>
+
+            <div class="form-split">
+              <label>
+                <span>Phone</span>
+                <input
+                  type="tel"
+                  name="phone"
+                  placeholder="(732) 555-0123"
+                  autocomplete="tel"
+                />
+              </label>
+
+              <label>
+                <span>Locations</span>
+                <select name="locations">
+                  <option value="1">1 location</option>
+                  <option value="2-5">2–5 locations</option>
+                  <option value="6+">6+ locations</option>
+                </select>
+              </label>
+            </div>
+
             <label>
-              <span>Work email</span>
-              <input
-                type="email"
-                name="email"
-                placeholder="you@restaurant.com"
-                autocomplete="email"
-                required
-              />
+              <span>What happens to reservation calls today?</span>
+              <textarea
+                name="workflow"
+                rows="3"
+                placeholder="Tell us briefly about your current process."
+              ></textarea>
             </label>
 
             <button class="button button-light" type="submit">
-              Request early access
+              Book a product preview
               <span aria-hidden="true">→</span>
             </button>
 
             <p class="form-note">
-              No commitment. We will contact you to learn about your reservation workflow.
+              No commitment. We will contact you personally at the email provided.
             </p>
           </form>
         </div>
@@ -715,8 +844,8 @@
   </div>
 
   <div class="form-toast" role="status" aria-live="polite">
-    <strong>Request ready</strong>
-    <span>Your email app is opening with the details filled in.</span>
+    <strong>Request received</strong>
+    <span>Thanks. We will contact you shortly.</span>
   </div>
 
   <script src="script.js"></script>
