@@ -1,4 +1,4 @@
-# Blue Current V6 — AI Concierge
+# Blue Current V7.0 — Digital Twin
 
 A deploy-ready static website for Blue Current's hospitality product concept.
 
@@ -80,3 +80,95 @@ Interactive six-stage Friday evening service simulation.
 - Autoplay demo controls
 - Reservation confirmation state
 - Responsive desktop and mobile layouts
+
+
+## V7.0 additions
+- Flagship Digital Twin workspace
+- Animated restaurant floor with five live table states
+- Shared event simulation across guest journey, floor, metrics, and activity feed
+- Automated Presentation Mode with pause, resume, replay, and speed controls
+- Interactive evening timeline scrubber
+- Live portfolio operating ribbon
+- Clickable table detail view
+- Operational decision recommendations
+- Toast notifications and synchronized metric changes
+- Cleaner unified product navigation
+
+
+# V8 Enterprise Platform (Roadmap Build)
+
+This milestone establishes the enterprise direction for Blue Current.
+
+Planned capabilities:
+- Multi-location organization selector
+- Role-based workspaces (Owner, GM, Host, Server)
+- Global command palette/search
+- Enterprise navigation shell
+- Organization settings
+- Portfolio dashboard
+- Notification center
+- Foundation for AI Operations Copilot
+
+Status:
+This package is the baseline for the V8 development branch.
+Future iterations will implement these capabilities directly in the application.
+
+
+# V9 – Operations Copilot
+
+Planned capabilities
+- AI operational recommendations
+- AI briefing panel
+- Scenario simulator
+- Executive summaries
+- Shared event integration
+
+
+# V10 – Executive Intelligence
+
+Primary goals:
+- Executive briefing dashboard
+- Multi-location portfolio overview
+- Organization health score (illustrative)
+- Daily operational timeline
+- Executive AI briefing
+- Natural-language 'Ask Blue Current' workspace
+- Cross-location comparison dashboards
+- Shared operational event model integration
+
+Vision:
+Provide restaurant owners and regional managers with one place to understand what matters today and why.
+
+
+# V11 – Interactive Demo Experience
+
+Purpose:
+A guided presentation mode that demonstrates the Blue Current platform from the first guest interaction through executive reporting.
+
+Planned capabilities:
+- One-click guided demo
+- Automated restaurant timeline
+- Narrated operational events
+- Interactive scenario selection
+- Presentation controls (play, pause, replay)
+- Executive summary at completion
+- Unified journey across Concierge, Digital Twin, Copilot, Analytics, and Executive Intelligence
+
+Outcome:
+Enable restaurant operators and stakeholders to experience the platform as a cohesive story rather than navigating individual modules.
+
+
+# V12 – Production Polish
+
+Focus:
+- Unified design system
+- Performance optimization roadmap
+- Modular application architecture
+- Responsive refinement
+- Accessibility improvements
+- Animation and interaction polish
+- Higher-fidelity demonstration data
+- Production readiness checklist
+
+Goal:
+Transform the prototype into a polished demonstration platform suitable for executive presentations and pilot evaluations.

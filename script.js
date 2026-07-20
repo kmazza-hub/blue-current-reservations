@@ -770,3 +770,233 @@ document.getElementById("confirmReservationButton")?.addEventListener("click", (
   document.getElementById("reservationStatus").textContent = "Confirmed";
   conciergeAddMessage("Your reservation is confirmed. A confirmation has been sent, and the host team has your birthday and seating notes. We look forward to welcoming you.", "assistant");
 });
+
+
+// V7.0 — Digital Twin shared simulation
+const twinState = {
+  running: false,
+  speed: 1,
+  step: 0,
+  timer: null
+};
+
+const twinEvents = [
+  {
+    time:"6:42", clock:"6:42 PM", title:"Concierge answered incoming call",
+    detail:"Anthony Russo requested a Friday reservation for four.",
+    type:"call", occupancy:"68%", guests:"74", wait:"12 min", calls:"1",
+    journey:2, brief:"Blue Current is gathering the preferred time, party size, and occasion.",
+    table14:"reserved"
+  },
+  {
+    time:"6:43", clock:"6:43 PM", title:"Guest profile matched",
+    detail:"Premier guest recognized with 11 prior visits and a tree nut allergy.",
+    type:"guest", occupancy:"68%", guests:"74", wait:"12 min", calls:"1",
+    journey:4, brief:"Guest Intelligence matched Anthony Russo and surfaced preferences before booking.",
+    table14:"reserved"
+  },
+  {
+    time:"6:44", clock:"6:44 PM", title:"Alternative seating recovered demand",
+    detail:"7:15 PM at Table 14 accepted instead of constrained 7:30 PM waterfront seating.",
+    type:"alert", occupancy:"69%", guests:"74", wait:"11 min", calls:"1",
+    journey:3, brief:"Blue Current offered a nearby time that protected the guest's waterfront preference.",
+    table14:"reserved"
+  },
+  {
+    time:"6:45", clock:"6:45 PM", title:"Reservation confirmed",
+    detail:"Birthday, allergy, and quiet-table notes synchronized to the host stand.",
+    type:"host", occupancy:"70%", guests:"74", wait:"11 min", calls:"0",
+    journey:5, brief:"The reservation now appears across Concierge, Host Stand, Guest Intelligence, and the Digital Twin.",
+    table14:"reserved"
+  },
+  {
+    time:"6:53", clock:"6:53 PM", title:"Table 9 reset complete",
+    detail:"Table returned to available inventory three minutes ahead of forecast.",
+    type:"table", occupancy:"70%", guests:"74", wait:"9 min", calls:"0",
+    journey:5, brief:"The floor plan and wait-time estimate updated from the same operational event.",
+    table9:"available"
+  },
+  {
+    time:"7:08", clock:"7:08 PM", title:"Anthony Russo checked in",
+    detail:"Host greeted the party by name and confirmed the birthday note privately.",
+    type:"guest", occupancy:"76%", guests:"82", wait:"14 min", calls:"2",
+    journey:5, brief:"Guest recognition reached the host team before arrival.",
+    table14:"reserved"
+  },
+  {
+    time:"7:15", clock:"7:15 PM", title:"Premier party seated at Table 14",
+    detail:"Service team received allergy and celebration briefing.",
+    type:"table", occupancy:"82%", guests:"86", wait:"16 min", calls:"1",
+    journey:5, brief:"Table 14 is seated. Leadership metrics and service alerts updated automatically.",
+    table14:"seated"
+  },
+  {
+    time:"7:32", clock:"7:32 PM", title:"Dinner rush reached peak load",
+    detail:"Waterfront demand is 18% above available inventory.",
+    type:"alert", occupancy:"91%", guests:"96", wait:"24 min", calls:"3",
+    journey:5, brief:"Blue Current recommends shifting flexible callers toward 8:30 PM.",
+    table14:"dining"
+  },
+  {
+    time:"8:41", clock:"8:41 PM", title:"Dining room turnover accelerating",
+    detail:"Four tables are expected to return within twelve minutes.",
+    type:"table", occupancy:"79%", guests:"84", wait:"8 min", calls:"1",
+    journey:5, brief:"The operation is moving out of peak service and into the second seating wave.",
+    table14:"dining"
+  },
+  {
+    time:"9:28", clock:"9:28 PM", title:"Birthday follow-up queued",
+    detail:"Guest experience workflow prepared a personalized thank-you message.",
+    type:"guest", occupancy:"58%", guests:"61", wait:"0 min", calls:"0",
+    journey:5, brief:"The guest journey continues after dinner with a hospitality-first follow-up.",
+    table14:"reset"
+  }
+];
+
+function twinToast(title, detail){
+  const stack = document.getElementById("twinToastStack");
+  if(!stack) return;
+  const toast = document.createElement("div");
+  toast.className = "twin-toast";
+  toast.innerHTML = `<strong>${title}</strong><span>${detail}</span>`;
+  stack.appendChild(toast);
+  setTimeout(()=>toast.remove(), 3900);
+}
+
+function setTableState(number, state){
+  const table = document.querySelector(`.floor-table[data-table="${number}"]`);
+  if(!table) return;
+  table.classList.remove("available","reserved","seated","dining","reset");
+  table.classList.add(state);
+}
+
+function updateJourney(stage, brief){
+  const items = [...document.querySelectorAll("#journeyFlow article")];
+  items.forEach((item,index)=>{
+    item.classList.toggle("complete", index < stage-1);
+    item.classList.toggle("active", index === stage-1);
+  });
+  const briefNode = document.querySelector("#journeyBrief span");
+  if(briefNode) briefNode.textContent = brief;
+  document.getElementById("journeyStatus").textContent = stage >= 5 ? "Synchronized" : "In progress";
+}
+
+function addTwinEvent(event){
+  const feed = document.getElementById("eventFeed");
+  if(!feed) return;
+  const article = document.createElement("article");
+  article.innerHTML = `<time>${event.time}</time><i class="${event.type}"></i><div><strong>${event.title}</strong><p>${event.detail}</p></div>`;
+  feed.prepend(article);
+  while(feed.children.length > 7) feed.lastElementChild.remove();
+  document.getElementById("eventCount").textContent = `${feed.children.length} events`;
+}
+
+function applyTwinEvent(event){
+  document.getElementById("twinClock").textContent = event.clock;
+  document.getElementById("twinOccupancy").textContent = event.occupancy;
+  document.getElementById("twinGuests").textContent = event.guests;
+  document.getElementById("twinWait").textContent = event.wait;
+  document.getElementById("twinCalls").textContent = event.calls;
+  document.getElementById("timelineLabel").textContent = `${event.clock} · ${event.title}`;
+  addTwinEvent(event);
+  updateJourney(event.journey,event.brief);
+  if(event.table14) setTableState(14,event.table14);
+  if(event.table9) setTableState(9,event.table9);
+  const pulse = document.getElementById("floorCallPulse");
+  pulse?.classList.toggle("show",event.type==="call");
+  twinToast(event.title,event.detail);
+}
+
+function runTwinStep(){
+  const event = twinEvents[twinState.step];
+  if(!event){
+    stopTwinPresentation();
+    document.getElementById("twinPresentation").textContent = "Replay presentation";
+    twinToast("Evening story complete","The same shared events updated the dining room, guest journey, and leadership metrics.");
+    return;
+  }
+  applyTwinEvent(event);
+  document.getElementById("timelineScrubber").value = Math.round((twinState.step/(twinEvents.length-1))*100);
+  twinState.step += 1;
+}
+
+function stopTwinPresentation(){
+  clearInterval(twinState.timer);
+  twinState.timer = null;
+  twinState.running = false;
+}
+
+function startTwinPresentation(){
+  if(twinState.step >= twinEvents.length) resetTwin();
+  twinState.running = true;
+  document.getElementById("twinPresentation").textContent = "Pause presentation";
+  runTwinStep();
+  twinState.timer = setInterval(runTwinStep, 1800/twinState.speed);
+}
+
+function resetTwin(){
+  stopTwinPresentation();
+  twinState.step = 0;
+  document.getElementById("twinPresentation").textContent = "Start presentation";
+  document.getElementById("twinClock").textContent = "6:42 PM";
+  document.getElementById("twinGuests").textContent = "74";
+  document.getElementById("twinOccupancy").textContent = "68%";
+  document.getElementById("twinWait").textContent = "12 min";
+  document.getElementById("twinCalls").textContent = "1";
+  document.getElementById("timelineScrubber").value = "44";
+  document.getElementById("timelineLabel").textContent = "6:42 PM · Dinner rush building";
+  setTableState(9,"reset"); setTableState(14,"reserved");
+  updateJourney(2,"Blue Current is gathering the preferred time, party size, and occasion.");
+}
+
+document.getElementById("twinPresentation")?.addEventListener("click",()=>{
+  if(twinState.running){
+    stopTwinPresentation();
+    document.getElementById("twinPresentation").textContent = "Resume presentation";
+  }else startTwinPresentation();
+});
+document.getElementById("twinReset")?.addEventListener("click",resetTwin);
+
+document.querySelectorAll(".twin-speed button").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelectorAll(".twin-speed button").forEach(b=>b.classList.remove("active"));
+    button.classList.add("active");
+    twinState.speed = Number(button.dataset.speed);
+    if(twinState.running){ stopTwinPresentation(); startTwinPresentation(); }
+  });
+});
+
+document.getElementById("timelineScrubber")?.addEventListener("input",(event)=>{
+  stopTwinPresentation();
+  document.getElementById("twinPresentation").textContent = "Continue presentation";
+  const index = Math.min(twinEvents.length-1,Math.round((Number(event.target.value)/100)*(twinEvents.length-1)));
+  twinState.step = index+1;
+  applyTwinEvent(twinEvents[index]);
+});
+
+document.querySelectorAll(".floor-table").forEach(table=>{
+  table.addEventListener("click",()=>{
+    document.querySelectorAll(".floor-table").forEach(t=>t.classList.remove("selected"));
+    table.classList.add("selected");
+    const status = [...table.classList].find(c=>["available","reserved","seated","dining","reset"].includes(c));
+    const detail = document.getElementById("floorDetail");
+    detail.children[0].querySelector("strong").textContent = `Table ${table.dataset.table}`;
+    detail.children[1].querySelector("strong").textContent = status.charAt(0).toUpperCase()+status.slice(1);
+    if(table.dataset.table !== "14"){
+      detail.children[2].querySelector("strong").textContent = status==="available" ? "No guest assigned" : "Current service party";
+      detail.children[3].querySelector("strong").textContent = status==="available" ? "Ready for assignment" : "Service notes available";
+    }else{
+      detail.children[2].querySelector("strong").textContent = "Anthony Russo · Party of 4";
+      detail.children[3].querySelector("strong").textContent = "Birthday · Tree nut allergy";
+    }
+  });
+});
+
+document.getElementById("decisionRefresh")?.addEventListener("click",()=>{
+  const stack = document.getElementById("decisionStack");
+  stack.innerHTML = `
+    <article class="priority"><span>Act now</span><div><strong>Move one host to waterfront arrivals</strong><p>Three parties are projected to check in within seven minutes.</p></div></article>
+    <article><span>Recover</span><div><strong>Offer flexible callers 8:30 PM</strong><p>Current acceptance probability is strongest for waterfront requests.</p></div></article>
+    <article><span>Recognize</span><div><strong>Brief service on two celebrations</strong><p>Birthday and anniversary guests are arriving before 7:20 PM.</p></div></article>`;
+  twinToast("Recommendations refreshed","Blue Current recalculated decisions from the current service state.");
+});

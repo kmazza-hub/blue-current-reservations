@@ -33,20 +33,12 @@
       </a>
 
       <nav class="desktop-nav" aria-label="Primary navigation">
-        <a href="#experience">Experience</a>
-        <a href="#journey">Guest journey</a>
-        <a href="#evening-service">Evening service</a>
-        <a href="#ai-concierge">AI Concierge</a>
+        <a href="#digital-twin">Digital Twin</a>
+        <a href="#ai-concierge">Concierge</a>
+        <a href="#host-stand">Host Stand</a>
+        <a href="#guest-intelligence">Guests</a>
         <a href="#hospitality-analytics">Analytics</a>
-        <a href="#executive-command-center">Executive view</a>
-        <a href="#guest-intelligence">Guest Intelligence</a>
-        <a href="#ai-concierge">AI Concierge</a>
-      <a href="#hospitality-analytics">Analytics</a>
-      <a href="#executive-command-center">Executive view</a>
-      <a href="#guest-intelligence">Guest Intelligence</a>
-      <a href="#host-stand">Host stand</a>
-        <a href="#operator-dashboard">Operator view</a>
-        <a href="#portfolio">Portfolio</a>
+        <a href="#executive-command-center">Executive</a>
         <a href="#pilot">Pilot</a>
       </nav>
 
@@ -58,14 +50,12 @@
     </div>
 
     <nav class="mobile-nav" aria-label="Mobile navigation" hidden>
-      <a href="#experience">Experience</a>
-      <a href="#journey">Guest journey</a>
-      <a href="#evening-service">Evening service</a>
-      <a href="#guest-intelligence">Guest Intelligence</a>
-        <a href="#guest-intelligence">Guest Intelligence</a>
-      <a href="#host-stand">Host stand</a>
-      <a href="#operator-dashboard">Operator view</a>
-      <a href="#portfolio">Portfolio</a>
+      <a href="#digital-twin">Digital Twin</a>
+      <a href="#ai-concierge">Concierge</a>
+      <a href="#host-stand">Host Stand</a>
+      <a href="#guest-intelligence">Guests</a>
+      <a href="#hospitality-analytics">Analytics</a>
+      <a href="#executive-command-center">Executive</a>
       <a href="#pilot">Pilot</a>
     </nav>
   </header>
@@ -576,7 +566,177 @@
 
     
     
-    <section class="concierge-section" id="ai-concierge">
+    
+    <section class="twin-section" id="digital-twin">
+      <div class="container">
+        <div class="twin-intro reveal">
+          <div>
+            <p class="eyebrow"><span></span> Blue Current OS · V7.0</p>
+            <h2>A living view of the restaurant.</h2>
+            <p>
+              Watch one evening unfold across the dining room, reservations, guest recognition,
+              host operations, and leadership metrics—all driven by one shared event timeline.
+            </p>
+          </div>
+          <div class="twin-intro-actions">
+            <button class="twin-button secondary" id="twinReset" type="button">Reset evening</button>
+            <button class="twin-button" id="twinPresentation" type="button">Start presentation</button>
+          </div>
+        </div>
+
+        <div class="portfolio-ribbon reveal">
+          <article><span>Location</span><strong>Marina Grille</strong><small><i></i> Live operation</small></article>
+          <article><span>Guests dining</span><strong id="twinGuests">74</strong><small id="twinGuestDelta">+8 arriving</small></article>
+          <article><span>Occupancy</span><strong id="twinOccupancy">68%</strong><small>Dining room</small></article>
+          <article><span>Average wait</span><strong id="twinWait">12 min</strong><small id="twinWaitTrend">Stable</small></article>
+          <article><span>Active calls</span><strong id="twinCalls">1</strong><small>Concierge coverage</small></article>
+          <article><span>Premier arrivals</span><strong id="twinPremier">3</strong><small>Next 90 minutes</small></article>
+        </div>
+
+        <div class="twin-app reveal">
+          <div class="twin-app-header">
+            <div class="twin-clock">
+              <small>Saturday service</small>
+              <strong id="twinClock">6:42 PM</strong>
+            </div>
+            <div class="twin-health">
+              <span><i class="healthy"></i> Concierge online</span>
+              <span><i class="healthy"></i> Host stand synced</span>
+              <span><i class="healthy"></i> Guest intelligence active</span>
+            </div>
+            <div class="twin-speed">
+              <button type="button" data-speed="1" class="active">1×</button>
+              <button type="button" data-speed="2">2×</button>
+              <button type="button" data-speed="4">4×</button>
+            </div>
+          </div>
+
+          <div class="twin-grid">
+            <section class="twin-panel floor-panel">
+              <div class="twin-panel-head">
+                <div><small>Digital twin</small><strong>Dining room floor</strong></div>
+                <div class="floor-legend">
+                  <span><i class="available"></i> Available</span>
+                  <span><i class="reserved"></i> Reserved</span>
+                  <span><i class="seated"></i> Seated</span>
+                  <span><i class="dining"></i> Dining</span>
+                  <span><i class="reset"></i> Reset</span>
+                </div>
+              </div>
+
+              <div class="restaurant-floor" id="restaurantFloor">
+                <div class="floor-zone waterfront">Waterfront windows</div>
+                <div class="floor-zone bar-zone">Bar</div>
+                <div class="floor-zone patio-zone">Patio</div>
+
+                <button class="floor-table round dining" data-table="1" style="--x:13%;--y:20%;"><span>1</span><small>2</small></button>
+                <button class="floor-table round seated" data-table="2" style="--x:31%;--y:20%;"><span>2</span><small>4</small></button>
+                <button class="floor-table round reserved" data-table="3" style="--x:49%;--y:20%;"><span>3</span><small>4</small></button>
+                <button class="floor-table booth dining" data-table="4" style="--x:68%;--y:18%;"><span>4</span><small>6</small></button>
+                <button class="floor-table booth available" data-table="5" style="--x:84%;--y:18%;"><span>5</span><small>6</small></button>
+
+                <button class="floor-table square dining" data-table="8" style="--x:15%;--y:53%;"><span>8</span><small>4</small></button>
+                <button class="floor-table square reset" data-table="9" style="--x:34%;--y:53%;"><span>9</span><small>4</small></button>
+                <button class="floor-table square seated" data-table="10" style="--x:53%;--y:53%;"><span>10</span><small>4</small></button>
+                <button class="floor-table square dining" data-table="11" style="--x:72%;--y:53%;"><span>11</span><small>4</small></button>
+
+                <button class="floor-table booth available" data-table="12" style="--x:13%;--y:82%;"><span>12</span><small>6</small></button>
+                <button class="floor-table booth dining" data-table="13" style="--x:36%;--y:82%;"><span>13</span><small>6</small></button>
+                <button class="floor-table booth reserved vip" data-table="14" style="--x:60%;--y:82%;"><span>14</span><small>4 · VIP</small></button>
+                <button class="floor-table booth available" data-table="15" style="--x:83%;--y:82%;"><span>15</span><small>6</small></button>
+
+                <div class="host-podium">HOST</div>
+                <div class="floor-call-pulse" id="floorCallPulse"><span>Incoming call</span></div>
+              </div>
+
+              <div class="floor-detail" id="floorDetail">
+                <div><small>Selected table</small><strong>Table 14</strong></div>
+                <div><small>Status</small><strong>Reserved · 7:15 PM</strong></div>
+                <div><small>Guest</small><strong>Anthony Russo · Party of 4</strong></div>
+                <div><small>Hospitality note</small><strong>Birthday · Tree nut allergy</strong></div>
+              </div>
+            </section>
+
+            <section class="twin-panel event-panel">
+              <div class="twin-panel-head">
+                <div><small>Shared event engine</small><strong>Live operations feed</strong></div>
+                <span id="eventCount">8 events</span>
+              </div>
+              <div class="event-feed" id="eventFeed">
+                <article><time>6:42</time><i class="call"></i><div><strong>Concierge answered incoming call</strong><p>Guest requested dinner availability for four.</p></div></article>
+                <article><time>6:40</time><i class="guest"></i><div><strong>Premier guest recognized</strong><p>Anthony Russo profile matched with 11 prior visits.</p></div></article>
+                <article><time>6:37</time><i class="table"></i><div><strong>Table 9 entered reset</strong><p>Estimated ready time: 6:45 PM.</p></div></article>
+                <article><time>6:34</time><i class="host"></i><div><strong>Party seated at Table 10</strong><p>Anniversary note delivered to service team.</p></div></article>
+                <article><time>6:28</time><i class="alert"></i><div><strong>Waterfront demand elevated</strong><p>7:00–8:00 PM requests exceed available inventory.</p></div></article>
+              </div>
+            </section>
+
+            <section class="twin-panel journey-panel">
+              <div class="twin-panel-head">
+                <div><small>Guest journey</small><strong id="journeyTitle">Anthony Russo reservation</strong></div>
+                <span id="journeyStatus">In progress</span>
+              </div>
+              <div class="journey-flow" id="journeyFlow">
+                <article class="complete"><i>1</i><div><strong>Incoming call</strong><small>6:42 PM</small></div></article>
+                <span></span>
+                <article class="active"><i>2</i><div><strong>Concierge</strong><small>Collecting details</small></div></article>
+                <span></span>
+                <article><i>3</i><div><strong>Reservation</strong><small>Pending</small></div></article>
+                <span></span>
+                <article><i>4</i><div><strong>Guest match</strong><small>Pending</small></div></article>
+                <span></span>
+                <article><i>5</i><div><strong>Host stand</strong><small>Pending</small></div></article>
+              </div>
+              <div class="journey-brief" id="journeyBrief">
+                <span>Blue Current is gathering the preferred time, party size, and occasion.</span>
+              </div>
+            </section>
+
+            <section class="twin-panel decisions-panel">
+              <div class="twin-panel-head">
+                <div><small>Operational intelligence</small><strong>Blue Current decisions</strong></div>
+                <button id="decisionRefresh" type="button">Refresh</button>
+              </div>
+              <div class="decision-stack" id="decisionStack">
+                <article class="priority">
+                  <span>Protect</span>
+                  <div><strong>Hold Table 14 until 7:25 PM</strong><p>Premier guest arrival with birthday and allergy notes.</p></div>
+                </article>
+                <article>
+                  <span>Recover</span>
+                  <div><strong>Offer 8:30 PM waterfront seating</strong><p>Likely to recover constrained 7:30 PM demand.</p></div>
+                </article>
+                <article>
+                  <span>Prepare</span>
+                  <div><strong>Stage host coverage at 7:00 PM</strong><p>Six arrivals are forecast within a 12-minute window.</p></div>
+                </article>
+              </div>
+            </section>
+          </div>
+
+          <div class="twin-timeline">
+            <div class="timeline-copy">
+              <small>Evening timeline</small>
+              <strong id="timelineLabel">6:42 PM · Dinner rush building</strong>
+            </div>
+            <input id="timelineScrubber" type="range" min="0" max="100" value="44" aria-label="Evening timeline">
+            <div class="timeline-labels"><span>4 PM</span><span>5:30</span><span>7 PM</span><span>8:30</span><span>10:30</span></div>
+          </div>
+        </div>
+
+        <div class="twin-story reveal">
+          <article><span>One event</span><strong>A guest calls.</strong><p>The concierge understands the request and begins the reservation.</p></article>
+          <article><span>One record</span><strong>The guest is recognized.</strong><p>Preferences, allergies, celebrations, and visit history follow the guest.</p></article>
+          <article><span>One operation</span><strong>Every workspace updates.</strong><p>The host stand, floor, analytics, and executive view reflect the same truth.</p></article>
+        </div>
+
+        <p class="twin-disclaimer">Demonstration data is illustrative. Live deployments would integrate with approved reservation, POS, telephony, and guest systems.</p>
+      </div>
+      <div class="twin-toast-stack" id="twinToastStack" aria-live="polite"></div>
+    </section>
+
+
+<section class="concierge-section" id="ai-concierge">
       <div class="container">
         <div class="section-heading reveal">
           <p class="eyebrow"><span></span> AI concierge</p>
