@@ -1000,3 +1000,47 @@ document.getElementById("decisionRefresh")?.addEventListener("click",()=>{
     <article><span>Recognize</span><div><strong>Brief service on two celebrations</strong><p>Birthday and anniversary guests are arriving before 7:20 PM.</p></div></article>`;
   twinToast("Recommendations refreshed","Blue Current recalculated decisions from the current service state.");
 });
+
+// ----------------------------------------
+// Blue Current Application Foundation
+// ----------------------------------------
+
+const eventBus = new window.BlueCurrentEventBus();
+
+const appState = new window.BlueCurrentAppState(eventBus, {
+  serviceStatus: "preparing",
+  occupancyPercent: 78,
+  reservations: [],
+  activeGuest: null,
+  activeTable: null
+});
+
+const motionEngine = new window.BlueCurrentMotionEngine();
+
+eventBus.on("service:started", ({ serviceName, startedAt }) => {
+  appState.set("serviceStatus", "live");
+
+  console.log(`✅ ${serviceName} started at ${startedAt}.`);
+});
+
+eventBus.on("state:changed", ({ key, value }) => {
+  console.log(`Blue Current state updated: ${key} =`, value);
+});
+
+motionEngine.load([
+  {
+    name: "Start dinner service",
+    delay: 1000,
+    action: () => {
+      eventBus.emit("service:started", {
+        serviceName: "Dinner service",
+        startedAt: new Date().toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit"
+        })
+      });
+    }
+  }
+]);
+
+motionEngine.start();
