@@ -1017,6 +1017,10 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 
 const motionEngine = new window.BlueCurrentMotionEngine();
 
+// --------------------------------------------------
+// Core Application Events
+// --------------------------------------------------
+
 eventBus.on("service:started", ({ serviceName, startedAt }) => {
   appState.set("serviceStatus", "live");
 
@@ -1027,20 +1031,57 @@ eventBus.on("state:changed", ({ key, value }) => {
   console.log(`Blue Current state updated: ${key} =`, value);
 });
 
-motionEngine.load([
-  {
-    name: "Start dinner service",
-    delay: 1000,
-    action: () => {
-      eventBus.emit("service:started", {
-        serviceName: "Dinner service",
-        startedAt: new Date().toLocaleTimeString([], {
-          hour: "numeric",
-          minute: "2-digit"
-        })
-      });
-    }
-  }
-]);
+// --------------------------------------------------
+// Live Service Timeline Events
+// --------------------------------------------------
+
+eventBus.on("concierge:call-started", (call) => {
+  console.log("📞 Incoming guest call:", call);
+});
+
+eventBus.on("reservation:created", (reservation) => {
+  const reservations = appState.get("reservations");
+
+  appState.set("reservations", [
+    ...reservations,
+    reservation
+  ]);
+
+  console.log("📅 Reservation created:", reservation);
+});
+
+eventBus.on("guest:recognized", (guest) => {
+  appState.set("activeGuest", guest);
+
+  console.log("👤 Guest recognized:", guest);
+});
+
+eventBus.on("table:assigned", (table) => {
+  appState.set("activeTable", table);
+
+  console.log("🍽️ Table assigned:", table);
+});
+
+eventBus.on("occupancy:updated", ({ occupancyPercent }) => {
+  appState.set("occupancyPercent", occupancyPercent);
+
+  console.log(`📊 Occupancy updated: ${occupancyPercent}%`);
+});
+
+eventBus.on("executive:updated", (metrics) => {
+  console.log("📈 Executive metrics updated:", metrics);
+});
+
+// --------------------------------------------------
+// Load Demo Timeline
+// --------------------------------------------------
+
+motionEngine.load(
+  window.createBlueCurrentLiveServiceTimeline(eventBus)
+);
+
+// --------------------------------------------------
+// Start Demo
+// --------------------------------------------------
 
 motionEngine.start();
