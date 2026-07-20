@@ -13,14 +13,29 @@ class AppState {
 
     this.eventBus = eventBus;
 
-    this.state = {
-      serviceStatus: "closed",
-      occupancyPercent: 0,
-      reservations: [],
-      activeGuest: null,
-      activeTable: null,
-      ...initialState
-    };
+   this.state = {
+  // Service
+  serviceStatus: "closed",
+
+  // Live Operations
+  occupancyPercent: 0,
+  reservations: [],
+  activeGuest: null,
+  activeTable: null,
+
+  // Executive Metrics
+  guestsExpected: 1026,
+  reservationsToday: 220,
+  callsAnswered: 176,
+  estimatedRevenue: 31800,
+  guestSatisfaction: 4.8,
+
+  // AI Summary
+  executiveBrief: "Waiting for dinner service…",
+
+  ...initialState
+};
+
   }
 
   getState() {
@@ -63,14 +78,64 @@ class AppState {
     });
   }
 
+  increment(key, amount = 1) {
+
+  if (typeof this.state[key] !== "number") {
+    throw new Error(
+      `${key} is not numeric.`
+    );
+  }
+
+  this.set(
+    key,
+    this.state[key] + amount
+  );
+
+}
+
+appendReservation(reservation) {
+
+  const reservations = [
+
+    ...this.state.reservations,
+
+    reservation
+
+  ];
+
+  this.set(
+    "reservations",
+    reservations
+  );
+
+}
+
   reset() {
     this.update({
-      serviceStatus: "closed",
-      occupancyPercent: 0,
-      reservations: [],
-      activeGuest: null,
-      activeTable: null
-    });
+
+  serviceStatus: "closed",
+
+  occupancyPercent: 0,
+
+  reservations: [],
+
+  activeGuest: null,
+
+  activeTable: null,
+
+  guestsExpected: 1026,
+
+  reservationsToday: 220,
+
+  callsAnswered: 176,
+
+  estimatedRevenue: 31800,
+
+  guestSatisfaction: 4.8,
+
+  executiveBrief: "Waiting for dinner service..."
+
+});
 
     this.eventBus.emit("state:reset", {
       state: this.getState()
