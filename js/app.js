@@ -1017,6 +1017,9 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 
 const motionEngine = new window.BlueCurrentMotionEngine();
 
+const conciergeModule =
+  window.createBlueCurrentConciergeModule(eventBus);
+
 // --------------------------------------------------
 // Core Application Events
 // --------------------------------------------------
