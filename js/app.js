@@ -1020,6 +1020,12 @@ const motionEngine = new window.BlueCurrentMotionEngine();
 const conciergeModule =
   window.createBlueCurrentConciergeModule(eventBus);
 
+  const digitalTwinModule =
+  window.createBlueCurrentDigitalTwinModule(eventBus);
+
+  const executiveModule =
+    window.createBlueCurrentExecutiveModule(eventBus);
+
 // --------------------------------------------------
 // Core Application Events
 // --------------------------------------------------
