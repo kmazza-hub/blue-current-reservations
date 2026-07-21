@@ -1,5 +1,3 @@
-# Blue Current V18.0 — Connect Platform
-
 # Blue Current V7.0 — Digital Twin
 
 A deploy-ready static website for Blue Current's hospitality product concept.
@@ -228,3 +226,7 @@ Portfolio Mode adds group-level operating visibility and location drill-down.
 
 ## V17.0
 Blue Current Live unifies operational health, Copilot answers, event telemetry, and connector readiness in one command center.
+
+
+## V20.0
+Adds the Intelligence Network module and cross-location learning foundation.

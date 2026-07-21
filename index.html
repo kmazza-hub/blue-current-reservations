@@ -34,13 +34,12 @@
 
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="#blue-current-live">Live</a>
-      <a href="#connect-platform">Connect</a>
-        <a href="#connect-platform">Connect</a>
         <a href="#digital-twin">Digital Twin</a>
       <a href="#mission-control">Mission Control</a>
         <a href="#time-machine">Time Machine</a>
         <a href="#portfolio-mode">Portfolio</a>
       <a href="#predictive-operations">Predictive</a>
+        <a href="#autonomous-operations">Autonomous</a>
         <a href="#ai-concierge">Concierge</a>
         <a href="#host-stand">Host Stand</a>
         <a href="#guest-intelligence">Guests</a>
@@ -62,6 +61,8 @@
       <a href="#mission-control">Mission Control</a>
       <a href="#time-machine">Time Machine</a>
       <a href="#portfolio-mode">Portfolio</a>
+      <a href="#intelligence-network">Intelligence</a>
+      <a href="#autonomous-operations">Autonomous</a>
       <a href="#ai-concierge">Concierge</a>
       <a href="#host-stand">Host Stand</a>
       <a href="#guest-intelligence">Guests</a>
@@ -967,6 +968,97 @@
         <div><small>Live journey history</small><strong>One guest. One connected record.</strong></div>
         <div class="guest-journey-history" id="guestJourneyHistory"></div>
       </aside>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="intelligence-network-section" id="intelligence-network" aria-labelledby="intelligenceTitle">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow">V20 · Intelligence Network</p>
+      <h2 id="intelligenceTitle">Every location learns from the portfolio.</h2>
+      <p>Compare operating performance, reuse successful decisions, and give leadership one live view across the restaurant group.</p>
+    </div>
+
+    <div class="intel-summary-grid reveal">
+      <article><small>Portfolio health</small><strong id="intelPortfolioHealth">94</strong><span>Across 6 locations</span></article>
+      <article><small>Forecast revenue</small><strong id="intelPortfolioRevenue">$184,420</strong><span id="intelRevenueTrend">+12.8% vs last Friday</span></article>
+      <article><small>Active guests</small><strong id="intelActiveGuests">684</strong><span>Live service network</span></article>
+      <article><small>Knowledge confidence</small><strong id="intelKnowledgeConfidence">93%</strong><span>42 learned outcomes</span></article>
+    </div>
+
+    <div class="intel-layout reveal">
+      <section class="intel-panel intel-locations-panel">
+        <div class="intel-panel-head"><div><small>Executive command center</small><h3>Restaurant network</h3></div><button id="intelPulse">Run network pulse</button></div>
+        <div id="intelLocationGrid" class="intel-location-grid"></div>
+      </section>
+
+      <section class="intel-panel intel-detail-panel">
+        <div class="intel-panel-head"><div><small>Selected location</small><h3 id="intelSelectedName">Marina Grille</h3></div><span id="intelSelectedStatus" class="intel-status healthy">Healthy</span></div>
+        <div class="intel-detail-metrics">
+          <div><span>Health</span><strong id="intelSelectedHealth">96</strong></div>
+          <div><span>Occupancy</span><strong id="intelSelectedOccupancy">91%</strong></div>
+          <div><span>Kitchen</span><strong id="intelSelectedKitchen">11.2 min</strong></div>
+          <div><span>Revenue</span><strong id="intelSelectedRevenue">$31,800</strong></div>
+        </div>
+        <div class="intel-ai-brief"><small>AI portfolio brief</small><p id="intelLocationBrief">Marina Grille is outperforming the portfolio on kitchen speed and reservation conversion.</p></div>
+      </section>
+
+      <section class="intel-panel intel-benchmark-panel">
+        <div class="intel-panel-head"><div><small>AI benchmarking</small><h3>Performance ranking</h3></div><select id="intelBenchmarkSelect" aria-label="Benchmark metric"><option value="health">Health score</option><option value="kitchen">Kitchen speed</option><option value="revenue">Revenue</option><option value="occupancy">Occupancy</option></select></div>
+        <div id="intelBenchmarkRows" class="intel-benchmark-rows"></div>
+      </section>
+
+      <section class="intel-panel intel-knowledge-panel">
+        <div class="intel-panel-head"><div><small>Knowledge engine</small><h3>Proven playbooks</h3></div><span class="live-indicator">Learning</span></div>
+        <div id="intelKnowledgeFeed" class="intel-knowledge-feed"></div>
+      </section>
+
+      <section class="intel-panel intel-report-panel">
+        <div><small>Executive reporting</small><h3>Portfolio operating brief</h3><p id="intelExecutiveBrief">All six locations are synchronized. One location requires attention and two proven playbooks are ready to deploy.</p></div>
+        <div class="intel-report-actions"><button id="intelGenerateReport">Generate report</button><button id="intelShareLearning">Share best practice</button></div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="autonomous-operations-section" id="autonomous-operations" aria-labelledby="autonomousTitle">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow">V19 · Autonomous Operations</p>
+      <h2 id="autonomousTitle">Your AI restaurant manager.</h2>
+      <p>Blue Current evaluates service conditions, recommends the next best action, learns from accepted decisions, and lets operators test scenarios before they affect guests.</p>
+    </div>
+
+    <div class="autonomous-command-grid reveal">
+      <article class="autonomous-hero-card">
+        <div class="autonomous-health-ring"><small>Restaurant health</small><strong id="autonomousHealth">94</strong><span>Live</span></div>
+        <div><small>Next best action</small><h3 id="autonomousNextAction">Maintain current pacing</h3><p id="autonomousConfidence">89% confidence</p><button id="autonomousEvaluate" class="autonomous-primary">Evaluate service now</button></div>
+      </article>
+      <article class="autonomous-copilot-card">
+        <small>Natural-language command center</small><h3>Ask Blue Current</h3>
+        <div class="autonomous-command"><input id="autonomousCommandInput" value="What should I do next?" aria-label="Ask Blue Current"><button id="autonomousCommandSend">Ask</button></div>
+        <p id="autonomousCommandOutput">Blue Current is ready to explain service conditions and recommend the next action.</p>
+      </article>
+    </div>
+
+    <div class="autonomous-grid reveal">
+      <section class="autonomous-panel decision-feed-panel"><div class="autonomous-panel-heading"><div><small>Decision engine</small><h3>Operational decision feed</h3></div><span class="live-indicator">Live</span></div><div id="autonomousDecisionFeed" class="autonomous-decision-feed"></div></section>
+      <section class="autonomous-panel rules-panel"><div class="autonomous-panel-heading"><div><small>No-code automation</small><h3>Autopilot rules</h3></div></div>
+        <button class="autonomous-rule active" data-rule="occupancy" aria-pressed="true"><span>IF occupancy &gt; 88%</span><strong>Open patio recommendation</strong><i></i></button>
+        <button class="autonomous-rule active" data-rule="kitchen" aria-pressed="true"><span>IF kitchen &gt; 17 min</span><strong>Add expo support</strong><i></i></button>
+        <button class="autonomous-rule active" data-rule="vip" aria-pressed="true"><span>IF VIP recognized</span><strong>Notify host lead</strong><i></i></button>
+        <button class="autonomous-rule active" data-rule="wait" aria-pressed="true"><span>IF wait &gt; 20 min</span><strong>Escalate manager alert</strong><i></i></button>
+      </section>
+      <section class="autonomous-panel scenario-panel"><div class="autonomous-panel-heading"><div><small>Operational sandbox</small><h3>Scenario simulator</h3></div></div>
+        <div class="scenario-buttons"><button data-scenario="server">Add one server</button><button data-scenario="rain">Simulate rain</button><button data-scenario="walkin">12-top walk-in</button><button data-scenario="kitchen">Kitchen failure</button></div>
+        <div id="scenarioOutput" class="scenario-output"><strong>Ready to simulate</strong><p>Select a scenario to forecast operational impact before taking action.</p></div>
+      </section>
+      <section class="autonomous-panel analytics-panel-v19"><div class="autonomous-panel-heading"><div><small>Learning engine</small><h3>Recommendation analytics</h3></div></div>
+        <div class="autonomous-metrics"><div><strong id="autonomousAccepted">0</strong><span>Accepted</span></div><div><strong id="autonomousSuccessRate">—</strong><span>Success rate</span></div><div><strong id="autonomousRevenueImpact">$0</strong><span>Revenue impact</span></div><div><strong id="autonomousWaitReduction">0 min</strong><span>Wait reduced</span></div></div>
+      </section>
     </div>
   </div>
 </section>
@@ -2040,20 +2132,7 @@
     </section>
 
 
-    
-<section class="connect-platform-section container" id="connect-platform" aria-labelledby="connectPlatformTitle">
-  <div class="section-heading reveal"><p class="eyebrow"><span></span> V18 · Integration fabric</p><h2 id="connectPlatformTitle">Blue Current <em>Connect</em></h2><p>One normalized connector layer for every reservation, payment, call, order and calendar event.</p></div>
-  <div class="connect-hero reveal"><div><span class="connect-live"><i></i> Connector fabric online</span><h3>The restaurant connects itself.</h3><p>External systems publish into the Event Bus, update shared App State and refresh every operational module without direct coupling.</p></div><button class="button button-gold" id="connectorHealthPulse" type="button">Run connector health pulse</button></div>
-  <div class="connector-stats" id="connectorStats"></div>
-  <div class="connector-grid" id="connectorGrid"></div>
-  <div class="connect-workbench">
-    <article class="connect-panel inspector-panel"><div class="connect-panel-head"><div><span>Event Inspector</span><h3>Normalized event stream</h3></div><input id="connectorEventFilter" type="search" placeholder="Filter events or sources"></div><div class="connector-inspector" id="connectorInspectorFeed"></div></article>
-    <article class="connect-panel api-panel"><div class="connect-panel-head"><div><span>API Playground</span><h3>Publish a live test event</h3></div></div><div class="api-controls"><select id="apiMethod"><option>POST</option><option>PATCH</option></select><select id="apiEndpoint"><option value="/reservations">/reservations</option><option value="/calls">/calls</option><option value="/payments">/payments</option><option value="/walkins">/walkins</option></select></div><textarea id="apiPayload" spellcheck="false">{"reservation":{"id":"api-204","guestName":"Jordan Lee","partySize":4,"tableNumber":12}}</textarea><button class="button button-gold button-small" id="apiSend" type="button">Send event</button><pre id="apiResponse">Ready.</pre></article>
-  </div>
-  <div class="connect-lower-grid"><article class="integration-monitor" id="integrationSummary"></article><article class="security-center"><span>Security Center</span><h3>Credentials and permissions</h3><ul id="securityAudit"></ul></article></div>
-  <div class="marketplace-heading"><div><span>Integration marketplace</span><h3>Extend the Hospitality OS</h3></div><p>Installable adapters use the same Connector SDK and event-normalization contract.</p></div><div class="connector-marketplace" id="connectorMarketplace"></div>
-</section>
-<section class="pilot-section container" id="pilot">
+    <section class="pilot-section container" id="pilot">
       <div class="pilot-card reveal">
         <div class="pilot-copy">
           <p class="eyebrow eyebrow-light"><span></span> Founding hospitality pilot</p>
@@ -2136,7 +2215,7 @@
   <div class="developer-overlay-grid">
     <section><h3>Event Bus</h3><div id="developerEventFeed" class="developer-event-feed"><p>Waiting for events…</p></div></section>
     <section><h3>App State</h3><pre id="developerStateView">{}</pre></section>
-    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li><li>Portfolio Mode <i></i></li><li>Blue Current Live <i></i></li><li>Connector Layer <i></i></li></ul></section>
+    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li><li>Portfolio Mode <i></i></li><li>Blue Current Live <i></i></li><li>Connector Layer <i></i></li><li>Intelligence Network <i></i></li></ul></section>
   </div>
 </div>
 
@@ -2154,7 +2233,8 @@
   <script src="js/modules/portfolioMode.js?v=17.0"></script>
   <script src="js/modules/predictiveOperations.js?v=17.0"></script>
   <script src="js/modules/blueCurrentLive.js?v=17.0"></script>
-  <script src="js/modules/connectorPlatform.js?v=18.0"></script>
-  <script src="js/app-v15.1.3.js?v=18.0"></script>
+  <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
+  <script src="js/modules/autonomousOperations.js?v=19.0"></script>
+  <script src="js/app-v15.1.3.js?v=20.0"></script>
 </body>
 </html>

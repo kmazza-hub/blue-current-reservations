@@ -24,6 +24,10 @@ class AppState {
       estimatedRevenue: 31800,
       guestSatisfaction: 4.8,
 
+      organization: { id: "blue-current-demo", name: "Blue Current Hospitality Group" },
+      selectedLocationId: "marina",
+      intelligenceNetwork: { status: "online", learnedOutcomes: 42, confidence: 93 },
+
       executiveBrief: "Waiting for dinner service…",
       lastOperationalEvent: null
     };

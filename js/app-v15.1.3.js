@@ -1060,8 +1060,11 @@ const predictiveOperationsModule =
 const blueCurrentLiveModule =
   window.createBlueCurrentLiveModule?.(eventBus, appState);
 
-  // V18 — Connector Platform
-  window.createConnectorPlatformModule?.(eventBus, appState);
+const intelligenceNetworkModule =
+  window.createBlueCurrentIntelligenceNetworkModule?.(eventBus, appState);
+
+const autonomousOperationsModule =
+  window.createBlueCurrentAutonomousOperationsModule?.(eventBus, appState);
 
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
@@ -1077,7 +1080,9 @@ window.blueCurrent = {
     timeMachine: timeMachineModule,
     portfolioMode: portfolioModeModule,
     predictiveOperations: predictiveOperationsModule,
-    blueCurrentLive: blueCurrentLiveModule
+    blueCurrentLive: blueCurrentLiveModule,
+    intelligenceNetwork: intelligenceNetworkModule,
+    autonomousOperations: autonomousOperationsModule
   }
 };
 window.appState = appState;
