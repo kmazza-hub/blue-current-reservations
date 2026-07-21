@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "24.2.1",
+        version: "26.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -182,6 +182,63 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     }
 
 
+
+
+
+    if (url.pathname === "/api/ai-brain" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await aiRestaurantBrainService.snapshot(locationId));
+    }
+
+    if (url.pathname.startsWith("/api/ai-brain/recommendations/") && request.method === "PATCH") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_operations")) {
+        return sendJson(response, 403, { error: "AI decision permission required." });
+      }
+      const recommendationId = decodeURIComponent(url.pathname.split("/").pop());
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await aiRestaurantBrainService.decide(
+        recommendationId, body, auth.user.name, organizationId
+      ));
+    }
+
+    if (url.pathname === "/api/ai-brain/refresh" && request.method === "POST") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_operations")) {
+        return sendJson(response, 403, { error: "AI decision permission required." });
+      }
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await aiRestaurantBrainService.reset(
+        body.locationId, auth.user.name, organizationId
+      ));
+    }
+
+    if (url.pathname === "/api/service-coordination" && request.method === "GET") {
+      const locationId=url.searchParams.get("locationId")||"loc_marina";
+      if(!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,200,await serviceCoordinationService.snapshot(locationId));
+    }
+    if (url.pathname === "/api/service-coordination" && request.method === "POST") {
+      if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Service write permission required."});
+      const body=await readJson(request); if(!canAccessLocation(body.locationId)) return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,201,await serviceCoordinationService.createFromTable(body,auth.user.name,organizationId));
+    }
+    if (url.pathname.startsWith("/api/service-coordination/flows/") && request.method === "PATCH") {
+      if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Service write permission required."});
+      const id=decodeURIComponent(url.pathname.split("/").pop()); const body=await readJson(request);
+      const flow=await serviceCoordinationService.updateFlow(id,body,auth.user.name,organizationId);
+      return flow?sendJson(response,200,flow):sendJson(response,404,{error:"Service flow not found."});
+    }
+    if (url.pathname.startsWith("/api/service-coordination/deliver/") && request.method === "POST") {
+      const id=decodeURIComponent(url.pathname.split("/").pop()); const flow=await serviceCoordinationService.markDelivered(id,auth.user.name,organizationId);
+      return flow?sendJson(response,200,flow):sendJson(response,404,{error:"Service flow not found."});
+    }
+
+    if (url.pathname === "/api/kitchen-operations" && request.method === "GET") {const locationId=url.searchParams.get("locationId")||"loc_marina";if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await kitchenOperationsService.snapshot(locationId));}
+    if (url.pathname === "/api/kitchen-operations" && request.method === "POST") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request);return sendJson(response,201,await kitchenOperationsService.createTicket(body,auth.user.name,organizationId));}
+    if (url.pathname.startsWith("/api/kitchen-operations/tickets/") && request.method === "PATCH") {const id=decodeURIComponent(url.pathname.split("/").pop());const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateTicket(id,body,auth.user.name,organizationId));}
+    if (url.pathname === "/api/kitchen-operations/item" && request.method === "PATCH") {const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateItem(body.ticketId,body.itemId,body.patch||{},auth.user.name,organizationId));}
 
     if (url.pathname === "/api/staff-operations" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || "loc_marina";

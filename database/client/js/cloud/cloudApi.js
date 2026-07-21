@@ -3,9 +3,9 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "24.2.1";
+    static VERSION = "26.0";
     static CAPABILITIES = Object.freeze([
-      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations",
+      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
@@ -70,6 +70,28 @@
         body: JSON.stringify(payload)
       });
     }
+
+    aiBrain(locationId = "loc_marina") {
+      return this.request(`/api/ai-brain?locationId=${encodeURIComponent(locationId)}`);
+    }
+    decideAiRecommendation(recommendationId, payload) {
+      return this.request(`/api/ai-brain/recommendations/${encodeURIComponent(recommendationId)}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload)
+      });
+    }
+    refreshAiBrain(locationId = "loc_marina") {
+      return this.request("/api/ai-brain/refresh", {
+        method: "POST",
+        body: JSON.stringify({ locationId })
+      });
+    }
+
+    kitchenOperations(locationId="loc_marina"){return this.request(`/api/kitchen-operations?locationId=${encodeURIComponent(locationId)}`)}
+    createKitchenTicket(payload){return this.request("/api/kitchen-operations",{method:"POST",body:JSON.stringify(payload)})}
+    updateKitchenTicket(id,payload){return this.request(`/api/kitchen-operations/tickets/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify(payload)})}
+    updateKitchenItem(ticketId,itemId,patch){return this.request("/api/kitchen-operations/item",{method:"PATCH",body:JSON.stringify({ticketId,itemId,patch})})}
+
     staffOperations(locationId = "loc_marina") {
       return this.request(`/api/staff-operations?locationId=${encodeURIComponent(locationId)}`);
     }
@@ -133,7 +155,7 @@
     connect(onEvent) {
       if (!window.EventSource) return () => {};
       this.eventSource = new EventSource(`${this.baseUrl}/api/events`);
-      ["connected", "reservation:created", "configuration:updated", "floor:table-updated", "floor:guest-seated", "floor:waitlist-added", "reservation:updated", "reservation:seated", "staff:updated", "staff:section-assigned", "staff:table-reassigned"].forEach(type => {
+      ["connected", "reservation:created", "configuration:updated", "floor:table-updated", "floor:guest-seated", "floor:waitlist-added", "reservation:updated", "reservation:seated", "staff:updated", "staff:section-assigned", "staff:table-reassigned", "kitchen:ticket-created", "kitchen:ticket-updated", "kitchen:item-updated", "service:guest-seated", "service:flow-updated", "ai:recommendation-decided", "ai:recommendations-refreshed"].forEach(type => {
         this.eventSource.addEventListener(type, event => {
           const payload = event.data ? JSON.parse(event.data) : {};
           onEvent(type, payload);
@@ -144,5 +166,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "24.2.1";
+  window.BLUE_CURRENT_CLIENT_BUILD = "26.0";
 })();

@@ -6,7 +6,7 @@
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="24.2.1">
+  <meta name="blue-current-build" content="26.0">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -14,14 +14,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=24.2.1">
+  <link rel="stylesheet" href="styles.css?v=26.0">
 </head>
 <body>
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V24.2.1</strong>
+    <strong>Blue Current V26.0</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -158,6 +158,10 @@
         <a href="#live-floor-operations">Floor</a>
         <a href="#reservation-operations">Reservations</a>
         <a href="#staff-sections">Staff</a>
+        <a href="#kitchen-command-center">Kitchen</a>
+        <a href="#service-coordination">Service</a>
+        <a href="#ai-restaurant-brain">AI Brain</a>
+        <a href="#ai-restaurant-brain">AI Brain</a>
         <a href="#cloud-foundation">Cloud</a>
         <a href="#auth-organizations">Access</a>
         <a href="#ai-concierge">Concierge</a>
@@ -182,6 +186,8 @@
       <a href="#live-floor-operations">Floor</a>
       <a href="#reservation-operations">Reservations</a>
       <a href="#staff-sections">Staff</a>
+        <a href="#kitchen-command-center">Kitchen</a>
+        <a href="#service-coordination">Service</a>
       <a href="#cloud-foundation">Cloud</a>
       <a href="#auth-organizations">Access</a>
       <a href="#ai-concierge">Concierge</a>
@@ -2519,6 +2525,71 @@
   </div>
 </section>
 
+<section class="kitchen-command-center section-shell" id="kitchen-command-center"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V25 · Kitchen Command Center</p><h2>See every ticket, station, and bottleneck in real time.</h2><p>Route items by station, advance ticket states, monitor timing pressure, and synchronize the kitchen with the floor.</p></div><div class="kitchen-kpi-grid"><article><strong id="kitchenActiveTickets">0</strong><span>Active tickets</span></article><article><strong id="kitchenReadyTickets">0</strong><span>Ready</span></article><article><strong id="kitchenOverdueTickets">0</strong><span>Overdue</span></article><article><strong id="kitchenAverageTime">0m</strong><span>Average age</span></article></div><article class="kitchen-card"><h3>Station Heat Map</h3><div class="kitchen-station-grid" id="kitchenStationGrid"></div></article><div class="kitchen-workspace"><article class="kitchen-card"><div class="kitchen-filters" id="kitchenFilters"><button data-filter="all">All</button><button data-filter="received">Received</button><button data-filter="cooking">Cooking</button><button data-filter="plating">Plating</button><button data-filter="ready">Ready</button></div><div class="kitchen-ticket-board" id="kitchenTicketBoard"></div></article><aside class="kitchen-card" id="kitchenInspector"></aside></div></div></section>
+<section class="service-coordination section-shell" id="service-coordination">
+ <div class="container">
+  <div class="section-heading reveal"><p class="eyebrow"><span></span> V25.1 · Service Coordination</p><h2>One live service flow from host stand to expo.</h2><p>Coordinate table pace, kitchen production, runners, server workload, and operating risk from a single control surface.</p></div>
+  <div class="svc-kpis reveal"><article><strong id="svcActive">0</strong><span>Active tables</span></article><article><strong id="svcReady">0</strong><span>Ready for runner</span></article><article><strong id="svcRisk">0</strong><span>At-risk tables</span></article><article><strong id="svcHealth">0%</strong><span>Service health</span></article></div>
+  <div class="svc-layout reveal">
+   <article class="svc-flow-card"><div class="svc-head"><div><small>Restaurant operations</small><h3>Service Flow Board</h3></div><div id="svcFilters"><button class="active" data-svc-filter="all">All</button><button data-svc-filter="ready">Expo ready</button><button data-svc-filter="high">High risk</button><button data-svc-filter="critical">Critical</button></div></div><div class="svc-table-wrap"><table class="svc-table"><thead><tr><th>Table</th><th>Server</th><th>Course</th><th>Kitchen</th><th>Expo</th><th>Time</th><th>Risk</th><th>Action</th></tr></thead><tbody id="svcFlowBody"></tbody></table></div></article>
+   <aside class="svc-alert-card"><div class="svc-head"><div><small>Mission Control</small><h3>Operational Alerts</h3></div><span>Live</span></div><div id="svcAlerts" class="svc-alerts"></div></aside>
+  </div>
+  <div class="svc-bottom reveal"><article class="svc-expo-card"><div class="svc-head"><div><small>Ready food</small><h3>Expo Console</h3></div><span>Runner workflow</span></div><div id="svcExpoQueue" class="svc-expo"></div></article><article class="svc-load-card"><div class="svc-head"><div><small>Front of house</small><h3>Server Workload</h3></div><span>Live covers</span></div><div id="svcServerLoad" class="svc-load"></div></article></div>
+ </div>
+</section>
+
+<section class="ai-restaurant-brain section-shell" id="ai-restaurant-brain">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V26 · AI Restaurant Brain</p>
+      <h2>Operational intelligence that explains what to do next.</h2>
+      <p>Blue Current continuously evaluates floor, kitchen, staff, reservations, and service risk to produce transparent, actionable recommendations.</p>
+    </div>
+
+    <div class="ai-brain-header reveal">
+      <article class="ai-health-card">
+        <div class="ai-health-ring" id="aiHealthRing"><strong id="aiHealthScore">—</strong><span>Restaurant health</span></div>
+        <div class="ai-health-breakdown">
+          <p><span>Kitchen</span><strong id="aiHealthKitchen">—</strong></p>
+          <p><span>Service</span><strong id="aiHealthService">—</strong></p>
+          <p><span>Staff</span><strong id="aiHealthStaff">—</strong></p>
+          <p><span>Reservations</span><strong id="aiHealthReservations">—</strong></p>
+          <p><span>Dining room</span><strong id="aiHealthDining">—</strong></p>
+        </div>
+      </article>
+
+      <article class="ai-signal-card">
+        <div class="ai-panel-head">
+          <div><small>Live operational context</small><h3>Decision Signals</h3></div>
+          <div><span>Updated <b id="aiLastUpdated">—</b></span><button class="button button-light" id="aiRefreshButton">Regenerate</button></div>
+        </div>
+        <div class="ai-signal-grid" id="aiSignalGrid"></div>
+      </article>
+    </div>
+
+    <div class="ai-category-filters reveal" id="aiCategoryFilters">
+      <button class="active" data-ai-category="all">All recommendations</button>
+      <button data-ai-category="seating">Seating</button>
+      <button data-ai-category="staff">Staff</button>
+      <button data-ai-category="kitchen">Kitchen</button>
+      <button data-ai-category="guest_experience">Guest experience</button>
+    </div>
+
+    <div class="ai-brain-workspace reveal">
+      <article class="ai-recommendations-panel">
+        <div class="ai-panel-head"><div><small>Decision center</small><h3>Active Recommendations</h3></div><span>Explainable rules engine</span></div>
+        <div class="ai-recommendation-list" id="aiRecommendationList"></div>
+      </article>
+      <aside class="ai-inspector-panel" id="aiRecommendationInspector"></aside>
+    </div>
+
+    <article class="ai-history-panel reveal">
+      <div class="ai-panel-head"><div><small>Manager learning loop</small><h3>Decision History</h3></div><span>Accepted · Snoozed · Rejected</span></div>
+      <div class="ai-decision-history" id="aiDecisionHistory"></div>
+    </article>
+  </div>
+</section>
+
 <section class="cloud-foundation section-shell" id="cloud-foundation">
   <div class="container">
     <div class="section-heading reveal">
@@ -2684,13 +2755,16 @@
   <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
   <script src="js/modules/autonomousOperations.js?v=19.0"></script>
   <script src="js/modules/productionReadiness.js?v=21.0"></script>
-  <script src="js/cloud/cloudApi.js?v=24.2.1"></script>
-  <script src="js/modules/cloudFoundation.js?v=24.2.1"></script>
-  <script src="js/modules/startupDiagnostics.js?v=24.2.1"></script>
-  <script src="js/modules/authOrganizations.js?v=24.2.1"></script>
-  <script src="js/modules/liveFloorOperations.js?v=24.2.1"></script>
-  <script src="js/modules/reservationOperations.js?v=24.2.1"></script>
-  <script src="js/modules/staffSections.js?v=24.2.1"></script>
-  <script src="js/app-v15.1.3.js?v=24.2.1"></script>
+  <script src="js/cloud/cloudApi.js?v=26.0"></script>
+  <script src="js/modules/cloudFoundation.js?v=26.0"></script>
+  <script src="js/modules/startupDiagnostics.js?v=26.0"></script>
+  <script src="js/modules/authOrganizations.js?v=26.0"></script>
+  <script src="js/modules/liveFloorOperations.js?v=26.0"></script>
+  <script src="js/modules/reservationOperations.js?v=26.0"></script>
+  <script src="js/modules/staffSections.js?v=26.0"></script>
+  <script src="js/modules/kitchenCommandCenter.js?v=26.0"></script>
+  <script src="js/modules/serviceCoordination.js?v=26.0"></script>
+  <script src="js/modules/aiRestaurantBrain.js?v=26.0"></script>
+  <script src="js/app-v15.1.3.js?v=26.0"></script>
 </body>
 </html>
