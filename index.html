@@ -573,7 +573,7 @@
       <div class="container">
         <div class="twin-intro reveal">
           <div>
-            <p class="eyebrow"><span></span> Blue Current OS · V7.0</p>
+            <p class="eyebrow"><span></span> Blue Current OS · V15.4</p>
             <h2>A living view of the restaurant.</h2>
             <p>
               Watch one evening unfold across the dining room, reservations, guest recognition,
@@ -652,10 +652,20 @@
               </div>
 
               <div class="floor-detail" id="floorDetail">
-                <div><small>Selected table</small><strong>Table 14</strong></div>
-                <div><small>Status</small><strong>Reserved · 7:15 PM</strong></div>
-                <div><small>Guest</small><strong>Anthony Russo · Party of 4</strong></div>
-                <div><small>Hospitality note</small><strong>Birthday · Tree nut allergy</strong></div>
+                <div><small>Selected table</small><strong id="floorDetailTable">Table 14</strong></div>
+                <div><small>Status</small><strong id="floorDetailStatus">Reserved · 7:15 PM</strong></div>
+                <div><small>Guest</small><strong id="floorDetailGuest">Anthony Russo · Party of 4</strong></div>
+                <div><small>Hospitality note</small><strong id="floorDetailNote">Birthday · Tree nut allergy</strong></div>
+                <div class="floor-detail-actions">
+                  <small>Live table controls</small>
+                  <div id="floorStatusControls" role="group" aria-label="Change selected table status">
+                    <button type="button" data-table-status="available">Available</button>
+                    <button type="button" data-table-status="reserved">Reserved</button>
+                    <button type="button" data-table-status="seated">Seated</button>
+                    <button type="button" data-table-status="dining">Dining</button>
+                    <button type="button" data-table-status="reset">Reset</button>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -818,6 +828,39 @@
             <p class="mission-no-recommendations">No intervention required.</p>
           </div>
         </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+
+<section class="guest-journey-live-section" id="guest-journey-live">
+  <div class="container">
+    <div class="guest-journey-live-heading reveal">
+      <div>
+        <p class="eyebrow"><span></span> Connected guest lifecycle</p>
+        <h2>Guest Journey Live</h2>
+        <p>Follow one guest from the first call through the dining experience and into the next visit.</p>
+      </div>
+      <div class="guest-journey-live-actions">
+        <button type="button" id="guestJourneyPlay" class="primary">Run full journey</button>
+        <button type="button" id="guestJourneyReset">Reset</button>
+      </div>
+    </div>
+
+    <div class="guest-journey-live-shell reveal">
+      <div class="guest-journey-summary">
+        <article><span>Active guest</span><strong id="guestJourneyGuest">Waiting for guest</strong></article>
+        <article><span>Current stage</span><strong id="guestJourneyCurrentStage">Not started</strong></article>
+        <article><span>Journey complete</span><strong id="guestJourneyProgress">0%</strong></article>
+        <div class="guest-journey-progress"><i id="guestJourneyProgressBar"></i></div>
+      </div>
+
+      <div class="guest-journey-track" id="guestJourneyTrack" aria-label="Live guest journey stages"></div>
+
+      <aside class="guest-journey-history-panel">
+        <div><small>Live journey history</small><strong>One guest. One connected record.</strong></div>
+        <div class="guest-journey-history" id="guestJourneyHistory"></div>
       </aside>
     </div>
   </div>
@@ -1979,15 +2022,16 @@
   </div>
 </div>
 
-  <script src="js/eventBus.js?v=15.3"></script>
-  <script src="js/appState.js?v=15.3"></script>
-  <script src="js/motionEngine.js?v=15.3"></script>
-  <script src="js/timeline.js?v=15.3"></script>
+  <script src="js/eventBus.js?v=15.5"></script>
+  <script src="js/appState.js?v=15.5"></script>
+  <script src="js/motionEngine.js?v=15.5"></script>
+  <script src="js/timeline.js?v=15.5"></script>
   <script src="js/modules/concierge.js"></script>
-  <script src="js/modules/digitalTwin.js"></script>
+  <script src="js/modules/digitalTwin.js?v=15.5"></script>
   <script src="js/modules/executive.js"></script>
-  <script src="js/modules/missionControl.js?v=15.3"></script>
-  <script src="js/modules/operationalIntelligence.js?v=15.3"></script>
-  <script src="js/app-v15.1.3.js?v=15.3"></script>
+  <script src="js/modules/missionControl.js?v=15.5"></script>
+  <script src="js/modules/operationalIntelligence.js?v=15.5"></script>
+  <script src="js/modules/guestJourney.js?v=15.5"></script>
+  <script src="js/app-v15.1.3.js?v=15.5"></script>
 </body>
 </html>

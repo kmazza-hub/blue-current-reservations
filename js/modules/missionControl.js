@@ -12,7 +12,11 @@ function createMissionControlModule(eventBus, appState, motionEngine) {
     "reservation:created": ["+","Host stand",()=>"Reservation added to service",p=>`${p.guestName||"Guest"} is now visible to the host team.`,"synced"],
     "table:assigned": ["▦","Digital Twin",p=>`Table ${p.tableNumber||"—"} reserved`,p=>`Dining room inventory updated for a party of ${p.partySize||"—"}.`,"synced"],
     "occupancy:updated": ["%","Operations",p=>`Occupancy updated to ${p.occupancyPercent||0}%`,()=>"Shared operational state synchronized across every active module.","synced"],
-    "executive:updated": ["↗","Executive",()=>"Leadership metrics refreshed",p=>`${Number(p.reservationsToday||0).toLocaleString()} reservations · $${Number(p.estimatedRevenue||0).toLocaleString()} estimated revenue.`,"synced"]
+    "executive:updated": ["↗","Executive",()=>"Leadership metrics refreshed",p=>`${Number(p.reservationsToday||0).toLocaleString()} reservations · $${Number(p.estimatedRevenue||0).toLocaleString()} estimated revenue.`,"synced"],
+    "guest:arrived": ["↘","Host stand",p=>`${p.guestName||"Guest"} arrived`,p=>`Arrival recognized for Table ${p.tableNumber||"—"}.`,"synced"],
+    "guest:seated": ["▦","Dining room",p=>`${p.guestName||"Guest"} seated`,p=>`Table ${p.tableNumber||"—"} transitioned into active service.`,"synced"],
+    "dining:started": ["✦","Experience",()=>"Dining experience underway",p=>`${p.guestName||"Guest"} is now in the active dining journey.`,"synced"],
+    "followup:scheduled": ["↗","Guest relationship",()=>"Follow-up scheduled",p=>`${p.channel||"SMS"} outreach will continue the guest relationship.`,"synced"]
   };
 
   let eventCount=0, recoveredRevenue=0;

@@ -215,3 +215,7 @@ Implementation goals:
 
 Success criteria:
 Every interaction should feel responsive, intentional, and cohesive across Concierge, Digital Twin, Guest Intelligence, Analytics, and Executive modules.
+
+
+## V15.4
+Digital Twin 2.0 adds live state-driven table controls, occupancy recalculation, reservation synchronization, and Mission Control table events.

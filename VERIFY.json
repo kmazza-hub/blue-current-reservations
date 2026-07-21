@@ -1,38 +1,17 @@
 {
-  "README.md": {
-    "bytes": 3175,
-    "sha256": "12751efa79ed1e36d3b4e2fadd30cbb0a5f2f4c50b79e4bc40d64a13b2b89de9"
-  },
-  "assets/favicon.svg": {
-    "bytes": 282,
-    "sha256": "8d7eb817a3e99c6e4b94b552463317c29622466912d303d18710e13bb25e6995"
-  },
-  "assets/logo-mark.svg": {
-    "bytes": 282,
-    "sha256": "8d7eb817a3e99c6e4b94b552463317c29622466912d303d18710e13bb25e6995"
-  },
-  "index.html": {
-    "bytes": 88122,
-    "sha256": "6911dcef64efa163aecec2d3d8ccc84ac8bf2246cfb923f79a7e53ae627415aa"
-  },
-  "netlify.toml": {
-    "bytes": 199,
-    "sha256": "ffec34829ff0e8f283cb6f168bbdebd1be507d15dae1b478f5115e541c069721"
-  },
-  "privacy.html": {
-    "bytes": 1139,
-    "sha256": "577bb3de1a462002eb843af7bebbc23f1cc3a98be0a82a93cb00c9c93d469a48"
-  },
-  "script.js": {
-    "bytes": 41346,
-    "sha256": "4a227b2947057b833ed638e71b46ca06599e6aef060db5c8f26eb5f779c6a030"
-  },
-  "styles.css": {
-    "bytes": 86228,
-    "sha256": "6598a25c7f9b7aed4b58b0ed737f27c0b236ac544e77f4b0d8c02055a5fa155a"
-  },
-  "terms.html": {
-    "bytes": 1127,
-    "sha256": "e128cbed089d5855f12f506721415652db85d3c594e03d9ce1b726cdf05d322a"
-  }
+  "version": "15.5",
+  "name": "Guest Journey Live",
+  "scripts": [
+    "js/app-v15.1.3.js",
+    "js/appState.js",
+    "js/eventBus.js",
+    "js/modules/concierge.js",
+    "js/modules/digitalTwin.js",
+    "js/modules/executive.js",
+    "js/modules/guestJourney.js",
+    "js/modules/missionControl.js",
+    "js/modules/operationalIntelligence.js",
+    "js/motionEngine.js",
+    "js/timeline.js"
+  ]
 }

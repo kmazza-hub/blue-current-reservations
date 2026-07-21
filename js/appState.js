@@ -16,6 +16,7 @@ class AppState {
       activeGuest: null,
       activeTable: null,
       activeCall: null,
+      tables: null,
 
       guestsExpected: 1026,
       reservationsToday: 220,

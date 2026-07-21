@@ -877,6 +877,7 @@ function setTableState(number, state){
   if(!table) return;
   table.classList.remove("available","reserved","seated","dining","reset");
   table.classList.add(state);
+  window.eventBus?.emit("table:presentation-state", { tableNumber: Number(number), status: state });
 }
 
 function updateJourney(stage, brief){
@@ -1044,6 +1045,9 @@ const executiveModule =
 const missionControlModule =
   window.createBlueCurrentMissionControlModule?.(eventBus, appState, motionEngine);
 
+const guestJourneyModule =
+  window.createBlueCurrentGuestJourneyModule?.(eventBus, appState);
+
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
   eventBus,
@@ -1053,7 +1057,8 @@ window.blueCurrent = {
     concierge: conciergeModule,
     digitalTwin: digitalTwinModule,
     executive: executiveModule,
-    missionControl: missionControlModule
+    missionControl: missionControlModule,
+    guestJourney: guestJourneyModule
   }
 };
 window.appState = appState;
@@ -1175,6 +1180,11 @@ eventBus.on("reservation:confirmed", ({
     activeTable: {
       tableNumber: reservation.tableNumber,
       partySize: reservation.partySize,
+      guestName: reservation.guestName,
+      time: reservation.time || reservation.offeredTime || "7:15 PM",
+      occasion: reservation.occasion,
+      note: reservation.note || "Tree nut allergy",
+      vip: true,
       status: "reserved"
     },
     activeCall: null,
