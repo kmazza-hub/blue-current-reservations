@@ -1035,7 +1035,7 @@ const motionEngine = new window.BlueCurrentMotionEngine();
 
 
 const startupRegistry = {
-  build: "23.0.2",
+  build: "24.0",
   modules: new Map(),
   register(name, instance, dependencies = []) {
     const missing = dependencies.filter(dependency => !this.modules.get(dependency)?.ready);
@@ -1113,6 +1113,13 @@ const authOrganizationsModule =
     "authOrganizations",
     window.createBlueCurrentAuthOrganizationsModule?.(eventBus, appState, cloudFoundationModule),
     ["eventBus", "appState", "cloudFoundation"]
+  );
+
+const liveFloorOperationsModule =
+  startupRegistry.register(
+    "liveFloorOperations",
+    window.createBlueCurrentLiveFloorOperationsModule?.(eventBus, appState, cloudFoundationModule),
+    ["eventBus", "appState", "cloudFoundation", "authOrganizations"]
   );
 
 // Exposed temporarily for browser-console testing.

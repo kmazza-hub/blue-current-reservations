@@ -3,9 +3,9 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "23.0.3";
+    static VERSION = "24.0";
     static CAPABILITIES = Object.freeze([
-      "health", "login", "logout", "me", "switchOrganization",
+      "health", "login", "logout", "me", "switchOrganization", "floor",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
@@ -49,6 +49,27 @@
       return this.request("/api/auth/switch-organization", { method: "POST", body: JSON.stringify({ organizationId }) });
     }
     bootstrap() { return this.request("/api/bootstrap"); }
+    floor(locationId = "loc_marina") {
+      return this.request(`/api/floor?locationId=${encodeURIComponent(locationId)}`);
+    }
+    updateTable(tableId, payload) {
+      return this.request(`/api/floor/tables/${encodeURIComponent(tableId)}`, {
+        method: "PATCH",
+        body: JSON.stringify(payload)
+      });
+    }
+    addWaitlist(payload) {
+      return this.request("/api/floor/waitlist", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+    }
+    seatWaitlist(payload) {
+      return this.request("/api/floor/seat-waitlist", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+    }
     listReservations() { return this.request("/api/reservations"); }
     createReservation(payload) {
       return this.request("/api/reservations", { method: "POST", body: JSON.stringify(payload) });
@@ -68,7 +89,7 @@
     connect(onEvent) {
       if (!window.EventSource) return () => {};
       this.eventSource = new EventSource(`${this.baseUrl}/api/events`);
-      ["connected", "reservation:created", "configuration:updated"].forEach(type => {
+      ["connected", "reservation:created", "configuration:updated", "floor:table-updated", "floor:guest-seated", "floor:waitlist-added"].forEach(type => {
         this.eventSource.addEventListener(type, event => {
           const payload = event.data ? JSON.parse(event.data) : {};
           onEvent(type, payload);
@@ -79,5 +100,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "23.0.3";
+  window.BLUE_CURRENT_CLIENT_BUILD = "24.0";
 })();

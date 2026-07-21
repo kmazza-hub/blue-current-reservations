@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "23.0.3",
+        version: "24.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -118,6 +118,67 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
           locationIds: auth.membership.locationIds
         }
       });
+    }
+
+
+    if (url.pathname === "/api/floor" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await floorService.snapshot(locationId));
+    }
+
+    if (url.pathname.startsWith("/api/floor/tables/") && request.method === "PATCH") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_operations")) {
+        return sendJson(response, 403, { error: "Floor write permission required." });
+      }
+      const tableId = decodeURIComponent(url.pathname.split("/").pop());
+      const table = await database.get("tables", tableId);
+      if (!table || !canAccessLocation(table.locationId)) {
+        return sendJson(response, 404, { error: "Table not found." });
+      }
+      const body = await readJson(request);
+      const updated = await floorService.updateTable(
+        tableId,
+        body,
+        auth.user.name,
+        organizationId
+      );
+      return sendJson(response, 200, updated);
+    }
+
+    if (url.pathname === "/api/floor/waitlist" && request.method === "POST") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_reservations")) {
+        return sendJson(response, 403, { error: "Waitlist write permission required." });
+      }
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId)) {
+        return sendJson(response, 403, { error: "Location access denied." });
+      }
+      return sendJson(response, 201, await floorService.addWaitlist(
+        body,
+        auth.user.name,
+        organizationId
+      ));
+    }
+
+    if (url.pathname === "/api/floor/seat-waitlist" && request.method === "POST") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_reservations")) {
+        return sendJson(response, 403, { error: "Seating permission required." });
+      }
+      const body = await readJson(request);
+      const table = await database.get("tables", body.tableId);
+      if (!table || !canAccessLocation(table.locationId)) {
+        return sendJson(response, 404, { error: "Table not found." });
+      }
+      const result = await floorService.seatWaitlist(
+        body.waitlistId,
+        body.tableId,
+        auth.user.name,
+        organizationId
+      );
+      return result
+        ? sendJson(response, 200, result)
+        : sendJson(response, 409, { error: "Unable to seat this party." });
     }
 
     if (url.pathname === "/api/reservations" && request.method === "GET") {
