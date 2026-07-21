@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "24.2",
+        version: "30.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -182,6 +182,100 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     }
 
 
+
+
+
+
+
+    if (url.pathname === "/api/workforce-intelligence" && request.method === "GET") return sendJson(response,200,await workforceIntelligenceService.snapshot(organizationId,url.searchParams.get("locationId")||"loc_marina"));
+    if (url.pathname.startsWith("/api/workforce-intelligence/recommendations/") && request.method === "POST") { const id=decodeURIComponent(url.pathname.split("/").pop()),body=await readJson(request); return sendJson(response,200,await workforceIntelligenceService.act(id,body,auth.user.name,organizationId)); }
+    if (url.pathname.startsWith("/api/workforce-intelligence/plans/") && request.method === "PATCH") { const locationId=decodeURIComponent(url.pathname.split("/").pop()),body=await readJson(request); return sendJson(response,200,await workforceIntelligenceService.updatePlan(locationId,body,auth.user.name,organizationId)); }
+
+    if (url.pathname === "/api/guest-intelligence" && request.method === "GET") return sendJson(response,200,await guestIntelligenceService.snapshot(organizationId));
+    if (url.pathname.startsWith("/api/guest-intelligence/campaigns/") && url.pathname.endsWith("/launch") && request.method === "POST") { const id=url.pathname.split("/")[4]; const result=await guestIntelligenceService.launchCampaign(id,auth.user.name,organizationId); return result?sendJson(response,200,result):sendJson(response,404,{error:"Campaign not found."}); }
+    if (url.pathname.startsWith("/api/guest-intelligence/profiles/") && url.pathname.endsWith("/recovery") && request.method === "POST") { const id=url.pathname.split("/")[4],body=await readJson(request); return sendJson(response,200,await guestIntelligenceService.recordRecovery(id,body,auth.user.name,organizationId)); }
+
+    if (url.pathname === "/api/autonomous-operations" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.snapshot(organizationId));
+    if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+      return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
+    }
+    if (url.pathname === "/api/autonomous-operations/policy" && request.method === "PATCH") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Policy permission required."});
+      return sendJson(response,200,await autonomousOperationsService.updatePolicy(await readJson(request),auth.user.name,organizationId));
+    }
+    if (url.pathname.startsWith("/api/autonomous-operations/actions/") && request.method === "PATCH") {
+      const id=decodeURIComponent(url.pathname.split("/").pop()),updated=await autonomousOperationsService.decide(id,await readJson(request),auth.user.name,organizationId);
+      return updated?sendJson(response,200,updated):sendJson(response,404,{error:"Action not found."});
+    }
+    if (url.pathname === "/api/autonomous-operations/ask" && request.method === "POST") {
+      const body=await readJson(request);return sendJson(response,200,await autonomousOperationsService.ask(body.question,organizationId));
+    }
+
+    if (url.pathname === "/api/executive-command" && request.method === "GET") {
+      return sendJson(response,200,await executiveCommandCenterService.snapshot(organizationId));
+    }
+    if (url.pathname.startsWith("/api/executive-command/goals/") && request.method === "PATCH") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Executive goal permission required."});
+      const goalId=decodeURIComponent(url.pathname.split("/").pop()), body=await readJson(request), goal=await database.get("executiveGoals",goalId);
+      if(!goal||goal.organizationId!==organizationId) return sendJson(response,404,{error:"Goal not found."});
+      return sendJson(response,200,await executiveCommandCenterService.updateGoal(goalId,body,auth.user.name,organizationId));
+    }
+
+    if (url.pathname === "/api/ai-brain" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await aiRestaurantBrainService.snapshot(locationId));
+    }
+
+    if (url.pathname.startsWith("/api/ai-brain/recommendations/") && request.method === "PATCH") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_operations")) {
+        return sendJson(response, 403, { error: "AI decision permission required." });
+      }
+      const recommendationId = decodeURIComponent(url.pathname.split("/").pop());
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await aiRestaurantBrainService.decide(
+        recommendationId, body, auth.user.name, organizationId
+      ));
+    }
+
+    if (url.pathname === "/api/ai-brain/refresh" && request.method === "POST") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_operations")) {
+        return sendJson(response, 403, { error: "AI decision permission required." });
+      }
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await aiRestaurantBrainService.reset(
+        body.locationId, auth.user.name, organizationId
+      ));
+    }
+
+    if (url.pathname === "/api/service-coordination" && request.method === "GET") {
+      const locationId=url.searchParams.get("locationId")||"loc_marina";
+      if(!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,200,await serviceCoordinationService.snapshot(locationId));
+    }
+    if (url.pathname === "/api/service-coordination" && request.method === "POST") {
+      if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Service write permission required."});
+      const body=await readJson(request); if(!canAccessLocation(body.locationId)) return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,201,await serviceCoordinationService.createFromTable(body,auth.user.name,organizationId));
+    }
+    if (url.pathname.startsWith("/api/service-coordination/flows/") && request.method === "PATCH") {
+      if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Service write permission required."});
+      const id=decodeURIComponent(url.pathname.split("/").pop()); const body=await readJson(request);
+      const flow=await serviceCoordinationService.updateFlow(id,body,auth.user.name,organizationId);
+      return flow?sendJson(response,200,flow):sendJson(response,404,{error:"Service flow not found."});
+    }
+    if (url.pathname.startsWith("/api/service-coordination/deliver/") && request.method === "POST") {
+      const id=decodeURIComponent(url.pathname.split("/").pop()); const flow=await serviceCoordinationService.markDelivered(id,auth.user.name,organizationId);
+      return flow?sendJson(response,200,flow):sendJson(response,404,{error:"Service flow not found."});
+    }
+
+    if (url.pathname === "/api/kitchen-operations" && request.method === "GET") {const locationId=url.searchParams.get("locationId")||"loc_marina";if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await kitchenOperationsService.snapshot(locationId));}
+    if (url.pathname === "/api/kitchen-operations" && request.method === "POST") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request);return sendJson(response,201,await kitchenOperationsService.createTicket(body,auth.user.name,organizationId));}
+    if (url.pathname.startsWith("/api/kitchen-operations/tickets/") && request.method === "PATCH") {const id=decodeURIComponent(url.pathname.split("/").pop());const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateTicket(id,body,auth.user.name,organizationId));}
+    if (url.pathname === "/api/kitchen-operations/item" && request.method === "PATCH") {const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateItem(body.ticketId,body.itemId,body.patch||{},auth.user.name,organizationId));}
 
     if (url.pathname === "/api/staff-operations" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || "loc_marina";

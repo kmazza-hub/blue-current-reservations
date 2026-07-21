@@ -59,6 +59,14 @@
       "name": "Lighthouse Social",
       "capacity": 118,
       "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_garden",
+      "organizationId": "org_chefs",
+      "name": "Garden Social",
+      "city": "Toms River",
+      "state": "NJ",
+      "status": "open"
     }
   ],
   "users": [
@@ -130,22 +138,6 @@
       "action": "Cloud database initialized",
       "category": "system",
       "createdAt": "2026-07-20T00:00:00.000Z"
-    },
-    {
-      "organizationId": "org_chefs",
-      "actor": "Keith Mazza",
-      "action": "Signed in to Blue Current Cloud",
-      "category": "security",
-      "createdAt": "2026-07-21T04:04:10.138Z",
-      "id": "audit_1784606650138_al4yau"
-    },
-    {
-      "organizationId": "org_chefs",
-      "actor": "Keith Mazza",
-      "action": "Signed in to Blue Current Cloud",
-      "category": "security",
-      "createdAt": "2026-07-21T21:16:13.492Z",
-      "id": "audit_1784668573492_l776nd"
     }
   ],
   "reservations": [
@@ -244,32 +236,7 @@
       ]
     }
   ],
-  "sessions": [
-    {
-      "id": "ses_1784606650133_96rk5c",
-      "tokenHash": "6a17717def6d2b4dca3eaa5fdeceabe2392f14571748612e752a9fd23cc2cba7",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-07-21T04:04:10.133Z",
-      "expiresAt": "2026-07-21T16:04:10.133Z"
-    },
-    {
-      "id": "ses_1784668573485_lamkbm",
-      "tokenHash": "bda7318d2a77e820fbada49661a392f90e9360e36066a29909e02aec42a3b79e",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-07-21T21:16:13.485Z",
-      "expiresAt": "2026-07-22T09:16:13.485Z"
-    }
-  ],
+  "sessions": [],
   "invitations": [
     {
       "id": "inv_demo",
@@ -667,5 +634,430 @@
     }
   ],
   "shifts": [],
-  "staffEvents": []
+  "staffEvents": [],
+  "kitchenStations": [
+    {
+      "id": "station_grill",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Grill",
+      "status": "active",
+      "capacity": 6
+    },
+    {
+      "id": "station_fry",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Fry",
+      "status": "active",
+      "capacity": 5
+    },
+    {
+      "id": "station_salad",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Salad",
+      "status": "active",
+      "capacity": 4
+    },
+    {
+      "id": "station_dessert",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Dessert",
+      "status": "active",
+      "capacity": 3
+    },
+    {
+      "id": "station_expo",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Expo",
+      "status": "active",
+      "capacity": 8
+    }
+  ],
+  "kitchenTickets": [
+    {
+      "id": "kt_1001",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableName": "T5",
+      "serverName": "Sarah Morgan",
+      "guestName": "Martinez Party",
+      "priority": "normal",
+      "status": "cooking",
+      "createdAt": "2026-07-21T12:55:00.000Z",
+      "targetMinutes": 18,
+      "items": [
+        {
+          "id": "ki_1",
+          "name": "Ribeye",
+          "qty": 2,
+          "stationId": "station_grill",
+          "status": "cooking"
+        },
+        {
+          "id": "ki_2",
+          "name": "Truffle Fries",
+          "qty": 2,
+          "stationId": "station_fry",
+          "status": "cooking"
+        },
+        {
+          "id": "ki_3",
+          "name": "Caesar Salad",
+          "qty": 1,
+          "stationId": "station_salad",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "id": "kt_1002",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableName": "T12",
+      "serverName": "Marcus Lee",
+      "guestName": "Lee Party",
+      "priority": "vip",
+      "status": "received",
+      "createdAt": "2026-07-21T13:03:00.000Z",
+      "targetMinutes": 16,
+      "items": [
+        {
+          "id": "ki_4",
+          "name": "Salmon",
+          "qty": 2,
+          "stationId": "station_grill",
+          "status": "received"
+        },
+        {
+          "id": "ki_5",
+          "name": "Vegetables",
+          "qty": 2,
+          "stationId": "station_grill",
+          "status": "received"
+        },
+        {
+          "id": "ki_6",
+          "name": "Chocolate Torte",
+          "qty": 1,
+          "stationId": "station_dessert",
+          "status": "received"
+        }
+      ]
+    },
+    {
+      "id": "kt_1003",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableName": "T3",
+      "serverName": "Sarah Morgan",
+      "guestName": "Russo Party",
+      "priority": "normal",
+      "status": "plating",
+      "createdAt": "2026-07-21T12:48:00.000Z",
+      "targetMinutes": 17,
+      "items": [
+        {
+          "id": "ki_7",
+          "name": "Chicken Milanese",
+          "qty": 2,
+          "stationId": "station_grill",
+          "status": "ready"
+        },
+        {
+          "id": "ki_8",
+          "name": "House Salad",
+          "qty": 2,
+          "stationId": "station_salad",
+          "status": "ready"
+        }
+      ]
+    },
+    {
+      "id": "kt_1004",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableName": "T8",
+      "serverName": "Elena Cruz",
+      "guestName": "Walk-in Party",
+      "priority": "rush",
+      "status": "ready",
+      "createdAt": "2026-07-21T12:43:00.000Z",
+      "targetMinutes": 15,
+      "items": [
+        {
+          "id": "ki_9",
+          "name": "Burger",
+          "qty": 3,
+          "stationId": "station_grill",
+          "status": "ready"
+        },
+        {
+          "id": "ki_10",
+          "name": "Fries",
+          "qty": 3,
+          "stationId": "station_fry",
+          "status": "ready"
+        }
+      ]
+    }
+  ],
+  "kitchenEvents": [],
+  "serviceFlows": [
+    {
+      "id": "svc_1001",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableId": "tbl_5",
+      "tableName": "T5",
+      "serverId": "staff_sarah",
+      "serverName": "Sarah Morgan",
+      "guestName": "Martinez Party",
+      "partySize": 4,
+      "course": "entree",
+      "kitchenStatus": "cooking",
+      "expoStatus": "waiting",
+      "risk": "normal",
+      "seatedAt": "2026-07-21T12:40:00.000Z",
+      "updatedAt": "2026-07-21T13:05:00.000Z",
+      "ticketId": "kt_1001",
+      "timeline": [
+        {
+          "stage": "seated",
+          "at": "2026-07-21T12:40:00.000Z"
+        },
+        {
+          "stage": "drinks",
+          "at": "2026-07-21T12:46:00.000Z"
+        },
+        {
+          "stage": "entree-fired",
+          "at": "2026-07-21T12:55:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "svc_1002",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableId": "tbl_12",
+      "tableName": "T12",
+      "serverId": "staff_marcus",
+      "serverName": "Marcus Lee",
+      "guestName": "Lee Party",
+      "partySize": 2,
+      "course": "entree",
+      "kitchenStatus": "received",
+      "expoStatus": "waiting",
+      "risk": "high",
+      "seatedAt": "2026-07-21T12:50:00.000Z",
+      "updatedAt": "2026-07-21T13:03:00.000Z",
+      "ticketId": "kt_1002",
+      "timeline": [
+        {
+          "stage": "seated",
+          "at": "2026-07-21T12:50:00.000Z"
+        },
+        {
+          "stage": "drinks",
+          "at": "2026-07-21T12:56:00.000Z"
+        },
+        {
+          "stage": "entree-fired",
+          "at": "2026-07-21T13:03:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "svc_1003",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableId": "tbl_3",
+      "tableName": "T3",
+      "serverId": "staff_sarah",
+      "serverName": "Sarah Morgan",
+      "guestName": "Russo Party",
+      "partySize": 2,
+      "course": "entree",
+      "kitchenStatus": "plating",
+      "expoStatus": "assigned",
+      "risk": "normal",
+      "seatedAt": "2026-07-21T12:30:00.000Z",
+      "updatedAt": "2026-07-21T13:04:00.000Z",
+      "ticketId": "kt_1003",
+      "runnerId": "staff_elena",
+      "runnerName": "Elena Cruz",
+      "timeline": [
+        {
+          "stage": "seated",
+          "at": "2026-07-21T12:30:00.000Z"
+        },
+        {
+          "stage": "appetizer",
+          "at": "2026-07-21T12:39:00.000Z"
+        },
+        {
+          "stage": "entree-fired",
+          "at": "2026-07-21T12:54:00.000Z"
+        },
+        {
+          "stage": "plating",
+          "at": "2026-07-21T13:04:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "svc_1004",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "tableId": "tbl_8",
+      "tableName": "T8",
+      "serverId": "staff_elena",
+      "serverName": "Elena Cruz",
+      "guestName": "Walk-in Party",
+      "partySize": 3,
+      "course": "entree",
+      "kitchenStatus": "ready",
+      "expoStatus": "ready",
+      "risk": "critical",
+      "seatedAt": "2026-07-21T12:25:00.000Z",
+      "updatedAt": "2026-07-21T13:08:00.000Z",
+      "ticketId": "kt_1004",
+      "readyAt": "2026-07-21T13:05:00.000Z",
+      "timeline": [
+        {
+          "stage": "seated",
+          "at": "2026-07-21T12:25:00.000Z"
+        },
+        {
+          "stage": "entree-fired",
+          "at": "2026-07-21T12:49:00.000Z"
+        },
+        {
+          "stage": "ready",
+          "at": "2026-07-21T13:05:00.000Z"
+        }
+      ]
+    }
+  ],
+  "serviceEvents": [],
+  "expoAssignments": [],
+  "aiRecommendations": [],
+  "aiDecisionHistory": [],
+  "aiPolicies": [
+    {
+      "id": "aip_marina",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "enabled": true,
+      "minimumConfidence": 70,
+      "autoRefreshSeconds": 45,
+      "categories": [
+        "seating",
+        "staff",
+        "kitchen",
+        "guest_experience"
+      ],
+      "updatedAt": "2026-07-21T13:00:00.000Z"
+    }
+  ],
+  "executiveGoals": [
+    {
+      "id": "goal_revenue",
+      "organizationId": "org_chefs",
+      "label": "Daily revenue target",
+      "target": 22000,
+      "unit": "currency"
+    },
+    {
+      "id": "goal_health",
+      "organizationId": "org_chefs",
+      "label": "Portfolio health target",
+      "target": 92,
+      "unit": "score"
+    },
+    {
+      "id": "goal_ticket",
+      "organizationId": "org_chefs",
+      "label": "Average ticket target",
+      "target": 16,
+      "unit": "minutes"
+    }
+  ],
+  "autonomousPolicies": [
+    {
+      "id": "auto_policy_org_chefs",
+      "organizationId": "org_chefs",
+      "enabled": true,
+      "mode": "guarded",
+      "autoExecuteRiskLevels": [
+        "low"
+      ],
+      "approvalRequiredRiskLevels": [
+        "medium",
+        "high"
+      ],
+      "maxActionsPerCycle": 3,
+      "forecastHorizonMinutes": 120,
+      "updatedAt": "2026-07-21T16:00:00.000Z"
+    }
+  ],
+  "autonomousActions": [],
+  "operationsTimeline": [],
+  "profitSnapshots": [],
+  "guestProfiles": [],
+  "guestCampaigns": [
+    {
+      "id": "camp_winback",
+      "organizationId": "org_chefs",
+      "name": "30-Day Win Back",
+      "segment": "at_risk",
+      "channel": "sms",
+      "offer": "Complimentary appetizer",
+      "status": "draft",
+      "estimatedGuests": 38,
+      "estimatedRevenue": 2850
+    },
+    {
+      "id": "camp_vip",
+      "organizationId": "org_chefs",
+      "name": "VIP Friday Preview",
+      "segment": "vip",
+      "channel": "email",
+      "offer": "Priority reservation access",
+      "status": "draft",
+      "estimatedGuests": 16,
+      "estimatedRevenue": 4320
+    },
+    {
+      "id": "camp_regular",
+      "organizationId": "org_chefs",
+      "name": "Regulars Midweek",
+      "segment": "regular",
+      "channel": "sms",
+      "offer": "Chef feature invitation",
+      "status": "active",
+      "estimatedGuests": 54,
+      "estimatedRevenue": 4860
+    }
+  ],
+  "guestEngagements": [],
+  "laborPlans": [
+    {
+      "id": "labor_plan_marina",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "date": "2026-07-21",
+      "salesForecast": 22400,
+      "laborBudget": 4032,
+      "targetLaborPercent": 18,
+      "status": "draft",
+      "updatedAt": "2026-07-21T14:00:00.000Z"
+    }
+  ],
+  "laborActions": [],
+  "shiftOffers": []
 }

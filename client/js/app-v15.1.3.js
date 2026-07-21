@@ -1035,7 +1035,7 @@ const motionEngine = new window.BlueCurrentMotionEngine();
 
 
 const startupRegistry = {
-  build: "24.2",
+  build: "30.0",
   modules: new Map(),
   register(name, instance, dependencies = []) {
     const missing = dependencies.filter(dependency => !this.modules.get(dependency)?.ready);
@@ -1146,6 +1146,16 @@ const staffSectionsModule =
     ["eventBus", "appState", "cloudFoundation", "authOrganizations", "liveFloorOperations"]
   );
 
+const kitchenCommandCenterModule = startupRegistry.register("kitchenCommandCenter", window.createBlueCurrentKitchenCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations"]);
+
+const serviceCoordinationModule = startupRegistry.register("serviceCoordination", window.createBlueCurrentServiceCoordinationModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","kitchenCommandCenter"]);
+
+const aiRestaurantBrainModule = startupRegistry.register("aiRestaurantBrain", window.createBlueCurrentAiRestaurantBrainModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","serviceCoordination","kitchenCommandCenter"]);
+
+const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
+
+const operationsDirectorModule = startupRegistry.register("operationsDirector", window.createBlueCurrentOperationsDirectorModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","executiveCommandCenter"]);
+
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
   eventBus,
@@ -1162,6 +1172,7 @@ window.blueCurrent = {
     predictiveOperations: predictiveOperationsModule,
     blueCurrentLive: blueCurrentLiveModule,
     intelligenceNetwork: intelligenceNetworkModule,
+    guestIntelligence: guestIntelligenceModule,
     autonomousOperations: autonomousOperationsModule
   }
 };
@@ -1348,4 +1359,8 @@ motionEngine.start();  const operationalIntelligence = typeof window.createBlueC
     ? window.createBlueCurrentOperationalIntelligenceModule(eventBus, appState)
     : null;
 
+
+const guestIntelligenceModule = startupRegistry.register("guestIntelligence", window.createBlueCurrentGuestIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","autonomousOperations"]);
+
+const workforceIntelligenceModule = startupRegistry.register("workforceIntelligence", window.createBlueCurrentWorkforceIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","guestIntelligence"]);
 

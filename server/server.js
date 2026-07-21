@@ -12,6 +12,13 @@ const AuthService = require("./services/authService");
 const FloorService = require("./services/floorService");
 const ReservationOperationsService = require("./services/reservationOperationsService");
 const StaffOperationsService = require("./services/staffOperationsService");
+const KitchenOperationsService = require("./services/kitchenOperationsService");
+const ServiceCoordinationService = require("./services/serviceCoordinationService");
+const AiRestaurantBrainService = require("./services/aiRestaurantBrainService");
+const ExecutiveCommandCenterService = require("./services/executiveCommandCenterService");
+const AutonomousOperationsService = require("./services/autonomousOperationsService");
+const GuestIntelligenceService = require("./services/guestIntelligenceService");
+const WorkforceIntelligenceService = require("./services/workforceIntelligenceService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -27,7 +34,14 @@ const authService = new AuthService(database, auditService);
 const floorService = new FloorService(database, auditService, realtimeHub);
 const reservationOperationsService = new ReservationOperationsService(database, auditService, realtimeHub);
 const staffOperationsService = new StaffOperationsService(database, auditService, realtimeHub);
-const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService });
+const kitchenOperationsService = new KitchenOperationsService(database, auditService, realtimeHub);
+const serviceCoordinationService = new ServiceCoordinationService(database, auditService, realtimeHub);
+const aiRestaurantBrainService = new AiRestaurantBrainService(database, auditService, realtimeHub);
+const executiveCommandCenterService = new ExecutiveCommandCenterService(database, auditService, realtimeHub, aiRestaurantBrainService);
+const autonomousOperationsService = new AutonomousOperationsService(database, auditService, realtimeHub, executiveCommandCenterService);
+const guestIntelligenceService = new GuestIntelligenceService(database, auditService, realtimeHub);
+const workforceIntelligenceService = new WorkforceIntelligenceService(database, auditService, realtimeHub, autonomousOperationsService);
+const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -99,7 +113,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V22 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V30 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);
