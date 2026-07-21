@@ -6,7 +6,7 @@
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="30.0">
+  <meta name="blue-current-build" content="31.0">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -14,14 +14,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=30.0">
+  <link rel="stylesheet" href="styles.css?v=31.0">
 </head>
 <body>
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V30.0</strong>
+    <strong>Blue Current V31.0</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -156,7 +156,7 @@
         <a href="#autonomous-operations">Autonomous</a>
         <a href="#guest-intelligence">Guests</a>
         <a href="#workforce-intelligence">Workforce</a>
-        <a href="#workforce-intelligence">Workforce</a>
+        <a href="#inventory-intelligence">Inventory</a>
         <a href="#production-readiness">Production</a>
         <a href="#live-floor-operations">Floor</a>
         <a href="#reservation-operations">Reservations</a>
@@ -1870,6 +1870,7 @@
 
 <section class="guest-intelligence section-shell" id="guest-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V29 · Guest Intelligence & Revenue Engine</p><h2>Know every guest. Grow every relationship.</h2><p>Unified guest profiles, lifetime value, behavioral segments, recovery workflows, and targeted revenue campaigns built from live reservation and service history.</p></div><div class="guest-kpis reveal"><article><small>Known guests</small><strong id="guestKnown">—</strong></article><article><small>VIP guests</small><strong id="guestVip">—</strong></article><article><small>At risk</small><strong id="guestAtRisk">—</strong></article><article><small>Guest revenue</small><strong id="guestRevenue">—</strong></article><article><small>Recoverable</small><strong id="guestRecoverable">—</strong></article><article><small>Average spend</small><strong id="guestAvgSpend">—</strong></article></div><div class="guest-toolbar reveal"><div class="guest-segments" id="guestSegments"></div><button class="button button-light" id="guestRefresh">Refresh intelligence</button></div><div class="guest-main reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Guest graph</small><h3>Profiles & Lifetime Value</h3></div></div><div class="guest-profile-list" id="guestProfileList"></div></article><aside class="guest-panel guest-profile-detail" id="guestProfileDetail"></aside></div><div class="guest-bottom reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Revenue activation</small><h3>Campaign Studio</h3></div></div><div class="guest-campaigns" id="guestCampaigns"></div></article><article class="guest-panel"><div class="guest-panel-head"><div><small>Learning loop</small><h3>Engagement Timeline</h3></div></div><div class="guest-engagements" id="guestEngagements"></div></article></div></div></section>
 <section class="workforce-intelligence section-shell" id="workforce-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V30 · Workforce Intelligence & Labor Optimizer</p><h2>Put the right people in the right place—at the right cost.</h2><p>Live labor forecasting, role coverage, skill intelligence, callout risk, open-shift workflows, and explainable staffing recommendations.</p></div><div class="wf-kpis reveal"><article><small>Scheduled</small><strong id="workforceScheduled">—</strong></article><article><small>Labor hours</small><strong id="workforceHours">—</strong></article><article><small>Projected labor</small><strong id="workforceLabor">—</strong></article><article><small>Labor %</small><strong id="workforcePercent">—</strong></article><article><small>Demand index</small><strong id="workforceDemand">—</strong></article><article><small>Callout risk</small><strong id="workforceRisk">—</strong></article></div><div class="wf-toolbar reveal"><div><small>Labor budget</small><div class="wf-budget"><i id="workforceBudgetBar"></i></div><span id="workforceBudgetText"></span></div><div><span>Updated <b id="workforceUpdated">—</b></span><button id="workforcePlan" class="button button-light">Edit plan</button><button id="workforceRefresh" class="button button-light">Refresh</button></div></div><div class="wf-main reveal"><article class="wf-panel"><div class="wf-head"><div><small>Shift command</small><h3>Tonight's Workforce</h3></div></div><div id="workforceSchedule" class="wf-schedule"></div></article><aside class="wf-panel"><div class="wf-head"><div><small>Coverage intelligence</small><h3>Role & Skill Matrix</h3></div></div><div id="workforceCoverage" class="wf-coverage"></div></aside></div><div class="wf-bottom reveal"><article class="wf-panel"><div class="wf-head"><div><small>Labor optimizer</small><h3>Staffing Recommendations</h3></div></div><div id="workforceRecommendations" class="wf-recommendations"></div></article><article class="wf-panel"><div class="wf-head"><div><small>Shift marketplace</small><h3>Open Shift Offers</h3></div></div><div id="workforceOffers" class="wf-offers"></div><div class="wf-head wf-history-head"><div><small>Decision trail</small><h3>Recent Actions</h3></div></div><div id="workforceActions" class="wf-actions"></div></article></div></div></section>
+<section class="inventory-intelligence section-shell" id="inventory-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V31 · Inventory Intelligence & Food Cost Optimizer</p><h2>Protect availability, margin, and every dollar of food cost.</h2><p>Live stock coverage, recipe costing, waste intelligence, predictive reordering, vendor consolidation, and explainable food-cost actions.</p></div><div class="inventory-kpis reveal"><article><small>Inventory value</small><strong id="inventoryValue">—</strong></article><article><small>Tracked SKUs</small><strong id="inventorySkus">—</strong></article><article><small>Critical stock</small><strong id="inventoryCritical">—</strong></article><article><small>Warning stock</small><strong id="inventoryWarning">—</strong></article><article><small>Actual food cost</small><strong id="inventoryFoodCost">—</strong></article><article><small>Waste today</small><strong id="inventoryWaste">—</strong></article></div><div class="inventory-toolbar reveal"><div class="inventory-cost-meter" id="inventoryFoodCostBar"><i></i><span id="inventoryFoodCostVariance">—</span></div><div><span>Updated <b id="inventoryUpdated">—</b></span><button id="inventoryPolicy" class="button button-light">Edit policy</button><button id="inventoryRefresh" class="button button-light">Refresh</button></div></div><div class="inventory-main reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Stock intelligence</small><h3>Coverage & Reorder Risk</h3></div></div><div id="inventoryItems" class="inventory-items"></div></article><aside class="inventory-panel"><div class="inventory-head"><div><small>Menu engineering</small><h3>Recipe Cost & Margin</h3></div></div><div id="inventoryRecipes" class="inventory-recipes"></div></aside></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Food-cost copilot</small><h3>Recommendations</h3></div></div><div id="inventoryRecommendations" class="inventory-recommendations"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Vendor consolidation</small><h3>Draft Purchase Orders</h3></div><strong id="inventoryOrderValue">—</strong></div><div id="inventoryOrders" class="inventory-orders"></div></article></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Loss prevention</small><h3>Waste Log</h3></div></div><div id="inventoryWasteLog" class="inventory-log"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Decision trail</small><h3>Inventory Actions</h3></div></div><div id="inventoryActions" class="inventory-log"></div></article></div></div></section>
 <section class="cloud-foundation section-shell" id="cloud-foundation">
   <div class="container">
     <div class="section-heading reveal">
@@ -2033,20 +2034,20 @@
   <script src="js/modules/predictiveOperations.js?v=17.0"></script>
   <script src="js/modules/blueCurrentLive.js?v=17.0"></script>
   <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
-  <script src="js/modules/autonomousOperations.js?v=30.0"></script>
-  <script src="js/modules/guestIntelligence.js?v=30.0"></script>
-  <script src="js/modules/workforceIntelligence.js?v=30.0"></script>
+  <script src="js/modules/autonomousOperations.js?v=31.0"></script>
+  <script src="js/modules/guestIntelligence.js?v=31.0"></script>
+  <script src="js/modules/workforceIntelligence.js?v=31.0"></script>
   <script src="js/modules/productionReadiness.js?v=21.0"></script>
-  <script src="js/cloud/cloudApi.js?v=30.0"></script>
-  <script src="js/modules/cloudFoundation.js?v=30.0"></script>
-  <script src="js/modules/startupDiagnostics.js?v=30.0"></script>
-  <script src="js/modules/authOrganizations.js?v=30.0"></script>
-  <script src="js/modules/liveFloorOperations.js?v=30.0"></script>
-  <script src="js/modules/reservationOperations.js?v=30.0"></script>
-  <script src="js/modules/staffSections.js?v=30.0"></script>
-  <script src="js/modules/kitchenCommandCenter.js?v=30.0"></script>
-  <script src="js/modules/serviceCoordination.js?v=30.0"></script>
-  <script src="js/modules/aiRestaurantBrain.js?v=30.0"></script>
-  <script src="js/app-v15.1.3.js?v=30.0"></script>
+  <script src="js/cloud/cloudApi.js?v=31.0"></script>
+  <script src="js/modules/cloudFoundation.js?v=31.0"></script>
+  <script src="js/modules/startupDiagnostics.js?v=31.0"></script>
+  <script src="js/modules/authOrganizations.js?v=31.0"></script>
+  <script src="js/modules/liveFloorOperations.js?v=31.0"></script>
+  <script src="js/modules/reservationOperations.js?v=31.0"></script>
+  <script src="js/modules/staffSections.js?v=31.0"></script>
+  <script src="js/modules/kitchenCommandCenter.js?v=31.0"></script>
+  <script src="js/modules/serviceCoordination.js?v=31.0"></script>
+  <script src="js/modules/aiRestaurantBrain.js?v=31.0"></script>
+  <script src="js/app-v15.1.3.js?v=31.0"></script>
 </body>
 </html>

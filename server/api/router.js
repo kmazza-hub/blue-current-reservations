@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "30.0",
+        version: "31.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -186,6 +186,21 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
 
 
 
+
+
+    if (url.pathname === "/api/inventory-intelligence" && request.method === "GET") return sendJson(response,200,await inventoryIntelligenceService.snapshot(organizationId,url.searchParams.get("locationId")||"loc_marina"));
+    if (url.pathname.startsWith("/api/inventory-intelligence/recommendations/") && request.method === "POST") {
+      const id=decodeURIComponent(url.pathname.split("/").pop()), body=await readJson(request);
+      return sendJson(response,200,await inventoryIntelligenceService.act(id,body,auth.user.name,organizationId));
+    }
+    if (url.pathname === "/api/inventory-intelligence/purchase-orders" && request.method === "POST") {
+      const body=await readJson(request);
+      return sendJson(response,201,await inventoryIntelligenceService.createPurchaseOrder(body,auth.user.name,organizationId));
+    }
+    if (url.pathname.startsWith("/api/inventory-intelligence/policies/") && request.method === "PATCH") {
+      const locationId=decodeURIComponent(url.pathname.split("/").pop()), body=await readJson(request);
+      return sendJson(response,200,await inventoryIntelligenceService.updatePolicy(locationId,body,auth.user.name,organizationId));
+    }
 
     if (url.pathname === "/api/workforce-intelligence" && request.method === "GET") return sendJson(response,200,await workforceIntelligenceService.snapshot(organizationId,url.searchParams.get("locationId")||"loc_marina"));
     if (url.pathname.startsWith("/api/workforce-intelligence/recommendations/") && request.method === "POST") { const id=decodeURIComponent(url.pathname.split("/").pop()),body=await readJson(request); return sendJson(response,200,await workforceIntelligenceService.act(id,body,auth.user.name,organizationId)); }

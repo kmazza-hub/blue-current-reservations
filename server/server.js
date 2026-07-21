@@ -19,6 +19,7 @@ const ExecutiveCommandCenterService = require("./services/executiveCommandCenter
 const AutonomousOperationsService = require("./services/autonomousOperationsService");
 const GuestIntelligenceService = require("./services/guestIntelligenceService");
 const WorkforceIntelligenceService = require("./services/workforceIntelligenceService");
+const InventoryIntelligenceService = require("./services/inventoryIntelligenceService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -41,7 +42,8 @@ const executiveCommandCenterService = new ExecutiveCommandCenterService(database
 const autonomousOperationsService = new AutonomousOperationsService(database, auditService, realtimeHub, executiveCommandCenterService);
 const guestIntelligenceService = new GuestIntelligenceService(database, auditService, realtimeHub);
 const workforceIntelligenceService = new WorkforceIntelligenceService(database, auditService, realtimeHub, autonomousOperationsService);
-const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService });
+const inventoryIntelligenceService = new InventoryIntelligenceService(database, auditService, realtimeHub);
+const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -113,7 +115,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V30 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V31 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);

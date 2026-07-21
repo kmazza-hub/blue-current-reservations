@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "30.0.0",
+  "version": "31.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 Workforce Intelligence & Labor Optimizer",
+  "description": "Blue Current Hospitality OS \u2014 Inventory Intelligence & Food Cost Optimizer",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

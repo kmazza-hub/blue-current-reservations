@@ -3,9 +3,9 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "30.0";
+    static VERSION = "31.0";
     static CAPABILITIES = Object.freeze([
-      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence",
+      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
@@ -70,6 +70,11 @@
         body: JSON.stringify(payload)
       });
     }
+
+    inventoryIntelligence(locationId="loc_marina"){return this.request(`/api/inventory-intelligence?locationId=${encodeURIComponent(locationId)}`);}
+    decideInventoryRecommendation(id,payload){return this.request(`/api/inventory-intelligence/recommendations/${encodeURIComponent(id)}`,{method:"POST",body:JSON.stringify(payload)});}
+    createInventoryPurchaseOrder(payload){return this.request("/api/inventory-intelligence/purchase-orders",{method:"POST",body:JSON.stringify(payload)});}
+    updateInventoryPolicy(locationId,payload){return this.request(`/api/inventory-intelligence/policies/${encodeURIComponent(locationId)}`,{method:"PATCH",body:JSON.stringify(payload)});}
 
     workforceIntelligence(locationId="loc_marina"){return this.request(`/api/workforce-intelligence?locationId=${encodeURIComponent(locationId)}`);}
     decideWorkforceRecommendation(id,payload){return this.request(`/api/workforce-intelligence/recommendations/${encodeURIComponent(id)}`,{method:"POST",body:JSON.stringify(payload)});}
@@ -181,5 +186,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "30.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "31.0";
 })();
