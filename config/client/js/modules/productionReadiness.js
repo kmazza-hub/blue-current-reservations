@@ -41,6 +41,7 @@
     };
 
     const $ = (id) => document.getElementById(id);
+    const hasProductionUi = Boolean($("production-readiness") || $("prodOrganizationName"));
     let state = load();
 
     function clone(value) {
@@ -135,7 +136,7 @@
 
     function renderHealth() {
       const health = [
-        ["Application version", "V21.0", "healthy"],
+        ["Application version", "V32.2", "healthy"],
         ["Event Bus", `${eventBus.listenerCount ? eventBus.listenerCount() : "Active"} listeners`, "healthy"],
         ["Shared App State", "Synchronized", "healthy"],
         ["Browser storage", localStorage.getItem(STORAGE_KEY) ? "Operational" : "Initializing", "healthy"],
@@ -146,7 +147,7 @@
       ];
       $("prodHealthGrid").innerHTML = health.map(item => `<article class="${item[2]}"><span></span><div><small>${item[0]}</small><strong>${item[1]}</strong></div></article>`).join("");
       $("prodDiagnosticFeed").innerHTML = `
-        <p><span>${new Date().toLocaleTimeString()}</span> All required V21 modules responding.</p>
+        <p><span>${new Date().toLocaleTimeString()}</span> All required V32.2 modules responding.</p>
         <p><span>${new Date(Date.now()-1200).toLocaleTimeString()}</span> App State production namespace synchronized.</p>
         <p><span>${new Date(Date.now()-2500).toLocaleTimeString()}</span> Feature flag registry validated.</p>`;
     }
@@ -162,6 +163,7 @@
     }
 
     function renderAll() {
+      if (!hasProductionUi) { save(); return; }
       renderSummary();
       renderOnboarding();
       renderUsers();

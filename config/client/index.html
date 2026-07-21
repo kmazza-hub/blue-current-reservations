@@ -6,7 +6,7 @@
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="28.0">
+  <meta name="blue-current-build" content="32.2">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -14,14 +14,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=28.0">
+  <link rel="stylesheet" href="styles.css?v=32.2">
 </head>
 <body>
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V28.0</strong>
+    <strong>Blue Current V32.2</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -154,6 +154,10 @@
         <a href="#portfolio-mode">Portfolio</a>
         <a href="#predictive-operations">Predictive</a>
         <a href="#autonomous-operations">Autonomous</a>
+        <a href="#guest-intelligence">Guests</a>
+        <a href="#workforce-intelligence">Workforce</a>
+        <a href="#inventory-intelligence">Inventory</a>
+        <a href="#time-clock">Time Clock</a>
         <a href="#production-readiness">Production</a>
         <a href="#live-floor-operations">Floor</a>
         <a href="#reservation-operations">Reservations</a>
@@ -163,6 +167,7 @@
         <a href="#ai-restaurant-brain">AI Brain</a>
         <a href="#executive-command-center">Executive</a>
         <a href="#autonomous-operations">Autonomous</a>
+        <a href="#guest-intelligence">Guests</a>
         <a href="#autonomous-operations">Autonomous</a>
         <a href="#executive-command-center">Executive</a>
         <a href="#ai-restaurant-brain">AI Brain</a>
@@ -1864,401 +1869,10 @@
     </section>
 
 
-<section id="guest-intelligence" class="guest-intelligence-section">
-<div class="container">
-<div class="section-heading">
-<p class="eyebrow"><span></span> Guest Intelligence</p>
-<h2>Recognize every returning guest.</h2>
-<p>Illustrative guest relationship workspace showing how restaurants can keep track of preferences, celebrations, and service notes.</p>
-</div>
-
-<div class="guest-grid">
-<div class="guest-card">
-<h3>Welcome back, Anthony Russo</h3>
-<p><strong>Premier Guest</strong> • 11 visits this year • Birthday today</p>
-<ul>
-<li>Preferred Table: 14</li>
-<li>Favorite Server: Emma</li>
-<li>Tree nut allergy noted</li>
-<li>Cabernet preference</li>
-<li>Average party: 4</li>
-</ul>
-</div>
-
-<div class="guest-card">
-<h3>Hospitality Brief</h3>
-<p>Birthday reservation tonight. Quiet waterfront seating preferred. Suggest Table 14 if available and note the celebration for staff.</p>
-<div class="meter"><div id="loyaltyFill"></div></div>
-<p>Premier loyalty progress</p>
-</div>
-
-<div class="guest-card">
-<h3>Relationship Timeline</h3>
-<ul>
-<li>✓ Birthday dinner</li>
-<li>✓ Anniversary</li>
-<li>✓ Mother's Day</li>
-<li>✓ Private dining inquiry</li>
-<li>✓ Birthday reservation tonight</li>
-</ul>
-</div>
-
-<div class="guest-card">
-<h3>Dining Preferences</h3>
-<div class="chips">
-<span>🍷 Cabernet</span>
-<span>🌊 Waterfront</span>
-<span>🎂 Birthday</span>
-<span>👨‍👩‍👧 Party of 4</span>
-<span>⭐ Table 14</span>
-</div>
-<input id="guestSearch" placeholder="Search guest...">
-<div id="guestResults">Anthony Russo<br>Anthony Miller<br>Anthony Romano</div>
-</div>
-</div>
-</div>
-</section>
-
-<section class="operator-section" id="operator-dashboard">
-      <div class="container">
-        <div class="section-heading reveal">
-          <p class="eyebrow"><span></span> The operator view</p>
-          <h2>One calm dashboard for the people running service.</h2>
-          <p>
-            Hosts, managers, and group leadership each see the information they need,
-            without turning the dining room into another control room.
-          </p>
-        </div>
-
-        <div class="operator-shell reveal">
-          <aside class="operator-sidebar">
-            <div class="operator-logo">
-              <img src="assets/logo-mark.svg" alt="">
-              <div><strong>Blue Current</strong><span>Operator Console</span></div>
-            </div>
-
-            <nav class="operator-nav" aria-label="Operator dashboard navigation">
-              <button class="active" type="button"><span>⌂</span> Overview</button>
-              <button type="button"><span>◷</span> Reservations</button>
-              <button type="button"><span>☎</span> Calls</button>
-              <button type="button"><span>≋</span> Waitlist</button>
-              <button type="button"><span>◇</span> Guests</button>
-              <button type="button"><span>▦</span> Locations</button>
-              <button type="button"><span>↗</span> Analytics</button>
-            </nav>
-
-            <div class="operator-user">
-              <div class="operator-avatar">KM</div>
-              <div><strong>Keith Mazza</strong><span>Group administrator</span></div>
-            </div>
-          </aside>
-
-          <div class="operator-main">
-            <div class="operator-topbar">
-              <div>
-                <small>Friday · Dinner service</small>
-                <h3>Good evening, Keith.</h3>
-              </div>
-              <div class="operator-actions">
-                <button type="button">Export report</button>
-                <button class="primary" type="button">+ Add reservation</button>
-              </div>
-            </div>
-
-            <div class="operator-location-tabs" role="tablist" aria-label="Restaurant locations">
-              <button class="active" type="button" data-location="Marina Grille">Marina Grille</button>
-              <button type="button" data-location="The Wharfside">The Wharfside</button>
-              <button type="button" data-location="Rod's Tavern">Rod's Tavern</button>
-              <button type="button" data-location="Captain's Inn">Captain's Inn</button>
-            </div>
-
-            <div class="operator-summary">
-              <article>
-                <span>Expected guests</span>
-                <strong id="opGuests">318</strong>
-                <small>+12% from last Friday</small>
-              </article>
-              <article>
-                <span>Reservations</span>
-                <strong id="opReservations">69</strong>
-                <small>9 added by phone</small>
-              </article>
-              <article>
-                <span>Calls answered</span>
-                <strong id="opCalls">54</strong>
-                <small>100% answer rate</small>
-              </article>
-              <article>
-                <span>Waitlist</span>
-                <strong id="opWaitlist">2</strong>
-                <small>11 minute average</small>
-              </article>
-            </div>
-
-            <div class="operator-grid">
-              <section class="operator-card reservations-card">
-                <div class="operator-card-head">
-                  <div><small>Tonight</small><strong>Upcoming reservations</strong></div>
-                  <button type="button">View all</button>
-                </div>
-
-                <div class="reservation-row highlighted">
-                  <span class="reservation-time">7:30</span>
-                  <div class="reservation-guest"><strong>Anthony Russo</strong><small>Party of 4 · Birthday</small></div>
-                  <span class="reservation-tag">Waterfront</span>
-                  <span class="reservation-status confirmed">Confirmed</span>
-                </div>
-                <div class="reservation-row">
-                  <span class="reservation-time">7:45</span>
-                  <div class="reservation-guest"><strong>Melissa Grant</strong><small>Party of 2 · Anniversary</small></div>
-                  <span class="reservation-tag">Window</span>
-                  <span class="reservation-status seated">Arrived</span>
-                </div>
-                <div class="reservation-row">
-                  <span class="reservation-time">8:00</span>
-                  <div class="reservation-guest"><strong>Daniel Cho</strong><small>Party of 6</small></div>
-                  <span class="reservation-tag">Main room</span>
-                  <span class="reservation-status confirmed">Confirmed</span>
-                </div>
-                <div class="reservation-row">
-                  <span class="reservation-time">8:15</span>
-                  <div class="reservation-guest"><strong>Alyssa Moore</strong><small>Party of 3 · High chair</small></div>
-                  <span class="reservation-tag">Flexible</span>
-                  <span class="reservation-status pending">Pending</span>
-                </div>
-              </section>
-
-              <section class="operator-card call-activity-card">
-                <div class="operator-card-head">
-                  <div><small>Guest line</small><strong>Recent call activity</strong></div>
-                  <span class="operator-live"><i></i> Live</span>
-                </div>
-
-                <div class="call-activity-item">
-                  <span class="call-activity-icon">✓</span>
-                  <div><strong>Reservation confirmed</strong><small>Party of 4 · 7:30 PM · 1m ago</small></div>
-                </div>
-                <div class="call-activity-item">
-                  <span class="call-activity-icon">☎</span>
-                  <div><strong>Hours and dress code answered</strong><small>General inquiry · 4m ago</small></div>
-                </div>
-                <div class="call-activity-item">
-                  <span class="call-activity-icon">≋</span>
-                  <div><strong>Guest added to waitlist</strong><small>Party of 3 · 6m ago</small></div>
-                </div>
-                <div class="call-activity-item">
-                  <span class="call-activity-icon">↗</span>
-                  <div><strong>Manager escalation completed</strong><small>Private event inquiry · 12m ago</small></div>
-                </div>
-              </section>
-
-              <section class="operator-card alerts-card">
-                <div class="operator-card-head">
-                  <div><small>Attention</small><strong>Service alerts</strong></div>
-                  <span class="alert-count">2</span>
-                </div>
-
-                <div class="alert-item warning">
-                  <i>!</i>
-                  <div><strong>Waterfront section near capacity</strong><small>Only one table remains before 8:30 PM.</small></div>
-                </div>
-                <div class="alert-item">
-                  <i>i</i>
-                  <div><strong>Birthday arrival in 14 minutes</strong><small>Anthony Russo · Table 14</small></div>
-                </div>
-              </section>
-
-              <section class="operator-card manager-summary-card">
-                <div class="operator-card-head">
-                  <div><small>AI summary</small><strong>What management should know</strong></div>
-                </div>
-                <p id="managerSummary">
-                  Dinner service is pacing ahead of last Friday. Call volume increased during the 6:30–7:00 rush,
-                  but every call was answered. Waterfront availability is limited through 8:30 PM.
-                </p>
-                <div class="summary-points">
-                  <span><i>✓</i> No unanswered calls</span>
-                  <span><i>✓</i> Wait time under target</span>
-                  <span><i>!</i> Waterfront nearly full</span>
-                </div>
-              </section>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    <section class="portfolio-section" id="portfolio">
-      <div class="container portfolio-grid">
-        <div class="section-heading section-heading-light reveal">
-          <p class="eyebrow eyebrow-light"><span></span> Built for a family of restaurants</p>
-          <h2>One group view. Each location keeps its own character.</h2>
-          <p>
-            Waterfront dining, neighborhood taverns, special events, and destination
-            venues all operate differently. Blue Current gives leadership visibility
-            without flattening those differences.
-          </p>
-          <ul class="feature-list">
-            <li><span>✓</span> Location-specific greetings and policies</li>
-            <li><span>✓</span> Shared group analytics with local detail</li>
-            <li><span>✓</span> Service status across the portfolio</li>
-          </ul>
-        </div>
-
-        <div class="portfolio-card reveal">
-          <div class="portfolio-header">
-            <div>
-              <small>Portfolio overview</small>
-              <strong>Tonight across the group</strong>
-            </div>
-            <span class="live-chip live-chip-light"><i></i> Live</span>
-          </div>
-
-          <div class="portfolio-metrics">
-            <div><span>Guests expected</span><strong>1,248</strong></div>
-            <div><span>Calls answered</span><strong>214</strong></div>
-            <div><span>Reservations</span><strong>327</strong></div>
-          </div>
-
-          <div class="location-list">
-            <button class="location-item active" type="button">
-              <span class="mini-emblem">MG</span>
-              <span><strong>Marina Grille</strong><small>84% · Dinner service</small></span>
-              <b>72</b>
-            </button>
-            <button class="location-item" type="button">
-              <span class="mini-emblem">WS</span>
-              <span><strong>The Wharfside</strong><small>79% · Dinner service</small></span>
-              <b>64</b>
-            </button>
-            <button class="location-item" type="button">
-              <span class="mini-emblem">RT</span>
-              <span><strong>Rod's Tavern</strong><small>71% · Dinner service</small></span>
-              <b>51</b>
-            </button>
-            <button class="location-item" type="button">
-              <span class="mini-emblem">CI</span>
-              <span><strong>Captain's Inn</strong><small>68% · Dinner service</small></span>
-              <b>46</b>
-            </button>
-          </div>
-
-          <p class="portfolio-note">Illustrative interface for product demonstration.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="standard-section container">
-      <div class="section-heading reveal">
-        <p class="eyebrow"><span></span> The Blue Current standard</p>
-        <h2>Technology your guests never have to think about.</h2>
-      </div>
-
-      <div class="standard-grid">
-        <article class="standard-card reveal">
-          <strong>01</strong>
-          <h3>Immediate acknowledgment</h3>
-          <p>No guest wonders whether anyone heard the phone ring.</p>
-        </article>
-        <article class="standard-card reveal">
-          <strong>02</strong>
-          <h3>Personal, not generic</h3>
-          <p>Every location speaks in a way that fits its own experience.</p>
-        </article>
-        <article class="standard-card reveal">
-          <strong>03</strong>
-          <h3>Effortless confirmation</h3>
-          <p>Guests leave the call knowing exactly what happens next.</p>
-        </article>
-        <article class="standard-card reveal">
-          <strong>04</strong>
-          <h3>Calm visibility</h3>
-          <p>Managers see what matters without another noisy system to manage.</p>
-        </article>
-      </div>
-    </section>
-
-
-    <section class="rollout-section" id="pilot-plan">
-      <div class="container">
-        <div class="section-heading section-heading-light reveal">
-          <p class="eyebrow eyebrow-light"><span></span> A practical first deployment</p>
-          <h2>Start with one location. Prove the value. Then expand.</h2>
-          <p>
-            The first pilot is intentionally controlled, measurable, and designed around
-            the way the restaurant already operates.
-          </p>
-        </div>
-
-        <div class="rollout-grid">
-          <article class="rollout-card reveal">
-            <span class="rollout-week">Week 1</span>
-            <div class="rollout-icon">01</div>
-            <h3>Observe</h3>
-            <p>Map incoming calls, reservation rules, peak periods, staff handoffs, and common guest questions.</p>
-            <ul>
-              <li>Call-flow review</li>
-              <li>Reservation policy map</li>
-              <li>Success metrics agreed</li>
-            </ul>
-          </article>
-
-          <article class="rollout-card reveal">
-            <span class="rollout-week">Week 2</span>
-            <div class="rollout-icon">02</div>
-            <h3>Configure</h3>
-            <p>Build the greeting, location knowledge, escalation rules, SMS confirmations, and manager view.</p>
-            <ul>
-              <li>Location-specific voice</li>
-              <li>Availability rules</li>
-              <li>Staff alerts and routing</li>
-            </ul>
-          </article>
-
-          <article class="rollout-card reveal">
-            <span class="rollout-week">Week 3</span>
-            <div class="rollout-icon">03</div>
-            <h3>Pilot</h3>
-            <p>Launch during selected hours with clear fallback rules and daily review with the operating team.</p>
-            <ul>
-              <li>Controlled service window</li>
-              <li>Manager escalation available</li>
-              <li>Daily transcript review</li>
-            </ul>
-          </article>
-
-          <article class="rollout-card reveal">
-            <span class="rollout-week">Week 4</span>
-            <div class="rollout-icon">04</div>
-            <h3>Measure</h3>
-            <p>Review calls answered, reservations captured, staff workload, guest outcomes, and expansion readiness.</p>
-            <ul>
-              <li>Answer-rate report</li>
-              <li>Reservation attribution</li>
-              <li>Go-forward recommendation</li>
-            </ul>
-          </article>
-        </div>
-
-        <div class="pilot-scorecard reveal">
-          <div class="pilot-scorecard-copy">
-            <small>Sample pilot scorecard</small>
-            <h3>Success is defined before launch.</h3>
-            <p>Every pilot begins with agreed operational targets rather than vague promises.</p>
-          </div>
-          <div class="pilot-scorecard-metrics">
-            <div><span>Calls answered</span><strong>95%+</strong></div>
-            <div><span>Reservations captured</span><strong>Trackable</strong></div>
-            <div><span>Staff interruptions</span><strong>Reduced</strong></div>
-            <div><span>Guest experience</span><strong>Protected</strong></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-
-    
+<section class="guest-intelligence section-shell" id="guest-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V29 · Guest Intelligence & Revenue Engine</p><h2>Know every guest. Grow every relationship.</h2><p>Unified guest profiles, lifetime value, behavioral segments, recovery workflows, and targeted revenue campaigns built from live reservation and service history.</p></div><div class="guest-kpis reveal"><article><small>Known guests</small><strong id="guestKnown">—</strong></article><article><small>VIP guests</small><strong id="guestVip">—</strong></article><article><small>At risk</small><strong id="guestAtRisk">—</strong></article><article><small>Guest revenue</small><strong id="guestRevenue">—</strong></article><article><small>Recoverable</small><strong id="guestRecoverable">—</strong></article><article><small>Average spend</small><strong id="guestAvgSpend">—</strong></article></div><div class="guest-toolbar reveal"><div class="guest-segments" id="guestSegments"></div><button class="button button-light" id="guestRefresh">Refresh intelligence</button></div><div class="guest-main reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Guest graph</small><h3>Profiles & Lifetime Value</h3></div></div><div class="guest-profile-list" id="guestProfileList"></div></article><aside class="guest-panel guest-profile-detail" id="guestProfileDetail"></aside></div><div class="guest-bottom reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Revenue activation</small><h3>Campaign Studio</h3></div></div><div class="guest-campaigns" id="guestCampaigns"></div></article><article class="guest-panel"><div class="guest-panel-head"><div><small>Learning loop</small><h3>Engagement Timeline</h3></div></div><div class="guest-engagements" id="guestEngagements"></div></article></div></div></section>
+<section class="workforce-intelligence section-shell" id="workforce-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V30 · Workforce Intelligence & Labor Optimizer</p><h2>Put the right people in the right place—at the right cost.</h2><p>Live labor forecasting, role coverage, skill intelligence, callout risk, open-shift workflows, and explainable staffing recommendations.</p></div><div class="wf-kpis reveal"><article><small>Scheduled</small><strong id="workforceScheduled">—</strong></article><article><small>Labor hours</small><strong id="workforceHours">—</strong></article><article><small>Projected labor</small><strong id="workforceLabor">—</strong></article><article><small>Labor %</small><strong id="workforcePercent">—</strong></article><article><small>Demand index</small><strong id="workforceDemand">—</strong></article><article><small>Callout risk</small><strong id="workforceRisk">—</strong></article></div><div class="wf-toolbar reveal"><div><small>Labor budget</small><div class="wf-budget"><i id="workforceBudgetBar"></i></div><span id="workforceBudgetText"></span></div><div><span>Updated <b id="workforceUpdated">—</b></span><button id="workforcePlan" class="button button-light">Edit plan</button><button id="workforceRefresh" class="button button-light">Refresh</button></div></div><div class="wf-main reveal"><article class="wf-panel"><div class="wf-head"><div><small>Shift command</small><h3>Tonight's Workforce</h3></div></div><div id="workforceSchedule" class="wf-schedule"></div></article><aside class="wf-panel"><div class="wf-head"><div><small>Coverage intelligence</small><h3>Role & Skill Matrix</h3></div></div><div id="workforceCoverage" class="wf-coverage"></div></aside></div><div class="wf-bottom reveal"><article class="wf-panel"><div class="wf-head"><div><small>Labor optimizer</small><h3>Staffing Recommendations</h3></div></div><div id="workforceRecommendations" class="wf-recommendations"></div></article><article class="wf-panel"><div class="wf-head"><div><small>Shift marketplace</small><h3>Open Shift Offers</h3></div></div><div id="workforceOffers" class="wf-offers"></div><div class="wf-head wf-history-head"><div><small>Decision trail</small><h3>Recent Actions</h3></div></div><div id="workforceActions" class="wf-actions"></div></article></div></div></section>
+<section class="time-clock section-shell" id="time-clock"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V32.2 · Employee Time & Attendance</p><h2>Accurate punches. Live labor control.</h2><p>PIN clock-in, break tracking, live staffing, overtime exposure, labor cost, and an auditable manager correction workflow.</p></div><div class="tc-kpis reveal"><article><small>Working now</small><strong id="tcWorking">—</strong></article><article><small>On break</small><strong id="tcBreak">—</strong></article><article><small>Hours today</small><strong id="tcHours">—</strong></article><article><small>Labor cost</small><strong id="tcCost">—</strong></article><article><small>Overtime risk</small><strong id="tcOvertime">—</strong></article><article><small>Missed punches</small><strong id="tcMissed">—</strong></article></div><div class="tc-grid reveal"><article class="tc-panel tc-kiosk"><div class="tc-head"><div><small>Employee kiosk</small><h3>Clock In / Out</h3></div><span>Updated <b id="tcUpdated">—</b></span></div><label>Employee<select id="tcEmployee"></select></label><label>PIN<input id="tcPin" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN"></label><div><button id="tcClockIn" class="button button-primary">Clock in</button><button id="tcClockOut" class="button button-light">Clock out</button><button id="tcRefresh" class="button button-light">Refresh</button></div></article><article class="tc-panel"><div class="tc-head"><div><small>Live floor</small><h3>Who’s Working</h3></div></div><div id="tcActive" class="tc-active"></div></article></div><div class="tc-grid reveal"><article class="tc-panel"><div class="tc-head"><div><small>Manager review</small><h3>Today’s Timecards</h3></div></div><div id="tcTimecards" class="tc-timecards"></div></article><article class="tc-panel"><div class="tc-head"><div><small>Audit trail</small><h3>Corrections</h3></div></div><div id="tcCorrections" class="tc-corrections"></div></article></div></div></section>
+<section class="inventory-intelligence section-shell" id="inventory-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V31 · Inventory Intelligence & Food Cost Optimizer</p><h2>Protect availability, margin, and every dollar of food cost.</h2><p>Live stock coverage, recipe costing, waste intelligence, predictive reordering, vendor consolidation, and explainable food-cost actions.</p></div><div class="inventory-kpis reveal"><article><small>Inventory value</small><strong id="inventoryValue">—</strong></article><article><small>Tracked SKUs</small><strong id="inventorySkus">—</strong></article><article><small>Critical stock</small><strong id="inventoryCritical">—</strong></article><article><small>Warning stock</small><strong id="inventoryWarning">—</strong></article><article><small>Actual food cost</small><strong id="inventoryFoodCost">—</strong></article><article><small>Waste today</small><strong id="inventoryWaste">—</strong></article></div><div class="inventory-toolbar reveal"><div class="inventory-cost-meter" id="inventoryFoodCostBar"><i></i><span id="inventoryFoodCostVariance">—</span></div><div><span>Updated <b id="inventoryUpdated">—</b></span><button id="inventoryPolicy" class="button button-light">Edit policy</button><button id="inventoryRefresh" class="button button-light">Refresh</button></div></div><div class="inventory-main reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Stock intelligence</small><h3>Coverage & Reorder Risk</h3></div></div><div id="inventoryItems" class="inventory-items"></div></article><aside class="inventory-panel"><div class="inventory-head"><div><small>Menu engineering</small><h3>Recipe Cost & Margin</h3></div></div><div id="inventoryRecipes" class="inventory-recipes"></div></aside></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Food-cost copilot</small><h3>Recommendations</h3></div></div><div id="inventoryRecommendations" class="inventory-recommendations"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Vendor consolidation</small><h3>Draft Purchase Orders</h3></div><strong id="inventoryOrderValue">—</strong></div><div id="inventoryOrders" class="inventory-orders"></div></article></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Loss prevention</small><h3>Waste Log</h3></div></div><div id="inventoryWasteLog" class="inventory-log"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Decision trail</small><h3>Inventory Actions</h3></div></div><div id="inventoryActions" class="inventory-log"></div></article></div></div></section>
 <section class="production-readiness section-shell" id="production-readiness">
   <div class="container">
     <div class="section-heading reveal">
@@ -2380,222 +1994,6 @@
   </div>
 </section>
 
-
-
-<section class="live-floor-operations section-shell" id="live-floor-operations">
-  <div class="container">
-    <div class="section-heading reveal">
-      <p class="eyebrow"><span></span> V24 · Live Floor Operations</p>
-      <h2>Run the dining room from one live floor map.</h2>
-      <p>Seat guests, move tables, manage turn states, track occupancy, and synchronize floor activity across authenticated users.</p>
-    </div>
-
-    <div class="floor-kpi-grid reveal">
-      <article><strong id="floorActiveTables">0</strong><span>Active tables</span></article>
-      <article><strong id="floorOccupancy">0%</strong><span>Seat occupancy</span></article>
-      <article><strong id="floorAvailable">0</strong><span>Available tables</span></article>
-      <article><strong id="floorWaiting">0</strong><span>Waiting parties</span></article>
-    </div>
-
-    <div class="floor-layout reveal">
-      <article class="floor-map-card">
-        <div class="floor-card-head">
-          <div><small>Marina Grille</small><h3>Live Dining Room</h3></div>
-          <div class="floor-legend">
-            <span class="available">Available</span>
-            <span class="reserved">Reserved</span>
-            <span class="seated">Seated</span>
-            <span class="cleaning">Cleaning</span>
-            <span class="blocked">Blocked</span>
-          </div>
-        </div>
-        <div class="floor-canvas" id="floorCanvas">
-          <p id="floorConnection">Loading floor…</p>
-        </div>
-        <small class="floor-map-hint">Drag tables to reposition them. Changes persist to Blue Current Cloud.</small>
-      </article>
-
-      <aside class="floor-inspector-card" id="floorInspector"></aside>
-    </div>
-
-    <div class="floor-secondary-grid reveal">
-      <article class="floor-waitlist-card">
-        <div class="floor-card-head"><div><small>Front door</small><h3>Waitlist</h3></div><span>Live queue</span></div>
-        <form class="floor-waitlist-form" id="floorWaitlistForm">
-          <input id="floorWaitGuest" placeholder="Guest name" required>
-          <input id="floorWaitParty" type="number" min="1" max="20" value="2" aria-label="Party size">
-          <input id="floorWaitQuote" type="number" min="0" value="15" aria-label="Quoted wait in minutes">
-          <button class="button button-gold" type="submit">Add guest</button>
-        </form>
-        <div class="floor-waitlist" id="floorWaitlist"></div>
-      </article>
-
-      <article class="floor-events-card">
-        <div class="floor-card-head"><div><small>Operational history</small><h3>Seating Activity</h3></div><span>Cloud persisted</span></div>
-        <div class="floor-event-feed" id="floorEventFeed"></div>
-      </article>
-    </div>
-  </div>
-</section>
-
-
-<section class="reservation-operations section-shell" id="reservation-operations">
-  <div class="container">
-    <div class="section-heading reveal">
-      <p class="eyebrow"><span></span> V24.1 · Waitlist & Reservations</p>
-      <h2>Coordinate every arrival from booking to seated guest.</h2>
-      <p>Manage reservations, arrival states, VIP and accessibility notes, compatible-table assignments, and front-door activity in one operational view.</p>
-    </div>
-
-    <div class="reservation-kpi-grid reveal">
-      <article><strong id="reservationConfirmed">0</strong><span>Confirmed</span></article>
-      <article><strong id="reservationArrived">0</strong><span>Arrived</span></article>
-      <article><strong id="reservationSeated">0</strong><span>Seated</span></article>
-      <article><strong id="reservationCovers">0</strong><span>Reserved covers</span></article>
-    </div>
-
-    <div class="reservation-workspace reveal">
-      <article class="reservation-list-card">
-        <div class="reservation-card-head">
-          <div><small>Marina Grille</small><h3>Tonight's Reservations</h3></div>
-          <div class="reservation-filters" id="reservationFilters">
-            <button class="active" data-reservation-filter="all">All</button>
-            <button data-reservation-filter="confirmed">Confirmed</button>
-            <button data-reservation-filter="arrived">Arrived</button>
-            <button data-reservation-filter="seated">Seated</button>
-          </div>
-        </div>
-        <div class="reservation-list" id="reservationList"></div>
-      </article>
-
-      <aside class="reservation-inspector-card" id="reservationInspector"></aside>
-    </div>
-
-    <article class="reservation-create-card reveal">
-      <div class="reservation-card-head">
-        <div><small>Host stand</small><h3>Create Reservation</h3></div>
-        <span>Cloud persisted</span>
-      </div>
-      <form class="reservation-create-form" id="reservationCreateForm">
-        <input id="newReservationGuest" placeholder="Guest name" required>
-        <input id="newReservationPhone" placeholder="Phone">
-        <input id="newReservationParty" type="number" min="1" value="2" aria-label="Party size">
-        <input id="newReservationDate" type="date" value="2026-07-20" required>
-        <input id="newReservationTime" type="time" value="19:00" required>
-        <input id="newReservationNotes" placeholder="Notes">
-        <label><input id="newReservationVip" type="checkbox"> VIP</label>
-        <button class="button button-gold" type="submit">Create reservation</button>
-      </form>
-    </article>
-  </div>
-</section>
-
-
-<section class="staff-sections section-shell" id="staff-sections">
-  <div class="container">
-    <div class="section-heading reveal">
-      <p class="eyebrow"><span></span> V24.2 · Staff & Sections</p>
-      <h2>Balance the floor before service pressure builds.</h2>
-      <p>Assign servers to sections, monitor active covers, identify overloaded staff, and keep table ownership synchronized with the live floor.</p>
-    </div>
-
-    <div class="staff-kpi-grid reveal">
-      <article><strong id="staffActiveCount">0</strong><span>Active staff</span></article>
-      <article><strong id="staffSeatedTables">0</strong><span>Seated tables</span></article>
-      <article><strong id="staffActiveCovers">0</strong><span>Active covers</span></article>
-      <article><strong id="staffOverloaded">0</strong><span>Overloaded</span></article>
-    </div>
-
-    <div class="staff-main-grid reveal">
-      <article class="staff-roster-card">
-        <div class="staff-card-head"><div><small>Tonight's team</small><h3>Staff Roster</h3></div><span>Live workload</span></div>
-        <div class="staff-roster" id="staffRoster"></div>
-      </article>
-
-      <aside class="staff-inspector-card" id="staffInspector"></aside>
-    </div>
-
-    <div class="staff-secondary-grid reveal">
-      <article class="section-assignment-card">
-        <div class="staff-card-head"><div><small>Floor ownership</small><h3>Section Assignments</h3></div><span>Server controlled</span></div>
-        <div class="section-assignment-grid" id="sectionAssignmentGrid"></div>
-      </article>
-
-      <article class="staff-balance-card">
-        <div class="staff-card-head"><div><small>Service pressure</small><h3>Workload Balance</h3></div><span>AI-ready signal</span></div>
-        <div class="staff-balance-board" id="staffBalanceBoard"></div>
-      </article>
-    </div>
-  </div>
-</section>
-
-<section class="kitchen-command-center section-shell" id="kitchen-command-center"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V25 · Kitchen Command Center</p><h2>See every ticket, station, and bottleneck in real time.</h2><p>Route items by station, advance ticket states, monitor timing pressure, and synchronize the kitchen with the floor.</p></div><div class="kitchen-kpi-grid"><article><strong id="kitchenActiveTickets">0</strong><span>Active tickets</span></article><article><strong id="kitchenReadyTickets">0</strong><span>Ready</span></article><article><strong id="kitchenOverdueTickets">0</strong><span>Overdue</span></article><article><strong id="kitchenAverageTime">0m</strong><span>Average age</span></article></div><article class="kitchen-card"><h3>Station Heat Map</h3><div class="kitchen-station-grid" id="kitchenStationGrid"></div></article><div class="kitchen-workspace"><article class="kitchen-card"><div class="kitchen-filters" id="kitchenFilters"><button data-filter="all">All</button><button data-filter="received">Received</button><button data-filter="cooking">Cooking</button><button data-filter="plating">Plating</button><button data-filter="ready">Ready</button></div><div class="kitchen-ticket-board" id="kitchenTicketBoard"></div></article><aside class="kitchen-card" id="kitchenInspector"></aside></div></div></section>
-<section class="service-coordination section-shell" id="service-coordination">
- <div class="container">
-  <div class="section-heading reveal"><p class="eyebrow"><span></span> V25.1 · Service Coordination</p><h2>One live service flow from host stand to expo.</h2><p>Coordinate table pace, kitchen production, runners, server workload, and operating risk from a single control surface.</p></div>
-  <div class="svc-kpis reveal"><article><strong id="svcActive">0</strong><span>Active tables</span></article><article><strong id="svcReady">0</strong><span>Ready for runner</span></article><article><strong id="svcRisk">0</strong><span>At-risk tables</span></article><article><strong id="svcHealth">0%</strong><span>Service health</span></article></div>
-  <div class="svc-layout reveal">
-   <article class="svc-flow-card"><div class="svc-head"><div><small>Restaurant operations</small><h3>Service Flow Board</h3></div><div id="svcFilters"><button class="active" data-svc-filter="all">All</button><button data-svc-filter="ready">Expo ready</button><button data-svc-filter="high">High risk</button><button data-svc-filter="critical">Critical</button></div></div><div class="svc-table-wrap"><table class="svc-table"><thead><tr><th>Table</th><th>Server</th><th>Course</th><th>Kitchen</th><th>Expo</th><th>Time</th><th>Risk</th><th>Action</th></tr></thead><tbody id="svcFlowBody"></tbody></table></div></article>
-   <aside class="svc-alert-card"><div class="svc-head"><div><small>Mission Control</small><h3>Operational Alerts</h3></div><span>Live</span></div><div id="svcAlerts" class="svc-alerts"></div></aside>
-  </div>
-  <div class="svc-bottom reveal"><article class="svc-expo-card"><div class="svc-head"><div><small>Ready food</small><h3>Expo Console</h3></div><span>Runner workflow</span></div><div id="svcExpoQueue" class="svc-expo"></div></article><article class="svc-load-card"><div class="svc-head"><div><small>Front of house</small><h3>Server Workload</h3></div><span>Live covers</span></div><div id="svcServerLoad" class="svc-load"></div></article></div>
- </div>
-</section>
-
-<section class="ai-restaurant-brain section-shell" id="ai-restaurant-brain">
-  <div class="container">
-    <div class="section-heading reveal">
-      <p class="eyebrow"><span></span> V26 · AI Restaurant Brain</p>
-      <h2>Operational intelligence that explains what to do next.</h2>
-      <p>Blue Current continuously evaluates floor, kitchen, staff, reservations, and service risk to produce transparent, actionable recommendations.</p>
-    </div>
-
-    <div class="ai-brain-header reveal">
-      <article class="ai-health-card">
-        <div class="ai-health-ring" id="aiHealthRing"><strong id="aiHealthScore">—</strong><span>Restaurant health</span></div>
-        <div class="ai-health-breakdown">
-          <p><span>Kitchen</span><strong id="aiHealthKitchen">—</strong></p>
-          <p><span>Service</span><strong id="aiHealthService">—</strong></p>
-          <p><span>Staff</span><strong id="aiHealthStaff">—</strong></p>
-          <p><span>Reservations</span><strong id="aiHealthReservations">—</strong></p>
-          <p><span>Dining room</span><strong id="aiHealthDining">—</strong></p>
-        </div>
-      </article>
-
-      <article class="ai-signal-card">
-        <div class="ai-panel-head">
-          <div><small>Live operational context</small><h3>Decision Signals</h3></div>
-          <div><span>Updated <b id="aiLastUpdated">—</b></span><button class="button button-light" id="aiRefreshButton">Regenerate</button></div>
-        </div>
-        <div class="ai-signal-grid" id="aiSignalGrid"></div>
-      </article>
-    </div>
-
-    <div class="ai-category-filters reveal" id="aiCategoryFilters">
-      <button class="active" data-ai-category="all">All recommendations</button>
-      <button data-ai-category="seating">Seating</button>
-      <button data-ai-category="staff">Staff</button>
-      <button data-ai-category="kitchen">Kitchen</button>
-      <button data-ai-category="guest_experience">Guest experience</button>
-    </div>
-
-    <div class="ai-brain-workspace reveal">
-      <article class="ai-recommendations-panel">
-        <div class="ai-panel-head"><div><small>Decision center</small><h3>Active Recommendations</h3></div><span>Explainable rules engine</span></div>
-        <div class="ai-recommendation-list" id="aiRecommendationList"></div>
-      </article>
-      <aside class="ai-inspector-panel" id="aiRecommendationInspector"></aside>
-    </div>
-
-    <article class="ai-history-panel reveal">
-      <div class="ai-panel-head"><div><small>Manager learning loop</small><h3>Decision History</h3></div><span>Accepted · Snoozed · Rejected</span></div>
-      <div class="ai-decision-history" id="aiDecisionHistory"></div>
-    </article>
-  </div>
-</section>
-
-<section class="executive-command-center section-shell" id="executive-command-center"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V27 · Executive Command Center</p><h2>One operating picture for every location.</h2><p>Portfolio health, revenue pacing, guest flow, kitchen timing, AI decisions, and executive alerts in a single owner-level command center.</p></div><div class="exec-hero-grid reveal"><article class="exec-health-card"><div class="exec-health-ring" id="execHealthRing"><strong id="execHealth">—</strong><span>Portfolio health</span></div><div class="exec-health-meta"><p><span>Open locations</span><strong id="execLocations">—</strong></p><p><span>At-risk locations</span><strong id="execAlerts">—</strong></p><p><span>Average ticket</span><strong id="execTicketTime">—</strong></p><p><span>Accepted AI actions</span><strong id="execAiDecisions">—</strong></p></div></article><article class="exec-revenue-card"><small>Portfolio revenue today</small><strong id="execRevenue">$0</strong><span id="execRevenueTrend">—</span><div class="exec-revenue-subgrid"><p><small>Guests served</small><b id="execGuests">—</b></p><p><small>Occupancy</small><b id="execOccupancy">—</b></p></div></article><article class="exec-brief-card"><div class="exec-panel-head"><div><small>AI-generated owner brief</small><h3>Executive Brief</h3></div><div><span>Updated <b id="execLastUpdated">—</b></span><button class="button button-light" id="execRefreshButton">Refresh</button></div></div><h4 id="execBriefHeadline"></h4><p id="execBriefSummary"></p><ul id="execBriefHighlights"></ul></article></div><div class="exec-main-grid reveal"><article class="exec-locations-panel"><div class="exec-panel-head"><div><small>Multi-location portfolio</small><h3>Location Performance</h3></div></div><div class="exec-location-grid" id="execLocationGrid"></div></article><aside class="exec-location-detail" id="execLocationDetail"></aside></div><div class="exec-secondary-grid reveal"><article class="exec-alert-panel"><div class="exec-panel-head"><div><small>Portfolio attention queue</small><h3>Executive Alerts</h3></div></div><div class="exec-alert-feed" id="execAlertFeed"></div></article><article class="exec-goals-panel"><div class="exec-panel-head"><div><small>Operating targets</small><h3>Executive Goals</h3></div></div><div class="exec-goal-list" id="execGoalList"></div></article></div></div></section>
-<section class="autonomous-operations section-shell" id="autonomous-operations"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V28 · Autonomous Operations Director</p><h2>Predict, decide, and safely execute.</h2><p>A guarded automation layer forecasts demand, recommends operating moves, executes approved low-risk actions, and preserves a complete management timeline.</p></div><div class="auto-top reveal"><article class="auto-status-card"><small>Automation state</small><strong id="autoMode">—</strong><p>Updated <span id="autoUpdated">—</span></p><button class="button button-gold" id="autoRunCycle">Run operating cycle</button></article><article class="auto-profit-summary"><div><small>Revenue</small><strong id="autoRevenue">—</strong></div><div><small>Operating profit</small><strong id="autoProfit">—</strong></div><div><small>Margin</small><strong id="autoMargin">—</strong></div><div><small>Labor</small><strong id="autoLabor">—</strong></div><div><small>Food</small><strong id="autoFood">—</strong></div></article><article class="auto-policy-card"><h3>Guardrails</h3><label><input type="checkbox" id="autoEnabled"> Enable automation</label><label>Mode<select id="autoPolicyMode"><option value="manual">Manual</option><option value="guarded">Guarded</option><option value="autonomous">Autonomous</option></select></label><label>Max actions<input type="number" min="0" max="10" id="autoMaxActions" value="3"></label><button class="button button-light" id="autoSavePolicy">Save policy</button></article></div><div class="auto-grid reveal"><article class="auto-panel"><div class="auto-panel-head"><div><small>Next 120 minutes</small><h3>Predictive Forecast</h3></div></div><div class="auto-forecast-grid" id="autoForecastGrid"></div></article><article class="auto-panel"><div class="auto-panel-head"><div><small>Portfolio digital twin</small><h3>Location Heat Map</h3></div></div><div class="auto-heat-map" id="autoHeatMap"></div></article></div><div class="auto-grid reveal"><article class="auto-panel"><div class="auto-panel-head"><div><small>Decision and execution queue</small><h3>Operating Actions</h3></div></div><div class="auto-action-queue" id="autoActionQueue"></div></article><article class="auto-panel"><div class="auto-panel-head"><div><small>Ask the live operation</small><h3>Executive AI Chat</h3></div></div><form class="auto-chat-form" id="autoChatForm"><input id="autoChatInput" placeholder="Which location needs help?" required><button class="button button-gold">Ask</button></form><div class="auto-chat-answer" id="autoChatAnswer"><p>Ask about revenue, staffing, risk, kitchen timing, or profit.</p></div></article></div><div class="auto-grid reveal"><article class="auto-panel"><div class="auto-panel-head"><div><small>Profit optimizer</small><h3>Location Economics</h3></div></div><div class="auto-profit-grid" id="autoProfitGrid"></div></article><article class="auto-panel"><div class="auto-panel-head"><div><small>Explainable operating history</small><h3>Executive Timeline</h3></div></div><div class="auto-timeline" id="autoTimeline"></div></article></div></div></section>
 <section class="cloud-foundation section-shell" id="cloud-foundation">
   <div class="container">
     <div class="section-heading reveal">
@@ -2759,18 +2157,21 @@
   <script src="js/modules/predictiveOperations.js?v=17.0"></script>
   <script src="js/modules/blueCurrentLive.js?v=17.0"></script>
   <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
-  <script src="js/modules/autonomousOperations.js?v=19.0"></script>
+  <script src="js/modules/autonomousOperations.js?v=32.2"></script>
+  <script src="js/modules/guestIntelligence.js?v=32.2"></script>
+  <script src="js/modules/workforceIntelligence.js?v=32.2"></script>
   <script src="js/modules/productionReadiness.js?v=21.0"></script>
-  <script src="js/cloud/cloudApi.js?v=28.0"></script>
-  <script src="js/modules/cloudFoundation.js?v=28.0"></script>
-  <script src="js/modules/startupDiagnostics.js?v=28.0"></script>
-  <script src="js/modules/authOrganizations.js?v=28.0"></script>
-  <script src="js/modules/liveFloorOperations.js?v=28.0"></script>
-  <script src="js/modules/reservationOperations.js?v=28.0"></script>
-  <script src="js/modules/staffSections.js?v=28.0"></script>
-  <script src="js/modules/kitchenCommandCenter.js?v=28.0"></script>
-  <script src="js/modules/serviceCoordination.js?v=28.0"></script>
-  <script src="js/modules/aiRestaurantBrain.js?v=28.0"></script>
-  <script src="js/app-v15.1.3.js?v=28.0"></script>
+  <script src="js/cloud/cloudApi.js?v=32.2"></script>
+  <script src="js/modules/cloudFoundation.js?v=32.2"></script>
+  <script src="js/modules/startupDiagnostics.js?v=32.2"></script>
+  <script src="js/modules/authOrganizations.js?v=32.2"></script>
+  <script src="js/modules/liveFloorOperations.js?v=32.2"></script>
+  <script src="js/modules/reservationOperations.js?v=32.2"></script>
+  <script src="js/modules/staffSections.js?v=32.2"></script>
+  <script src="js/modules/kitchenCommandCenter.js?v=32.2"></script>
+  <script src="js/modules/serviceCoordination.js?v=32.2"></script>
+  <script src="js/modules/aiRestaurantBrain.js?v=32.2"></script>
+  <script src="js/modules/timeClock.js?v=32.2"></script>
+  <script src="js/app-v15.1.3.js?v=32.2"></script>
 </body>
 </html>

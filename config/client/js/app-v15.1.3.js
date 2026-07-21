@@ -1035,7 +1035,7 @@ const motionEngine = new window.BlueCurrentMotionEngine();
 
 
 const startupRegistry = {
-  build: "28.0",
+  build: "31.0",
   modules: new Map(),
   register(name, instance, dependencies = []) {
     const missing = dependencies.filter(dependency => !this.modules.get(dependency)?.ready);
@@ -1172,6 +1172,7 @@ window.blueCurrent = {
     predictiveOperations: predictiveOperationsModule,
     blueCurrentLive: blueCurrentLiveModule,
     intelligenceNetwork: intelligenceNetworkModule,
+    guestIntelligence: guestIntelligenceModule,
     autonomousOperations: autonomousOperationsModule
   }
 };
@@ -1358,4 +1359,12 @@ motionEngine.start();  const operationalIntelligence = typeof window.createBlueC
     ? window.createBlueCurrentOperationalIntelligenceModule(eventBus, appState)
     : null;
 
+
+const guestIntelligenceModule = startupRegistry.register("guestIntelligence", window.createBlueCurrentGuestIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","autonomousOperations"]);
+
+const workforceIntelligenceModule = startupRegistry.register("workforceIntelligence", window.createBlueCurrentWorkforceIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","guestIntelligence"]);
+
+const inventoryIntelligenceModule = startupRegistry.register("inventoryIntelligence", window.createBlueCurrentInventoryIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
+
+const timeClockModule = startupRegistry.register("timeClock", window.createBlueCurrentTimeClockModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
 

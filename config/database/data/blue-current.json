@@ -1007,5 +1007,403 @@
   ],
   "autonomousActions": [],
   "operationsTimeline": [],
-  "profitSnapshots": []
+  "profitSnapshots": [],
+  "guestProfiles": [],
+  "guestCampaigns": [
+    {
+      "id": "camp_winback",
+      "organizationId": "org_chefs",
+      "name": "30-Day Win Back",
+      "segment": "at_risk",
+      "channel": "sms",
+      "offer": "Complimentary appetizer",
+      "status": "draft",
+      "estimatedGuests": 38,
+      "estimatedRevenue": 2850
+    },
+    {
+      "id": "camp_vip",
+      "organizationId": "org_chefs",
+      "name": "VIP Friday Preview",
+      "segment": "vip",
+      "channel": "email",
+      "offer": "Priority reservation access",
+      "status": "draft",
+      "estimatedGuests": 16,
+      "estimatedRevenue": 4320
+    },
+    {
+      "id": "camp_regular",
+      "organizationId": "org_chefs",
+      "name": "Regulars Midweek",
+      "segment": "regular",
+      "channel": "sms",
+      "offer": "Chef feature invitation",
+      "status": "active",
+      "estimatedGuests": 54,
+      "estimatedRevenue": 4860
+    }
+  ],
+  "guestEngagements": [],
+  "laborPlans": [
+    {
+      "id": "labor_plan_marina",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "date": "2026-07-21",
+      "salesForecast": 22400,
+      "laborBudget": 4032,
+      "targetLaborPercent": 18,
+      "status": "draft",
+      "updatedAt": "2026-07-21T14:00:00.000Z"
+    }
+  ],
+  "laborActions": [],
+  "shiftOffers": [],
+  "inventoryItems": [
+    {
+      "id": "inv_ribeye",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Prime Ribeye",
+      "category": "protein",
+      "unit": "lb",
+      "onHand": 42,
+      "par": 55,
+      "unitCost": 14.8,
+      "vendorId": "vendor_atlantic",
+      "dailyUsage": 11,
+      "shelfLifeDays": 5
+    },
+    {
+      "id": "inv_salmon",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Atlantic Salmon",
+      "category": "protein",
+      "unit": "lb",
+      "onHand": 19,
+      "par": 35,
+      "unitCost": 11.25,
+      "vendorId": "vendor_harbor",
+      "dailyUsage": 8,
+      "shelfLifeDays": 3
+    },
+    {
+      "id": "inv_chicken",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Chicken Breast",
+      "category": "protein",
+      "unit": "lb",
+      "onHand": 48,
+      "par": 45,
+      "unitCost": 4.95,
+      "vendorId": "vendor_atlantic",
+      "dailyUsage": 10,
+      "shelfLifeDays": 4
+    },
+    {
+      "id": "inv_fries",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Truffle Fries",
+      "category": "frozen",
+      "unit": "case",
+      "onHand": 7,
+      "par": 10,
+      "unitCost": 38,
+      "vendorId": "vendor_atlantic",
+      "dailyUsage": 2.2,
+      "shelfLifeDays": 30
+    },
+    {
+      "id": "inv_greens",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Romaine Hearts",
+      "category": "produce",
+      "unit": "case",
+      "onHand": 3,
+      "par": 8,
+      "unitCost": 31,
+      "vendorId": "vendor_garden",
+      "dailyUsage": 1.7,
+      "shelfLifeDays": 4
+    },
+    {
+      "id": "inv_tomato",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Heirloom Tomato",
+      "category": "produce",
+      "unit": "lb",
+      "onHand": 15,
+      "par": 20,
+      "unitCost": 3.4,
+      "vendorId": "vendor_garden",
+      "dailyUsage": 5,
+      "shelfLifeDays": 3
+    },
+    {
+      "id": "inv_butter",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Cultured Butter",
+      "category": "dairy",
+      "unit": "lb",
+      "onHand": 12,
+      "par": 15,
+      "unitCost": 5.6,
+      "vendorId": "vendor_atlantic",
+      "dailyUsage": 3,
+      "shelfLifeDays": 12
+    },
+    {
+      "id": "inv_wine",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "House Cabernet",
+      "category": "beverage",
+      "unit": "bottle",
+      "onHand": 31,
+      "par": 36,
+      "unitCost": 12,
+      "vendorId": "vendor_atlantic",
+      "dailyUsage": 7,
+      "shelfLifeDays": 365
+    }
+  ],
+  "vendors": [
+    {
+      "id": "vendor_atlantic",
+      "organizationId": "org_chefs",
+      "name": "Atlantic Provisions",
+      "leadDays": 2,
+      "onTimeRate": 96,
+      "minimumOrder": 350
+    },
+    {
+      "id": "vendor_harbor",
+      "organizationId": "org_chefs",
+      "name": "Harbor Seafood",
+      "leadDays": 1,
+      "onTimeRate": 92,
+      "minimumOrder": 500
+    },
+    {
+      "id": "vendor_garden",
+      "organizationId": "org_chefs",
+      "name": "Garden State Produce",
+      "leadDays": 1,
+      "onTimeRate": 98,
+      "minimumOrder": 200
+    }
+  ],
+  "purchaseOrders": [],
+  "recipes": [
+    {
+      "id": "recipe_ribeye",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Ribeye",
+      "menuPrice": 39,
+      "ingredients": [
+        {
+          "inventoryId": "inv_ribeye",
+          "quantity": 0.75
+        },
+        {
+          "inventoryId": "inv_butter",
+          "quantity": 0.08
+        }
+      ]
+    },
+    {
+      "id": "recipe_salmon",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Salmon",
+      "menuPrice": 31,
+      "ingredients": [
+        {
+          "inventoryId": "inv_salmon",
+          "quantity": 0.65
+        },
+        {
+          "inventoryId": "inv_butter",
+          "quantity": 0.05
+        }
+      ]
+    },
+    {
+      "id": "recipe_fries",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Truffle Fries",
+      "menuPrice": 12,
+      "ingredients": [
+        {
+          "inventoryId": "inv_fries",
+          "quantity": 0.13
+        }
+      ]
+    },
+    {
+      "id": "recipe_caesar",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Caesar Salad",
+      "menuPrice": 14,
+      "ingredients": [
+        {
+          "inventoryId": "inv_greens",
+          "quantity": 0.18
+        }
+      ]
+    }
+  ],
+  "wasteEvents": [
+    {
+      "id": "waste_1",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "inventoryId": "inv_salmon",
+      "quantity": 2,
+      "cost": 22.5,
+      "reason": "quality",
+      "createdAt": "2026-07-21T10:30:00.000Z"
+    },
+    {
+      "id": "waste_2",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "inventoryId": "inv_greens",
+      "quantity": 0.5,
+      "cost": 15.5,
+      "reason": "spoilage",
+      "createdAt": "2026-07-21T11:15:00.000Z"
+    }
+  ],
+  "inventoryActions": [],
+  "inventoryPolicies": [
+    {
+      "id": "policy_inventory_marina",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "targetFoodCostPercent": 29,
+      "autoDraftOrders": true,
+      "criticalDaysRemaining": 1.5
+    }
+  ],
+  "employees": [
+    {
+      "id": "emp_maria",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Maria Santos",
+      "role": "Server",
+      "department": "FOH",
+      "pin": "1204",
+      "hourlyRate": 18.5,
+      "weeklyHours": 34.2,
+      "status": "active"
+    },
+    {
+      "id": "emp_jamal",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Jamal Reed",
+      "role": "Line Cook",
+      "department": "BOH",
+      "pin": "3381",
+      "hourlyRate": 22,
+      "weeklyHours": 38.7,
+      "status": "active"
+    },
+    {
+      "id": "emp_olivia",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Olivia Chen",
+      "role": "Bartender",
+      "department": "FOH",
+      "pin": "7426",
+      "hourlyRate": 19.75,
+      "weeklyHours": 29.6,
+      "status": "active"
+    },
+    {
+      "id": "emp_devon",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Devon Blake",
+      "role": "Host",
+      "department": "FOH",
+      "pin": "9055",
+      "hourlyRate": 16.25,
+      "weeklyHours": 21.1,
+      "status": "active"
+    }
+  ],
+  "employeeTimecards": [
+    {
+      "id": "tc_maria_active",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "employeeId": "emp_maria",
+      "clockIn": "2026-07-21T14:30:00.000Z",
+      "clockOut": null,
+      "status": "active",
+      "source": "kiosk",
+      "createdAt": "2026-07-21T14:30:00.000Z"
+    },
+    {
+      "id": "tc_jamal_active",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "employeeId": "emp_jamal",
+      "clockIn": "2026-07-21T13:00:00.000Z",
+      "clockOut": null,
+      "status": "active",
+      "source": "kiosk",
+      "createdAt": "2026-07-21T13:00:00.000Z"
+    },
+    {
+      "id": "tc_olivia_active",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "employeeId": "emp_olivia",
+      "clockIn": "2026-07-21T15:15:00.000Z",
+      "clockOut": null,
+      "status": "active",
+      "source": "manager",
+      "createdAt": "2026-07-21T15:15:00.000Z"
+    }
+  ],
+  "employeeBreaks": [
+    {
+      "id": "break_jamal",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "timecardId": "tc_jamal_active",
+      "employeeId": "emp_jamal",
+      "start": "2026-07-21T17:40:00.000Z",
+      "end": null,
+      "paid": false,
+      "status": "active"
+    }
+  ],
+  "timeClockCorrections": [],
+  "timeClockPolicies": [
+    {
+      "id": "tcp_marina",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "dailyOvertimeHours": 8,
+      "weeklyOvertimeHours": 40,
+      "breakReminderMinutes": 300,
+      "requirePin": true
+    }
+  ]
 }

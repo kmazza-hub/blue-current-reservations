@@ -40,6 +40,16 @@
       ]
     };
 
+    function setText(id, value) {
+  const element = $(id);
+  if (element) element.textContent = value;
+}
+
+function setClass(id, value) {
+  const element = $(id);
+  if (element) element.className = value;
+}
+
     const $ = (id) => document.getElementById(id);
     let state = load();
 
@@ -76,14 +86,28 @@
       return Math.round(90 + enabled * 2 + onboarding * 2);
     }
 
-    function audit(action, category = "system", actor = "Keith Mazza") {
-      state.audit.unshift({ time: new Date().toISOString(), actor, action, category });
-      state.audit = state.audit.slice(0, 40);
-      save();
-      renderAudit();
-      eventBus.emit("production:audit-recorded", { action, category, actor });
-    }
+   setText("prodOrganizationName", state.organization);
+setText("prodLocationCount", state.locations);
+setText("prodUserCount", state.users.length);
+setText("prodFeatureCount", enabled);
+setText("prodHealthScore", calculateHealth());
 
+setText(
+  "prodDeploymentStatus",
+  state.mode === "live" ? "Live controls armed" : "Pilot ready"
+);
+
+setClass(
+  "prodDeploymentStatus",
+  `production-status ${state.mode === "live" ? "watch" : "ready"}`
+);
+
+setText(
+  "prodLaunchBrief",
+  state.mode === "live"
+    ? "Live data mode is selected. External actions remain governed by feature flags and connector permissions."
+    : "Configuration is complete. Demo data is active and the environment is ready for a controlled pilot."
+);
     function renderSummary() {
       const enabled = Object.values(state.features).filter(Boolean).length;
       $("prodOrganizationName").textContent = state.organization;

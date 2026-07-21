@@ -3,9 +3,9 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "28.0";
+    static VERSION = "32.2";
     static CAPABILITIES = Object.freeze([
-      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain", "executiveCommand", "autonomousOperations",
+      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
@@ -71,6 +71,24 @@
       });
     }
 
+    timeClock(locationId="loc_marina"){return this.request(`/api/timeclock?locationId=${encodeURIComponent(locationId)}`);}
+    clockIn(payload){return this.request("/api/timeclock/clock-in",{method:"POST",body:JSON.stringify(payload)});}
+    clockOut(payload){return this.request("/api/timeclock/clock-out",{method:"POST",body:JSON.stringify(payload)});}
+    startBreak(payload){return this.request("/api/timeclock/break-start",{method:"POST",body:JSON.stringify(payload)});}
+    endBreak(payload){return this.request("/api/timeclock/break-end",{method:"POST",body:JSON.stringify(payload)});}
+    correctTimecard(id,payload){return this.request(`/api/timeclock/timecards/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify(payload)});}
+
+    inventoryIntelligence(locationId="loc_marina"){return this.request(`/api/inventory-intelligence?locationId=${encodeURIComponent(locationId)}`);}
+    decideInventoryRecommendation(id,payload){return this.request(`/api/inventory-intelligence/recommendations/${encodeURIComponent(id)}`,{method:"POST",body:JSON.stringify(payload)});}
+    createInventoryPurchaseOrder(payload){return this.request("/api/inventory-intelligence/purchase-orders",{method:"POST",body:JSON.stringify(payload)});}
+    updateInventoryPolicy(locationId,payload){return this.request(`/api/inventory-intelligence/policies/${encodeURIComponent(locationId)}`,{method:"PATCH",body:JSON.stringify(payload)});}
+
+    workforceIntelligence(locationId="loc_marina"){return this.request(`/api/workforce-intelligence?locationId=${encodeURIComponent(locationId)}`);}
+    decideWorkforceRecommendation(id,payload){return this.request(`/api/workforce-intelligence/recommendations/${encodeURIComponent(id)}`,{method:"POST",body:JSON.stringify(payload)});}
+    updateLaborPlan(locationId,payload){return this.request(`/api/workforce-intelligence/plans/${encodeURIComponent(locationId)}`,{method:"PATCH",body:JSON.stringify(payload)});}
+    guestIntelligence(){return this.request("/api/guest-intelligence");}
+    launchGuestCampaign(id){return this.request(`/api/guest-intelligence/campaigns/${encodeURIComponent(id)}/launch`,{method:"POST",body:"{}"});}
+    completeGuestRecovery(id,payload){return this.request(`/api/guest-intelligence/profiles/${encodeURIComponent(id)}/recovery`,{method:"POST",body:JSON.stringify(payload)});}
     autonomousOperations(){return this.request("/api/autonomous-operations");}
     runAutonomousCycle(){return this.request("/api/autonomous-operations/run",{method:"POST",body:"{}"});}
     updateAutonomousPolicy(payload){return this.request("/api/autonomous-operations/policy",{method:"PATCH",body:JSON.stringify(payload)});}
@@ -164,7 +182,7 @@
     connect(onEvent) {
       if (!window.EventSource) return () => {};
       this.eventSource = new EventSource(`${this.baseUrl}/api/events`);
-      ["connected", "reservation:created", "configuration:updated", "floor:table-updated", "floor:guest-seated", "floor:waitlist-added", "reservation:updated", "reservation:seated", "staff:updated", "staff:section-assigned", "staff:table-reassigned", "kitchen:ticket-created", "kitchen:ticket-updated", "kitchen:item-updated", "service:guest-seated", "service:flow-updated", "ai:recommendation-decided", "ai:recommendations-refreshed", "executive:goal-updated", "autonomous:cycle-completed", "autonomous:action-decided", "autonomous:policy-updated"].forEach(type => {
+      ["connected", "reservation:created", "configuration:updated", "floor:table-updated", "floor:guest-seated", "floor:waitlist-added", "reservation:updated", "reservation:seated", "staff:updated", "staff:section-assigned", "staff:table-reassigned", "kitchen:ticket-created", "kitchen:ticket-updated", "kitchen:item-updated", "service:guest-seated", "service:flow-updated", "ai:recommendation-decided", "ai:recommendations-refreshed", "executive:goal-updated", "autonomous:cycle-completed", "autonomous:action-decided", "autonomous:policy-updated", "guest:campaign-launched", "guest:recovery-completed"].forEach(type => {
         this.eventSource.addEventListener(type, event => {
           const payload = event.data ? JSON.parse(event.data) : {};
           onEvent(type, payload);
@@ -175,5 +193,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "28.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "31.0";
 })();
