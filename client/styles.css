@@ -3124,3 +3124,102 @@ img,svg{display:block}
     width: calc(100vw - 20px);
   }
 }
+
+
+/* V23.0.2 — Startup Reliability */
+.auth-form-panel form .button-primary,
+.auth-form-panel form button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  color: #08202a !important;
+  background: linear-gradient(135deg, #f0c66f, #dda64a) !important;
+  border: 1px solid #f0c66f !important;
+  border-radius: 11px;
+  font-size: .9rem;
+  font-weight: 850;
+  letter-spacing: .01em;
+  box-shadow: 0 12px 28px rgba(229, 184, 95, .18);
+  cursor: pointer;
+}
+
+.auth-form-panel form .button-primary:hover,
+.auth-form-panel form button[type="submit"]:hover {
+  color: #061923 !important;
+  background: #f5d38a !important;
+  transform: translateY(-1px);
+}
+
+.auth-form-panel form .button-primary:focus-visible,
+.auth-form-panel form button[type="submit"]:focus-visible {
+  outline: 3px solid rgba(240, 198, 111, .42);
+  outline-offset: 3px;
+}
+
+.auth-form-panel form .button-primary:disabled,
+.auth-form-panel form button[type="submit"]:disabled {
+  opacity: .68;
+  cursor: wait;
+  transform: none;
+}
+
+#startupDiagnosticsDot.error {
+  background: #ff9b7f;
+  box-shadow: 0 0 0 5px rgba(255, 155, 127, .1);
+}
+
+
+/* V23.0.3 — definitive authentication button correction */
+.auth-overlay .button,
+.auth-overlay button[type="submit"],
+.auth-organizations .button,
+#authLogout {
+  color: #071a22 !important;
+  -webkit-text-fill-color: #071a22 !important;
+  background: linear-gradient(135deg, #f2ca73 0%, #dfa849 100%) !important;
+  border: 1px solid #f2ca73 !important;
+  border-radius: 12px !important;
+  font-weight: 850 !important;
+  text-shadow: none !important;
+  opacity: 1 !important;
+  box-shadow: 0 12px 28px rgba(229, 184, 95, .20) !important;
+}
+
+.auth-overlay .button:hover,
+.auth-overlay button[type="submit"]:hover,
+.auth-organizations .button:hover,
+#authLogout:hover {
+  color: #06171f !important;
+  -webkit-text-fill-color: #06171f !important;
+  background: #f7d98f !important;
+  border-color: #f7d98f !important;
+}
+
+.auth-overlay .button:focus-visible,
+.auth-overlay button[type="submit"]:focus-visible,
+.auth-organizations .button:focus-visible,
+#authLogout:focus-visible {
+  outline: 3px solid rgba(242, 202, 115, .48) !important;
+  outline-offset: 3px !important;
+}
+
+/* Keep the small demo-account selectors dark instead of gold. */
+.auth-demo-accounts button {
+  color: #dcebf3 !important;
+  -webkit-text-fill-color: #dcebf3 !important;
+  background: #102936 !important;
+  border-color: rgba(159, 211, 235, .16) !important;
+  box-shadow: none !important;
+}
+
+/* Ensure controls in the authenticated context remain legible. */
+.auth-context-card label {
+  color: #a9c0ce !important;
+}
+
+.auth-context-card select {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background-color: #102b39 !important;
+}
