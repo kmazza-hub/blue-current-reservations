@@ -736,30 +736,36 @@ document.getElementById("conciergeForm")?.addEventListener("submit", (event) => 
   }, 350);
 });
 
-document.getElementById("conciergeAutoplay")?.addEventListener("click", (event) => {
-  const autoplayButton = event.currentTarget;
+const conciergeAutoplayButton = document.getElementById("conciergeAutoplay");
 
+conciergeAutoplayButton?.addEventListener("click", () => {
   if (conciergeAutoplayTimer) {
     clearInterval(conciergeAutoplayTimer);
     conciergeAutoplayTimer = null;
-    autoplayButton.textContent = "Resume demo";
+    if (conciergeAutoplayButton?.isConnected) {
+      conciergeAutoplayButton.textContent = "Resume demo";
+    }
     return;
   }
 
   if (conciergeStep >= conciergeDemo.length) conciergeReset();
-  autoplayButton.textContent = "Pause demo";
+  if (conciergeAutoplayButton?.isConnected) {
+    conciergeAutoplayButton.textContent = "Pause demo";
+  }
 
   conciergeRunStep(conciergeStep);
   conciergeStep += 1;
 
-  conciergeAutoplayTimer = setInterval(() => {
+  conciergeAutoplayTimer = window.setInterval(() => {
     if (conciergeStep >= conciergeDemo.length) {
-      clearInterval(conciergeAutoplayTimer);
+      window.clearInterval(conciergeAutoplayTimer);
       conciergeAutoplayTimer = null;
-      const activeAutoplayButton = document.getElementById("conciergeAutoplay");
-      if (activeAutoplayButton) activeAutoplayButton.textContent = "Replay demo";
+      if (conciergeAutoplayButton?.isConnected) {
+        conciergeAutoplayButton.textContent = "Replay demo";
+      }
       return;
     }
+
     conciergeRunStep(conciergeStep);
     conciergeStep += 1;
   }, 1500);
