@@ -1,3 +1,5 @@
+# Blue Current V18.0 — Connect Platform
+
 # Blue Current V7.0 — Digital Twin
 
 A deploy-ready static website for Blue Current's hospitality product concept.

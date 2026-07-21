@@ -1060,6 +1060,9 @@ const predictiveOperationsModule =
 const blueCurrentLiveModule =
   window.createBlueCurrentLiveModule?.(eventBus, appState);
 
+  // V18 — Connector Platform
+  window.createConnectorPlatformModule?.(eventBus, appState);
+
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
   eventBus,
