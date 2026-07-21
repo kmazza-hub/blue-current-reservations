@@ -37,8 +37,8 @@
       try {
         const health = await api.health();
         connected = true;
-        setStatus("Connected", `Cloud Core V${health.version} · Database ${health.database} · ${health.realtimeClients} realtime clients`);
-        renderBootstrap(await api.bootstrap());
+        setStatus("Connected", `Cloud Core V${health.version} · Authentication ${health.auth || "ready"} · Database ${health.database}`);
+        if (api.token) renderBootstrap(await api.bootstrap());
         appState.update({ cloudConnected: true, cloudVersion: health.version, cloudLastSync: health.now });
         eventBus.emit("cloud:connected", health);
       } catch (error) {
@@ -64,7 +64,7 @@
         });
         eventBus.emit("reservation:created", reservation);
         appState.appendReservation?.(reservation);
-        renderBootstrap(await api.bootstrap());
+        if (api.token) renderBootstrap(await api.bootstrap());
       } catch (error) {
         setStatus("Cloud error", error.message);
       } finally {
@@ -87,7 +87,7 @@
         category: "migration"
       });
       $("cloudMigrationResult").textContent = "V21 configuration detected and migration audit recorded successfully.";
-      renderBootstrap(await api.bootstrap());
+      if (api.token) renderBootstrap(await api.bootstrap());
       eventBus.emit("cloud:migration-complete", { sourceVersion: "21.0" });
     });
 

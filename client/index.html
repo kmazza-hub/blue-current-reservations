@@ -6,7 +6,7 @@
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="24.0">
+  <meta name="blue-current-build" content="24.2">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -14,14 +14,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=24.0">
+  <link rel="stylesheet" href="styles.css?v=24.2">
 </head>
 <body>
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V24.0</strong>
+    <strong>Blue Current V24.2</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -156,6 +156,10 @@
         <a href="#autonomous-operations">Autonomous</a>
         <a href="#production-readiness">Production</a>
       <a href="#live-floor-operations">Floor</a>
+      <a href="#reservation-operations">Reservations</a>
+      <a href="#staff-sections">Staff</a>
+        <a href="#staff-sections">Staff</a>
+        <a href="#reservation-operations">Reservations</a>
         <a href="#live-floor-operations">Floor</a>
       <a href="#cloud-foundation">Cloud</a>
       <a href="#auth-organizations">Access</a>
@@ -2434,6 +2438,97 @@
   </div>
 </section>
 
+
+<section class="reservation-operations section-shell" id="reservation-operations">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V24.1 · Waitlist & Reservations</p>
+      <h2>Coordinate every arrival from booking to seated guest.</h2>
+      <p>Manage reservations, arrival states, VIP and accessibility notes, compatible-table assignments, and front-door activity in one operational view.</p>
+    </div>
+
+    <div class="reservation-kpi-grid reveal">
+      <article><strong id="reservationConfirmed">0</strong><span>Confirmed</span></article>
+      <article><strong id="reservationArrived">0</strong><span>Arrived</span></article>
+      <article><strong id="reservationSeated">0</strong><span>Seated</span></article>
+      <article><strong id="reservationCovers">0</strong><span>Reserved covers</span></article>
+    </div>
+
+    <div class="reservation-workspace reveal">
+      <article class="reservation-list-card">
+        <div class="reservation-card-head">
+          <div><small>Marina Grille</small><h3>Tonight's Reservations</h3></div>
+          <div class="reservation-filters" id="reservationFilters">
+            <button class="active" data-reservation-filter="all">All</button>
+            <button data-reservation-filter="confirmed">Confirmed</button>
+            <button data-reservation-filter="arrived">Arrived</button>
+            <button data-reservation-filter="seated">Seated</button>
+          </div>
+        </div>
+        <div class="reservation-list" id="reservationList"></div>
+      </article>
+
+      <aside class="reservation-inspector-card" id="reservationInspector"></aside>
+    </div>
+
+    <article class="reservation-create-card reveal">
+      <div class="reservation-card-head">
+        <div><small>Host stand</small><h3>Create Reservation</h3></div>
+        <span>Cloud persisted</span>
+      </div>
+      <form class="reservation-create-form" id="reservationCreateForm">
+        <input id="newReservationGuest" placeholder="Guest name" required>
+        <input id="newReservationPhone" placeholder="Phone">
+        <input id="newReservationParty" type="number" min="1" value="2" aria-label="Party size">
+        <input id="newReservationDate" type="date" value="2026-07-20" required>
+        <input id="newReservationTime" type="time" value="19:00" required>
+        <input id="newReservationNotes" placeholder="Notes">
+        <label><input id="newReservationVip" type="checkbox"> VIP</label>
+        <button class="button button-gold" type="submit">Create reservation</button>
+      </form>
+    </article>
+  </div>
+</section>
+
+
+<section class="staff-sections section-shell" id="staff-sections">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V24.2 · Staff & Sections</p>
+      <h2>Balance the floor before service pressure builds.</h2>
+      <p>Assign servers to sections, monitor active covers, identify overloaded staff, and keep table ownership synchronized with the live floor.</p>
+    </div>
+
+    <div class="staff-kpi-grid reveal">
+      <article><strong id="staffActiveCount">0</strong><span>Active staff</span></article>
+      <article><strong id="staffSeatedTables">0</strong><span>Seated tables</span></article>
+      <article><strong id="staffActiveCovers">0</strong><span>Active covers</span></article>
+      <article><strong id="staffOverloaded">0</strong><span>Overloaded</span></article>
+    </div>
+
+    <div class="staff-main-grid reveal">
+      <article class="staff-roster-card">
+        <div class="staff-card-head"><div><small>Tonight's team</small><h3>Staff Roster</h3></div><span>Live workload</span></div>
+        <div class="staff-roster" id="staffRoster"></div>
+      </article>
+
+      <aside class="staff-inspector-card" id="staffInspector"></aside>
+    </div>
+
+    <div class="staff-secondary-grid reveal">
+      <article class="section-assignment-card">
+        <div class="staff-card-head"><div><small>Floor ownership</small><h3>Section Assignments</h3></div><span>Server controlled</span></div>
+        <div class="section-assignment-grid" id="sectionAssignmentGrid"></div>
+      </article>
+
+      <article class="staff-balance-card">
+        <div class="staff-card-head"><div><small>Service pressure</small><h3>Workload Balance</h3></div><span>AI-ready signal</span></div>
+        <div class="staff-balance-board" id="staffBalanceBoard"></div>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="cloud-foundation section-shell" id="cloud-foundation">
   <div class="container">
     <div class="section-heading reveal">
@@ -2599,11 +2694,13 @@
   <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
   <script src="js/modules/autonomousOperations.js?v=19.0"></script>
   <script src="js/modules/productionReadiness.js?v=21.0"></script>
-  <script src="js/cloud/cloudApi.js?v=24.0"></script>
-  <script src="js/modules/cloudFoundation.js?v=24.0"></script>
-  <script src="js/modules/startupDiagnostics.js?v=24.0"></script>
-  <script src="js/modules/authOrganizations.js?v=24.0"></script>
-  <script src="js/modules/liveFloorOperations.js?v=24.0"></script>
-  <script src="js/app-v15.1.3.js?v=24.0"></script>
+  <script src="js/cloud/cloudApi.js?v=24.2"></script>
+  <script src="js/modules/cloudFoundation.js?v=24.2"></script>
+  <script src="js/modules/startupDiagnostics.js?v=24.2"></script>
+  <script src="js/modules/authOrganizations.js?v=24.2"></script>
+  <script src="js/modules/liveFloorOperations.js?v=24.2"></script>
+  <script src="js/modules/reservationOperations.js?v=24.2"></script>
+  <script src="js/modules/staffSections.js?v=24.2"></script>
+  <script src="js/app-v15.1.3.js?v=24.2"></script>
 </body>
 </html>

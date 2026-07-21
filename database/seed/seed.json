@@ -132,7 +132,72 @@
       "createdAt": "2026-07-20T00:00:00.000Z"
     }
   ],
-  "reservations": [],
+  "reservations": [
+    {
+      "id": "res_2401",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Anthony Russo",
+      "phone": "732-555-0108",
+      "partySize": 4,
+      "reservationTime": "2026-07-20T18:30:00.000Z",
+      "status": "confirmed",
+      "tableId": "tbl_3",
+      "source": "AI Concierge",
+      "vip": false,
+      "accessibility": "",
+      "notes": "Anniversary dinner",
+      "createdAt": "2026-07-20T14:00:00.000Z"
+    },
+    {
+      "id": "res_2402",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Danielle Carter",
+      "phone": "732-555-0142",
+      "partySize": 2,
+      "reservationTime": "2026-07-20T19:00:00.000Z",
+      "status": "arrived",
+      "tableId": null,
+      "source": "Website",
+      "vip": true,
+      "accessibility": "",
+      "notes": "VIP guest",
+      "createdAt": "2026-07-20T14:10:00.000Z"
+    },
+    {
+      "id": "res_2403",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Michael Lee",
+      "phone": "732-555-0199",
+      "partySize": 6,
+      "reservationTime": "2026-07-20T19:30:00.000Z",
+      "status": "confirmed",
+      "tableId": null,
+      "source": "Phone",
+      "vip": false,
+      "accessibility": "Wheelchair access",
+      "notes": "",
+      "createdAt": "2026-07-20T14:20:00.000Z"
+    },
+    {
+      "id": "res_2404",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Sofia Martinez",
+      "phone": "732-555-0166",
+      "partySize": 5,
+      "reservationTime": "2026-07-20T20:00:00.000Z",
+      "status": "confirmed",
+      "tableId": null,
+      "source": "OpenTable",
+      "vip": false,
+      "accessibility": "",
+      "notes": "Birthday cake requested",
+      "createdAt": "2026-07-20T14:30:00.000Z"
+    }
+  ],
   "operationalEvents": [],
   "memberships": [
     {
@@ -190,12 +255,14 @@
       "shape": "round",
       "status": "available",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_2",
@@ -208,12 +275,14 @@
       "shape": "round",
       "status": "available",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_3",
@@ -226,12 +295,14 @@
       "shape": "round",
       "status": "reserved",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": "19:30",
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_4",
@@ -244,12 +315,14 @@
       "shape": "round",
       "status": "available",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_5",
@@ -262,12 +335,14 @@
       "shape": "rectangle",
       "status": "seated",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "Martinez Party",
       "partySize": 5,
       "seatedAt": "2026-07-20T00:00:00.000Z",
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_6",
@@ -280,12 +355,14 @@
       "shape": "round",
       "status": "available",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_7",
@@ -298,12 +375,14 @@
       "shape": "round",
       "status": "cleaning",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_8",
@@ -316,12 +395,14 @@
       "shape": "rectangle",
       "status": "available",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Sarah Morgan",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_main",
+      "serverId": "staff_sarah"
     },
     {
       "id": "tbl_9",
@@ -334,12 +415,14 @@
       "shape": "round",
       "status": "blocked",
       "section": "Dining Room",
-      "server": "Unassigned",
+      "server": "Elena Cruz",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_bar",
+      "serverId": "staff_elena"
     },
     {
       "id": "tbl_10",
@@ -352,12 +435,14 @@
       "shape": "round",
       "status": "available",
       "section": "Patio",
-      "server": "Unassigned",
+      "server": "Marcus Lee",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_patio",
+      "serverId": "staff_marcus"
     },
     {
       "id": "tbl_11",
@@ -370,12 +455,14 @@
       "shape": "round",
       "status": "available",
       "section": "Patio",
-      "server": "Unassigned",
+      "server": "Marcus Lee",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_patio",
+      "serverId": "staff_marcus"
     },
     {
       "id": "tbl_12",
@@ -388,12 +475,14 @@
       "shape": "round",
       "status": "seated",
       "section": "Patio",
-      "server": "Unassigned",
+      "server": "Marcus Lee",
       "guestName": "Lee Party",
       "partySize": 4,
       "seatedAt": "2026-07-20T00:00:00.000Z",
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_patio",
+      "serverId": "staff_marcus"
     },
     {
       "id": "tbl_13",
@@ -406,12 +495,14 @@
       "shape": "rectangle",
       "status": "available",
       "section": "Patio",
-      "server": "Unassigned",
+      "server": "Marcus Lee",
       "guestName": "",
       "partySize": 0,
       "seatedAt": null,
       "reservationTime": null,
-      "notes": ""
+      "notes": "",
+      "sectionId": "sec_patio",
+      "serverId": "staff_marcus"
     }
   ],
   "waitlist": [
@@ -436,5 +527,104 @@
       "createdAt": "2026-07-20T18:48:00.000Z"
     }
   ],
-  "seatingEvents": []
+  "seatingEvents": [],
+  "reservationNotes": [],
+  "reservationEvents": [],
+  "staff": [
+    {
+      "id": "staff_sarah",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Sarah Morgan",
+      "role": "Server",
+      "status": "active",
+      "sectionId": "sec_main",
+      "shiftStart": "2026-07-20T16:00:00.000Z",
+      "shiftEnd": "2026-07-20T23:00:00.000Z",
+      "maxCovers": 24
+    },
+    {
+      "id": "staff_marcus",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Marcus Lee",
+      "role": "Server",
+      "status": "active",
+      "sectionId": "sec_patio",
+      "shiftStart": "2026-07-20T16:30:00.000Z",
+      "shiftEnd": "2026-07-20T23:30:00.000Z",
+      "maxCovers": 28
+    },
+    {
+      "id": "staff_elena",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Elena Cruz",
+      "role": "Server",
+      "status": "active",
+      "sectionId": "sec_bar",
+      "shiftStart": "2026-07-20T17:00:00.000Z",
+      "shiftEnd": "2026-07-20T23:00:00.000Z",
+      "maxCovers": 20
+    },
+    {
+      "id": "staff_jordan",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Jordan Kim",
+      "role": "Host",
+      "status": "active",
+      "sectionId": null,
+      "shiftStart": "2026-07-20T15:30:00.000Z",
+      "shiftEnd": "2026-07-20T22:30:00.000Z",
+      "maxCovers": 0
+    }
+  ],
+  "sections": [
+    {
+      "id": "sec_main",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Main Dining",
+      "serverId": "staff_sarah",
+      "tableIds": [
+        "tbl_1",
+        "tbl_2",
+        "tbl_3",
+        "tbl_4",
+        "tbl_5",
+        "tbl_6",
+        "tbl_7",
+        "tbl_8"
+      ],
+      "colorKey": "blue"
+    },
+    {
+      "id": "sec_patio",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Patio",
+      "serverId": "staff_marcus",
+      "tableIds": [
+        "tbl_10",
+        "tbl_11",
+        "tbl_12",
+        "tbl_13"
+      ],
+      "colorKey": "green"
+    },
+    {
+      "id": "sec_bar",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Bar",
+      "serverId": "staff_elena",
+      "tableIds": [
+        "tbl_9"
+      ],
+      "colorKey": "gold"
+    }
+  ],
+  "shifts": [],
+  "staffEvents": []
 }

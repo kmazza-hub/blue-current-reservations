@@ -9,6 +9,9 @@ const AuditService = require("./services/auditService");
 const ReservationService = require("./services/reservationService");
 const RealtimeHub = require("./realtime/realtimeHub");
 const AuthService = require("./services/authService");
+const FloorService = require("./services/floorService");
+const ReservationOperationsService = require("./services/reservationOperationsService");
+const StaffOperationsService = require("./services/staffOperationsService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -21,7 +24,10 @@ const realtimeHub = new RealtimeHub();
 const auditService = new AuditService(database);
 const reservationService = new ReservationService(database, auditService, realtimeHub);
 const authService = new AuthService(database, auditService);
-const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService });
+const floorService = new FloorService(database, auditService, realtimeHub);
+const reservationOperationsService = new ReservationOperationsService(database, auditService, realtimeHub);
+const staffOperationsService = new StaffOperationsService(database, auditService, realtimeHub);
+const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",

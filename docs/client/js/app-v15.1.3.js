@@ -1033,6 +1033,31 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 
 const motionEngine = new window.BlueCurrentMotionEngine();
 
+
+const startupRegistry = {
+  build: "24.1",
+  modules: new Map(),
+  register(name, instance, dependencies = []) {
+    const missing = dependencies.filter(dependency => !this.modules.get(dependency)?.ready);
+    const ready = Boolean(instance) && missing.length === 0;
+    this.modules.set(name, {
+      ready,
+      dependencies,
+      missing,
+      startedAt: new Date().toISOString()
+    });
+    eventBus.emit("startup:module-registered", { name, ready, dependencies, missing });
+    return instance;
+  },
+  snapshot() {
+    return Object.fromEntries(this.modules.entries());
+  }
+};
+
+window.BlueCurrentStartupRegistry = startupRegistry;
+startupRegistry.register("eventBus", eventBus);
+startupRegistry.register("appState", appState, ["eventBus"]);
+
 const conciergeModule =
   window.createBlueCurrentConciergeModule?.(eventBus, appState);
 
@@ -1070,7 +1095,44 @@ const productionReadinessModule =
   window.createBlueCurrentProductionReadinessModule?.(eventBus, appState);
 
 const cloudFoundationModule =
-  window.createBlueCurrentCloudFoundationModule?.(eventBus, appState);
+  startupRegistry.register(
+    "cloudFoundation",
+    window.createBlueCurrentCloudFoundationModule?.(eventBus, appState),
+    ["eventBus", "appState"]
+  );
+
+const startupDiagnosticsModule =
+  startupRegistry.register(
+    "startupDiagnostics",
+    window.createBlueCurrentStartupDiagnosticsModule?.(eventBus, appState),
+    ["eventBus", "appState", "cloudFoundation"]
+  );
+
+const authOrganizationsModule =
+  startupRegistry.register(
+    "authOrganizations",
+    window.createBlueCurrentAuthOrganizationsModule?.(eventBus, appState, cloudFoundationModule),
+    ["eventBus", "appState", "cloudFoundation"]
+  );
+
+const liveFloorOperationsModule =
+  startupRegistry.register(
+    "liveFloorOperations",
+    window.createBlueCurrentLiveFloorOperationsModule?.(eventBus, appState, cloudFoundationModule),
+    ["eventBus", "appState", "cloudFoundation", "authOrganizations"]
+  );
+
+const reservationOperationsModule =
+  startupRegistry.register(
+    "reservationOperations",
+    window.createBlueCurrentReservationOperationsModule?.(
+      eventBus,
+      appState,
+      cloudFoundationModule,
+      liveFloorOperationsModule
+    ),
+    ["eventBus", "appState", "cloudFoundation", "authOrganizations", "liveFloorOperations"]
+  );
 
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {

@@ -8,6 +8,9 @@ const DatabaseService = require("./services/databaseService");
 const AuditService = require("./services/auditService");
 const ReservationService = require("./services/reservationService");
 const RealtimeHub = require("./realtime/realtimeHub");
+const AuthService = require("./services/authService");
+const FloorService = require("./services/floorService");
+const ReservationOperationsService = require("./services/reservationOperationsService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -19,7 +22,10 @@ const database = new DatabaseService(DB_PATH);
 const realtimeHub = new RealtimeHub();
 const auditService = new AuditService(database);
 const reservationService = new ReservationService(database, auditService, realtimeHub);
-const routeApi = createRouter({ database, auditService, reservationService, realtimeHub });
+const authService = new AuthService(database, auditService);
+const floorService = new FloorService(database, auditService, realtimeHub);
+const reservationOperationsService = new ReservationOperationsService(database, auditService, realtimeHub);
+const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -75,7 +81,11 @@ const server = http.createServer(async (request, response) => {
         }
         response.writeHead(200, {
           "Content-Type": MIME[path.extname(target).toLowerCase()] || "application/octet-stream",
-          "Cache-Control": target.endsWith(".html") ? "no-cache" : "public, max-age=3600"
+          "Cache-Control": (
+            target.endsWith(".html") ||
+            target.endsWith(".js") ||
+            target.endsWith(".css")
+          ) ? "no-store, max-age=0" : "public, max-age=3600"
         });
         response.end(content);
       });
@@ -86,7 +96,10 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
-server.listen(PORT, () => {
+authService.initializePasswords().then(() => server.listen(PORT, () => {
   console.log(`Blue Current Cloud V22 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
+})).catch(error => {
+  console.error(error);
+  process.exit(1);
 });

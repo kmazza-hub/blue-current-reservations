@@ -9,6 +9,12 @@
       "name": "Chefs International",
       "status": "pilot",
       "createdAt": "2026-07-20T00:00:00.000Z"
+    },
+    {
+      "id": "org_blueharbor",
+      "name": "Blue Harbor Hospitality",
+      "status": "pilot",
+      "createdAt": "2026-07-20T00:00:00.000Z"
     }
   ],
   "locations": [
@@ -39,6 +45,20 @@
       "name": "The Cabin",
       "capacity": 126,
       "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_tide",
+      "organizationId": "org_blueharbor",
+      "name": "Tide & Timber",
+      "capacity": 132,
+      "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_lighthouse",
+      "organizationId": "org_blueharbor",
+      "name": "Lighthouse Social",
+      "capacity": 118,
+      "timezone": "America/New_York"
     }
   ],
   "users": [
@@ -48,7 +68,26 @@
       "name": "Keith Mazza",
       "email": "keith@bluecurrent.demo",
       "role": "owner",
-      "status": "active"
+      "status": "active",
+      "passwordHash": "837007656658e68b4a33c196d68d5ae8:8dcb617208381b492ff82f839cfed53b055f53ba0d050ef68b7d935bb32ac3b19a080b39a5e836abf9d37a0b8c943c649fd5afd6226463011adae86a24aa62e5"
+    },
+    {
+      "id": "usr_sarah",
+      "organizationId": "org_chefs",
+      "name": "Sarah Morgan",
+      "email": "sarah@bluecurrent.demo",
+      "role": "general_manager",
+      "status": "active",
+      "passwordHash": "c06982797cb34a33ef1525b1bd4ca140:ad1db171a43b64611987ede44a322fdcbf6abc3e9f067bab1ff68ea1b9d0f747ab861e1231a4f8cf757a0611813cf5ca3d5b21c8b18f49a44a4c57aaa99e1bf3"
+    },
+    {
+      "id": "usr_alex",
+      "organizationId": "org_blueharbor",
+      "name": "Alex Rivera",
+      "email": "alex@bluecurrent.demo",
+      "role": "owner",
+      "status": "active",
+      "passwordHash": "c35fd08cb9cf8fde548a15031e33d0af:8f2c9e35f18abe0fd458ab5fcd2f3f2e8e22cea8add200ed9d47ba84fa5e7b03ae68621fccf91a1a502afd60f0ff1251311d7fa93e50a55bb91bb5fe887b0366"
     }
   ],
   "configurations": [
@@ -93,6 +132,376 @@
       "createdAt": "2026-07-20T00:00:00.000Z"
     }
   ],
-  "reservations": [],
-  "operationalEvents": []
+  "reservations": [
+    {
+      "id": "res_2401",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Anthony Russo",
+      "phone": "732-555-0108",
+      "partySize": 4,
+      "reservationTime": "2026-07-20T18:30:00.000Z",
+      "status": "confirmed",
+      "tableId": "tbl_3",
+      "source": "AI Concierge",
+      "vip": false,
+      "accessibility": "",
+      "notes": "Anniversary dinner",
+      "createdAt": "2026-07-20T14:00:00.000Z"
+    },
+    {
+      "id": "res_2402",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Danielle Carter",
+      "phone": "732-555-0142",
+      "partySize": 2,
+      "reservationTime": "2026-07-20T19:00:00.000Z",
+      "status": "arrived",
+      "tableId": null,
+      "source": "Website",
+      "vip": true,
+      "accessibility": "",
+      "notes": "VIP guest",
+      "createdAt": "2026-07-20T14:10:00.000Z"
+    },
+    {
+      "id": "res_2403",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Michael Lee",
+      "phone": "732-555-0199",
+      "partySize": 6,
+      "reservationTime": "2026-07-20T19:30:00.000Z",
+      "status": "confirmed",
+      "tableId": null,
+      "source": "Phone",
+      "vip": false,
+      "accessibility": "Wheelchair access",
+      "notes": "",
+      "createdAt": "2026-07-20T14:20:00.000Z"
+    },
+    {
+      "id": "res_2404",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Sofia Martinez",
+      "phone": "732-555-0166",
+      "partySize": 5,
+      "reservationTime": "2026-07-20T20:00:00.000Z",
+      "status": "confirmed",
+      "tableId": null,
+      "source": "OpenTable",
+      "vip": false,
+      "accessibility": "",
+      "notes": "Birthday cake requested",
+      "createdAt": "2026-07-20T14:30:00.000Z"
+    }
+  ],
+  "operationalEvents": [],
+  "memberships": [
+    {
+      "id": "m_keith_chefs",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ]
+    },
+    {
+      "id": "m_sarah_chefs",
+      "userId": "usr_sarah",
+      "organizationId": "org_chefs",
+      "role": "general_manager",
+      "locationIds": [
+        "loc_marina"
+      ]
+    },
+    {
+      "id": "m_alex_harbor",
+      "userId": "usr_alex",
+      "organizationId": "org_blueharbor",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ]
+    }
+  ],
+  "sessions": [],
+  "invitations": [
+    {
+      "id": "inv_demo",
+      "organizationId": "org_chefs",
+      "email": "pilot.manager@example.com",
+      "role": "general_manager",
+      "locationIds": [
+        "loc_marina"
+      ],
+      "status": "pending",
+      "token": "BC23-DEMO-INVITE",
+      "expiresAt": "2027-01-01T00:00:00.000Z"
+    }
+  ],
+  "tables": [
+    {
+      "id": "tbl_1",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T1",
+      "seats": 2,
+      "x": 8,
+      "y": 12,
+      "shape": "round",
+      "status": "available",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_2",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T2",
+      "seats": 2,
+      "x": 24,
+      "y": 12,
+      "shape": "round",
+      "status": "available",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_3",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T3",
+      "seats": 4,
+      "x": 42,
+      "y": 12,
+      "shape": "round",
+      "status": "reserved",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": "19:30",
+      "notes": ""
+    },
+    {
+      "id": "tbl_4",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T4",
+      "seats": 4,
+      "x": 62,
+      "y": 12,
+      "shape": "round",
+      "status": "available",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_5",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T5",
+      "seats": 6,
+      "x": 80,
+      "y": 12,
+      "shape": "rectangle",
+      "status": "seated",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "Martinez Party",
+      "partySize": 5,
+      "seatedAt": "2026-07-20T00:00:00.000Z",
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_6",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T6",
+      "seats": 4,
+      "x": 13,
+      "y": 38,
+      "shape": "round",
+      "status": "available",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_7",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T7",
+      "seats": 4,
+      "x": 34,
+      "y": 38,
+      "shape": "round",
+      "status": "cleaning",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_8",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T8",
+      "seats": 6,
+      "x": 58,
+      "y": 38,
+      "shape": "rectangle",
+      "status": "available",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_9",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T9",
+      "seats": 2,
+      "x": 82,
+      "y": 38,
+      "shape": "round",
+      "status": "blocked",
+      "section": "Dining Room",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_10",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T10",
+      "seats": 2,
+      "x": 10,
+      "y": 66,
+      "shape": "round",
+      "status": "available",
+      "section": "Patio",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_11",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T11",
+      "seats": 4,
+      "x": 30,
+      "y": 66,
+      "shape": "round",
+      "status": "available",
+      "section": "Patio",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_12",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T12",
+      "seats": 4,
+      "x": 52,
+      "y": 66,
+      "shape": "round",
+      "status": "seated",
+      "section": "Patio",
+      "server": "Unassigned",
+      "guestName": "Lee Party",
+      "partySize": 4,
+      "seatedAt": "2026-07-20T00:00:00.000Z",
+      "reservationTime": null,
+      "notes": ""
+    },
+    {
+      "id": "tbl_13",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "T13",
+      "seats": 6,
+      "x": 76,
+      "y": 66,
+      "shape": "rectangle",
+      "status": "available",
+      "section": "Patio",
+      "server": "Unassigned",
+      "guestName": "",
+      "partySize": 0,
+      "seatedAt": null,
+      "reservationTime": null,
+      "notes": ""
+    }
+  ],
+  "waitlist": [
+    {
+      "id": "wait_1",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Jordan Blake",
+      "partySize": 4,
+      "quotedMinutes": 20,
+      "status": "waiting",
+      "createdAt": "2026-07-20T18:40:00.000Z"
+    },
+    {
+      "id": "wait_2",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "guestName": "Priya Shah",
+      "partySize": 2,
+      "quotedMinutes": 10,
+      "status": "waiting",
+      "createdAt": "2026-07-20T18:48:00.000Z"
+    }
+  ],
+  "seatingEvents": [],
+  "reservationNotes": [],
+  "reservationEvents": []
 }
