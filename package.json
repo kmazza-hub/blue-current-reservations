@@ -1,0 +1,13 @@
+{
+  "name": "blue-current-cloud",
+  "version": "22.0.0",
+  "private": true,
+  "description": "Blue Current Hospitality OS Cloud Foundation",
+  "scripts": {
+    "start": "node server/server.js",
+    "check": "node scripts/validate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

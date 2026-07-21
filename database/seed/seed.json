@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "version": "22.0",
+    "createdAt": "2026-07-20T00:00:00.000Z"
+  },
+  "organizations": [
+    {
+      "id": "org_chefs",
+      "name": "Chefs International",
+      "status": "pilot",
+      "createdAt": "2026-07-20T00:00:00.000Z"
+    }
+  ],
+  "locations": [
+    {
+      "id": "loc_marina",
+      "organizationId": "org_chefs",
+      "name": "Marina Grille",
+      "capacity": 188,
+      "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_harbor",
+      "organizationId": "org_chefs",
+      "name": "Harbor House",
+      "capacity": 164,
+      "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_river",
+      "organizationId": "org_chefs",
+      "name": "River & Rail",
+      "capacity": 142,
+      "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_cabin",
+      "organizationId": "org_chefs",
+      "name": "The Cabin",
+      "capacity": 126,
+      "timezone": "America/New_York"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr_keith",
+      "organizationId": "org_chefs",
+      "name": "Keith Mazza",
+      "email": "keith@bluecurrent.demo",
+      "role": "owner",
+      "status": "active"
+    }
+  ],
+  "configurations": [
+    {
+      "id": "cfg_marina",
+      "locationId": "loc_marina",
+      "occupancyThreshold": 90,
+      "waitThreshold": 20,
+      "kitchenThreshold": 18,
+      "revenueTarget": 24000
+    }
+  ],
+  "featureFlags": [
+    {
+      "organizationId": "org_chefs",
+      "key": "aiConcierge",
+      "enabled": true
+    },
+    {
+      "organizationId": "org_chefs",
+      "key": "predictiveOperations",
+      "enabled": true
+    },
+    {
+      "organizationId": "org_chefs",
+      "key": "autonomousOperations",
+      "enabled": true
+    },
+    {
+      "organizationId": "org_chefs",
+      "key": "portfolioIntelligence",
+      "enabled": true
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit_bootstrap",
+      "organizationId": "org_chefs",
+      "actor": "System",
+      "action": "Cloud database initialized",
+      "category": "system",
+      "createdAt": "2026-07-20T00:00:00.000Z"
+    }
+  ],
+  "reservations": [],
+  "operationalEvents": []
+}

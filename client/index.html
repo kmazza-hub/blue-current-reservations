@@ -41,6 +41,8 @@
       <a href="#predictive-operations">Predictive</a>
         <a href="#autonomous-operations">Autonomous</a>
         <a href="#production-readiness">Production</a>
+      <a href="#cloud-foundation">Cloud</a>
+        <a href="#cloud-foundation">Cloud</a>
         <a href="#ai-concierge">Concierge</a>
         <a href="#host-stand">Host Stand</a>
         <a href="#guest-intelligence">Guests</a>
@@ -2256,6 +2258,68 @@
   </div>
 </section>
 
+
+<section class="cloud-foundation section-shell" id="cloud-foundation">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V22 · Blue Current Cloud</p>
+      <h2>Persistent data, service boundaries, and real-time synchronization.</h2>
+      <p>This release introduces a runnable Node cloud service, file-backed database, REST API, durable audit history, and server-sent operational events.</p>
+    </div>
+
+    <div class="cloud-status-bar reveal">
+      <div>
+        <span class="cloud-status connecting" id="cloudConnectionStatus">Connecting</span>
+        <p id="cloudConnectionDetail">Contacting local Blue Current Cloud service…</p>
+      </div>
+      <button class="button button-ghost" id="cloudRefresh">Reconnect</button>
+    </div>
+
+    <div class="cloud-kpi-grid reveal">
+      <article><strong id="cloudOrgCount">—</strong><span>Organizations</span></article>
+      <article><strong id="cloudLocationCount">—</strong><span>Locations</span></article>
+      <article><strong id="cloudUserCount">—</strong><span>Cloud users</span></article>
+      <article><strong id="cloudAuditCount">—</strong><span>Audit records</span></article>
+      <article><strong id="cloudReservationCount">—</strong><span>Reservations</span></article>
+    </div>
+
+    <div class="cloud-console-grid reveal">
+      <article class="cloud-panel cloud-architecture">
+        <div class="cloud-panel-head"><div><small>Service topology</small><h3>Cloud Core Architecture</h3></div><span>V22.0</span></div>
+        <div class="cloud-flow">
+          <span>Client Modules</span><i>→</i><span>REST Services</span><i>→</i><span>Database</span><i>→</i><span>Realtime Hub</span><i>→</i><span>App State</span>
+        </div>
+        <div class="cloud-service-list">
+          <p><b>Reservation Service</b><em>Validated creation and durable records</em></p>
+          <p><b>Audit Service</b><em>Persistent governance history</em></p>
+          <p><b>Configuration Service</b><em>Location policy updates</em></p>
+          <p><b>Realtime Hub</b><em>Server-sent events across clients</em></p>
+        </div>
+      </article>
+
+      <article class="cloud-panel">
+        <div class="cloud-panel-head"><div><small>Tenant registry</small><h3>Organizations</h3></div><span>Isolated scope</span></div>
+        <div class="cloud-organization-list" id="cloudOrganizationList"><p>Waiting for cloud service…</p></div>
+      </article>
+
+      <article class="cloud-panel">
+        <div class="cloud-panel-head"><div><small>Durable event history</small><h3>Recent Cloud Audit</h3></div><span>Database backed</span></div>
+        <div class="cloud-audit-list" id="cloudRecentAudit"><p>Waiting for cloud service…</p></div>
+      </article>
+
+      <article class="cloud-panel cloud-actions-panel">
+        <div class="cloud-panel-head"><div><small>Cloud validation</small><h3>Test the Platform</h3></div><span>Safe local service</span></div>
+        <p>Create a persisted reservation and broadcast it through the realtime hub to every connected browser.</p>
+        <button class="button button-primary" id="cloudCreateReservation">Create cloud reservation</button>
+        <hr>
+        <p>Detect the existing V21 browser configuration and record its migration into Cloud Core.</p>
+        <button class="button button-ghost" id="cloudMigrateV21">Migrate V21 configuration</button>
+        <small id="cloudMigrationResult"></small>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="pilot-section container" id="pilot">
       <div class="pilot-card reveal">
         <div class="pilot-copy">
@@ -2360,6 +2424,8 @@
   <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
   <script src="js/modules/autonomousOperations.js?v=19.0"></script>
   <script src="js/modules/productionReadiness.js?v=21.0"></script>
-  <script src="js/app-v15.1.3.js?v=21.0"></script>
+  <script src="js/cloud/cloudApi.js?v=22.0"></script>
+  <script src="js/modules/cloudFoundation.js?v=22.0"></script>
+  <script src="js/app-v15.1.3.js?v=22.0"></script>
 </body>
 </html>

@@ -736,36 +736,27 @@ document.getElementById("conciergeForm")?.addEventListener("submit", (event) => 
   }, 350);
 });
 
-const conciergeAutoplayButton = document.getElementById("conciergeAutoplay");
-
-conciergeAutoplayButton?.addEventListener("click", () => {
+document.getElementById("conciergeAutoplay")?.addEventListener("click", (event) => {
   if (conciergeAutoplayTimer) {
     clearInterval(conciergeAutoplayTimer);
     conciergeAutoplayTimer = null;
-    if (conciergeAutoplayButton?.isConnected) {
-      conciergeAutoplayButton.textContent = "Resume demo";
-    }
+    event.currentTarget.textContent = "Resume demo";
     return;
   }
 
   if (conciergeStep >= conciergeDemo.length) conciergeReset();
-  if (conciergeAutoplayButton?.isConnected) {
-    conciergeAutoplayButton.textContent = "Pause demo";
-  }
+  event.currentTarget.textContent = "Pause demo";
 
   conciergeRunStep(conciergeStep);
   conciergeStep += 1;
 
-  conciergeAutoplayTimer = window.setInterval(() => {
+  conciergeAutoplayTimer = setInterval(() => {
     if (conciergeStep >= conciergeDemo.length) {
-      window.clearInterval(conciergeAutoplayTimer);
+      clearInterval(conciergeAutoplayTimer);
       conciergeAutoplayTimer = null;
-      if (conciergeAutoplayButton?.isConnected) {
-        conciergeAutoplayButton.textContent = "Replay demo";
-      }
+      event.currentTarget.textContent = "Replay demo";
       return;
     }
-
     conciergeRunStep(conciergeStep);
     conciergeStep += 1;
   }, 1500);
@@ -877,7 +868,6 @@ function setTableState(number, state){
   if(!table) return;
   table.classList.remove("available","reserved","seated","dining","reset");
   table.classList.add(state);
-  window.eventBus?.emit("table:presentation-state", { tableNumber: Number(number), status: state });
 }
 
 function updateJourney(stage, brief){
@@ -1010,265 +1000,3 @@ document.getElementById("decisionRefresh")?.addEventListener("click",()=>{
     <article><span>Recognize</span><div><strong>Brief service on two celebrations</strong><p>Birthday and anniversary guests are arriving before 7:20 PM.</p></div></article>`;
   twinToast("Recommendations refreshed","Blue Current recalculated decisions from the current service state.");
 });
-
-// ----------------------------------------
-// Blue Current Application Foundation
-// ----------------------------------------
-
-const eventBus = new window.BlueCurrentEventBus();
-
-const appState = new window.BlueCurrentAppState(eventBus, {
-  serviceStatus: "preparing",
-  occupancyPercent: 78,
-  reservations: [],
-  activeGuest: null,
-  activeTable: null,
-  activeCall: null,
-  guestsExpected: 1026,
-  reservationsToday: 220,
-  callsAnswered: 176,
-  estimatedRevenue: 31800,
-  executiveBrief: "Dinner service is preparing across the portfolio."
-});
-
-const motionEngine = new window.BlueCurrentMotionEngine();
-
-const conciergeModule =
-  window.createBlueCurrentConciergeModule?.(eventBus, appState);
-
-const digitalTwinModule =
-  window.createBlueCurrentDigitalTwinModule?.(eventBus, appState);
-
-const executiveModule =
-  window.createBlueCurrentExecutiveModule?.(eventBus, appState);
-
-const missionControlModule =
-  window.createBlueCurrentMissionControlModule?.(eventBus, appState, motionEngine);
-
-const guestJourneyModule =
-  window.createBlueCurrentGuestJourneyModule?.(eventBus, appState);
-
-const timeMachineModule =
-  window.createBlueCurrentTimeMachineModule?.(eventBus, appState);
-
-const portfolioModeModule =
-  window.createBlueCurrentPortfolioModeModule?.(eventBus, appState);
-
-const predictiveOperationsModule =
-  window.createBlueCurrentPredictiveOperationsModule?.(eventBus, appState);
-
-const blueCurrentLiveModule =
-  window.createBlueCurrentLiveModule?.(eventBus, appState);
-
-const intelligenceNetworkModule =
-  window.createBlueCurrentIntelligenceNetworkModule?.(eventBus, appState);
-
-const autonomousOperationsModule =
-  window.createBlueCurrentAutonomousOperationsModule?.(eventBus, appState);
-
-const productionReadinessModule =
-  window.createBlueCurrentProductionReadinessModule?.(eventBus, appState);
-
-// Exposed temporarily for browser-console testing.
-window.blueCurrent = {
-  eventBus,
-  appState,
-  motionEngine,
-  modules: {
-    concierge: conciergeModule,
-    digitalTwin: digitalTwinModule,
-    executive: executiveModule,
-    missionControl: missionControlModule,
-    guestJourney: guestJourneyModule,
-    timeMachine: timeMachineModule,
-    portfolioMode: portfolioModeModule,
-    predictiveOperations: predictiveOperationsModule,
-    blueCurrentLive: blueCurrentLiveModule,
-    intelligenceNetwork: intelligenceNetworkModule,
-    autonomousOperations: autonomousOperationsModule
-  }
-};
-window.appState = appState;
-window.eventBus = eventBus;
-
-// --------------------------------------------------
-// Shared UI renderer
-// --------------------------------------------------
-
-function setText(id, value) {
-  const element = document.getElementById(id);
-  if (element && value !== undefined && value !== null) {
-    element.textContent = String(value);
-  }
-}
-
-function formatExecutiveRevenue(value) {
-  const amount = Number(value) || 0;
-  if (amount >= 1000000) return `$${(amount / 1000000).toFixed(1)}M`;
-  if (amount >= 1000) return `$${(amount / 1000).toFixed(1)}K`;
-  return `$${Math.round(amount).toLocaleString()}`;
-}
-
-function pulseById(id) {
-  const element = document.getElementById(id);
-  if (!element) return;
-  element.classList.remove("is-updating");
-  void element.offsetWidth;
-  element.classList.add("is-updating");
-  window.setTimeout(() => element.classList.remove("is-updating"), 700);
-}
-
-function renderSharedState(state, changes = {}) {
-  setText("execGuests", Number(state.guestsExpected).toLocaleString());
-  setText("execReservations", Number(state.reservationsToday).toLocaleString());
-  setText("execCalls", Number(state.callsAnswered).toLocaleString());
-  setText("execRevenue", formatExecutiveRevenue(state.estimatedRevenue));
-  setText("executiveBrief", state.executiveBrief);
-
-  setText("occupancyLabel", `${state.occupancyPercent}% occupied`);
-
-  if (state.activeTable?.tableNumber) {
-    const target = document.getElementById("targetTable");
-    target?.setAttribute("data-table", String(state.activeTable.tableNumber));
-    target?.classList.add("confirmed");
-  }
-
-  const metricMap = {
-    guestsExpected: "execGuests",
-    reservationsToday: "execReservations",
-    callsAnswered: "execCalls",
-    estimatedRevenue: "execRevenue",
-    executiveBrief: "executiveBrief"
-  };
-
-  Object.keys(changes).forEach((key) => {
-    if (metricMap[key]) pulseById(metricMap[key]);
-  });
-}
-
-// --------------------------------------------------
-// Domain events → App State
-// --------------------------------------------------
-
-eventBus.on("service:started", ({ serviceName, startedAt }) => {
-  appState.update({
-    serviceStatus: "live",
-    executiveBrief: `${serviceName} started at ${startedAt}. Blue Current is monitoring live service.`
-  });
-});
-
-eventBus.on("concierge:call-started", (call) => {
-  appState.update({
-    activeCall: call,
-    executiveBrief: "An incoming reservation call was answered immediately by Blue Current Concierge."
-  });
-});
-
-eventBus.on("guest:recognized", (guest) => {
-  appState.update({
-    activeGuest: guest,
-    executiveBrief: `${guest.guestName} was recognized and guest preferences were shared with the operation.`
-  });
-});
-
-eventBus.on("availability:matched", (match) => {
-  appState.update({
-    executiveBrief: `Demand recovered: ${match.offeredTime} at Table ${match.tableNumber} was offered when the requested inventory was constrained.`
-  });
-});
-
-/**
- * The synchronization point for Sprint 1.
- * One confirmation updates state once, then compatibility events allow
- * existing visual modules to react without directly controlling each other.
- */
-eventBus.on("reservation:confirmed", ({
-  reservation,
-  occupancyPercent,
-  revenueImpact = 0,
-  executiveBrief
-}) => {
-  const existingReservations = appState.get("reservations") || [];
-  const alreadyExists = existingReservations.some(
-    (item) => item.id === reservation.id
-  );
-
-  const nextReservations = alreadyExists
-    ? existingReservations
-    : [...existingReservations, reservation];
-
-  const nextState = {
-    reservations: nextReservations,
-    activeGuest: {
-      ...(appState.get("activeGuest") || {}),
-      guestName: reservation.guestName,
-      occasion: reservation.occasion
-    },
-    activeTable: {
-      tableNumber: reservation.tableNumber,
-      partySize: reservation.partySize,
-      guestName: reservation.guestName,
-      time: reservation.time || reservation.offeredTime || "7:15 PM",
-      occasion: reservation.occasion,
-      note: reservation.note || "Tree nut allergy",
-      vip: true,
-      status: "reserved"
-    },
-    activeCall: null,
-    occupancyPercent,
-    reservationsToday: appState.get("reservationsToday") + (alreadyExists ? 0 : 1),
-    callsAnswered: appState.get("callsAnswered") + (alreadyExists ? 0 : 1),
-    guestsExpected: appState.get("guestsExpected") + (alreadyExists ? 0 : reservation.partySize),
-    estimatedRevenue: appState.get("estimatedRevenue") + (alreadyExists ? 0 : revenueImpact),
-    executiveBrief,
-    lastOperationalEvent: {
-      type: "reservation:confirmed",
-      occurredAt: new Date().toISOString(),
-      reservationId: reservation.id
-    }
-  };
-
-  appState.update(nextState);
-
-  // Compatibility events for existing modules. These are views of the
-  // committed state—not separate sources of truth.
-  eventBus.emit("reservation:created", reservation);
-  eventBus.emit("table:assigned", nextState.activeTable);
-  eventBus.emit("occupancy:updated", { occupancyPercent });
-  eventBus.emit("executive:updated", {
-    guestsExpected: nextState.guestsExpected,
-    reservationsToday: nextState.reservationsToday,
-    callsAnswered: nextState.callsAnswered,
-    estimatedRevenue: nextState.estimatedRevenue
-  });
-});
-
-// --------------------------------------------------
-// State subscriptions
-// --------------------------------------------------
-
-eventBus.on("state:updated", ({ state, changes }) => {
-  renderSharedState(state, changes);
-  console.log("Blue Current state synchronized:", changes);
-});
-
-eventBus.on("state:reset", ({ state }) => {
-  renderSharedState(state, state);
-});
-
-// Initial render before the timeline begins.
-renderSharedState(appState.getState(), appState.getState());
-
-// --------------------------------------------------
-// Load and start demo timeline
-// --------------------------------------------------
-
-motionEngine.load(
-  window.createBlueCurrentLiveServiceTimeline(eventBus)
-);
-
-motionEngine.start();  const operationalIntelligence = typeof window.createBlueCurrentOperationalIntelligenceModule === "function"
-    ? window.createBlueCurrentOperationalIntelligenceModule(eventBus, appState)
-    : null;
-
-
