@@ -6,7 +6,7 @@
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="25.1">
+  <meta name="blue-current-build" content="29.0">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -14,14 +14,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=25.1">
+  <link rel="stylesheet" href="styles.css?v=29.0">
 </head>
 <body>
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V25.1</strong>
+    <strong>Blue Current V29.0</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -154,12 +154,20 @@
         <a href="#portfolio-mode">Portfolio</a>
         <a href="#predictive-operations">Predictive</a>
         <a href="#autonomous-operations">Autonomous</a>
+        <a href="#guest-intelligence">Guests</a>
         <a href="#production-readiness">Production</a>
         <a href="#live-floor-operations">Floor</a>
         <a href="#reservation-operations">Reservations</a>
         <a href="#staff-sections">Staff</a>
         <a href="#kitchen-command-center">Kitchen</a>
         <a href="#service-coordination">Service</a>
+        <a href="#ai-restaurant-brain">AI Brain</a>
+        <a href="#executive-command-center">Executive</a>
+        <a href="#autonomous-operations">Autonomous</a>
+        <a href="#guest-intelligence">Guests</a>
+        <a href="#autonomous-operations">Autonomous</a>
+        <a href="#executive-command-center">Executive</a>
+        <a href="#ai-restaurant-brain">AI Brain</a>
         <a href="#cloud-foundation">Cloud</a>
         <a href="#auth-organizations">Access</a>
         <a href="#ai-concierge">Concierge</a>
@@ -2535,6 +2543,62 @@
   <div class="svc-bottom reveal"><article class="svc-expo-card"><div class="svc-head"><div><small>Ready food</small><h3>Expo Console</h3></div><span>Runner workflow</span></div><div id="svcExpoQueue" class="svc-expo"></div></article><article class="svc-load-card"><div class="svc-head"><div><small>Front of house</small><h3>Server Workload</h3></div><span>Live covers</span></div><div id="svcServerLoad" class="svc-load"></div></article></div>
  </div>
 </section>
+
+<section class="ai-restaurant-brain section-shell" id="ai-restaurant-brain">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V26 · AI Restaurant Brain</p>
+      <h2>Operational intelligence that explains what to do next.</h2>
+      <p>Blue Current continuously evaluates floor, kitchen, staff, reservations, and service risk to produce transparent, actionable recommendations.</p>
+    </div>
+
+    <div class="ai-brain-header reveal">
+      <article class="ai-health-card">
+        <div class="ai-health-ring" id="aiHealthRing"><strong id="aiHealthScore">—</strong><span>Restaurant health</span></div>
+        <div class="ai-health-breakdown">
+          <p><span>Kitchen</span><strong id="aiHealthKitchen">—</strong></p>
+          <p><span>Service</span><strong id="aiHealthService">—</strong></p>
+          <p><span>Staff</span><strong id="aiHealthStaff">—</strong></p>
+          <p><span>Reservations</span><strong id="aiHealthReservations">—</strong></p>
+          <p><span>Dining room</span><strong id="aiHealthDining">—</strong></p>
+        </div>
+      </article>
+
+      <article class="ai-signal-card">
+        <div class="ai-panel-head">
+          <div><small>Live operational context</small><h3>Decision Signals</h3></div>
+          <div><span>Updated <b id="aiLastUpdated">—</b></span><button class="button button-light" id="aiRefreshButton">Regenerate</button></div>
+        </div>
+        <div class="ai-signal-grid" id="aiSignalGrid"></div>
+      </article>
+    </div>
+
+    <div class="ai-category-filters reveal" id="aiCategoryFilters">
+      <button class="active" data-ai-category="all">All recommendations</button>
+      <button data-ai-category="seating">Seating</button>
+      <button data-ai-category="staff">Staff</button>
+      <button data-ai-category="kitchen">Kitchen</button>
+      <button data-ai-category="guest_experience">Guest experience</button>
+    </div>
+
+    <div class="ai-brain-workspace reveal">
+      <article class="ai-recommendations-panel">
+        <div class="ai-panel-head"><div><small>Decision center</small><h3>Active Recommendations</h3></div><span>Explainable rules engine</span></div>
+        <div class="ai-recommendation-list" id="aiRecommendationList"></div>
+      </article>
+      <aside class="ai-inspector-panel" id="aiRecommendationInspector"></aside>
+    </div>
+
+    <article class="ai-history-panel reveal">
+      <div class="ai-panel-head"><div><small>Manager learning loop</small><h3>Decision History</h3></div><span>Accepted · Snoozed · Rejected</span></div>
+      <div class="ai-decision-history" id="aiDecisionHistory"></div>
+    </article>
+  </div>
+</section>
+
+<section class="executive-command-center section-shell" id="executive-command-center"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V27 · Executive Command Center</p><h2>One operating picture for every location.</h2><p>Portfolio health, revenue pacing, guest flow, kitchen timing, AI decisions, and executive alerts in a single owner-level command center.</p></div><div class="exec-hero-grid reveal"><article class="exec-health-card"><div class="exec-health-ring" id="execHealthRing"><strong id="execHealth">—</strong><span>Portfolio health</span></div><div class="exec-health-meta"><p><span>Open locations</span><strong id="execLocations">—</strong></p><p><span>At-risk locations</span><strong id="execAlerts">—</strong></p><p><span>Average ticket</span><strong id="execTicketTime">—</strong></p><p><span>Accepted AI actions</span><strong id="execAiDecisions">—</strong></p></div></article><article class="exec-revenue-card"><small>Portfolio revenue today</small><strong id="execRevenue">$0</strong><span id="execRevenueTrend">—</span><div class="exec-revenue-subgrid"><p><small>Guests served</small><b id="execGuests">—</b></p><p><small>Occupancy</small><b id="execOccupancy">—</b></p></div></article><article class="exec-brief-card"><div class="exec-panel-head"><div><small>AI-generated owner brief</small><h3>Executive Brief</h3></div><div><span>Updated <b id="execLastUpdated">—</b></span><button class="button button-light" id="execRefreshButton">Refresh</button></div></div><h4 id="execBriefHeadline"></h4><p id="execBriefSummary"></p><ul id="execBriefHighlights"></ul></article></div><div class="exec-main-grid reveal"><article class="exec-locations-panel"><div class="exec-panel-head"><div><small>Multi-location portfolio</small><h3>Location Performance</h3></div></div><div class="exec-location-grid" id="execLocationGrid"></div></article><aside class="exec-location-detail" id="execLocationDetail"></aside></div><div class="exec-secondary-grid reveal"><article class="exec-alert-panel"><div class="exec-panel-head"><div><small>Portfolio attention queue</small><h3>Executive Alerts</h3></div></div><div class="exec-alert-feed" id="execAlertFeed"></div></article><article class="exec-goals-panel"><div class="exec-panel-head"><div><small>Operating targets</small><h3>Executive Goals</h3></div></div><div class="exec-goal-list" id="execGoalList"></div></article></div></div></section>
+<section class="autonomous-operations section-shell" id="autonomous-operations"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V28 · Autonomous Operations Director</p><h2>Predict, decide, and safely execute.</h2><p>A guarded automation layer forecasts demand, recommends operating moves, executes approved low-risk actions, and preserves a complete management timeline.</p></div><div class="auto-top reveal"><article class="auto-status-card"><small>Automation state</small><strong id="autoMode">—</strong><p>Updated <span id="autoUpdated">—</span></p><button class="button button-gold" id="autoRunCycle">Run operating cycle</button></article><article class="auto-profit-summary"><div><small>Revenue</small><strong id="autoRevenue">—</strong></div><div><small>Operating profit</small><strong id="autoProfit">—</strong></div><div><small>Margin</small><strong id="autoMargin">—</strong></div><div><small>Labor</small><strong id="autoLabor">—</strong></div><div><small>Food</small><strong id="autoFood">—</strong></div></article><article class="auto-policy-card"><h3>Guardrails</h3><label><input type="checkbox" id="autoEnabled"> Enable automation</label><label>Mode<select id="autoPolicyMode"><option value="manual">Manual</option><option value="guarded">Guarded</option><option value="autonomous">Autonomous</option></select></label><label>Max actions<input type="number" min="0" max="10" id="autoMaxActions" value="3"></label><button class="button button-light" id="autoSavePolicy">Save policy</button></article></div><div class="auto-grid reveal"><article class="auto-panel"><div class="auto-panel-head"><div><small>Next 120 minutes</small><h3>Predictive Forecast</h3></div></div><div class="auto-forecast-grid" id="autoForecastGrid"></div></article><article class="auto-panel"><div class="auto-panel-head"><div><small>Portfolio digital twin</small><h3>Location Heat Map</h3></div></div><div class="auto-heat-map" id="autoHeatMap"></div></article></div><div class="auto-grid reveal"><article class="auto-panel"><div class="auto-panel-head"><div><small>Decision and execution queue</small><h3>Operating Actions</h3></div></div><div class="auto-action-queue" id="autoActionQueue"></div></article><article class="auto-panel"><div class="auto-panel-head"><div><small>Ask the live operation</small><h3>Executive AI Chat</h3></div></div><form class="auto-chat-form" id="autoChatForm"><input id="autoChatInput" placeholder="Which location needs help?" required><button class="button button-gold">Ask</button></form><div class="auto-chat-answer" id="autoChatAnswer"><p>Ask about revenue, staffing, risk, kitchen timing, or profit.</p></div></article></div><div class="auto-grid reveal"><article class="auto-panel"><div class="auto-panel-head"><div><small>Profit optimizer</small><h3>Location Economics</h3></div></div><div class="auto-profit-grid" id="autoProfitGrid"></div></article><article class="auto-panel"><div class="auto-panel-head"><div><small>Explainable operating history</small><h3>Executive Timeline</h3></div></div><div class="auto-timeline" id="autoTimeline"></div></article></div></div></section>
+<section class="guest-intelligence section-shell" id="guest-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V29 · Guest Intelligence & Revenue Engine</p><h2>Know every guest. Grow every relationship.</h2><p>Unified guest profiles, lifetime value, behavioral segments, recovery workflows, and targeted revenue campaigns built from live reservation and service history.</p></div><div class="guest-kpis reveal"><article><small>Known guests</small><strong id="guestKnown">—</strong></article><article><small>VIP guests</small><strong id="guestVip">—</strong></article><article><small>At risk</small><strong id="guestAtRisk">—</strong></article><article><small>Guest revenue</small><strong id="guestRevenue">—</strong></article><article><small>Recoverable</small><strong id="guestRecoverable">—</strong></article><article><small>Average spend</small><strong id="guestAvgSpend">—</strong></article></div><div class="guest-toolbar reveal"><div class="guest-segments" id="guestSegments"></div><button class="button button-light" id="guestRefresh">Refresh intelligence</button></div><div class="guest-main reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Guest graph</small><h3>Profiles & Lifetime Value</h3></div></div><div class="guest-profile-list" id="guestProfileList"></div></article><aside class="guest-panel guest-profile-detail" id="guestProfileDetail"></aside></div><div class="guest-bottom reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Revenue activation</small><h3>Campaign Studio</h3></div></div><div class="guest-campaigns" id="guestCampaigns"></div></article><article class="guest-panel"><div class="guest-panel-head"><div><small>Learning loop</small><h3>Engagement Timeline</h3></div></div><div class="guest-engagements" id="guestEngagements"></div></article></div></div></section>
 <section class="cloud-foundation section-shell" id="cloud-foundation">
   <div class="container">
     <div class="section-heading reveal">
@@ -2698,17 +2762,19 @@
   <script src="js/modules/predictiveOperations.js?v=17.0"></script>
   <script src="js/modules/blueCurrentLive.js?v=17.0"></script>
   <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
-  <script src="js/modules/autonomousOperations.js?v=19.0"></script>
+  <script src="js/modules/autonomousOperations.js?v=29.0"></script>
+  <script src="js/modules/guestIntelligence.js?v=29.0"></script>
   <script src="js/modules/productionReadiness.js?v=21.0"></script>
-  <script src="js/cloud/cloudApi.js?v=25.1"></script>
-  <script src="js/modules/cloudFoundation.js?v=25.1"></script>
-  <script src="js/modules/startupDiagnostics.js?v=25.1"></script>
-  <script src="js/modules/authOrganizations.js?v=25.1"></script>
-  <script src="js/modules/liveFloorOperations.js?v=25.1"></script>
-  <script src="js/modules/reservationOperations.js?v=25.1"></script>
-  <script src="js/modules/staffSections.js?v=25.1"></script>
-  <script src="js/modules/kitchenCommandCenter.js?v=25.1"></script>
-  <script src="js/modules/serviceCoordination.js?v=25.1"></script>
-  <script src="js/app-v15.1.3.js?v=25.1"></script>
+  <script src="js/cloud/cloudApi.js?v=29.0"></script>
+  <script src="js/modules/cloudFoundation.js?v=29.0"></script>
+  <script src="js/modules/startupDiagnostics.js?v=29.0"></script>
+  <script src="js/modules/authOrganizations.js?v=29.0"></script>
+  <script src="js/modules/liveFloorOperations.js?v=29.0"></script>
+  <script src="js/modules/reservationOperations.js?v=29.0"></script>
+  <script src="js/modules/staffSections.js?v=29.0"></script>
+  <script src="js/modules/kitchenCommandCenter.js?v=29.0"></script>
+  <script src="js/modules/serviceCoordination.js?v=29.0"></script>
+  <script src="js/modules/aiRestaurantBrain.js?v=29.0"></script>
+  <script src="js/app-v15.1.3.js?v=29.0"></script>
 </body>
 </html>

@@ -59,6 +59,14 @@
       "name": "Lighthouse Social",
       "capacity": 118,
       "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_garden",
+      "organizationId": "org_chefs",
+      "name": "Garden Social",
+      "city": "Toms River",
+      "state": "NJ",
+      "status": "open"
     }
   ],
   "users": [
@@ -936,5 +944,105 @@
     }
   ],
   "serviceEvents": [],
-  "expoAssignments": []
+  "expoAssignments": [],
+  "aiRecommendations": [],
+  "aiDecisionHistory": [],
+  "aiPolicies": [
+    {
+      "id": "aip_marina",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "enabled": true,
+      "minimumConfidence": 70,
+      "autoRefreshSeconds": 45,
+      "categories": [
+        "seating",
+        "staff",
+        "kitchen",
+        "guest_experience"
+      ],
+      "updatedAt": "2026-07-21T13:00:00.000Z"
+    }
+  ],
+  "executiveGoals": [
+    {
+      "id": "goal_revenue",
+      "organizationId": "org_chefs",
+      "label": "Daily revenue target",
+      "target": 22000,
+      "unit": "currency"
+    },
+    {
+      "id": "goal_health",
+      "organizationId": "org_chefs",
+      "label": "Portfolio health target",
+      "target": 92,
+      "unit": "score"
+    },
+    {
+      "id": "goal_ticket",
+      "organizationId": "org_chefs",
+      "label": "Average ticket target",
+      "target": 16,
+      "unit": "minutes"
+    }
+  ],
+  "autonomousPolicies": [
+    {
+      "id": "auto_policy_org_chefs",
+      "organizationId": "org_chefs",
+      "enabled": true,
+      "mode": "guarded",
+      "autoExecuteRiskLevels": [
+        "low"
+      ],
+      "approvalRequiredRiskLevels": [
+        "medium",
+        "high"
+      ],
+      "maxActionsPerCycle": 3,
+      "forecastHorizonMinutes": 120,
+      "updatedAt": "2026-07-21T16:00:00.000Z"
+    }
+  ],
+  "autonomousActions": [],
+  "operationsTimeline": [],
+  "profitSnapshots": [],
+  "guestProfiles": [],
+  "guestCampaigns": [
+    {
+      "id": "camp_winback",
+      "organizationId": "org_chefs",
+      "name": "30-Day Win Back",
+      "segment": "at_risk",
+      "channel": "sms",
+      "offer": "Complimentary appetizer",
+      "status": "draft",
+      "estimatedGuests": 38,
+      "estimatedRevenue": 2850
+    },
+    {
+      "id": "camp_vip",
+      "organizationId": "org_chefs",
+      "name": "VIP Friday Preview",
+      "segment": "vip",
+      "channel": "email",
+      "offer": "Priority reservation access",
+      "status": "draft",
+      "estimatedGuests": 16,
+      "estimatedRevenue": 4320
+    },
+    {
+      "id": "camp_regular",
+      "organizationId": "org_chefs",
+      "name": "Regulars Midweek",
+      "segment": "regular",
+      "channel": "sms",
+      "offer": "Chef feature invitation",
+      "status": "active",
+      "estimatedGuests": 54,
+      "estimatedRevenue": 4860
+    }
+  ],
+  "guestEngagements": []
 }
