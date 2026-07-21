@@ -1,8 +1,21 @@
 {
-  "version": "15.7",
-  "feature": "Portfolio Mode",
-  "javascript_files": 13,
-  "script_references": 13,
-  "missing_scripts": [],
-  "syntax_validation": "passed"
+  "version": "16.0",
+  "javascript": "syntax-valid",
+  "scripts": [
+    "js/eventBus.js?v=16.0",
+    "js/appState.js?v=16.0",
+    "js/motionEngine.js?v=16.0",
+    "js/timeline.js?v=16.0",
+    "js/modules/concierge.js",
+    "js/modules/digitalTwin.js?v=16.0",
+    "js/modules/executive.js",
+    "js/modules/missionControl.js?v=16.0",
+    "js/modules/operationalIntelligence.js?v=16.0",
+    "js/modules/guestJourney.js?v=16.0",
+    "js/modules/timeMachine.js?v=16.0",
+    "js/modules/portfolioMode.js?v=16.0",
+    "js/modules/predictiveOperations.js?v=16.0",
+    "js/app-v15.1.3.js?v=16.0"
+  ],
+  "missing": []
 }
