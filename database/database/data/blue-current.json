@@ -69,7 +69,7 @@
       "email": "keith@bluecurrent.demo",
       "role": "owner",
       "status": "active",
-      "passwordHash": "085f511d16715156b506387c91004e8a:ef6192ab9861855b72137ba465e09822ee7ab5d4c8af8af444cffd735ad4fe73c8895073c1edb2c45bfe2c8328eb50845327f9191c893e701415714a686b7e7a"
+      "passwordHash": "837007656658e68b4a33c196d68d5ae8:8dcb617208381b492ff82f839cfed53b055f53ba0d050ef68b7d935bb32ac3b19a080b39a5e836abf9d37a0b8c943c649fd5afd6226463011adae86a24aa62e5"
     },
     {
       "id": "usr_sarah",
@@ -78,7 +78,7 @@
       "email": "sarah@bluecurrent.demo",
       "role": "general_manager",
       "status": "active",
-      "passwordHash": "88a1380f120dc59e3d06cf03129f55a7:b82047979e139732a647c169aeb29fc6ee0864f9ca80b5d9167e74e1dd309ab20d7a8553fe2cf8fa4f43b508f9ffd21fe9c760fde61959b8ba6cd0e691694b63"
+      "passwordHash": "c06982797cb34a33ef1525b1bd4ca140:ad1db171a43b64611987ede44a322fdcbf6abc3e9f067bab1ff68ea1b9d0f747ab861e1231a4f8cf757a0611813cf5ca3d5b21c8b18f49a44a4c57aaa99e1bf3"
     },
     {
       "id": "usr_alex",
@@ -87,7 +87,7 @@
       "email": "alex@bluecurrent.demo",
       "role": "owner",
       "status": "active",
-      "passwordHash": "3d16560865c1990832e8b17093f08554:dfcd1d14f6295e590e5ff50f3acf9b320afc3ed90fa34e97baa1a0dd5f3acd43fa2d4e74e0c31bdc581cf4929fd6b66a1d5d6cdbeb76d590a633b692c86942ff"
+      "passwordHash": "c35fd08cb9cf8fde548a15031e33d0af:8f2c9e35f18abe0fd458ab5fcd2f3f2e8e22cea8add200ed9d47ba84fa5e7b03ae68621fccf91a1a502afd60f0ff1251311d7fa93e50a55bb91bb5fe887b0366"
     }
   ],
   "configurations": [
@@ -130,38 +130,6 @@
       "action": "Cloud database initialized",
       "category": "system",
       "createdAt": "2026-07-20T00:00:00.000Z"
-    },
-    {
-      "organizationId": "org_chefs",
-      "actor": "keith@bluecurrent.demo",
-      "action": "Failed login attempt",
-      "category": "security",
-      "createdAt": "2026-07-21T03:27:08.672Z",
-      "id": "audit_1784604428672_rnk2ox"
-    },
-    {
-      "organizationId": "org_chefs",
-      "actor": "keith@bluecurrent.demo",
-      "action": "Failed login attempt",
-      "category": "security",
-      "createdAt": "2026-07-21T03:27:11.487Z",
-      "id": "audit_1784604431487_d6busl"
-    },
-    {
-      "organizationId": "org_chefs",
-      "actor": "Keith Mazza",
-      "action": "Signed in to Blue Current Cloud",
-      "category": "security",
-      "createdAt": "2026-07-21T03:30:58.554Z",
-      "id": "audit_1784604658554_a4liun"
-    },
-    {
-      "organizationId": "org_chefs",
-      "actor": "Keith Mazza",
-      "action": "Signed in to Blue Current Cloud",
-      "category": "security",
-      "createdAt": "2026-07-21T03:34:47.298Z",
-      "id": "audit_1784604887298_srbagz"
     }
   ],
   "reservations": [],
@@ -195,20 +163,7 @@
       ]
     }
   ],
-  "sessions": [
-    {
-      "id": "ses_1784604887292_v6z9nc",
-      "tokenHash": "998236562f7ed51b8a36291e53416f5d459961f95bb88f45583fe0dae9d4183d",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-07-21T03:34:47.292Z",
-      "expiresAt": "2026-07-21T15:34:47.292Z"
-    }
-  ],
+  "sessions": [],
   "invitations": [
     {
       "id": "inv_demo",

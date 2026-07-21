@@ -1,0 +1,13 @@
+{
+  "name": "blue-current-cloud",
+  "version": "23.0.3",
+  "private": true,
+  "description": "Blue Current Hospitality OS \u2014 Authentication Button Fix",
+  "scripts": {
+    "start": "node server/server.js",
+    "check": "node scripts/validate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
