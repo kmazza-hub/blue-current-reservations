@@ -1,0 +1,2177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blue Current | Hospitality That Answers</title>
+  <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
+  <meta name="theme-color" content="#082632">
+  <meta name="blue-current-build" content="32.2.2">
+  <meta property="og:title" content="Blue Current | Hospitality That Answers">
+  <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=32.2.2">
+</head>
+<body>
+
+<div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
+  <button id="startupDiagnosticsToggle" aria-expanded="false">
+    <span id="startupDiagnosticsDot"></span>
+    <strong>Blue Current V32.2.2</strong>
+    <small id="startupDiagnosticsSummary">Starting modules…</small>
+  </button>
+  <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
+    <div><span>Styles</span><strong id="diagStyles">Checking</strong></div>
+    <div><span>Cloud API</span><strong id="diagCloudApi">Checking</strong></div>
+    <div><span>Authentication</span><strong id="diagAuth">Checking</strong></div>
+    <div><span>Application</span><strong id="diagApplication">Checking</strong></div>
+    <p id="diagCompatibility">Verifying client compatibility…</p>
+  </div>
+</div>
+
+
+<div class="auth-overlay" id="authOverlay" aria-modal="true" role="dialog">
+  <div class="auth-shell">
+    <section class="auth-brand-panel">
+      <p class="eyebrow"><span></span> Blue Current Cloud V23</p>
+      <h1>Secure access for every restaurant organization.</h1>
+      <p>Authentication, enforced roles, protected APIs, tenant boundaries, and organization-aware sessions are now part of the platform.</p>
+      <div class="auth-security-list">
+        <span>Password hashing with scrypt</span>
+        <span>Hashed bearer sessions</span>
+        <span>Organization data isolation</span>
+        <span>Role-enforced API permissions</span>
+      </div>
+    </section>
+    <section class="auth-form-panel">
+      <div>
+        <small>Hospitality OS</small>
+        <h2>Sign in to Blue Current</h2>
+        <p>Use a V23 demo account to enter the protected application.</p>
+      </div>
+      <form id="authLoginForm">
+        <label>Email<input id="authEmail" type="email" value="keith@bluecurrent.demo" autocomplete="username" required></label>
+        <label>Password<input id="authPassword" type="password" value="BlueCurrent23!" autocomplete="current-password" required></label>
+        <button class="button button-gold button-full" type="submit">Sign in</button>
+        <p id="authMessage"></p>
+      </form>
+      <div class="auth-demo-accounts">
+        <button id="authDemoKeith"><strong>Owner account</strong><span>Keith · all Chefs locations</span></button>
+        <button id="authDemoSarah"><strong>Manager account</strong><span>Sarah · Marina Grille only</span></button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section class="auth-organizations section-shell" id="auth-organizations">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V23 · Authentication & Organizations</p>
+      <h2>Protected access with real tenant and role boundaries.</h2>
+      <p>Every protected request now resolves an authenticated user, active organization, role, and authorized location scope.</p>
+    </div>
+
+    <div class="auth-session-grid reveal">
+      <article class="auth-profile-card">
+        <div class="auth-avatar">KM</div>
+        <div>
+          <small>Signed-in user</small>
+          <h3 id="authUserName">Not signed in</h3>
+          <p id="authUserEmail">—</p>
+        </div>
+        <span class="auth-session-status" id="authSessionStatus">Locked</span>
+      </article>
+      <article class="auth-context-card">
+        <label>Active organization
+          <select id="authOrganizationSelect"></select>
+        </label>
+        <div><small>Enforced role</small><strong id="authUserRole">—</strong></div>
+        <button class="button button-gold button-full" id="authLogout" type="button">Sign out</button>
+      </article>
+    </div>
+
+    <div class="auth-console-grid reveal">
+      <article class="auth-console-card">
+        <div class="auth-card-head"><div><small>Authorization model</small><h3>Role Permissions</h3></div><span>Server enforced</span></div>
+        <div class="auth-role-list">
+          <p><strong>Owner</strong><span>All locations, users, settings, invitations, and operational writes</span></p>
+          <p><strong>General Manager</strong><span>Assigned locations, operational writes, and team invitations</span></p>
+          <p><strong>Host</strong><span>Read access and reservation operations</span></p>
+          <p><strong>Kitchen Manager</strong><span>Read access and kitchen operational events</span></p>
+        </div>
+      </article>
+
+      <article class="auth-console-card">
+        <div class="auth-card-head"><div><small>Team access</small><h3>Create Invitation</h3></div><span>7-day token</span></div>
+        <form class="auth-invite-form" id="authInviteForm">
+          <label>Email<input id="authInviteEmail" type="email" placeholder="manager@restaurant.com" required></label>
+          <label>Role<select id="authInviteRole"><option value="general_manager">General Manager</option><option value="host">Host</option><option value="kitchen_manager">Kitchen Manager</option></select></label>
+          <label>Location<select id="authInviteLocation"><option value="loc_marina">Marina Grille</option><option value="loc_harbor">Harbor House</option><option value="loc_river">River & Rail</option></select></label>
+          <button class="button button-primary" type="submit">Generate invitation</button>
+          <small id="authInviteResult"></small>
+        </form>
+      </article>
+
+      <article class="auth-console-card auth-boundary-card">
+        <div class="auth-card-head"><div><small>Tenant isolation</small><h3>Organization Boundary</h3></div><span>Active</span></div>
+        <div class="auth-boundary-visual">
+          <div><strong>Authenticated session</strong><span>User + role + organization</span></div>
+          <i>→</i>
+          <div><strong>Protected API</strong><span>Permission evaluation</span></div>
+          <i>→</i>
+          <div><strong>Scoped database</strong><span>Authorized records only</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="page-noise" aria-hidden="true"></div>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="site-header" id="top">
+    <div class="container nav-shell">
+      <a class="brand" href="#top" aria-label="Blue Current home">
+        <img src="assets/logo-mark.svg" alt="" width="44" height="44">
+        <span class="brand-copy">
+          <strong>Blue Current</strong>
+          <small>Hospitality OS</small>
+        </span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="#blue-current-live">Live</a>
+        <a href="#digital-twin">Digital Twin</a>
+        <a href="#mission-control">Mission Control</a>
+        <a href="#time-machine">Time Machine</a>
+        <a href="#portfolio-mode">Portfolio</a>
+        <a href="#predictive-operations">Predictive</a>
+        <a href="#autonomous-operations">Autonomous</a>
+        <a href="#guest-intelligence">Guests</a>
+        <a href="#workforce-intelligence">Workforce</a>
+        <a href="#inventory-intelligence">Inventory</a>
+        <a href="#time-clock">Time Clock</a>
+        <a href="#production-readiness">Production</a>
+        <a href="#live-floor-operations">Floor</a>
+        <a href="#reservation-operations">Reservations</a>
+        <a href="#staff-sections">Staff</a>
+        <a href="#kitchen-command-center">Kitchen</a>
+        <a href="#service-coordination">Service</a>
+        <a href="#ai-restaurant-brain">AI Brain</a>
+        <a href="#executive-command-center">Executive</a>
+        <a href="#autonomous-operations">Autonomous</a>
+        <a href="#guest-intelligence">Guests</a>
+        <a href="#autonomous-operations">Autonomous</a>
+        <a href="#executive-command-center">Executive</a>
+        <a href="#ai-restaurant-brain">AI Brain</a>
+        <a href="#cloud-foundation">Cloud</a>
+        <a href="#auth-organizations">Access</a>
+        <a href="#ai-concierge">Concierge</a>
+      </nav>
+
+      <a class="button button-light button-small" href="#pilot">Book a private demo</a>
+
+      <button class="menu-button" type="button" aria-label="Open navigation" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" hidden>
+      <a href="#blue-current-live">Live</a>
+      <a href="#digital-twin">Digital Twin</a>
+      <a href="#mission-control">Mission Control</a>
+      <a href="#time-machine">Time Machine</a>
+      <a href="#portfolio-mode">Portfolio</a>
+      <a href="#predictive-operations">Predictive</a>
+      <a href="#autonomous-operations">Autonomous</a>
+      <a href="#production-readiness">Production</a>
+      <a href="#live-floor-operations">Floor</a>
+      <a href="#reservation-operations">Reservations</a>
+      <a href="#staff-sections">Staff</a>
+        <a href="#kitchen-command-center">Kitchen</a>
+        <a href="#service-coordination">Service</a>
+      <a href="#cloud-foundation">Cloud</a>
+      <a href="#auth-organizations">Access</a>
+      <a href="#ai-concierge">Concierge</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero container">
+      <div class="hero-copy reveal">
+        <p class="eyebrow"><span></span> Built for modern hospitality groups</p>
+        <h1>Great hospitality starts <em>before</em> guests walk through the door.</h1>
+        <p class="hero-description">
+          Blue Current answers reservation calls with warmth, confirms every detail,
+          and gives every location one calm operating view.
+        </p>
+
+        <div class="hero-actions">
+          <button class="button button-gold" id="watchDemo" type="button">Watch the evening unfold</button>
+          <a class="text-link" href="#pilot">Plan a pilot <span aria-hidden="true">↗</span></a>
+        </div>
+
+        <div class="hero-outcomes" aria-label="Blue Current outcomes">
+          <div><strong>Every call</strong><span>acknowledged</span></div>
+          <div><strong>Every guest</strong><span>remembered</span></div>
+          <div><strong>Every location</strong><span>visible</span></div>
+        </div>
+      </div>
+
+      <div class="product-stage reveal" id="experience" aria-label="Interactive reservation workflow demonstration">
+        <div class="stage-chrome">
+          <div>
+            <span class="stage-label">Dinner service</span>
+            <strong id="serviceClock">6:42 PM</strong>
+          </div>
+          <div class="stage-controls">
+            <span class="live-chip"><i></i> Live</span>
+            <button class="icon-button" id="replayButton" type="button" aria-label="Replay demonstration">↻</button>
+            <button class="icon-button" id="pauseButton" type="button" aria-label="Pause demonstration">Ⅱ</button>
+          </div>
+        </div>
+
+        <div class="location-bar">
+          <div class="location-emblem">MG</div>
+          <div>
+            <strong>Marina Grille</strong>
+            <span>Belmar · Waterfront dining</span>
+          </div>
+          <button class="location-chevron" type="button" aria-label="Switch location">⌄</button>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel call-panel">
+            <div class="panel-title">
+              <span>Guest line</span>
+              <span class="status-text" id="callStatus">Incoming call</span>
+            </div>
+
+            <div class="caller-row">
+              <div class="caller-icon">☎</div>
+              <div>
+                <strong>New guest</strong>
+                <span>(732) 555-0148</span>
+              </div>
+              <div class="call-timer" id="callTimer">00:03</div>
+            </div>
+
+            <div class="waveform" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span>
+            </div>
+
+            <div class="transcript" aria-live="polite">
+              <div class="message message-ai">
+                <span>Blue Current</span>
+                <p id="aiLine">Good evening, thank you for calling Marina Grille. How may I help?</p>
+              </div>
+              <div class="message message-guest">
+                <span>Guest</span>
+                <p id="guestLine">A table for four around seven-thirty, preferably outside.</p>
+              </div>
+            </div>
+
+            <div class="thinking-row">
+              <div><i></i><span id="thinkingText">Listening</span></div>
+              <span>AI host</span>
+            </div>
+          </article>
+
+          <article class="panel floor-panel">
+            <div class="panel-title">
+              <span>Dining room</span>
+              <span id="occupancyLabel">78% occupied</span>
+            </div>
+
+            <div class="floor-map">
+              <div class="table table-round occupied" style="--x:12%;--y:16%">2</div>
+              <div class="table reserved" style="--x:43%;--y:13%">4</div>
+              <div class="table table-round" style="--x:77%;--y:17%">2</div>
+              <div class="table occupied" style="--x:10%;--y:51%">6</div>
+              <div class="table featured" id="targetTable" style="--x:43%;--y:48%">14</div>
+              <div class="table occupied" style="--x:78%;--y:50%">4</div>
+              <div class="table table-round reserved" style="--x:13%;--y:81%">2</div>
+              <div class="table" style="--x:48%;--y:80%">4</div>
+              <div class="table table-round occupied" style="--x:80%;--y:81%">2</div>
+              <div class="water-edge">Waterfront deck</div>
+            </div>
+
+            <div class="legend">
+              <span><i class="dot open"></i>Open</span>
+              <span><i class="dot reserved-dot"></i>Reserved</span>
+              <span><i class="dot occupied-dot"></i>Seated</span>
+            </div>
+          </article>
+
+          <article class="panel metrics-panel">
+            <div class="metric">
+              <span>Guests welcomed</span>
+              <strong id="guestCount">184</strong>
+              <small>Tonight</small>
+            </div>
+            <div class="metric">
+              <span>Calls answered</span>
+              <strong id="callCount">31</strong>
+              <small>100% today</small>
+            </div>
+            <div class="metric">
+              <span>Reservations</span>
+              <strong id="reservationCount">48</strong>
+              <small id="reservationDelta">+6 from last Friday</small>
+            </div>
+          </article>
+        </div>
+
+        <div class="event-strip">
+          <span class="event-dot"></span>
+          <div>
+            <small id="eventLabel">Waiting for guest request</small>
+            <strong id="eventDetail">Reservation workflow ready</strong>
+          </div>
+          <span id="eventTime">Now</span>
+        </div>
+
+        <div class="reservation-toast" id="reservationToast" role="status" aria-live="polite">
+          <span class="confirmation-mark">✓</span>
+          <div>
+            <small>Reservation confirmed</small>
+            <strong>Anthony Russo · Party of 4</strong>
+            <span>7:30 PM · Waterfront deck · Table 14</span>
+          </div>
+        </div>
+
+        <div class="sms-toast" id="smsToast" aria-hidden="true">
+          <div><span>Blue Current</span><small>now</small></div>
+          <p>Your table at Marina Grille is confirmed for 4 guests at 7:30 PM. We look forward to welcoming you.</p>
+          <span>Delivered ✓</span>
+        </div>
+
+        <p class="demo-caption">Illustrative product demonstration. Names, numbers, and performance data are sample content.</p>
+      </div>
+    </section>
+    <section class="live-command-center container" id="blue-current-live" aria-labelledby="liveTitle">
+      <div class="live-command-head reveal">
+        <div><p class="eyebrow"><span></span> Blue Current Live</p><h2 id="liveTitle">One command center for the entire service.</h2><p>Live operating health, predictive signals, guest activity, and a state-aware AI copilot—coordinated through the same event architecture.</p></div>
+        <div class="live-health-ring" id="liveHealthRing"><strong id="liveHealthScore">94</strong><span>Restaurant health</span></div>
+      </div>
+      <div class="live-kpi-grid reveal">
+        <button type="button" data-live-focus="guests"><small>Guests dining</small><strong id="liveGuestsDining">84</strong><span>Across 29 active tables</span></button>
+        <button type="button" data-live-focus="tables"><small>Tables active</small><strong id="liveTablesActive">29</strong><span id="liveTablePressure">Balanced floor</span></button>
+        <button type="button" data-live-focus="calls"><small>Calls today</small><strong id="liveCallsToday">53</strong><span>98% answered</span></button>
+        <button type="button" data-live-focus="revenue"><small>Revenue pace</small><strong id="liveRevenue">$12,884</strong><span id="liveRevenueForecast">Forecast $18,720</span></button>
+      </div>
+      <div class="live-command-grid">
+        <article class="live-copilot-card reveal">
+          <div class="live-panel-head"><div><small>AI Copilot</small><h3>Ask the operation.</h3></div><span class="live-status"><i></i> State connected</span></div>
+          <div class="copilot-answer" id="copilotAnswer"><small>Manager briefing</small><p>Service is healthy. Prepare Table 14 for a VIP birthday arrival and open the patio before the next demand wave.</p></div>
+          <div class="copilot-prompts" id="copilotPrompts">
+            <button type="button" data-copilot-query="vip">Show tonight's VIP guests</button><button type="button" data-copilot-query="birthdays">How many birthdays?</button><button type="button" data-copilot-query="slowdown">What's slowing service?</button><button type="button" data-copilot-query="revenue">Predict closing revenue</button>
+          </div>
+          <form class="copilot-form" id="copilotForm"><input id="copilotInput" type="text" placeholder="Ask Blue Current a question…" autocomplete="off"><button type="submit">Ask</button></form>
+        </article>
+        <article class="live-timeline-card reveal">
+          <div class="live-panel-head"><div><small>Operational timeline</small><h3>Search the service.</h3></div><input id="liveTimelineSearch" type="search" placeholder="Guest, table, event…"></div>
+          <div class="live-event-stream" id="liveEventStream"><p class="live-event-empty">Waiting for live events…</p></div>
+        </article>
+        <article class="connector-card reveal">
+          <div class="live-panel-head"><div><small>Connector layer</small><h3>Integration-ready core.</h3></div><button type="button" id="connectorPulse">Run connector pulse</button></div>
+          <div class="connector-grid" id="connectorGrid">
+            <div data-connector="Twilio"><i></i><span><strong>Twilio</strong><small>Voice + SMS</small></span><b>Ready</b></div><div data-connector="Toast"><i></i><span><strong>Toast POS</strong><small>Orders + revenue</small></span><b>Adapter</b></div><div data-connector="OpenTable"><i></i><span><strong>OpenTable</strong><small>Reservations</small></span><b>Adapter</b></div><div data-connector="Stripe"><i></i><span><strong>Stripe</strong><small>Deposits + payments</small></span><b>Ready</b></div>
+          </div>
+        </article>
+        <article class="live-action-card reveal">
+          <small>Next best action</small><h3 id="liveNextAction">Prepare Table 14 for VIP arrival</h3><p id="liveNextActionDetail">Birthday preferences are loaded. Notify the host and verify the dessert note.</p><button type="button" id="liveRunSequence">Run live service pulse</button>
+        </article>
+      </div>
+    </section>
+
+
+    <section class="hospitality-statement">
+      <div class="container statement-inner">
+        <p class="eyebrow eyebrow-light"><span></span> Hospitality before technology</p>
+        <blockquote>“Welcome every caller with the same warmth they feel when they arrive.”</blockquote>
+        <p>
+          Blue Current works quietly behind the scenes—supporting the host stand,
+          preserving each restaurant’s personality, and keeping management informed.
+        </p>
+      </div>
+    </section>
+
+    <section class="journey-section container" id="journey">
+      <div class="section-heading reveal">
+        <p class="eyebrow"><span></span> One guest journey</p>
+        <h2>From the first ring to the first welcome.</h2>
+        <p>
+          A reservation should not feel like a transaction. Blue Current carries
+          the guest’s needs from the call into the dining room.
+        </p>
+      </div>
+
+      <div class="journey-grid">
+        <article class="journey-card reveal">
+          <span class="journey-number">01</span>
+          <div class="journey-icon">☎</div>
+          <h3>The guest is greeted</h3>
+          <p>A warm, location-specific welcome—even during the dinner rush.</p>
+        </article>
+        <article class="journey-card reveal">
+          <span class="journey-number">02</span>
+          <div class="journey-icon">⌁</div>
+          <h3>Availability is understood</h3>
+          <p>Party size, timing, seating preference, celebrations, and special notes.</p>
+        </article>
+        <article class="journey-card reveal">
+          <span class="journey-number">03</span>
+          <div class="journey-icon">✓</div>
+          <h3>The reservation is confirmed</h3>
+          <p>The guest receives clear details while the restaurant’s view updates.</p>
+        </article>
+        <article class="journey-card reveal">
+          <span class="journey-number">04</span>
+          <div class="journey-icon">✦</div>
+          <h3>The team is prepared</h3>
+          <p>Hosts see the context that turns a reservation into a personal welcome.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="evening-service" id="evening-service">
+      <div class="container">
+        <div class="section-heading section-heading-light reveal">
+          <p class="eyebrow eyebrow-light"><span></span> A live evening service</p>
+          <h2>Watch Blue Current quietly orchestrate the dinner rush.</h2>
+          <p>Follow one Friday evening—from opening preparation to a guest’s arrival—and see every call, table, and detail stay connected.</p>
+        </div>
+        <div class="evening-simulator reveal">
+          <div class="evening-header">
+            <div><small>Marina Grille · Friday</small><strong id="eveningTime">5:55 PM</strong></div>
+            <div class="evening-live"><i></i><span id="eveningStatus">Preparing for dinner</span></div>
+          </div>
+          <div class="evening-timeline">
+            <button class="evening-stop active" data-evening-scene="0"><span>5:55</span><i></i><b>Opening</b></button>
+            <button class="evening-stop" data-evening-scene="1"><span>6:08</span><i></i><b>Birthday</b></button>
+            <button class="evening-stop" data-evening-scene="2"><span>6:21</span><i></i><b>Waitlist</b></button>
+            <button class="evening-stop" data-evening-scene="3"><span>6:45</span><i></i><b>Capacity</b></button>
+            <button class="evening-stop" data-evening-scene="4"><span>7:15</span><i></i><b>Opening</b></button>
+            <button class="evening-stop" data-evening-scene="5"><span>8:00</span><i></i><b>Arrival</b></button>
+          </div>
+          <div class="evening-content">
+            <div class="evening-copy">
+              <p id="eveningKicker">Before the doors open</p>
+              <h3 id="eveningTitle">The team begins with a clear view.</h3>
+              <div id="eveningDescription">Managers see expected covers, special occasions, and reservation pacing before the first guest arrives.</div>
+              <div class="evening-highlight"><span id="eveningIcon">☀</span><div><small id="eveningLabel">Service preparation</small><strong id="eveningDetail">48 reservations · 184 guests expected</strong></div></div>
+            </div>
+            <div class="evening-dashboard">
+              <div class="evening-metrics">
+                <div><span>Guests</span><strong id="eveningGuests">184</strong></div>
+                <div><span>Reservations</span><strong id="eveningReservations">48</strong></div>
+                <div><span>Waitlist</span><strong id="eveningWaitlist">0</strong></div>
+                <div><span>Occupancy</span><strong id="eveningOccupancy">12%</strong></div>
+              </div>
+              <div class="evening-feed">
+                <div class="evening-feed-title"><span>Live service feed</span><small id="eveningFeedTime">5:55 PM</small></div>
+                <article class="evening-feed-item primary"><i>✓</i><div><small id="feedOneLabel">Opening brief</small><strong id="feedOneDetail">Special occasions shared with host team</strong></div></article>
+                <article class="evening-feed-item"><i>•</i><div><small id="feedTwoLabel">Dining room</small><strong id="feedTwoDetail">Waterfront section prepared</strong></div></article>
+                <article class="evening-feed-item"><i>•</i><div><small id="feedThreeLabel">Guest line</small><strong id="feedThreeDetail">AI host ready</strong></div></article>
+              </div>
+            </div>
+          </div>
+          <p class="demo-caption">Illustrative service simulation. Times and figures are sample content.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="guest-profile-section">
+      <div class="container guest-profile-grid">
+        <div class="section-heading section-heading-light reveal">
+          <p class="eyebrow eyebrow-light"><span></span> Remember the guest</p>
+          <h2>Context that turns a booking into hospitality.</h2>
+          <p>
+            Preferences, celebrations, and visit history move with the reservation,
+            helping the team deliver a thoughtful arrival.
+          </p>
+          <ul class="feature-list">
+            <li><span>✓</span> Seating preferences and accessibility notes</li>
+            <li><span>✓</span> Birthdays, anniversaries, and special occasions</li>
+            <li><span>✓</span> Visit history and service context</li>
+          </ul>
+        </div>
+
+        <div class="profile-card reveal">
+          <div class="profile-top">
+            <div class="profile-avatar">AR</div>
+            <div>
+              <small>Guest profile</small>
+              <strong>Anthony Russo</strong>
+              <span>Returning guest · 4 visits</span>
+            </div>
+            <span class="vip-chip">Birthday</span>
+          </div>
+
+          <div class="profile-stats">
+            <div><span>Upcoming</span><strong>Tonight · 7:30 PM</strong></div>
+            <div><span>Preference</span><strong>Waterfront seating</strong></div>
+            <div><span>Party</span><strong>4 guests</strong></div>
+          </div>
+
+          <div class="profile-note">
+            <span>Host note</span>
+            <p>Celebrating spouse’s birthday. Offer waterfront seating when available.</p>
+          </div>
+
+          <div class="visit-history">
+            <div class="visit-title"><span>Recent visits</span><small>Last 12 months</small></div>
+            <div class="visit-row"><span>May 18</span><strong>Dinner · Party of 2</strong><small>Waterfront deck</small></div>
+            <div class="visit-row"><span>Feb 09</span><strong>Dinner · Party of 4</strong><small>Main dining room</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section class="host-stand-section" id="host-stand">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow"><span></span> The host stand</p>
+          <h2>A live dining room view built for the rush.</h2>
+          <p>
+            Reservations, walk-ins, table turns, celebrations, and guest notes come together
+            in one focused interface designed for an iPad at the front door.
+          </p>
+        </div>
+
+        <div class="host-device reveal">
+          <div class="device-camera"></div>
+
+          <div class="host-app">
+            <aside class="host-sidebar">
+              <div class="host-brand">
+                <img src="assets/logo-mark.svg" alt="">
+                <div><strong>Blue Current</strong><span>Host Stand</span></div>
+              </div>
+
+              <div class="host-service-card">
+                <small>Friday dinner</small>
+                <strong id="hostClock">6:38 PM</strong>
+                <span><i></i> Service live</span>
+              </div>
+
+              <nav class="host-nav" aria-label="Host stand navigation">
+                <button class="active" type="button"><span>▦</span> Floor</button>
+                <button type="button"><span>◷</span> Reservations</button>
+                <button type="button"><span>≋</span> Waitlist</button>
+                <button type="button"><span>◇</span> Guests</button>
+              </nav>
+
+              <div class="host-quick-stats">
+                <div><span>Seated</span><strong id="hostSeated">42</strong></div>
+                <div><span>Waiting</span><strong id="hostWaiting">3</strong></div>
+                <div><span>Open</span><strong id="hostOpen">4</strong></div>
+              </div>
+
+              <button class="host-add-button" type="button" id="addWalkIn">+ Add walk-in</button>
+            </aside>
+
+            <main class="host-main">
+              <div class="host-topbar">
+                <div>
+                  <small>Marina Grille · Waterfront dining</small>
+                  <h3>Dining room</h3>
+                </div>
+                <div class="host-top-actions">
+                  <button type="button">Search guest</button>
+                  <button class="primary" type="button">+ Reservation</button>
+                </div>
+              </div>
+
+              <div class="host-status-bar">
+                <div><i class="status-dot available"></i><span>Available</span><strong id="availableCount">4</strong></div>
+                <div><i class="status-dot reserved"></i><span>Reserved</span><strong id="reservedCount">5</strong></div>
+                <div><i class="status-dot seated"></i><span>Seated</span><strong id="seatedCount">8</strong></div>
+                <div><i class="status-dot cleaning"></i><span>Cleaning</span><strong id="cleaningCount">1</strong></div>
+              </div>
+
+              <div class="host-workspace">
+                <section class="host-floor-panel">
+                  <div class="host-floor-toolbar">
+                    <div>
+                      <button class="active" type="button">Main floor</button>
+                      <button type="button">Waterfront</button>
+                      <button type="button">Private dining</button>
+                    </div>
+                    <span id="hostRecommendation">AI suggestion: Table 14 opens in 12 minutes</span>
+                  </div>
+
+                  <div class="host-floor-map" id="hostFloorMap">
+                    <div class="host-table round seated" data-table="2" style="--x:10%;--y:14%">
+                      <span>2</span><small>6:12</small>
+                    </div>
+                    <div class="host-table reserved" data-table="4" style="--x:37%;--y:12%">
+                      <span>4</span><small>7:00</small>
+                    </div>
+                    <div class="host-table round available" data-table="6" style="--x:70%;--y:14%">
+                      <span>6</span><small>Open</small>
+                    </div>
+                    <div class="host-table seated" data-table="8" style="--x:12%;--y:44%">
+                      <span>8</span><small>6:28</small>
+                    </div>
+                    <div class="host-table cleaning" data-table="14" id="hostFeaturedTable" style="--x:40%;--y:44%">
+                      <span>14</span><small>12 min</small>
+                    </div>
+                    <div class="host-table reserved" data-table="16" style="--x:72%;--y:44%">
+                      <span>16</span><small>7:30</small>
+                    </div>
+                    <div class="host-table round available" data-table="18" style="--x:12%;--y:76%">
+                      <span>18</span><small>Open</small>
+                    </div>
+                    <div class="host-table seated" data-table="20" style="--x:42%;--y:76%">
+                      <span>20</span><small>6:05</small>
+                    </div>
+                    <div class="host-table round reserved" data-table="22" style="--x:73%;--y:76%">
+                      <span>22</span><small>8:00</small>
+                    </div>
+
+                    <div class="host-water-line">Waterfront windows</div>
+
+                    <div class="host-table-detail" id="hostTableDetail">
+                      <div class="host-table-detail-head">
+                        <div><small>Selected table</small><strong>Table 14</strong></div>
+                        <span class="cleaning-chip">Cleaning</span>
+                      </div>
+                      <div class="host-table-detail-grid">
+                        <div><span>Seats</span><strong>4</strong></div>
+                        <div><span>Ready in</span><strong>12 min</strong></div>
+                        <div><span>Next guest</span><strong>Anthony Russo</strong></div>
+                      </div>
+                      <p>Birthday reservation · Waterfront preference · 7:30 PM</p>
+                      <button type="button" id="assignTableButton">Assign when ready</button>
+                    </div>
+                  </div>
+                </section>
+
+                <aside class="host-queue-panel">
+                  <div class="queue-tabs">
+                    <button class="active" type="button" data-queue="waitlist">Waitlist <span id="waitlistBadge">3</span></button>
+                    <button type="button" data-queue="arrivals">Arrivals <span>4</span></button>
+                  </div>
+
+                  <div class="queue-list" id="waitlistQueue">
+                    <article class="queue-item priority">
+                      <span class="queue-time">18m</span>
+                      <div><strong>Sarah Coleman</strong><small>Party of 3 · Flexible</small></div>
+                      <button type="button">Seat</button>
+                    </article>
+                    <article class="queue-item">
+                      <span class="queue-time">11m</span>
+                      <div><strong>Mark Ellis</strong><small>Party of 2 · Bar okay</small></div>
+                      <button type="button">Seat</button>
+                    </article>
+                    <article class="queue-item">
+                      <span class="queue-time">4m</span>
+                      <div><strong>Priya Shah</strong><small>Party of 4 · High chair</small></div>
+                      <button type="button">Seat</button>
+                    </article>
+                  </div>
+
+                  <div class="queue-list hidden" id="arrivalQueue">
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">7:15</span>
+                      <div><strong>Melissa Grant</strong><small>Party of 2 · Anniversary</small></div>
+                      <span class="arrival-chip">Arrived</span>
+                    </article>
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">7:30</span>
+                      <div><strong>Anthony Russo</strong><small>Party of 4 · Birthday</small></div>
+                      <span class="arrival-chip pending">Expected</span>
+                    </article>
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">7:45</span>
+                      <div><strong>Daniel Cho</strong><small>Party of 6</small></div>
+                      <span class="arrival-chip pending">Expected</span>
+                    </article>
+                    <article class="queue-item arrival">
+                      <span class="arrival-time">8:00</span>
+                      <div><strong>Alyssa Moore</strong><small>Party of 3 · High chair</small></div>
+                      <span class="arrival-chip pending">Expected</span>
+                    </article>
+                  </div>
+
+                  <div class="host-note-card">
+                    <div class="host-note-head"><span>Tonight’s moments</span><small>2</small></div>
+                    <div><i>✦</i><p><strong>Birthday</strong><span>Anthony Russo · 7:30 PM</span></p></div>
+                    <div><i>♡</i><p><strong>Anniversary</strong><span>Melissa Grant · 7:15 PM</span></p></div>
+                  </div>
+                </aside>
+              </div>
+
+              <div class="host-bottom-feed">
+                <div class="host-feed-item">
+                  <span>☎</span>
+                  <div><small>6:36 PM</small><strong>Reservation confirmed for party of 4</strong></div>
+                </div>
+                <div class="host-feed-item">
+                  <span>≋</span>
+                  <div><small>6:34 PM</small><strong>Walk-in added to 18-minute wait</strong></div>
+                </div>
+                <div class="host-feed-item">
+                  <span>✓</span>
+                  <div><small>6:31 PM</small><strong>Table 8 seated</strong></div>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+
+        <p class="host-stand-note">
+          Illustrative host-stand concept for product demonstration. Guest names, times, and table data are sample content.
+        </p>
+      </div>
+    </section>
+
+
+    
+
+    
+    
+    
+    <section class="twin-section" id="digital-twin">
+      <div class="container">
+        <div class="twin-intro reveal">
+          <div>
+            <p class="eyebrow"><span></span> Blue Current OS · V15.4</p>
+            <h2>A living view of the restaurant.</h2>
+            <p>
+              Watch one evening unfold across the dining room, reservations, guest recognition,
+              host operations, and leadership metrics—all driven by one shared event timeline.
+            </p>
+          </div>
+          <div class="twin-intro-actions">
+            <button class="twin-button secondary" id="twinReset" type="button">Reset evening</button>
+            <button class="twin-button" id="twinPresentation" type="button">Start presentation</button>
+          </div>
+        </div>
+
+        <div class="portfolio-ribbon reveal">
+          <article><span>Location</span><strong>Marina Grille</strong><small><i></i> Live operation</small></article>
+          <article><span>Guests dining</span><strong id="twinGuests">74</strong><small id="twinGuestDelta">+8 arriving</small></article>
+          <article><span>Occupancy</span><strong id="twinOccupancy">68%</strong><small>Dining room</small></article>
+          <article><span>Average wait</span><strong id="twinWait">12 min</strong><small id="twinWaitTrend">Stable</small></article>
+          <article><span>Active calls</span><strong id="twinCalls">1</strong><small>Concierge coverage</small></article>
+          <article><span>Premier arrivals</span><strong id="twinPremier">3</strong><small>Next 90 minutes</small></article>
+        </div>
+
+        <div class="twin-app reveal">
+          <div class="twin-app-header">
+            <div class="twin-clock">
+              <small>Saturday service</small>
+              <strong id="twinClock">6:42 PM</strong>
+            </div>
+            <div class="twin-health">
+              <span><i class="healthy"></i> Concierge online</span>
+              <span><i class="healthy"></i> Host stand synced</span>
+              <span><i class="healthy"></i> Guest intelligence active</span>
+            </div>
+            <div class="twin-speed">
+              <button type="button" data-speed="1" class="active">1×</button>
+              <button type="button" data-speed="2">2×</button>
+              <button type="button" data-speed="4">4×</button>
+            </div>
+          </div>
+
+          <div class="twin-grid">
+            <section class="twin-panel floor-panel">
+              <div class="twin-panel-head">
+                <div><small>Digital twin</small><strong>Dining room floor</strong></div>
+                <div class="floor-legend">
+                  <span><i class="available"></i> Available</span>
+                  <span><i class="reserved"></i> Reserved</span>
+                  <span><i class="seated"></i> Seated</span>
+                  <span><i class="dining"></i> Dining</span>
+                  <span><i class="reset"></i> Reset</span>
+                </div>
+              </div>
+
+              <div class="restaurant-floor" id="restaurantFloor">
+                <div class="floor-zone waterfront">Waterfront windows</div>
+                <div class="floor-zone bar-zone">Bar</div>
+                <div class="floor-zone patio-zone">Patio</div>
+
+                <button class="floor-table round dining" data-table="1" style="--x:13%;--y:20%;"><span>1</span><small>2</small></button>
+                <button class="floor-table round seated" data-table="2" style="--x:31%;--y:20%;"><span>2</span><small>4</small></button>
+                <button class="floor-table round reserved" data-table="3" style="--x:49%;--y:20%;"><span>3</span><small>4</small></button>
+                <button class="floor-table booth dining" data-table="4" style="--x:68%;--y:18%;"><span>4</span><small>6</small></button>
+                <button class="floor-table booth available" data-table="5" style="--x:84%;--y:18%;"><span>5</span><small>6</small></button>
+
+                <button class="floor-table square dining" data-table="8" style="--x:15%;--y:53%;"><span>8</span><small>4</small></button>
+                <button class="floor-table square reset" data-table="9" style="--x:34%;--y:53%;"><span>9</span><small>4</small></button>
+                <button class="floor-table square seated" data-table="10" style="--x:53%;--y:53%;"><span>10</span><small>4</small></button>
+                <button class="floor-table square dining" data-table="11" style="--x:72%;--y:53%;"><span>11</span><small>4</small></button>
+
+                <button class="floor-table booth available" data-table="12" style="--x:13%;--y:82%;"><span>12</span><small>6</small></button>
+                <button class="floor-table booth dining" data-table="13" style="--x:36%;--y:82%;"><span>13</span><small>6</small></button>
+                <button class="floor-table booth reserved vip" data-table="14" style="--x:60%;--y:82%;"><span>14</span><small>4 · VIP</small></button>
+                <button class="floor-table booth available" data-table="15" style="--x:83%;--y:82%;"><span>15</span><small>6</small></button>
+
+                <div class="host-podium">HOST</div>
+                <div class="floor-call-pulse" id="floorCallPulse"><span>Incoming call</span></div>
+              </div>
+
+              <div class="floor-detail" id="floorDetail">
+                <div><small>Selected table</small><strong id="floorDetailTable">Table 14</strong></div>
+                <div><small>Status</small><strong id="floorDetailStatus">Reserved · 7:15 PM</strong></div>
+                <div><small>Guest</small><strong id="floorDetailGuest">Anthony Russo · Party of 4</strong></div>
+                <div><small>Hospitality note</small><strong id="floorDetailNote">Birthday · Tree nut allergy</strong></div>
+                <div class="floor-detail-actions">
+                  <small>Live table controls</small>
+                  <div id="floorStatusControls" role="group" aria-label="Change selected table status">
+                    <button type="button" data-table-status="available">Available</button>
+                    <button type="button" data-table-status="reserved">Reserved</button>
+                    <button type="button" data-table-status="seated">Seated</button>
+                    <button type="button" data-table-status="dining">Dining</button>
+                    <button type="button" data-table-status="reset">Reset</button>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="twin-panel event-panel">
+              <div class="twin-panel-head">
+                <div><small>Shared event engine</small><strong>Live operations feed</strong></div>
+                <span id="eventCount">8 events</span>
+              </div>
+              <div class="event-feed" id="eventFeed">
+                <article><time>6:42</time><i class="call"></i><div><strong>Concierge answered incoming call</strong><p>Guest requested dinner availability for four.</p></div></article>
+                <article><time>6:40</time><i class="guest"></i><div><strong>Premier guest recognized</strong><p>Anthony Russo profile matched with 11 prior visits.</p></div></article>
+                <article><time>6:37</time><i class="table"></i><div><strong>Table 9 entered reset</strong><p>Estimated ready time: 6:45 PM.</p></div></article>
+                <article><time>6:34</time><i class="host"></i><div><strong>Party seated at Table 10</strong><p>Anniversary note delivered to service team.</p></div></article>
+                <article><time>6:28</time><i class="alert"></i><div><strong>Waterfront demand elevated</strong><p>7:00–8:00 PM requests exceed available inventory.</p></div></article>
+              </div>
+            </section>
+
+            <section class="twin-panel journey-panel">
+              <div class="twin-panel-head">
+                <div><small>Guest journey</small><strong id="journeyTitle">Anthony Russo reservation</strong></div>
+                <span id="journeyStatus">In progress</span>
+              </div>
+              <div class="journey-flow" id="journeyFlow">
+                <article class="complete"><i>1</i><div><strong>Incoming call</strong><small>6:42 PM</small></div></article>
+                <span></span>
+                <article class="active"><i>2</i><div><strong>Concierge</strong><small>Collecting details</small></div></article>
+                <span></span>
+                <article><i>3</i><div><strong>Reservation</strong><small>Pending</small></div></article>
+                <span></span>
+                <article><i>4</i><div><strong>Guest match</strong><small>Pending</small></div></article>
+                <span></span>
+                <article><i>5</i><div><strong>Host stand</strong><small>Pending</small></div></article>
+              </div>
+              <div class="journey-brief" id="journeyBrief">
+                <span>Blue Current is gathering the preferred time, party size, and occasion.</span>
+              </div>
+            </section>
+
+            <section class="twin-panel decisions-panel">
+              <div class="twin-panel-head">
+                <div><small>Operational intelligence</small><strong>Blue Current decisions</strong></div>
+                <button id="decisionRefresh" type="button">Refresh</button>
+              </div>
+              <div class="decision-stack" id="decisionStack">
+                <article class="priority">
+                  <span>Protect</span>
+                  <div><strong>Hold Table 14 until 7:25 PM</strong><p>Premier guest arrival with birthday and allergy notes.</p></div>
+                </article>
+                <article>
+                  <span>Recover</span>
+                  <div><strong>Offer 8:30 PM waterfront seating</strong><p>Likely to recover constrained 7:30 PM demand.</p></div>
+                </article>
+                <article>
+                  <span>Prepare</span>
+                  <div><strong>Stage host coverage at 7:00 PM</strong><p>Six arrivals are forecast within a 12-minute window.</p></div>
+                </article>
+              </div>
+            </section>
+          </div>
+
+          <div class="twin-timeline">
+            <div class="timeline-copy">
+              <small>Evening timeline</small>
+              <strong id="timelineLabel">6:42 PM · Dinner rush building</strong>
+            </div>
+            <input id="timelineScrubber" type="range" min="0" max="100" value="44" aria-label="Evening timeline">
+            <div class="timeline-labels"><span>4 PM</span><span>5:30</span><span>7 PM</span><span>8:30</span><span>10:30</span></div>
+          </div>
+        </div>
+
+        <div class="twin-story reveal">
+          <article><span>One event</span><strong>A guest calls.</strong><p>The concierge understands the request and begins the reservation.</p></article>
+          <article><span>One record</span><strong>The guest is recognized.</strong><p>Preferences, allergies, celebrations, and visit history follow the guest.</p></article>
+          <article><span>One operation</span><strong>Every workspace updates.</strong><p>The host stand, floor, analytics, and executive view reflect the same truth.</p></article>
+        </div>
+
+        <p class="twin-disclaimer">Demonstration data is illustrative. Live deployments would integrate with approved reservation, POS, telephony, and guest systems.</p>
+      </div>
+      <div class="twin-toast-stack" id="twinToastStack" aria-live="polite"></div>
+    </section>
+
+
+<section class="mission-control-section" id="mission-control">
+  <div class="container">
+    <div class="mission-control-heading reveal">
+      <div>
+        <p class="eyebrow"><span></span> Live operational intelligence</p>
+        <h2>Mission Control</h2>
+        <p>One calm, real-time view of every event moving through the hospitality operation.</p>
+      </div>
+      <div class="mission-control-actions">
+        <button type="button" id="missionReplay">Replay live journey</button>
+        <button type="button" id="missionDeveloperToggle">Developer overlay</button>
+        <button type="button" id="missionClear">Clear feed</button>
+      </div>
+    </div>
+
+    <div class="mission-control-shell reveal">
+      <aside class="mission-status-rail">
+        <div class="mission-live-badge"><i></i><span>System live</span></div>
+        <article><span>Events processed</span><strong id="missionEventCount">0</strong></article>
+        <article><span>Modules synchronized</span><strong id="missionModuleCount">5</strong></article>
+        <article><span>Current occupancy</span><strong id="missionOccupancy">0%</strong></article>
+        <article><span>Revenue recovered</span><strong id="missionRevenue">$0</strong></article>
+        <div class="mission-score-card">
+          <div><span>Restaurant health</span><strong id="missionHealthScore">96</strong></div>
+          <div class="mission-score-track"><i id="missionHealthBar"></i></div>
+          <small id="missionHealthLabel">Excellent</small>
+        </div>
+        <div class="mission-health" id="missionPlatformHealth">
+          <small>Platform health</small>
+          <strong><i></i><span id="missionPlatformHealthText">All systems operational</span></strong>
+        </div>
+      </aside>
+
+      <div class="mission-feed-panel">
+        <div class="mission-feed-header">
+          <div><small>Marina Grille · Live service</small><strong id="missionHeadline">Waiting for the next operational event</strong></div>
+          <time id="missionClock">Now</time>
+        </div>
+
+        <div class="mission-journey" aria-label="Current guest journey">
+          <div class="mission-journey-step" data-stage="call"><i>1</i><span>Call</span></div>
+          <div class="mission-journey-step" data-stage="recognized"><i>2</i><span>Recognized</span></div>
+          <div class="mission-journey-step" data-stage="matched"><i>3</i><span>Matched</span></div>
+          <div class="mission-journey-step" data-stage="confirmed"><i>4</i><span>Confirmed</span></div>
+          <div class="mission-journey-step" data-stage="synced"><i>5</i><span>Synced</span></div>
+        </div>
+
+        <div class="mission-event-feed" id="missionEventFeed" aria-live="polite">
+          <div class="mission-empty-state" id="missionEmptyState">
+            <span>⌁</span>
+            <strong>Event bus connected</strong>
+            <p>The live service journey will appear here automatically.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="mission-state-panel">
+        <div class="mission-state-heading"><small>Shared application state</small><strong>Single source of truth</strong></div>
+        <dl>
+          <div><dt>Service</dt><dd id="missionService">Closed</dd></div>
+          <div><dt>Active guest</dt><dd id="missionGuest">—</dd></div>
+          <div><dt>Assigned table</dt><dd id="missionTable">—</dd></div>
+          <div><dt>Reservations</dt><dd id="missionReservations">220</dd></div>
+          <div><dt>Calls answered</dt><dd id="missionCalls">176</dd></div>
+        </dl>
+        <div class="mission-brief">
+          <small>Executive brief</small>
+          <p id="missionBrief">Waiting for dinner service…</p>
+        </div>
+        <div class="mission-ai-alert" id="missionAiAlert">
+          <div><span>AI</span><small>Manager signal</small></div>
+          <strong id="missionAlertTitle">Operation stable</strong>
+          <p id="missionAlertText">Mission Control will surface priority conditions as service develops.</p>
+        </div>
+        <div class="mission-recommendations">
+          <div class="mission-recommendations-head"><small>Recommended actions</small><span id="missionRecommendationCount">0</span></div>
+          <div id="missionRecommendationList" class="mission-recommendation-list">
+            <p class="mission-no-recommendations">No intervention required.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="time-machine-section" id="time-machine">
+  <div class="container">
+    <div class="time-machine-heading reveal">
+      <div><span class="eyebrow">Service replay</span><h2>Time Machine</h2><p>Rewind the restaurant, inspect every operational moment, and replay the dinner rush across the entire Hospitality OS.</p></div>
+      <div class="time-machine-actions"><button class="button button-primary" type="button" id="timeMachinePlay">Play service</button><button class="button button-secondary" type="button" id="timeMachineLive">Return live</button></div>
+    </div>
+    <div class="time-machine-shell reveal">
+      <div class="time-machine-player">
+        <div class="time-machine-now"><div><small>Selected moment</small><strong id="timeMachineTime">LIVE</strong></div><div><small>Operational state</small><strong id="timeMachineLabel">Current service restored</strong></div><span id="timeMachineStage">Live</span></div>
+        <div class="time-machine-scrubber"><div class="time-machine-progress"><i id="timeMachineProgressBar"></i></div><input id="timeMachineSlider" type="range" min="0" max="8" value="0" step="1" aria-label="Service timeline"></div>
+        <div class="time-machine-scale"><span>6:00 PM</span><span>7:00 PM</span><span>8:24 PM</span></div>
+        <div class="time-machine-kpis"><article><small>Occupancy</small><strong id="timeMachineOccupancy">42%</strong></article><article><small>Reservations</small><strong id="timeMachineReservations">206</strong></article><article><small>Revenue pace</small><strong id="timeMachineRevenue">$28,100</strong></article></div>
+      </div>
+      <aside class="time-machine-events-panel"><div class="time-machine-panel-head"><small>Recorded service</small><strong>Operational moments</strong></div><div id="timeMachineEvents" class="time-machine-events"></div></aside>
+    </div>
+  </div>
+</section>
+<section class="portfolio-mode-section" id="portfolio-mode">
+  <div class="container">
+    <div class="portfolio-mode-heading reveal">
+      <div><span class="eyebrow">Multi-location command</span><h2>Portfolio Mode</h2><p>See every restaurant, compare operating health, and move from group-level intelligence to a single location without leaving the command center.</p></div>
+      <div class="portfolio-mode-actions"><button class="button button-primary" type="button" id="portfolioPulse">Run portfolio pulse</button><button class="button button-secondary" type="button" id="portfolioReset">Reset view</button></div>
+    </div>
+    <div class="portfolio-summary-grid reveal">
+      <article><small>Portfolio revenue</small><strong id="portfolioRevenue">$62,660</strong><span id="portfolioRevenueTrend">+13.4% vs last Friday</span></article>
+      <article><small>Average occupancy</small><strong id="portfolioOccupancy">86%</strong><span>Across 4 active locations</span></article>
+      <article><small>Guests in service</small><strong id="portfolioGuests">1,746</strong><span>Tonight's expected covers</span></article>
+      <article><small>Locations requiring action</small><strong id="portfolioAlerts">1</strong><span id="portfolioAlertSummary">Atlantic Bar kitchen delay</span></article>
+    </div>
+    <div class="portfolio-command-shell reveal">
+      <div class="portfolio-location-grid" id="portfolioLocationGrid" aria-label="Restaurant portfolio"></div>
+      <aside class="portfolio-focus-panel">
+        <div class="portfolio-focus-head"><div><small>Location focus</small><strong id="portfolioFocusName">Marina Grille</strong></div><span id="portfolioFocusStatus" class="portfolio-status healthy">Healthy</span></div>
+        <div class="portfolio-focus-kpis"><article><small>Occupancy</small><strong id="portfolioFocusOccupancy">91%</strong></article><article><small>Revenue</small><strong id="portfolioFocusRevenue">$18,240</strong></article><article><small>Health</small><strong id="portfolioFocusHealth">94</strong></article><article><small>Kitchen</small><strong id="portfolioFocusKitchen">9 min</strong></article></div>
+        <div class="portfolio-focus-intelligence"><small>AI portfolio brief</small><p id="portfolioFocusBrief">Marina Grille is operating above plan with strong guest flow and no immediate intervention required.</p></div>
+        <button type="button" id="portfolioOpenLocation">Open location in Mission Control</button>
+      </aside>
+    </div>
+  </div>
+</section>
+
+
+<section class="predictive-operations-section" id="predictive-operations">
+  <div class="container">
+    <div class="predictive-heading reveal">
+      <div><span class="eyebrow">Predictive operations</span><h2>See the pressure before it arrives.</h2><p>Blue Current converts live operating signals into capacity, kitchen, staffing, and revenue forecasts—then recommends the next move.</p></div>
+      <div class="predictive-actions"><button class="button button-primary" id="forecastRun" type="button">Run predictive service</button><button class="button button-secondary" id="forecastNext" type="button">Next forecast</button></div>
+    </div>
+    <div class="predictive-status reveal"><div><small>Forecast state</small><strong id="predictionState">Current service</strong></div><span id="forecastConfidence">94% confidence</span></div>
+    <div class="predictive-grid reveal">
+      <article class="predictive-card capacity-card"><div class="predictive-card-head"><div><small>Capacity forecast</small><strong>Dining room demand</strong></div><span id="forecastWait">12 min wait</span></div><div class="capacity-numbers"><div><small>Now</small><b id="forecastOccNow">82%</b></div><div><small>+15 min</small><b id="forecastOcc15">89%</b></div><div><small>+30 min</small><b id="forecastOcc30">94%</b></div></div><div class="forecast-track"><i id="forecastBar15"></i></div><div class="forecast-track muted"><i id="forecastBar30"></i></div></article>
+      <article class="predictive-card"><div class="predictive-card-head"><div><small>Kitchen load</small><strong>Ticket-time predictor</strong></div><span>Live</span></div><div class="predictive-dual"><div><small>Current</small><b id="forecastKitchenNow">11 min</b></div><div><small>Projected</small><b id="forecastKitchenProjected">15 min</b></div></div><p id="forecastKitchenReason">Two large parties arrive within 25 minutes.</p></article>
+      <article class="predictive-card"><div class="predictive-card-head"><div><small>Revenue forecast</small><strong>Expected close</strong></div><span id="forecastRevenueConfidence">94%</span></div><div class="predictive-dual"><div><small>Current</small><b id="forecastRevenueNow">$8,420</b></div><div><small>Forecast</small><b id="forecastRevenueClose">$13,950</b></div></div><p>Calculated from pace, covers, table turns, and projected demand.</p></article>
+      <article class="predictive-card recommendation-card"><small>Staffing advisor</small><strong id="forecastStaffing">Balanced</strong><div class="recommended-action"><small>Recommended action</small><b id="forecastAction">Prepare patio section</b></div></article>
+    </div>
+    <div class="predictive-brief reveal"><div><small>AI operational briefing</small><strong>Brief me</strong></div><p id="forecastBrief">Current service. Occupancy is 82% and is projected to reach 89% within fifteen minutes. Kitchen time is expected to move from 11 to 15 minutes. Forecast close is $13,950. Recommended action: prepare patio section.</p></div>
+  </div>
+</section>
+
+<section class="guest-journey-live-section" id="guest-journey-live">
+  <div class="container">
+    <div class="guest-journey-live-heading reveal">
+      <div>
+        <p class="eyebrow"><span></span> Connected guest lifecycle</p>
+        <h2>Guest Journey Live</h2>
+        <p>Follow one guest from the first call through the dining experience and into the next visit.</p>
+      </div>
+      <div class="guest-journey-live-actions">
+        <button type="button" id="guestJourneyPlay" class="primary">Run full journey</button>
+        <button type="button" id="guestJourneyReset">Reset</button>
+      </div>
+    </div>
+
+    <div class="guest-journey-live-shell reveal">
+      <div class="guest-journey-summary">
+        <article><span>Active guest</span><strong id="guestJourneyGuest">Waiting for guest</strong></article>
+        <article><span>Current stage</span><strong id="guestJourneyCurrentStage">Not started</strong></article>
+        <article><span>Journey complete</span><strong id="guestJourneyProgress">0%</strong></article>
+        <div class="guest-journey-progress"><i id="guestJourneyProgressBar"></i></div>
+      </div>
+
+      <div class="guest-journey-track" id="guestJourneyTrack" aria-label="Live guest journey stages"></div>
+
+      <aside class="guest-journey-history-panel">
+        <div><small>Live journey history</small><strong>One guest. One connected record.</strong></div>
+        <div class="guest-journey-history" id="guestJourneyHistory"></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="intelligence-network-section" id="intelligence-network" aria-labelledby="intelligenceTitle">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow">V20 · Intelligence Network</p>
+      <h2 id="intelligenceTitle">Every location learns from the portfolio.</h2>
+      <p>Compare operating performance, reuse successful decisions, and give leadership one live view across the restaurant group.</p>
+    </div>
+
+    <div class="intel-summary-grid reveal">
+      <article><small>Portfolio health</small><strong id="intelPortfolioHealth">94</strong><span>Across 6 locations</span></article>
+      <article><small>Forecast revenue</small><strong id="intelPortfolioRevenue">$184,420</strong><span id="intelRevenueTrend">+12.8% vs last Friday</span></article>
+      <article><small>Active guests</small><strong id="intelActiveGuests">684</strong><span>Live service network</span></article>
+      <article><small>Knowledge confidence</small><strong id="intelKnowledgeConfidence">93%</strong><span>42 learned outcomes</span></article>
+    </div>
+
+    <div class="intel-layout reveal">
+      <section class="intel-panel intel-locations-panel">
+        <div class="intel-panel-head"><div><small>Executive command center</small><h3>Restaurant network</h3></div><button id="intelPulse">Run network pulse</button></div>
+        <div id="intelLocationGrid" class="intel-location-grid"></div>
+      </section>
+
+      <section class="intel-panel intel-detail-panel">
+        <div class="intel-panel-head"><div><small>Selected location</small><h3 id="intelSelectedName">Marina Grille</h3></div><span id="intelSelectedStatus" class="intel-status healthy">Healthy</span></div>
+        <div class="intel-detail-metrics">
+          <div><span>Health</span><strong id="intelSelectedHealth">96</strong></div>
+          <div><span>Occupancy</span><strong id="intelSelectedOccupancy">91%</strong></div>
+          <div><span>Kitchen</span><strong id="intelSelectedKitchen">11.2 min</strong></div>
+          <div><span>Revenue</span><strong id="intelSelectedRevenue">$31,800</strong></div>
+        </div>
+        <div class="intel-ai-brief"><small>AI portfolio brief</small><p id="intelLocationBrief">Marina Grille is outperforming the portfolio on kitchen speed and reservation conversion.</p></div>
+      </section>
+
+      <section class="intel-panel intel-benchmark-panel">
+        <div class="intel-panel-head"><div><small>AI benchmarking</small><h3>Performance ranking</h3></div><select id="intelBenchmarkSelect" aria-label="Benchmark metric"><option value="health">Health score</option><option value="kitchen">Kitchen speed</option><option value="revenue">Revenue</option><option value="occupancy">Occupancy</option></select></div>
+        <div id="intelBenchmarkRows" class="intel-benchmark-rows"></div>
+      </section>
+
+      <section class="intel-panel intel-knowledge-panel">
+        <div class="intel-panel-head"><div><small>Knowledge engine</small><h3>Proven playbooks</h3></div><span class="live-indicator">Learning</span></div>
+        <div id="intelKnowledgeFeed" class="intel-knowledge-feed"></div>
+      </section>
+
+      <section class="intel-panel intel-report-panel">
+        <div><small>Executive reporting</small><h3>Portfolio operating brief</h3><p id="intelExecutiveBrief">All six locations are synchronized. One location requires attention and two proven playbooks are ready to deploy.</p></div>
+        <div class="intel-report-actions"><button id="intelGenerateReport">Generate report</button><button id="intelShareLearning">Share best practice</button></div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="autonomous-operations-section" id="autonomous-operations" aria-labelledby="autonomousTitle">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow">V19 · Autonomous Operations</p>
+      <h2 id="autonomousTitle">Your AI restaurant manager.</h2>
+      <p>Blue Current evaluates service conditions, recommends the next best action, learns from accepted decisions, and lets operators test scenarios before they affect guests.</p>
+    </div>
+
+    <div class="autonomous-command-grid reveal">
+      <article class="autonomous-hero-card">
+        <div class="autonomous-health-ring"><small>Restaurant health</small><strong id="autonomousHealth">94</strong><span>Live</span></div>
+        <div><small>Next best action</small><h3 id="autonomousNextAction">Maintain current pacing</h3><p id="autonomousConfidence">89% confidence</p><button id="autonomousEvaluate" class="autonomous-primary">Evaluate service now</button></div>
+      </article>
+      <article class="autonomous-copilot-card">
+        <small>Natural-language command center</small><h3>Ask Blue Current</h3>
+        <div class="autonomous-command"><input id="autonomousCommandInput" value="What should I do next?" aria-label="Ask Blue Current"><button id="autonomousCommandSend">Ask</button></div>
+        <p id="autonomousCommandOutput">Blue Current is ready to explain service conditions and recommend the next action.</p>
+      </article>
+    </div>
+
+    <div class="autonomous-grid reveal">
+      <section class="autonomous-panel decision-feed-panel"><div class="autonomous-panel-heading"><div><small>Decision engine</small><h3>Operational decision feed</h3></div><span class="live-indicator">Live</span></div><div id="autonomousDecisionFeed" class="autonomous-decision-feed"></div></section>
+      <section class="autonomous-panel rules-panel"><div class="autonomous-panel-heading"><div><small>No-code automation</small><h3>Autopilot rules</h3></div></div>
+        <button class="autonomous-rule active" data-rule="occupancy" aria-pressed="true"><span>IF occupancy &gt; 88%</span><strong>Open patio recommendation</strong><i></i></button>
+        <button class="autonomous-rule active" data-rule="kitchen" aria-pressed="true"><span>IF kitchen &gt; 17 min</span><strong>Add expo support</strong><i></i></button>
+        <button class="autonomous-rule active" data-rule="vip" aria-pressed="true"><span>IF VIP recognized</span><strong>Notify host lead</strong><i></i></button>
+        <button class="autonomous-rule active" data-rule="wait" aria-pressed="true"><span>IF wait &gt; 20 min</span><strong>Escalate manager alert</strong><i></i></button>
+      </section>
+      <section class="autonomous-panel scenario-panel"><div class="autonomous-panel-heading"><div><small>Operational sandbox</small><h3>Scenario simulator</h3></div></div>
+        <div class="scenario-buttons"><button data-scenario="server">Add one server</button><button data-scenario="rain">Simulate rain</button><button data-scenario="walkin">12-top walk-in</button><button data-scenario="kitchen">Kitchen failure</button></div>
+        <div id="scenarioOutput" class="scenario-output"><strong>Ready to simulate</strong><p>Select a scenario to forecast operational impact before taking action.</p></div>
+      </section>
+      <section class="autonomous-panel analytics-panel-v19"><div class="autonomous-panel-heading"><div><small>Learning engine</small><h3>Recommendation analytics</h3></div></div>
+        <div class="autonomous-metrics"><div><strong id="autonomousAccepted">0</strong><span>Accepted</span></div><div><strong id="autonomousSuccessRate">—</strong><span>Success rate</span></div><div><strong id="autonomousRevenueImpact">$0</strong><span>Revenue impact</span></div><div><strong id="autonomousWaitReduction">0 min</strong><span>Wait reduced</span></div></div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="concierge-section" id="ai-concierge">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow"><span></span> AI concierge</p>
+          <h2>From guest conversation to confirmed reservation.</h2>
+          <p>
+            A hospitality-first booking experience that captures the request, understands the occasion,
+            checks availability, and prepares the host team before the guest arrives.
+          </p>
+        </div>
+
+        <div class="concierge-shell reveal">
+          <div class="concierge-topbar">
+            <div class="concierge-identity">
+              <div class="concierge-avatar">BC</div>
+              <div>
+                <strong>Blue Current Concierge</strong>
+                <span><i></i> Available now</span>
+              </div>
+            </div>
+
+            <div class="concierge-actions">
+              <button type="button" id="conciergeReset">Start over</button>
+              <button type="button" id="conciergeAutoplay" class="primary">Play demo</button>
+            </div>
+          </div>
+
+          <div class="concierge-layout">
+            <section class="concierge-conversation">
+              <div class="conversation-header">
+                <div>
+                  <small>Live guest conversation</small>
+                  <strong id="conversationGuest">New reservation inquiry</strong>
+                </div>
+                <span id="conversationStage">Step 1 of 5</span>
+              </div>
+
+              <div class="conversation-thread" id="conversationThread">
+                <article class="message assistant-message">
+                  <div class="message-avatar">BC</div>
+                  <div class="message-bubble">
+                    <p>Good evening. Thank you for calling Marina Grille. How may I help you tonight?</p>
+                    <span>Blue Current Concierge • now</span>
+                  </div>
+                </article>
+              </div>
+
+              <div class="conversation-quick-replies" id="quickReplies">
+                <button type="button" data-reply="I'd like to make a dinner reservation.">Make a reservation</button>
+                <button type="button" data-reply="I'm calling about a private event.">Private event</button>
+                <button type="button" data-reply="Can you tell me tonight's availability?">Tonight's availability</button>
+              </div>
+
+              <form class="conversation-input" id="conciergeForm">
+                <input id="conciergeInput" type="text" placeholder="Type a guest response..." autocomplete="off">
+                <button type="submit">Send</button>
+              </form>
+            </section>
+
+            <aside class="concierge-reservation-panel">
+              <div class="reservation-panel-head">
+                <div>
+                  <small>Reservation in progress</small>
+                  <strong id="reservationStatus">Waiting for guest</strong>
+                </div>
+                <span class="reservation-status-dot"></span>
+              </div>
+
+              <div class="reservation-progress">
+                <span class="active"></span><span></span><span></span><span></span><span></span>
+              </div>
+
+              <div class="reservation-details">
+                <div>
+                  <span>Guest</span>
+                  <strong id="reservationGuest">—</strong>
+                </div>
+                <div>
+                  <span>Date</span>
+                  <strong id="reservationDate">—</strong>
+                </div>
+                <div>
+                  <span>Time</span>
+                  <strong id="reservationTime">—</strong>
+                </div>
+                <div>
+                  <span>Party size</span>
+                  <strong id="reservationParty">—</strong>
+                </div>
+                <div>
+                  <span>Occasion</span>
+                  <strong id="reservationOccasion">—</strong>
+                </div>
+                <div>
+                  <span>Seating preference</span>
+                  <strong id="reservationSeating">—</strong>
+                </div>
+              </div>
+
+              <div class="availability-card" id="availabilityCard">
+                <div>
+                  <small>Availability check</small>
+                  <strong>Not started</strong>
+                </div>
+                <span>—</span>
+              </div>
+
+              <div class="guest-memory-card" id="guestMemoryCard">
+                <div class="guest-memory-icon">✦</div>
+                <div>
+                  <small>Guest intelligence</small>
+                  <strong>No guest matched yet</strong>
+                  <p>Preferences and visit history will appear when the guest is identified.</p>
+                </div>
+              </div>
+
+              <button class="confirm-reservation-button" id="confirmReservationButton" type="button" disabled>
+                Confirm reservation
+              </button>
+            </aside>
+          </div>
+
+          <div class="concierge-impact-grid">
+            <article>
+              <span>01</span>
+              <div>
+                <strong>Understands the request</strong>
+                <p>Recognizes reservation intent, private events, availability questions, and service requests.</p>
+              </div>
+            </article>
+            <article>
+              <span>02</span>
+              <div>
+                <strong>Checks the operation</strong>
+                <p>Matches the guest's preferred time, party size, and seating request against available inventory.</p>
+              </div>
+            </article>
+            <article>
+              <span>03</span>
+              <div>
+                <strong>Prepares the host team</strong>
+                <p>Creates a reservation record, celebration note, and guest-recognition brief before arrival.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <p class="concierge-disclaimer">
+          Concept workflow shown for demonstration. Live deployment would connect to the restaurant's approved reservation and operating systems.
+        </p>
+      </div>
+    </section>
+
+
+<section class="analytics-section" id="hospitality-analytics">
+      <div class="container">
+        <div class="section-heading reveal">
+          <p class="eyebrow"><span></span> Hospitality analytics</p>
+          <h2>Answers for operators—not another wall of data.</h2>
+          <p>
+            Blue Current translates guest demand, call activity, reservations, wait times,
+            and repeat visits into practical operating decisions.
+          </p>
+        </div>
+
+        <div class="analytics-shell reveal">
+          <div class="analytics-header">
+            <div>
+              <small>Portfolio intelligence</small>
+              <h3>Performance overview</h3>
+            </div>
+
+            <div class="analytics-controls">
+              <select id="analyticsLocation" aria-label="Analytics location">
+                <option>All locations</option>
+                <option>Marina Grille</option>
+                <option>The Wharfside</option>
+                <option>Rod's Tavern</option>
+                <option>Captain's Inn</option>
+              </select>
+
+              <div class="analytics-period">
+                <button class="active" type="button" data-period="7">7 days</button>
+                <button type="button" data-period="30">30 days</button>
+                <button type="button" data-period="90">90 days</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-kpis">
+            <article>
+              <span>Call-to-reservation conversion</span>
+              <strong id="analyticsConversion">42.6%</strong>
+              <small>+4.8 points</small>
+            </article>
+            <article>
+              <span>Average answer time</span>
+              <strong id="analyticsAnswer">8 sec</strong>
+              <small>Within target</small>
+            </article>
+            <article>
+              <span>Average wait time</span>
+              <strong id="analyticsWait">13 min</strong>
+              <small>-3 min vs prior period</small>
+            </article>
+            <article>
+              <span>Repeat guest rate</span>
+              <strong id="analyticsRepeat">31%</strong>
+              <small>+6% this quarter</small>
+            </article>
+          </div>
+
+          <div class="analytics-grid">
+            <section class="analytics-panel analytics-trend-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Reservation demand</small>
+                  <strong>Calls that became reservations</strong>
+                </div>
+                <span id="analyticsTrendLabel">Last 7 days</span>
+              </div>
+
+              <div class="line-chart" id="conversionChart" aria-label="Illustrative conversion trend chart">
+                <svg viewBox="0 0 700 250" role="img">
+                  <defs>
+                    <linearGradient id="analyticsArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="currentColor" stop-opacity=".28"></stop>
+                      <stop offset="100%" stop-color="currentColor" stop-opacity="0"></stop>
+                    </linearGradient>
+                  </defs>
+                  <g class="chart-grid-lines">
+                    <line x1="30" y1="40" x2="680" y2="40"></line>
+                    <line x1="30" y1="95" x2="680" y2="95"></line>
+                    <line x1="30" y1="150" x2="680" y2="150"></line>
+                    <line x1="30" y1="205" x2="680" y2="205"></line>
+                  </g>
+                  <path class="conversion-area" d="M35,185 C110,165 130,155 190,160 C250,165 275,125 340,132 C405,139 430,105 490,98 C550,91 585,64 665,72 L665,220 L35,220 Z"></path>
+                  <path class="conversion-line" d="M35,185 C110,165 130,155 190,160 C250,165 275,125 340,132 C405,139 430,105 490,98 C550,91 585,64 665,72"></path>
+                  <g class="chart-points">
+                    <circle cx="35" cy="185" r="5"></circle>
+                    <circle cx="140" cy="157" r="5"></circle>
+                    <circle cx="245" cy="156" r="5"></circle>
+                    <circle cx="350" cy="130" r="5"></circle>
+                    <circle cx="455" cy="107" r="5"></circle>
+                    <circle cx="560" cy="86" r="5"></circle>
+                    <circle cx="665" cy="72" r="6"></circle>
+                  </g>
+                </svg>
+
+                <div class="line-chart-labels">
+                  <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-opportunity-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Opportunity analysis</small>
+                  <strong>Where demand is being lost</strong>
+                </div>
+                <span>Illustrative</span>
+              </div>
+
+              <div class="opportunity-list">
+                <article>
+                  <div>
+                    <strong>After-hours reservation calls</strong>
+                    <small>Most common between 10:15 PM and midnight</small>
+                  </div>
+                  <span>18%</span>
+                </article>
+                <article>
+                  <div>
+                    <strong>Unavailable 7:00–8:00 PM requests</strong>
+                    <small>Guests often accept 8:30 PM when offered</small>
+                  </div>
+                  <span>14%</span>
+                </article>
+                <article>
+                  <div>
+                    <strong>Private event inquiries</strong>
+                    <small>Follow-up takes longer than one business day</small>
+                  </div>
+                  <span>9%</span>
+                </article>
+                <article>
+                  <div>
+                    <strong>Large-party requests</strong>
+                    <small>Manual approval required above eight guests</small>
+                  </div>
+                  <span>7%</span>
+                </article>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-heatmap-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Demand pattern</small>
+                  <strong>Reservation request heatmap</strong>
+                </div>
+                <span>Darker = greater demand</span>
+              </div>
+
+              <div class="analytics-heatmap">
+                <div class="heatmap-label"></div>
+                <div class="heatmap-label">5 PM</div>
+                <div class="heatmap-label">6 PM</div>
+                <div class="heatmap-label">7 PM</div>
+                <div class="heatmap-label">8 PM</div>
+                <div class="heatmap-label">9 PM</div>
+
+                <div class="heatmap-label">Mon</div>
+                <button style="--v:.15"></button><button style="--v:.28"></button><button style="--v:.48"></button><button style="--v:.35"></button><button style="--v:.18"></button>
+                <div class="heatmap-label">Tue</div>
+                <button style="--v:.18"></button><button style="--v:.32"></button><button style="--v:.53"></button><button style="--v:.39"></button><button style="--v:.19"></button>
+                <div class="heatmap-label">Wed</div>
+                <button style="--v:.21"></button><button style="--v:.4"></button><button style="--v:.62"></button><button style="--v:.44"></button><button style="--v:.25"></button>
+                <div class="heatmap-label">Thu</div>
+                <button style="--v:.27"></button><button style="--v:.51"></button><button style="--v:.74"></button><button style="--v:.58"></button><button style="--v:.31"></button>
+                <div class="heatmap-label">Fri</div>
+                <button style="--v:.41"></button><button style="--v:.69"></button><button style="--v:1"></button><button style="--v:.83"></button><button style="--v:.52"></button>
+                <div class="heatmap-label">Sat</div>
+                <button style="--v:.5"></button><button style="--v:.78"></button><button style="--v:.94"></button><button style="--v:.88"></button><button style="--v:.61"></button>
+                <div class="heatmap-label">Sun</div>
+                <button style="--v:.31"></button><button style="--v:.55"></button><button style="--v:.71"></button><button style="--v:.49"></button><button style="--v:.28"></button>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-channel-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Reservation source</small>
+                  <strong>How guests are booking</strong>
+                </div>
+                <span id="analyticsBookings">1,486 bookings</span>
+              </div>
+
+              <div class="channel-layout">
+                <div class="channel-donut" aria-label="Reservation source distribution">
+                  <div class="channel-donut-center"><strong>42%</strong><span>Phone</span></div>
+                </div>
+
+                <div class="channel-legend">
+                  <div><i class="phone"></i><span>Phone</span><strong>42%</strong></div>
+                  <div><i class="web"></i><span>Website</span><strong>31%</strong></div>
+                  <div><i class="walkin"></i><span>Walk-in</span><strong>18%</strong></div>
+                  <div><i class="other"></i><span>Other</span><strong>9%</strong></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-insights-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Operator insights</small>
+                  <strong>Recommended actions</strong>
+                </div>
+                <button type="button" id="regenerateInsights">Regenerate</button>
+              </div>
+
+              <div class="insight-list" id="analyticsInsights">
+                <article>
+                  <span>01</span>
+                  <div>
+                    <strong>Offer 8:30 PM more proactively</strong>
+                    <p>Nearly one in three guests declined at 7:30 PM would accept 8:30 PM when offered immediately.</p>
+                  </div>
+                </article>
+                <article>
+                  <span>02</span>
+                  <div>
+                    <strong>Extend automated coverage after closing</strong>
+                    <p>After-hours callers show strong reservation intent and often call before searching elsewhere.</p>
+                  </div>
+                </article>
+                <article>
+                  <span>03</span>
+                  <div>
+                    <strong>Flag high-value repeat guests earlier</strong>
+                    <p>Premier guests are most likely to book Friday and Saturday waterfront tables.</p>
+                  </div>
+                </article>
+              </div>
+            </section>
+
+            <section class="analytics-panel analytics-repeat-panel">
+              <div class="analytics-panel-head">
+                <div>
+                  <small>Guest retention</small>
+                  <strong>Repeat-guest growth</strong>
+                </div>
+                <span>Quarter to date</span>
+              </div>
+
+              <div class="repeat-guest-score">
+                <div class="repeat-ring"><strong id="repeatRingValue">31%</strong><span>Repeat rate</span></div>
+                <div class="repeat-copy">
+                  <strong>Returning guests are growing.</strong>
+                  <p>Recognition notes and preference capture are contributing to more consistent repeat-guest experiences.</p>
+                  <div><span>Premier guests</span><b>428</b></div>
+                  <div><span>Milestone visits</span><b>96</b></div>
+                  <div><span>Celebrations recognized</span><b>214</b></div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <p class="analytics-disclaimer">
+          Analytics and attribution shown are illustrative product concepts and do not represent audited operating results.
+        </p>
+      </div>
+    </section>
+
+
+<section class="executive-section" id="executive-command-center">
+      <div class="container">
+        <div class="section-heading section-heading-light reveal">
+          <p class="eyebrow eyebrow-light"><span></span> Executive command center</p>
+          <h2>One operating picture across every location.</h2>
+          <p>
+            A portfolio-level view of guest demand, service pressure, call performance,
+            reservations, and the moments that need leadership attention.
+          </p>
+        </div>
+
+        <div class="exec-shell reveal">
+          <div class="exec-topbar">
+            <div class="exec-brand">
+              <img src="assets/logo-mark.svg" alt="">
+              <div>
+                <strong>Blue Current</strong>
+                <span>Executive Command Center</span>
+              </div>
+            </div>
+
+            <div class="exec-topbar-actions">
+              <div class="exec-live"><i></i> Live portfolio view</div>
+              <button type="button" id="execRefresh">Refresh</button>
+              <button class="primary" type="button">Download briefing</button>
+            </div>
+          </div>
+
+          <div class="exec-toolbar">
+            <div>
+              <small>Friday dinner service</small>
+              <h3>Chefs International concept portfolio</h3>
+            </div>
+
+            <div class="exec-range" role="tablist" aria-label="Executive reporting range">
+              <button class="active" type="button" data-range="Tonight">Tonight</button>
+              <button type="button" data-range="7 Days">7 days</button>
+              <button type="button" data-range="30 Days">30 days</button>
+            </div>
+          </div>
+
+          <div class="exec-kpis">
+            <article>
+              <span>Expected guests</span>
+              <strong id="execGuests">1,026</strong>
+              <small>Across four locations</small>
+            </article>
+            <article>
+              <span>Reservations</span>
+              <strong id="execReservations">220</strong>
+              <small>+11% vs last Friday</small>
+            </article>
+            <article>
+              <span>Calls answered</span>
+              <strong id="execCalls">176</strong>
+              <small>98.9% answer rate</small>
+            </article>
+            <article>
+              <span>Estimated revenue influenced</span>
+              <strong id="execRevenue">$31.8K</strong>
+              <small>Illustrative attribution</small>
+            </article>
+          </div>
+
+          <div class="exec-grid">
+            <section class="exec-panel exec-locations">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Portfolio occupancy</small>
+                  <strong>Location performance</strong>
+                </div>
+                <span id="execRangeLabel">Tonight</span>
+              </div>
+
+              <div class="location-performance-list">
+                <article class="location-performance-row active" data-location="Marina Grille">
+                  <div class="location-name">
+                    <i class="location-status healthy"></i>
+                    <div><strong>Marina Grille</strong><small>Waterfront dining</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:98%"></span></div>
+                  <strong class="location-percent">98%</strong>
+                  <span class="location-wait">11 min wait</span>
+                </article>
+
+                <article class="location-performance-row" data-location="The Wharfside">
+                  <div class="location-name">
+                    <i class="location-status healthy"></i>
+                    <div><strong>The Wharfside</strong><small>Coastal dining</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:84%"></span></div>
+                  <strong class="location-percent">84%</strong>
+                  <span class="location-wait">16 min wait</span>
+                </article>
+
+                <article class="location-performance-row" data-location="Rod's Tavern">
+                  <div class="location-name">
+                    <i class="location-status watch"></i>
+                    <div><strong>Rod's Tavern</strong><small>Neighborhood tavern</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:91%"></span></div>
+                  <strong class="location-percent">91%</strong>
+                  <span class="location-wait">8 min wait</span>
+                </article>
+
+                <article class="location-performance-row" data-location="Captain's Inn">
+                  <div class="location-name">
+                    <i class="location-status healthy"></i>
+                    <div><strong>Captain's Inn</strong><small>Harbor dining</small></div>
+                  </div>
+                  <div class="location-bar"><span style="width:76%"></span></div>
+                  <strong class="location-percent">76%</strong>
+                  <span class="location-wait">No wait</span>
+                </article>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-demand">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Live demand</small>
+                  <strong>Reservations by hour</strong>
+                </div>
+                <span class="exec-insight">Peak: 7:30 PM</span>
+              </div>
+
+              <div class="exec-chart" aria-label="Illustrative reservations by hour chart">
+                <div class="exec-chart-grid"></div>
+                <div class="exec-bar" style="--h:34%"><span>5:30</span></div>
+                <div class="exec-bar" style="--h:52%"><span>6:00</span></div>
+                <div class="exec-bar" style="--h:72%"><span>6:30</span></div>
+                <div class="exec-bar" style="--h:88%"><span>7:00</span></div>
+                <div class="exec-bar active" style="--h:100%"><span>7:30</span></div>
+                <div class="exec-bar" style="--h:82%"><span>8:00</span></div>
+                <div class="exec-bar" style="--h:58%"><span>8:30</span></div>
+                <div class="exec-bar" style="--h:31%"><span>9:00</span></div>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-alerts">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Leadership attention</small>
+                  <strong>Service alerts</strong>
+                </div>
+                <span class="exec-alert-count">3</span>
+              </div>
+
+              <article class="exec-alert critical">
+                <i>!</i>
+                <div>
+                  <strong>Marina Grille near capacity</strong>
+                  <small>Waterfront tables are fully committed through 8:30 PM.</small>
+                </div>
+                <span>Now</span>
+              </article>
+
+              <article class="exec-alert warning">
+                <i>↗</i>
+                <div>
+                  <strong>Rod's Tavern call volume elevated</strong>
+                  <small>Calls are running 23% above the normal Friday pattern.</small>
+                </div>
+                <span>6m</span>
+              </article>
+
+              <article class="exec-alert">
+                <i>i</i>
+                <div>
+                  <strong>Private event opportunity</strong>
+                  <small>Captain's Inn received three qualified inquiries tonight.</small>
+                </div>
+                <span>18m</span>
+              </article>
+            </section>
+
+            <section class="exec-panel exec-guest-moments">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Guest experience</small>
+                  <strong>Tonight's moments</strong>
+                </div>
+                <button type="button">View guest intelligence</button>
+              </div>
+
+              <div class="guest-moment-grid">
+                <article>
+                  <span>🎂</span>
+                  <div><strong>14 birthdays</strong><small>Across the portfolio</small></div>
+                </article>
+                <article>
+                  <span>♡</span>
+                  <div><strong>8 anniversaries</strong><small>Special notes confirmed</small></div>
+                </article>
+                <article>
+                  <span>★</span>
+                  <div><strong>22 premier guests</strong><small>Returning tonight</small></div>
+                </article>
+                <article>
+                  <span>◇</span>
+                  <div><strong>5 milestone visits</strong><small>10th visit or higher</small></div>
+                </article>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-summary">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Executive briefing</small>
+                  <strong>What leadership should know</strong>
+                </div>
+                <span class="exec-generated">Updated <b id="execUpdated">just now</b></span>
+              </div>
+
+              <p id="execSummaryText">
+                Portfolio demand is strong and currently tracking above last Friday. Marina Grille
+                is the only location approaching hard capacity, while Captain's Inn has additional
+                room and may absorb overflow demand. Call coverage remains healthy across the group.
+              </p>
+
+              <div class="exec-summary-actions">
+                <span><i>✓</i> No unanswered-call issue</span>
+                <span><i>✓</i> Wait times within target</span>
+                <span><i>!</i> Marina Grille capacity risk</span>
+              </div>
+            </section>
+
+            <section class="exec-panel exec-detail">
+              <div class="exec-panel-head">
+                <div>
+                  <small>Selected location</small>
+                  <strong id="execLocationName">Marina Grille</strong>
+                </div>
+                <span id="execLocationStatus">Healthy service</span>
+              </div>
+
+              <div class="exec-detail-metrics">
+                <div><span>Occupancy</span><strong id="execLocationOccupancy">98%</strong></div>
+                <div><span>Reservations</span><strong id="execLocationReservations">69</strong></div>
+                <div><span>Calls</span><strong id="execLocationCalls">54</strong></div>
+                <div><span>Waitlist</span><strong id="execLocationWaitlist">2</strong></div>
+              </div>
+
+              <p id="execLocationNarrative">
+                Demand is concentrated between 7:00 and 8:30 PM. Waterfront inventory is the primary
+                constraint, but current wait times remain within the operating target.
+              </p>
+            </section>
+          </div>
+        </div>
+
+        <p class="exec-disclaimer">
+          Concept deployment shown for demonstration. Names, operating metrics, and revenue attribution are illustrative.
+        </p>
+      </div>
+    </section>
+
+
+<section class="guest-intelligence section-shell" id="guest-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V29 · Guest Intelligence & Revenue Engine</p><h2>Know every guest. Grow every relationship.</h2><p>Unified guest profiles, lifetime value, behavioral segments, recovery workflows, and targeted revenue campaigns built from live reservation and service history.</p></div><div class="guest-kpis reveal"><article><small>Known guests</small><strong id="guestKnown">—</strong></article><article><small>VIP guests</small><strong id="guestVip">—</strong></article><article><small>At risk</small><strong id="guestAtRisk">—</strong></article><article><small>Guest revenue</small><strong id="guestRevenue">—</strong></article><article><small>Recoverable</small><strong id="guestRecoverable">—</strong></article><article><small>Average spend</small><strong id="guestAvgSpend">—</strong></article></div><div class="guest-toolbar reveal"><div class="guest-segments" id="guestSegments"></div><button class="button button-light" id="guestRefresh">Refresh intelligence</button></div><div class="guest-main reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Guest graph</small><h3>Profiles & Lifetime Value</h3></div></div><div class="guest-profile-list" id="guestProfileList"></div></article><aside class="guest-panel guest-profile-detail" id="guestProfileDetail"></aside></div><div class="guest-bottom reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Revenue activation</small><h3>Campaign Studio</h3></div></div><div class="guest-campaigns" id="guestCampaigns"></div></article><article class="guest-panel"><div class="guest-panel-head"><div><small>Learning loop</small><h3>Engagement Timeline</h3></div></div><div class="guest-engagements" id="guestEngagements"></div></article></div></div></section>
+<section class="workforce-intelligence section-shell" id="workforce-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V30 · Workforce Intelligence & Labor Optimizer</p><h2>Put the right people in the right place—at the right cost.</h2><p>Live labor forecasting, role coverage, skill intelligence, callout risk, open-shift workflows, and explainable staffing recommendations.</p></div><div class="wf-kpis reveal"><article><small>Scheduled</small><strong id="workforceScheduled">—</strong></article><article><small>Labor hours</small><strong id="workforceHours">—</strong></article><article><small>Projected labor</small><strong id="workforceLabor">—</strong></article><article><small>Labor %</small><strong id="workforcePercent">—</strong></article><article><small>Demand index</small><strong id="workforceDemand">—</strong></article><article><small>Callout risk</small><strong id="workforceRisk">—</strong></article></div><div class="wf-toolbar reveal"><div><small>Labor budget</small><div class="wf-budget"><i id="workforceBudgetBar"></i></div><span id="workforceBudgetText"></span></div><div><span>Updated <b id="workforceUpdated">—</b></span><button id="workforcePlan" class="button button-light">Edit plan</button><button id="workforceRefresh" class="button button-light">Refresh</button></div></div><div class="wf-main reveal"><article class="wf-panel"><div class="wf-head"><div><small>Shift command</small><h3>Tonight's Workforce</h3></div></div><div id="workforceSchedule" class="wf-schedule"></div></article><aside class="wf-panel"><div class="wf-head"><div><small>Coverage intelligence</small><h3>Role & Skill Matrix</h3></div></div><div id="workforceCoverage" class="wf-coverage"></div></aside></div><div class="wf-bottom reveal"><article class="wf-panel"><div class="wf-head"><div><small>Labor optimizer</small><h3>Staffing Recommendations</h3></div></div><div id="workforceRecommendations" class="wf-recommendations"></div></article><article class="wf-panel"><div class="wf-head"><div><small>Shift marketplace</small><h3>Open Shift Offers</h3></div></div><div id="workforceOffers" class="wf-offers"></div><div class="wf-head wf-history-head"><div><small>Decision trail</small><h3>Recent Actions</h3></div></div><div id="workforceActions" class="wf-actions"></div></article></div></div></section>
+<section class="time-clock section-shell" id="time-clock"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V32.2 · Employee Time & Attendance</p><h2>Accurate punches. Live labor control.</h2><p>PIN clock-in, break tracking, live staffing, overtime exposure, labor cost, and an auditable manager correction workflow.</p></div><div class="tc-kpis reveal"><article><small>Working now</small><strong id="tcWorking">—</strong></article><article><small>On break</small><strong id="tcBreak">—</strong></article><article><small>Hours today</small><strong id="tcHours">—</strong></article><article><small>Labor cost</small><strong id="tcCost">—</strong></article><article><small>Overtime risk</small><strong id="tcOvertime">—</strong></article><article><small>Missed punches</small><strong id="tcMissed">—</strong></article></div><div class="tc-grid reveal"><article class="tc-panel tc-kiosk"><div class="tc-head"><div><small>Employee kiosk</small><h3>Clock In / Out</h3></div><span>Updated <b id="tcUpdated">—</b></span></div><label>Employee<select id="tcEmployee"></select></label><label>PIN<input id="tcPin" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN"></label><div><button id="tcClockIn" class="button button-primary">Clock in</button><button id="tcClockOut" class="button button-light">Clock out</button><button id="tcRefresh" class="button button-light">Refresh</button></div></article><article class="tc-panel"><div class="tc-head"><div><small>Live floor</small><h3>Who’s Working</h3></div></div><div id="tcActive" class="tc-active"></div></article></div><div class="tc-grid reveal"><article class="tc-panel"><div class="tc-head"><div><small>Manager review</small><h3>Today’s Timecards</h3></div></div><div id="tcTimecards" class="tc-timecards"></div></article><article class="tc-panel"><div class="tc-head"><div><small>Audit trail</small><h3>Corrections</h3></div></div><div id="tcCorrections" class="tc-corrections"></div></article></div></div></section>
+<section class="inventory-intelligence section-shell" id="inventory-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V31 · Inventory Intelligence & Food Cost Optimizer</p><h2>Protect availability, margin, and every dollar of food cost.</h2><p>Live stock coverage, recipe costing, waste intelligence, predictive reordering, vendor consolidation, and explainable food-cost actions.</p></div><div class="inventory-kpis reveal"><article><small>Inventory value</small><strong id="inventoryValue">—</strong></article><article><small>Tracked SKUs</small><strong id="inventorySkus">—</strong></article><article><small>Critical stock</small><strong id="inventoryCritical">—</strong></article><article><small>Warning stock</small><strong id="inventoryWarning">—</strong></article><article><small>Actual food cost</small><strong id="inventoryFoodCost">—</strong></article><article><small>Waste today</small><strong id="inventoryWaste">—</strong></article></div><div class="inventory-toolbar reveal"><div class="inventory-cost-meter" id="inventoryFoodCostBar"><i></i><span id="inventoryFoodCostVariance">—</span></div><div><span>Updated <b id="inventoryUpdated">—</b></span><button id="inventoryPolicy" class="button button-light">Edit policy</button><button id="inventoryRefresh" class="button button-light">Refresh</button></div></div><div class="inventory-main reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Stock intelligence</small><h3>Coverage & Reorder Risk</h3></div></div><div id="inventoryItems" class="inventory-items"></div></article><aside class="inventory-panel"><div class="inventory-head"><div><small>Menu engineering</small><h3>Recipe Cost & Margin</h3></div></div><div id="inventoryRecipes" class="inventory-recipes"></div></aside></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Food-cost copilot</small><h3>Recommendations</h3></div></div><div id="inventoryRecommendations" class="inventory-recommendations"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Vendor consolidation</small><h3>Draft Purchase Orders</h3></div><strong id="inventoryOrderValue">—</strong></div><div id="inventoryOrders" class="inventory-orders"></div></article></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Loss prevention</small><h3>Waste Log</h3></div></div><div id="inventoryWasteLog" class="inventory-log"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Decision trail</small><h3>Inventory Actions</h3></div></div><div id="inventoryActions" class="inventory-log"></div></article></div></div></section>
+<section class="production-readiness section-shell" id="production-readiness">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V21 · Production Readiness</p>
+      <h2>Configure, govern, and launch every restaurant from one control plane.</h2>
+      <p>Blue Current now includes a practical pilot foundation: onboarding, role-based access, feature controls, audit history, diagnostics, and portable configuration backups.</p>
+    </div>
+
+    <div class="production-summary-grid reveal">
+      <article class="production-hero-card">
+        <div class="production-card-head">
+          <div>
+            <small>Deployment status</small>
+            <h3 id="prodOrganizationName">Chefs International</h3>
+          </div>
+          <span class="production-status ready" id="prodDeploymentStatus">Pilot ready</span>
+        </div>
+        <div class="production-kpis">
+          <div><strong id="prodLocationCount">4</strong><span>Locations</span></div>
+          <div><strong id="prodUserCount">12</strong><span>Users</span></div>
+          <div><strong id="prodFeatureCount">6</strong><span>Features live</span></div>
+          <div><strong id="prodHealthScore">98</strong><span>System health</span></div>
+        </div>
+        <p id="prodLaunchBrief">Configuration is complete. Demo data is active and the environment is ready for a controlled pilot.</p>
+        <div class="production-actions">
+          <button class="button button-primary" id="prodRunReadiness">Run readiness check</button>
+          <button class="button button-ghost" id="prodSeedService">Seed dinner service</button>
+        </div>
+      </article>
+
+      <article class="production-panel pilot-switch-panel">
+        <div class="production-card-head">
+          <div><small>Environment</small><h3>Pilot Mode</h3></div>
+          <span class="production-live-dot"></span>
+        </div>
+        <div class="production-mode-toggle" role="group" aria-label="Data mode">
+          <button class="active" data-prod-mode="demo">Demo data</button>
+          <button data-prod-mode="live">Live data</button>
+        </div>
+        <p id="prodModeDescription">Safe simulated data is active. Connectors cannot perform external actions.</p>
+        <button class="production-text-button" id="prodResetEnvironment">Reset pilot environment</button>
+      </article>
+    </div>
+
+    <div class="production-tabs reveal" role="tablist" aria-label="Production readiness controls">
+      <button class="active" data-prod-tab="onboarding">Onboarding</button>
+      <button data-prod-tab="access">Access</button>
+      <button data-prod-tab="configuration">Configuration</button>
+      <button data-prod-tab="features">Feature Flags</button>
+      <button data-prod-tab="health">System Health</button>
+      <button data-prod-tab="audit">Audit Log</button>
+      <button data-prod-tab="backup">Backup</button>
+    </div>
+
+    <div class="production-workspace reveal">
+      <section class="production-tab-panel active" data-prod-panel="onboarding">
+        <div class="production-panel-title">
+          <div><small>Guided setup</small><h3>Customer Onboarding</h3></div>
+          <span id="prodOnboardingProgress">75% complete</span>
+        </div>
+        <div class="production-progress"><i id="prodOnboardingBar" style="width:75%"></i></div>
+        <div class="production-step-grid">
+          <button class="complete" data-onboarding-step="organization"><b>1</b><span><strong>Organization</strong><small>Identity and branding</small></span><em>Complete</em></button>
+          <button class="complete" data-onboarding-step="locations"><b>2</b><span><strong>Locations</strong><small>Hours and capacity</small></span><em>Complete</em></button>
+          <button class="complete" data-onboarding-step="tables"><b>3</b><span><strong>Floor plan</strong><small>Tables and sections</small></span><em>Complete</em></button>
+          <button data-onboarding-step="team"><b>4</b><span><strong>Team access</strong><small>Invite managers and staff</small></span><em>Continue</em></button>
+        </div>
+        <div class="production-form-grid">
+          <label>Organization name<input id="prodOrgInput" value="Chefs International"></label>
+          <label>Primary location<select id="prodPrimaryLocation"><option>Marina Grille</option><option>Harbor House</option><option>River & Rail</option></select></label>
+          <label>Operating timezone<select id="prodTimezone"><option>America/New_York</option><option>America/Chicago</option><option>America/Los_Angeles</option></select></label>
+          <label>Notification email<input id="prodNotificationEmail" type="email" value="operations@bluecurrent.demo"></label>
+        </div>
+        <button class="button button-primary" id="prodSaveOnboarding">Save and continue</button>
+      </section>
+
+      <section class="production-tab-panel" data-prod-panel="access">
+        <div class="production-panel-title"><div><small>Role-based access</small><h3>Users and Permissions</h3></div><button class="button button-ghost button-small" id="prodInviteUser">Invite user</button></div>
+        <div class="production-user-list" id="prodUserList"></div>
+      </section>
+
+      <section class="production-tab-panel" data-prod-panel="configuration">
+        <div class="production-panel-title"><div><small>Location policy</small><h3>Configuration Center</h3></div><span>Marina Grille</span></div>
+        <div class="production-form-grid">
+          <label>Guest capacity<input id="prodCapacity" type="number" value="188"></label>
+          <label>Revenue target<input id="prodRevenueTarget" type="number" value="24000"></label>
+          <label>Wait-time alert<input id="prodWaitThreshold" type="number" value="20"><small>minutes</small></label>
+          <label>Kitchen alert<input id="prodKitchenThreshold" type="number" value="18"><small>minutes</small></label>
+          <label>Occupancy pressure<input id="prodOccupancyThreshold" type="number" value="90"><small>percent</small></label>
+          <label>VIP rule<select id="prodVipRule"><option>Notify host and manager</option><option>Notify host only</option><option>Executive alert</option></select></label>
+        </div>
+        <button class="button button-primary" id="prodSaveConfiguration">Publish configuration</button>
+      </section>
+
+      <section class="production-tab-panel" data-prod-panel="features">
+        <div class="production-panel-title"><div><small>Controlled rollout</small><h3>Feature Flags</h3></div><span>Portfolio scope</span></div>
+        <div class="production-feature-grid" id="prodFeatureGrid"></div>
+      </section>
+
+      <section class="production-tab-panel" data-prod-panel="health">
+        <div class="production-panel-title"><div><small>Administrator diagnostics</small><h3>System Health</h3></div><button class="button button-ghost button-small" id="prodRefreshHealth">Refresh</button></div>
+        <div class="production-health-grid" id="prodHealthGrid"></div>
+        <div class="production-diagnostic-feed" id="prodDiagnosticFeed"></div>
+      </section>
+
+      <section class="production-tab-panel" data-prod-panel="audit">
+        <div class="production-panel-title"><div><small>Governance</small><h3>Audit Log</h3></div><span id="prodAuditCount">0 events</span></div>
+        <div class="production-audit-list" id="prodAuditList"></div>
+      </section>
+
+      <section class="production-tab-panel" data-prod-panel="backup">
+        <div class="production-panel-title"><div><small>Portable configuration</small><h3>Backup and Recovery</h3></div><span>Local encrypted-ready format</span></div>
+        <div class="production-backup-grid">
+          <article><strong>Organization configuration</strong><p>Locations, thresholds, roles, feature flags, and pilot settings.</p><button class="button button-primary" id="prodExportBackup">Export backup</button></article>
+          <article><strong>Restore environment</strong><p>Import a Blue Current V21 JSON configuration package.</p><label class="production-upload">Choose backup<input type="file" id="prodImportBackup" accept="application/json"></label></article>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<section class="cloud-foundation section-shell" id="cloud-foundation">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V22 · Blue Current Cloud</p>
+      <h2>Persistent data, service boundaries, and real-time synchronization.</h2>
+      <p>This release introduces a runnable Node cloud service, file-backed database, REST API, durable audit history, and server-sent operational events.</p>
+    </div>
+
+    <div class="cloud-status-bar reveal">
+      <div>
+        <span class="cloud-status connecting" id="cloudConnectionStatus">Connecting</span>
+        <p id="cloudConnectionDetail">Contacting local Blue Current Cloud service…</p>
+      </div>
+      <button class="button button-ghost" id="cloudRefresh">Reconnect</button>
+    </div>
+
+    <div class="cloud-kpi-grid reveal">
+      <article><strong id="cloudOrgCount">—</strong><span>Organizations</span></article>
+      <article><strong id="cloudLocationCount">—</strong><span>Locations</span></article>
+      <article><strong id="cloudUserCount">—</strong><span>Cloud users</span></article>
+      <article><strong id="cloudAuditCount">—</strong><span>Audit records</span></article>
+      <article><strong id="cloudReservationCount">—</strong><span>Reservations</span></article>
+    </div>
+
+    <div class="cloud-console-grid reveal">
+      <article class="cloud-panel cloud-architecture">
+        <div class="cloud-panel-head"><div><small>Service topology</small><h3>Cloud Core Architecture</h3></div><span>V22.0</span></div>
+        <div class="cloud-flow">
+          <span>Client Modules</span><i>→</i><span>REST Services</span><i>→</i><span>Database</span><i>→</i><span>Realtime Hub</span><i>→</i><span>App State</span>
+        </div>
+        <div class="cloud-service-list">
+          <p><b>Reservation Service</b><em>Validated creation and durable records</em></p>
+          <p><b>Audit Service</b><em>Persistent governance history</em></p>
+          <p><b>Configuration Service</b><em>Location policy updates</em></p>
+          <p><b>Realtime Hub</b><em>Server-sent events across clients</em></p>
+        </div>
+      </article>
+
+      <article class="cloud-panel">
+        <div class="cloud-panel-head"><div><small>Tenant registry</small><h3>Organizations</h3></div><span>Isolated scope</span></div>
+        <div class="cloud-organization-list" id="cloudOrganizationList"><p>Waiting for cloud service…</p></div>
+      </article>
+
+      <article class="cloud-panel">
+        <div class="cloud-panel-head"><div><small>Durable event history</small><h3>Recent Cloud Audit</h3></div><span>Database backed</span></div>
+        <div class="cloud-audit-list" id="cloudRecentAudit"><p>Waiting for cloud service…</p></div>
+      </article>
+
+      <article class="cloud-panel cloud-actions-panel">
+        <div class="cloud-panel-head"><div><small>Cloud validation</small><h3>Test the Platform</h3></div><span>Safe local service</span></div>
+        <p>Create a persisted reservation and broadcast it through the realtime hub to every connected browser.</p>
+        <button class="button button-primary" id="cloudCreateReservation">Create cloud reservation</button>
+        <hr>
+        <p>Detect the existing V21 browser configuration and record its migration into Cloud Core.</p>
+        <button class="button button-ghost" id="cloudMigrateV21">Migrate V21 configuration</button>
+        <small id="cloudMigrationResult"></small>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="pilot-section container" id="pilot">
+      <div class="pilot-card reveal">
+        <div class="pilot-copy">
+          <p class="eyebrow eyebrow-light"><span></span> Founding hospitality pilot</p>
+          <h2>Let’s design the first deployment around your operation.</h2>
+          <p>
+            We begin with one location, one real reservation workflow, and a clear
+            definition of success. Then we refine it with the people who run service.
+          </p>
+
+          <div class="pilot-steps">
+            <span>01 · Observe</span>
+            <span>02 · Configure</span>
+            <span>03 · Pilot</span>
+            <span>04 · Measure</span>
+          </div>
+
+          <a class="button button-gold" href="https://api.leadconnectorhq.com/widget/booking/3xIjQHhsnJEgyxwOATMp" target="_blank" rel="noopener">Schedule a private walkthrough</a>
+          <p class="contact-line">Or contact <a href="mailto:keith@bluecurrentco.com">keith@bluecurrentco.com</a></p>
+        </div>
+
+        <form class="pilot-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="contact">
+          <p class="hidden"><label>Do not fill this out: <input name="bot-field"></label></p>
+
+          <label>
+            Your name
+            <input type="text" name="name" autocomplete="name" required placeholder="Name">
+          </label>
+
+          <label>
+            Work email
+            <input type="email" name="email" autocomplete="email" required placeholder="you@restaurant.com">
+          </label>
+
+          <label>
+            Restaurant or group
+            <input type="text" name="company" autocomplete="organization" placeholder="Hospitality group">
+          </label>
+
+          <label>
+            What should the pilot solve first?
+            <textarea name="message" rows="4" placeholder="Reservation calls, after-hours questions, multi-location visibility…"></textarea>
+          </label>
+
+          <button class="button button-light button-full" type="submit">Request a pilot conversation</button>
+
+          <p class="form-note">
+            By submitting, you agree that Blue Current Services LLC may contact you about this inquiry.
+            Message and data rates may apply. Reply STOP to opt out.
+          </p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <a class="brand footer-brand" href="#top">
+        <img src="assets/logo-mark.svg" alt="" width="44" height="44">
+        <span class="brand-copy">
+          <strong>Blue Current</strong>
+          <small>Hospitality OS</small>
+        </span>
+      </a>
+
+      <p>Hospitality that answers.</p>
+
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="mailto:keith@bluecurrentco.com">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </nav>
+
+      <small>© <span id="year"></span> Blue Current Services LLC. All rights reserved.</small>
+    </div>
+  </footer>
+
+<div class="developer-overlay" id="developerOverlay" aria-hidden="true">
+  <div class="developer-overlay-head"><div><small>Blue Current developer mode</small><strong>Live system telemetry</strong></div><button type="button" id="developerOverlayClose" aria-label="Close developer overlay">×</button></div>
+  <div class="developer-overlay-grid">
+    <section><h3>Event Bus</h3><div id="developerEventFeed" class="developer-event-feed"><p>Waiting for events…</p></div></section>
+    <section><h3>App State</h3><pre id="developerStateView">{}</pre></section>
+    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li><li>Portfolio Mode <i></i></li><li>Blue Current Live <i></i></li><li>Connector Layer <i></i></li><li>Intelligence Network <i></i></li><li>Production Readiness <i></i></li></ul></section>
+  </div>
+</div>
+
+  <script src="js/eventBus.js?v=32.2.2"></script>
+  <script src="js/appState.js?v=32.2.2"></script>
+  <script src="js/motionEngine.js?v=32.2.2"></script>
+  <script src="js/timeline.js?v=32.2.2"></script>
+  <script src="js/modules/concierge.js"></script>
+  <script src="js/modules/digitalTwin.js?v=32.2.2"></script>
+  <script src="js/modules/executive.js"></script>
+  <script src="js/modules/missionControl.js?v=32.2.2"></script>
+  <script src="js/modules/operationalIntelligence.js?v=32.2.2"></script>
+  <script src="js/modules/guestJourney.js?v=32.2.2"></script>
+  <script src="js/modules/timeMachine.js?v=32.2.2"></script>
+  <script src="js/modules/portfolioMode.js?v=32.2.2"></script>
+  <script src="js/modules/predictiveOperations.js?v=32.2.2"></script>
+  <script src="js/modules/blueCurrentLive.js?v=32.2.2"></script>
+  <script src="js/modules/intelligenceNetwork.js?v=32.2.2"></script>
+  <script src="js/modules/autonomousOperations.js?v=32.2.2"></script>
+  <script src="js/modules/guestIntelligence.js?v=32.2.2"></script>
+  <script src="js/modules/workforceIntelligence.js?v=32.2.2"></script>
+  <script src="js/modules/productionReadiness.js?v=32.2.2"></script>
+  <script src="js/cloud/cloudApi.js?v=32.2.2"></script>
+  <script src="js/modules/cloudFoundation.js?v=32.2.2"></script>
+  <script src="js/modules/startupDiagnostics.js?v=32.2.2"></script>
+  <script src="js/modules/authOrganizations.js?v=32.2.2"></script>
+  <script src="js/modules/liveFloorOperations.js?v=32.2.2"></script>
+  <script src="js/modules/reservationOperations.js?v=32.2.2"></script>
+  <script src="js/modules/staffSections.js?v=32.2.2"></script>
+  <script src="js/modules/kitchenCommandCenter.js?v=32.2.2"></script>
+  <script src="js/modules/serviceCoordination.js?v=32.2.2"></script>
+  <script src="js/modules/aiRestaurantBrain.js?v=32.2.2"></script>
+  <script src="js/modules/timeClock.js?v=32.2.2"></script>
+  <script src="js/app-v15.1.3.js?v=32.2.2"></script>
+</body>
+</html>

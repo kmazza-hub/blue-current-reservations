@@ -1,0 +1,13 @@
+{
+  "name": "blue-current-cloud",
+  "version": "32.2.2",
+  "private": true,
+  "description": "Blue Current Hospitality OS \u2014 Runtime Stabilization",
+  "scripts": {
+    "start": "node server/server.js",
+    "check": "node scripts/validate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
