@@ -222,3 +222,7 @@ Digital Twin 2.0 adds live state-driven table controls, occupancy recalculation,
 
 ## V15.7
 Portfolio Mode adds group-level operating visibility and location drill-down.
+
+
+## V17.0
+Blue Current Live unifies operational health, Copilot answers, event telemetry, and connector readiness in one command center.

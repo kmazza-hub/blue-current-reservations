@@ -33,12 +33,12 @@
       </a>
 
       <nav class="desktop-nav" aria-label="Primary navigation">
+        <a href="#blue-current-live">Live</a>
         <a href="#digital-twin">Digital Twin</a>
       <a href="#mission-control">Mission Control</a>
         <a href="#time-machine">Time Machine</a>
         <a href="#portfolio-mode">Portfolio</a>
       <a href="#predictive-operations">Predictive</a>
-        <a href="#predictive-operations">Predictive</a>
         <a href="#ai-concierge">Concierge</a>
         <a href="#host-stand">Host Stand</a>
         <a href="#guest-intelligence">Guests</a>
@@ -55,6 +55,7 @@
     </div>
 
     <nav class="mobile-nav" aria-label="Mobile navigation" hidden>
+      <a href="#blue-current-live">Live</a>
       <a href="#digital-twin">Digital Twin</a>
       <a href="#mission-control">Mission Control</a>
       <a href="#time-machine">Time Machine</a>
@@ -224,6 +225,42 @@
         <p class="demo-caption">Illustrative product demonstration. Names, numbers, and performance data are sample content.</p>
       </div>
     </section>
+    <section class="live-command-center container" id="blue-current-live" aria-labelledby="liveTitle">
+      <div class="live-command-head reveal">
+        <div><p class="eyebrow"><span></span> Blue Current Live</p><h2 id="liveTitle">One command center for the entire service.</h2><p>Live operating health, predictive signals, guest activity, and a state-aware AI copilot—coordinated through the same event architecture.</p></div>
+        <div class="live-health-ring" id="liveHealthRing"><strong id="liveHealthScore">94</strong><span>Restaurant health</span></div>
+      </div>
+      <div class="live-kpi-grid reveal">
+        <button type="button" data-live-focus="guests"><small>Guests dining</small><strong id="liveGuestsDining">84</strong><span>Across 29 active tables</span></button>
+        <button type="button" data-live-focus="tables"><small>Tables active</small><strong id="liveTablesActive">29</strong><span id="liveTablePressure">Balanced floor</span></button>
+        <button type="button" data-live-focus="calls"><small>Calls today</small><strong id="liveCallsToday">53</strong><span>98% answered</span></button>
+        <button type="button" data-live-focus="revenue"><small>Revenue pace</small><strong id="liveRevenue">$12,884</strong><span id="liveRevenueForecast">Forecast $18,720</span></button>
+      </div>
+      <div class="live-command-grid">
+        <article class="live-copilot-card reveal">
+          <div class="live-panel-head"><div><small>AI Copilot</small><h3>Ask the operation.</h3></div><span class="live-status"><i></i> State connected</span></div>
+          <div class="copilot-answer" id="copilotAnswer"><small>Manager briefing</small><p>Service is healthy. Prepare Table 14 for a VIP birthday arrival and open the patio before the next demand wave.</p></div>
+          <div class="copilot-prompts" id="copilotPrompts">
+            <button type="button" data-copilot-query="vip">Show tonight's VIP guests</button><button type="button" data-copilot-query="birthdays">How many birthdays?</button><button type="button" data-copilot-query="slowdown">What's slowing service?</button><button type="button" data-copilot-query="revenue">Predict closing revenue</button>
+          </div>
+          <form class="copilot-form" id="copilotForm"><input id="copilotInput" type="text" placeholder="Ask Blue Current a question…" autocomplete="off"><button type="submit">Ask</button></form>
+        </article>
+        <article class="live-timeline-card reveal">
+          <div class="live-panel-head"><div><small>Operational timeline</small><h3>Search the service.</h3></div><input id="liveTimelineSearch" type="search" placeholder="Guest, table, event…"></div>
+          <div class="live-event-stream" id="liveEventStream"><p class="live-event-empty">Waiting for live events…</p></div>
+        </article>
+        <article class="connector-card reveal">
+          <div class="live-panel-head"><div><small>Connector layer</small><h3>Integration-ready core.</h3></div><button type="button" id="connectorPulse">Run connector pulse</button></div>
+          <div class="connector-grid" id="connectorGrid">
+            <div data-connector="Twilio"><i></i><span><strong>Twilio</strong><small>Voice + SMS</small></span><b>Ready</b></div><div data-connector="Toast"><i></i><span><strong>Toast POS</strong><small>Orders + revenue</small></span><b>Adapter</b></div><div data-connector="OpenTable"><i></i><span><strong>OpenTable</strong><small>Reservations</small></span><b>Adapter</b></div><div data-connector="Stripe"><i></i><span><strong>Stripe</strong><small>Deposits + payments</small></span><b>Ready</b></div>
+          </div>
+        </article>
+        <article class="live-action-card reveal">
+          <small>Next best action</small><h3 id="liveNextAction">Prepare Table 14 for VIP arrival</h3><p id="liveNextActionDetail">Birthday preferences are loaded. Notify the host and verify the dessert note.</p><button type="button" id="liveRunSequence">Run live service pulse</button>
+        </article>
+      </div>
+    </section>
+
 
     <section class="hospitality-statement">
       <div class="container statement-inner">
@@ -2084,23 +2121,24 @@
   <div class="developer-overlay-grid">
     <section><h3>Event Bus</h3><div id="developerEventFeed" class="developer-event-feed"><p>Waiting for events…</p></div></section>
     <section><h3>App State</h3><pre id="developerStateView">{}</pre></section>
-    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li><li>Portfolio Mode <i></i></li></ul></section>
+    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li><li>Portfolio Mode <i></i></li><li>Blue Current Live <i></i></li><li>Connector Layer <i></i></li></ul></section>
   </div>
 </div>
 
-  <script src="js/eventBus.js?v=16.0"></script>
-  <script src="js/appState.js?v=16.0"></script>
-  <script src="js/motionEngine.js?v=16.0"></script>
-  <script src="js/timeline.js?v=16.0"></script>
+  <script src="js/eventBus.js?v=17.0"></script>
+  <script src="js/appState.js?v=17.0"></script>
+  <script src="js/motionEngine.js?v=17.0"></script>
+  <script src="js/timeline.js?v=17.0"></script>
   <script src="js/modules/concierge.js"></script>
-  <script src="js/modules/digitalTwin.js?v=16.0"></script>
+  <script src="js/modules/digitalTwin.js?v=17.0"></script>
   <script src="js/modules/executive.js"></script>
-  <script src="js/modules/missionControl.js?v=16.0"></script>
-  <script src="js/modules/operationalIntelligence.js?v=16.0"></script>
-  <script src="js/modules/guestJourney.js?v=16.0"></script>
-  <script src="js/modules/timeMachine.js?v=16.0"></script>
-  <script src="js/modules/portfolioMode.js?v=16.0"></script>
-  <script src="js/modules/predictiveOperations.js?v=16.0"></script>
-  <script src="js/app-v15.1.3.js?v=16.0"></script>
+  <script src="js/modules/missionControl.js?v=17.0"></script>
+  <script src="js/modules/operationalIntelligence.js?v=17.0"></script>
+  <script src="js/modules/guestJourney.js?v=17.0"></script>
+  <script src="js/modules/timeMachine.js?v=17.0"></script>
+  <script src="js/modules/portfolioMode.js?v=17.0"></script>
+  <script src="js/modules/predictiveOperations.js?v=17.0"></script>
+  <script src="js/modules/blueCurrentLive.js?v=17.0"></script>
+  <script src="js/app-v15.1.3.js?v=17.0"></script>
 </body>
 </html>

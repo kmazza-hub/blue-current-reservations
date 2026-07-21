@@ -1057,6 +1057,9 @@ const portfolioModeModule =
 const predictiveOperationsModule =
   window.createBlueCurrentPredictiveOperationsModule?.(eventBus, appState);
 
+const blueCurrentLiveModule =
+  window.createBlueCurrentLiveModule?.(eventBus, appState);
+
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
   eventBus,
@@ -1070,7 +1073,8 @@ window.blueCurrent = {
     guestJourney: guestJourneyModule,
     timeMachine: timeMachineModule,
     portfolioMode: portfolioModeModule,
-    predictiveOperations: predictiveOperationsModule
+    predictiveOperations: predictiveOperationsModule,
+    blueCurrentLive: blueCurrentLiveModule
   }
 };
 window.appState = appState;
