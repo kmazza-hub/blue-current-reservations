@@ -1072,6 +1072,12 @@ const productionReadinessModule =
 const cloudFoundationModule =
   window.createBlueCurrentCloudFoundationModule?.(eventBus, appState);
 
+const startupDiagnosticsModule =
+  window.createBlueCurrentStartupDiagnosticsModule?.(eventBus);
+
+const authOrganizationsModule =
+  window.createBlueCurrentAuthOrganizationsModule?.(eventBus, appState, cloudFoundationModule);
+
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
   eventBus,

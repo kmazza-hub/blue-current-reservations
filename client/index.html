@@ -6,6 +6,7 @@
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
+  <meta name="blue-current-build" content="23.0.1">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -13,9 +14,122 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=22.1">
+  <link rel="stylesheet" href="styles.css?v=23.0.1">
 </head>
 <body>
+
+<div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
+  <button id="startupDiagnosticsToggle" aria-expanded="false">
+    <span id="startupDiagnosticsDot"></span>
+    <strong>Blue Current V23.0.1</strong>
+    <small id="startupDiagnosticsSummary">Starting modules…</small>
+  </button>
+  <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
+    <div><span>Styles</span><strong id="diagStyles">Checking</strong></div>
+    <div><span>Cloud API</span><strong id="diagCloudApi">Checking</strong></div>
+    <div><span>Authentication</span><strong id="diagAuth">Checking</strong></div>
+    <div><span>Application</span><strong id="diagApplication">Checking</strong></div>
+    <p id="diagCompatibility">Verifying client compatibility…</p>
+  </div>
+</div>
+
+
+<div class="auth-overlay" id="authOverlay" aria-modal="true" role="dialog">
+  <div class="auth-shell">
+    <section class="auth-brand-panel">
+      <p class="eyebrow"><span></span> Blue Current Cloud V23</p>
+      <h1>Secure access for every restaurant organization.</h1>
+      <p>Authentication, enforced roles, protected APIs, tenant boundaries, and organization-aware sessions are now part of the platform.</p>
+      <div class="auth-security-list">
+        <span>Password hashing with scrypt</span>
+        <span>Hashed bearer sessions</span>
+        <span>Organization data isolation</span>
+        <span>Role-enforced API permissions</span>
+      </div>
+    </section>
+    <section class="auth-form-panel">
+      <div>
+        <small>Hospitality OS</small>
+        <h2>Sign in to Blue Current</h2>
+        <p>Use a V23 demo account to enter the protected application.</p>
+      </div>
+      <form id="authLoginForm">
+        <label>Email<input id="authEmail" type="email" value="keith@bluecurrent.demo" autocomplete="username" required></label>
+        <label>Password<input id="authPassword" type="password" value="BlueCurrent23!" autocomplete="current-password" required></label>
+        <button class="button button-primary" type="submit">Sign in</button>
+        <p id="authMessage"></p>
+      </form>
+      <div class="auth-demo-accounts">
+        <button id="authDemoKeith"><strong>Owner account</strong><span>Keith · all Chefs locations</span></button>
+        <button id="authDemoSarah"><strong>Manager account</strong><span>Sarah · Marina Grille only</span></button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section class="auth-organizations section-shell" id="auth-organizations">
+  <div class="container">
+    <div class="section-heading reveal">
+      <p class="eyebrow"><span></span> V23 · Authentication & Organizations</p>
+      <h2>Protected access with real tenant and role boundaries.</h2>
+      <p>Every protected request now resolves an authenticated user, active organization, role, and authorized location scope.</p>
+    </div>
+
+    <div class="auth-session-grid reveal">
+      <article class="auth-profile-card">
+        <div class="auth-avatar">KM</div>
+        <div>
+          <small>Signed-in user</small>
+          <h3 id="authUserName">Not signed in</h3>
+          <p id="authUserEmail">—</p>
+        </div>
+        <span class="auth-session-status" id="authSessionStatus">Locked</span>
+      </article>
+      <article class="auth-context-card">
+        <label>Active organization
+          <select id="authOrganizationSelect"></select>
+        </label>
+        <div><small>Enforced role</small><strong id="authUserRole">—</strong></div>
+        <button class="button button-ghost" id="authLogout">Sign out</button>
+      </article>
+    </div>
+
+    <div class="auth-console-grid reveal">
+      <article class="auth-console-card">
+        <div class="auth-card-head"><div><small>Authorization model</small><h3>Role Permissions</h3></div><span>Server enforced</span></div>
+        <div class="auth-role-list">
+          <p><strong>Owner</strong><span>All locations, users, settings, invitations, and operational writes</span></p>
+          <p><strong>General Manager</strong><span>Assigned locations, operational writes, and team invitations</span></p>
+          <p><strong>Host</strong><span>Read access and reservation operations</span></p>
+          <p><strong>Kitchen Manager</strong><span>Read access and kitchen operational events</span></p>
+        </div>
+      </article>
+
+      <article class="auth-console-card">
+        <div class="auth-card-head"><div><small>Team access</small><h3>Create Invitation</h3></div><span>7-day token</span></div>
+        <form class="auth-invite-form" id="authInviteForm">
+          <label>Email<input id="authInviteEmail" type="email" placeholder="manager@restaurant.com" required></label>
+          <label>Role<select id="authInviteRole"><option value="general_manager">General Manager</option><option value="host">Host</option><option value="kitchen_manager">Kitchen Manager</option></select></label>
+          <label>Location<select id="authInviteLocation"><option value="loc_marina">Marina Grille</option><option value="loc_harbor">Harbor House</option><option value="loc_river">River & Rail</option></select></label>
+          <button class="button button-primary" type="submit">Generate invitation</button>
+          <small id="authInviteResult"></small>
+        </form>
+      </article>
+
+      <article class="auth-console-card auth-boundary-card">
+        <div class="auth-card-head"><div><small>Tenant isolation</small><h3>Organization Boundary</h3></div><span>Active</span></div>
+        <div class="auth-boundary-visual">
+          <div><strong>Authenticated session</strong><span>User + role + organization</span></div>
+          <i>→</i>
+          <div><strong>Protected API</strong><span>Permission evaluation</span></div>
+          <i>→</i>
+          <div><strong>Scoped database</strong><span>Authorized records only</span></div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="page-noise" aria-hidden="true"></div>
@@ -42,6 +156,8 @@
         <a href="#autonomous-operations">Autonomous</a>
         <a href="#production-readiness">Production</a>
       <a href="#cloud-foundation">Cloud</a>
+      <a href="#auth-organizations">Access</a>
+        <a href="#auth-organizations">Access</a>
         <a href="#cloud-foundation">Cloud</a>
         <a href="#ai-concierge">Concierge</a>
         <a href="#host-stand">Host Stand</a>
@@ -2424,8 +2540,10 @@
   <script src="js/modules/intelligenceNetwork.js?v=20.0"></script>
   <script src="js/modules/autonomousOperations.js?v=19.0"></script>
   <script src="js/modules/productionReadiness.js?v=21.0"></script>
-  <script src="js/cloud/cloudApi.js?v=22.0"></script>
-  <script src="js/modules/cloudFoundation.js?v=22.0"></script>
-  <script src="js/app-v15.1.3.js?v=22.0"></script>
+  <script src="js/cloud/cloudApi.js?v=23.0.1"></script>
+  <script src="js/modules/cloudFoundation.js?v=23.0.1"></script>
+  <script src="js/modules/startupDiagnostics.js?v=23.0.1"></script>
+  <script src="js/modules/authOrganizations.js?v=23.0.1"></script>
+  <script src="js/app-v15.1.3.js?v=23.0.1"></script>
 </body>
 </html>

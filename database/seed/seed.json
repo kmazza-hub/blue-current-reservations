@@ -9,6 +9,12 @@
       "name": "Chefs International",
       "status": "pilot",
       "createdAt": "2026-07-20T00:00:00.000Z"
+    },
+    {
+      "id": "org_blueharbor",
+      "name": "Blue Harbor Hospitality",
+      "status": "pilot",
+      "createdAt": "2026-07-20T00:00:00.000Z"
     }
   ],
   "locations": [
@@ -39,6 +45,20 @@
       "name": "The Cabin",
       "capacity": 126,
       "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_tide",
+      "organizationId": "org_blueharbor",
+      "name": "Tide & Timber",
+      "capacity": 132,
+      "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_lighthouse",
+      "organizationId": "org_blueharbor",
+      "name": "Lighthouse Social",
+      "capacity": 118,
+      "timezone": "America/New_York"
     }
   ],
   "users": [
@@ -48,7 +68,26 @@
       "name": "Keith Mazza",
       "email": "keith@bluecurrent.demo",
       "role": "owner",
-      "status": "active"
+      "status": "active",
+      "password": "BlueCurrent23!"
+    },
+    {
+      "id": "usr_sarah",
+      "organizationId": "org_chefs",
+      "name": "Sarah Morgan",
+      "email": "sarah@bluecurrent.demo",
+      "role": "general_manager",
+      "status": "active",
+      "password": "Manager23!"
+    },
+    {
+      "id": "usr_alex",
+      "organizationId": "org_blueharbor",
+      "name": "Alex Rivera",
+      "email": "alex@bluecurrent.demo",
+      "role": "owner",
+      "status": "active",
+      "password": "Harbor23!"
     }
   ],
   "configurations": [
@@ -94,5 +133,49 @@
     }
   ],
   "reservations": [],
-  "operationalEvents": []
+  "operationalEvents": [],
+  "memberships": [
+    {
+      "id": "m_keith_chefs",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ]
+    },
+    {
+      "id": "m_sarah_chefs",
+      "userId": "usr_sarah",
+      "organizationId": "org_chefs",
+      "role": "general_manager",
+      "locationIds": [
+        "loc_marina"
+      ]
+    },
+    {
+      "id": "m_alex_harbor",
+      "userId": "usr_alex",
+      "organizationId": "org_blueharbor",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ]
+    }
+  ],
+  "sessions": [],
+  "invitations": [
+    {
+      "id": "inv_demo",
+      "organizationId": "org_chefs",
+      "email": "pilot.manager@example.com",
+      "role": "general_manager",
+      "locationIds": [
+        "loc_marina"
+      ],
+      "status": "pending",
+      "token": "BC23-DEMO-INVITE",
+      "expiresAt": "2027-01-01T00:00:00.000Z"
+    }
+  ]
 }

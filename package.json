@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "22.0.0",
+  "version": "23.0.1",
   "private": true,
-  "description": "Blue Current Hospitality OS Cloud Foundation",
+  "description": "Blue Current Hospitality OS \u2014 V23 Stabilization",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
