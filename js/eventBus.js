@@ -2,43 +2,27 @@
  * Blue Current Event Bus
  *
  * Allows independent modules to publish and subscribe to shared
- * application events.
+ * application events without depending on one another.
  */
-
 class EventBus {
   constructor() {
     this.listeners = new Map();
   }
 
-  /**
-   * Subscribe to an event.
-   *
-   * Returns an unsubscribe function.
-   */
   on(eventName, callback) {
-    if (typeof eventName !== "string" || !eventName.trim()) {
-      throw new TypeError("EventBus.on requires a valid event name.");
-    }
-
-    if (typeof callback !== "function") {
-      throw new TypeError("EventBus.on requires a callback function.");
-    }
+    this.#validateSubscription(eventName, callback);
 
     if (!this.listeners.has(eventName)) {
       this.listeners.set(eventName, new Set());
     }
 
     this.listeners.get(eventName).add(callback);
-
-    return () => {
-      this.off(eventName, callback);
-    };
+    return () => this.off(eventName, callback);
   }
 
-  /**
-   * Subscribe to an event once.
-   */
   once(eventName, callback) {
+    this.#validateSubscription(eventName, callback);
+
     const unsubscribe = this.on(eventName, (payload) => {
       unsubscribe();
       callback(payload);
@@ -47,52 +31,57 @@ class EventBus {
     return unsubscribe;
   }
 
-  /**
-   * Remove a specific event listener.
-   */
   off(eventName, callback) {
     const eventListeners = this.listeners.get(eventName);
+    if (!eventListeners) return false;
 
-    if (!eventListeners) {
-      return;
-    }
-
-    eventListeners.delete(callback);
-
-    if (eventListeners.size === 0) {
-      this.listeners.delete(eventName);
-    }
+    const removed = eventListeners.delete(callback);
+    if (eventListeners.size === 0) this.listeners.delete(eventName);
+    return removed;
   }
 
-  /**
-   * Publish an event to every subscriber.
-   */
   emit(eventName, payload = {}) {
-    const eventListeners = this.listeners.get(eventName);
-
-    if (!eventListeners) {
-      return;
+    if (typeof eventName !== "string" || !eventName.trim()) {
+      throw new TypeError("EventBus.emit requires a valid event name.");
     }
 
+    const eventListeners = this.listeners.get(eventName);
+    if (!eventListeners) return 0;
+
+    let delivered = 0;
     [...eventListeners].forEach((callback) => {
       try {
         callback(payload);
+        delivered += 1;
       } catch (error) {
         console.error(`Event Bus listener failed: ${eventName}`, error);
       }
     });
+
+    return delivered;
   }
 
-  /**
-   * Remove all listeners, or all listeners for one event.
-   */
   clear(eventName) {
     if (typeof eventName === "string") {
-      this.listeners.delete(eventName);
-      return;
+      return this.listeners.delete(eventName);
     }
 
     this.listeners.clear();
+    return true;
+  }
+
+  listenerCount(eventName) {
+    return this.listeners.get(eventName)?.size ?? 0;
+  }
+
+  #validateSubscription(eventName, callback) {
+    if (typeof eventName !== "string" || !eventName.trim()) {
+      throw new TypeError("EventBus.on requires a valid event name.");
+    }
+
+    if (typeof callback !== "function") {
+      throw new TypeError("EventBus.on requires a callback function.");
+    }
   }
 }
 

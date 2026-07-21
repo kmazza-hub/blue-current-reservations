@@ -172,3 +172,46 @@ Focus:
 
 Goal:
 Transform the prototype into a polished demonstration platform suitable for executive presentations and pilot evaluations.
+
+
+# V13 – Live Service Experience
+
+Objective:
+Transform the homepage into a cinematic demonstration of a complete dinner service.
+
+Experience roadmap:
+1. Restaurant transitions from Closed → Opening → Live Dinner Service.
+2. Incoming guest call animates in real time.
+3. Concierge captures reservation details.
+4. Guest Intelligence recognizes returning guests and preferences.
+5. Digital Twin assigns and updates table status.
+6. Operations Copilot surfaces contextual recommendations.
+7. Analytics update continuously during service.
+8. Executive dashboard concludes with an end-of-service summary.
+
+Design priorities:
+- Smooth, coordinated animations
+- Shared event engine powering every module
+- Illustrative operational data clearly identified
+- Premium hospitality presentation suitable for executive demos
+
+
+# V14 – Motion System
+
+Purpose:
+Create a unified animation framework so every module feels like one connected application.
+
+Implementation goals:
+- Global timeline controller
+- Shared application state
+- Page transition engine
+- Coordinated card animations
+- Table status transitions
+- Live notification framework
+- Ambient background motion
+- Skeleton loading states
+- Consistent easing, timing, and spacing tokens
+- Reduced-motion accessibility support
+
+Success criteria:
+Every interaction should feel responsive, intentional, and cohesive across Concierge, Digital Twin, Guest Intelligence, Analytics, and Executive modules.

@@ -1,93 +1,80 @@
 /**
  * Blue Current Live Service Timeline
  *
- * Describes the sequence of events used during the guided
- * dinner-service demonstration.
+ * One guided reservation journey. The final reservation:confirmed
+ * event contains everything required to synchronize the application.
  */
-
 function createLiveServiceTimeline(eventBus) {
   if (!eventBus) {
     throw new Error("createLiveServiceTimeline requires an Event Bus.");
   }
 
+  const reservation = {
+    id: "reservation-1048",
+    guestName: "Anthony Russo",
+    phoneNumber: "(732) 555-0148",
+    partySize: 4,
+    reservationDate: "Friday, July 24",
+    reservationTime: "7:15 PM",
+    tableNumber: 14,
+    seatingPreference: "Quiet waterfront",
+    occasion: "Birthday",
+    notes: ["Tree nut allergy", "Premier guest"]
+  };
+
   return [
     {
       name: "Start dinner service",
       delay: 1000,
-      action: () => {
-        eventBus.emit("service:started", {
-          serviceName: "Dinner service",
-          startedAt: new Date().toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit"
-          })
-        });
-      }
+      action: () => eventBus.emit("service:started", {
+        serviceName: "Dinner service",
+        startedAt: new Date().toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit"
+        })
+      })
     },
     {
       name: "Incoming guest call",
       delay: 1800,
-      action: () => {
-        eventBus.emit("concierge:call-started", {
-          phoneNumber: "(732) 555-0148",
-          guestType: "new"
-        });
-      }
-    },
-    {
-      name: "Reservation captured",
-      delay: 2400,
-      action: () => {
-        eventBus.emit("reservation:created", {
-          id: "reservation-1048",
-          guestName: "Anthony Russo",
-          partySize: 4,
-          reservationTime: "7:15 PM",
-          seatingPreference: "Waterfront"
-        });
-      }
+      action: () => eventBus.emit("concierge:call-started", {
+        id: "call-1048",
+        phoneNumber: reservation.phoneNumber,
+        guestType: "returning"
+      })
     },
     {
       name: "Guest recognized",
       delay: 2200,
-      action: () => {
-        eventBus.emit("guest:recognized", {
-          guestName: "Anthony Russo",
-          visits: 6,
-          preferences: ["Waterfront seating", "Quiet table"],
-          occasion: "Birthday"
-        });
-      }
+      action: () => eventBus.emit("guest:recognized", {
+        guestName: reservation.guestName,
+        visits: 11,
+        tier: "Premier Guest",
+        preferences: ["Waterfront seating", "Quiet table"],
+        allergies: ["Tree nut"],
+        occasion: reservation.occasion
+      })
     },
     {
-      name: "Table assigned",
+      name: "Availability recovered",
       delay: 2200,
-      action: () => {
-        eventBus.emit("table:assigned", {
-          tableNumber: 14,
-          partySize: 4
-        });
-      }
+      action: () => eventBus.emit("availability:matched", {
+        requestedTime: "7:30 PM",
+        offeredTime: reservation.reservationTime,
+        tableNumber: reservation.tableNumber,
+        reason: "Waterfront inventory constrained at 7:30 PM"
+      })
     },
     {
-      name: "Occupancy updated",
-      delay: 1800,
-      action: () => {
-        eventBus.emit("occupancy:updated", {
-          occupancyPercent: 82
-        });
-      }
-    },
-    {
-      name: "Executive metrics refreshed",
-      delay: 2000,
-      action: () => {
-        eventBus.emit("executive:updated", {
-          reservationsCaptured: 1,
-          callsHandled: 1,
-          occupancyPercent: 82
-        });
-      }
+      name: "Reservation confirmed",
+      delay: 2400,
+      action: () => eventBus.emit("reservation:confirmed", {
+        reservation,
+        occupancyPercent: 82,
+        revenueImpact: 340,
+        executiveBrief:
+          "One waterfront reservation was recovered, Table 14 was assigned, and the host team received the birthday and allergy notes."
+      })
     }
   ];
 }

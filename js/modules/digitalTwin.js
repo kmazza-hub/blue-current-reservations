@@ -1,25 +1,47 @@
- <article class="panel floor-panel">
-            <div class="panel-title">
-              <span>Dining room</span>
-              <span id="occupancyLabel">78% occupied</span>
-            </div>
+/** Blue Current Digital Twin module */
+function createDigitalTwinModule(eventBus) {
+  if (!eventBus) throw new Error("Digital Twin module requires an Event Bus.");
 
-            <div class="floor-map">
-              <div class="table table-round occupied" style="--x:12%;--y:16%">2</div>
-              <div class="table reserved" style="--x:43%;--y:13%">4</div>
-              <div class="table table-round" style="--x:77%;--y:17%">2</div>
-              <div class="table occupied" style="--x:10%;--y:51%">6</div>
-              <div class="table featured" id="targetTable" style="--x:43%;--y:48%">14</div>
-              <div class="table occupied" style="--x:78%;--y:50%">4</div>
-              <div class="table table-round reserved" style="--x:13%;--y:81%">2</div>
-              <div class="table" style="--x:48%;--y:80%">4</div>
-              <div class="table table-round occupied" style="--x:80%;--y:81%">2</div>
-              <div class="water-edge">Waterfront deck</div>
-            </div>
+  const setTableState = (tableNumber, status = "reserved") => {
+    const selectors = [
+      `.floor-table[data-table="${tableNumber}"]`,
+      `.host-table[data-table="${tableNumber}"]`,
+      `#targetTable[data-table="${tableNumber}"]`
+    ];
+    selectors.forEach((selector) => {
+      const table = document.querySelector(selector);
+      if (!table) return;
+      table.classList.remove("available", "reserved", "seated", "dining", "reset", "cleaning");
+      table.classList.add(status, "selected");
+    });
+  };
 
-            <div class="legend">
-              <span><i class="dot open"></i>Open</span>
-              <span><i class="dot reserved-dot"></i>Reserved</span>
-              <span><i class="dot occupied-dot"></i>Seated</span>
-            </div>
-          </article>
+  const pulse = (node) => {
+    if (!node) return;
+    node.classList.remove("is-updating");
+    void node.offsetWidth;
+    node.classList.add("is-updating");
+    setTimeout(() => node.classList.remove("is-updating"), 700);
+  };
+
+  const unsubscribers = [
+    eventBus.on("table:assigned", (table) => {
+      setTableState(table.tableNumber, table.status || "reserved");
+      pulse(document.getElementById("targetTable"));
+      const recommendation = document.getElementById("hostRecommendation");
+      if (recommendation) recommendation.textContent = `Table ${table.tableNumber} assigned for 7:15 PM`;
+    }),
+    eventBus.on("occupancy:updated", ({ occupancyPercent }) => {
+      const label = document.getElementById("occupancyLabel");
+      if (label) label.textContent = `${occupancyPercent}% occupied`;
+      const twin = document.getElementById("twinOccupancy");
+      if (twin) twin.textContent = `${occupancyPercent}%`;
+      pulse(label);
+      pulse(twin);
+    })
+  ];
+
+  return { destroy: () => unsubscribers.forEach((unsubscribe) => unsubscribe()) };
+}
+
+window.createBlueCurrentDigitalTwinModule = createDigitalTwinModule;
