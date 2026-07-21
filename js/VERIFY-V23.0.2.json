@@ -1,0 +1,14 @@
+{
+  "version": "23.0.2",
+  "build": "Startup Reliability",
+  "javascriptValidation": "Validated 33 JavaScript files and all client script references.",
+  "loginSmokeTestPassed": true,
+  "healthEndpointPassed": true,
+  "startupRegistryPresent": true,
+  "correctCoreDiagnostics": true,
+  "signInButtonContrastOverride": true,
+  "cssCacheControl": "no-store, max-age=0",
+  "javascriptCacheControl": "no-store, max-age=0",
+  "expectedDiagnosticResult": "4/4 \u2014 All modules compatible",
+  "zipIntegrity": true
+}
