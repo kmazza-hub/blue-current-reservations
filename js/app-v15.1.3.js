@@ -1048,6 +1048,12 @@ const missionControlModule =
 const guestJourneyModule =
   window.createBlueCurrentGuestJourneyModule?.(eventBus, appState);
 
+const timeMachineModule =
+  window.createBlueCurrentTimeMachineModule?.(eventBus, appState);
+
+const portfolioModeModule =
+  window.createBlueCurrentPortfolioModeModule?.(eventBus, appState);
+
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
   eventBus,
@@ -1058,7 +1064,9 @@ window.blueCurrent = {
     digitalTwin: digitalTwinModule,
     executive: executiveModule,
     missionControl: missionControlModule,
-    guestJourney: guestJourneyModule
+    guestJourney: guestJourneyModule,
+    timeMachine: timeMachineModule,
+    portfolioMode: portfolioModeModule
   }
 };
 window.appState = appState;

@@ -219,3 +219,6 @@ Every interaction should feel responsive, intentional, and cohesive across Conci
 
 ## V15.4
 Digital Twin 2.0 adds live state-driven table controls, occupancy recalculation, reservation synchronization, and Mission Control table events.
+
+## V15.7
+Portfolio Mode adds group-level operating visibility and location drill-down.

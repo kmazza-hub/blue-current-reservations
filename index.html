@@ -35,7 +35,8 @@
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="#digital-twin">Digital Twin</a>
       <a href="#mission-control">Mission Control</a>
-        <a href="#mission-control">Mission Control</a>
+        <a href="#time-machine">Time Machine</a>
+        <a href="#portfolio-mode">Portfolio</a>
         <a href="#ai-concierge">Concierge</a>
         <a href="#host-stand">Host Stand</a>
         <a href="#guest-intelligence">Guests</a>
@@ -53,6 +54,9 @@
 
     <nav class="mobile-nav" aria-label="Mobile navigation" hidden>
       <a href="#digital-twin">Digital Twin</a>
+      <a href="#mission-control">Mission Control</a>
+      <a href="#time-machine">Time Machine</a>
+      <a href="#portfolio-mode">Portfolio</a>
       <a href="#ai-concierge">Concierge</a>
       <a href="#host-stand">Host Stand</a>
       <a href="#guest-intelligence">Guests</a>
@@ -833,6 +837,48 @@
   </div>
 </section>
 
+
+
+<section class="time-machine-section" id="time-machine">
+  <div class="container">
+    <div class="time-machine-heading reveal">
+      <div><span class="eyebrow">Service replay</span><h2>Time Machine</h2><p>Rewind the restaurant, inspect every operational moment, and replay the dinner rush across the entire Hospitality OS.</p></div>
+      <div class="time-machine-actions"><button class="button button-primary" type="button" id="timeMachinePlay">Play service</button><button class="button button-secondary" type="button" id="timeMachineLive">Return live</button></div>
+    </div>
+    <div class="time-machine-shell reveal">
+      <div class="time-machine-player">
+        <div class="time-machine-now"><div><small>Selected moment</small><strong id="timeMachineTime">LIVE</strong></div><div><small>Operational state</small><strong id="timeMachineLabel">Current service restored</strong></div><span id="timeMachineStage">Live</span></div>
+        <div class="time-machine-scrubber"><div class="time-machine-progress"><i id="timeMachineProgressBar"></i></div><input id="timeMachineSlider" type="range" min="0" max="8" value="0" step="1" aria-label="Service timeline"></div>
+        <div class="time-machine-scale"><span>6:00 PM</span><span>7:00 PM</span><span>8:24 PM</span></div>
+        <div class="time-machine-kpis"><article><small>Occupancy</small><strong id="timeMachineOccupancy">42%</strong></article><article><small>Reservations</small><strong id="timeMachineReservations">206</strong></article><article><small>Revenue pace</small><strong id="timeMachineRevenue">$28,100</strong></article></div>
+      </div>
+      <aside class="time-machine-events-panel"><div class="time-machine-panel-head"><small>Recorded service</small><strong>Operational moments</strong></div><div id="timeMachineEvents" class="time-machine-events"></div></aside>
+    </div>
+  </div>
+</section>
+<section class="portfolio-mode-section" id="portfolio-mode">
+  <div class="container">
+    <div class="portfolio-mode-heading reveal">
+      <div><span class="eyebrow">Multi-location command</span><h2>Portfolio Mode</h2><p>See every restaurant, compare operating health, and move from group-level intelligence to a single location without leaving the command center.</p></div>
+      <div class="portfolio-mode-actions"><button class="button button-primary" type="button" id="portfolioPulse">Run portfolio pulse</button><button class="button button-secondary" type="button" id="portfolioReset">Reset view</button></div>
+    </div>
+    <div class="portfolio-summary-grid reveal">
+      <article><small>Portfolio revenue</small><strong id="portfolioRevenue">$62,660</strong><span id="portfolioRevenueTrend">+13.4% vs last Friday</span></article>
+      <article><small>Average occupancy</small><strong id="portfolioOccupancy">86%</strong><span>Across 4 active locations</span></article>
+      <article><small>Guests in service</small><strong id="portfolioGuests">1,746</strong><span>Tonight's expected covers</span></article>
+      <article><small>Locations requiring action</small><strong id="portfolioAlerts">1</strong><span id="portfolioAlertSummary">Atlantic Bar kitchen delay</span></article>
+    </div>
+    <div class="portfolio-command-shell reveal">
+      <div class="portfolio-location-grid" id="portfolioLocationGrid" aria-label="Restaurant portfolio"></div>
+      <aside class="portfolio-focus-panel">
+        <div class="portfolio-focus-head"><div><small>Location focus</small><strong id="portfolioFocusName">Marina Grille</strong></div><span id="portfolioFocusStatus" class="portfolio-status healthy">Healthy</span></div>
+        <div class="portfolio-focus-kpis"><article><small>Occupancy</small><strong id="portfolioFocusOccupancy">91%</strong></article><article><small>Revenue</small><strong id="portfolioFocusRevenue">$18,240</strong></article><article><small>Health</small><strong id="portfolioFocusHealth">94</strong></article><article><small>Kitchen</small><strong id="portfolioFocusKitchen">9 min</strong></article></div>
+        <div class="portfolio-focus-intelligence"><small>AI portfolio brief</small><p id="portfolioFocusBrief">Marina Grille is operating above plan with strong guest flow and no immediate intervention required.</p></div>
+        <button type="button" id="portfolioOpenLocation">Open location in Mission Control</button>
+      </aside>
+    </div>
+  </div>
+</section>
 
 <section class="guest-journey-live-section" id="guest-journey-live">
   <div class="container">
@@ -2018,20 +2064,22 @@
   <div class="developer-overlay-grid">
     <section><h3>Event Bus</h3><div id="developerEventFeed" class="developer-event-feed"><p>Waiting for events…</p></div></section>
     <section><h3>App State</h3><pre id="developerStateView">{}</pre></section>
-    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li></ul></section>
+    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li><li>Portfolio Mode <i></i></li></ul></section>
   </div>
 </div>
 
-  <script src="js/eventBus.js?v=15.5"></script>
-  <script src="js/appState.js?v=15.5"></script>
-  <script src="js/motionEngine.js?v=15.5"></script>
-  <script src="js/timeline.js?v=15.5"></script>
+  <script src="js/eventBus.js?v=15.7"></script>
+  <script src="js/appState.js?v=15.7"></script>
+  <script src="js/motionEngine.js?v=15.7"></script>
+  <script src="js/timeline.js?v=15.7"></script>
   <script src="js/modules/concierge.js"></script>
-  <script src="js/modules/digitalTwin.js?v=15.5"></script>
+  <script src="js/modules/digitalTwin.js?v=15.7"></script>
   <script src="js/modules/executive.js"></script>
-  <script src="js/modules/missionControl.js?v=15.5"></script>
-  <script src="js/modules/operationalIntelligence.js?v=15.5"></script>
-  <script src="js/modules/guestJourney.js?v=15.5"></script>
-  <script src="js/app-v15.1.3.js?v=15.5"></script>
+  <script src="js/modules/missionControl.js?v=15.7"></script>
+  <script src="js/modules/operationalIntelligence.js?v=15.7"></script>
+  <script src="js/modules/guestJourney.js?v=15.7"></script>
+  <script src="js/modules/timeMachine.js?v=15.7"></script>
+  <script src="js/modules/portfolioMode.js?v=15.7"></script>
+  <script src="js/app-v15.1.3.js?v=15.7"></script>
 </body>
 </html>
