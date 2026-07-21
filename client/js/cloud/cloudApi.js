@@ -3,9 +3,9 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "31.0";
+    static VERSION = "32.0";
     static CAPABILITIES = Object.freeze([
-      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence",
+      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
@@ -70,6 +70,13 @@
         body: JSON.stringify(payload)
       });
     }
+
+    timeClock(locationId="loc_marina"){return this.request(`/api/timeclock?locationId=${encodeURIComponent(locationId)}`);}
+    clockIn(payload){return this.request("/api/timeclock/clock-in",{method:"POST",body:JSON.stringify(payload)});}
+    clockOut(payload){return this.request("/api/timeclock/clock-out",{method:"POST",body:JSON.stringify(payload)});}
+    startBreak(payload){return this.request("/api/timeclock/break-start",{method:"POST",body:JSON.stringify(payload)});}
+    endBreak(payload){return this.request("/api/timeclock/break-end",{method:"POST",body:JSON.stringify(payload)});}
+    correctTimecard(id,payload){return this.request(`/api/timeclock/timecards/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify(payload)});}
 
     inventoryIntelligence(locationId="loc_marina"){return this.request(`/api/inventory-intelligence?locationId=${encodeURIComponent(locationId)}`);}
     decideInventoryRecommendation(id,payload){return this.request(`/api/inventory-intelligence/recommendations/${encodeURIComponent(id)}`,{method:"POST",body:JSON.stringify(payload)});}

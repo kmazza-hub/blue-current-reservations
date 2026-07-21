@@ -20,6 +20,7 @@ const AutonomousOperationsService = require("./services/autonomousOperationsServ
 const GuestIntelligenceService = require("./services/guestIntelligenceService");
 const WorkforceIntelligenceService = require("./services/workforceIntelligenceService");
 const InventoryIntelligenceService = require("./services/inventoryIntelligenceService");
+const TimeClockService = require("./services/timeClockService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -43,7 +44,8 @@ const autonomousOperationsService = new AutonomousOperationsService(database, au
 const guestIntelligenceService = new GuestIntelligenceService(database, auditService, realtimeHub);
 const workforceIntelligenceService = new WorkforceIntelligenceService(database, auditService, realtimeHub, autonomousOperationsService);
 const inventoryIntelligenceService = new InventoryIntelligenceService(database, auditService, realtimeHub);
-const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService });
+const timeClockService = new TimeClockService(database, auditService, realtimeHub);
+const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -115,7 +117,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V31 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V32.0 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);

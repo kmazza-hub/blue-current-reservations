@@ -1366,3 +1366,5 @@ const workforceIntelligenceModule = startupRegistry.register("workforceIntellige
 
 const inventoryIntelligenceModule = startupRegistry.register("inventoryIntelligence", window.createBlueCurrentInventoryIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
 
+const timeClockModule = startupRegistry.register("timeClock", window.createBlueCurrentTimeClockModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
+

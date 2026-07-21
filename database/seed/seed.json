@@ -1295,5 +1295,115 @@
       "autoDraftOrders": true,
       "criticalDaysRemaining": 1.5
     }
+  ],
+  "employees": [
+    {
+      "id": "emp_maria",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Maria Santos",
+      "role": "Server",
+      "department": "FOH",
+      "pin": "1204",
+      "hourlyRate": 18.5,
+      "weeklyHours": 34.2,
+      "status": "active"
+    },
+    {
+      "id": "emp_jamal",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Jamal Reed",
+      "role": "Line Cook",
+      "department": "BOH",
+      "pin": "3381",
+      "hourlyRate": 22.0,
+      "weeklyHours": 38.7,
+      "status": "active"
+    },
+    {
+      "id": "emp_olivia",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Olivia Chen",
+      "role": "Bartender",
+      "department": "FOH",
+      "pin": "7426",
+      "hourlyRate": 19.75,
+      "weeklyHours": 29.6,
+      "status": "active"
+    },
+    {
+      "id": "emp_devon",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Devon Blake",
+      "role": "Host",
+      "department": "FOH",
+      "pin": "9055",
+      "hourlyRate": 16.25,
+      "weeklyHours": 21.1,
+      "status": "active"
+    }
+  ],
+  "employeeTimecards": [
+    {
+      "id": "tc_maria_active",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "employeeId": "emp_maria",
+      "clockIn": "2026-07-21T14:30:00.000Z",
+      "clockOut": null,
+      "status": "active",
+      "source": "kiosk",
+      "createdAt": "2026-07-21T14:30:00.000Z"
+    },
+    {
+      "id": "tc_jamal_active",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "employeeId": "emp_jamal",
+      "clockIn": "2026-07-21T13:00:00.000Z",
+      "clockOut": null,
+      "status": "active",
+      "source": "kiosk",
+      "createdAt": "2026-07-21T13:00:00.000Z"
+    },
+    {
+      "id": "tc_olivia_active",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "employeeId": "emp_olivia",
+      "clockIn": "2026-07-21T15:15:00.000Z",
+      "clockOut": null,
+      "status": "active",
+      "source": "manager",
+      "createdAt": "2026-07-21T15:15:00.000Z"
+    }
+  ],
+  "employeeBreaks": [
+    {
+      "id": "break_jamal",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "timecardId": "tc_jamal_active",
+      "employeeId": "emp_jamal",
+      "start": "2026-07-21T17:40:00.000Z",
+      "end": null,
+      "paid": false,
+      "status": "active"
+    }
+  ],
+  "timeClockCorrections": [],
+  "timeClockPolicies": [
+    {
+      "id": "tcp_marina",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "dailyOvertimeHours": 8,
+      "weeklyOvertimeHours": 40,
+      "breakReminderMinutes": 300,
+      "requirePin": true
+    }
   ]
 }

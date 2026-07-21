@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "31.0",
+        version: "32.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -187,6 +187,24 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
 
 
 
+
+    if (url.pathname === "/api/timeclock" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await timeClockService.snapshot(organizationId, locationId));
+    }
+    if (url.pathname === "/api/timeclock/clock-in" && request.method === "POST") {
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId || "loc_marina")) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 201, await timeClockService.clockIn(body, auth.user.name, organizationId));
+    }
+    if (url.pathname === "/api/timeclock/clock-out" && request.method === "POST") return sendJson(response, 200, await timeClockService.clockOut(await readJson(request), auth.user.name, organizationId));
+    if (url.pathname === "/api/timeclock/break-start" && request.method === "POST") return sendJson(response, 201, await timeClockService.startBreak(await readJson(request), auth.user.name, organizationId));
+    if (url.pathname === "/api/timeclock/break-end" && request.method === "POST") return sendJson(response, 200, await timeClockService.endBreak(await readJson(request), auth.user.name, organizationId));
+    if (url.pathname.startsWith("/api/timeclock/timecards/") && request.method === "PATCH") {
+      const timecardId = decodeURIComponent(url.pathname.split("/").pop());
+      return sendJson(response, 200, await timeClockService.correct(timecardId, await readJson(request), auth.user.name, organizationId));
+    }
 
     if (url.pathname === "/api/inventory-intelligence" && request.method === "GET") return sendJson(response,200,await inventoryIntelligenceService.snapshot(organizationId,url.searchParams.get("locationId")||"loc_marina"));
     if (url.pathname.startsWith("/api/inventory-intelligence/recommendations/") && request.method === "POST") {
