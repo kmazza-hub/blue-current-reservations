@@ -748,6 +748,7 @@
       </div>
       <div class="mission-control-actions">
         <button type="button" id="missionReplay">Replay live journey</button>
+        <button type="button" id="missionDeveloperToggle">Developer overlay</button>
         <button type="button" id="missionClear">Clear feed</button>
       </div>
     </div>
@@ -759,9 +760,14 @@
         <article><span>Modules synchronized</span><strong id="missionModuleCount">5</strong></article>
         <article><span>Current occupancy</span><strong id="missionOccupancy">0%</strong></article>
         <article><span>Revenue recovered</span><strong id="missionRevenue">$0</strong></article>
-        <div class="mission-health">
+        <div class="mission-score-card">
+          <div><span>Restaurant health</span><strong id="missionHealthScore">96</strong></div>
+          <div class="mission-score-track"><i id="missionHealthBar"></i></div>
+          <small id="missionHealthLabel">Excellent</small>
+        </div>
+        <div class="mission-health" id="missionPlatformHealth">
           <small>Platform health</small>
-          <strong><i></i> All systems operational</strong>
+          <strong><i></i><span id="missionPlatformHealthText">All systems operational</span></strong>
         </div>
       </aside>
 
@@ -770,6 +776,15 @@
           <div><small>Marina Grille · Live service</small><strong id="missionHeadline">Waiting for the next operational event</strong></div>
           <time id="missionClock">Now</time>
         </div>
+
+        <div class="mission-journey" aria-label="Current guest journey">
+          <div class="mission-journey-step" data-stage="call"><i>1</i><span>Call</span></div>
+          <div class="mission-journey-step" data-stage="recognized"><i>2</i><span>Recognized</span></div>
+          <div class="mission-journey-step" data-stage="matched"><i>3</i><span>Matched</span></div>
+          <div class="mission-journey-step" data-stage="confirmed"><i>4</i><span>Confirmed</span></div>
+          <div class="mission-journey-step" data-stage="synced"><i>5</i><span>Synced</span></div>
+        </div>
+
         <div class="mission-event-feed" id="missionEventFeed" aria-live="polite">
           <div class="mission-empty-state" id="missionEmptyState">
             <span>⌁</span>
@@ -791,6 +806,17 @@
         <div class="mission-brief">
           <small>Executive brief</small>
           <p id="missionBrief">Waiting for dinner service…</p>
+        </div>
+        <div class="mission-ai-alert" id="missionAiAlert">
+          <div><span>AI</span><small>Manager signal</small></div>
+          <strong id="missionAlertTitle">Operation stable</strong>
+          <p id="missionAlertText">Mission Control will surface priority conditions as service develops.</p>
+        </div>
+        <div class="mission-recommendations">
+          <div class="mission-recommendations-head"><small>Recommended actions</small><span id="missionRecommendationCount">0</span></div>
+          <div id="missionRecommendationList" class="mission-recommendation-list">
+            <p class="mission-no-recommendations">No intervention required.</p>
+          </div>
         </div>
       </aside>
     </div>
@@ -1944,14 +1970,24 @@
     </div>
   </footer>
 
-  <script src="js/eventBus.js?v=15.1.2"></script>
-  <script src="js/appState.js?v=15.1.2"></script>
-  <script src="js/motionEngine.js?v=15.1.2"></script>
-  <script src="js/timeline.js?v=15.1.2"></script>
+<div class="developer-overlay" id="developerOverlay" aria-hidden="true">
+  <div class="developer-overlay-head"><div><small>Blue Current developer mode</small><strong>Live system telemetry</strong></div><button type="button" id="developerOverlayClose" aria-label="Close developer overlay">×</button></div>
+  <div class="developer-overlay-grid">
+    <section><h3>Event Bus</h3><div id="developerEventFeed" class="developer-event-feed"><p>Waiting for events…</p></div></section>
+    <section><h3>App State</h3><pre id="developerStateView">{}</pre></section>
+    <section><h3>Modules</h3><ul id="developerModuleList"><li>Concierge <i></i></li><li>Digital Twin <i></i></li><li>Executive <i></i></li><li>Mission Control <i></i></li><li>Intelligence Engine <i></i></li></ul></section>
+  </div>
+</div>
+
+  <script src="js/eventBus.js?v=15.3"></script>
+  <script src="js/appState.js?v=15.3"></script>
+  <script src="js/motionEngine.js?v=15.3"></script>
+  <script src="js/timeline.js?v=15.3"></script>
   <script src="js/modules/concierge.js"></script>
   <script src="js/modules/digitalTwin.js"></script>
   <script src="js/modules/executive.js"></script>
-  <script src="js/modules/missionControl.js"></script>
-  <script src="js/app-v15.1.3.js"></script>
+  <script src="js/modules/missionControl.js?v=15.3"></script>
+  <script src="js/modules/operationalIntelligence.js?v=15.3"></script>
+  <script src="js/app-v15.1.3.js?v=15.3"></script>
 </body>
 </html>

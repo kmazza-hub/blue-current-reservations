@@ -1,174 +1,87 @@
-/**
- * Blue Current Mission Control
- * A derived operational view of Event Bus activity and shared App State.
- */
+/** Blue Current Mission Control V15.2 */
 function createMissionControlModule(eventBus, appState, motionEngine) {
   const feed = document.getElementById("missionEventFeed");
   if (!feed) return null;
 
-  const eventDefinitions = {
-    "service:started": {
-      icon: "◉",
-      label: "Service",
-      title: () => "Dinner service started",
-      detail: (payload) => `${payload.serviceName || "Service"} is live across the operation.`
-    },
-    "concierge:call-started": {
-      icon: "☎",
-      label: "Concierge",
-      title: () => "Incoming call answered",
-      detail: (payload) => `${payload.guestType === "returning" ? "Returning guest" : "Guest"} call ${payload.phoneNumber || ""} connected immediately.`
-    },
-    "guest:recognized": {
-      icon: "◎",
-      label: "Guest intelligence",
-      title: (payload) => `${payload.guestName || "Guest"} recognized`,
-      detail: (payload) => `${payload.tier || "Guest profile"} · ${(payload.preferences || []).join(" · ") || "Preferences loaded"}`
-    },
-    "availability:matched": {
-      icon: "⌁",
-      label: "Inventory",
-      title: (payload) => `Table ${payload.tableNumber || "—"} matched`,
-      detail: (payload) => `${payload.offeredTime || "Available time"} recovered from constrained inventory.`
-    },
-    "reservation:confirmed": {
-      icon: "✓",
-      label: "Reservation",
-      title: (payload) => `${payload.reservation?.guestName || "Guest"} confirmed`,
-      detail: (payload) => `Table ${payload.reservation?.tableNumber || "—"} · Party of ${payload.reservation?.partySize || "—"} · ${payload.reservation?.reservationTime || "Time confirmed"}`,
-      confirmed: true
-    },
-    "reservation:created": {
-      icon: "+",
-      label: "Host stand",
-      title: () => "Reservation added to service",
-      detail: (payload) => `${payload.guestName || "Guest"} is now visible to the host team.`
-    },
-    "table:assigned": {
-      icon: "▦",
-      label: "Digital Twin",
-      title: (payload) => `Table ${payload.tableNumber || "—"} reserved`,
-      detail: (payload) => `Dining room inventory updated for a party of ${payload.partySize || "—"}.`
-    },
-    "occupancy:updated": {
-      icon: "%",
-      label: "Operations",
-      title: (payload) => `Occupancy updated to ${payload.occupancyPercent || 0}%`,
-      detail: () => "Shared operational state synchronized across every active module."
-    },
-    "executive:updated": {
-      icon: "↗",
-      label: "Executive",
-      title: () => "Leadership metrics refreshed",
-      detail: (payload) => `${Number(payload.reservationsToday || 0).toLocaleString()} reservations · $${Number(payload.estimatedRevenue || 0).toLocaleString()} estimated revenue.`
+  const definitions = {
+    "service:started": ["◉","Service",()=>"Dinner service started",p=>`${p.serviceName||"Dinner service"} is live across the operation.`,"service"],
+    "concierge:call-started": ["☎","Concierge",()=>"Incoming call answered",p=>`${p.guestType==="returning"?"Returning guest":"Guest"} connected immediately.`,"call"],
+    "guest:recognized": ["◎","Guest intelligence",p=>`${p.guestName||"Guest"} recognized`,p=>`${p.tier||"Guest profile"} · ${(p.preferences||[]).join(" · ")||"Preferences loaded"}`,"recognized"],
+    "availability:matched": ["⌁","Inventory",p=>`Table ${p.tableNumber||"—"} matched`,p=>`${p.offeredTime||"Available time"} recovered from constrained inventory.`,"matched"],
+    "reservation:confirmed": ["✓","Reservation",p=>`${p.reservation?.guestName||"Guest"} confirmed`,p=>`Table ${p.reservation?.tableNumber||"—"} · Party of ${p.reservation?.partySize||"—"} · ${p.reservation?.reservationTime||"Time confirmed"}`,"confirmed",true],
+    "reservation:created": ["+","Host stand",()=>"Reservation added to service",p=>`${p.guestName||"Guest"} is now visible to the host team.`,"synced"],
+    "table:assigned": ["▦","Digital Twin",p=>`Table ${p.tableNumber||"—"} reserved`,p=>`Dining room inventory updated for a party of ${p.partySize||"—"}.`,"synced"],
+    "occupancy:updated": ["%","Operations",p=>`Occupancy updated to ${p.occupancyPercent||0}%`,()=>"Shared operational state synchronized across every active module.","synced"],
+    "executive:updated": ["↗","Executive",()=>"Leadership metrics refreshed",p=>`${Number(p.reservationsToday||0).toLocaleString()} reservations · $${Number(p.estimatedRevenue||0).toLocaleString()} estimated revenue.`,"synced"]
+  };
+
+  let eventCount=0, recoveredRevenue=0;
+  const setText=(id,value)=>{const el=document.getElementById(id); if(el) el.textContent=value;};
+  const time=()=>new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"});
+
+  function setJourney(stage){
+    const order=["call","recognized","matched","confirmed","synced"];
+    const active=order.indexOf(stage);
+    document.querySelectorAll(".mission-journey-step").forEach((el,i)=>{
+      el.classList.toggle("is-complete", i<active);
+      el.classList.toggle("is-active", i===active);
+    });
+  }
+
+  function updateAlert(state){
+    const occ=Number(state.occupancyPercent||0);
+    if(occ>=90){
+      setText("missionAlertTitle","Capacity pressure building");
+      setText("missionAlertText",`Occupancy is ${occ}%. Protect the next seating window and prioritize flexible inventory.`);
+      document.getElementById("missionAiAlert")?.classList.add("is-warning");
+    } else if(state.activeGuest?.tier?.toLowerCase().includes("premier")) {
+      setText("missionAlertTitle","Premier guest in journey");
+      setText("missionAlertText",`${state.activeGuest.guestName} has been recognized. Preferences are synchronized for the host team.`);
+      document.getElementById("missionAiAlert")?.classList.remove("is-warning");
+    } else {
+      setText("missionAlertTitle","Operation stable");
+      setText("missionAlertText","All connected modules are synchronized and no immediate intervention is required.");
+      document.getElementById("missionAiAlert")?.classList.remove("is-warning");
     }
-  };
+  }
 
-  let eventCount = 0;
-  let recoveredRevenue = 0;
-
-  const setText = (id, value) => {
-    const element = document.getElementById(id);
-    if (element) element.textContent = value;
-  };
-
-  const formatTime = () => new Date().toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit"
-  });
-
-  function addEvent(eventName, payload = {}) {
-    const definition = eventDefinitions[eventName];
-    if (!definition) return;
-
+  function addEvent(name,payload={}){
+    const d=definitions[name]; if(!d) return;
     document.getElementById("missionEmptyState")?.remove();
-    eventCount += 1;
-
-    if (eventName === "reservation:confirmed") {
-      recoveredRevenue += Number(payload.revenueImpact || 0);
-    }
-
-    const item = document.createElement("article");
-    item.className = `mission-event${definition.confirmed ? " is-confirmed" : ""}`;
-
-    const title = typeof definition.title === "function" ? definition.title(payload) : definition.title;
-    const detail = typeof definition.detail === "function" ? definition.detail(payload) : definition.detail;
-    const timestamp = formatTime();
-
-    item.innerHTML = `
-      <div class="mission-event-icon" aria-hidden="true">${definition.icon}</div>
-      <div class="mission-event-copy">
-        <small>${definition.label}</small>
-        <strong>${title}</strong>
-        <p>${detail}</p>
-      </div>
-      <time>${timestamp}</time>
-    `;
-
-    feed.append(item);
-    feed.scrollTo({ top: feed.scrollHeight, behavior: "smooth" });
-
-    setText("missionEventCount", String(eventCount));
-    setText("missionRevenue", `$${recoveredRevenue.toLocaleString()}`);
-    setText("missionHeadline", title);
-    setText("missionClock", timestamp);
+    eventCount++;
+    if(name==="reservation:confirmed") recoveredRevenue+=Number(payload.revenueImpact||0);
+    const [icon,label,titleFn,detailFn,stage,confirmed]=d;
+    const title=titleFn(payload), stamp=time();
+    const item=document.createElement("article");
+    item.className=`mission-event${confirmed?" is-confirmed":""}`;
+    item.innerHTML=`<div class="mission-event-icon" aria-hidden="true">${icon}</div><div class="mission-event-copy"><small>${label}</small><strong>${title}</strong><p>${detailFn(payload)}</p></div><time>${stamp}</time>`;
+    feed.append(item); feed.scrollTo({top:feed.scrollHeight,behavior:"smooth"});
+    setJourney(stage); setText("missionEventCount",String(eventCount)); setText("missionRevenue",`$${recoveredRevenue.toLocaleString()}`); setText("missionHeadline",title); setText("missionClock",stamp);
   }
 
-  function renderState(state) {
-    setText("missionService", state.serviceStatus === "live" ? "Live" : "Closed");
-    setText("missionGuest", state.activeGuest?.guestName || "—");
-    setText("missionTable", state.activeTable?.tableNumber ? `Table ${state.activeTable.tableNumber}` : "—");
-    setText("missionReservations", Number(state.reservationsToday || 0).toLocaleString());
-    setText("missionCalls", Number(state.callsAnswered || 0).toLocaleString());
-    setText("missionOccupancy", `${Number(state.occupancyPercent || 0)}%`);
-    setText("missionBrief", state.executiveBrief || "Waiting for dinner service…");
+  function renderState(state){
+    setText("missionService",state.serviceStatus==="live"?"Live":"Closed");
+    setText("missionGuest",state.activeGuest?.guestName||"—");
+    setText("missionTable",state.activeTable?.tableNumber?`Table ${state.activeTable.tableNumber}`:"—");
+    setText("missionReservations",Number(state.reservationsToday||0).toLocaleString());
+    setText("missionCalls",Number(state.callsAnswered||0).toLocaleString());
+    setText("missionOccupancy",`${Number(state.occupancyPercent||0)}%`);
+    setText("missionBrief",state.executiveBrief||"Waiting for dinner service…");
+    updateAlert(state);
   }
 
-  const unsubscribers = Object.keys(eventDefinitions).map((eventName) =>
-    eventBus.on(eventName, (payload) => addEvent(eventName, payload))
-  );
+  const unsubs=Object.keys(definitions).map(name=>eventBus.on(name,p=>addEvent(name,p)));
+  unsubs.push(eventBus.on("state:updated",({state})=>renderState(state)));
+  unsubs.push(eventBus.on("state:reset",({state})=>renderState(state)));
 
-  unsubscribers.push(eventBus.on("state:updated", ({ state }) => renderState(state)));
-  unsubscribers.push(eventBus.on("state:reset", ({ state }) => renderState(state)));
-
-  document.getElementById("missionClear")?.addEventListener("click", () => {
-    eventCount = 0;
-    recoveredRevenue = 0;
-    feed.innerHTML = `
-      <div class="mission-empty-state" id="missionEmptyState">
-        <span>⌁</span>
-        <strong>Feed cleared</strong>
-        <p>The next operational event will appear here automatically.</p>
-      </div>`;
-    setText("missionEventCount", "0");
-    setText("missionRevenue", "$0");
-    setText("missionHeadline", "Waiting for the next operational event");
-    setText("missionClock", "Now");
-  });
-
-  document.getElementById("missionReplay")?.addEventListener("click", () => {
-    appState.reset();
-    eventCount = 0;
-    recoveredRevenue = 0;
-    feed.innerHTML = `
-      <div class="mission-empty-state" id="missionEmptyState">
-        <span>⌁</span>
-        <strong>Replaying live journey</strong>
-        <p>Mission Control is listening to the Event Bus.</p>
-      </div>`;
-    setText("missionEventCount", "0");
-    setText("missionRevenue", "$0");
-    motionEngine.restart();
-  });
-
+  function resetFeed(message="Event bus connected"){
+    eventCount=0; recoveredRevenue=0; setJourney("");
+    feed.innerHTML=`<div class="mission-empty-state" id="missionEmptyState"><span>⌁</span><strong>${message}</strong><p>The next operational event will appear here automatically.</p></div>`;
+    setText("missionEventCount","0"); setText("missionRevenue","$0"); setText("missionHeadline","Waiting for the next operational event"); setText("missionClock","Now");
+  }
+  document.getElementById("missionClear")?.addEventListener("click",()=>resetFeed("Feed cleared"));
+  document.getElementById("missionReplay")?.addEventListener("click",()=>{appState.reset(); resetFeed("Replaying live journey"); motionEngine.restart();});
   renderState(appState.getState());
-
-  return {
-    destroy() {
-      unsubscribers.forEach((unsubscribe) => unsubscribe?.());
-    }
-  };
+  return {destroy(){unsubs.forEach(fn=>fn?.());}};
 }
-
-window.createBlueCurrentMissionControlModule = createMissionControlModule;
+window.createBlueCurrentMissionControlModule=createMissionControlModule;

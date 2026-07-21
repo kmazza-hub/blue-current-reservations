@@ -1230,4 +1230,8 @@ motionEngine.load(
   window.createBlueCurrentLiveServiceTimeline(eventBus)
 );
 
-motionEngine.start();
+motionEngine.start();  const operationalIntelligence = typeof window.createBlueCurrentOperationalIntelligenceModule === "function"
+    ? window.createBlueCurrentOperationalIntelligenceModule(eventBus, appState)
+    : null;
+
+
