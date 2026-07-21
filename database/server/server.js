@@ -15,6 +15,7 @@ const StaffOperationsService = require("./services/staffOperationsService");
 const KitchenOperationsService = require("./services/kitchenOperationsService");
 const ServiceCoordinationService = require("./services/serviceCoordinationService");
 const AiRestaurantBrainService = require("./services/aiRestaurantBrainService");
+const ExecutiveCommandCenterService = require("./services/executiveCommandCenterService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -33,7 +34,8 @@ const staffOperationsService = new StaffOperationsService(database, auditService
 const kitchenOperationsService = new KitchenOperationsService(database, auditService, realtimeHub);
 const serviceCoordinationService = new ServiceCoordinationService(database, auditService, realtimeHub);
 const aiRestaurantBrainService = new AiRestaurantBrainService(database, auditService, realtimeHub);
-const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService });
+const executiveCommandCenterService = new ExecutiveCommandCenterService(database, auditService, realtimeHub, aiRestaurantBrainService);
+const routeApi = createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -105,7 +107,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V26 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V27 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);

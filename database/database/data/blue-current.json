@@ -59,6 +59,14 @@
       "name": "Lighthouse Social",
       "capacity": 118,
       "timezone": "America/New_York"
+    },
+    {
+      "id": "loc_garden",
+      "organizationId": "org_chefs",
+      "name": "Garden Social",
+      "city": "Toms River",
+      "state": "NJ",
+      "status": "open"
     }
   ],
   "users": [
@@ -954,6 +962,29 @@
         "guest_experience"
       ],
       "updatedAt": "2026-07-21T13:00:00.000Z"
+    }
+  ],
+  "executiveGoals": [
+    {
+      "id": "goal_revenue",
+      "organizationId": "org_chefs",
+      "label": "Daily revenue target",
+      "target": 22000,
+      "unit": "currency"
+    },
+    {
+      "id": "goal_health",
+      "organizationId": "org_chefs",
+      "label": "Portfolio health target",
+      "target": 92,
+      "unit": "score"
+    },
+    {
+      "id": "goal_ticket",
+      "organizationId": "org_chefs",
+      "label": "Average ticket target",
+      "target": 16,
+      "unit": "minutes"
     }
   ]
 }

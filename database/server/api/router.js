@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "26.0",
+        version: "27.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -184,6 +184,17 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
 
 
 
+
+
+    if (url.pathname === "/api/executive-command" && request.method === "GET") {
+      return sendJson(response,200,await executiveCommandCenterService.snapshot(organizationId));
+    }
+    if (url.pathname.startsWith("/api/executive-command/goals/") && request.method === "PATCH") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Executive goal permission required."});
+      const goalId=decodeURIComponent(url.pathname.split("/").pop()), body=await readJson(request), goal=await database.get("executiveGoals",goalId);
+      if(!goal||goal.organizationId!==organizationId) return sendJson(response,404,{error:"Goal not found."});
+      return sendJson(response,200,await executiveCommandCenterService.updateGoal(goalId,body,auth.user.name,organizationId));
+    }
 
     if (url.pathname === "/api/ai-brain" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || "loc_marina";

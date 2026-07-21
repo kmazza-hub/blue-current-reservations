@@ -1035,7 +1035,7 @@ const motionEngine = new window.BlueCurrentMotionEngine();
 
 
 const startupRegistry = {
-  build: "26.0",
+  build: "27.0",
   modules: new Map(),
   register(name, instance, dependencies = []) {
     const missing = dependencies.filter(dependency => !this.modules.get(dependency)?.ready);
@@ -1151,6 +1151,8 @@ const kitchenCommandCenterModule = startupRegistry.register("kitchenCommandCente
 const serviceCoordinationModule = startupRegistry.register("serviceCoordination", window.createBlueCurrentServiceCoordinationModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","kitchenCommandCenter"]);
 
 const aiRestaurantBrainModule = startupRegistry.register("aiRestaurantBrain", window.createBlueCurrentAiRestaurantBrainModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","serviceCoordination","kitchenCommandCenter"]);
+
+const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
 
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {

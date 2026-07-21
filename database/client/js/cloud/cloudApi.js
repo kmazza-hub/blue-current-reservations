@@ -3,9 +3,9 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "26.0";
+    static VERSION = "27.0";
     static CAPABILITIES = Object.freeze([
-      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain",
+      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "aiBrain", "executiveCommand",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
@@ -70,6 +70,9 @@
         body: JSON.stringify(payload)
       });
     }
+
+    executiveCommand(){return this.request("/api/executive-command");}
+    updateExecutiveGoal(goalId,payload){return this.request(`/api/executive-command/goals/${encodeURIComponent(goalId)}`,{method:"PATCH",body:JSON.stringify(payload)});}
 
     aiBrain(locationId = "loc_marina") {
       return this.request(`/api/ai-brain?locationId=${encodeURIComponent(locationId)}`);
@@ -155,7 +158,7 @@
     connect(onEvent) {
       if (!window.EventSource) return () => {};
       this.eventSource = new EventSource(`${this.baseUrl}/api/events`);
-      ["connected", "reservation:created", "configuration:updated", "floor:table-updated", "floor:guest-seated", "floor:waitlist-added", "reservation:updated", "reservation:seated", "staff:updated", "staff:section-assigned", "staff:table-reassigned", "kitchen:ticket-created", "kitchen:ticket-updated", "kitchen:item-updated", "service:guest-seated", "service:flow-updated", "ai:recommendation-decided", "ai:recommendations-refreshed"].forEach(type => {
+      ["connected", "reservation:created", "configuration:updated", "floor:table-updated", "floor:guest-seated", "floor:waitlist-added", "reservation:updated", "reservation:seated", "staff:updated", "staff:section-assigned", "staff:table-reassigned", "kitchen:ticket-created", "kitchen:ticket-updated", "kitchen:item-updated", "service:guest-seated", "service:flow-updated", "ai:recommendation-decided", "ai:recommendations-refreshed", "executive:goal-updated"].forEach(type => {
         this.eventSource.addEventListener(type, event => {
           const payload = event.data ? JSON.parse(event.data) : {};
           onEvent(type, payload);
@@ -166,5 +169,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "26.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "27.0";
 })();
