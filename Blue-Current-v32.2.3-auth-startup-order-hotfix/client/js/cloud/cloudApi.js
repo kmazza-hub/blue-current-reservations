@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "32.4.0";
+    static VERSION = "32.3.0";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -12,15 +12,15 @@
     constructor(baseUrl = "") {
       this.baseUrl = baseUrl;
       this.eventSource = null;
-      this.token = localStorage.getItem("blueCurrentV3230Token") || "";
+      this.token = localStorage.getItem("blueCurrentV3223Token") || "";
       this.version = CloudApi.VERSION;
       this.capabilities = [...CloudApi.CAPABILITIES];
     }
 
     setToken(token) {
       this.token = token || "";
-      if (this.token) localStorage.setItem("blueCurrentV3230Token", this.token);
-      else localStorage.removeItem("blueCurrentV3230Token");
+      if (this.token) localStorage.setItem("blueCurrentV3223Token", this.token);
+      else localStorage.removeItem("blueCurrentV3223Token");
     }
 
     async request(path, options = {}) {

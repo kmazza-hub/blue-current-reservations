@@ -1,13 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="32.4.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="32.4.0">
+  <meta name="blue-current-build" content="32.3.0">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,14 +14,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=32.4.0">
+  <link rel="stylesheet" href="styles.css?v=32.3.0">
 </head>
 <body>
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V32.4.0</strong>
+    <strong>Blue Current V32.3.0</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -154,7 +153,6 @@
         <a href="#time-machine">Time Machine</a>
         <a href="#portfolio-mode">Portfolio</a>
         <a href="#predictive-operations">Predictive</a>
-        <a href="#autonomous-operations">Autonomous</a>
         <a href="#guest-intelligence">Guests</a>
         <a href="#workforce-intelligence">Workforce</a>
         <a href="#inventory-intelligence">Inventory</a>
@@ -167,9 +165,7 @@
         <a href="#service-coordination">Service</a>
         <a href="#ai-restaurant-brain">AI Brain</a>
         <a href="#executive-command-center">Executive</a>
-        <a href="#autonomous-operations">Autonomous</a>
         <a href="#guest-intelligence">Guests</a>
-        <a href="#autonomous-operations">Autonomous</a>
         <a href="#executive-command-center">Executive</a>
         <a href="#ai-restaurant-brain">AI Brain</a>
         <a href="#cloud-foundation">Cloud</a>
@@ -191,7 +187,6 @@
       <a href="#time-machine">Time Machine</a>
       <a href="#portfolio-mode">Portfolio</a>
       <a href="#predictive-operations">Predictive</a>
-      <a href="#autonomous-operations">Autonomous</a>
       <a href="#production-readiness">Production</a>
       <a href="#live-floor-operations">Floor</a>
       <a href="#reservation-operations">Reservations</a>
@@ -1156,44 +1151,6 @@
   </div>
 </section>
 
-<section class="autonomous-operations-section" id="autonomous-operations" aria-labelledby="autonomousTitle">
-  <div class="container">
-    <div class="section-heading reveal">
-      <p class="eyebrow">V19 · Autonomous Operations</p>
-      <h2 id="autonomousTitle">Your AI restaurant manager.</h2>
-      <p>Blue Current evaluates service conditions, recommends the next best action, learns from accepted decisions, and lets operators test scenarios before they affect guests.</p>
-    </div>
-
-    <div class="autonomous-command-grid reveal">
-      <article class="autonomous-hero-card">
-        <div class="autonomous-health-ring"><small>Restaurant health</small><strong id="autonomousHealth">94</strong><span>Live</span></div>
-        <div><small>Next best action</small><h3 id="autonomousNextAction">Maintain current pacing</h3><p id="autonomousConfidence">89% confidence</p><button id="autonomousEvaluate" class="autonomous-primary">Evaluate service now</button></div>
-      </article>
-      <article class="autonomous-copilot-card">
-        <small>Natural-language command center</small><h3>Ask Blue Current</h3>
-        <div class="autonomous-command"><input id="autonomousCommandInput" value="What should I do next?" aria-label="Ask Blue Current"><button id="autonomousCommandSend">Ask</button></div>
-        <p id="autonomousCommandOutput">Blue Current is ready to explain service conditions and recommend the next action.</p>
-      </article>
-    </div>
-
-    <div class="autonomous-grid reveal">
-      <section class="autonomous-panel decision-feed-panel"><div class="autonomous-panel-heading"><div><small>Decision engine</small><h3>Operational decision feed</h3></div><span class="live-indicator">Live</span></div><div id="autonomousDecisionFeed" class="autonomous-decision-feed"></div></section>
-      <section class="autonomous-panel rules-panel"><div class="autonomous-panel-heading"><div><small>No-code automation</small><h3>Autopilot rules</h3></div></div>
-        <button class="autonomous-rule active" data-rule="occupancy" aria-pressed="true"><span>IF occupancy &gt; 88%</span><strong>Open patio recommendation</strong><i></i></button>
-        <button class="autonomous-rule active" data-rule="kitchen" aria-pressed="true"><span>IF kitchen &gt; 17 min</span><strong>Add expo support</strong><i></i></button>
-        <button class="autonomous-rule active" data-rule="vip" aria-pressed="true"><span>IF VIP recognized</span><strong>Notify host lead</strong><i></i></button>
-        <button class="autonomous-rule active" data-rule="wait" aria-pressed="true"><span>IF wait &gt; 20 min</span><strong>Escalate manager alert</strong><i></i></button>
-      </section>
-      <section class="autonomous-panel scenario-panel"><div class="autonomous-panel-heading"><div><small>Operational sandbox</small><h3>Scenario simulator</h3></div></div>
-        <div class="scenario-buttons"><button data-scenario="server">Add one server</button><button data-scenario="rain">Simulate rain</button><button data-scenario="walkin">12-top walk-in</button><button data-scenario="kitchen">Kitchen failure</button></div>
-        <div id="scenarioOutput" class="scenario-output"><strong>Ready to simulate</strong><p>Select a scenario to forecast operational impact before taking action.</p></div>
-      </section>
-      <section class="autonomous-panel analytics-panel-v19"><div class="autonomous-panel-heading"><div><small>Learning engine</small><h3>Recommendation analytics</h3></div></div>
-        <div class="autonomous-metrics"><div><strong id="autonomousAccepted">0</strong><span>Accepted</span></div><div><strong id="autonomousSuccessRate">—</strong><span>Success rate</span></div><div><strong id="autonomousRevenueImpact">$0</strong><span>Revenue impact</span></div><div><strong id="autonomousWaitReduction">0 min</strong><span>Wait reduced</span></div></div>
-      </section>
-    </div>
-  </div>
-</section>
 
 <section class="concierge-section" id="ai-concierge">
       <div class="container">
@@ -2143,38 +2100,37 @@
   </div>
 </div>
 
-  <script src="js/eventBus.js?v=32.4.0"></script>
-  <script src="js/core/platform.js?v=32.4.0"></script>
-  <script src="js/appState.js?v=32.4.0"></script>
-  <script src="js/motionEngine.js?v=32.4.0"></script>
-  <script src="js/timeline.js?v=32.4.0"></script>
+  <script src="js/core/safeDom.js?v=32.3.0"></script>
+  <script src="js/core/moduleRegistry.js?v=32.3.0"></script>
+  <script src="js/eventBus.js?v=32.3.0"></script>
+  <script src="js/appState.js?v=32.3.0"></script>
+  <script src="js/motionEngine.js?v=32.3.0"></script>
+  <script src="js/timeline.js?v=32.3.0"></script>
   <script src="js/modules/concierge.js"></script>
-  <script src="js/modules/digitalTwin.js?v=32.4.0"></script>
+  <script src="js/modules/digitalTwin.js?v=32.3.0"></script>
   <script src="js/modules/executive.js"></script>
-  <script src="js/modules/missionControl.js?v=32.4.0"></script>
-  <script src="js/modules/operationalIntelligence.js?v=32.4.0"></script>
-  <script src="js/modules/guestJourney.js?v=32.4.0"></script>
-  <script src="js/modules/timeMachine.js?v=32.4.0"></script>
-  <script src="js/modules/portfolioMode.js?v=32.4.0"></script>
-  <script src="js/modules/predictiveOperations.js?v=32.4.0"></script>
-  <script src="js/modules/blueCurrentLive.js?v=32.4.0"></script>
-  <script src="js/modules/intelligenceNetwork.js?v=32.4.0"></script>
-  <script src="js/modules/guestIntelligence.js?v=32.4.0"></script>
-  <script src="js/modules/workforceIntelligence.js?v=32.4.0"></script>
-  <script src="js/modules/productionReadiness.js?v=32.4.0"></script>
-  <script src="js/modules/executiveCommandCenter.js?v=32.4.0"></script>
-  <script src="js/modules/inventoryIntelligence.js?v=32.4.0"></script>
-  <script src="js/cloud/cloudApi.js?v=32.4.0"></script>
-  <script src="js/modules/cloudFoundation.js?v=32.4.0"></script>
-  <script src="js/modules/startupDiagnostics.js?v=32.4.0"></script>
-  <script src="js/modules/authOrganizations.js?v=32.4.0"></script>
-  <script src="js/modules/liveFloorOperations.js?v=32.4.0"></script>
-  <script src="js/modules/reservationOperations.js?v=32.4.0"></script>
-  <script src="js/modules/staffSections.js?v=32.4.0"></script>
-  <script src="js/modules/kitchenCommandCenter.js?v=32.4.0"></script>
-  <script src="js/modules/serviceCoordination.js?v=32.4.0"></script>
-  <script src="js/modules/aiRestaurantBrain.js?v=32.4.0"></script>
-  <script src="js/modules/timeClock.js?v=32.4.0"></script>
-  <script src="js/app-v15.1.3.js?v=32.4.0"></script>
+  <script src="js/modules/missionControl.js?v=32.3.0"></script>
+  <script src="js/modules/operationalIntelligence.js?v=32.3.0"></script>
+  <script src="js/modules/guestJourney.js?v=32.3.0"></script>
+  <script src="js/modules/timeMachine.js?v=32.3.0"></script>
+  <script src="js/modules/portfolioMode.js?v=32.3.0"></script>
+  <script src="js/modules/predictiveOperations.js?v=32.3.0"></script>
+  <script src="js/modules/blueCurrentLive.js?v=32.3.0"></script>
+  <script src="js/modules/intelligenceNetwork.js?v=32.3.0"></script>
+  <script src="js/modules/guestIntelligence.js?v=32.3.0"></script>
+  <script src="js/modules/workforceIntelligence.js?v=32.3.0"></script>
+  <script src="js/modules/productionReadiness.js?v=32.3.0"></script>
+  <script src="js/cloud/cloudApi.js?v=32.3.0"></script>
+  <script src="js/modules/cloudFoundation.js?v=32.3.0"></script>
+  <script src="js/modules/startupDiagnostics.js?v=32.3.0"></script>
+  <script src="js/modules/authOrganizations.js?v=32.3.0"></script>
+  <script src="js/modules/liveFloorOperations.js?v=32.3.0"></script>
+  <script src="js/modules/reservationOperations.js?v=32.3.0"></script>
+  <script src="js/modules/staffSections.js?v=32.3.0"></script>
+  <script src="js/modules/kitchenCommandCenter.js?v=32.3.0"></script>
+  <script src="js/modules/serviceCoordination.js?v=32.3.0"></script>
+  <script src="js/modules/aiRestaurantBrain.js?v=32.3.0"></script>
+  <script src="js/modules/timeClock.js?v=32.3.0"></script>
+  <script src="js/app-v15.1.3.js?v=32.3.0"></script>
 </body>
 </html>

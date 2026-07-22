@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "32.4.0",
+  "version": "32.3.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 Platform Foundation and Runtime Diagnostics",
+  "description": "Blue Current Hospitality OS \u2014 Core Cleanup and Startup Registry",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

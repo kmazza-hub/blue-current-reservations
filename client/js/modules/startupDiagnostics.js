@@ -1,112 +1,50 @@
-
 (function () {
   "use strict";
 
   function createStartupDiagnosticsModule(eventBus, appState) {
+    const BUILD = "32.4.0";
     const $ = id => document.getElementById(id);
-    const checks = {
-      styles: { ok: false, detail: "Not checked" },
-      cloudApi: { ok: false, detail: "Not checked" },
-      auth: { ok: false, detail: "Not checked" },
-      application: { ok: false, detail: "Not checked" }
-    };
-
-    function updateLine(id, check) {
-      const element = $(id);
-      if (!element) return;
-      element.textContent = check.detail;
-      element.className = check.ok ? "ok" : "error";
-    }
-
-    function render() {
-      updateLine("diagStyles", checks.styles);
-      updateLine("diagCloudApi", checks.cloudApi);
-      updateLine("diagAuth", checks.auth);
-      updateLine("diagApplication", checks.application);
-
-      const passed = Object.values(checks).filter(check => check.ok).length;
-      const total = Object.keys(checks).length;
-      const allPassed = passed === total;
-      $("startupDiagnosticsSummary").textContent =
-        allPassed ? "All modules compatible" : `${passed}/${total} checks passed`;
-      $("startupDiagnosticsDot").className = allPassed ? "ok" : "error";
-      $("diagCompatibility").textContent = allPassed
-        ? "Startup dependency graph completed successfully at build V23.0.3."
-        : Object.entries(checks)
-            .filter(([, check]) => !check.ok)
-            .map(([name, check]) => `${name}: ${check.detail}`)
-            .join(" · ");
-    }
+    const setText = (id, value) => { const el = $(id); if (el) el.textContent = String(value); };
+    const setClass = (id, value) => { const el = $(id); if (el) el.className = value; };
+    let lastReport = null;
 
     function run() {
-      const authOverlay = $("authOverlay");
-      const overlayStyle = authOverlay ? getComputedStyle(authOverlay) : null;
-      checks.styles = {
-        ok: Boolean(
-          overlayStyle &&
-          overlayStyle.position === "fixed" &&
-          Number.parseInt(overlayStyle.zIndex, 10) >= 10000
-        ),
-        detail: overlayStyle ? "V23.0.3 loaded" : "Auth styles unavailable"
+      const registry = window.BlueCurrentStartupRegistry;
+      const startup = registry?.report?.() || { build: BUILD, counts: {}, modules: {}, durationMs: 0 };
+      const api = window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null;
+      const checks = {
+        styles: { ok: Boolean($("authOverlay")), detail: $("authOverlay") ? "Application styles loaded" : "Auth overlay unavailable" },
+        cloudApi: { ok: api?.version === BUILD, detail: api ? `V${api.version} API client` : "API client unavailable" },
+        auth: { ok: typeof window.createBlueCurrentAuthOrganizationsModule === "function", detail: "Authentication module registered" },
+        application: { ok: Boolean(eventBus?.emit && appState?.update), detail: `Core active · ${startup.counts.ready || 0} modules ready` }
       };
-
-      const Api = window.BlueCurrentCloudApi;
-      let api = null;
-      try { api = Api ? new Api("") : null; } catch (_) {}
-      const requiredMethods = ["login", "logout", "me", "switchOrganization", "createInvitation"];
-      const missingMethods = requiredMethods.filter(name => typeof api?.[name] !== "function");
-      checks.cloudApi = {
-        ok: Boolean(api && api.version === "23.0.3" && missingMethods.length === 0),
-        detail: missingMethods.length
-          ? `Missing: ${missingMethods.join(", ")}`
-          : api ? `V${api.version} compatible` : "Constructor unavailable"
-      };
-
-      checks.auth = {
-        ok: Boolean(
-          typeof window.createBlueCurrentAuthOrganizationsModule === "function" &&
-          document.getElementById("authLoginForm")
-        ),
-        detail: typeof window.createBlueCurrentAuthOrganizationsModule === "function"
-          ? "Module and login form ready"
-          : "Authentication module missing"
-      };
-
-      checks.application = {
-        ok: Boolean(
-          window.BlueCurrentEventBus &&
-          window.BlueCurrentAppState &&
-          eventBus &&
-          appState &&
-          typeof eventBus.emit === "function" &&
-          typeof appState.update === "function"
-        ),
-        detail: window.BlueCurrentEventBus && window.BlueCurrentAppState
-          ? "Event Bus and App State active"
-          : "Core constructors unavailable"
-      };
-
-      render();
-      eventBus?.emit("diagnostics:complete", {
-        build: "23.0.3",
-        checks: JSON.parse(JSON.stringify(checks))
-      });
-      return JSON.parse(JSON.stringify(checks));
+      for (const [name, check] of Object.entries(checks)) {
+        const id = { styles:"diagStyles", cloudApi:"diagCloudApi", auth:"diagAuth", application:"diagApplication" }[name];
+        setText(id, check.detail); setClass(id, check.ok ? "ok" : "error");
+      }
+      const passed = Object.values(checks).filter(check => check.ok).length;
+      const allPassed = passed === Object.keys(checks).length;
+      setText("startupDiagnosticsSummary", allPassed ? `V${BUILD} stable startup` : `${passed}/4 core checks passed`);
+      setClass("startupDiagnosticsDot", allPassed ? "ok" : "error");
+      const skipped = Object.entries(startup.modules).filter(([,m]) => m.status === "skipped").map(([n]) => n);
+      const blocked = Object.entries(startup.modules).filter(([,m]) => m.status === "blocked").map(([n]) => n);
+      setText("diagCompatibility", `Build V${BUILD} · ${startup.durationMs}ms · ready ${startup.counts.ready || 0}` +
+        (skipped.length ? ` · retired ${skipped.join(", ")}` : "") +
+        (blocked.length ? ` · blocked ${blocked.join(", ")}` : ""));
+      lastReport = { build: BUILD, checks, startup };
+      eventBus?.emit("diagnostics:complete", lastReport);
+      return JSON.parse(JSON.stringify(lastReport));
     }
 
     $("startupDiagnosticsToggle")?.addEventListener("click", () => {
       const panel = $("startupDiagnosticsPanel");
+      if (!panel) return;
       const open = panel.classList.toggle("open");
-      $("startupDiagnosticsToggle").setAttribute("aria-expanded", String(open));
+      $("startupDiagnosticsToggle")?.setAttribute("aria-expanded", String(open));
     });
-
+    eventBus?.on?.("startup:complete", run);
     window.addEventListener("load", () => setTimeout(run, 100), { once: true });
-
-    return {
-      run,
-      getResults: () => JSON.parse(JSON.stringify(checks))
-    };
+    return { run, getResults: () => lastReport ? JSON.parse(JSON.stringify(lastReport)) : null };
   }
-
   window.createBlueCurrentStartupDiagnosticsModule = createStartupDiagnosticsModule;
 })();

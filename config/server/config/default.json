@@ -1,6 +1,0 @@
-{
-  "port": 8787,
-  "databaseFile": "database/data/blue-current.json",
-  "clientDirectory": "client",
-  "environment": "local-cloud"
-}

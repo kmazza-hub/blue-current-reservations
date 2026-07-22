@@ -17,13 +17,11 @@ $$(".mobile-nav a").forEach((link) => {
   });
 });
 
-if ($("#year")) $("#year").textContent = new Date().getFullYear();
+$("#year").textContent = new Date().getFullYear();
 
 function updateClock() {
   const now = new Date();
-  const serviceClock = $("#serviceClock");
-  if (!serviceClock) return;
-  serviceClock.textContent = now.toLocaleTimeString([], {
+  $("#serviceClock").textContent = now.toLocaleTimeString([], {
     hour: "numeric",
     minute: "2-digit"
   });
@@ -1036,10 +1034,9 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 const motionEngine = new window.BlueCurrentMotionEngine();
 
 
-const platform = window.BlueCurrentPlatform.create({ build: "32.4.0", eventBus });
-const startupRegistry = platform.registry;
+const startupRegistry = new window.BlueCurrentModuleRegistry(eventBus);
+
 window.BlueCurrentStartupRegistry = startupRegistry;
-window.BlueCurrentPlatformRuntime = platform;
 startupRegistry.register("eventBus", eventBus);
 startupRegistry.register("appState", appState, ["eventBus"]);
 
@@ -1072,9 +1069,6 @@ const blueCurrentLiveModule =
 
 const intelligenceNetworkModule =
   window.createBlueCurrentIntelligenceNetworkModule?.(eventBus, appState);
-
-// The legacy autonomous module is superseded by Operations Director.
-const autonomousOperationsModule = null;
 
 const productionReadinessModule =
   window.createBlueCurrentProductionReadinessModule?.(eventBus, appState);
@@ -1163,18 +1157,10 @@ const aiRestaurantBrainModule = startupRegistry.register(
 
 const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
 
-// V32.3 retires the legacy Autonomous Operations renderer. Its DOM contract
-// belonged to an older view and was the final source of startup-time null errors.
-const operationsDirectorModule = startupRegistry.skip(
-  "operationsDirector",
-  "Legacy renderer retired; replacement will use the V32.3 module lifecycle.",
-  ["eventBus", "appState", "cloudFoundation", "authOrganizations", "executiveCommandCenter"]
-);
-startupRegistry.skip(
-  "autonomousOperations",
-  "Superseded legacy alias retained only for compatibility reporting.",
-  ["eventBus", "appState", "cloudFoundation", "authOrganizations", "executiveCommandCenter"]
-);
+// V32.3 retires the duplicate browser Autonomous Operations renderer.
+// Executive Command Center remains the active management intelligence surface.
+const operationsDirectorModule = startupRegistry.alias("operationsDirector", "executiveCommandCenter");
+startupRegistry.alias("autonomousOperations", "executiveCommandCenter");
 
 // Exposed temporarily for browser-console testing.
 window.blueCurrent = {
@@ -1379,7 +1365,7 @@ motionEngine.start();  const operationalIntelligence = typeof window.createBlueC
     : null;
 
 
-const guestIntelligenceModule = startupRegistry.register("guestIntelligence", window.createBlueCurrentGuestIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations"]);
+const guestIntelligenceModule = startupRegistry.register("guestIntelligence", window.createBlueCurrentGuestIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","executiveCommandCenter"]);
 if (window.blueCurrent?.modules) window.blueCurrent.modules.guestIntelligence = guestIntelligenceModule;
 
 const workforceIntelligenceModule = startupRegistry.register("workforceIntelligence", window.createBlueCurrentWorkforceIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","guestIntelligence"]);
@@ -1388,9 +1374,7 @@ const inventoryIntelligenceModule = startupRegistry.register("inventoryIntellige
 
 const timeClockModule = startupRegistry.register("timeClock", window.createBlueCurrentTimeClockModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
 
-// Publish one deterministic startup summary after all active modules register.
-queueMicrotask(() => {
-  const report = startupRegistry.complete();
-  window.blueCurrent.startup = report;
-  console.info(`[Blue Current V${report.build}] startup complete in ${report.durationMs}ms`, report);
-});
+window.BlueCurrentStartupReport = startupRegistry.report();
+eventBus.emit("startup:complete", window.BlueCurrentStartupReport);
+console.info("Blue Current V32.3 startup complete", window.BlueCurrentStartupReport);
+

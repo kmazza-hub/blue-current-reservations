@@ -1,0 +1,25 @@
+{
+  "build": "32.3.0",
+  "release": "Core Cleanup and Startup Registry",
+  "validatedAt": "2026-07-22T12:19:00.955709+00:00",
+  "checks": {
+    "javascriptSyntax": true,
+    "clientScriptReferences": true,
+    "coreHelpersPresent": true,
+    "duplicateScriptsAbsent": true,
+    "legacyAutonomousRendererInactive": true,
+    "healthEndpoint": true,
+    "healthVersion": "32.3.0"
+  },
+  "retired": [
+    "client/js/modules/autonomousOperations.js active runtime",
+    "V19 Autonomous Operations HTML view",
+    "duplicate Autonomous navigation links"
+  ],
+  "added": [
+    "client/js/core/safeDom.js",
+    "client/js/core/moduleRegistry.js",
+    "structured startup report",
+    "V32.3 architecture documentation"
+  ]
+}

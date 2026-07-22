@@ -3,6 +3,20 @@
   "use strict";
 
   function createProductionReadinessModule(eventBus, appState) {
+    function element(id) {
+      return document.getElementById(id);
+    }
+
+    function setText(id, value) {
+      const target = element(id);
+      if (target) target.textContent = value;
+    }
+
+    function setClass(id, value) {
+      const target = element(id);
+      if (target) target.className = value;
+    }
+
     const STORAGE_KEY = "blueCurrentV21Production";
     const defaultState = {
       organization: "Chefs International",
@@ -41,6 +55,7 @@
     };
 
     const $ = (id) => document.getElementById(id);
+    const hasProductionUi = Boolean($("production-readiness") || $("prodOrganizationName"));
     let state = load();
 
     function clone(value) {
@@ -86,24 +101,24 @@
 
     function renderSummary() {
       const enabled = Object.values(state.features).filter(Boolean).length;
-      $("prodOrganizationName").textContent = state.organization;
-      $("prodLocationCount").textContent = state.locations;
-      $("prodUserCount").textContent = state.users.length;
-      $("prodFeatureCount").textContent = enabled;
-      $("prodHealthScore").textContent = calculateHealth();
-      $("prodDeploymentStatus").textContent = state.mode === "live" ? "Live controls armed" : "Pilot ready";
-      $("prodDeploymentStatus").className = `production-status ${state.mode === "live" ? "watch" : "ready"}`;
-      $("prodLaunchBrief").textContent = state.mode === "live"
+      setText("prodOrganizationName", state.organization);
+      setText("prodLocationCount", state.locations);
+      setText("prodUserCount", state.users.length);
+      setText("prodFeatureCount", enabled);
+      setText("prodHealthScore", calculateHealth());
+      setText("prodDeploymentStatus", state.mode === "live" ? "Live controls armed" : "Pilot ready");
+      setClass("prodDeploymentStatus", `production-status ${state.mode === "live" ? "watch" : "ready"}`);
+      setText("prodLaunchBrief", state.mode === "live"
         ? "Live data mode is selected. External actions remain governed by feature flags and connector permissions."
-        : "Configuration is complete. Demo data is active and the environment is ready for a controlled pilot.";
+        : "Configuration is complete. Demo data is active and the environment is ready for a controlled pilot.");
       document.querySelectorAll("[data-prod-mode]").forEach(button => button.classList.toggle("active", button.dataset.prodMode === state.mode));
-      $("prodModeDescription").textContent = state.mode === "live"
+      setText("prodModeDescription", state.mode === "live"
         ? "Live data is enabled. Connector permissions and audit controls remain active."
-        : "Safe simulated data is active. Connectors cannot perform external actions.";
+        : "Safe simulated data is active. Connectors cannot perform external actions.");
     }
 
     function renderOnboarding() {
-      $("prodOnboardingProgress").textContent = `${state.onboardingProgress}% complete`;
+      setText("prodOnboardingProgress", `${state.onboardingProgress}% complete`);
       $("prodOnboardingBar").style.width = `${state.onboardingProgress}%`;
       $("prodOrgInput").value = state.organization;
       document.querySelectorAll("[data-onboarding-step]").forEach((button, index) => {
@@ -135,7 +150,7 @@
 
     function renderHealth() {
       const health = [
-        ["Application version", "V21.0", "healthy"],
+        ["Application version", "V32.2", "healthy"],
         ["Event Bus", `${eventBus.listenerCount ? eventBus.listenerCount() : "Active"} listeners`, "healthy"],
         ["Shared App State", "Synchronized", "healthy"],
         ["Browser storage", localStorage.getItem(STORAGE_KEY) ? "Operational" : "Initializing", "healthy"],
@@ -146,13 +161,13 @@
       ];
       $("prodHealthGrid").innerHTML = health.map(item => `<article class="${item[2]}"><span></span><div><small>${item[0]}</small><strong>${item[1]}</strong></div></article>`).join("");
       $("prodDiagnosticFeed").innerHTML = `
-        <p><span>${new Date().toLocaleTimeString()}</span> All required V21 modules responding.</p>
+        <p><span>${new Date().toLocaleTimeString()}</span> All required V32.2 modules responding.</p>
         <p><span>${new Date(Date.now()-1200).toLocaleTimeString()}</span> App State production namespace synchronized.</p>
         <p><span>${new Date(Date.now()-2500).toLocaleTimeString()}</span> Feature flag registry validated.</p>`;
     }
 
     function renderAudit() {
-      $("prodAuditCount").textContent = `${state.audit.length} events`;
+      setText("prodAuditCount", `${state.audit.length} events`);
       $("prodAuditList").innerHTML = state.audit.map(entry => `
         <article>
           <time>${new Date(entry.time).toLocaleTimeString([], {hour:"numeric", minute:"2-digit"})}</time>
@@ -162,6 +177,7 @@
     }
 
     function renderAll() {
+      if (!hasProductionUi) { save(); return; }
       renderSummary();
       renderOnboarding();
       renderUsers();
@@ -250,8 +266,8 @@
       button.textContent = "Checking modules…";
       setTimeout(() => {
         button.textContent = "Readiness confirmed";
-        $("prodHealthScore").textContent = calculateHealth();
-        $("prodLaunchBrief").textContent = "Readiness check passed. Configuration, storage, Event Bus, App State, permissions, and feature controls are responding.";
+        setText("prodHealthScore", calculateHealth());
+        setText("prodLaunchBrief", "Readiness check passed. Configuration, storage, Event Bus, App State, permissions, and feature controls are responding.");
         audit("Production readiness check passed", "system", "System");
         eventBus.emit("production:readiness-passed", { score: calculateHealth() });
         setTimeout(() => { button.disabled = false; button.textContent = "Run readiness check"; }, 1800);

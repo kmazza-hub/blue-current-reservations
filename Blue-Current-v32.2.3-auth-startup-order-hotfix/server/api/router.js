@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "32.4.0",
+        version: "32.3.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
