@@ -1,0 +1,21 @@
+{
+  "version": "33.0.1",
+  "release": "Workforce Foundation",
+  "validatedAt": "2026-07-22T16:20:41.675505+00:00",
+  "checks": {
+    "javascriptSyntax": "passed",
+    "htmlScripts": "passed",
+    "duplicateScripts": "passed",
+    "duplicateHtmlIds": "passed",
+    "databaseJson": "passed",
+    "serverStartup": "passed",
+    "healthEndpoint": "passed",
+    "authenticatedWorkforceSnapshot": "passed"
+  },
+  "counts": {
+    "javascriptFiles": 61,
+    "clientScripts": 34,
+    "uniqueHtmlIds": 470
+  },
+  "healthVersion": "33.0.1"
+}

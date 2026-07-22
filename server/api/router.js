@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "32.4.0",
+        version: "33.0.1",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -187,6 +187,42 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
 
 
 
+
+    if (url.pathname === "/api/workforce-foundation" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await workforceFoundationService.snapshot(organizationId, locationId));
+    }
+    if (url.pathname === "/api/workforce-foundation/employees" && request.method === "POST") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_operations")) return sendJson(response, 403, { error: "Workforce write permission required." });
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 201, await workforceFoundationService.createEmployee(body, auth.user.name, organizationId));
+    }
+    if (url.pathname.startsWith("/api/workforce-foundation/employees/") && request.method === "PATCH") {
+      const id = decodeURIComponent(url.pathname.split("/").pop());
+      const updated = await workforceFoundationService.updateEmployee(id, await readJson(request), auth.user.name, organizationId);
+      return updated ? sendJson(response, 200, updated) : sendJson(response, 404, { error: "Employee not found." });
+    }
+    if (url.pathname === "/api/workforce-foundation/availability" && request.method === "POST") {
+      const result = await workforceFoundationService.saveAvailability(await readJson(request), auth.user.name, organizationId);
+      return result ? sendJson(response, 200, result) : sendJson(response, 404, { error: "Employee not found." });
+    }
+    if (url.pathname === "/api/workforce-foundation/pto" && request.method === "POST") {
+      const result = await workforceFoundationService.requestPto(await readJson(request), auth.user.name, organizationId);
+      return result ? sendJson(response, 201, result) : sendJson(response, 404, { error: "Employee not found." });
+    }
+    if (url.pathname.startsWith("/api/workforce-foundation/pto/") && request.method === "PATCH") {
+      const id = decodeURIComponent(url.pathname.split("/").pop());
+      const body = await readJson(request);
+      const result = await workforceFoundationService.decidePto(id, body.status, auth.user.name, organizationId);
+      return result ? sendJson(response, 200, result) : sendJson(response, 404, { error: "PTO request not found." });
+    }
+    if (url.pathname === "/api/workforce-foundation/shift-templates" && request.method === "POST") {
+      const body = await readJson(request);
+      if (!canAccessLocation(body.locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 201, await workforceFoundationService.createShiftTemplate(body, auth.user.name, organizationId));
+    }
 
     if (url.pathname === "/api/timeclock" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || "loc_marina";

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "version": "22.0",
+    "version": "33.0.1",
     "createdAt": "2026-07-20T00:00:00.000Z"
   },
   "organizations": [
@@ -138,6 +138,22 @@
       "action": "Cloud database initialized",
       "category": "system",
       "createdAt": "2026-07-20T00:00:00.000Z"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-07-22T16:20:23.752Z",
+      "id": "audit_1784737223752_ru9mco"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-07-22T16:20:40.266Z",
+      "id": "audit_1784737240266_3l5af0"
     }
   ],
   "reservations": [
@@ -236,7 +252,32 @@
       ]
     }
   ],
-  "sessions": [],
+  "sessions": [
+    {
+      "id": "ses_1784737223750_pmx5o0",
+      "tokenHash": "043b0f37221d7ec84030123f3cccc2573ce94ecc0b1851794004ee3e82bedb57",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-07-22T16:20:23.751Z",
+      "expiresAt": "2026-07-23T04:20:23.751Z"
+    },
+    {
+      "id": "ses_1784737240265_xh868k",
+      "tokenHash": "fd569960d6e7d2779e2822f11e2c7179622e34a81952526d90f80faee9c6aa82",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-07-22T16:20:40.265Z",
+      "expiresAt": "2026-07-23T04:20:40.265Z"
+    }
+  ],
   "invitations": [
     {
       "id": "inv_demo",
@@ -1404,6 +1445,43 @@
       "weeklyOvertimeHours": 40,
       "breakReminderMinutes": 300,
       "requirePin": true
+    }
+  ],
+  "workforceRoles": [],
+  "employeeAvailability": [],
+  "ptoRequests": [],
+  "shiftTemplates": [
+    {
+      "id": "shift_template_dinner_server",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Dinner Server",
+      "department": "Service",
+      "role": "Server",
+      "startTime": "16:00",
+      "endTime": "23:00",
+      "requiredEmployees": 4,
+      "days": [
+        5,
+        6
+      ],
+      "createdAt": "2026-07-22T12:00:00.000Z"
+    },
+    {
+      "id": "shift_template_dinner_bartender",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Dinner Bartender",
+      "department": "Bar",
+      "role": "Bartender",
+      "startTime": "16:30",
+      "endTime": "00:00",
+      "requiredEmployees": 2,
+      "days": [
+        5,
+        6
+      ],
+      "createdAt": "2026-07-22T12:00:00.000Z"
     }
   ]
 }

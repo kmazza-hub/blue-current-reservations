@@ -1382,7 +1382,9 @@ motionEngine.start();  const operationalIntelligence = typeof window.createBlueC
 const guestIntelligenceModule = startupRegistry.register("guestIntelligence", window.createBlueCurrentGuestIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations"]);
 if (window.blueCurrent?.modules) window.blueCurrent.modules.guestIntelligence = guestIntelligenceModule;
 
-const workforceIntelligenceModule = startupRegistry.register("workforceIntelligence", window.createBlueCurrentWorkforceIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","guestIntelligence"]);
+const workforceFoundationModule = startupRegistry.register("workforceFoundation", window.createBlueCurrentWorkforceFoundationModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations"]);
+
+const workforceIntelligenceModule = startupRegistry.register("workforceIntelligence", window.createBlueCurrentWorkforceIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","guestIntelligence","workforceFoundation"]);
 
 const inventoryIntelligenceModule = startupRegistry.register("inventoryIntelligence", window.createBlueCurrentInventoryIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
 

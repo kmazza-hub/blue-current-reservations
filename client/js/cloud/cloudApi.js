@@ -3,9 +3,9 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "32.4.0";
+    static VERSION = "33.0.1";
     static CAPABILITIES = Object.freeze([
-      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock",
+      "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
@@ -71,6 +71,15 @@
         body: JSON.stringify(payload)
       });
     }
+
+
+    workforceFoundation(locationId="loc_marina"){return this.request(`/api/workforce-foundation?locationId=${encodeURIComponent(locationId)}`);}
+    createWorkforceEmployee(payload){return this.request("/api/workforce-foundation/employees",{method:"POST",body:JSON.stringify(payload)});}
+    updateWorkforceEmployee(id,payload){return this.request(`/api/workforce-foundation/employees/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify(payload)});}
+    saveEmployeeAvailability(payload){return this.request("/api/workforce-foundation/availability",{method:"POST",body:JSON.stringify(payload)});}
+    createPtoRequest(payload){return this.request("/api/workforce-foundation/pto",{method:"POST",body:JSON.stringify(payload)});}
+    decidePtoRequest(id,status){return this.request(`/api/workforce-foundation/pto/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify({status})});}
+    createShiftTemplate(payload){return this.request("/api/workforce-foundation/shift-templates",{method:"POST",body:JSON.stringify(payload)});}
 
     timeClock(locationId="loc_marina"){return this.request(`/api/timeclock?locationId=${encodeURIComponent(locationId)}`);}
     clockIn(payload){return this.request("/api/timeclock/clock-in",{method:"POST",body:JSON.stringify(payload)});}
@@ -211,5 +220,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "31.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "33.0.1";
 })();

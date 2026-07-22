@@ -11,5 +11,8 @@ module.exports = {
   location: value => withId("loc", value),
   reservation: value => withId("res", value),
   audit: value => withId("audit", { ...value, createdAt: value.createdAt || new Date().toISOString() }),
-  operationalEvent: value => withId("evt", { ...value, createdAt: value.createdAt || new Date().toISOString() })
+  operationalEvent: value => withId("evt", { ...value, createdAt: value.createdAt || new Date().toISOString() }),
+  employee: value => withId("emp", value),
+  ptoRequest: value => withId("pto", value),
+  shiftTemplate: value => withId("shift_template", value)
 };
