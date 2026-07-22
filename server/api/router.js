@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "33.0.1",
+        version: "33.0.2",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -187,6 +187,21 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
 
 
 
+
+
+    if (url.pathname === "/api/scheduling" && request.method === "GET") {
+      const locationId=url.searchParams.get("locationId")||"loc_marina"; if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,200,await schedulingService.snapshot(organizationId,locationId,url.searchParams.get("weekStart")));
+    }
+    if (url.pathname === "/api/scheduling/shifts" && request.method === "POST") {
+      if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Scheduling write permission required."});
+      const body=await readJson(request);if(!canAccessLocation(body.locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,201,await schedulingService.create(body,auth.user.name,organizationId));
+    }
+    if (url.pathname.startsWith("/api/scheduling/shifts/") && request.method === "PATCH") {const id=decodeURIComponent(url.pathname.split("/").pop());const result=await schedulingService.update(id,await readJson(request),auth.user.name,organizationId);return result?sendJson(response,200,result):sendJson(response,404,{error:"Shift not found."});}
+    if (url.pathname.startsWith("/api/scheduling/shifts/") && request.method === "DELETE") {const id=decodeURIComponent(url.pathname.split("/").pop());return (await schedulingService.remove(id,auth.user.name,organizationId))?sendJson(response,200,{ok:true}):sendJson(response,404,{error:"Shift not found."});}
+    if (url.pathname === "/api/scheduling/publish" && request.method === "POST") {const body=await readJson(request);if(!canAccessLocation(body.locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await schedulingService.publish(body,auth.user.name,organizationId));}
+    if (url.pathname === "/api/scheduling/copy-previous" && request.method === "POST") {const body=await readJson(request);if(!canAccessLocation(body.locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await schedulingService.copyPrevious(body,auth.user.name,organizationId));}
+    if (url.pathname === "/api/scheduling/ai/smart-fill" && request.method === "POST") {const result=await schedulingService.smartFill(await readJson(request),auth.user.name,organizationId);return result?sendJson(response,200,result):sendJson(response,404,{error:"Shift not found."});}
 
     if (url.pathname === "/api/workforce-foundation" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || "loc_marina";
