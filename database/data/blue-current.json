@@ -178,6 +178,14 @@
       "category": "access",
       "createdAt": "2026-07-22T21:15:57.997Z",
       "id": "audit_1784754957997_r51qek"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Maria Santos",
+      "action": "Signed in to Employee Portal",
+      "category": "employee_portal",
+      "createdAt": "2026-07-23T00:43:45.919Z",
+      "id": "audit_1784767425919_6rlqzr"
     }
   ],
   "reservations": [
@@ -1542,6 +1550,16 @@
         6
       ],
       "createdAt": "2026-07-22T12:00:00.000Z"
+    }
+  ],
+  "employeePortalSessions": [
+    {
+      "id": "eps_1784767425914",
+      "tokenHash": "9d4fda5a6572f30f8db89f01e8d8b10c36b9045f9d899e2c991e72327140d7c4",
+      "employeeId": "emp_maria",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "expiresAt": "2026-07-23T12:43:45.914Z"
     }
   ]
 }

@@ -247,7 +247,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname.startsWith("/api/workforce-foundation/pto/") && request.method === "PATCH") {
       const id = decodeURIComponent(url.pathname.split("/").pop());
       const body = await readJson(request);
-      const result = await workforceFoundationService.decidePto(id, body.status, auth.user.name, organizationId);
+      const result = await workforceFoundationService.decidePto(id, body.status, body.managerComment, auth.user.name, organizationId);
       return result ? sendJson(response, 200, result) : sendJson(response, 404, { error: "PTO request not found." });
     }
     if (url.pathname === "/api/workforce-foundation/shift-templates" && request.method === "POST") {

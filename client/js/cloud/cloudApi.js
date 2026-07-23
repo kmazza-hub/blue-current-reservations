@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "33.0.2";
+    static VERSION = "33.0.4a";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -85,7 +85,7 @@
     updateWorkforceEmployee(id,payload){return this.request(`/api/workforce-foundation/employees/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify(payload)});}
     saveEmployeeAvailability(payload){return this.request("/api/workforce-foundation/availability",{method:"POST",body:JSON.stringify(payload)});}
     createPtoRequest(payload){return this.request("/api/workforce-foundation/pto",{method:"POST",body:JSON.stringify(payload)});}
-    decidePtoRequest(id,status){return this.request(`/api/workforce-foundation/pto/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify({status})});}
+    decidePtoRequest(id,status,managerComment=""){return this.request(`/api/workforce-foundation/pto/${encodeURIComponent(id)}`,{method:"PATCH",body:JSON.stringify({status,managerComment})});}
     createShiftTemplate(payload){return this.request("/api/workforce-foundation/shift-templates",{method:"POST",body:JSON.stringify(payload)});}
 
     timeClock(locationId="loc_marina"){return this.request(`/api/timeclock?locationId=${encodeURIComponent(locationId)}`);}
@@ -227,5 +227,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "33.0.1";
+  window.BLUE_CURRENT_CLIENT_BUILD = "33.0.4a";
 })();

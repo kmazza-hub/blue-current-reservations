@@ -55,7 +55,7 @@
 
   function ptoHistoryHtml(request) {
     const type = request.requestType || "time off";
-    return `<div class="ep-item"><div class="ep-pto-summary"><div><strong>${esc(request.startDate)} → ${esc(request.endDate)}</strong><span class="ep-pto-type">${esc(type)}</span>${request.reason ? `<small>${esc(request.reason)}</small>` : `<small>No note provided</small>`}</div></div><span class="ep-status ${esc(request.status)}">${esc(request.status)}</span></div>`;
+    return `<div class="ep-item"><div class="ep-pto-summary"><div><strong>${esc(request.startDate)} → ${esc(request.endDate)}</strong><span class="ep-pto-type">${esc(type)}</span>${request.reason ? `<small>${esc(request.reason)}</small>` : `<small>No note provided</small>`}${request.managerComment ? `<small><b>Manager:</b> ${esc(request.managerComment)}</small>` : ""}</div></div><span class="ep-status ${esc(request.status)}">${esc(request.status)}</span></div>`;
   }
 
   function render() {

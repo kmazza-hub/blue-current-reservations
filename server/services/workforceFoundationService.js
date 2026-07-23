@@ -13,7 +13,9 @@ class WorkforceFoundationService {
 
   async snapshot(organizationId, locationId) {
     const db = await this.database.read();
-    const employees = (db.staff || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
+    const staff = (db.staff || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
+    const portalEmployees = (db.employees || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
+    const employees = [...staff, ...portalEmployees.filter(item => !staff.some(existing => existing.id === item.id))];
     const employeeIds = new Set(employees.map(item => item.id));
     return {
       employees,
@@ -22,7 +24,7 @@ class WorkforceFoundationService {
       ptoRequests: (db.ptoRequests || []).filter(item => employeeIds.has(item.employeeId)),
       shiftTemplates: (db.shiftTemplates || []).filter(item => item.organizationId === organizationId && item.locationId === locationId),
       summary: {
-        activeEmployees: employees.filter(item => (item.employmentStatus || "active") === "active").length,
+        activeEmployees: employees.filter(item => (item.employmentStatus || item.status || "active") === "active").length,
         pendingPto: (db.ptoRequests || []).filter(item => employeeIds.has(item.employeeId) && item.status === "pending").length,
         roles: new Set(employees.map(item => item.role).filter(Boolean)).size,
         templates: (db.shiftTemplates || []).filter(item => item.organizationId === organizationId && item.locationId === locationId).length
@@ -103,15 +105,26 @@ class WorkforceFoundationService {
     return request;
   }
 
-  async decidePto(id, status, actor, organizationId) {
-    if (!VALID_PTO.has(status) || status === "pending") throw new Error("status must be approved, denied, or cancelled");
+  async decidePto(id, status, managerComment, actor, organizationId) {
+    if (!VALID_PTO.has(status) || !["approved", "denied"].includes(status)) throw new Error("status must be approved or denied");
+    const comment = String(managerComment || "").trim();
+    if (comment.length > 300) throw new Error("Manager comment must be 300 characters or fewer");
     const existing = await this.database.get("ptoRequests", id);
     if (!existing) return null;
-    const employee = await this.database.get("staff", existing.employeeId);
+    const db = await this.database.read();
+    const employee = [...(db.staff || []), ...(db.employees || [])].find(item => item.id === existing.employeeId);
     if (!employee || employee.organizationId !== organizationId) return null;
-    const updated = await this.database.update("ptoRequests", id, { status, decidedBy: actor, decidedAt: new Date().toISOString() });
+    if (existing.status !== "pending") throw new Error("Only pending PTO requests can be approved or denied");
+    const updated = await this.database.update("ptoRequests", id, {
+      status,
+      managerComment: comment,
+      decidedBy: actor,
+      decidedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    });
     await this.record(organizationId, actor, `${status} PTO for ${employee.name}`);
     this.realtimeHub.publish("workforce-foundation:pto-updated", updated);
+    this.realtimeHub.publish("employee-portal:pto-updated", updated);
     return updated;
   }
 

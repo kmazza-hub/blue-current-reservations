@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "33.0.4-b1",
+  "version": "33.0.4-b2",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 Employee PTO Request Experience — Story 1",
+  "description": "Blue Current Hospitality OS \u2014 Manager PTO Approval \u2014 Story 2",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
