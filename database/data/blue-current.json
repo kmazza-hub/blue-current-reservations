@@ -162,6 +162,22 @@
       "category": "security",
       "createdAt": "2026-07-22T19:37:09.771Z",
       "id": "audit_1784749029771_8jtvvl"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-07-22T21:14:40.154Z",
+      "id": "audit_1784754880154_rxrvwr"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Invited kmazza2006@yahoo.com as general_manager",
+      "category": "access",
+      "createdAt": "2026-07-22T21:15:57.997Z",
+      "id": "audit_1784754957997_r51qek"
     }
   ],
   "reservations": [
@@ -296,6 +312,18 @@
       ],
       "createdAt": "2026-07-22T19:37:09.769Z",
       "expiresAt": "2026-07-23T07:37:09.769Z"
+    },
+    {
+      "id": "ses_1784754880148_wikkye",
+      "tokenHash": "5a32cc9e4b356c88e29818f96606a7d8e36a7ed369146d6fe968fa8143d1190b",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-07-22T21:14:40.148Z",
+      "expiresAt": "2026-07-23T09:14:40.148Z"
     }
   ],
   "invitations": [
@@ -310,6 +338,18 @@
       "status": "pending",
       "token": "BC23-DEMO-INVITE",
       "expiresAt": "2027-01-01T00:00:00.000Z"
+    },
+    {
+      "id": "inv_1784754957992_4lutu6",
+      "organizationId": "org_chefs",
+      "email": "kmazza2006@yahoo.com",
+      "role": "general_manager",
+      "locationIds": [
+        "loc_marina"
+      ],
+      "status": "pending",
+      "token": "BC23-R3AUGETY",
+      "expiresAt": "2026-07-29T21:15:57.992Z"
     }
   ],
   "tables": [
