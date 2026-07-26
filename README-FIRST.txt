@@ -1,23 +1,26 @@
-BLUE CURRENT V34.0.6c — CC-007c PREVIOUS SHIFT HANDOFF
+BLUE CURRENT V34.0.7a — CC-008a LIVE MANAGER RECOMMENDATION
 
-REPLACE:
-- client/index.html
-- client/styles.css
+REPLACE ONLY:
 - client/js/modules/managerShiftBrief.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Previous Shift section inside the Manager Shift Brief
-- Live handoff manager/time metadata
-- Live handoff summary
-- Highlight chips pulled from the existing handoff
-- Needs-attention warning pulled from the existing handoff
-- Automatic updates whenever the underlying handoff changes
+- Dynamic Blue Current manager recommendations
+- Recommendations respond to:
+  - Projected labor
+  - Reservation volume
+  - Sales forecast versus last year
+  - Weather and rain probability
+  - Pending PTO
+  - Open manager actions and attention items
+- Dynamic confidence level
+- Automatic refresh whenever operating data changes
+
+NO HTML, CSS, SERVER, OR API FILES CHANGE.
 
 TEST
 1. npm run check
 2. npm start
 3. Open Command Center
-4. Confirm Previous Shift appears inside the Manager Brief
-5. Post a new handoff
-6. Confirm the brief updates without reloading
-7. Refresh and confirm the latest handoff remains visible
+4. Confirm the Blue Current recommendation is no longer static
+5. Change or refresh operational data
+6. Confirm the recommendation and confidence update

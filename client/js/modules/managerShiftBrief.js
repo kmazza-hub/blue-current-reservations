@@ -142,6 +142,86 @@
     alert.textContent = alertText;
   }
 
+  function numericValue(id, fallback = 0) {
+    const raw = text(id, String(fallback)).replace(/[$,%+,]/g, "");
+    const value = Number.parseFloat(raw);
+    return Number.isFinite(value) ? value : fallback;
+  }
+
+  function buildManagerRecommendation() {
+    const labor = numericValue("operationLabor", 0);
+    const reservations = numericValue("operationReservations", 0);
+    const scheduled = numericValue("operationScheduled", 0);
+    const pendingPto = numericValue("operationPto", 0);
+    const forecastChange = numericValue("forecastChange", 0);
+    const weather = text("weatherCondition", "").toLowerCase();
+    const rain = numericValue("weatherRain", 0);
+    const attention = document.querySelectorAll("#attentionList li").length;
+    const openActions = openManagerActions().length;
+
+    const recommendations = [];
+    let confidence = "Medium";
+
+    if (labor >= 30) {
+      recommendations.push(`Projected labor is ${labor.toFixed(1)}%. Review the first cut window and avoid adding coverage unless demand rises.`);
+      confidence = "High";
+    } else if (labor > 0 && labor <= 25) {
+      recommendations.push(`Labor is controlled at ${labor.toFixed(1)}%. Preserve coverage through the peak rather than cutting early.`);
+    }
+
+    if (forecastChange >= 8) {
+      recommendations.push(`Sales are tracking ${forecastChange.toFixed(1)}% ahead of last year. Increase prep and confirm peak staffing.`);
+      confidence = "High";
+    } else if (forecastChange <= -5) {
+      recommendations.push(`Sales are tracking ${Math.abs(forecastChange).toFixed(1)}% below last year. Stage labor conservatively and watch walk-in pace.`);
+      confidence = "High";
+    }
+
+    if (weather.includes("rain") || weather.includes("storm") || rain >= 50) {
+      recommendations.push(`Weather may reduce patio demand. Contact outdoor reservations and prepare an indoor seating plan.`);
+      confidence = "High";
+    } else if (
+      weather.includes("sun") ||
+      weather.includes("clear") ||
+      weather.includes("fair")
+    ) {
+      recommendations.push(`Favorable weather supports patio demand. Verify patio setup and outdoor server coverage before the rush.`);
+    }
+
+    if (reservations >= 80 && scheduled > 0) {
+      recommendations.push(`${Math.round(reservations)} reservations are booked. Confirm host coverage and table-turn pacing before service.`);
+    }
+
+    if (pendingPto > 0) {
+      recommendations.push(`Resolve ${Math.round(pendingPto)} pending PTO request${pendingPto === 1 ? "" : "s"} before finalizing upcoming schedules.`);
+    }
+
+    if (attention > 0 || openActions > 0) {
+      const count = Math.max(attention, openActions);
+      recommendations.push(`Clear the ${count} highest-priority operating item${count === 1 ? "" : "s"} before service begins.`);
+    }
+
+    if (!recommendations.length) {
+      recommendations.push("The operation is balanced. Maintain current staffing, monitor guest pace, and protect service readiness.");
+      confidence = "Medium";
+    }
+
+    return {
+      message: recommendations.slice(0, 3).join(" "),
+      confidence
+    };
+  }
+
+  function syncManagerRecommendation() {
+    const recommendation = byId("aiRecommendation");
+    const confidence = byId("aiConfidence");
+    if (!recommendation || !confidence) return;
+
+    const result = buildManagerRecommendation();
+    recommendation.textContent = result.message;
+    confidence.textContent = result.confidence;
+  }
+
   function syncFromCommandCenter() {
     const forecast = byId("managerShiftForecastSales");
     const forecastDelta = byId("managerShiftForecastDelta");
@@ -165,6 +245,7 @@
 
     renderPriorities();
     syncHandoff();
+    syncManagerRecommendation();
   }
 
   function observeLiveData() {
@@ -184,7 +265,9 @@
       "handoffMeta",
       "handoffSummary",
       "handoffHighlights",
-      "handoffAttention"
+      "handoffAttention",
+      "aiRecommendation",
+      "aiConfidence"
     ]
       .map(byId)
       .filter(Boolean);
