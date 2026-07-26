@@ -1,22 +1,27 @@
-BLUE CURRENT V34.0.5i — CC-006h ACTION NOTES
+BLUE CURRENT V34.0.6a — CC-007a MANAGER SHIFT BRIEF
 
 REPLACE:
-- client/js/modules/actionList.js
-- server/services/actionListService.js
+- client/index.html
+- client/styles.css
+
+ADD:
+- client/js/modules/managerShiftBrief.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Add Note / Edit Note button on every manager action
-- Notes display directly under the action details
-- Notes persist on the server
-- Operations Feed records note additions and removals
-- Notes work on both manual and automatic actions
+- One-minute manager shift brief above the existing Command Center cards
+- Today’s priority list
+- Yesterday sales, guests, labor, and today weather snapshot
+- Short operating narrative
+- Start Shift button with local browser persistence
+- Responsive desktop and mobile layout
+
+THIS IS UI-ONLY
+The values are pilot data in this first micro-story. The next stories will connect live operational data.
 
 TEST
 1. npm run check
 2. npm start
 3. Open the Command Center
-4. Add a note to an action
-5. Refresh and verify the note remains
-6. Edit the note
-7. Clear the note and confirm it is removed
-8. Confirm the Operations Feed records the change
+4. Confirm the new Manager Brief appears above the existing cards
+5. Click Start shift
+6. Refresh and confirm the started state remains

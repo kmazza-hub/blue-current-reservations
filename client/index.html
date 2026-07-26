@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.5e">
+  <meta name="blue-current-build" content="34.0.6a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.5e">
+  <meta name="blue-current-build" content="34.0.6a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.5e">
+  <link rel="stylesheet" href="styles.css?v=34.0.6a">
 </head>
 <body>
 
@@ -244,6 +244,43 @@
           </div>
           <div class="readiness-component-grid" id="readinessComponentGrid"></div>
           <div class="readiness-next-action"><strong>Best next action</strong><span id="readinessNextAction">Loading recommendation…</span></div>
+        </section>
+
+        <section class="manager-shift-brief reveal" id="managerShiftBrief" aria-labelledby="managerShiftBriefTitle">
+          <div class="manager-shift-brief-topline">
+            <div>
+              <small>Blue Current Manager Brief</small>
+              <h3 id="managerShiftBriefTitle">Your shift, summarized in one minute.</h3>
+            </div>
+            <span id="managerShiftBriefStatus">Preparing brief…</span>
+          </div>
+
+          <div class="manager-shift-brief-grid">
+            <article class="manager-shift-summary">
+              <div class="manager-shift-summary-heading">
+                <span>Today’s priorities</span>
+                <strong id="managerShiftPriorityCount">4 items</strong>
+              </div>
+              <ul id="managerShiftPriorityList">
+                <li>Review one pending PTO request before noon.</li>
+                <li>Confirm supplemental wing inventory before dinner prep.</li>
+                <li>Inspect the ice machine before lunch service.</li>
+                <li>Acknowledge the latest closing handoff.</li>
+              </ul>
+            </article>
+
+            <article class="manager-shift-kpis">
+              <div><small>Yesterday sales</small><strong id="managerShiftYesterdaySales">$18,472</strong><span id="managerShiftYesterdaySalesDelta">+7.3% vs. last year</span></div>
+              <div><small>Guests served</small><strong id="managerShiftGuests">426</strong><span>Across lunch and dinner</span></div>
+              <div><small>Labor</small><strong id="managerShiftLabor">29.3%</strong><span>1.3 points above target</span></div>
+              <div><small>Today weather</small><strong id="managerShiftWeather">82°</strong><span>Sunny · Patio favorable</span></div>
+            </article>
+          </div>
+
+          <div class="manager-shift-brief-footer">
+            <p id="managerShiftNarrative">Yesterday finished ahead of last year, but labor ran slightly high. Today’s sunny weather and stronger patio reservations suggest a busy dinner. Resolve the inventory and maintenance items before service.</p>
+            <button type="button" id="managerShiftStart">Start shift</button>
+          </div>
         </section>
 
         <div class="manager-brief-grid reveal">
@@ -2364,6 +2401,7 @@
 
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/modules/actionList.js?v=34.0.5e"></script>
+  <script src="js/modules/managerShiftBrief.js?v=34.0.6a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
