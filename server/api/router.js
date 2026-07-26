@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.0.5e",
+        version: "34.0.5f",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -149,6 +149,20 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
       );
       return updated
         ? sendJson(response, 200, updated)
+        : sendJson(response, 404, { error: "Manager action not found." });
+    }
+
+    if (managerActionMatch && request.method === "DELETE") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      const deleted = await actionListService.delete(
+        organizationId,
+        locationId,
+        decodeURIComponent(managerActionMatch[1]),
+        auth.user
+      );
+      return deleted
+        ? sendJson(response, 200, { deleted: true, action: deleted })
         : sendJson(response, 404, { error: "Manager action not found." });
     }
 

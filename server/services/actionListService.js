@@ -250,6 +250,35 @@ class ActionListService {
     return action;
   }
 
+  async delete(organizationId, locationId, actionId, actor) {
+    const current = await this.database.get("managerActions", actionId);
+    if (!current || current.organizationId !== organizationId || current.locationId !== locationId) {
+      return null;
+    }
+
+    if (current.automatic) {
+      const error = new Error("Automatic actions cannot be deleted. Resolve the underlying condition instead.");
+      error.statusCode = 409;
+      throw error;
+    }
+
+    await this.database.delete("managerActions", actionId);
+
+    if (this.operationsFeedService) {
+      await this.operationsFeedService.record({
+        organizationId,
+        locationId,
+        category: String(current.source || "operations").toLowerCase(),
+        type: "action_deleted",
+        title: `Manager action removed: ${current.title}`,
+        detail: `${current.source} · ${current.due}`,
+        actor: actor?.name || actor?.email || "Manager"
+      });
+    }
+
+    return current;
+  }
+
   async update(organizationId, locationId, actionId, patch, actor) {
     const current = await this.database.get("managerActions", actionId);
     if (!current || current.organizationId !== organizationId || current.locationId !== locationId) {

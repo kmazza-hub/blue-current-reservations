@@ -93,6 +93,32 @@
     return created;
   }
 
+  async function deleteAction(action) {
+    if (action.automatic) return;
+
+    const confirmed = window.confirm(`Remove "${action.title}" from the manager action list?`);
+    if (!confirmed) return;
+
+    action.isSaving = true;
+    render();
+
+    if (state.source === "server") {
+      const api = apiClient();
+      try {
+        await api.deleteManagerAction(action.id, LOCATION_ID);
+      } catch (error) {
+        action.isSaving = false;
+        setStatus(error.message || "Could not remove action.");
+        render();
+        return;
+      }
+    }
+
+    state.actions = state.actions.filter(item => item.id !== action.id);
+    if (state.source !== "server") saveLocal();
+    render();
+  }
+
   async function setCompleted(action, completed) {
     const previous = action.completed;
     action.completed = completed;
@@ -160,6 +186,18 @@
     source.textContent = action.source;
 
     badges.append(priority, source);
+
+    if (!action.automatic) {
+      const remove = document.createElement("button");
+      remove.className = "manager-action-remove";
+      remove.type = "button";
+      remove.textContent = "Remove";
+      remove.disabled = Boolean(action.isSaving);
+      remove.setAttribute("aria-label", `Remove ${action.title}`);
+      remove.addEventListener("click", () => deleteAction(action));
+      badges.append(remove);
+    }
+
     article.append(checkbox, copy, badges);
     return article;
   }
@@ -298,8 +336,29 @@
     });
   }
 
+  function ensureRemoveButtonStyles() {
+    if (document.getElementById("managerActionRemoveStyles")) return;
+    const style = document.createElement("style");
+    style.id = "managerActionRemoveStyles";
+    style.textContent = `
+      .manager-action-remove{
+        padding:6px 8px;
+        color:#ffd7cf;
+        border:1px solid rgba(223,128,108,.28);
+        border-radius:999px;
+        background:rgba(223,128,108,.1);
+        font-size:.62rem;
+        font-weight:700;
+      }
+      .manager-action-remove:hover{background:rgba(223,128,108,.18)}
+      .manager-action-remove:disabled{opacity:.45;cursor:wait}
+    `;
+    document.head.append(style);
+  }
+
   function init() {
     if (!document.getElementById("managerActionList")) return;
+    ensureRemoveButtonStyles();
     bindFilters();
     bindCompletedToggle();
     bindComposer();

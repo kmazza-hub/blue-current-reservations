@@ -1,31 +1,23 @@
-BLUE CURRENT V34.0.5e — CC-006d MANUAL MANAGER ACTIONS
+BLUE CURRENT V34.0.5f — CC-006e REMOVE MANUAL ACTIONS
 
 REPLACE:
-- client/index.html
-- client/styles.css
 - client/js/modules/actionList.js
 - client/js/cloud/cloudApi.js
 - server/api/router.js
 - server/services/actionListService.js
 
-IMPORTANT
-This index.html includes BOTH:
-- The Manager Action List UI from V34.0.5a
-- The duplicate Command Center navigation fix from V34.0.5c
-
 WHAT THIS MICRO-UPDATE ADDS
-- Add Action button
-- Action composer with title, source, priority, and due field
-- Server persistence for manually created actions
-- Operations Feed event when a manager creates an action
-- Local fallback when the API is unavailable
+- Remove button for manually created manager actions
+- Confirmation before removal
+- Server-side DELETE endpoint
+- Operations Feed event when a manual action is removed
+- Automatic actions cannot be deleted; resolve the underlying condition instead
 
 TEST
 1. npm run check
 2. npm start
-3. Sign in and open Command Center
-4. Confirm only one Command Center navigation item appears
-5. Click Add action
-6. Create a task
-7. Refresh the page and confirm it remains
-8. Confirm Operations Feed shows the creation event
+3. Add a manual action
+4. Click Remove and confirm
+5. Refresh and verify it stays removed
+6. Confirm automatic actions have no Remove button
+7. Confirm Operations Feed records the removal

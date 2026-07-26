@@ -3,10 +3,10 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.0.5e";
+    static VERSION = "34.0.5f";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
-      "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
+      "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
     constructor(baseUrl = "") {
@@ -48,6 +48,7 @@
     managerActions(locationId = "loc_marina") { return this.request(`/api/manager-actions?locationId=${encodeURIComponent(locationId)}`); }
     createManagerAction(payload) { return this.request("/api/manager-actions", { method: "POST", body: JSON.stringify(payload) }); }
     updateManagerAction(id, payload) { return this.request(`/api/manager-actions/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify(payload) }); }
+    deleteManagerAction(id, locationId = "loc_marina") { return this.request(`/api/manager-actions/${encodeURIComponent(id)}?locationId=${encodeURIComponent(locationId)}`, { method: "DELETE" }); }
     createShiftHandoff(payload) { return this.request("/api/command-center/handoffs", { method: "POST", body: JSON.stringify(payload) }); }
     acknowledgeShiftHandoff(id) { return this.request(`/api/command-center/handoffs/${encodeURIComponent(id)}/acknowledge`, { method: "PATCH", body: JSON.stringify({}) }); }
 
@@ -235,5 +236,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.0.5e";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.0.5f";
 })();
