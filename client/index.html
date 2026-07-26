@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.5a">
+  <meta name="blue-current-build" content="34.0.5c">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.5a">
+  <meta name="blue-current-build" content="34.0.5c">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.5a">
+  <link rel="stylesheet" href="styles.css?v=34.0.5c">
 </head>
 <body>
 
@@ -148,8 +148,7 @@
       </a>
 
       <nav class="desktop-nav" aria-label="Primary navigation">
-        <a href="#command-center">Command Center</a>
-        <a href="#command-center">Command Center</a>
+        <a href="#command-center" aria-current="page">Command Center</a>
       <a href="#blue-current-live">Live</a>
         <a href="#digital-twin">Digital Twin</a>
         <a href="#mission-control">Mission Control</a>
@@ -347,40 +346,17 @@
           <button class="operations-feed-more" id="operationsFeedMore" type="button" hidden>View more activity</button>
         </section>
 
-        <section class="manager-actions-panel reveal" id="managerActionList" aria-labelledby="managerActionListTitle">
+        <div class="manager-actions-panel reveal">
           <div class="manager-actions-heading">
-            <div>
-              <small>What should I do next?</small>
-              <h3 id="managerActionListTitle">Today’s Action List</h3>
-            </div>
-            <strong id="managerActionProgress">0 of 0 complete</strong>
+            <div><small>Manager action list</small><h3>Three priorities before service</h3></div>
+            <strong id="managerActionProgress">0 of 3 complete</strong>
           </div>
-
-          <div class="manager-action-progress" aria-label="Manager action completion progress">
-            <span><i id="managerActionProgressFill"></i></span>
-            <b id="managerActionProgressPercent">0%</b>
+          <div class="manager-action-list">
+            <label><input type="checkbox" data-manager-action><span>Confirm supplemental wing order</span><small>Inventory · High priority</small></label>
+            <label><input type="checkbox" data-manager-action><span>Inspect ice machine before lunch</span><small>Equipment · Due 10:30 AM</small></label>
+            <label><input type="checkbox" data-manager-action><span>Review Sarah’s pending PTO request</span><small>Workforce · Due today</small></label>
           </div>
-
-          <div class="manager-action-toolbar">
-            <div class="manager-action-filters" id="managerActionFilters" aria-label="Filter manager actions">
-              <button class="is-active" type="button" data-action-filter="open">Open</button>
-              <button type="button" data-action-filter="all">All</button>
-              <button type="button" data-action-filter="high">High priority</button>
-              <button type="button" data-action-filter="completed">Completed</button>
-            </div>
-            <span id="managerActionStatus" role="status">Preparing today’s priorities…</span>
-          </div>
-
-          <div class="manager-action-list" id="managerActionItems" aria-live="polite"></div>
-
-          <div class="manager-action-completed" id="managerActionCompleted" hidden>
-            <button type="button" id="managerActionCompletedToggle" aria-expanded="false">
-              <span>Completed today</span>
-              <strong id="managerActionCompletedCount">0</strong>
-            </button>
-            <div id="managerActionCompletedItems" hidden></div>
-          </div>
-        </section>
+        </div>
       </div>
     </section>
     <section class="hero container">
@@ -2324,7 +2300,6 @@
 </div>
 
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
-  <script src="js/modules/actionList.js?v=34.0.5a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
