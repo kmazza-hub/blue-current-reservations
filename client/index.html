@@ -234,8 +234,18 @@
             <span class="signal-good" id="readinessStaffing">Staffing ready</span>
             <span class="signal-good" id="readinessReservations">Reservations on pace</span>
             <span class="signal-warn" id="readinessAttention">2 items need attention</span>
+            <button class="readiness-details-button" id="readinessDetailsToggle" type="button" aria-expanded="false" aria-controls="readinessBreakdown">View breakdown</button>
           </div>
         </div>
+
+        <section class="readiness-breakdown" id="readinessBreakdown" hidden aria-labelledby="readinessBreakdownTitle">
+          <div class="readiness-breakdown-heading">
+            <div><small>Readiness intelligence</small><h3 id="readinessBreakdownTitle">What is helping—or holding back—today’s score</h3></div>
+            <span id="readinessBreakdownSummary">Calculating operating signals…</span>
+          </div>
+          <div class="readiness-component-grid" id="readinessComponentGrid"></div>
+          <div class="readiness-next-action"><strong>Best next action</strong><span id="readinessNextAction">Loading recommendation…</span></div>
+        </section>
 
         <div class="manager-brief-grid reveal">
           <article class="brief-card brief-weather">

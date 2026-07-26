@@ -3374,3 +3374,28 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .handoff-attention{margin-top:14px;padding:11px 12px;border-radius:12px;color:#774839;background:rgba(189,115,92,.11);font-size:9px;line-height:1.5}.handoff-attention strong{display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em}.handoff-attention ul{margin:0;padding-left:16px}
 .handoff-composer{margin-top:18px;padding-top:16px;border-top:1px solid rgba(16,43,52,.1)}.handoff-composer[hidden]{display:none}.handoff-composer label{display:block;margin-top:10px;color:#557071;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.handoff-composer input,.handoff-composer select,.handoff-composer textarea{box-sizing:border-box;width:100%;margin-top:6px;padding:10px 11px;border:1px solid rgba(16,43,52,.14);border-radius:10px;color:#102b34;background:#fff;font:inherit;font-size:10px;text-transform:none;letter-spacing:0}.handoff-composer textarea{min-height:92px;resize:vertical;line-height:1.5}.handoff-form-row{display:grid;grid-template-columns:.75fr 1.25fr;gap:10px}.handoff-composer-actions{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-top:12px}.handoff-composer-actions .brief-action{width:auto;margin-top:0;padding-inline:14px}.handoff-composer-actions span{color:#a05f4d;font-size:9px;line-height:1.35}
 @media(max-width:680px){.handoff-actions,.handoff-form-row{grid-template-columns:1fr}.handoff-composer-actions{grid-template-columns:1fr 1fr}.handoff-composer-actions span{grid-column:1/-1}}
+
+/* V34.0.3 — CC-004 Restaurant Readiness Breakdown */
+.readiness-details-button{padding:7px 10px;border:1px solid rgba(214,178,110,.32);border-radius:999px;color:#ead39e;background:rgba(214,178,110,.08);font:inherit;font-size:9px;cursor:pointer;transition:background .2s ease,transform .2s ease}
+.readiness-details-button:hover{background:rgba(214,178,110,.16);transform:translateY(-1px)}
+.readiness-details-button[aria-expanded="true"]{color:#102b34;background:#e0c48e}
+.readiness-breakdown{position:relative;z-index:1;margin:-2px 0 18px;padding:24px;border:1px solid rgba(255,255,255,.09);border-radius:22px;background:rgba(4,23,31,.55);box-shadow:0 24px 70px rgba(0,0,0,.14)}
+.readiness-breakdown[hidden]{display:none}
+.readiness-breakdown-heading{display:flex;justify-content:space-between;gap:24px;align-items:flex-end;margin-bottom:18px}
+.readiness-breakdown-heading small{color:#8eaaaa;font-size:9px;text-transform:uppercase;letter-spacing:.12em}
+.readiness-breakdown-heading h3{margin:5px 0 0;font-family:"Playfair Display",Georgia,serif;font-size:25px}
+.readiness-breakdown-heading>span{max-width:360px;color:#9db7b6;font-size:10px;line-height:1.5;text-align:right}
+.readiness-component-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.readiness-component{padding:15px;border:1px solid rgba(255,255,255,.07);border-radius:16px;background:rgba(255,255,255,.045)}
+.readiness-component-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.readiness-component-head strong{font-size:11px}.readiness-component-head b{font-size:16px}
+.readiness-component-track{height:6px;margin:11px 0 10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.readiness-component-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#5e9f8a,#d6b26e)}
+.readiness-component p{min-height:30px;margin:0;color:#9db7b6;font-size:9px;line-height:1.5}
+.readiness-component footer{display:flex;justify-content:space-between;gap:8px;margin-top:10px;color:#759594;font-size:8px;text-transform:uppercase;letter-spacing:.07em}
+.readiness-component.is-warning .readiness-component-head b,.readiness-component.is-warning footer span:first-child{color:#e2c78f}
+.readiness-component.is-critical .readiness-component-head b,.readiness-component.is-critical footer span:first-child{color:#e19a82}
+.readiness-next-action{display:grid;grid-template-columns:auto 1fr;gap:14px;margin-top:16px;padding:14px 15px;border-radius:15px;color:#c9dcda;background:rgba(94,159,138,.1);font-size:10px;line-height:1.5}
+.readiness-next-action strong{color:#e0c48e;text-transform:uppercase;letter-spacing:.08em}
+@media(max-width:980px){.readiness-component-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.readiness-breakdown-heading{align-items:flex-start;flex-direction:column}.readiness-breakdown-heading>span{text-align:left}}
+@media(max-width:680px){.readiness-component-grid{grid-template-columns:1fr}.readiness-breakdown{padding:18px}.readiness-next-action{grid-template-columns:1fr}.readiness-signals{align-items:flex-start}}

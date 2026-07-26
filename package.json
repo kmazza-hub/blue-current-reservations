@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "34.0.2",
+  "version": "34.0.3",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 CC-003 Shift Handoff",
+  "description": "Blue Current Hospitality OS \u2014 CC-004 Restaurant Readiness Breakdown",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

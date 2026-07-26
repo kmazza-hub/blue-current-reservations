@@ -72,7 +72,18 @@ class CommandCenterService {
     const forecastRevenue = Math.round(Math.max(historicalRevenue * 1.074, lastWeekRevenue * 1.08));
     const projectedLabor = Number(location.commandCenterBaseline?.projectedLabor || 26.1);
     const attentionCount = lowInventory.slice(0, 2).length + openMaintenance.length + pendingPto;
-    const readiness = Math.max(55, Math.min(98, Math.round(96 - attentionCount * 4 - Math.max(0, projectedLabor - 28))));
+    const handoffAgeHours = latestHandoff ? Math.max(0, (now - new Date(latestHandoff.createdAt || now)) / 36e5) : null;
+    const readinessComponents = [
+      { key: "staffing", label: "Staffing", score: Math.max(55, Math.min(100, 92 - pendingPto * 6 + (scheduled >= 8 ? 6 : scheduled >= 4 ? 0 : -12))), weight: 24, detail: scheduled ? `${scheduled} active team members · ${pendingPto} PTO pending` : "No active staffing signal is available", impact: pendingPto ? "Manager review needed" : "Coverage signal stable" },
+      { key: "reservations", label: "Reservations", score: todaysReservations.length >= 10 ? 96 : todaysReservations.length >= 4 ? 88 : todaysReservations.length ? 78 : 72, weight: 18, detail: `${todaysReservations.length} bookings · ${todaysCovers} covers`, impact: todaysReservations.length ? "Demand visible" : "Confirm walk-in plan" },
+      { key: "inventory", label: "Inventory", score: Math.max(45, 100 - lowInventory.length * 14), weight: 20, detail: lowInventory.length ? `${lowInventory.length} item${lowInventory.length === 1 ? "" : "s"} below operating threshold` : "No low-stock items detected", impact: lowInventory.length ? "Replenishment needed" : "Pars protected" },
+      { key: "equipment", label: "Equipment", score: Math.max(40, 100 - openMaintenance.length * 18), weight: 14, detail: openMaintenance.length ? `${openMaintenance.length} open maintenance item${openMaintenance.length === 1 ? "" : "s"}` : "No open maintenance items", impact: openMaintenance.length ? "Service risk present" : "Systems clear" },
+      { key: "labor", label: "Labor", score: Math.max(50, Math.min(100, Math.round(100 - Math.max(0, projectedLabor - 24) * 4))), weight: 16, detail: `${projectedLabor.toFixed(1)}% projected labor`, impact: projectedLabor > 28 ? "Above target" : "Within target" },
+      { key: "handoff", label: "Shift handoff", score: latestHandoff ? (handoffAgeHours <= 16 ? 100 : handoffAgeHours <= 30 ? 84 : 70) : 62, weight: 8, detail: latestHandoff ? `${latestHandoff.shift} note posted ${Math.round(handoffAgeHours)}h ago` : "No recent handoff is available", impact: latestHandoff ? "Context transferred" : "Post shift context" }
+    ];
+    const readiness = Math.max(55, Math.min(98, Math.round(readinessComponents.reduce((sum, item) => sum + item.score * item.weight, 0) / readinessComponents.reduce((sum, item) => sum + item.weight, 0))));
+    const weakestComponent = [...readinessComponents].sort((a, b) => a.score - b.score)[0];
+    const strongestComponent = [...readinessComponents].sort((a, b) => b.score - a.score)[0];
 
     const recommendationParts = [];
     if (lowInventory[0]) recommendationParts.push(`${lowInventory[0].name} is below its operating par; confirm replenishment before dinner.`);
@@ -82,7 +93,21 @@ class CommandCenterService {
 
     return {
       location: { id: location.id, name: location.name, timezone: location.timezone || "America/New_York", latitude: 40.1784, longitude: -74.0218 },
-      readiness: { score: readiness, status: readiness >= 90 ? "Ready for service" : readiness >= 75 ? "Review before service" : "Action required", attentionCount },
+      readiness: {
+        score: readiness,
+        status: readiness >= 90 ? "Ready for service" : readiness >= 75 ? "Review before service" : "Action required",
+        attentionCount,
+        components: readinessComponents,
+        strongest: strongestComponent?.label || null,
+        weakest: weakestComponent?.label || null,
+        summary: `${strongestComponent?.label || "Core operations"} is the strongest signal. ${weakestComponent?.label || "One area"} offers the clearest opportunity to improve readiness.`,
+        nextAction: weakestComponent?.key === "inventory" && lowInventory[0] ? `Confirm replenishment for ${lowInventory[0].name} before the next service period.`
+          : weakestComponent?.key === "equipment" && openMaintenance[0] ? `Assign or escalate ${openMaintenance[0].title || "the leading maintenance item"}.`
+          : weakestComponent?.key === "staffing" && pendingPto ? `Resolve ${pendingPto} pending PTO request${pendingPto === 1 ? "" : "s"} and verify coverage.`
+          : weakestComponent?.key === "handoff" ? "Post a concise shift handoff so the next manager starts with current context."
+          : weakestComponent?.key === "reservations" ? "Review reservations and establish the expected walk-in and section plan."
+          : "Review labor deployment against forecast demand before service."
+      },
       business: { lastYearRevenue: historicalRevenue, lastWeekRevenue, forecastRevenue, forecastChange: Number(((forecastRevenue / historicalRevenue - 1) * 100).toFixed(1)), lastYearGuests: 624, averageCheck: 29.54, historicalLabor: 24.8 },
       operation: { reservations: todaysReservations.length, covers: todaysCovers, scheduled, pendingPto, projectedLabor },
       attention: [

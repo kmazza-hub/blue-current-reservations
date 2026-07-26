@@ -1,4 +1,4 @@
-BLUE CURRENT V34.0.2 — CC-003 SHIFT HANDOFF
+BLUE CURRENT V34.0.3 — CC-004 RESTAURANT READINESS BREAKDOWN
 
 INSTALL
 1. Back up your current Blue Current project.
@@ -11,22 +11,19 @@ INSTALL
 CHANGED FILES
 - client/index.html
 - client/styles.css
-- client/js/cloud/cloudApi.js
 - client/js/modules/commandCenter.js
-- server/api/router.js
-- server/server.js
 - server/services/commandCenterService.js
 - package.json
 
 TEST CHECKLIST
-- Sign in with a manager account.
-- Open Command Center.
-- Click Leave shift note.
-- Select a shift and enter a summary of at least 10 characters.
-- Add comma-separated highlights and needs-attention items.
-- Post the handoff and confirm it appears immediately.
-- Click Acknowledge handoff and confirm the acknowledgement is saved after refresh.
-- Confirm an empty database shows a safe “No handoff posted yet” state.
+- Sign in with a manager account and open Command Center.
+- Confirm the readiness score loads.
+- Click View breakdown.
+- Confirm six signal cards appear: Staffing, Reservations, Inventory, Equipment, Labor, and Shift handoff.
+- Confirm each card shows a score, explanation, impact, and weight.
+- Confirm Best next action reflects the lowest-scoring signal.
+- Click Hide breakdown and confirm the panel collapses.
+- Resize to mobile width and confirm the cards stack cleanly.
 
 NOTES
-Shift handoffs are now saved in database/data/blue-current.json under shiftHandoffs. No migration is required; the collection is created automatically on first use.
+No database migration is required. Readiness details are calculated from existing operational data each time the Command Center snapshot loads.

@@ -61,6 +61,25 @@
     return String(value || "").replace(/[&<>'"]/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[character]));
   }
 
+
+  function renderReadinessBreakdown(readiness = {}) {
+    const grid = byId("readinessComponentGrid");
+    const components = Array.isArray(readiness.components) ? readiness.components : [];
+    text("readinessBreakdownSummary", readiness.summary || "Operating signals are being evaluated.");
+    text("readinessNextAction", readiness.nextAction || "Review the lowest-scoring operating signal before service.");
+    if (!grid) return;
+    grid.innerHTML = components.length ? components.map(component => {
+      const score = Math.max(0, Math.min(100, Number(component.score || 0)));
+      const state = score < 70 ? "is-critical" : score < 86 ? "is-warning" : "is-good";
+      return `<article class="readiness-component ${state}">
+        <div class="readiness-component-head"><strong>${escapeHtml(component.label)}</strong><b>${Math.round(score)}%</b></div>
+        <div class="readiness-component-track"><i style="width:${score}%"></i></div>
+        <p>${escapeHtml(component.detail)}</p>
+        <footer><span>${escapeHtml(component.impact)}</span><span>${Number(component.weight || 0)}% weight</span></footer>
+      </article>`;
+    }).join("") : '<article class="readiness-component is-warning"><div class="readiness-component-head"><strong>Readiness details</strong><b>—</b></div><p>Sign in and refresh to calculate the complete breakdown.</p></article>';
+  }
+
   function render(snapshot) {
     const b=snapshot.business||{}, o=snapshot.operation||{}, r=snapshot.readiness||{};
     text("commandCenterLocation", snapshot.location?.name || "Marina Grille");
@@ -70,6 +89,9 @@
     text("readinessStaffing", o.scheduled ? `${o.scheduled} team members active` : "Staffing needs review");
     text("readinessReservations", `${o.reservations || 0} reservations · ${o.covers || 0} covers`);
     text("readinessAttention", `${r.attentionCount || 0} item${r.attentionCount===1?"":"s"} need attention`);
+    const readinessPanel = byId("readinessMeterFill")?.closest(".readiness-meter");
+    if (readinessPanel) readinessPanel.setAttribute("aria-label", `Restaurant readiness ${r.score || 0} percent`);
+    renderReadinessBreakdown(r);
     text("lastYearRevenue", money(b.lastYearRevenue));
     text("lastYearDetails", `${b.lastYearGuests || 0} guests · ${b.historicalLabor || 0}% labor · $${Number(b.averageCheck || 0).toFixed(2)} average check`);
     text("lastWeekRevenue", money(b.lastWeekRevenue));
@@ -146,6 +168,14 @@
     byId("openHandoffComposer")?.addEventListener("click",()=>setComposer(true));
     byId("cancelHandoffComposer")?.addEventListener("click",()=>setComposer(false));
     byId("handoffComposer")?.addEventListener("submit",saveHandoff);
+    const readinessToggle = byId("readinessDetailsToggle");
+    readinessToggle?.addEventListener("click", () => {
+      const breakdown = byId("readinessBreakdown");
+      const open = breakdown?.hidden !== false;
+      if (breakdown) breakdown.hidden = !open;
+      readinessToggle.setAttribute("aria-expanded", String(open));
+      readinessToggle.textContent = open ? "Hide breakdown" : "View breakdown";
+    });
     const refresh=byId("commandCenterRefresh"); refresh?.addEventListener("click",()=>loadBrief(refresh));
     loadBrief();
     window.addEventListener("storage",event=>{if(event.key==="blueCurrentV3230Token")loadBrief();});
