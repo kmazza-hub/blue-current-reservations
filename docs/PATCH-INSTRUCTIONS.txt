@@ -1,0 +1,38 @@
+NEXT IMPLEMENTATION
+
+HTML
+-----
+<section id="restaurantPulse" class="restaurant-pulse">
+  <div class="pulse-score">92</div>
+  <div class="pulse-summary">
+    <h3>Restaurant Pulse</h3>
+    <p id="pulseSummary">Operations are stable. Focus on host stand and patio readiness.</p>
+  </div>
+  <button id="pulseFocus">Go to Priority</button>
+</section>
+
+CSS
+---
+Create animated pulse states:
+.restaurant-pulse--calm
+.restaurant-pulse--building
+.restaurant-pulse--busy
+.restaurant-pulse--critical
+
+JS
+--
+Use:
+- labor
+- reservations
+- weather
+- kitchen alerts
+- open manager actions
+- AI recommendation confidence
+
+Return:
+{
+ score:92,
+ state:"building",
+ priority:"Host Stand",
+ summary:"Reservations are accelerating faster than staffing."
+}

@@ -1,27 +1,29 @@
-BLUE CURRENT V34.0.8e — CC-009e ACTIVE DECISION TRACKER
+BLUE CURRENT V34.0.9a — CC-010a LIVE RESTAURANT PULSE
 
 REPLACE:
 - client/index.html
 - client/styles.css
 - client/js/modules/managerShiftBrief.js
 
-WHAT THIS MICRO-UPDATE ADDS
-- Active Decision card after a scenario is applied
-- Tracks:
-  - Selected scenario
-  - Expected savings
-  - Expected guest wait impact
-  - Review point
-  - Time since the decision was started
-- Local persistence after browser refresh
-- Review Now shortcut to the shift-close timeline checkpoint
-- Clear Decision control
+FEATURES
+- New 'Restaurant Pulse' banner at the top of Command Center
+- Overall operating health score (0-100)
+- Color-coded state:
+  • Calm
+  • Building
+  • Busy
+  • Critical
+- Top three live drivers (labor, reservations, kitchen, weather, staffing)
+- One-click jump to the highest priority module
+- Auto-refresh whenever live operational data changes
 
-TEST
-1. npm run check
-2. npm start
-3. Sign in and choose a scenario
-4. Confirm the Active Decision card appears
-5. Refresh and verify it remains
-6. Click Review now
-7. Click Clear decision and confirm the card disappears
+UI PATCH
+1. Insert a Restaurant Pulse banner above the Executive Command Center.
+2. Add pulse styles.
+3. Add:
+   - calculateRestaurantPulse()
+   - syncRestaurantPulse()
+4. Call syncRestaurantPulse() whenever dashboard state updates.
+
+GOAL
+Managers should understand the state of the restaurant in under three seconds.
