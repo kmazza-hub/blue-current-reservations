@@ -340,6 +340,17 @@ class ActionListService {
         : `Action unassigned: ${current.title}`;
     }
 
+    if (patch.noteUpdate) {
+      const note = String(patch.note || "").trim();
+      changes.note = note.slice(0, 500) || null;
+      changes.noteUpdatedAt = new Date().toISOString();
+      changes.noteUpdatedBy = actor?.name || actor?.email || "Manager";
+      eventType = changes.note ? "action_note_added" : "action_note_removed";
+      eventTitle = changes.note
+        ? `Manager note added: ${current.title}`
+        : `Manager note removed: ${current.title}`;
+    }
+
     const updated = await this.database.update("managerActions", actionId, changes);
 
     if (updated && this.operationsFeedService && eventType) {

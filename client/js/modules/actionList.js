@@ -93,6 +93,40 @@
     return created;
   }
 
+  async function updateActionNote(action) {
+    const note = window.prompt(
+      action.note ? "Edit manager note:" : "Add a manager note:",
+      action.note || ""
+    );
+
+    if (note === null) return;
+
+    const previous = { ...action };
+    action.note = note.trim() || null;
+    action.isSaving = true;
+    render();
+
+    if (state.source === "server") {
+      const api = apiClient();
+      try {
+        const updated = await api.updateManagerAction(action.id, {
+          locationId: LOCATION_ID,
+          noteUpdate: true,
+          note: action.note || ""
+        });
+        Object.assign(action, updated, { isSaving: false });
+      } catch (error) {
+        Object.assign(action, previous, { isSaving: false });
+        setStatus(error.message || "Could not save note.");
+      }
+    } else {
+      action.isSaving = false;
+      saveLocal();
+    }
+
+    render();
+  }
+
   async function assignAction(action) {
     const currentAssignee = action.assignedTo || "";
     const assignedTo = window.prompt(
@@ -264,6 +298,13 @@
     copy.querySelector("strong").textContent = action.title;
     copy.querySelector("small").textContent = `${action.source} · ${action.due}${action.isSaving ? " · Saving…" : ""}`;
 
+    if (action.note) {
+      const note = document.createElement("p");
+      note.className = "manager-action-note";
+      note.textContent = action.note;
+      copy.append(note);
+    }
+
     const badges = document.createElement("div");
     badges.className = "manager-action-badges";
 
@@ -283,6 +324,15 @@
       assignee.textContent = `Assigned: ${action.assignedTo}`;
       badges.append(assignee);
     }
+
+    const note = document.createElement("button");
+    note.className = "manager-action-note-button";
+    note.type = "button";
+    note.textContent = action.note ? "Edit note" : "Add note";
+    note.disabled = Boolean(action.isSaving);
+    note.setAttribute("aria-label", `${action.note ? "Edit note for" : "Add note to"} ${action.title}`);
+    note.addEventListener("click", () => updateActionNote(action));
+    badges.append(note);
 
     const assign = document.createElement("button");
     assign.className = "manager-action-assign";
@@ -456,6 +506,7 @@
     const style = document.createElement("style");
     style.id = "managerActionRemoveStyles";
     style.textContent = `
+      .manager-action-note-button,
       .manager-action-assign,
       .manager-action-edit,
       .manager-action-remove{
@@ -463,6 +514,22 @@
         border-radius:999px;
         font-size:.62rem;
         font-weight:700;
+      }
+      .manager-action-note-button{
+        color:#d7e7f4;
+        border:1px solid rgba(131,197,187,.26);
+        background:rgba(131,197,187,.09);
+      }
+      .manager-action-note-button:hover{background:rgba(131,197,187,.16)}
+      .manager-action-note{
+        margin:8px 0 0;
+        padding:9px 10px;
+        color:#d7e7e3;
+        border-left:2px solid rgba(216,174,98,.55);
+        border-radius:0 8px 8px 0;
+        background:rgba(255,255,255,.035);
+        font-size:.72rem;
+        line-height:1.45;
       }
       .manager-action-assign{
         color:#f7e6c6;
@@ -487,6 +554,7 @@
         background:rgba(223,128,108,.1);
       }
       .manager-action-remove:hover{background:rgba(223,128,108,.18)}
+      .manager-action-note-button:disabled,
       .manager-action-assign:disabled,
       .manager-action-edit:disabled,
       .manager-action-remove:disabled{opacity:.45;cursor:wait}
