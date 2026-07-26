@@ -336,6 +336,90 @@
     });
   }
 
+  function calculateRecommendationImpact() {
+    const labor = numericValue("operationLabor", 0);
+    const forecast = numericValue("forecastRevenue", 0);
+    const reservations = numericValue("operationReservations", 0);
+    const scheduled = numericValue("operationScheduled", 0);
+    const rain = numericValue("weatherRain", 0);
+    const weather = text("weatherCondition", "").toLowerCase();
+    const confidenceText = text("aiConfidence", "Medium");
+
+    let laborDelta = 0.4;
+    let savings = Math.max(45, Math.round((forecast * 0.006) / 5) * 5);
+    let waitImpact = 0.3;
+    let risk = "Low";
+    let confidence = confidenceText === "High" ? 91 : 82;
+
+    if (labor >= 30) {
+      laborDelta = 1.2;
+      savings = Math.max(120, Math.round((forecast * 0.011) / 5) * 5);
+      waitImpact = reservations >= 80 ? 0.8 : 0.4;
+      risk = reservations >= 100 ? "Medium" : "Low";
+    } else if (labor >= 28) {
+      laborDelta = 0.8;
+      savings = Math.max(80, Math.round((forecast * 0.008) / 5) * 5);
+      waitImpact = reservations >= 80 ? 0.6 : 0.3;
+    } else if (labor > 0 && labor <= 25) {
+      laborDelta = -0.2;
+      savings = 0;
+      waitImpact = -0.1;
+      risk = "Low";
+    }
+
+    if (/rain|storm/.test(weather) || rain >= 50) {
+      risk = reservations >= 70 ? "Medium" : risk;
+      waitImpact += 0.2;
+      confidence = Math.min(95, confidence + 2);
+    }
+
+    if (scheduled > 0 && reservations / scheduled > 6) {
+      risk = "Medium";
+      waitImpact += 0.4;
+    }
+
+    const afterLabor = Math.max(0, labor - laborDelta);
+    const summary = savings > 0
+      ? `Estimated savings of ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(savings)} with approximately ${waitImpact.toFixed(1)} minutes of guest wait impact.`
+      : "The current recommendation favors protecting service capacity rather than reducing labor.";
+
+    return {
+      beforeLabor: labor,
+      afterLabor,
+      savings,
+      waitImpact,
+      risk,
+      confidence,
+      summary
+    };
+  }
+
+  function syncImpactPreview() {
+    const impact = calculateRecommendationImpact();
+
+    const before = byId("aiImpactLaborBefore");
+    const after = byId("aiImpactLaborAfter");
+    const savings = byId("aiImpactSavings");
+    const wait = byId("aiImpactWait");
+    const risk = byId("aiImpactRisk");
+    const confidence = byId("aiImpactConfidence");
+    const summary = byId("aiImpactSummary");
+
+    if (before) before.textContent = `${impact.beforeLabor.toFixed(1)}%`;
+    if (after) after.textContent = `${impact.afterLabor.toFixed(1)}%`;
+    if (savings) {
+      savings.textContent = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+      }).format(impact.savings);
+    }
+    if (wait) wait.textContent = `${impact.waitImpact >= 0 ? "+" : ""}${impact.waitImpact.toFixed(1)} min`;
+    if (risk) risk.textContent = impact.risk;
+    if (confidence) confidence.textContent = `Confidence ${impact.confidence}%`;
+    if (summary) summary.textContent = impact.summary;
+  }
+
   function syncManagerRecommendation() {
     const recommendation = byId("aiRecommendation");
     const confidence = byId("aiConfidence");
@@ -345,6 +429,7 @@
     recommendation.textContent = result.message;
     confidence.textContent = result.confidence;
     syncRecommendationSignals();
+    syncImpactPreview();
   }
 
   function syncFromCommandCenter() {

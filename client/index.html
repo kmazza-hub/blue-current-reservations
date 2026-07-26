@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.7c">
+  <meta name="blue-current-build" content="34.0.8a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.7c">
+  <meta name="blue-current-build" content="34.0.8a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.7c">
+  <link rel="stylesheet" href="styles.css?v=34.0.8a">
 </head>
 <body>
 
@@ -383,6 +383,37 @@
               <strong>Signals behind this recommendation</strong>
               <div id="aiRecommendationSignals"></div>
             </div>
+
+            <section class="ai-impact-preview" id="aiImpactPreview" aria-labelledby="aiImpactPreviewTitle">
+              <div class="ai-impact-preview-heading">
+                <div>
+                  <small>Decision support</small>
+                  <strong id="aiImpactPreviewTitle">Estimated impact</strong>
+                </div>
+                <span id="aiImpactConfidence">Confidence 82%</span>
+              </div>
+
+              <div class="ai-impact-grid">
+                <div>
+                  <small>Projected labor</small>
+                  <strong><span id="aiImpactLaborBefore">26.1%</span> <i>→</i> <span id="aiImpactLaborAfter">25.4%</span></strong>
+                </div>
+                <div>
+                  <small>Estimated savings</small>
+                  <strong id="aiImpactSavings">$138</strong>
+                </div>
+                <div>
+                  <small>Guest wait impact</small>
+                  <strong id="aiImpactWait">+0.4 min</strong>
+                </div>
+                <div>
+                  <small>Service risk</small>
+                  <strong id="aiImpactRisk">Low</strong>
+                </div>
+              </div>
+
+              <p id="aiImpactSummary">Applying this recommendation is expected to improve labor efficiency with limited guest impact.</p>
+            </section>
           </article>
         </div>
 
@@ -2425,7 +2456,7 @@
 
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/modules/actionList.js?v=34.0.7b"></script>
-  <script src="js/modules/managerShiftBrief.js?v=34.0.7c"></script>
+  <script src="js/modules/managerShiftBrief.js?v=34.0.8a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

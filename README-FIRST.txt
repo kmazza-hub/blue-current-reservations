@@ -1,4 +1,4 @@
-BLUE CURRENT V34.0.7c — CC-008c RECOMMENDATION EXPLAINABILITY
+BLUE CURRENT V34.0.8a — CC-009a AI IMPACT PREVIEW
 
 REPLACE:
 - client/index.html
@@ -6,23 +6,22 @@ REPLACE:
 - client/js/modules/managerShiftBrief.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Why? button beneath the Blue Current recommendation
-- Expandable signal panel showing the data behind the recommendation
-- Signal chips for:
-  - Labor
-  - Reservations
-  - Scheduled staff
-  - Forecast versus last year
-  - Weather and rain
-  - Pending PTO
-  - Open priorities
-- Watch and risk styling for stronger signals
-- Automatic updates whenever operating data changes
+- Estimated impact section beneath the Blue Current recommendation
+- Projected labor before and after
+- Estimated savings in USD
+- Estimated guest wait-time impact
+- Service risk
+- Confidence percentage
+- Short plain-language impact summary
+- Automatic recalculation when live operating data changes
+
+IMPORTANT
+This is a transparent pilot estimation model, not a payroll or labor-management guarantee.
 
 TEST
 1. npm run check
 2. npm start
 3. Open Command Center
-4. Click Why? beneath the Blue Current recommendation
-5. Confirm the signal chips match the live dashboard
-6. Refresh operating data and confirm the chips update
+4. Confirm the Estimated Impact section appears beneath the recommendation
+5. Refresh operating data
+6. Confirm labor, savings, wait impact, risk, and confidence update
