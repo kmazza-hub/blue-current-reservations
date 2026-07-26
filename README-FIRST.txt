@@ -1,27 +1,24 @@
-BLUE CURRENT V34.0.6a — CC-007a MANAGER SHIFT BRIEF
+BLUE CURRENT V34.0.6b — CC-007b LIVE MANAGER BRIEF
 
 REPLACE:
 - client/index.html
-- client/styles.css
-
-ADD:
 - client/js/modules/managerShiftBrief.js
 
-WHAT THIS MICRO-UPDATE ADDS
-- One-minute manager shift brief above the existing Command Center cards
-- Today’s priority list
-- Yesterday sales, guests, labor, and today weather snapshot
-- Short operating narrative
-- Start Shift button with local browser persistence
-- Responsive desktop and mobile layout
+WHAT THIS MICRO-UPDATE DOES
+- Connects the Manager Shift Brief to the existing live Command Center values
+- Uses today’s forecast revenue and comparison
+- Uses current reservations, scheduled team, pending PTO, and projected labor
+- Uses live weather condition, temperature, rain, and weather impact
+- Pulls priorities from the Manager Action List
+- Falls back to Needs Attention items when the Action List is still loading
+- Automatically refreshes when Command Center data changes
 
-THIS IS UI-ONLY
-The values are pilot data in this first micro-story. The next stories will connect live operational data.
+NO CSS OR SERVER FILES CHANGE.
 
 TEST
 1. npm run check
 2. npm start
-3. Open the Command Center
-4. Confirm the new Manager Brief appears above the existing cards
-5. Click Start shift
-6. Refresh and confirm the started state remains
+3. Sign in and open Command Center
+4. Confirm the Manager Shift Brief matches the cards below it
+5. Complete or add an action and confirm the priority list updates
+6. Refresh the brief and confirm weather/operations values stay synchronized
