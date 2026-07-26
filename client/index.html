@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="33.0.4-b2">
+  <meta name="blue-current-build" content="34.0.0-cc1">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="33.0.4-b2">
+  <meta name="blue-current-build" content="34.0.0-cc1">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=33.0.4b2">
+  <link rel="stylesheet" href="styles.css?v=34.0.0cc1">
 </head>
 <body>
 
@@ -148,7 +148,9 @@
       </a>
 
       <nav class="desktop-nav" aria-label="Primary navigation">
-        <a href="#blue-current-live">Live</a>
+        <a href="#command-center">Command Center</a>
+        <a href="#command-center">Command Center</a>
+      <a href="#blue-current-live">Live</a>
         <a href="#digital-twin">Digital Twin</a>
         <a href="#mission-control">Mission Control</a>
         <a href="#time-machine">Time Machine</a>
@@ -206,6 +208,99 @@
   </header>
 
   <main id="main">
+
+    <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
+      <div class="container">
+        <div class="command-center-topbar reveal">
+          <div>
+            <p class="eyebrow"><span></span> Restaurant Command Center</p>
+            <h2 id="commandCenterTitle">Good morning, <span id="commandCenterManagerName">Keith</span>.</h2>
+            <p id="commandCenterDate">Preparing today’s operating brief…</p>
+          </div>
+          <div class="command-center-actions">
+            <span class="demo-data-chip">Pilot data</span>
+            <button class="button button-light button-small" id="commandCenterRefresh" type="button">Refresh brief</button>
+          </div>
+        </div>
+
+        <div class="readiness-panel reveal">
+          <div class="readiness-score">
+            <small>Restaurant readiness</small>
+            <strong><span id="readinessScore">92</span>%</strong>
+            <span class="readiness-status">Ready for service</span>
+          </div>
+          <div class="readiness-meter" aria-label="Restaurant readiness 92 percent"><i id="readinessMeterFill"></i></div>
+          <div class="readiness-signals">
+            <span class="signal-good">Staffing ready</span>
+            <span class="signal-good">Reservations on pace</span>
+            <span class="signal-warn">2 items need attention</span>
+          </div>
+        </div>
+
+        <div class="manager-brief-grid reveal">
+          <article class="brief-card brief-weather">
+            <div class="brief-card-head"><span>Local weather</span><small>Belmar, NJ</small></div>
+            <div class="weather-now"><strong>78°</strong><div><b>Mostly sunny</b><span>High 83° · Low 69°</span></div></div>
+            <p>Patio demand is expected to remain strong through dinner.</p>
+            <div class="brief-card-footer"><span>Rain 10%</span><span>Sunset 8:12 PM</span></div>
+          </article>
+
+          <article class="brief-card">
+            <div class="brief-card-head"><span>Historical comparison</span><small>Same day last year</small></div>
+            <strong class="brief-primary-value">$18,432</strong>
+            <p>624 guests · 24.8% labor · $29.54 average check</p>
+            <div class="comparison-row"><span>Last week</span><strong>$17,980</strong></div>
+            <div class="comparison-row"><span>Today’s forecast</span><strong>$19,800 <em>+7.4%</em></strong></div>
+          </article>
+
+          <article class="brief-card">
+            <div class="brief-card-head"><span>Today’s operation</span><small>Live outlook</small></div>
+            <div class="operation-stat-grid">
+              <div><strong>46</strong><span>Reservations</span></div>
+              <div><strong>17</strong><span>Scheduled</span></div>
+              <div><strong>1</strong><span>PTO pending</span></div>
+              <div><strong>26.1%</strong><span>Projected labor</span></div>
+            </div>
+          </article>
+
+          <article class="brief-card brief-attention">
+            <div class="brief-card-head"><span>Needs attention</span><small>Before service</small></div>
+            <ul class="attention-list">
+              <li><i></i><div><strong>Wings inventory is low</strong><span>Estimated stockout at 7:30 PM</span></div></li>
+              <li><i></i><div><strong>Ice machine follow-up</strong><span>Noise reported during closing</span></div></li>
+              <li class="attention-low"><i></i><div><strong>Produce delivery</strong><span>Expected between 9:00–10:00 AM</span></div></li>
+            </ul>
+          </article>
+
+          <article class="brief-card brief-handoff">
+            <div class="brief-card-head"><span>Previous shift handoff</span><small>Closing · 11:15 PM</small></div>
+            <p class="handoff-summary">Sales finished 6% above forecast. Patio traffic stayed strong through close. Wings are running low, and the ice machine should be checked before lunch service.</p>
+            <div class="handoff-highlights">
+              <span>2 guest compliments</span><span>1 overtime exception</span><span>No incidents</span>
+            </div>
+            <button class="brief-action" id="acknowledgeHandoff" type="button">Acknowledge handoff</button>
+          </article>
+
+          <article class="brief-card brief-ai">
+            <div class="brief-card-head"><span>Blue Current recommendation</span><small>AI operating brief</small></div>
+            <blockquote>Sunny weather and reservations running ahead of last year suggest heavier patio demand. Add one server from 4–8 PM and increase wing prep before dinner.</blockquote>
+            <div class="ai-confidence"><span>Confidence</span><strong>High</strong></div>
+          </article>
+        </div>
+
+        <div class="manager-actions-panel reveal">
+          <div class="manager-actions-heading">
+            <div><small>Manager action list</small><h3>Three priorities before service</h3></div>
+            <strong id="managerActionProgress">0 of 3 complete</strong>
+          </div>
+          <div class="manager-action-list">
+            <label><input type="checkbox" data-manager-action><span>Confirm supplemental wing order</span><small>Inventory · High priority</small></label>
+            <label><input type="checkbox" data-manager-action><span>Inspect ice machine before lunch</span><small>Equipment · Due 10:30 AM</small></label>
+            <label><input type="checkbox" data-manager-action><span>Review Sarah’s pending PTO request</span><small>Workforce · Due today</small></label>
+          </div>
+        </div>
+      </div>
+    </section>
     <section class="hero container">
       <div class="hero-copy reveal">
         <p class="eyebrow"><span></span> Built for modern hospitality groups</p>
@@ -2146,6 +2241,7 @@
   </div>
 </div>
 
+  <script src="js/modules/commandCenter.js?v=34.0.0cc1"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

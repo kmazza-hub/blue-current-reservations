@@ -1,26 +1,23 @@
-Blue Current v33.0.4b — Story 2: Manager PTO Approval
+BLUE CURRENT V34.0.0 — COMMAND CENTER CC-001
 
-IMPORTANT
-This is a changed-files update, not a complete standalone program.
-Copy every item in this package into the root of your master Blue Current project.
-Choose "Replace the files in the destination" when Windows asks.
+COPY THESE FILES INTO YOUR MASTER PROJECT:
 
-FILES MODIFIED
-- client/index.html
-- client/styles.css
-- client/js/cloud/cloudApi.js
-- client/js/employeePortal.js
-- client/js/modules/workforceFoundation.js
-- server/api/router.js
-- server/services/workforceFoundationService.js
-- package.json
+1. client/index.html
+2. client/styles.css
+3. client/js/modules/commandCenter.js   (NEW FILE)
+4. package.json
 
-FILES ADDED
-- V33.0.4b-STORY-2-MANAGER-PTO-APPROVAL.md
-- README-FIRST.txt
+IMPORTANT:
+- Keep the same folders shown above.
+- This update uses pilot/demo data intentionally. Live weather and historical POS integrations are separate stories.
+- Restart the Node server after replacing the files.
+- Hard refresh the browser with Ctrl+F5.
 
-TEST
-Follow the seven-step checklist in V33.0.4b-STORY-2-MANAGER-PTO-APPROVAL.md.
-
-ROLLBACK
-Restore these modified files from the backup you made immediately before applying this update.
+TEST CHECKLIST:
+1. Sign in normally.
+2. Click Command Center in the navigation.
+3. Confirm the date and Marina Grille label appear.
+4. Click Refresh brief and confirm readiness animates back to 92%.
+5. Click Acknowledge handoff.
+6. Check all three manager actions and confirm progress reaches 3 of 3.
+7. Resize the browser and confirm cards stack cleanly on mobile.
