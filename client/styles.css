@@ -3631,3 +3631,94 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     justify-content:flex-start;
   }
 }
+
+
+/* V34.0.5e — CC-006d Manual Manager Actions */
+.manager-action-toolbar-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:12px;
+}
+.manager-action-add-button{
+  padding:8px 13px;
+  color:#082632;
+  border:0;
+  border-radius:999px;
+  background:#d8ae62;
+  font-weight:800;
+  white-space:nowrap;
+}
+.manager-action-composer{
+  margin:0 0 16px;
+  padding:16px;
+  border:1px solid rgba(216,174,98,.24);
+  border-radius:16px;
+  background:rgba(216,174,98,.07);
+}
+.manager-action-composer label{
+  display:block;
+  color:rgba(255,255,255,.7);
+  font-size:.72rem;
+  font-weight:700;
+}
+.manager-action-composer input,
+.manager-action-composer select{
+  width:100%;
+  min-height:42px;
+  margin-top:7px;
+  padding:9px 11px;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:10px;
+  background:#0b303c;
+  outline:none;
+}
+.manager-action-composer input:focus,
+.manager-action-composer select:focus{
+  border-color:#d8ae62;
+  box-shadow:0 0 0 3px rgba(216,174,98,.12);
+}
+.manager-action-composer-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1.2fr;
+  gap:10px;
+  margin-top:12px;
+}
+.manager-action-composer-actions{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  margin-top:14px;
+}
+.manager-action-composer-actions span{
+  margin-right:auto;
+  color:#f7e6c6;
+  font-size:.72rem;
+}
+.manager-action-composer-actions button{
+  padding:9px 13px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  color:#eef6f3;
+  background:rgba(255,255,255,.05);
+  font-weight:700;
+}
+.manager-action-composer-actions button[type="submit"]{
+  color:#082632;
+  border-color:#d8ae62;
+  background:#d8ae62;
+}
+@media(max-width:760px){
+  .manager-action-toolbar-actions{
+    width:100%;
+    justify-content:space-between;
+  }
+  .manager-action-composer-grid{
+    grid-template-columns:1fr;
+  }
+  .manager-action-composer-actions{
+    flex-wrap:wrap;
+  }
+}

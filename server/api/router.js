@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.0.4",
+        version: "34.0.5e",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -119,6 +119,37 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
       const limit = Number(url.searchParams.get("limit") || 40);
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       return sendJson(response, 200, await operationsFeedService.list(organizationId, locationId, category, limit));
+    }
+
+    if (url.pathname === "/api/manager-actions" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await actionListService.list(organizationId, locationId));
+    }
+
+    if (url.pathname === "/api/manager-actions" && request.method === "POST") {
+      const body = await readJson(request);
+      const locationId = body.locationId || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      const created = await actionListService.create(organizationId, locationId, body, auth.user);
+      return sendJson(response, 201, created);
+    }
+
+    const managerActionMatch = url.pathname.match(/^\/api\/manager-actions\/([^/]+)$/);
+    if (managerActionMatch && request.method === "PATCH") {
+      const body = await readJson(request);
+      const locationId = body.locationId || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      const updated = await actionListService.update(
+        organizationId,
+        locationId,
+        decodeURIComponent(managerActionMatch[1]),
+        body,
+        auth.user
+      );
+      return updated
+        ? sendJson(response, 200, updated)
+        : sendJson(response, 404, { error: "Manager action not found." });
     }
 
     if (url.pathname === "/api/command-center" && request.method === "GET") {

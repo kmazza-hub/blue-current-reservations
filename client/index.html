@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.5c">
+  <meta name="blue-current-build" content="34.0.5e">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.5c">
+  <meta name="blue-current-build" content="34.0.5e">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.5c">
+  <link rel="stylesheet" href="styles.css?v=34.0.5e">
 </head>
 <body>
 
@@ -346,17 +346,80 @@
           <button class="operations-feed-more" id="operationsFeedMore" type="button" hidden>View more activity</button>
         </section>
 
-        <div class="manager-actions-panel reveal">
+        <section class="manager-actions-panel reveal" id="managerActionList" aria-labelledby="managerActionListTitle">
           <div class="manager-actions-heading">
-            <div><small>Manager action list</small><h3>Three priorities before service</h3></div>
-            <strong id="managerActionProgress">0 of 3 complete</strong>
+            <div>
+              <small>What should I do next?</small>
+              <h3 id="managerActionListTitle">Today’s Action List</h3>
+            </div>
+            <strong id="managerActionProgress">0 of 0 complete</strong>
           </div>
-          <div class="manager-action-list">
-            <label><input type="checkbox" data-manager-action><span>Confirm supplemental wing order</span><small>Inventory · High priority</small></label>
-            <label><input type="checkbox" data-manager-action><span>Inspect ice machine before lunch</span><small>Equipment · Due 10:30 AM</small></label>
-            <label><input type="checkbox" data-manager-action><span>Review Sarah’s pending PTO request</span><small>Workforce · Due today</small></label>
+
+          <div class="manager-action-progress" aria-label="Manager action completion progress">
+            <span><i id="managerActionProgressFill"></i></span>
+            <b id="managerActionProgressPercent">0%</b>
           </div>
-        </div>
+
+          <div class="manager-action-toolbar">
+            <div class="manager-action-filters" id="managerActionFilters" aria-label="Filter manager actions">
+              <button class="is-active" type="button" data-action-filter="open">Open</button>
+              <button type="button" data-action-filter="all">All</button>
+              <button type="button" data-action-filter="high">High priority</button>
+              <button type="button" data-action-filter="completed">Completed</button>
+            </div>
+            <div class="manager-action-toolbar-actions">
+              <span id="managerActionStatus" role="status">Preparing today’s priorities…</span>
+              <button class="manager-action-add-button" id="managerActionAddToggle" type="button" aria-expanded="false" aria-controls="managerActionComposer">Add action</button>
+            </div>
+          </div>
+
+          <form class="manager-action-composer" id="managerActionComposer" hidden>
+            <label>
+              Action
+              <input id="managerActionTitleInput" maxlength="140" required placeholder="What needs to be done?">
+            </label>
+            <div class="manager-action-composer-grid">
+              <label>
+                Source
+                <select id="managerActionSourceInput">
+                  <option>Operations</option>
+                  <option>Workforce</option>
+                  <option>Inventory</option>
+                  <option>Maintenance</option>
+                  <option>Guests</option>
+                  <option>Handoffs</option>
+                </select>
+              </label>
+              <label>
+                Priority
+                <select id="managerActionPriorityInput">
+                  <option value="high">High</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </label>
+              <label>
+                Due
+                <input id="managerActionDueInput" maxlength="80" placeholder="Due today">
+              </label>
+            </div>
+            <div class="manager-action-composer-actions">
+              <span id="managerActionComposerStatus" role="status"></span>
+              <button type="button" id="managerActionCancel">Cancel</button>
+              <button type="submit">Add to list</button>
+            </div>
+          </form>
+
+          <div class="manager-action-list" id="managerActionItems" aria-live="polite"></div>
+
+          <div class="manager-action-completed" id="managerActionCompleted" hidden>
+            <button type="button" id="managerActionCompletedToggle" aria-expanded="false">
+              <span>Completed today</span>
+              <strong id="managerActionCompletedCount">0</strong>
+            </button>
+            <div id="managerActionCompletedItems" hidden></div>
+          </div>
+        </section>
       </div>
     </section>
     <section class="hero container">
@@ -2300,6 +2363,7 @@
 </div>
 
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
+  <script src="js/modules/actionList.js?v=34.0.5e"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

@@ -204,6 +204,52 @@ class ActionListService {
     };
   }
 
+  async create(organizationId, locationId, input, actor) {
+    const title = String(input.title || "").trim();
+    if (!title) {
+      const error = new Error("Action title is required.");
+      error.statusCode = 400;
+      throw error;
+    }
+
+    const allowedPriorities = new Set(["high", "medium", "low"]);
+    const priority = allowedPriorities.has(String(input.priority || "").toLowerCase())
+      ? String(input.priority).toLowerCase()
+      : "medium";
+
+    const now = new Date().toISOString();
+    const action = {
+      id: `action_${locationId}_manual_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      organizationId,
+      locationId,
+      title: title.slice(0, 140),
+      source: String(input.source || "Operations").trim().slice(0, 40) || "Operations",
+      priority,
+      due: String(input.due || "Due today").trim().slice(0, 80) || "Due today",
+      completed: false,
+      automatic: false,
+      createdBy: actor?.name || actor?.email || "Manager",
+      createdAt: now,
+      updatedAt: now
+    };
+
+    await this.database.create("managerActions", action);
+
+    if (this.operationsFeedService) {
+      await this.operationsFeedService.record({
+        organizationId,
+        locationId,
+        category: String(action.source || "operations").toLowerCase(),
+        type: "action_created",
+        title: `Manager action added: ${action.title}`,
+        detail: `${action.source} · ${action.due}`,
+        actor: action.createdBy
+      });
+    }
+
+    return action;
+  }
+
   async update(organizationId, locationId, actionId, patch, actor) {
     const current = await this.database.get("managerActions", actionId);
     if (!current || current.organizationId !== organizationId || current.locationId !== locationId) {
