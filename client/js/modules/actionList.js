@@ -93,6 +93,61 @@
     return created;
   }
 
+  async function editAction(action) {
+    if (action.automatic) return;
+
+    const title = window.prompt("Action title", action.title);
+    if (title === null) return;
+
+    const due = window.prompt("Due or timing", action.due || "Due today");
+    if (due === null) return;
+
+    const priorityInput = window.prompt("Priority: high, medium, or low", action.priority || "medium");
+    if (priorityInput === null) return;
+
+    const priority = String(priorityInput).trim().toLowerCase();
+    if (!["high", "medium", "low"].includes(priority)) {
+      setStatus("Priority must be high, medium, or low.");
+      return;
+    }
+
+    const source = window.prompt("Source", action.source || "Operations");
+    if (source === null) return;
+
+    const previous = { ...action };
+    Object.assign(action, {
+      title: title.trim(),
+      due: due.trim() || "Due today",
+      priority,
+      source: source.trim() || "Operations",
+      isSaving: true
+    });
+    render();
+
+    if (state.source === "server") {
+      const api = apiClient();
+      try {
+        const updated = await api.updateManagerAction(action.id, {
+          locationId: LOCATION_ID,
+          edit: true,
+          title: action.title,
+          due: action.due,
+          priority: action.priority,
+          source: action.source
+        });
+        Object.assign(action, updated, { isSaving: false });
+      } catch (error) {
+        Object.assign(action, previous, { isSaving: false });
+        setStatus(error.message || "Could not update action.");
+      }
+    } else {
+      action.isSaving = false;
+      saveLocal();
+    }
+
+    render();
+  }
+
   async function deleteAction(action) {
     if (action.automatic) return;
 
@@ -188,6 +243,14 @@
     badges.append(priority, source);
 
     if (!action.automatic) {
+      const edit = document.createElement("button");
+      edit.className = "manager-action-edit";
+      edit.type = "button";
+      edit.textContent = "Edit";
+      edit.disabled = Boolean(action.isSaving);
+      edit.setAttribute("aria-label", `Edit ${action.title}`);
+      edit.addEventListener("click", () => editAction(action));
+
       const remove = document.createElement("button");
       remove.className = "manager-action-remove";
       remove.type = "button";
@@ -195,7 +258,8 @@
       remove.disabled = Boolean(action.isSaving);
       remove.setAttribute("aria-label", `Remove ${action.title}`);
       remove.addEventListener("click", () => deleteAction(action));
-      badges.append(remove);
+
+      badges.append(edit, remove);
     }
 
     article.append(checkbox, copy, badges);
@@ -341,16 +405,26 @@
     const style = document.createElement("style");
     style.id = "managerActionRemoveStyles";
     style.textContent = `
+      .manager-action-edit,
       .manager-action-remove{
         padding:6px 8px;
-        color:#ffd7cf;
-        border:1px solid rgba(223,128,108,.28);
         border-radius:999px;
-        background:rgba(223,128,108,.1);
         font-size:.62rem;
         font-weight:700;
       }
+      .manager-action-edit{
+        color:#d9eee8;
+        border:1px solid rgba(103,196,154,.28);
+        background:rgba(103,196,154,.1);
+      }
+      .manager-action-edit:hover{background:rgba(103,196,154,.18)}
+      .manager-action-remove{
+        color:#ffd7cf;
+        border:1px solid rgba(223,128,108,.28);
+        background:rgba(223,128,108,.1);
+      }
       .manager-action-remove:hover{background:rgba(223,128,108,.18)}
+      .manager-action-edit:disabled,
       .manager-action-remove:disabled{opacity:.45;cursor:wait}
     `;
     document.head.append(style);

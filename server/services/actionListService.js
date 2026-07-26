@@ -285,22 +285,59 @@ class ActionListService {
       return null;
     }
 
-    const completed = Boolean(patch.completed);
-    const updated = await this.database.update("managerActions", actionId, {
-      completed,
-      completedAt: completed ? new Date().toISOString() : null,
-      completedBy: completed ? (actor?.name || actor?.email || "Manager") : null,
-      autoResolved: false,
+    const changes = {
       updatedAt: new Date().toISOString()
-    });
+    };
 
-    if (updated && this.operationsFeedService) {
+    let eventType = null;
+    let eventTitle = null;
+
+    if (Object.prototype.hasOwnProperty.call(patch, "completed")) {
+      const completed = Boolean(patch.completed);
+      changes.completed = completed;
+      changes.completedAt = completed ? new Date().toISOString() : null;
+      changes.completedBy = completed ? (actor?.name || actor?.email || "Manager") : null;
+      changes.autoResolved = false;
+      eventType = completed ? "action_completed" : "action_reopened";
+      eventTitle = completed ? `Action completed: ${current.title}` : `Action reopened: ${current.title}`;
+    }
+
+    if (patch.edit) {
+      if (current.automatic) {
+        const error = new Error("Automatic actions cannot be edited. Resolve the underlying condition instead.");
+        error.statusCode = 409;
+        throw error;
+      }
+
+      const title = String(patch.title || "").trim();
+      if (!title) {
+        const error = new Error("Action title is required.");
+        error.statusCode = 400;
+        throw error;
+      }
+
+      const allowedPriorities = new Set(["high", "medium", "low"]);
+      const priority = allowedPriorities.has(String(patch.priority || "").toLowerCase())
+        ? String(patch.priority).toLowerCase()
+        : current.priority;
+
+      changes.title = title.slice(0, 140);
+      changes.source = String(patch.source || current.source || "Operations").trim().slice(0, 40) || "Operations";
+      changes.priority = priority;
+      changes.due = String(patch.due || current.due || "Due today").trim().slice(0, 80) || "Due today";
+      eventType = "action_edited";
+      eventTitle = `Manager action updated: ${changes.title}`;
+    }
+
+    const updated = await this.database.update("managerActions", actionId, changes);
+
+    if (updated && this.operationsFeedService && eventType) {
       await this.operationsFeedService.record({
         organizationId,
         locationId,
         category: String(updated.source || "operations").toLowerCase(),
-        type: completed ? "action_completed" : "action_reopened",
-        title: completed ? `Action completed: ${updated.title}` : `Action reopened: ${updated.title}`,
+        type: eventType,
+        title: eventTitle,
         detail: `${updated.source} · ${updated.due}`,
         actor: actor?.name || actor?.email || "Manager"
       });
