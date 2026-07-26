@@ -265,6 +265,77 @@
     button.addEventListener("click", addRecommendationToActionList);
   }
 
+  function buildRecommendationSignals() {
+    const labor = numericValue("operationLabor", 0);
+    const reservations = numericValue("operationReservations", 0);
+    const scheduled = numericValue("operationScheduled", 0);
+    const pendingPto = numericValue("operationPto", 0);
+    const forecastChange = numericValue("forecastChange", 0);
+    const weather = text("weatherCondition", "Unknown");
+    const rain = numericValue("weatherRain", 0);
+    const openActions = openManagerActions().length;
+    const attention = document.querySelectorAll("#attentionList li").length;
+
+    return [
+      {
+        label: `Labor ${labor ? `${labor.toFixed(1)}%` : "—"}`,
+        tone: labor >= 30 ? "risk" : labor >= 28 ? "watch" : "normal"
+      },
+      {
+        label: `${Math.round(reservations)} reservations`,
+        tone: reservations >= 80 ? "watch" : "normal"
+      },
+      {
+        label: `${Math.round(scheduled)} scheduled`,
+        tone: "normal"
+      },
+      {
+        label: `${forecastChange >= 0 ? "+" : ""}${forecastChange.toFixed(1)}% vs. last year`,
+        tone: forecastChange <= -5 ? "risk" : forecastChange >= 8 ? "watch" : "normal"
+      },
+      {
+        label: `${weather}${rain ? ` · ${Math.round(rain)}% rain` : ""}`,
+        tone: /rain|storm/i.test(weather) || rain >= 50 ? "risk" : "normal"
+      },
+      {
+        label: `${Math.round(pendingPto)} PTO pending`,
+        tone: pendingPto > 0 ? "watch" : "normal"
+      },
+      {
+        label: `${Math.max(openActions, attention)} open priorities`,
+        tone: Math.max(openActions, attention) >= 4 ? "risk" : Math.max(openActions, attention) > 0 ? "watch" : "normal"
+      }
+    ];
+  }
+
+  function syncRecommendationSignals() {
+    const container = byId("aiRecommendationSignals");
+    if (!container) return;
+
+    container.replaceChildren();
+    buildRecommendationSignals().forEach(signal => {
+      const chip = document.createElement("span");
+      chip.textContent = signal.label;
+      if (signal.tone === "watch") chip.classList.add("signal-watch");
+      if (signal.tone === "risk") chip.classList.add("signal-risk");
+      container.append(chip);
+    });
+  }
+
+  function bindRecommendationWhy() {
+    const toggle = byId("aiRecommendationWhyToggle");
+    const panel = byId("aiRecommendationWhy");
+    if (!toggle || !panel) return;
+
+    toggle.addEventListener("click", () => {
+      const willOpen = panel.hidden;
+      panel.hidden = !willOpen;
+      toggle.setAttribute("aria-expanded", String(willOpen));
+      toggle.textContent = willOpen ? "Hide why" : "Why?";
+      if (willOpen) syncRecommendationSignals();
+    });
+  }
+
   function syncManagerRecommendation() {
     const recommendation = byId("aiRecommendation");
     const confidence = byId("aiConfidence");
@@ -273,6 +344,7 @@
     const result = buildManagerRecommendation();
     recommendation.textContent = result.message;
     confidence.textContent = result.confidence;
+    syncRecommendationSignals();
   }
 
   function syncFromCommandCenter() {
@@ -347,6 +419,7 @@
 
     applyStartedState(localStorage.getItem(STORAGE_KEY) === "true");
     bindRecommendationAction();
+    bindRecommendationWhy();
     syncFromCommandCenter();
     observeLiveData();
 
