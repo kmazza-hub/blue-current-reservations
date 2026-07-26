@@ -1,25 +1,30 @@
-BLUE CURRENT V34.0.4 — CC-005 OPERATIONS FEED
+BLUE CURRENT V34.0.5a — CC-006a MANAGER ACTION LIST
 
-Replace the matching files in your current master project and add the two new files.
+COPY THESE FILES INTO YOUR MASTER PROJECT:
 
-CHANGED
-- client/index.html
-- client/styles.css
-- client/js/cloud/cloudApi.js
-- client/js/modules/commandCenter.js
-- server/api/router.js
-- server/server.js
-- server/services/commandCenterService.js
-- package.json
+1. client/index.html
+2. client/styles.css
+3. client/js/modules/actionList.js  <-- NEW FILE
 
-NEW
-- server/services/operationsFeedService.js
-- V34.0.4-CC005-RELEASE-NOTES.md
+The actionList.js file does not already exist. Create it at:
+client/js/modules/actionList.js
+
+WHAT THIS MICRO-UPDATE ADDS
+- New Manager Action List card
+- High, medium, and low priority badges
+- Open, all, high-priority, and completed filters
+- Completion progress bar
+- Completed Today section
+- Local sample task data
+- Browser-local persistence through localStorage
+- Responsive mobile layout
+
+NO SERVER OR API FILES ARE CHANGED.
 
 TEST
-1. Run: npm run check
-2. Run: npm start
-3. Sign in and open Command Center.
-4. Confirm Operations Feed loads newest activity first.
-5. Test every category filter.
-6. Post and acknowledge a shift handoff; confirm both appear in the feed after refresh.
+1. Run npm run check
+2. Run npm start
+3. Hard-refresh with Ctrl + F5
+4. Open Command Center
+5. Complete and reopen actions
+6. Refresh the browser and confirm local state remains
