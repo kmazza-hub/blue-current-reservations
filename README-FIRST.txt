@@ -1,4 +1,4 @@
-BLUE CURRENT V34.0.8d — CC-009d APPLY SCENARIO
+BLUE CURRENT V34.0.8e — CC-009e ACTIVE DECISION TRACKER
 
 REPLACE:
 - client/index.html
@@ -6,19 +6,22 @@ REPLACE:
 - client/js/modules/managerShiftBrief.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Action button on each operating scenario
-- Protect service, Balanced move, and Aggressive savings can each become a manager action
-- Selected scenario persists through the existing Action List API
-- Scenario rationale is attached as a manager note
-- Action List refreshes immediately
-- Clear sign-in, saving, success, and error messaging
+- Active Decision card after a scenario is applied
+- Tracks:
+  - Selected scenario
+  - Expected savings
+  - Expected guest wait impact
+  - Review point
+  - Time since the decision was started
+- Local persistence after browser refresh
+- Review Now shortcut to the shift-close timeline checkpoint
+- Clear Decision control
 
 TEST
 1. npm run check
 2. npm start
-3. Sign in and open Command Center
-4. Choose one of the three operating scenarios
-5. Confirm the status message appears
-6. Confirm a new AI Scenario action appears in Today’s Action List
-7. Open its note and confirm the scenario rationale was saved
-8. Refresh and verify the action remains
+3. Sign in and choose a scenario
+4. Confirm the Active Decision card appears
+5. Refresh and verify it remains
+6. Click Review now
+7. Click Clear decision and confirm the card disappears

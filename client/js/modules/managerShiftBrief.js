@@ -259,6 +259,105 @@
     }
   }
 
+  const ACTIVE_DECISION_KEY = "blueCurrent.activeDecision.v34.0.8e";
+
+  function scenarioLabel(type) {
+    if (type === "protect") return "Protect service";
+    if (type === "aggressive") return "Aggressive savings";
+    return "Balanced move";
+  }
+
+  function decisionFromScenario(type) {
+    const scenarios = calculateScenarioComparison();
+    const impact = calculateRecommendationImpact();
+    const selected = type === "protect"
+      ? scenarios.protect
+      : type === "aggressive"
+        ? scenarios.aggressive
+        : scenarios.balanced;
+
+    return {
+      type,
+      label: scenarioLabel(type),
+      savings: selected.savings,
+      waitImpact: type === "protect" ? 0 : type === "aggressive" ? Math.max(1.2, impact.waitImpact * 2.6) : impact.waitImpact,
+      risk: selected.risk,
+      startedAt: new Date().toISOString(),
+      reviewPoint: "Shift close"
+    };
+  }
+
+  function saveActiveDecision(decision) {
+    try {
+      localStorage.setItem(ACTIVE_DECISION_KEY, JSON.stringify(decision));
+    } catch (error) {
+      console.warn("[ManagerShiftBrief] Active decision could not be saved.", error);
+    }
+  }
+
+  function loadActiveDecision() {
+    try {
+      const value = JSON.parse(localStorage.getItem(ACTIVE_DECISION_KEY));
+      return value && value.type ? value : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function formatDecisionAge(startedAt) {
+    const minutes = Math.max(0, Math.floor((Date.now() - new Date(startedAt).getTime()) / 60000));
+    if (minutes < 1) return "Started just now";
+    if (minutes < 60) return `Started ${minutes} min ago`;
+    const hours = Math.floor(minutes / 60);
+    return `Started ${hours}h ago`;
+  }
+
+  function renderActiveDecision(decision = loadActiveDecision()) {
+    const panel = byId("aiActiveDecision");
+    if (!panel) return;
+
+    panel.hidden = !decision;
+    if (!decision) return;
+
+    const scenario = byId("aiActiveDecisionScenario");
+    const savings = byId("aiActiveDecisionSavings");
+    const wait = byId("aiActiveDecisionWait");
+    const review = byId("aiActiveDecisionReview");
+    const time = byId("aiActiveDecisionTime");
+    const note = byId("aiActiveDecisionNote");
+
+    if (scenario) scenario.textContent = decision.label;
+    if (savings) savings.textContent = formatMoney(decision.savings || 0);
+    if (wait) wait.textContent = `${decision.waitImpact >= 0 ? "+" : ""}${Number(decision.waitImpact || 0).toFixed(1)} min`;
+    if (review) review.textContent = decision.reviewPoint || "Shift close";
+    if (time) time.textContent = formatDecisionAge(decision.startedAt);
+    if (note) note.textContent = `${decision.risk}. Track the result through service and compare predicted versus actual outcome at ${decision.reviewPoint || "shift close"}.`;
+  }
+
+  function bindActiveDecision() {
+    const clear = byId("aiActiveDecisionClear");
+    const review = byId("aiActiveDecisionReviewNow");
+
+    if (clear) {
+      clear.addEventListener("click", () => {
+        localStorage.removeItem(ACTIVE_DECISION_KEY);
+        renderActiveDecision(null);
+      });
+    }
+
+    if (review) {
+      review.addEventListener("click", () => {
+        const timeline = byId("aiTimelineCloseTitle");
+        timeline?.scrollIntoView({ behavior: "smooth", block: "center" });
+        const status = byId("aiScenarioActionStatus");
+        if (status) status.textContent = "Review the predicted outcome against actual shift results.";
+      });
+    }
+
+    renderActiveDecision();
+    window.setInterval(() => renderActiveDecision(), 60000);
+  }
+
   function scenarioActionPayload(type) {
     const scenarios = calculateScenarioComparison();
     const recommendation = text("aiRecommendation", "Review the current operating recommendation.");
@@ -330,7 +429,11 @@
         }
       }
 
-      status.textContent = `${type === "balanced" ? "Recommended" : "Selected"} scenario added to the action list.`;
+      const decision = decisionFromScenario(type);
+      saveActiveDecision(decision);
+      renderActiveDecision(decision);
+
+      status.textContent = `${type === "balanced" ? "Recommended" : "Selected"} scenario added to the action list and decision tracker.`;
       window.dispatchEvent(new CustomEvent("bluecurrent:manager-action-created", {
         detail: { action }
       }));
@@ -739,6 +842,7 @@
     bindRecommendationAction();
     bindRecommendationWhy();
     bindScenarioActions();
+    bindActiveDecision();
     syncFromCommandCenter();
     observeLiveData();
 

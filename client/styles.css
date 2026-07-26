@@ -4393,3 +4393,107 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
   color:#9fcac0;
   font-size:.69rem;
 }
+
+
+/* V34.0.8e — CC-009e Active Decision Tracker */
+.ai-active-decision{
+  margin-top:14px;
+  padding:15px;
+  border:1px solid rgba(216,174,98,.28);
+  border-radius:16px;
+  background:
+    linear-gradient(145deg,rgba(216,174,98,.11),rgba(255,255,255,.025));
+}
+.ai-active-decision-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+.ai-active-decision-heading small,
+.ai-active-decision-heading strong{
+  display:block;
+}
+.ai-active-decision-heading small{
+  color:#f0d39a;
+  font-size:.65rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.ai-active-decision-heading strong{
+  margin-top:4px;
+  color:#fff;
+  font-size:.9rem;
+}
+#aiActiveDecisionTime{
+  color:rgba(255,255,255,.5);
+  font-size:.66rem;
+}
+.ai-active-decision-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:13px;
+}
+.ai-active-decision-grid>div{
+  padding:11px;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  background:rgba(255,255,255,.035);
+}
+.ai-active-decision-grid small,
+.ai-active-decision-grid strong{
+  display:block;
+}
+.ai-active-decision-grid small{
+  color:rgba(255,255,255,.48);
+  font-size:.61rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.ai-active-decision-grid strong{
+  margin-top:6px;
+  color:#f7e6c6;
+  font-size:.82rem;
+}
+#aiActiveDecisionNote{
+  margin:12px 0 0;
+  color:#cbdad6;
+  font-size:.72rem;
+  line-height:1.5;
+}
+.ai-active-decision-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:12px;
+}
+.ai-active-decision-actions button{
+  min-height:36px;
+  padding:0 12px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  color:#d7e7e3;
+  background:rgba(255,255,255,.045);
+  font-size:.67rem;
+  font-weight:800;
+}
+.ai-active-decision-actions button:last-child{
+  color:#082632;
+  border-color:#d8ae62;
+  background:#d8ae62;
+}
+@media(max-width:820px){
+  .ai-active-decision-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:520px){
+  .ai-active-decision-heading{
+    flex-direction:column;
+  }
+  .ai-active-decision-grid{grid-template-columns:1fr}
+  .ai-active-decision-actions{
+    justify-content:stretch;
+    flex-direction:column;
+  }
+}
