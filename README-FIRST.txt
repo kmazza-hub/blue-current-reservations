@@ -1,40 +1,32 @@
-BLUE CURRENT V34.0.1 — CC-002 LIVE MANAGER BRIEF
+BLUE CURRENT V34.0.2 — CC-003 SHIFT HANDOFF
 
-Replace the matching files in your master project with every file in this package.
-The server/services/commandCenterService.js file is NEW.
+INSTALL
+1. Back up your current Blue Current project.
+2. Copy every file in this package into the matching path in your master project.
+3. Replace existing files when Windows asks.
+4. Run: npm run check
+5. Run: npm start
+6. Hard refresh the browser with Ctrl + F5.
 
-FILES
+CHANGED FILES
 - client/index.html
 - client/styles.css
-- client/js/modules/commandCenter.js
 - client/js/cloud/cloudApi.js
-- server/services/commandCenterService.js (new)
+- client/js/modules/commandCenter.js
 - server/api/router.js
 - server/server.js
+- server/services/commandCenterService.js
 - package.json
 
-INSTALL / TEST
-1. Stop the Blue Current server.
-2. Copy these files into the matching folders.
-3. Run: npm run check
-4. Run: npm start
-5. Open http://localhost:8787 and hard-refresh with Ctrl+F5.
-6. Sign in, then press Refresh brief.
+TEST CHECKLIST
+- Sign in with a manager account.
+- Open Command Center.
+- Click Leave shift note.
+- Select a shift and enter a summary of at least 10 characters.
+- Add comma-separated highlights and needs-attention items.
+- Post the handoff and confirm it appears immediately.
+- Click Acknowledge handoff and confirm the acknowledgement is saved after refresh.
+- Confirm an empty database shows a safe “No handoff posted yet” state.
 
-WHAT IS LIVE
-- Local weather from Open-Meteo (no API key required)
-- Active team count
-- Pending PTO count
-- Today's reservation and cover count
-- Low-inventory alerts
-- Open maintenance alerts when present
-- Readiness score calculated from current operating signals
-- AI-style recommendation assembled from current operating data
-
-WHAT REMAINS A PILOT BASELINE
-- Same-day-last-year sales
-- Last-week sales
-- Revenue forecast
-- Historical guest/labor/average-check figures
-
-The screen labels the combined data mode accurately. Historical financial figures will become fully live after POS/import integration.
+NOTES
+Shift handoffs are now saved in database/data/blue-current.json under shiftHandoffs. No migration is required; the collection is created automatically on first use.

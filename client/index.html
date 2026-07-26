@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.1">
+  <meta name="blue-current-build" content="34.0.2">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.1">
+  <meta name="blue-current-build" content="34.0.2">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -273,12 +273,40 @@
           </article>
 
           <article class="brief-card brief-handoff">
-            <div class="brief-card-head"><span>Previous shift handoff</span><small>Closing · 11:15 PM</small></div>
-            <p class="handoff-summary">Sales finished 6% above forecast. Patio traffic stayed strong through close. Wings are running low, and the ice machine should be checked before lunch service.</p>
-            <div class="handoff-highlights">
-              <span>2 guest compliments</span><span>1 overtime exception</span><span>No incidents</span>
+            <div class="brief-card-head"><span>Previous shift handoff</span><small id="handoffMeta">Loading latest handoff…</small></div>
+            <p class="handoff-summary" id="handoffSummary">Preparing the previous shift summary…</p>
+            <div class="handoff-highlights" id="handoffHighlights"></div>
+            <div class="handoff-attention" id="handoffAttention" hidden></div>
+            <div class="handoff-actions">
+              <button class="brief-action" id="acknowledgeHandoff" type="button" disabled>Acknowledge handoff</button>
+              <button class="brief-action brief-action-secondary" id="openHandoffComposer" type="button">Leave shift note</button>
             </div>
-            <button class="brief-action" id="acknowledgeHandoff" type="button">Acknowledge handoff</button>
+            <form class="handoff-composer" id="handoffComposer" hidden>
+              <div class="handoff-form-row">
+                <label>Shift
+                  <select id="handoffShift" required>
+                    <option value="opening">Opening</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="closing" selected>Closing</option>
+                  </select>
+                </label>
+                <label>Highlights
+                  <input id="handoffHighlightInput" maxlength="180" placeholder="Guest compliment, sales win, no incidents">
+                </label>
+              </div>
+              <label>Shift summary
+                <textarea id="handoffSummaryInput" maxlength="1200" required placeholder="What happened, what changed, and what should the next manager know?"></textarea>
+              </label>
+              <label>Needs attention
+                <input id="handoffAttentionInput" maxlength="240" placeholder="Equipment, inventory, staffing, or follow-up items">
+              </label>
+              <div class="handoff-composer-actions">
+                <span id="handoffFormStatus" role="status"></span>
+                <button type="button" class="brief-action brief-action-secondary" id="cancelHandoffComposer">Cancel</button>
+                <button type="submit" class="brief-action" id="saveHandoff">Post handoff</button>
+              </div>
+            </form>
           </article>
 
           <article class="brief-card brief-ai">
@@ -2241,7 +2269,7 @@
   </div>
 </div>
 
-  <script src="js/modules/commandCenter.js?v=34.0.1"></script>
+  <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
@@ -2265,7 +2293,7 @@
   <script src="js/modules/productionReadiness.js?v=33.0.3"></script>
   <script src="js/modules/executiveCommandCenter.js?v=33.0.3"></script>
   <script src="js/modules/inventoryIntelligence.js?v=33.0.3"></script>
-  <script src="js/cloud/cloudApi.js?v=34.0.1"></script>
+  <script src="js/cloud/cloudApi.js?v=34.0.2"></script>
   <script src="js/modules/cloudFoundation.js?v=33.0.3"></script>
   <script src="js/modules/startupDiagnostics.js?v=33.0.3"></script>
   <script src="js/modules/authOrganizations.js?v=33.0.3"></script>

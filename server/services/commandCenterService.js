@@ -3,6 +3,43 @@
 class CommandCenterService {
   constructor(database) { this.database = database; }
 
+  normalizeList(value, limit = 6) {
+    const values = Array.isArray(value) ? value : String(value || "").split(",");
+    return values.map(item => String(item || "").trim()).filter(Boolean).slice(0, limit);
+  }
+
+  async createHandoff(organizationId, locationId, user, payload = {}) {
+    const summary = String(payload.summary || "").trim();
+    if (summary.length < 10) throw new Error("Shift summary must contain at least 10 characters.");
+    const allowedShifts = new Set(["opening", "lunch", "dinner", "closing"]);
+    const shift = allowedShifts.has(payload.shift) ? payload.shift : "closing";
+    const now = new Date().toISOString();
+    const handoff = {
+      id: `handoff_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+      organizationId, locationId, shift, summary: summary.slice(0, 1200),
+      highlights: this.normalizeList(payload.highlights),
+      needsAttention: this.normalizeList(payload.needsAttention, 4),
+      authorId: user?.id || null,
+      authorName: user?.name || user?.displayName || user?.email || "Manager",
+      createdAt: now, updatedAt: now, acknowledgements: []
+    };
+    return this.database.create("shiftHandoffs", handoff);
+  }
+
+  async acknowledgeHandoff(organizationId, handoffId, user) {
+    return this.database.mutate(database => {
+      database.shiftHandoffs ||= [];
+      const handoff = database.shiftHandoffs.find(item => item.id === handoffId && item.organizationId === organizationId);
+      if (!handoff) return null;
+      handoff.acknowledgements ||= [];
+      const userId = user?.id || user?.email || "manager";
+      const existing = handoff.acknowledgements.find(item => item.userId === userId);
+      if (!existing) handoff.acknowledgements.push({ userId, name: user?.name || user?.displayName || user?.email || "Manager", acknowledgedAt: new Date().toISOString() });
+      handoff.updatedAt = new Date().toISOString();
+      return handoff;
+    });
+  }
+
   async snapshot(organizationId, locationId) {
     const db = await this.database.read();
     const location = (db.locations || []).find(item => item.id === locationId && item.organizationId === organizationId);
@@ -26,6 +63,9 @@ class CommandCenterService {
     const inventory = (db.inventoryItems || []).filter(item => item.locationId === locationId);
     const lowInventory = inventory.filter(item => Number(item.onHand || 0) <= Number(item.par || 0) * 0.6).sort((a,b) => (a.onHand/a.par)-(b.onHand/b.par));
     const openMaintenance = (db.maintenanceTickets || []).filter(item => item.locationId === locationId && !["closed", "completed"].includes(item.status));
+    const latestHandoff = (db.shiftHandoffs || [])
+      .filter(item => item.organizationId === organizationId && item.locationId === locationId)
+      .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0] || null;
 
     const historicalRevenue = Number(location.commandCenterBaseline?.lastYearRevenue || 18432);
     const lastWeekRevenue = Number(location.commandCenterBaseline?.lastWeekRevenue || 17980);
@@ -50,6 +90,12 @@ class CommandCenterService {
         ...openMaintenance.slice(0, 2).map(item => ({ type: "equipment", priority: "high", title: item.title || "Open maintenance item", detail: item.description || item.status })),
         ...(pendingPto ? [{ type: "workforce", priority: "normal", title: `${pendingPto} PTO request${pendingPto === 1 ? "" : "s"} pending`, detail: "Manager decision required" }] : [])
       ].slice(0, 4),
+      handoff: latestHandoff ? {
+        id: latestHandoff.id, shift: latestHandoff.shift, summary: latestHandoff.summary,
+        highlights: latestHandoff.highlights || [], needsAttention: latestHandoff.needsAttention || [],
+        authorName: latestHandoff.authorName || "Manager", createdAt: latestHandoff.createdAt,
+        acknowledgements: latestHandoff.acknowledgements || []
+      } : null,
       recommendation: { text: recommendationParts.join(" "), confidence: lowInventory.length || todaysReservations.length ? "High" : "Medium" },
       generatedAt: now.toISOString(),
       dataMode: "live-operational-with-pilot-financial-baseline"

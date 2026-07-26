@@ -3,10 +3,10 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.0.1";
+    static VERSION = "34.0.2";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
-      "commandCenter", "bootstrap", "reservations", "audit", "invitations", "configuration"
+      "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
     constructor(baseUrl = "") {
@@ -44,6 +44,8 @@
 
     health() { return this.request("/api/health"); }
     commandCenter(locationId = "loc_marina") { return this.request(`/api/command-center?locationId=${encodeURIComponent(locationId)}`); }
+    createShiftHandoff(payload) { return this.request("/api/command-center/handoffs", { method: "POST", body: JSON.stringify(payload) }); }
+    acknowledgeShiftHandoff(id) { return this.request(`/api/command-center/handoffs/${encodeURIComponent(id)}/acknowledge`, { method: "PATCH", body: JSON.stringify({}) }); }
 
     login(payload) { return this.request("/api/auth/login", { method: "POST", body: JSON.stringify(payload) }); }
     logout() { return this.request("/api/auth/logout", { method: "POST" }); }
@@ -229,5 +231,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.0.1";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.0.2";
 })();

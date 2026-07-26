@@ -3367,3 +3367,10 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .demo-data-chip { transition: opacity .2s ease, transform .2s ease; }
 .brief-card.is-loading { opacity: .72; }
 #attentionList li strong, #aiRecommendation { transition: opacity .2s ease; }
+
+
+/* V34.0.2 Command Center — CC-003 Shift Handoff */
+.handoff-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:18px}.handoff-actions .brief-action{margin-top:0}.brief-action-secondary{color:#234951;background:rgba(35,73,81,.09);border:1px solid rgba(35,73,81,.13)}.brief-action-secondary:hover{background:rgba(35,73,81,.15)}
+.handoff-attention{margin-top:14px;padding:11px 12px;border-radius:12px;color:#774839;background:rgba(189,115,92,.11);font-size:9px;line-height:1.5}.handoff-attention strong{display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.08em}.handoff-attention ul{margin:0;padding-left:16px}
+.handoff-composer{margin-top:18px;padding-top:16px;border-top:1px solid rgba(16,43,52,.1)}.handoff-composer[hidden]{display:none}.handoff-composer label{display:block;margin-top:10px;color:#557071;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.handoff-composer input,.handoff-composer select,.handoff-composer textarea{box-sizing:border-box;width:100%;margin-top:6px;padding:10px 11px;border:1px solid rgba(16,43,52,.14);border-radius:10px;color:#102b34;background:#fff;font:inherit;font-size:10px;text-transform:none;letter-spacing:0}.handoff-composer textarea{min-height:92px;resize:vertical;line-height:1.5}.handoff-form-row{display:grid;grid-template-columns:.75fr 1.25fr;gap:10px}.handoff-composer-actions{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;margin-top:12px}.handoff-composer-actions .brief-action{width:auto;margin-top:0;padding-inline:14px}.handoff-composer-actions span{color:#a05f4d;font-size:9px;line-height:1.35}
+@media(max-width:680px){.handoff-actions,.handoff-form-row{grid-template-columns:1fr}.handoff-composer-actions{grid-template-columns:1fr 1fr}.handoff-composer-actions span{grid-column:1/-1}}

@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.0.1",
+        version: "34.0.2",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -118,6 +118,24 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       const snapshot = await commandCenterService.snapshot(organizationId, locationId);
       return snapshot ? sendJson(response, 200, snapshot) : sendJson(response, 404, { error: "Location not found." });
+    }
+
+    if (url.pathname === "/api/command-center/handoffs" && request.method === "POST") {
+      const body = await readJson(request);
+      const locationId = body.locationId || "loc_marina";
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      try {
+        const handoff = await commandCenterService.createHandoff(organizationId, locationId, auth.user, body);
+        return sendJson(response, 201, handoff);
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+
+    const handoffAckMatch = url.pathname.match(/^\/api\/command-center\/handoffs\/([^/]+)\/acknowledge$/);
+    if (handoffAckMatch && request.method === "PATCH") {
+      const handoff = await commandCenterService.acknowledgeHandoff(organizationId, decodeURIComponent(handoffAckMatch[1]), auth.user);
+      return handoff ? sendJson(response, 200, handoff) : sendJson(response, 404, { error: "Shift handoff not found." });
     }
 
     if (url.pathname === "/api/bootstrap" && request.method === "GET") {

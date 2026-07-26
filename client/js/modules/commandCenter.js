@@ -3,8 +3,11 @@
   const byId = id => document.getElementById(id);
   const money = value => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(value || 0));
   const text = (id, value) => { const el = byId(id); if (el && value !== undefined && value !== null) el.textContent = value; };
+  let currentHandoff = null;
+  let activeApi = null;
 
   const weatherCode = code => ({0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Overcast",45:"Foggy",48:"Foggy",51:"Light drizzle",53:"Drizzle",55:"Heavy drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",71:"Light snow",73:"Snow",75:"Heavy snow",80:"Rain showers",81:"Rain showers",82:"Heavy showers",95:"Thunderstorms"}[code] || "Current conditions");
+  const titleCase = value => String(value || "shift").replace(/\b\w/g, letter => letter.toUpperCase());
 
   async function loadWeather(location) {
     const latitude = location?.latitude || 40.1784;
@@ -24,6 +27,40 @@
     if (chip) chip.textContent = "Live operations + weather";
   }
 
+  function renderHandoff(handoff) {
+    currentHandoff = handoff || null;
+    const acknowledge = byId("acknowledgeHandoff");
+    const highlights = byId("handoffHighlights");
+    const attention = byId("handoffAttention");
+    if (!handoff) {
+      text("handoffMeta", "No handoff posted yet");
+      text("handoffSummary", "The latest manager can leave a concise handoff for the next shift.");
+      if (highlights) highlights.innerHTML = '<span>Ready for first note</span>';
+      if (attention) { attention.hidden = true; attention.textContent = ""; }
+      if (acknowledge) { acknowledge.disabled = true; acknowledge.classList.remove("is-complete"); acknowledge.textContent = "Nothing to acknowledge"; }
+      return;
+    }
+    const created = new Date(handoff.createdAt);
+    text("handoffMeta", `${titleCase(handoff.shift)} · ${created.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} · ${handoff.authorName || "Manager"}`);
+    text("handoffSummary", handoff.summary);
+    if (highlights) highlights.innerHTML = (handoff.highlights?.length ? handoff.highlights : ["Shift summary posted"]).map(item => `<span>${escapeHtml(item)}</span>`).join("");
+    if (attention) {
+      const items = handoff.needsAttention || [];
+      attention.hidden = !items.length;
+      attention.innerHTML = items.length ? `<strong>Next shift attention</strong><ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : "";
+    }
+    if (acknowledge) {
+      const acknowledged = (handoff.acknowledgements || []).length > 0;
+      acknowledge.disabled = false;
+      acknowledge.classList.toggle("is-complete", acknowledged);
+      acknowledge.textContent = acknowledged ? `Acknowledged by ${(handoff.acknowledgements || []).length} manager${handoff.acknowledgements.length === 1 ? "" : "s"} ✓` : "Acknowledge handoff";
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value || "").replace(/[&<>'"]/g, character => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[character]));
+  }
+
   function render(snapshot) {
     const b=snapshot.business||{}, o=snapshot.operation||{}, r=snapshot.readiness||{};
     text("commandCenterLocation", snapshot.location?.name || "Marina Grille");
@@ -41,8 +78,9 @@
     text("operationReservations", o.reservations || 0); text("operationScheduled", o.scheduled || 0); text("operationPto", o.pendingPto || 0); text("operationLabor", `${o.projectedLabor || 0}%`);
     const list=byId("attentionList"); if(list){
       const items=snapshot.attention||[];
-      list.innerHTML=items.length?items.map(item=>`<li class="${item.priority==='normal'?'attention-low':''}"><i></i><div><strong>${item.title}</strong><span>${item.detail}</span></div></li>`).join(""):'<li class="attention-low"><i></i><div><strong>No urgent operating alerts</strong><span>Core signals are within range.</span></div></li>';
+      list.innerHTML=items.length?items.map(item=>`<li class="${item.priority==='normal'?'attention-low':''}"><i></i><div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.detail)}</span></div></li>`).join(""):'<li class="attention-low"><i></i><div><strong>No urgent operating alerts</strong><span>Core signals are within range.</span></div></li>';
     }
+    renderHandoff(snapshot.handoff);
     text("aiRecommendation", snapshot.recommendation?.text);
     text("aiConfidence", snapshot.recommendation?.confidence || "Medium");
     text("briefLastUpdated", `Updated ${new Date(snapshot.generatedAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`);
@@ -51,18 +89,50 @@
   async function loadBrief(button) {
     if(button){button.disabled=true;button.textContent="Refreshing…";}
     try {
-      const api = window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null;
-      if (!api?.token) throw new Error("Sign in to load live operating data");
-      const snapshot = await api.commandCenter("loc_marina");
+      activeApi = window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null;
+      if (!activeApi?.token) throw new Error("Sign in to load live operating data");
+      const snapshot = await activeApi.commandCenter("loc_marina");
       render(snapshot);
       await loadWeather(snapshot.location).catch(()=>text("weatherImpact","Live weather could not be reached; operating data is current."));
       if(button) button.textContent="Brief updated ✓";
     } catch(error) {
       const chip=byId("commandCenterDataChip"); if(chip) chip.textContent="Pilot view · sign in for live data";
+      renderHandoff(null);
       if(button) button.textContent="Sign in for live brief";
     } finally {
       if(button){button.disabled=false;setTimeout(()=>button.textContent="Refresh brief",1800);}
     }
+  }
+
+  function setComposer(open) {
+    const composer = byId("handoffComposer");
+    if (composer) composer.hidden = !open;
+    const opener = byId("openHandoffComposer");
+    if (opener) opener.hidden = open;
+    if (open) byId("handoffSummaryInput")?.focus();
+  }
+
+  async function saveHandoff(event) {
+    event.preventDefault();
+    const status = byId("handoffFormStatus"), button = byId("saveHandoff");
+    const summary = byId("handoffSummaryInput")?.value.trim();
+    if (!summary || summary.length < 10) { if(status) status.textContent="Add a little more detail before posting."; return; }
+    if (!activeApi?.token) { if(status) status.textContent="Sign in before posting a handoff."; return; }
+    button.disabled = true; button.textContent = "Posting…"; if(status) status.textContent="";
+    try {
+      await activeApi.createShiftHandoff({ locationId:"loc_marina", shift:byId("handoffShift")?.value, summary, highlights:byId("handoffHighlightInput")?.value, needsAttention:byId("handoffAttentionInput")?.value });
+      event.target.reset(); byId("handoffShift").value="closing"; setComposer(false); await loadBrief();
+    } catch(error) { if(status) status.textContent=error.message; }
+    finally { button.disabled=false; button.textContent="Post handoff"; }
+  }
+
+  async function acknowledgeHandoff() {
+    const button = byId("acknowledgeHandoff");
+    if (!currentHandoff?.id || !activeApi?.token) return;
+    button.disabled=true; button.textContent="Saving…";
+    try { await activeApi.acknowledgeShiftHandoff(currentHandoff.id); await loadBrief(); }
+    catch(error) { button.textContent=error.message; }
+    finally { button.disabled=false; }
   }
 
   const ready = callback => document.readyState === "loading" ? document.addEventListener("DOMContentLoaded",callback,{once:true}) : callback();
@@ -72,7 +142,10 @@
     const actions=[...document.querySelectorAll("[data-manager-action]")], progress=byId("managerActionProgress");
     const update=()=>{const done=actions.filter(x=>x.checked).length; actions.forEach(x=>x.closest("label")?.classList.toggle("is-complete",x.checked)); if(progress)progress.textContent=`${done} of ${actions.length} complete`;};
     actions.forEach(x=>x.addEventListener("change",update)); update();
-    const handoff=byId("acknowledgeHandoff"); handoff?.addEventListener("click",()=>{const done=handoff.classList.toggle("is-complete");handoff.textContent=done?"Handoff acknowledged ✓":"Acknowledge handoff";});
+    byId("acknowledgeHandoff")?.addEventListener("click",acknowledgeHandoff);
+    byId("openHandoffComposer")?.addEventListener("click",()=>setComposer(true));
+    byId("cancelHandoffComposer")?.addEventListener("click",()=>setComposer(false));
+    byId("handoffComposer")?.addEventListener("submit",saveHandoff);
     const refresh=byId("commandCenterRefresh"); refresh?.addEventListener("click",()=>loadBrief(refresh));
     loadBrief();
     window.addEventListener("storage",event=>{if(event.key==="blueCurrentV3230Token")loadBrief();});
