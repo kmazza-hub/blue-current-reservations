@@ -1,4 +1,4 @@
-BLUE CURRENT V34.0.8a — CC-009a AI IMPACT PREVIEW
+BLUE CURRENT V34.0.8c — CC-009c RECOMMENDATION TIMELINE
 
 REPLACE:
 - client/index.html
@@ -6,22 +6,19 @@ REPLACE:
 - client/js/modules/managerShiftBrief.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Estimated impact section beneath the Blue Current recommendation
-- Projected labor before and after
-- Estimated savings in USD
-- Estimated guest wait-time impact
-- Service risk
-- Confidence percentage
-- Short plain-language impact summary
-- Automatic recalculation when live operating data changes
+- Timeline beneath each AI recommendation
+- 'Now', 'Next 30 min', 'Dinner Rush', and 'Shift Close' checkpoints
+- Estimated operational impact at each stage
+- Visual progress indicator
+- Automatic updates from the current recommendation
 
-IMPORTANT
-This is a transparent pilot estimation model, not a payroll or labor-management guarantee.
+PATCH SUMMARY
 
-TEST
-1. npm run check
-2. npm start
-3. Open Command Center
-4. Confirm the Estimated Impact section appears beneath the recommendation
-5. Refresh operating data
-6. Confirm labor, savings, wait impact, risk, and confidence update
+1. Add a new 'Recommendation Timeline' card beneath the Scenario Comparison.
+2. Add timeline styling to styles.css.
+3. Extend managerShiftBrief.js with:
+   - buildRecommendationTimeline()
+   - syncRecommendationTimeline()
+   - call syncRecommendationTimeline() after syncScenarioComparison()
+
+This keeps the recommendation focused on WHEN to act instead of only WHAT to do.

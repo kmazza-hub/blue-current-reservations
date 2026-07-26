@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.8a">
+  <meta name="blue-current-build" content="34.0.8b">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.8a">
+  <meta name="blue-current-build" content="34.0.8b">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.8a">
+  <link rel="stylesheet" href="styles.css?v=34.0.8b">
 </head>
 <body>
 
@@ -413,6 +413,42 @@
               </div>
 
               <p id="aiImpactSummary">Applying this recommendation is expected to improve labor efficiency with limited guest impact.</p>
+            </section>
+
+            <section class="ai-scenario-comparison" aria-labelledby="aiScenarioTitle">
+              <div class="ai-scenario-heading">
+                <div>
+                  <small>Compare choices</small>
+                  <strong id="aiScenarioTitle">Three operating scenarios</strong>
+                </div>
+                <span>Live estimates</span>
+              </div>
+
+              <div class="ai-scenario-grid">
+                <article data-scenario="protect">
+                  <small>Option A</small>
+                  <h4>Protect service</h4>
+                  <strong id="aiScenarioProtectSavings">$0</strong>
+                  <p id="aiScenarioProtectDetail">Keep full coverage through the peak.</p>
+                  <span id="aiScenarioProtectRisk">Lowest service risk</span>
+                </article>
+
+                <article class="is-recommended" data-scenario="balanced">
+                  <small>Option B · Recommended</small>
+                  <h4>Balanced move</h4>
+                  <strong id="aiScenarioBalancedSavings">$138</strong>
+                  <p id="aiScenarioBalancedDetail">Improve labor while limiting guest impact.</p>
+                  <span id="aiScenarioBalancedRisk">Low service risk</span>
+                </article>
+
+                <article data-scenario="aggressive">
+                  <small>Option C</small>
+                  <h4>Aggressive savings</h4>
+                  <strong id="aiScenarioAggressiveSavings">$246</strong>
+                  <p id="aiScenarioAggressiveDetail">Reduce labor faster with more guest impact.</p>
+                  <span id="aiScenarioAggressiveRisk">Medium service risk</span>
+                </article>
+              </div>
             </section>
           </article>
         </div>
@@ -2456,7 +2492,7 @@
 
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/modules/actionList.js?v=34.0.7b"></script>
-  <script src="js/modules/managerShiftBrief.js?v=34.0.8a"></script>
+  <script src="js/modules/managerShiftBrief.js?v=34.0.8b"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

@@ -394,6 +394,78 @@
     };
   }
 
+  function calculateScenarioComparison() {
+    const impact = calculateRecommendationImpact();
+    const reservations = numericValue("operationReservations", 0);
+    const labor = numericValue("operationLabor", 0);
+
+    const protect = {
+      savings: 0,
+      detail: reservations >= 80
+        ? "Keep full coverage through the peak to protect table turns and guest wait times."
+        : "Keep current staffing and preserve flexibility through the next demand wave.",
+      risk: "Lowest service risk"
+    };
+
+    const balanced = {
+      savings: impact.savings,
+      detail: impact.savings > 0
+        ? `Target ${impact.afterLabor.toFixed(1)}% labor with about ${impact.waitImpact.toFixed(1)} minutes of guest wait impact.`
+        : "Maintain current coverage and avoid a premature labor reduction.",
+      risk: `${impact.risk} service risk`
+    };
+
+    const aggressiveSavings = impact.savings > 0
+      ? Math.round((impact.savings * 1.75) / 5) * 5
+      : Math.max(60, Math.round((labor * 4) / 5) * 5);
+
+    const aggressiveWait = Math.max(1.2, impact.waitImpact * 2.6);
+
+    const aggressive = {
+      savings: aggressiveSavings,
+      detail: `Push labor lower with approximately ${aggressiveWait.toFixed(1)} minutes of additional guest wait impact.`,
+      risk: reservations >= 80 ? "High service risk" : "Medium service risk"
+    };
+
+    return { protect, balanced, aggressive };
+  }
+
+  function formatMoney(value) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+
+  function syncScenarioComparison() {
+    const scenarios = calculateScenarioComparison();
+
+    const protectSavings = byId("aiScenarioProtectSavings");
+    const protectDetail = byId("aiScenarioProtectDetail");
+    const protectRisk = byId("aiScenarioProtectRisk");
+
+    const balancedSavings = byId("aiScenarioBalancedSavings");
+    const balancedDetail = byId("aiScenarioBalancedDetail");
+    const balancedRisk = byId("aiScenarioBalancedRisk");
+
+    const aggressiveSavings = byId("aiScenarioAggressiveSavings");
+    const aggressiveDetail = byId("aiScenarioAggressiveDetail");
+    const aggressiveRisk = byId("aiScenarioAggressiveRisk");
+
+    if (protectSavings) protectSavings.textContent = formatMoney(scenarios.protect.savings);
+    if (protectDetail) protectDetail.textContent = scenarios.protect.detail;
+    if (protectRisk) protectRisk.textContent = scenarios.protect.risk;
+
+    if (balancedSavings) balancedSavings.textContent = formatMoney(scenarios.balanced.savings);
+    if (balancedDetail) balancedDetail.textContent = scenarios.balanced.detail;
+    if (balancedRisk) balancedRisk.textContent = scenarios.balanced.risk;
+
+    if (aggressiveSavings) aggressiveSavings.textContent = formatMoney(scenarios.aggressive.savings);
+    if (aggressiveDetail) aggressiveDetail.textContent = scenarios.aggressive.detail;
+    if (aggressiveRisk) aggressiveRisk.textContent = scenarios.aggressive.risk;
+  }
+
   function syncImpactPreview() {
     const impact = calculateRecommendationImpact();
 
@@ -418,6 +490,7 @@
     if (risk) risk.textContent = impact.risk;
     if (confidence) confidence.textContent = `Confidence ${impact.confidence}%`;
     if (summary) summary.textContent = impact.summary;
+    syncScenarioComparison();
   }
 
   function syncManagerRecommendation() {

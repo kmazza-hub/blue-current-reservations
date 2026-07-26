@@ -1,12 +1,33 @@
-PATCH INSTRUCTIONS
+FILES TO MODIFY
 
-1. Inside the Manager Shift Brief top row, replace the status badge with:
+client/index.html
+-----------------
+Add a new section:
 
-<div class="manager-readiness">
-  <strong id="managerReadinessScore">100%</strong>
-  <span id="managerReadinessLabel">Excellent</span>
-</div>
+<section class="ai-recommendation-timeline">
+  <h3>Recommendation Timeline</h3>
+  <div id="aiTimeline"></div>
+</section>
 
-2. Add before </body>:
+client/styles.css
+-----------------
+Add styles for:
+- .ai-recommendation-timeline
+- .ai-timeline-step
+- .ai-timeline-marker
+- .ai-timeline-connector
 
-<script src="js/modules/readinessEngine.js?v=34.0.6d"></script>
+client/js/modules/managerShiftBrief.js
+--------------------------------------
+Create:
+
+function buildRecommendationTimeline() { ... }
+
+Timeline stages:
+• Now
+• Next 30 Minutes
+• Dinner Rush
+• Shift Close
+
+Populate the timeline using the current recommendation, labor forecast,
+reservation pace, and weather conditions.
