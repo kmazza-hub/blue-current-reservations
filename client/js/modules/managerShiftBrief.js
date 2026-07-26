@@ -212,6 +212,59 @@
     };
   }
 
+  function apiClient() {
+    const module = window.BlueCurrentModules?.cloudFoundation;
+    return module?.api || (window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null);
+  }
+
+  function recommendationTitle(message) {
+    const firstSentence = String(message || "").split(/(?<=[.!?])\s+/)[0] || "Review Blue Current recommendation";
+    return firstSentence.slice(0, 137).replace(/[.!?]+$/, "") + ".";
+  }
+
+  async function addRecommendationToActionList() {
+    const button = byId("aiRecommendationToAction");
+    const status = byId("aiRecommendationActionStatus");
+    const recommendation = text("aiRecommendation", "");
+    const confidence = text("aiConfidence", "Medium");
+
+    if (!button || !status || !recommendation) return;
+
+    const api = apiClient();
+    if (!api?.hasCapability?.("createManagerAction") || !api.token) {
+      status.textContent = "Sign in to save this recommendation.";
+      return;
+    }
+
+    button.disabled = true;
+    status.textContent = "Adding action…";
+
+    try {
+      const action = await api.createManagerAction({
+        locationId: "loc_marina",
+        title: recommendationTitle(recommendation),
+        source: "AI Brief",
+        priority: confidence === "High" ? "high" : "medium",
+        due: "Before service"
+      });
+
+      status.textContent = "Added to today’s action list.";
+      window.dispatchEvent(new CustomEvent("bluecurrent:manager-action-created", {
+        detail: { action }
+      }));
+    } catch (error) {
+      status.textContent = error.message || "Could not add recommendation.";
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  function bindRecommendationAction() {
+    const button = byId("aiRecommendationToAction");
+    if (!button) return;
+    button.addEventListener("click", addRecommendationToActionList);
+  }
+
   function syncManagerRecommendation() {
     const recommendation = byId("aiRecommendation");
     const confidence = byId("aiConfidence");
@@ -293,6 +346,7 @@
     if (!panel || !button) return;
 
     applyStartedState(localStorage.getItem(STORAGE_KEY) === "true");
+    bindRecommendationAction();
     syncFromCommandCenter();
     observeLiveData();
 

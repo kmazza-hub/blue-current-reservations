@@ -568,6 +568,7 @@
     bindFilters();
     bindCompletedToggle();
     bindComposer();
+    window.addEventListener("bluecurrent:manager-action-created", () => loadActions());
     loadActions();
   }
 

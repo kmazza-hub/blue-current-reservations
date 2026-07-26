@@ -3966,3 +3966,40 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     text-align:left;
   }
 }
+
+
+/* V34.0.7b — CC-008b Recommendation to Action */
+.ai-recommendation-actions{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.1);
+}
+#aiRecommendationActionStatus{
+  color:rgba(255,255,255,.58);
+  font-size:.7rem;
+}
+#aiRecommendationToAction{
+  flex:0 0 auto;
+  min-height:38px;
+  padding:0 14px;
+  color:#082632;
+  border:0;
+  border-radius:999px;
+  background:#d8ae62;
+  font-size:.72rem;
+  font-weight:800;
+}
+#aiRecommendationToAction:disabled{
+  opacity:.55;
+  cursor:wait;
+}
+@media(max-width:620px){
+  .ai-recommendation-actions{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
