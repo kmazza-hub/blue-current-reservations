@@ -1,22 +1,22 @@
-BLUE CURRENT V34.0.5g — CC-006f EDIT MANUAL ACTIONS
+BLUE CURRENT V34.0.5h — CC-006g ACTION OWNERSHIP
 
 REPLACE:
 - client/js/modules/actionList.js
 - server/services/actionListService.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Edit button on manually created manager actions
-- Managers can update title, due timing, priority, and source
-- Server persistence for edited actions
-- Operations Feed entry when an action is edited
-- Automatic actions remain protected from manual editing
+- Assign or reassign any manager action
+- Assigned employee/manager displayed directly on the action
+- Assignment persists on the server
+- Operations Feed records assignments and unassignments
+- Automatic actions can be assigned, while still remaining protected from edit/delete
 
 TEST
 1. npm run check
 2. npm start
-3. Add a manual action
-4. Click Edit
-5. Change its title, timing, priority, or source
-6. Refresh and verify the edits remain
-7. Confirm automatic actions do not show Edit or Remove
-8. Confirm the Operations Feed records the update
+3. Open the Command Center
+4. Click Assign on an action
+5. Enter a team member name
+6. Refresh and verify the assignment remains
+7. Reassign or clear the name to unassign
+8. Confirm the Operations Feed records the change

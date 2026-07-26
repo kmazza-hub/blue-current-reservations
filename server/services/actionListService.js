@@ -329,6 +329,17 @@ class ActionListService {
       eventTitle = `Manager action updated: ${changes.title}`;
     }
 
+    if (patch.assign) {
+      const assignedTo = String(patch.assignedTo || "").trim();
+      changes.assignedTo = assignedTo.slice(0, 80) || null;
+      changes.assignedAt = changes.assignedTo ? new Date().toISOString() : null;
+      changes.assignedBy = changes.assignedTo ? (actor?.name || actor?.email || "Manager") : null;
+      eventType = changes.assignedTo ? "action_assigned" : "action_unassigned";
+      eventTitle = changes.assignedTo
+        ? `Action assigned to ${changes.assignedTo}: ${current.title}`
+        : `Action unassigned: ${current.title}`;
+    }
+
     const updated = await this.database.update("managerActions", actionId, changes);
 
     if (updated && this.operationsFeedService && eventType) {

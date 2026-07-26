@@ -93,6 +93,41 @@
     return created;
   }
 
+  async function assignAction(action) {
+    const currentAssignee = action.assignedTo || "";
+    const assignedTo = window.prompt(
+      currentAssignee ? "Reassign this action to:" : "Assign this action to:",
+      currentAssignee
+    );
+
+    if (assignedTo === null) return;
+
+    const previous = { ...action };
+    action.assignedTo = assignedTo.trim() || null;
+    action.isSaving = true;
+    render();
+
+    if (state.source === "server") {
+      const api = apiClient();
+      try {
+        const updated = await api.updateManagerAction(action.id, {
+          locationId: LOCATION_ID,
+          assign: true,
+          assignedTo: action.assignedTo || ""
+        });
+        Object.assign(action, updated, { isSaving: false });
+      } catch (error) {
+        Object.assign(action, previous, { isSaving: false });
+        setStatus(error.message || "Could not assign action.");
+      }
+    } else {
+      action.isSaving = false;
+      saveLocal();
+    }
+
+    render();
+  }
+
   async function editAction(action) {
     if (action.automatic) return;
 
@@ -241,6 +276,22 @@
     source.textContent = action.source;
 
     badges.append(priority, source);
+
+    if (action.assignedTo) {
+      const assignee = document.createElement("span");
+      assignee.className = "manager-action-badge manager-action-assignee";
+      assignee.textContent = `Assigned: ${action.assignedTo}`;
+      badges.append(assignee);
+    }
+
+    const assign = document.createElement("button");
+    assign.className = "manager-action-assign";
+    assign.type = "button";
+    assign.textContent = action.assignedTo ? "Reassign" : "Assign";
+    assign.disabled = Boolean(action.isSaving);
+    assign.setAttribute("aria-label", `${action.assignedTo ? "Reassign" : "Assign"} ${action.title}`);
+    assign.addEventListener("click", () => assignAction(action));
+    badges.append(assign);
 
     if (!action.automatic) {
       const edit = document.createElement("button");
@@ -405,12 +456,24 @@
     const style = document.createElement("style");
     style.id = "managerActionRemoveStyles";
     style.textContent = `
+      .manager-action-assign,
       .manager-action-edit,
       .manager-action-remove{
         padding:6px 8px;
         border-radius:999px;
         font-size:.62rem;
         font-weight:700;
+      }
+      .manager-action-assign{
+        color:#f7e6c6;
+        border:1px solid rgba(216,174,98,.3);
+        background:rgba(216,174,98,.1);
+      }
+      .manager-action-assign:hover{background:rgba(216,174,98,.18)}
+      .manager-action-assignee{
+        color:#d9eee8;
+        border:1px solid rgba(103,196,154,.18);
+        background:rgba(103,196,154,.08);
       }
       .manager-action-edit{
         color:#d9eee8;
@@ -424,6 +487,7 @@
         background:rgba(223,128,108,.1);
       }
       .manager-action-remove:hover{background:rgba(223,128,108,.18)}
+      .manager-action-assign:disabled,
       .manager-action-edit:disabled,
       .manager-action-remove:disabled{opacity:.45;cursor:wait}
     `;
