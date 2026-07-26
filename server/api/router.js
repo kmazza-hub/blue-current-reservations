@@ -28,7 +28,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService }) {
+function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -44,7 +44,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.0.2",
+        version: "34.0.4",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -112,6 +112,14 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     const allowedLocations = auth.membership.locationIds || [];
     const canAccessLocation = locationId =>
       allowedLocations.includes("*") || allowedLocations.includes(locationId);
+
+    if (url.pathname === "/api/operations-feed" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const category = url.searchParams.get("category") || "all";
+      const limit = Number(url.searchParams.get("limit") || 40);
+      if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      return sendJson(response, 200, await operationsFeedService.list(organizationId, locationId, category, limit));
+    }
 
     if (url.pathname === "/api/command-center" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || "loc_marina";

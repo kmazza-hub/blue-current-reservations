@@ -80,6 +80,43 @@
     }).join("") : '<article class="readiness-component is-warning"><div class="readiness-component-head"><strong>Readiness details</strong><b>—</b></div><p>Sign in and refresh to calculate the complete breakdown.</p></article>';
   }
 
+  let activeFeedCategory = "all";
+  let activeFeedLimit = 8;
+
+  function feedIcon(category) {
+    return ({ staffing:"👥", guests:"◷", inventory:"▦", maintenance:"⚙", handoffs:"📝", operations:"✓" })[category] || "•";
+  }
+
+  function relativeTime(value) {
+    const date = new Date(value || Date.now());
+    const seconds = Math.max(0, Math.round((Date.now() - date.getTime()) / 1000));
+    if (seconds < 60) return "Just now";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    if (seconds < 172800) return `Yesterday · ${date.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`;
+    return date.toLocaleDateString([], {month:"short",day:"numeric"});
+  }
+
+  function renderOperationsFeed(payload = {}) {
+    const list = byId("operationsFeedList");
+    const status = byId("operationsFeedStatus");
+    const more = byId("operationsFeedMore");
+    const events = Array.isArray(payload.events) ? payload.events : [];
+    if (status) status.textContent = events.length ? `${events.length} recent update${events.length === 1 ? "" : "s"}` : "No recent activity";
+    if (list) list.innerHTML = events.length ? events.map(event => `<article class="operations-feed-item" data-category="${escapeHtml(event.category)}">
+      <span class="operations-feed-icon" aria-hidden="true">${feedIcon(event.category)}</span>
+      <div><div class="operations-feed-item-head"><strong>${escapeHtml(event.title)}</strong><time>${relativeTime(event.occurredAt)}</time></div>
+      ${event.detail ? `<p>${escapeHtml(event.detail)}</p>` : ""}<small>${escapeHtml(event.actor || "Blue Current")} · ${escapeHtml(titleCase(event.category || "operations"))}</small></div>
+    </article>`).join("") : '<article class="operations-feed-empty">Nothing new in this category yet.</article>';
+    if (more) { more.hidden = events.length < activeFeedLimit; more.textContent = activeFeedLimit > 8 ? "Show fewer updates" : "View more activity"; }
+  }
+
+  async function loadOperationsFeed() {
+    if (!activeApi?.token || typeof activeApi.operationsFeed !== "function") return renderOperationsFeed({events:[]});
+    try { renderOperationsFeed(await activeApi.operationsFeed("loc_marina", activeFeedCategory, activeFeedLimit)); }
+    catch (error) { text("operationsFeedStatus", "Feed unavailable"); }
+  }
+
   function render(snapshot) {
     const b=snapshot.business||{}, o=snapshot.operation||{}, r=snapshot.readiness||{};
     text("commandCenterLocation", snapshot.location?.name || "Marina Grille");
@@ -115,6 +152,7 @@
       if (!activeApi?.token) throw new Error("Sign in to load live operating data");
       const snapshot = await activeApi.commandCenter("loc_marina");
       render(snapshot);
+      await loadOperationsFeed();
       await loadWeather(snapshot.location).catch(()=>text("weatherImpact","Live weather could not be reached; operating data is current."));
       if(button) button.textContent="Brief updated ✓";
     } catch(error) {
@@ -176,6 +214,15 @@
       readinessToggle.setAttribute("aria-expanded", String(open));
       readinessToggle.textContent = open ? "Hide breakdown" : "View breakdown";
     });
+    byId("operationsFeedFilters")?.addEventListener("click", event => {
+      const button = event.target.closest("[data-feed-filter]");
+      if (!button) return;
+      activeFeedCategory = button.dataset.feedFilter;
+      activeFeedLimit = 8;
+      document.querySelectorAll("[data-feed-filter]").forEach(item => item.classList.toggle("is-active", item === button));
+      loadOperationsFeed();
+    });
+    byId("operationsFeedMore")?.addEventListener("click", () => { activeFeedLimit = activeFeedLimit > 8 ? 8 : 40; loadOperationsFeed(); });
     const refresh=byId("commandCenterRefresh"); refresh?.addEventListener("click",()=>loadBrief(refresh));
     loadBrief();
     window.addEventListener("storage",event=>{if(event.key==="blueCurrentV3230Token")loadBrief();});

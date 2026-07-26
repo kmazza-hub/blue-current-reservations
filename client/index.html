@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.2">
+  <meta name="blue-current-build" content="34.0.4">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.2">
+  <meta name="blue-current-build" content="34.0.4">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -325,6 +325,27 @@
             <div class="ai-confidence"><span>Confidence</span><strong id="aiConfidence">High</strong></div>
           </article>
         </div>
+
+
+        <section class="operations-feed-panel reveal" aria-labelledby="operationsFeedTitle">
+          <div class="operations-feed-heading">
+            <div><small>What changed since you last looked</small><h3 id="operationsFeedTitle">Operations Feed</h3></div>
+            <span id="operationsFeedStatus">Loading activity…</span>
+          </div>
+          <div class="operations-feed-filters" id="operationsFeedFilters" role="tablist" aria-label="Filter operations feed">
+            <button class="is-active" type="button" data-feed-filter="all">All</button>
+            <button type="button" data-feed-filter="operations">Operations</button>
+            <button type="button" data-feed-filter="staffing">Staffing</button>
+            <button type="button" data-feed-filter="guests">Guests</button>
+            <button type="button" data-feed-filter="inventory">Inventory</button>
+            <button type="button" data-feed-filter="maintenance">Maintenance</button>
+            <button type="button" data-feed-filter="handoffs">Handoffs</button>
+          </div>
+          <div class="operations-feed-list" id="operationsFeedList" aria-live="polite">
+            <article class="operations-feed-empty">Preparing recent restaurant activity…</article>
+          </div>
+          <button class="operations-feed-more" id="operationsFeedMore" type="button" hidden>View more activity</button>
+        </section>
 
         <div class="manager-actions-panel reveal">
           <div class="manager-actions-heading">

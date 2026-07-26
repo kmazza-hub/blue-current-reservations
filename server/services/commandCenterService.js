@@ -1,7 +1,7 @@
 "use strict";
 
 class CommandCenterService {
-  constructor(database) { this.database = database; }
+  constructor(database, operationsFeedService = null) { this.database = database; this.operationsFeedService = operationsFeedService; }
 
   normalizeList(value, limit = 6) {
     const values = Array.isArray(value) ? value : String(value || "").split(",");
@@ -23,11 +23,13 @@ class CommandCenterService {
       authorName: user?.name || user?.displayName || user?.email || "Manager",
       createdAt: now, updatedAt: now, acknowledgements: []
     };
-    return this.database.create("shiftHandoffs", handoff);
+    await this.database.create("shiftHandoffs", handoff);
+    if (this.operationsFeedService) await this.operationsFeedService.record({ organizationId, locationId, category: "handoffs", type: "handoff", title: `${shift.charAt(0).toUpperCase()+shift.slice(1)} shift handoff posted`, detail: summary, actor: handoff.authorName, occurredAt: now });
+    return handoff;
   }
 
   async acknowledgeHandoff(organizationId, handoffId, user) {
-    return this.database.mutate(database => {
+    const updated = await this.database.mutate(database => {
       database.shiftHandoffs ||= [];
       const handoff = database.shiftHandoffs.find(item => item.id === handoffId && item.organizationId === organizationId);
       if (!handoff) return null;
@@ -38,6 +40,8 @@ class CommandCenterService {
       handoff.updatedAt = new Date().toISOString();
       return handoff;
     });
+    if (updated && this.operationsFeedService) await this.operationsFeedService.record({ organizationId, locationId: updated.locationId, category: "handoffs", type: "acknowledgement", title: "Shift handoff acknowledged", detail: `${user?.name || user?.email || "Manager"} acknowledged the ${updated.shift} handoff.`, actor: user?.name || user?.email || "Manager" });
+    return updated;
   }
 
   async snapshot(organizationId, locationId) {

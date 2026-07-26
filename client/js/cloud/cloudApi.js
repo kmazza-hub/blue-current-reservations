@@ -3,10 +3,10 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.0.2";
+    static VERSION = "34.0.4";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
-      "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "bootstrap", "reservations", "audit", "invitations", "configuration"
+      "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "bootstrap", "reservations", "audit", "invitations", "configuration"
     ]);
 
     constructor(baseUrl = "") {
@@ -44,6 +44,7 @@
 
     health() { return this.request("/api/health"); }
     commandCenter(locationId = "loc_marina") { return this.request(`/api/command-center?locationId=${encodeURIComponent(locationId)}`); }
+    operationsFeed(locationId = "loc_marina", category = "all", limit = 40) { return this.request(`/api/operations-feed?locationId=${encodeURIComponent(locationId)}&category=${encodeURIComponent(category)}&limit=${encodeURIComponent(limit)}`); }
     createShiftHandoff(payload) { return this.request("/api/command-center/handoffs", { method: "POST", body: JSON.stringify(payload) }); }
     acknowledgeShiftHandoff(id) { return this.request(`/api/command-center/handoffs/${encodeURIComponent(id)}/acknowledge`, { method: "PATCH", body: JSON.stringify({}) }); }
 
