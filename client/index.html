@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.8b">
+  <meta name="blue-current-build" content="34.0.8d">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.8b">
+  <meta name="blue-current-build" content="34.0.8d">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.8b">
+  <link rel="stylesheet" href="styles.css?v=34.0.8d">
 </head>
 <body>
 
@@ -431,6 +431,7 @@
                   <strong id="aiScenarioProtectSavings">$0</strong>
                   <p id="aiScenarioProtectDetail">Keep full coverage through the peak.</p>
                   <span id="aiScenarioProtectRisk">Lowest service risk</span>
+                  <button type="button" class="ai-scenario-action" data-scenario-action="protect">Choose option</button>
                 </article>
 
                 <article class="is-recommended" data-scenario="balanced">
@@ -439,6 +440,7 @@
                   <strong id="aiScenarioBalancedSavings">$138</strong>
                   <p id="aiScenarioBalancedDetail">Improve labor while limiting guest impact.</p>
                   <span id="aiScenarioBalancedRisk">Low service risk</span>
+                  <button type="button" class="ai-scenario-action" data-scenario-action="balanced">Apply recommendation</button>
                 </article>
 
                 <article data-scenario="aggressive">
@@ -447,6 +449,56 @@
                   <strong id="aiScenarioAggressiveSavings">$246</strong>
                   <p id="aiScenarioAggressiveDetail">Reduce labor faster with more guest impact.</p>
                   <span id="aiScenarioAggressiveRisk">Medium service risk</span>
+                  <button type="button" class="ai-scenario-action" data-scenario-action="aggressive">Choose option</button>
+                </article>
+              </div>
+              <span class="ai-scenario-status" id="aiScenarioActionStatus" role="status"></span>
+            </section>
+
+            <section class="ai-recommendation-timeline" aria-labelledby="aiTimelineTitle">
+              <div class="ai-timeline-heading">
+                <div>
+                  <small>When to act</small>
+                  <strong id="aiTimelineTitle">Recommendation timeline</strong>
+                </div>
+                <span id="aiTimelineStatus">Live operating sequence</span>
+              </div>
+
+              <div class="ai-timeline" id="aiTimeline">
+                <article class="ai-timeline-step is-now">
+                  <i></i>
+                  <div>
+                    <small>Now</small>
+                    <strong id="aiTimelineNowTitle">Confirm the recommended move</strong>
+                    <p id="aiTimelineNowDetail">Review the current recommendation and assign the action.</p>
+                  </div>
+                </article>
+
+                <article class="ai-timeline-step">
+                  <i></i>
+                  <div>
+                    <small>Next 30 minutes</small>
+                    <strong id="aiTimelineThirtyTitle">Watch the first signal</strong>
+                    <p id="aiTimelineThirtyDetail">Monitor labor, reservations, and guest pace.</p>
+                  </div>
+                </article>
+
+                <article class="ai-timeline-step">
+                  <i></i>
+                  <div>
+                    <small>Dinner rush</small>
+                    <strong id="aiTimelineRushTitle">Protect service execution</strong>
+                    <p id="aiTimelineRushDetail">Recheck staffing and guest wait-time pressure.</p>
+                  </div>
+                </article>
+
+                <article class="ai-timeline-step">
+                  <i></i>
+                  <div>
+                    <small>Shift close</small>
+                    <strong id="aiTimelineCloseTitle">Compare expected and actual outcome</strong>
+                    <p id="aiTimelineCloseDetail">Record the result in the shift handoff.</p>
+                  </div>
                 </article>
               </div>
             </section>
@@ -2492,7 +2544,7 @@
 
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/modules/actionList.js?v=34.0.7b"></script>
-  <script src="js/modules/managerShiftBrief.js?v=34.0.8b"></script>
+  <script src="js/modules/managerShiftBrief.js?v=34.0.8d"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

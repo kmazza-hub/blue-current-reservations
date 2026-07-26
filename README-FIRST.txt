@@ -1,4 +1,4 @@
-BLUE CURRENT V34.0.8c — CC-009c RECOMMENDATION TIMELINE
+BLUE CURRENT V34.0.8d — CC-009d APPLY SCENARIO
 
 REPLACE:
 - client/index.html
@@ -6,19 +6,19 @@ REPLACE:
 - client/js/modules/managerShiftBrief.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Timeline beneath each AI recommendation
-- 'Now', 'Next 30 min', 'Dinner Rush', and 'Shift Close' checkpoints
-- Estimated operational impact at each stage
-- Visual progress indicator
-- Automatic updates from the current recommendation
+- Action button on each operating scenario
+- Protect service, Balanced move, and Aggressive savings can each become a manager action
+- Selected scenario persists through the existing Action List API
+- Scenario rationale is attached as a manager note
+- Action List refreshes immediately
+- Clear sign-in, saving, success, and error messaging
 
-PATCH SUMMARY
-
-1. Add a new 'Recommendation Timeline' card beneath the Scenario Comparison.
-2. Add timeline styling to styles.css.
-3. Extend managerShiftBrief.js with:
-   - buildRecommendationTimeline()
-   - syncRecommendationTimeline()
-   - call syncRecommendationTimeline() after syncScenarioComparison()
-
-This keeps the recommendation focused on WHEN to act instead of only WHAT to do.
+TEST
+1. npm run check
+2. npm start
+3. Sign in and open Command Center
+4. Choose one of the three operating scenarios
+5. Confirm the status message appears
+6. Confirm a new AI Scenario action appears in Today’s Action List
+7. Open its note and confirm the scenario rationale was saved
+8. Refresh and verify the action remains

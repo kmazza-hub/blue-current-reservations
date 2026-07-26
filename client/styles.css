@@ -4243,3 +4243,153 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
   .ai-scenario-grid{grid-template-columns:1fr}
   .ai-scenario-grid p{min-height:auto}
 }
+
+
+/* V34.0.8c — CC-009c Recommendation Timeline */
+.ai-recommendation-timeline{
+  margin-top:14px;
+  padding:15px;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  background:rgba(255,255,255,.025);
+}
+.ai-timeline-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+.ai-timeline-heading small,
+.ai-timeline-heading strong{
+  display:block;
+}
+.ai-timeline-heading small{
+  color:#9fcac0;
+  font-size:.65rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.ai-timeline-heading strong{
+  margin-top:4px;
+  color:#fff;
+  font-size:.9rem;
+}
+.ai-timeline-heading>span{
+  color:rgba(255,255,255,.48);
+  font-size:.66rem;
+}
+.ai-timeline{
+  position:relative;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.ai-timeline::before{
+  content:"";
+  position:absolute;
+  left:8%;
+  right:8%;
+  top:8px;
+  height:1px;
+  background:rgba(255,255,255,.12);
+}
+.ai-timeline-step{
+  position:relative;
+  z-index:1;
+  padding-top:22px;
+}
+.ai-timeline-step>i{
+  position:absolute;
+  left:0;
+  top:2px;
+  width:13px;
+  height:13px;
+  border:2px solid rgba(131,197,187,.65);
+  border-radius:50%;
+  background:#0b2d3a;
+}
+.ai-timeline-step.is-now>i{
+  border-color:#d8ae62;
+  background:#d8ae62;
+  box-shadow:0 0 0 6px rgba(216,174,98,.1);
+}
+.ai-timeline-step small,
+.ai-timeline-step strong,
+.ai-timeline-step p{
+  display:block;
+}
+.ai-timeline-step small{
+  color:rgba(255,255,255,.45);
+  font-size:.6rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.ai-timeline-step strong{
+  margin-top:6px;
+  color:#fff;
+  font-size:.78rem;
+}
+.ai-timeline-step p{
+  margin:6px 0 0;
+  color:#cbdad6;
+  font-size:.68rem;
+  line-height:1.45;
+}
+@media(max-width:820px){
+  .ai-timeline{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+  .ai-timeline::before{
+    left:6px;
+    right:auto;
+    top:8px;
+    bottom:8px;
+    width:1px;
+    height:auto;
+  }
+  .ai-timeline-step{
+    padding:0 0 0 26px;
+  }
+  .ai-timeline-step>i{
+    left:0;
+    top:2px;
+  }
+}
+
+
+/* V34.0.8d — CC-009d Apply Scenario */
+.ai-scenario-action{
+  width:100%;
+  min-height:36px;
+  margin-top:10px;
+  padding:0 10px;
+  color:#d7e7e3;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+  font-size:.67rem;
+  font-weight:800;
+}
+.ai-scenario-grid article.is-recommended .ai-scenario-action{
+  color:#082632;
+  border-color:#d8ae62;
+  background:#d8ae62;
+}
+.ai-scenario-action:hover{
+  transform:translateY(-1px);
+}
+.ai-scenario-action:disabled{
+  opacity:.5;
+  cursor:wait;
+  transform:none;
+}
+.ai-scenario-status{
+  display:block;
+  min-height:18px;
+  margin-top:10px;
+  color:#9fcac0;
+  font-size:.69rem;
+}

@@ -259,6 +259,96 @@
     }
   }
 
+  function scenarioActionPayload(type) {
+    const scenarios = calculateScenarioComparison();
+    const recommendation = text("aiRecommendation", "Review the current operating recommendation.");
+
+    if (type === "protect") {
+      return {
+        title: "Protect service coverage through the peak.",
+        source: "AI Scenario",
+        priority: "medium",
+        due: "Before dinner rush",
+        note: scenarios.protect.detail
+      };
+    }
+
+    if (type === "aggressive") {
+      return {
+        title: "Review aggressive labor-saving option before execution.",
+        source: "AI Scenario",
+        priority: "high",
+        due: "Before next labor decision",
+        note: `${scenarios.aggressive.detail} ${scenarios.aggressive.risk}.`
+      };
+    }
+
+    return {
+      title: recommendationTitle(recommendation),
+      source: "AI Scenario",
+      priority: "high",
+      due: "Before service",
+      note: `${scenarios.balanced.detail} ${scenarios.balanced.risk}.`
+    };
+  }
+
+  async function applyScenario(type, button) {
+    const status = byId("aiScenarioActionStatus");
+    const api = apiClient();
+
+    if (!status) return;
+
+    if (!api?.hasCapability?.("createManagerAction") || !api.token) {
+      status.textContent = "Sign in to save a scenario.";
+      return;
+    }
+
+    const payload = scenarioActionPayload(type);
+    button.disabled = true;
+    status.textContent = "Creating manager action…";
+
+    try {
+      const action = await api.createManagerAction({
+        locationId: "loc_marina",
+        title: payload.title,
+        source: payload.source,
+        priority: payload.priority,
+        due: payload.due
+      });
+
+      // Add the scenario rationale as a note when supported.
+      if (payload.note && api?.hasCapability?.("updateManagerAction")) {
+        try {
+          await api.updateManagerAction(action.id, {
+            locationId: "loc_marina",
+            noteUpdate: true,
+            note: payload.note
+          });
+          action.note = payload.note;
+        } catch (noteError) {
+          console.warn("[ManagerShiftBrief] Scenario note could not be attached.", noteError);
+        }
+      }
+
+      status.textContent = `${type === "balanced" ? "Recommended" : "Selected"} scenario added to the action list.`;
+      window.dispatchEvent(new CustomEvent("bluecurrent:manager-action-created", {
+        detail: { action }
+      }));
+    } catch (error) {
+      status.textContent = error.message || "Could not apply scenario.";
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  function bindScenarioActions() {
+    document.querySelectorAll("[data-scenario-action]").forEach(button => {
+      button.addEventListener("click", () => {
+        applyScenario(button.dataset.scenarioAction, button);
+      });
+    });
+  }
+
   function bindRecommendationAction() {
     const button = byId("aiRecommendationToAction");
     if (!button) return;
@@ -438,6 +528,75 @@
     }).format(value);
   }
 
+  function buildRecommendationTimeline() {
+    const labor = numericValue("operationLabor", 0);
+    const reservations = numericValue("operationReservations", 0);
+    const forecastChange = numericValue("forecastChange", 0);
+    const weather = text("weatherCondition", "").toLowerCase();
+    const rain = numericValue("weatherRain", 0);
+    const openActions = openManagerActions().length;
+    const impact = calculateRecommendationImpact();
+
+    const now = {
+      title: openActions
+        ? `Assign the highest-priority action now`
+        : "Confirm the recommended operating move",
+      detail: openActions
+        ? `${openActions} action${openActions === 1 ? "" : "s"} are open. Start with the highest-risk item.`
+        : "Convert the recommendation into an action and identify an owner."
+    };
+
+    const thirty = {
+      title: labor >= 30
+        ? "Recheck labor pace after the next sales interval"
+        : "Watch reservations and guest arrival pace",
+      detail: labor >= 30
+        ? `Labor is ${labor.toFixed(1)}%. Confirm whether the first cut window is still appropriate.`
+        : `${Math.round(reservations)} reservations are booked. Compare arrivals against staffing coverage.`
+    };
+
+    const rush = {
+      title: /rain|storm/.test(weather) || rain >= 50
+        ? "Protect indoor seating flow during the rush"
+        : forecastChange >= 8
+          ? "Protect peak coverage as demand builds"
+          : "Maintain service execution through the peak",
+      detail: /rain|storm/.test(weather) || rain >= 50
+        ? "Move patio demand indoors and watch host-stand congestion."
+        : forecastChange >= 8
+          ? `Forecast is ${forecastChange.toFixed(1)}% ahead of last year. Avoid cutting coverage too early.`
+          : `Target approximately ${impact.afterLabor.toFixed(1)}% labor without increasing guest wait beyond ${impact.waitImpact.toFixed(1)} minutes.`
+    };
+
+    const close = {
+      title: "Compare predicted and actual outcome",
+      detail: impact.savings > 0
+        ? `Record whether the move delivered the estimated ${formatMoney(impact.savings)} savings and note any guest impact.`
+        : "Record whether protected coverage improved service and include the result in the handoff."
+    };
+
+    return { now, thirty, rush, close };
+  }
+
+  function syncRecommendationTimeline() {
+    const timeline = buildRecommendationTimeline();
+    const mapping = [
+      ["aiTimelineNowTitle", timeline.now.title],
+      ["aiTimelineNowDetail", timeline.now.detail],
+      ["aiTimelineThirtyTitle", timeline.thirty.title],
+      ["aiTimelineThirtyDetail", timeline.thirty.detail],
+      ["aiTimelineRushTitle", timeline.rush.title],
+      ["aiTimelineRushDetail", timeline.rush.detail],
+      ["aiTimelineCloseTitle", timeline.close.title],
+      ["aiTimelineCloseDetail", timeline.close.detail]
+    ];
+
+    mapping.forEach(([id, value]) => {
+      const node = byId(id);
+      if (node) node.textContent = value;
+    });
+  }
+
   function syncScenarioComparison() {
     const scenarios = calculateScenarioComparison();
 
@@ -464,6 +623,7 @@
     if (aggressiveSavings) aggressiveSavings.textContent = formatMoney(scenarios.aggressive.savings);
     if (aggressiveDetail) aggressiveDetail.textContent = scenarios.aggressive.detail;
     if (aggressiveRisk) aggressiveRisk.textContent = scenarios.aggressive.risk;
+    syncRecommendationTimeline();
   }
 
   function syncImpactPreview() {
@@ -578,6 +738,7 @@
     applyStartedState(localStorage.getItem(STORAGE_KEY) === "true");
     bindRecommendationAction();
     bindRecommendationWhy();
+    bindScenarioActions();
     syncFromCommandCenter();
     observeLiveData();
 
