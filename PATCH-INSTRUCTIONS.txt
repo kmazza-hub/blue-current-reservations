@@ -1,0 +1,12 @@
+PATCH INSTRUCTIONS
+
+1. Inside the Manager Shift Brief top row, replace the status badge with:
+
+<div class="manager-readiness">
+  <strong id="managerReadinessScore">100%</strong>
+  <span id="managerReadinessLabel">Excellent</span>
+</div>
+
+2. Add before </body>:
+
+<script src="js/modules/readinessEngine.js?v=34.0.6d"></script>
