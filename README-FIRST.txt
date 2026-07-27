@@ -5,25 +5,10 @@ REPLACE:
 - client/styles.css
 - client/js/modules/managerShiftBrief.js
 
-FEATURES
-- New 'Restaurant Pulse' banner at the top of Command Center
-- Overall operating health score (0-100)
-- Color-coded state:
-  • Calm
-  • Building
-  • Busy
-  • Critical
-- Top three live drivers (labor, reservations, kitchen, weather, staffing)
-- One-click jump to the highest priority module
-- Auto-refresh whenever live operational data changes
+Adds a live 0–100 Restaurant Pulse, Calm/Building/Busy/Critical states,
+top operating drivers, automatic refresh, and Go to priority navigation.
 
-UI PATCH
-1. Insert a Restaurant Pulse banner above the Executive Command Center.
-2. Add pulse styles.
-3. Add:
-   - calculateRestaurantPulse()
-   - syncRestaurantPulse()
-4. Call syncRestaurantPulse() whenever dashboard state updates.
-
-GOAL
-Managers should understand the state of the restaurant in under three seconds.
+TEST:
+npm run check
+npm start
+Open Command Center, verify pulse values, then click Go to priority.

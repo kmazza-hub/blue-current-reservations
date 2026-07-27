@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.8e">
+  <meta name="blue-current-build" content="34.0.9a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.8e">
+  <meta name="blue-current-build" content="34.0.9a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.8e">
+  <link rel="stylesheet" href="styles.css?v=34.0.9a">
 </head>
 <body>
 
@@ -221,6 +221,23 @@
             <button class="button button-light button-small" id="commandCenterRefresh" type="button">Refresh brief</button>
           </div>
         </div>
+
+        <section class="restaurant-pulse reveal" id="restaurantPulse" aria-labelledby="restaurantPulseTitle">
+          <div class="restaurant-pulse-score">
+            <small>Restaurant pulse</small>
+            <strong id="restaurantPulseScore">92</strong>
+            <span id="restaurantPulseState">Building</span>
+          </div>
+          <div class="restaurant-pulse-summary">
+            <div class="restaurant-pulse-heading">
+              <div><small>Live operating health</small><h3 id="restaurantPulseTitle">The restaurant is building toward service.</h3></div>
+              <span id="restaurantPulseUpdated">Updating…</span>
+            </div>
+            <p id="restaurantPulseSummary">The operation is stable, but the highest-priority items should be cleared before service.</p>
+            <div class="restaurant-pulse-drivers" id="restaurantPulseDrivers"></div>
+          </div>
+          <button class="restaurant-pulse-focus" id="restaurantPulseFocus" type="button">Go to priority</button>
+        </section>
 
         <div class="readiness-panel reveal">
           <div class="readiness-score">
@@ -489,6 +506,72 @@
                 <button type="button" id="aiActiveDecisionClear">Clear decision</button>
                 <button type="button" id="aiActiveDecisionReviewNow">Review now</button>
               </div>
+            </section>
+
+            <section class="ai-decision-review" id="aiDecisionReview" hidden aria-labelledby="aiDecisionReviewTitle">
+              <div class="ai-decision-review-heading">
+                <div>
+                  <small>Close the loop</small>
+                  <strong id="aiDecisionReviewTitle">Review actual outcome</strong>
+                </div>
+                <button type="button" id="aiDecisionReviewClose" aria-label="Close outcome review">×</button>
+              </div>
+
+              <div class="ai-decision-review-grid">
+                <label>
+                  Actual savings
+                  <input id="aiDecisionActualSavings" type="number" min="0" step="1" placeholder="0">
+                </label>
+                <label>
+                  Actual guest wait impact
+                  <input id="aiDecisionActualWait" type="number" min="-10" max="60" step="0.1" placeholder="0.0">
+                </label>
+                <label>
+                  Service result
+                  <select id="aiDecisionServiceResult">
+                    <option value="better">Better than expected</option>
+                    <option value="as_expected" selected>As expected</option>
+                    <option value="worse">Worse than expected</option>
+                  </select>
+                </label>
+              </div>
+
+              <label class="ai-decision-review-note">
+                Manager note
+                <textarea id="aiDecisionReviewNote" maxlength="500" placeholder="What actually happened during service?"></textarea>
+              </label>
+
+              <div class="ai-decision-review-actions">
+                <span id="aiDecisionReviewStatus" role="status"></span>
+                <button type="button" id="aiDecisionReviewCancel">Cancel</button>
+                <button type="button" id="aiDecisionReviewSave">Save outcome</button>
+              </div>
+            </section>
+
+            <section class="ai-decision-result" id="aiDecisionResult" hidden aria-labelledby="aiDecisionResultTitle">
+              <div>
+                <small>Decision result</small>
+                <strong id="aiDecisionResultTitle">Predicted vs. actual</strong>
+              </div>
+              <div class="ai-decision-result-grid">
+                <article>
+                  <small>Predicted savings</small>
+                  <strong id="aiDecisionPredictedSavings">$0</strong>
+                </article>
+                <article>
+                  <small>Actual savings</small>
+                  <strong id="aiDecisionResultSavings">$0</strong>
+                </article>
+                <article>
+                  <small>Predicted wait impact</small>
+                  <strong id="aiDecisionPredictedWait">+0.0 min</strong>
+                </article>
+                <article>
+                  <small>Actual wait impact</small>
+                  <strong id="aiDecisionResultWait">+0.0 min</strong>
+                </article>
+              </div>
+              <p id="aiDecisionResultSummary">Outcome review saved.</p>
             </section>
 
             <section class="ai-recommendation-timeline" aria-labelledby="aiTimelineTitle">
@@ -2580,7 +2663,7 @@
 
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/modules/actionList.js?v=34.0.7b"></script>
-  <script src="js/modules/managerShiftBrief.js?v=34.0.8e"></script>
+  <script src="js/modules/managerShiftBrief.js?v=34.0.9a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

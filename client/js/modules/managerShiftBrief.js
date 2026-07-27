@@ -334,6 +334,121 @@
     if (note) note.textContent = `${decision.risk}. Track the result through service and compare predicted versus actual outcome at ${decision.reviewPoint || "shift close"}.`;
   }
 
+  const DECISION_RESULT_KEY = "blueCurrent.activeDecisionResult.v34.0.8f";
+
+  function saveDecisionResult(result) {
+    try {
+      localStorage.setItem(DECISION_RESULT_KEY, JSON.stringify(result));
+    } catch (error) {
+      console.warn("[ManagerShiftBrief] Decision result could not be saved.", error);
+    }
+  }
+
+  function loadDecisionResult() {
+    try {
+      const result = JSON.parse(localStorage.getItem(DECISION_RESULT_KEY));
+      return result && result.savedAt ? result : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function openDecisionReview() {
+    const decision = loadActiveDecision();
+    const panel = byId("aiDecisionReview");
+    const result = byId("aiDecisionResult");
+    const savings = byId("aiDecisionActualSavings");
+    const wait = byId("aiDecisionActualWait");
+    const status = byId("aiDecisionReviewStatus");
+
+    if (!decision || !panel) return;
+
+    panel.hidden = false;
+    if (result) result.hidden = true;
+    if (savings) savings.value = "";
+    if (wait) wait.value = "";
+    if (status) status.textContent = "";
+    panel.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function closeDecisionReview() {
+    const panel = byId("aiDecisionReview");
+    if (panel) panel.hidden = true;
+  }
+
+  function renderDecisionResult(result = loadDecisionResult()) {
+    const panel = byId("aiDecisionResult");
+    if (!panel) return;
+
+    panel.hidden = !result;
+    if (!result) return;
+
+    const mapping = [
+      ["aiDecisionPredictedSavings", formatMoney(result.predictedSavings || 0)],
+      ["aiDecisionResultSavings", formatMoney(result.actualSavings || 0)],
+      ["aiDecisionPredictedWait", `${result.predictedWait >= 0 ? "+" : ""}${Number(result.predictedWait || 0).toFixed(1)} min`],
+      ["aiDecisionResultWait", `${result.actualWait >= 0 ? "+" : ""}${Number(result.actualWait || 0).toFixed(1)} min`]
+    ];
+
+    mapping.forEach(([id, value]) => {
+      const node = byId(id);
+      if (node) node.textContent = value;
+    });
+
+    const summary = byId("aiDecisionResultSummary");
+    if (summary) {
+      const savingsDifference = Number(result.actualSavings || 0) - Number(result.predictedSavings || 0);
+      const waitDifference = Number(result.actualWait || 0) - Number(result.predictedWait || 0);
+      const savingsText = savingsDifference >= 0
+        ? `${formatMoney(Math.abs(savingsDifference))} above prediction`
+        : `${formatMoney(Math.abs(savingsDifference))} below prediction`;
+      const waitText = waitDifference <= 0
+        ? `${Math.abs(waitDifference).toFixed(1)} minutes better than expected`
+        : `${Math.abs(waitDifference).toFixed(1)} minutes worse than expected`;
+
+      summary.textContent = `${savingsText}; guest wait impact was ${waitText}. ${result.note || ""}`.trim();
+    }
+  }
+
+  function saveOutcomeReview() {
+    const decision = loadActiveDecision();
+    const status = byId("aiDecisionReviewStatus");
+    if (!decision) {
+      if (status) status.textContent = "No active decision is available.";
+      return;
+    }
+
+    const actualSavings = Number.parseFloat(byId("aiDecisionActualSavings")?.value || "0");
+    const actualWait = Number.parseFloat(byId("aiDecisionActualWait")?.value || "0");
+    const serviceResult = byId("aiDecisionServiceResult")?.value || "as_expected";
+    const note = byId("aiDecisionReviewNote")?.value?.trim() || "";
+
+    const result = {
+      decisionType: decision.type,
+      predictedSavings: Number(decision.savings || 0),
+      predictedWait: Number(decision.waitImpact || 0),
+      actualSavings: Number.isFinite(actualSavings) ? actualSavings : 0,
+      actualWait: Number.isFinite(actualWait) ? actualWait : 0,
+      serviceResult,
+      note,
+      savedAt: new Date().toISOString()
+    };
+
+    saveDecisionResult(result);
+    closeDecisionReview();
+    renderDecisionResult(result);
+
+    if (status) status.textContent = "Outcome saved.";
+  }
+
+  function bindDecisionReview() {
+    byId("aiDecisionReviewNow")?.addEventListener("click", openDecisionReview);
+    byId("aiDecisionReviewClose")?.addEventListener("click", closeDecisionReview);
+    byId("aiDecisionReviewCancel")?.addEventListener("click", closeDecisionReview);
+    byId("aiDecisionReviewSave")?.addEventListener("click", saveOutcomeReview);
+    renderDecisionResult();
+  }
+
   function bindActiveDecision() {
     const clear = byId("aiActiveDecisionClear");
     const review = byId("aiActiveDecisionReviewNow");
@@ -346,12 +461,7 @@
     }
 
     if (review) {
-      review.addEventListener("click", () => {
-        const timeline = byId("aiTimelineCloseTitle");
-        timeline?.scrollIntoView({ behavior: "smooth", block: "center" });
-        const status = byId("aiScenarioActionStatus");
-        if (status) status.textContent = "Review the predicted outcome against actual shift results.";
-      });
+      review.addEventListener("click", openDecisionReview);
     }
 
     renderActiveDecision();
@@ -768,6 +878,53 @@
     syncImpactPreview();
   }
 
+  function calculateRestaurantPulse() {
+    const labor=numericValue("operationLabor",0), reservations=numericValue("operationReservations",0);
+    const scheduled=numericValue("operationScheduled",0), pto=numericValue("operationPto",0);
+    const forecast=numericValue("forecastChange",0), rain=numericValue("weatherRain",0);
+    const weather=text("weatherCondition","").toLowerCase();
+    const priorities=Math.max(openManagerActions().length,document.querySelectorAll("#attentionList li").length);
+    let score=100, target="managerActionList"; const drivers=[];
+    if(labor>=30){score-=14;drivers.push(`Labor high at ${labor.toFixed(1)}%`)}
+    else if(labor>=28){score-=7;drivers.push(`Labor watch at ${labor.toFixed(1)}%`)}
+    else if(labor>0) drivers.push(`Labor controlled at ${labor.toFixed(1)}%`);
+    if(reservations>=100){score-=4;drivers.push(`${Math.round(reservations)} reservations`);target="reservation-operations"}
+    else drivers.push(`${Math.round(reservations)} reservations booked`);
+    if(scheduled>0&&reservations/scheduled>6){score-=8;drivers.push("Staffing pressure rising")}
+    if(pto>0){score-=Math.min(10,pto*3);drivers.push(`${Math.round(pto)} PTO pending`)}
+    if(/storm|thunder/.test(weather)||rain>=70){score-=12;drivers.push("Weather disruption risk");target="managerShiftBrief"}
+    else if(/rain/.test(weather)||rain>=40){score-=6;drivers.push("Rain watch")}
+    if(forecast>=8){score-=3;drivers.push(`Demand +${forecast.toFixed(1)}%`)}
+    if(priorities>=5){score-=12;drivers.push(`${priorities} priorities open`)}
+    else if(priorities>0){score-=priorities*2;drivers.push(`${priorities} priorit${priorities===1?"y":"ies"} open`)}
+    score=Math.max(0,Math.min(100,Math.round(score)));
+    let state="calm",title="The restaurant is calm and ready.";
+    if(score<70){state="critical";title="The restaurant needs immediate attention."}
+    else if(score<82){state="busy";title="The restaurant is under operating pressure."}
+    else if(score<93){state="building";title="The restaurant is building toward service."}
+    const summary=state==="critical"?"Resolve the highest-risk operating item before demand increases.":state==="busy"?"Protect coverage and clear the most important open action.":state==="building"?"Finish priority items before the next demand wave.":"Staffing, demand, and service conditions are aligned.";
+    return {score,state,title,summary,drivers:drivers.slice(0,3),target};
+  }
+
+  function syncRestaurantPulse(){
+    const pulse=byId("restaurantPulse"); if(!pulse) return;
+    const result=calculateRestaurantPulse();
+    pulse.dataset.state=result.state;
+    byId("restaurantPulseScore").textContent=String(result.score);
+    byId("restaurantPulseState").textContent=result.state[0].toUpperCase()+result.state.slice(1);
+    byId("restaurantPulseTitle").textContent=result.title;
+    byId("restaurantPulseSummary").textContent=result.summary;
+    byId("restaurantPulseUpdated").textContent=`Updated ${new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit"}).format(new Date())}`;
+    const drivers=byId("restaurantPulseDrivers"); drivers.replaceChildren();
+    result.drivers.forEach(value=>{const chip=document.createElement("span");chip.textContent=value;drivers.append(chip)});
+    byId("restaurantPulseFocus").dataset.target=result.target;
+  }
+
+  function bindRestaurantPulse(){
+    const button=byId("restaurantPulseFocus"); if(!button) return;
+    button.addEventListener("click",()=>byId(button.dataset.target||"managerActionList")?.scrollIntoView({behavior:"smooth",block:"center"}));
+  }
+
   function syncFromCommandCenter() {
     const forecast = byId("managerShiftForecastSales");
     const forecastDelta = byId("managerShiftForecastDelta");
@@ -792,6 +949,7 @@
     renderPriorities();
     syncHandoff();
     syncManagerRecommendation();
+    syncRestaurantPulse();
   }
 
   function observeLiveData() {
@@ -843,6 +1001,8 @@
     bindRecommendationWhy();
     bindScenarioActions();
     bindActiveDecision();
+    bindDecisionReview();
+    bindRestaurantPulse();
     syncFromCommandCenter();
     observeLiveData();
 
