@@ -4673,3 +4673,131 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .restaurant-pulse-focus{min-height:42px;padding:0 16px;color:#082632;border:0;border-radius:999px;background:#d8ae62;font-size:.72rem;font-weight:800;white-space:nowrap}
 @media(max-width:820px){.restaurant-pulse{grid-template-columns:auto 1fr}.restaurant-pulse-focus{grid-column:1/-1;justify-self:start}}
 @media(max-width:560px){.restaurant-pulse{grid-template-columns:1fr}.restaurant-pulse-score{width:96px;height:96px}.restaurant-pulse-heading{flex-direction:column}}
+
+
+/* V34.1.0a — CC-011a Predictive Operations */
+.predictive-operations-panel{
+  margin:18px 0;
+  padding:22px;
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(242,238,227,.88));
+  box-shadow:0 22px 68px rgba(4,28,36,.09);
+}
+.predictive-operations-heading,
+.predictive-priority{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+}
+.predictive-operations-heading small,
+.predictive-priority small{
+  color:var(--sea);
+  font-size:.66rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.predictive-operations-heading h3{
+  margin:.35rem 0 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.5rem;
+}
+#predictiveOperationsConfidence{
+  padding:7px 10px;
+  color:#2f7075;
+  border:1px solid rgba(47,112,117,.16);
+  border-radius:999px;
+  background:rgba(47,112,117,.06);
+  font-size:.68rem;
+  font-weight:800;
+}
+.predictive-pressure-grid,
+.predictive-forecast-grid{
+  display:grid;
+  gap:10px;
+  margin-top:16px;
+}
+.predictive-pressure-grid{grid-template-columns:repeat(4,1fr)}
+.predictive-forecast-grid{grid-template-columns:repeat(4,1fr)}
+.predictive-pressure-grid article,
+.predictive-forecast-grid article{
+  padding:14px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:15px;
+  background:rgba(255,255,255,.62);
+}
+.predictive-pressure-grid small,
+.predictive-pressure-grid strong,
+.predictive-pressure-grid span,
+.predictive-forecast-grid small,
+.predictive-forecast-grid strong,
+.predictive-forecast-grid p{
+  display:block;
+}
+.predictive-pressure-grid small,
+.predictive-forecast-grid small{
+  color:#708587;
+  font-size:.63rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.predictive-pressure-grid strong{
+  margin-top:6px;
+  color:var(--atlantic);
+  font-size:1.55rem;
+}
+.predictive-pressure-grid span{
+  margin-top:4px;
+  color:#708587;
+  font-size:.68rem;
+}
+.predictive-forecast-grid strong{
+  margin-top:7px;
+  font-size:.86rem;
+}
+.predictive-forecast-grid p{
+  margin:6px 0 0;
+  color:#60777a;
+  font-size:.7rem;
+  line-height:1.45;
+}
+.predictive-priority{
+  margin-top:14px;
+  padding:15px;
+  border:1px solid rgba(216,174,98,.2);
+  border-radius:15px;
+  background:rgba(216,174,98,.08);
+}
+.predictive-priority strong{
+  display:block;
+  margin-top:5px;
+  font-size:.9rem;
+}
+.predictive-priority p{
+  margin:6px 0 0;
+  color:#60777a;
+  font-size:.72rem;
+}
+#predictiveRiskAction{
+  flex:0 0 auto;
+  min-height:38px;
+  padding:0 14px;
+  color:#082632;
+  border:0;
+  border-radius:999px;
+  background:var(--gold);
+  font-size:.7rem;
+  font-weight:800;
+}
+@media(max-width:900px){
+  .predictive-pressure-grid,
+  .predictive-forecast-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  .predictive-operations-heading,
+  .predictive-priority{flex-direction:column}
+  .predictive-pressure-grid,
+  .predictive-forecast-grid{grid-template-columns:1fr}
+}

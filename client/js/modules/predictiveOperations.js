@@ -1,103 +1,154 @@
-(function () {
+(() => {
   "use strict";
 
-  const scenarios = [
-    { label:"Current service", occupancy:82, occupancy15:89, occupancy30:94, wait:12, kitchen:11, kitchenProjected:15, revenue:8420, forecast:13950, confidence:94, staffing:"Balanced", action:"Prepare patio section", reason:"Two large parties arrive within 25 minutes." },
-    { label:"Demand building", occupancy:89, occupancy15:96, occupancy30:99, wait:18, kitchen:13, kitchenProjected:18, revenue:9730, forecast:15180, confidence:92, staffing:"Dining room tight", action:"Open patio and delay breaks", reason:"Four reservations and two walk-ins are converging." },
-    { label:"Peak pressure", occupancy:96, occupancy15:99, occupancy30:97, wait:24, kitchen:17, kitchenProjected:21, revenue:11280, forecast:16240, confidence:90, staffing:"Kitchen heavy", action:"Pause walk-ins for 10 minutes", reason:"Ticket load is rising faster than table turns." },
-    { label:"Recovery underway", occupancy:91, occupancy15:86, occupancy30:79, wait:9, kitchen:14, kitchenProjected:11, revenue:12860, forecast:16520, confidence:95, staffing:"Recovering", action:"Resume normal seating", reason:"Table turns and kitchen throughput are improving." }
-  ];
+  const byId = id => document.getElementById(id);
 
-  const money = value => new Intl.NumberFormat("en-US", { style:"currency", currency:"USD", maximumFractionDigits:0 }).format(value);
+  function text(id, fallback = "") {
+    return byId(id)?.textContent?.trim() || fallback;
+  }
 
-  window.createBlueCurrentPredictiveOperationsModule = function (eventBus, appState) {
-    const root = document.getElementById("predictive-operations");
-    if (!root) return null;
+  function number(id, fallback = 0) {
+    const value = Number.parseFloat(text(id, String(fallback)).replace(/[$,%+,]/g, ""));
+    return Number.isFinite(value) ? value : fallback;
+  }
 
-    const el = id => document.getElementById(id);
-    const els = {
-      state:el("predictionState"), occNow:el("forecastOccNow"), occ15:el("forecastOcc15"), occ30:el("forecastOcc30"), wait:el("forecastWait"),
-      kitchenNow:el("forecastKitchenNow"), kitchenProjected:el("forecastKitchenProjected"), kitchenReason:el("forecastKitchenReason"),
-      revenueNow:el("forecastRevenueNow"), revenueClose:el("forecastRevenueClose"), revenueConfidence:el("forecastRevenueConfidence"),
-      staffing:el("forecastStaffing"), action:el("forecastAction"), brief:el("forecastBrief"), confidence:el("forecastConfidence"),
-      run:el("forecastRun"), next:el("forecastNext"), bar15:el("forecastBar15"), bar30:el("forecastBar30")
+  function calculatePrediction() {
+    const reservations = number("operationReservations", 0);
+    const scheduled = number("operationScheduled", 0);
+    const labor = number("operationLabor", 0);
+    const forecastRevenue = number("forecastRevenue", 0);
+    const forecastChange = number("forecastChange", 0);
+    const rain = number("weatherRain", 0);
+    const weather = text("weatherCondition", "").toLowerCase();
+    const openActions = document.querySelectorAll("#managerActionItems .manager-action-item:not(.is-complete)").length;
+    const attention = document.querySelectorAll("#attentionList li").length;
+
+    const reservationPressure = Math.min(35, reservations * 0.28);
+    const staffingPressure = scheduled > 0 ? Math.max(0, reservations / scheduled - 3.5) * 8 : 8;
+    const laborPressure = labor >= 30 ? 16 : labor >= 28 ? 9 : 2;
+    const weatherPressure = /storm|thunder/.test(weather) || rain >= 70 ? 18 : /rain/.test(weather) || rain >= 40 ? 9 : 0;
+    const actionPressure = Math.min(14, Math.max(openActions, attention) * 2.5);
+
+    const now = Math.round(Math.min(100, 18 + reservationPressure + staffingPressure + laborPressure + weatherPressure + actionPressure));
+    const growth = Math.max(4, Math.min(22, reservations * 0.08 + Math.max(0, forecastChange) * 0.7));
+    const p30 = Math.min(100, Math.round(now + growth * 0.55));
+    const p60 = Math.min(100, Math.round(now + growth));
+    const p90 = Math.max(0, Math.min(100, Math.round(p60 - (weatherPressure ? 2 : 7))));
+
+    const ninetyMinuteRevenue = Math.max(
+      0,
+      Math.round((forecastRevenue * 0.075) / 10) * 10
+    );
+
+    const hostRisk = reservations >= 90 || p60 >= 78;
+    const kitchenRisk = p60 >= 82 || reservations >= 110;
+    const laborRisk = labor >= 29.5;
+    const weatherRisk = weatherPressure >= 15;
+
+    let riskTitle = "No immediate predicted risk";
+    let riskDetail = "Operating pressure is expected to remain manageable.";
+    let target = "managerShiftBrief";
+
+    if (kitchenRisk) {
+      riskTitle = "Kitchen pressure expected within 60 minutes";
+      riskDetail = "Prep, expo, and ticket pacing should be reviewed before the rush.";
+      target = "kitchen-command-center";
+    } else if (hostRisk) {
+      riskTitle = "Host-stand congestion expected";
+      riskDetail = "Reservation arrivals may outpace table availability during the next demand wave.";
+      target = "reservation-operations";
+    } else if (laborRisk) {
+      riskTitle = "Labor likely to finish above target";
+      riskDetail = "Review the next staffing decision before additional coverage is added.";
+      target = "managerActionList";
+    } else if (weatherRisk) {
+      riskTitle = "Weather may disrupt seating flow";
+      riskDetail = "Prepare for patio demand to shift indoors.";
+      target = "managerShiftBrief";
+    }
+
+    return {
+      confidence: Math.min(96, Math.round(78 + Math.min(18, reservations / 10))),
+      pressure: [now, p30, p60, p90],
+      host: hostRisk
+        ? ["Congestion building", "Wait-time pressure may rise as reservation arrivals cluster."]
+        : ["Stable", "Guest arrivals are expected to remain manageable."],
+      kitchen: kitchenRisk
+        ? ["Pressure rising", "Ticket-time and expo pressure may increase during the next hour."]
+        : ["Balanced", "Kitchen load is expected to remain controlled."],
+      labor: laborRisk
+        ? ["Above target", `Projected labor is ${labor.toFixed(1)}%; review the next cut window.`]
+        : ["On target", `Projected labor is ${labor.toFixed(1)}% and currently aligned with plan.`],
+      revenue: [ninetyMinuteRevenue, `Current pace is ${forecastChange >= 0 ? "+" : ""}${forecastChange.toFixed(1)}% versus last year.`],
+      risk: { title: riskTitle, detail: riskDetail, target }
     };
+  }
 
-    let index = 0;
-    let timer = null;
-
-    function buildBrief(s) {
-      return `${s.label}. Occupancy is ${s.occupancy}% and is projected to reach ${s.occupancy15}% within fifteen minutes. Kitchen time is expected to move from ${s.kitchen} to ${s.kitchenProjected} minutes. Forecast close is ${money(s.forecast)}. Recommended action: ${s.action.toLowerCase()}.`;
-    }
-
-    function render(i, publish) {
-      index = (i + scenarios.length) % scenarios.length;
-      const s = scenarios[index];
-      els.state.textContent = s.label;
-      els.occNow.textContent = `${s.occupancy}%`;
-      els.occ15.textContent = `${s.occupancy15}%`;
-      els.occ30.textContent = `${s.occupancy30}%`;
-      els.wait.textContent = `${s.wait} min`;
-      els.kitchenNow.textContent = `${s.kitchen} min`;
-      els.kitchenProjected.textContent = `${s.kitchenProjected} min`;
-      els.kitchenReason.textContent = s.reason;
-      els.revenueNow.textContent = money(s.revenue);
-      els.revenueClose.textContent = money(s.forecast);
-      els.revenueConfidence.textContent = `${s.confidence}%`;
-      els.staffing.textContent = s.staffing;
-      els.action.textContent = s.action;
-      els.brief.textContent = buildBrief(s);
-      els.confidence.textContent = `${s.confidence}% confidence`;
-      els.bar15.style.width = `${Math.min(100, s.occupancy15)}%`;
-      els.bar30.style.width = `${Math.min(100, s.occupancy30)}%`;
-
-      if (publish) {
-        appState?.update?.({
-          occupancyPercent:s.occupancy,
-          estimatedRevenue:s.revenue,
-          revenueForecast:s.forecast,
-          projectedOccupancy:s.occupancy15,
-          projectedKitchenMinutes:s.kitchenProjected,
-          executiveBrief:buildBrief(s)
-        }, "predictive:forecast-updated");
-        eventBus?.emit?.("predictive:forecast-updated", { scenario:s, index });
-        eventBus?.emit?.("ai-manager:recommendation", { priority:s.occupancy15 >= 96 ? "warning" : "info", title:s.action, detail:s.reason });
-      }
-    }
-
-    function runForecast() {
-      clearInterval(timer);
-      els.run.disabled = true;
-      els.run.textContent = "Forecasting…";
-      let step = 0;
-      render(step, true);
-      timer = setInterval(() => {
-        step += 1;
-        if (step >= scenarios.length) {
-          clearInterval(timer); timer = null;
-          els.run.disabled = false; els.run.textContent = "Run predictive service";
-          eventBus?.emit?.("predictive:run-complete", { scenarios:scenarios.length });
-          return;
-        }
-        render(step, true);
-      }, 1500);
-    }
-
-    els.run?.addEventListener("click", runForecast);
-    els.next?.addEventListener("click", () => render(index + 1, true));
-    eventBus?.on?.("portfolio:location-selected", ({ location }) => {
-      if (!location) return;
-      const closest = location.occupancy >= 95 ? 2 : location.occupancy >= 86 ? 1 : 0;
-      render(closest, false);
-    });
-    eventBus?.on?.("time-machine:snapshot-applied", ({ snapshot }) => {
-      if (!snapshot) return;
-      const closest = snapshot.occupancy >= 94 ? 2 : snapshot.occupancy >= 86 ? 1 : snapshot.occupancy >= 75 ? 0 : 3;
-      render(closest, false);
+  function renderPrediction() {
+    const result = calculatePrediction();
+    const pressureIds = ["predictivePressureNow", "predictivePressure30", "predictivePressure60", "predictivePressure90"];
+    pressureIds.forEach((id, index) => {
+      if (byId(id)) byId(id).textContent = String(result.pressure[index]);
     });
 
-    render(0, false);
-    eventBus?.emit?.("predictive:ready", { scenarios:scenarios.length });
-    return { render, runForecast, scenarios:scenarios.slice(), getCurrent:() => scenarios[index] };
-  };
+    byId("predictiveOperationsConfidence").textContent = `Confidence ${result.confidence}%`;
+    byId("predictiveHostTitle").textContent = result.host[0];
+    byId("predictiveHostDetail").textContent = result.host[1];
+    byId("predictiveKitchenTitle").textContent = result.kitchen[0];
+    byId("predictiveKitchenDetail").textContent = result.kitchen[1];
+    byId("predictiveLaborTitle").textContent = result.labor[0];
+    byId("predictiveLaborDetail").textContent = result.labor[1];
+    byId("predictiveRevenueTitle").textContent = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0
+    }).format(result.revenue[0]) + " next 90 min";
+    byId("predictiveRevenueDetail").textContent = result.revenue[1];
+    byId("predictiveRiskTitle").textContent = result.risk.title;
+    byId("predictiveRiskDetail").textContent = result.risk.detail;
+    byId("predictiveRiskAction").dataset.target = result.risk.target;
+  }
+
+  function observe() {
+    if (!window.MutationObserver) return;
+    const ids = [
+      "operationReservations",
+      "operationScheduled",
+      "operationLabor",
+      "forecastRevenue",
+      "forecastChange",
+      "weatherRain",
+      "weatherCondition",
+      "managerActionItems",
+      "attentionList"
+    ];
+
+    const observer = new MutationObserver(() => {
+      clearTimeout(observe.timer);
+      observe.timer = setTimeout(renderPrediction, 75);
+    });
+
+    ids.map(byId).filter(Boolean).forEach(node => observer.observe(node, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true
+    }));
+  }
+
+  function init() {
+    if (!byId("predictiveOperationsPanel")) return;
+    byId("predictiveRiskAction")?.addEventListener("click", event => {
+      const target = byId(event.currentTarget.dataset.target || "managerShiftBrief");
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    renderPrediction();
+    observe();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
 })();

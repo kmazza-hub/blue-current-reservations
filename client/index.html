@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.9a">
+  <meta name="blue-current-build" content="34.1.0a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.9a">
+  <meta name="blue-current-build" content="34.1.0a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.9a">
+  <link rel="stylesheet" href="styles.css?v=34.1.0a">
 </head>
 <body>
 
@@ -237,6 +237,71 @@
             <div class="restaurant-pulse-drivers" id="restaurantPulseDrivers"></div>
           </div>
           <button class="restaurant-pulse-focus" id="restaurantPulseFocus" type="button">Go to priority</button>
+        </section>
+
+        <section class="predictive-operations-panel reveal" id="predictiveOperationsPanel" aria-labelledby="predictiveOperationsTitle">
+          <div class="predictive-operations-heading">
+            <div>
+              <small>Next 90 minutes</small>
+              <h3 id="predictiveOperationsTitle">Predictive Operations</h3>
+            </div>
+            <span id="predictiveOperationsConfidence">Confidence 88%</span>
+          </div>
+
+          <div class="predictive-pressure-grid">
+            <article>
+              <small>Now</small>
+              <strong id="predictivePressureNow">42</strong>
+              <span>Current pressure</span>
+            </article>
+            <article>
+              <small>30 minutes</small>
+              <strong id="predictivePressure30">54</strong>
+              <span>Building</span>
+            </article>
+            <article>
+              <small>60 minutes</small>
+              <strong id="predictivePressure60">67</strong>
+              <span>Peak forming</span>
+            </article>
+            <article>
+              <small>90 minutes</small>
+              <strong id="predictivePressure90">61</strong>
+              <span>Expected easing</span>
+            </article>
+          </div>
+
+          <div class="predictive-forecast-grid">
+            <article>
+              <small>Host stand</small>
+              <strong id="predictiveHostTitle">Stable</strong>
+              <p id="predictiveHostDetail">Guest arrivals are expected to remain manageable.</p>
+            </article>
+            <article>
+              <small>Kitchen</small>
+              <strong id="predictiveKitchenTitle">Balanced</strong>
+              <p id="predictiveKitchenDetail">Ticket-time pressure is expected to stay controlled.</p>
+            </article>
+            <article>
+              <small>Labor</small>
+              <strong id="predictiveLaborTitle">On target</strong>
+              <p id="predictiveLaborDetail">Projected labor should remain near the current plan.</p>
+            </article>
+            <article>
+              <small>Revenue</small>
+              <strong id="predictiveRevenueTitle">$0 next 90 min</strong>
+              <p id="predictiveRevenueDetail">Forecasting the next sales interval.</p>
+            </article>
+          </div>
+
+          <div class="predictive-priority">
+            <div>
+              <small>Highest predicted risk</small>
+              <strong id="predictiveRiskTitle">No immediate risk</strong>
+              <p id="predictiveRiskDetail">Blue Current is monitoring operating pressure.</p>
+            </div>
+            <button type="button" id="predictiveRiskAction">Go to priority</button>
+          </div>
         </section>
 
         <div class="readiness-panel reveal">
@@ -2664,6 +2729,7 @@
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/modules/actionList.js?v=34.0.7b"></script>
   <script src="js/modules/managerShiftBrief.js?v=34.0.9a"></script>
+  <script src="js/modules/predictiveOperations.js?v=34.1.0a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
