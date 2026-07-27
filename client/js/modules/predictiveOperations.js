@@ -172,6 +172,87 @@
     }
   }
 
+  function buildForecastWatchlist(result) {
+    const reservations = number("operationReservations", 0);
+    const scheduled = number("operationScheduled", 0);
+    const labor = number("operationLabor", 0);
+    const rain = number("weatherRain", 0);
+    const weather = text("weatherCondition", "").toLowerCase();
+    const p60 = result.pressure[2];
+
+    const items = [
+      {
+        title: "Guest arrival pace",
+        detail: reservations >= 80
+          ? `${Math.round(reservations)} reservations may create clustered arrivals.`
+          : "Reservation arrivals are currently manageable.",
+        tone: reservations >= 100 ? "risk" : reservations >= 70 ? "watch" : "normal"
+      },
+      {
+        title: "Staffing coverage",
+        detail: scheduled > 0
+          ? `${Math.round(scheduled)} team members are scheduled for the current outlook.`
+          : "Scheduled staffing data is still loading.",
+        tone: scheduled > 0 && reservations / scheduled > 6 ? "risk" : scheduled > 0 && reservations / scheduled > 4.5 ? "watch" : "normal"
+      },
+      {
+        title: "Kitchen pressure",
+        detail: p60 >= 82
+          ? "Prep, expo, and ticket pacing may tighten within the next hour."
+          : "Kitchen load is projected to remain controlled.",
+        tone: p60 >= 82 ? "risk" : p60 >= 68 ? "watch" : "normal"
+      },
+      {
+        title: "Labor pace",
+        detail: `Projected labor is ${labor.toFixed(1)}%.`,
+        tone: labor >= 30 ? "risk" : labor >= 28 ? "watch" : "normal"
+      },
+      {
+        title: "Weather effect",
+        detail: /rain|storm/.test(weather) || rain >= 40
+          ? "Seating demand may shift indoors."
+          : "Weather is not expected to disrupt seating flow.",
+        tone: /storm/.test(weather) || rain >= 70 ? "risk" : /rain/.test(weather) || rain >= 40 ? "watch" : "normal"
+      }
+    ];
+
+    return items
+      .sort((a, b) => {
+        const rank = { risk: 0, watch: 1, normal: 2 };
+        return rank[a.tone] - rank[b.tone];
+      })
+      .slice(0, 3);
+  }
+
+  function renderForecastWatchlist(result) {
+    const list = byId("predictiveWatchlistList");
+    const count = byId("predictiveWatchlistCount");
+    if (!list || !count) return;
+
+    const items = buildForecastWatchlist(result);
+    count.textContent = `${items.length} signal${items.length === 1 ? "" : "s"}`;
+    list.replaceChildren();
+
+    items.forEach(item => {
+      const article = document.createElement("article");
+      article.dataset.tone = item.tone;
+
+      const dot = document.createElement("span");
+      dot.className = "predictive-watch-dot";
+
+      const copy = document.createElement("div");
+      copy.innerHTML = "<strong></strong><small></small>";
+      copy.querySelector("strong").textContent = item.title;
+      copy.querySelector("small").textContent = item.detail;
+
+      const badge = document.createElement("b");
+      badge.textContent = item.tone === "risk" ? "Risk" : item.tone === "watch" ? "Watch" : "Stable";
+
+      article.append(dot, copy, badge);
+      list.append(article);
+    });
+  }
+
   function renderPrediction() {
     const result = calculatePrediction();
     const pressureIds = ["predictivePressureNow", "predictivePressure30", "predictivePressure60", "predictivePressure90"];
@@ -197,6 +278,7 @@
     byId("predictiveRiskEta").textContent = result.risk.eta;
     byId("predictiveRiskAction").dataset.target = result.risk.target;
     renderRiskSignals(result.risk.signals);
+    renderForecastWatchlist(result);
   }
 
   function observe() {

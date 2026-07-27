@@ -1,4 +1,4 @@
-BLUE CURRENT V34.1.0b — CC-011b PREVENTIVE FORECAST ACTIONS
+BLUE CURRENT V34.1.0c — CC-011c PREDICTIVE WATCHLIST
 
 REPLACE:
 - client/index.html
@@ -6,20 +6,21 @@ REPLACE:
 - client/js/modules/predictiveOperations.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Expected time-to-risk estimate
-- Live signal chips explaining the predicted risk
-- Create Preventive Action button
-- Predictive risk converted into a persisted manager action
-- Forecast rationale attached as a manager note
-- Action List refresh event
-- Saving, sign-in, success, and error messages
+- Forecast Watchlist inside Predictive Operations
+- Top three signals ranked by risk:
+  - Guest arrival pace
+  - Staffing coverage
+  - Kitchen pressure
+  - Labor pace
+  - Weather effect
+- Stable, Watch, and Risk states
+- Automatic updates whenever live operating data changes
 
 TEST
 1. npm run check
 2. npm start
-3. Sign in and open Command Center
-4. Confirm ETA and risk signals appear
-5. Click Create preventive action
-6. Confirm the new Predictive Operations action appears
-7. Confirm the rationale note is attached
-8. Refresh and verify the action remains
+3. Open Command Center
+4. Confirm Forecast Watchlist appears
+5. Verify the top three signals match current conditions
+6. Refresh or change operating data
+7. Confirm ranking and labels update

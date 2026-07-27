@@ -4887,3 +4887,106 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     flex-wrap:wrap;
   }
 }
+
+
+/* V34.1.0c — CC-011c Predictive Watchlist */
+.predictive-watchlist{
+  margin-top:14px;
+  padding:15px;
+  border:1px solid rgba(11,45,58,.09);
+  border-radius:15px;
+  background:rgba(255,255,255,.48);
+}
+.predictive-watchlist-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+}
+.predictive-watchlist-heading small,
+.predictive-watchlist-heading strong{
+  display:block;
+}
+.predictive-watchlist-heading small{
+  color:var(--sea);
+  font-size:.63rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.predictive-watchlist-heading strong{
+  margin-top:4px;
+  color:var(--atlantic);
+  font-size:.86rem;
+}
+#predictiveWatchlistCount{
+  color:#708587;
+  font-size:.66rem;
+}
+.predictive-watchlist-list{
+  display:grid;
+  gap:8px;
+  margin-top:12px;
+}
+.predictive-watchlist-list article{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
+  padding:11px 12px;
+  border:1px solid rgba(11,45,58,.07);
+  border-radius:12px;
+  background:rgba(255,255,255,.62);
+}
+.predictive-watch-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#83c5bb;
+  box-shadow:0 0 0 5px rgba(131,197,187,.12);
+}
+.predictive-watchlist-list article[data-tone="watch"] .predictive-watch-dot{
+  background:#d8ae62;
+  box-shadow:0 0 0 5px rgba(216,174,98,.12);
+}
+.predictive-watchlist-list article[data-tone="risk"] .predictive-watch-dot{
+  background:#df806c;
+  box-shadow:0 0 0 5px rgba(223,128,108,.12);
+}
+.predictive-watchlist-list strong,
+.predictive-watchlist-list small{
+  display:block;
+}
+.predictive-watchlist-list strong{
+  color:var(--atlantic);
+  font-size:.76rem;
+}
+.predictive-watchlist-list small{
+  margin-top:3px;
+  color:#708587;
+  font-size:.66rem;
+}
+.predictive-watchlist-list b{
+  padding:6px 8px;
+  border-radius:999px;
+  color:#526f72;
+  background:rgba(47,112,117,.07);
+  font-size:.62rem;
+}
+.predictive-watchlist-list article[data-tone="watch"] b{
+  color:#805f2d;
+  background:rgba(216,174,98,.11);
+}
+.predictive-watchlist-list article[data-tone="risk"] b{
+  color:#8a4438;
+  background:rgba(223,128,108,.1);
+}
+@media(max-width:560px){
+  .predictive-watchlist-list article{
+    grid-template-columns:auto 1fr;
+  }
+  .predictive-watchlist-list b{
+    grid-column:2;
+    justify-self:start;
+  }
+}
