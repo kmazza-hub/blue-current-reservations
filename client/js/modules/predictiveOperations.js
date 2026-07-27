@@ -80,8 +80,96 @@
         ? ["Above target", `Projected labor is ${labor.toFixed(1)}%; review the next cut window.`]
         : ["On target", `Projected labor is ${labor.toFixed(1)}% and currently aligned with plan.`],
       revenue: [ninetyMinuteRevenue, `Current pace is ${forecastChange >= 0 ? "+" : ""}${forecastChange.toFixed(1)}% versus last year.`],
-      risk: { title: riskTitle, detail: riskDetail, target }
+      risk: {
+        title: riskTitle,
+        detail: riskDetail,
+        target,
+        eta: p30 >= 78 ? "Within 30 min" : p60 >= 72 ? "30–60 min" : "60–90 min",
+        signals: [
+          { label: `Pressure ${p60}`, tone: p60 >= 82 ? "risk" : p60 >= 68 ? "watch" : "normal" },
+          { label: `${Math.round(reservations)} reservations`, tone: reservations >= 100 ? "risk" : reservations >= 70 ? "watch" : "normal" },
+          { label: `Labor ${labor.toFixed(1)}%`, tone: labor >= 30 ? "risk" : labor >= 28 ? "watch" : "normal" }
+        ],
+        actionTitle: kitchenRisk
+          ? "Prepare kitchen and expo for predicted rush pressure"
+          : hostRisk
+            ? "Prepare host stand for predicted arrival congestion"
+            : laborRisk
+              ? "Review staffing plan before labor exceeds target"
+              : weatherRisk
+                ? "Prepare indoor seating plan for weather disruption"
+                : "Review the next predicted operating risk",
+        actionNote: `${riskDetail} Expected ${p30 >= 78 ? "within 30 minutes" : p60 >= 72 ? "within 30–60 minutes" : "within 60–90 minutes"}.`
+      }
     };
+  }
+
+  function apiClient() {
+    const module = window.BlueCurrentModules?.cloudFoundation;
+    return module?.api || (window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null);
+  }
+
+  function renderRiskSignals(signals) {
+    const container = byId("predictiveRiskSignals");
+    if (!container) return;
+
+    container.replaceChildren();
+    signals.forEach(signal => {
+      const chip = document.createElement("span");
+      chip.textContent = signal.label;
+      if (signal.tone === "watch") chip.classList.add("is-watch");
+      if (signal.tone === "risk") chip.classList.add("is-risk");
+      container.append(chip);
+    });
+  }
+
+  async function createPreventiveAction() {
+    const status = byId("predictiveActionStatus");
+    const button = byId("predictiveCreateAction");
+    const result = calculatePrediction();
+    const api = apiClient();
+
+    if (!status || !button) return;
+
+    if (!api?.hasCapability?.("createManagerAction") || !api.token) {
+      status.textContent = "Sign in to save a preventive action.";
+      return;
+    }
+
+    button.disabled = true;
+    status.textContent = "Creating preventive action…";
+
+    try {
+      const action = await api.createManagerAction({
+        locationId: "loc_marina",
+        title: result.risk.actionTitle,
+        source: "Predictive Operations",
+        priority: result.pressure[2] >= 82 ? "high" : "medium",
+        due: result.risk.eta
+      });
+
+      if (api?.hasCapability?.("updateManagerAction")) {
+        try {
+          await api.updateManagerAction(action.id, {
+            locationId: "loc_marina",
+            noteUpdate: true,
+            note: result.risk.actionNote
+          });
+          action.note = result.risk.actionNote;
+        } catch (noteError) {
+          console.warn("[PredictiveOperations] Preventive note could not be attached.", noteError);
+        }
+      }
+
+      status.textContent = "Preventive action added.";
+      window.dispatchEvent(new CustomEvent("bluecurrent:manager-action-created", {
+        detail: { action }
+      }));
+    } catch (error) {
+      status.textContent = error.message || "Could not create preventive action.";
+    } finally {
+      button.disabled = false;
+    }
   }
 
   function renderPrediction() {
@@ -106,7 +194,9 @@
     byId("predictiveRevenueDetail").textContent = result.revenue[1];
     byId("predictiveRiskTitle").textContent = result.risk.title;
     byId("predictiveRiskDetail").textContent = result.risk.detail;
+    byId("predictiveRiskEta").textContent = result.risk.eta;
     byId("predictiveRiskAction").dataset.target = result.risk.target;
+    renderRiskSignals(result.risk.signals);
   }
 
   function observe() {
@@ -142,6 +232,7 @@
       const target = byId(event.currentTarget.dataset.target || "managerShiftBrief");
       target?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
+    byId("predictiveCreateAction")?.addEventListener("click", createPreventiveAction);
     renderPrediction();
     observe();
   }
