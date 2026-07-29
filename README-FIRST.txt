@@ -1,37 +1,38 @@
-BLUE CURRENT V35.0.6 — RESERVATION TIMELINE
+BLUE CURRENT V35.0.7 — SERVICE FLOW MONITOR
 
 BASELINE
-Built from the real V35.0.5 Waitlist Engine release.
+Built from the real V35.0.6 Reservation Timeline release.
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/reservationTimeline.js
+- client/js/modules/serviceFlowMonitor.js
 
 WHAT THIS RELEASE ADDS
-- Lunch, dinner, and full-day reservation timelines
-- 15- and 30-minute service intervals
-- Reservation and cover counts by time window
-- Peak-pressure detection
-- Large-party and unassigned-reservation KPIs
-- Live comparison against current floor capacity
-- Projected wait by arrival window
-- Blue Current seating recommendations
-- Create Seating Plan workflow
-- Host Stand shortcut
-- Automatic updates after seating or table clearing
-- Persistent timeline settings and seating plans
+- Live service progression for every occupied table
+- Waiting, Drinks, Appetizers, Entrees, Dessert, and Check stages
+- Stage-target timing
+- Stalled-table detection
+- Active table, stalled, checks-open, cycle-time, and next-turn KPIs
+- Smart service-pressure indicator
+- Table-level service recommendations
+- Call Server workflow
+- Flag Manager workflow
+- Advance Stage workflow
+- Persistent stage timing
+- Automatic synchronization with Live Floor Operations
+- Browser events for future manager and staff tools
 
 TEST
 1. Copy the files into the master project.
 2. Run: npm run check
 3. Run: npm start
-4. Confirm Reservation Timeline appears.
-5. Test lunch, dinner, and full-day windows.
-6. Test 15- and 30-minute intervals.
-7. Select several time windows.
-8. Confirm pressure, projected wait, and recommendation update.
-9. Create a seating plan.
-10. Seat a party or clear a table and confirm the timeline recalculates.
+4. Confirm Service Flow Monitor appears.
+5. Select an occupied table.
+6. Advance its service stage.
+7. Call the server.
+8. Flag the table for manager attention.
+9. Confirm the table changes to Needs Attention on Live Floor Operations.
+10. Refresh and confirm the service stage remains.

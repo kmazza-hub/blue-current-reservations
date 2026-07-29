@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="35.0.6">
+  <meta name="blue-current-build" content="35.0.7">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="35.0.6">
+  <meta name="blue-current-build" content="35.0.7">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=35.0.6">
+  <link rel="stylesheet" href="styles.css?v=35.0.7">
 </head>
 <body>
 
@@ -1640,6 +1640,96 @@
               </div>
 
               <span id="reservationTimelineStatus" role="status"></span>
+            </aside>
+          </div>
+        </section>
+
+        <section class="service-flow-monitor reveal" id="serviceFlowMonitor" aria-labelledby="serviceFlowMonitorTitle">
+          <div class="service-flow-heading">
+            <div>
+              <small>Table progression</small>
+              <h3 id="serviceFlowMonitorTitle">Service Flow Monitor</h3>
+              <span id="serviceFlowUpdated">Analyzing active tables…</span>
+            </div>
+
+            <div class="service-flow-pressure" id="serviceFlowPressure" data-tone="stable">
+              <small>Service pressure</small>
+              <strong id="serviceFlowPressureLabel">Stable</strong>
+              <span id="serviceFlowPressureDetail">Dining room flow is within target.</span>
+            </div>
+          </div>
+
+          <div class="service-flow-kpis">
+            <article>
+              <small>Active tables</small>
+              <strong id="serviceFlowActiveTables">0</strong>
+              <span>Currently in service</span>
+            </article>
+            <article>
+              <small>Stalled tables</small>
+              <strong id="serviceFlowStalledTables">0</strong>
+              <span>Beyond stage target</span>
+            </article>
+            <article>
+              <small>Checks open</small>
+              <strong id="serviceFlowChecksOpen">0</strong>
+              <span>Ready for payment</span>
+            </article>
+            <article>
+              <small>Average cycle</small>
+              <strong id="serviceFlowAverageCycle">0 min</strong>
+              <span>Occupied tables</span>
+            </article>
+            <article>
+              <small>Next turns</small>
+              <strong id="serviceFlowNextTurns">0</strong>
+              <span>Likely within 20 min</span>
+            </article>
+          </div>
+
+          <div class="service-flow-layout">
+            <div class="service-flow-board">
+              <div class="service-flow-stage-headers">
+                <span>Waiting</span>
+                <span>Drinks</span>
+                <span>Appetizers</span>
+                <span>Entrees</span>
+                <span>Dessert</span>
+                <span>Check</span>
+              </div>
+
+              <div class="service-flow-table-list" id="serviceFlowTableList" aria-live="polite"></div>
+            </div>
+
+            <aside class="service-flow-inspector">
+              <div>
+                <small>Selected table</small>
+                <strong id="serviceFlowSelectedTable">Choose a table</strong>
+                <span id="serviceFlowSelectedStatus">No table selected</span>
+              </div>
+
+              <dl class="service-flow-table-meta">
+                <div><dt>Guests</dt><dd id="serviceFlowGuests">—</dd></div>
+                <div><dt>Server</dt><dd id="serviceFlowServer">—</dd></div>
+                <div><dt>Seated</dt><dd id="serviceFlowSeated">—</dd></div>
+                <div><dt>Current stage</dt><dd id="serviceFlowStage">—</dd></div>
+                <div><dt>Stage time</dt><dd id="serviceFlowStageTime">—</dd></div>
+                <div><dt>Turn outlook</dt><dd id="serviceFlowTurnOutlook">—</dd></div>
+              </dl>
+
+              <div class="service-flow-recommendation">
+                <small>Blue Current recommendation</small>
+                <strong id="serviceFlowRecommendation">Select an active table.</strong>
+                <p id="serviceFlowRecommendationDetail">Blue Current will compare the table against service-stage targets.</p>
+              </div>
+
+              <div class="service-flow-actions">
+                <button type="button" class="service-flow-secondary" id="serviceFlowCallServer">Call server</button>
+                <button type="button" class="service-flow-secondary" id="serviceFlowFlagManager">Flag manager</button>
+                <button type="button" id="serviceFlowAdvanceStage">Advance stage</button>
+              </div>
+
+              <span id="serviceFlowStatus" role="status"></span>
             </aside>
           </div>
         </section>
@@ -4084,12 +4174,13 @@
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
   <script src="js/modules/regionalNotifications.js?v=34.1.7b"></script>
   <script src="js/modules/notificationRouting.js?v=34.1.7b"></script>
-  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.6"></script>
-  <script src="js/modules/liveServiceMode.js?v=35.0.6"></script>
-  <script src="js/modules/liveFloorOperationsV2.js?v=35.0.6"></script>
-  <script src="js/modules/hostStandDashboard.js?v=35.0.6"></script>
-  <script src="js/modules/waitlistEngine.js?v=35.0.6"></script>
-  <script src="js/modules/reservationTimeline.js?v=35.0.6"></script>
+  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.7"></script>
+  <script src="js/modules/liveServiceMode.js?v=35.0.7"></script>
+  <script src="js/modules/liveFloorOperationsV2.js?v=35.0.7"></script>
+  <script src="js/modules/hostStandDashboard.js?v=35.0.7"></script>
+  <script src="js/modules/waitlistEngine.js?v=35.0.7"></script>
+  <script src="js/modules/reservationTimeline.js?v=35.0.7"></script>
+  <script src="js/modules/serviceFlowMonitor.js?v=35.0.7"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
