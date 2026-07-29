@@ -258,6 +258,38 @@
       "category": "security",
       "createdAt": "2026-07-27T21:13:36.045Z",
       "id": "audit_1785186816045_4fji4v"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-07-29T20:28:59.918Z",
+      "id": "audit_1785356939918_34hvw9"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Labor recommendation approved: wf_add_server",
+      "category": "workforce",
+      "createdAt": "2026-07-29T20:29:11.810Z",
+      "id": "audit_1785356951810_f4yqkx"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Labor recommendation rejected: wf_add_server",
+      "category": "workforce",
+      "createdAt": "2026-07-29T20:29:14.471Z",
+      "id": "audit_1785356954472_3kljnk"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Labor recommendation approved: wf_add_cook",
+      "category": "workforce",
+      "createdAt": "2026-07-29T20:29:15.790Z",
+      "id": "audit_1785356955790_cc45ls"
     }
   ],
   "reservations": [
@@ -500,6 +532,18 @@
       ],
       "createdAt": "2026-07-27T21:13:36.038Z",
       "expiresAt": "2026-07-28T09:13:36.038Z"
+    },
+    {
+      "id": "ses_1785356939913_jcdisp",
+      "tokenHash": "c6183004d0a351be4c160c7cd24f2df9194038ac7423c86f1eaaff5076e77def",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-07-29T20:28:59.913Z",
+      "expiresAt": "2026-07-30T08:28:59.913Z"
     }
   ],
   "invitations": [
@@ -1335,8 +1379,60 @@
       "updatedAt": "2026-07-21T14:00:00.000Z"
     }
   ],
-  "laborActions": [],
-  "shiftOffers": [],
+  "laborActions": [
+    {
+      "id": "labor_1785356951805",
+      "recommendationId": "wf_add_server",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "decision": "approved",
+      "note": "",
+      "actor": "Keith Mazza",
+      "createdAt": "2026-07-29T20:29:11.805Z"
+    },
+    {
+      "id": "labor_1785356954467",
+      "recommendationId": "wf_add_server",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "decision": "rejected",
+      "note": "",
+      "actor": "Keith Mazza",
+      "createdAt": "2026-07-29T20:29:14.467Z"
+    },
+    {
+      "id": "labor_1785356955785",
+      "recommendationId": "wf_add_cook",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "decision": "approved",
+      "note": "",
+      "actor": "Keith Mazza",
+      "createdAt": "2026-07-29T20:29:15.785Z"
+    }
+  ],
+  "shiftOffers": [
+    {
+      "id": "offer_1785356951806",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "recommendationId": "wf_add_server",
+      "role": "server",
+      "shift": "5:00 PM–9:00 PM",
+      "status": "open",
+      "createdAt": "2026-07-29T20:29:11.805Z"
+    },
+    {
+      "id": "offer_1785356955787",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "recommendationId": "wf_add_cook",
+      "role": "cook",
+      "shift": "5:00 PM–9:00 PM",
+      "status": "open",
+      "createdAt": "2026-07-29T20:29:15.785Z"
+    }
+  ],
   "inventoryItems": [
     {
       "id": "inv_ribeye",

@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.4d">
+  <meta name="blue-current-build" content="34.1.5a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.4d">
+  <meta name="blue-current-build" content="34.1.5a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.4d">
+  <link rel="stylesheet" href="styles.css?v=34.1.5a">
 </head>
 <body>
 
@@ -617,6 +617,80 @@
 
           <div class="executive-action-list" id="executiveActionList" aria-live="polite"></div>
           <span class="executive-action-status" id="executiveActionStatus" role="status"></span>
+        </section>
+
+        <section class="executive-analytics reveal" id="executiveAnalytics" aria-labelledby="executiveAnalyticsTitle">
+          <div class="executive-analytics-heading">
+            <div>
+              <small>Portfolio trends</small>
+              <h3 id="executiveAnalyticsTitle">Executive Analytics</h3>
+            </div>
+
+            <label class="executive-analytics-range">
+              Period
+              <select id="executiveAnalyticsRange">
+                <option value="7">Last 7 days</option>
+                <option value="14">Last 14 days</option>
+                <option value="30">Last 30 days</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="executive-analytics-kpis">
+            <article>
+              <small>Revenue trend</small>
+              <strong id="executiveAnalyticsRevenueTrend">+0.0%</strong>
+              <span id="executiveAnalyticsRevenueDetail">Versus prior period</span>
+            </article>
+            <article>
+              <small>Labor trend</small>
+              <strong id="executiveAnalyticsLaborTrend">0.0 pts</strong>
+              <span id="executiveAnalyticsLaborDetail">Portfolio average</span>
+            </article>
+            <article>
+              <small>Health trend</small>
+              <strong id="executiveAnalyticsHealthTrend">+0</strong>
+              <span id="executiveAnalyticsHealthDetail">Average score change</span>
+            </article>
+            <article>
+              <small>Alert trend</small>
+              <strong id="executiveAnalyticsAlertTrend">0</strong>
+              <span id="executiveAnalyticsAlertDetail">Change in open alerts</span>
+            </article>
+          </div>
+
+          <div class="executive-analytics-grid">
+            <article class="executive-trend-card">
+              <div class="executive-trend-card-heading">
+                <div>
+                  <small>Portfolio revenue</small>
+                  <strong id="executiveRevenueChartTitle">$0</strong>
+                </div>
+                <span id="executiveRevenueChartChange">0.0%</span>
+              </div>
+              <div class="executive-mini-chart" id="executiveRevenueChart" aria-label="Portfolio revenue trend"></div>
+            </article>
+
+            <article class="executive-trend-card">
+              <div class="executive-trend-card-heading">
+                <div>
+                  <small>Portfolio labor</small>
+                  <strong id="executiveLaborChartTitle">0.0%</strong>
+                </div>
+                <span id="executiveLaborChartChange">0.0 pts</span>
+              </div>
+              <div class="executive-mini-chart" id="executiveLaborChart" aria-label="Portfolio labor trend"></div>
+            </article>
+          </div>
+
+          <div class="executive-analytics-insight">
+            <div>
+              <small>Blue Current insight</small>
+              <strong id="executiveAnalyticsInsightTitle">Portfolio trend analysis is ready.</strong>
+              <p id="executiveAnalyticsInsightDetail">Blue Current is comparing revenue, labor, health, and alerts across the selected period.</p>
+            </div>
+            <button type="button" id="executiveAnalyticsFocus">Review priority location</button>
+          </div>
         </section>
 
         <div class="readiness-panel reveal">
@@ -3052,6 +3126,7 @@
   <script src="js/modules/crossLocationComparison.js?v=34.1.4b"></script>
   <script src="js/modules/executiveRecommendations.js?v=34.1.4c"></script>
   <script src="js/modules/executiveActionCenter.js?v=34.1.4d"></script>
+  <script src="js/modules/executiveAnalytics.js?v=34.1.5a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

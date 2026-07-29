@@ -6059,3 +6059,176 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .executive-action-status{display:block;min-height:17px;margin-top:10px;color:#60777a;font-size:.65rem}
 @media(max-width:800px){.executive-action-kpis{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.executive-action-heading,.executive-action-summary{flex-direction:column}.executive-action-kpis{grid-template-columns:1fr}.executive-action-card{grid-template-columns:1fr}.executive-action-buttons{min-width:0;flex-direction:row;flex-wrap:wrap}}
+
+
+/* V34.1.5a — CC-016a Executive Analytics */
+.executive-analytics{
+  margin:18px 0;
+  padding:22px;
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(131,197,187,.13),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.8),rgba(242,238,227,.94));
+  box-shadow:0 22px 68px rgba(4,28,36,.09);
+}
+.executive-analytics-heading,
+.executive-trend-card-heading,
+.executive-analytics-insight{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+}
+.executive-analytics-heading small,
+.executive-trend-card-heading small,
+.executive-analytics-insight small{
+  color:var(--sea);
+  font-size:.64rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+}
+.executive-analytics-heading h3{
+  margin:.35rem 0 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.5rem;
+}
+.executive-analytics-range{
+  color:#708587;
+  font-size:.64rem;
+  font-weight:800;
+}
+.executive-analytics-range select{
+  display:block;
+  min-width:145px;
+  margin-top:6px;
+  padding:9px 10px;
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:10px;
+  background:rgba(255,255,255,.68);
+}
+.executive-analytics-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+.executive-analytics-kpis article{
+  padding:13px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:14px;
+  background:rgba(255,255,255,.62);
+}
+.executive-analytics-kpis small,
+.executive-analytics-kpis strong,
+.executive-analytics-kpis span{
+  display:block;
+}
+.executive-analytics-kpis small{
+  color:#708587;
+  font-size:.6rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.executive-analytics-kpis strong{
+  margin-top:6px;
+  color:var(--atlantic);
+  font-size:1.18rem;
+}
+.executive-analytics-kpis span{
+  margin-top:4px;
+  color:#708587;
+  font-size:.63rem;
+}
+.executive-analytics-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:15px;
+}
+.executive-trend-card{
+  padding:15px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:16px;
+  background:rgba(255,255,255,.64);
+}
+.executive-trend-card-heading strong{
+  display:block;
+  margin-top:5px;
+  color:var(--atlantic);
+  font-size:.95rem;
+}
+.executive-trend-card-heading>span{
+  padding:6px 8px;
+  color:#2f6f57;
+  border-radius:999px;
+  background:rgba(103,196,154,.11);
+  font-size:.62rem;
+  font-weight:800;
+}
+.executive-trend-card-heading>span.is-negative{
+  color:#8a4438;
+  background:rgba(223,128,108,.11);
+}
+.executive-mini-chart{
+  display:flex;
+  align-items:flex-end;
+  gap:6px;
+  height:130px;
+  margin-top:14px;
+  padding-top:10px;
+  border-top:1px solid rgba(11,45,58,.07);
+}
+.executive-mini-chart-bar{
+  flex:1;
+  min-width:8px;
+  border-radius:6px 6px 2px 2px;
+  background:linear-gradient(180deg,#83c5bb,var(--sea));
+  transition:height .3s ease;
+}
+#executiveLaborChart .executive-mini-chart-bar{
+  background:linear-gradient(180deg,#d8ae62,#b98b3f);
+}
+.executive-analytics-insight{
+  margin-top:14px;
+  padding:14px;
+  border:1px solid rgba(47,112,117,.1);
+  border-radius:14px;
+  background:rgba(47,112,117,.06);
+}
+.executive-analytics-insight strong{
+  display:block;
+  margin-top:5px;
+  color:var(--atlantic);
+  font-size:.82rem;
+}
+.executive-analytics-insight p{
+  margin:6px 0 0;
+  color:#60777a;
+  font-size:.7rem;
+  line-height:1.48;
+}
+.executive-analytics-insight button{
+  flex:0 0 auto;
+  min-height:38px;
+  padding:0 13px;
+  color:#082632;
+  border:0;
+  border-radius:999px;
+  background:var(--gold);
+  font-size:.68rem;
+  font-weight:800;
+}
+@media(max-width:850px){
+  .executive-analytics-kpis{grid-template-columns:repeat(2,1fr)}
+  .executive-analytics-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .executive-analytics-heading,
+  .executive-analytics-insight{
+    flex-direction:column;
+  }
+  .executive-analytics-kpis{grid-template-columns:1fr}
+}
