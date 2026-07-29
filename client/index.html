@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.5a">
+  <meta name="blue-current-build" content="34.1.5b">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.5a">
+  <meta name="blue-current-build" content="34.1.5b">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.5a">
+  <link rel="stylesheet" href="styles.css?v=34.1.5b">
 </head>
 <body>
 
@@ -691,6 +691,58 @@
             </div>
             <button type="button" id="executiveAnalyticsFocus">Review priority location</button>
           </div>
+        </section>
+
+        <section class="executive-event-feed reveal" id="executiveEventFeed" aria-labelledby="executiveEventFeedTitle">
+          <div class="executive-event-heading">
+            <div>
+              <small>Portfolio activity</small>
+              <h3 id="executiveEventFeedTitle">Live Executive Event Feed</h3>
+            </div>
+
+            <label class="executive-event-filter">
+              Filter
+              <select id="executiveEventFilter">
+                <option value="all">All events</option>
+                <option value="operations">Operations</option>
+                <option value="guests">Guests</option>
+                <option value="staffing">Staffing</option>
+                <option value="revenue">Revenue</option>
+                <option value="ai">AI</option>
+                <option value="critical">Critical only</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="executive-event-kpis">
+            <article>
+              <small>Events today</small>
+              <strong id="executiveEventCount">0</strong>
+              <span>Across all locations</span>
+            </article>
+            <article>
+              <small>Critical events</small>
+              <strong id="executiveCriticalCount">0</strong>
+              <span>Needs leadership attention</span>
+            </article>
+            <article>
+              <small>Resolved</small>
+              <strong id="executiveResolvedCount">0</strong>
+              <span>Closed today</span>
+            </article>
+            <article>
+              <small>Average response</small>
+              <strong id="executiveResponseTime">—</strong>
+              <span>From alert to action</span>
+            </article>
+          </div>
+
+          <div class="executive-event-summary">
+            <strong id="executiveEventHeadline">Blue Current is collecting portfolio events.</strong>
+            <span id="executiveEventUpdated">Live</span>
+          </div>
+
+          <div class="executive-event-list" id="executiveEventList" aria-live="polite"></div>
         </section>
 
         <div class="readiness-panel reveal">
@@ -3127,6 +3179,7 @@
   <script src="js/modules/executiveRecommendations.js?v=34.1.4c"></script>
   <script src="js/modules/executiveActionCenter.js?v=34.1.4d"></script>
   <script src="js/modules/executiveAnalytics.js?v=34.1.5a"></script>
+  <script src="js/modules/executiveEventFeed.js?v=34.1.5b"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

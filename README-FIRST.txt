@@ -1,32 +1,40 @@
-BLUE CURRENT V34.1.5a — CC-016a EXECUTIVE ANALYTICS
+BLUE CURRENT V34.1.5b — CC-016b LIVE EXECUTIVE EVENT FEED
 
 REPLACE:
 - client/index.html
 - client/styles.css
 
 ADD:
-- client/js/modules/executiveAnalytics.js
+- client/js/modules/executiveEventFeed.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- 7-, 14-, and 30-day portfolio trend views
-- Revenue trend
-- Labor trend
-- Health-score trend
-- Alert trend
-- Visual revenue and labor mini charts
-- Blue Current executive insight
-- Review Priority Location shortcut
-- Automatic refresh when district data changes
-
-IMPORTANT
-Trend history is a transparent pilot model generated from current portfolio values.
-Real historical series will replace it when POS and reporting integrations are connected.
+- Live portfolio event feed
+- Filters for:
+  - All events
+  - Operations
+  - Guests
+  - Staffing
+  - Revenue
+  - AI
+  - Critical only
+- Event severity:
+  - Info
+  - Success
+  - Warning
+  - Critical
+- KPIs for events today, critical events, resolved events, and average response time
+- Browser persistence after refresh
+- Automatic events from:
+  - Manager and executive action creation
+  - District location selection
+  - Executive action completion
 
 TEST
 1. npm run check
 2. npm start
 3. Open Command Center
-4. Confirm Executive Analytics appears
-5. Test 7-, 14-, and 30-day periods
-6. Confirm KPI trends and charts update
-7. Click Review Priority Location
+4. Confirm Live Executive Event Feed appears
+5. Test every filter
+6. Create an executive action and confirm a new event appears
+7. Complete an executive action and confirm a resolved event appears
+8. Refresh and verify event history remains
