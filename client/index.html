@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.4b">
+  <meta name="blue-current-build" content="34.1.4c">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.4b">
+  <meta name="blue-current-build" content="34.1.4c">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.4b">
+  <link rel="stylesheet" href="styles.css?v=34.1.4c">
 </head>
 <body>
 
@@ -565,6 +565,25 @@
               <p id="crossLocationSpreadDetail">No comparison available.</p>
             </article>
           </div>
+        </section>
+
+        <section class="executive-recommendations reveal" id="executiveRecommendations" aria-labelledby="executiveRecommendationsTitle">
+          <div class="executive-recommendations-heading">
+            <div>
+              <small>Leadership decision support</small>
+              <h3 id="executiveRecommendationsTitle">Executive Recommendations</h3>
+            </div>
+            <span id="executiveRecommendationsUpdated">Preparing recommendations…</span>
+          </div>
+
+          <div class="executive-recommendations-summary">
+            <strong id="executiveRecommendationsHeadline">Blue Current is prioritizing portfolio actions.</strong>
+            <p id="executiveRecommendationsNarrative">Recommendations are generated from location health, labor, revenue, alerts, and portfolio spread.</p>
+          </div>
+
+          <div class="executive-recommendations-list" id="executiveRecommendationsList" aria-live="polite"></div>
+
+          <span class="executive-recommendations-status" id="executiveRecommendationsStatus" role="status"></span>
         </section>
 
         <div class="readiness-panel reveal">
@@ -2998,6 +3017,7 @@
   <script src="js/modules/districtCommandCenter.js?v=34.1.3a"></script>
   <script src="js/modules/executiveMorningBrief.js?v=34.1.4a"></script>
   <script src="js/modules/crossLocationComparison.js?v=34.1.4b"></script>
+  <script src="js/modules/executiveRecommendations.js?v=34.1.4c"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
