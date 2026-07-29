@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.0d">
+  <meta name="blue-current-build" content="34.1.2a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.0d">
+  <meta name="blue-current-build" content="34.1.2a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.0d">
+  <link rel="stylesheet" href="styles.css?v=34.1.2a">
 </head>
 <body>
 
@@ -338,6 +338,63 @@
               <small id="predictiveActionStatus" role="status"></small>
             </div>
           </div>
+        </section>
+
+        <section class="shift-risk-heatmap-panel reveal" id="shiftRiskHeatmapPanel" aria-labelledby="shiftRiskHeatmapTitle">
+          <div class="shift-risk-heatmap-heading">
+            <div>
+              <small>Next 12 hours</small>
+              <h3 id="shiftRiskHeatmapTitle">Shift Risk Heatmap</h3>
+            </div>
+            <div class="shift-risk-legend" aria-label="Risk legend">
+              <span><i data-tone="stable"></i>Stable</span>
+              <span><i data-tone="watch"></i>Watch</span>
+              <span><i data-tone="risk"></i>High risk</span>
+            </div>
+          </div>
+
+          <div class="shift-risk-heatmap" id="shiftRiskHeatmap" aria-live="polite"></div>
+
+          <article class="shift-risk-detail" id="shiftRiskDetail">
+            <div>
+              <small>Selected hour</small>
+              <strong id="shiftRiskDetailTime">Now</strong>
+            </div>
+            <div>
+              <small>Risk score</small>
+              <strong id="shiftRiskDetailScore">0</strong>
+            </div>
+            <div class="shift-risk-detail-copy">
+              <small>Why this hour matters</small>
+              <p id="shiftRiskDetailSummary">Blue Current is calculating the next operating window.</p>
+              <div class="shift-risk-detail-signals" id="shiftRiskDetailSignals"></div>
+            </div>
+            <button type="button" id="shiftRiskCreateAction">Create action</button>
+          </article>
+
+          <span class="shift-risk-status" id="shiftRiskStatus" role="status"></span>
+        </section>
+
+        <section class="operations-timeline-panel reveal" id="operationsTimelinePanel" aria-labelledby="operationsTimelineTitle">
+          <div class="operations-timeline-heading">
+            <div>
+              <small>One operating story</small>
+              <h3 id="operationsTimelineTitle">AI Operations Timeline</h3>
+            </div>
+            <div class="operations-timeline-controls">
+              <button type="button" class="is-active" data-timeline-filter="all">All</button>
+              <button type="button" data-timeline-filter="risk">Risk</button>
+              <button type="button" data-timeline-filter="people">People</button>
+              <button type="button" data-timeline-filter="service">Service</button>
+            </div>
+          </div>
+
+          <div class="operations-timeline-summary">
+            <strong id="operationsTimelineSummary">Blue Current is assembling today’s operating story.</strong>
+            <span id="operationsTimelineUpdated">Updating…</span>
+          </div>
+
+          <div class="operations-timeline-list" id="operationsTimelineList" aria-live="polite"></div>
         </section>
 
         <div class="readiness-panel reveal">
@@ -2766,6 +2823,8 @@
   <script src="js/modules/actionList.js?v=34.0.7b"></script>
   <script src="js/modules/managerShiftBrief.js?v=34.0.9a"></script>
   <script src="js/modules/predictiveOperations.js?v=34.1.0d"></script>
+  <script src="js/modules/shiftRiskHeatmap.js?v=34.1.1a"></script>
+  <script src="js/modules/operationsTimeline.js?v=34.1.2a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
