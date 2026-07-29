@@ -175,6 +175,7 @@
 
       const button = document.createElement("button");
       button.type = "button";
+      button.dataset.locationId = location.id;
       button.textContent = "Open location";
       button.addEventListener("click", () => selectLocation(location.id));
 

@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.3a">
+  <meta name="blue-current-build" content="34.1.4a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.3a">
+  <meta name="blue-current-build" content="34.1.4a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.3a">
+  <link rel="stylesheet" href="styles.css?v=34.1.4a">
 </head>
 <body>
 
@@ -456,6 +456,70 @@
           </div>
 
           <div class="district-location-grid" id="districtLocationGrid" aria-live="polite"></div>
+        </section>
+
+        <section class="executive-morning-brief reveal" id="executiveMorningBrief" aria-labelledby="executiveMorningBriefTitle">
+          <div class="executive-brief-heading">
+            <div>
+              <small>Leadership briefing</small>
+              <h3 id="executiveMorningBriefTitle">Executive Morning Brief</h3>
+            </div>
+            <span id="executiveBriefUpdated">Preparing brief…</span>
+          </div>
+
+          <div class="executive-brief-summary">
+            <div>
+              <small>Portfolio outlook</small>
+              <strong id="executiveBriefHeadline">Portfolio performance is stable.</strong>
+              <p id="executiveBriefNarrative">Blue Current is comparing health, revenue, labor, and alerts across all locations.</p>
+            </div>
+            <button type="button" id="executiveBriefFocus">Review priority location</button>
+          </div>
+
+          <div class="executive-brief-kpis">
+            <article>
+              <small>Portfolio health</small>
+              <strong id="executiveBriefHealth">—</strong>
+              <span>Average operating score</span>
+            </article>
+            <article>
+              <small>Revenue today</small>
+              <strong id="executiveBriefRevenue">$0</strong>
+              <span>Across all locations</span>
+            </article>
+            <article>
+              <small>Weighted labor</small>
+              <strong id="executiveBriefLabor">—</strong>
+              <span>Portfolio average</span>
+            </article>
+            <article>
+              <small>Active alerts</small>
+              <strong id="executiveBriefAlerts">0</strong>
+              <span>Open district signals</span>
+            </article>
+          </div>
+
+          <div class="executive-brief-grid">
+            <article class="executive-brief-card">
+              <small>Top risk location</small>
+              <strong id="executiveBriefTopRisk">—</strong>
+              <p id="executiveBriefTopRiskDetail">No elevated portfolio risk detected.</p>
+            </article>
+
+            <article class="executive-brief-card">
+              <small>Best-performing location</small>
+              <strong id="executiveBriefTopPerformer">—</strong>
+              <p id="executiveBriefTopPerformerDetail">Blue Current is evaluating current performance.</p>
+            </article>
+
+            <article class="executive-brief-card executive-priorities-card">
+              <div class="executive-priorities-heading">
+                <small>Today’s executive priorities</small>
+                <strong id="executiveBriefPriorityCount">0</strong>
+              </div>
+              <ol id="executiveBriefPriorities"></ol>
+            </article>
+          </div>
         </section>
 
         <div class="readiness-panel reveal">
@@ -2887,6 +2951,7 @@
   <script src="js/modules/shiftRiskHeatmap.js?v=34.1.1a"></script>
   <script src="js/modules/operationsTimeline.js?v=34.1.2a"></script>
   <script src="js/modules/districtCommandCenter.js?v=34.1.3a"></script>
+  <script src="js/modules/executiveMorningBrief.js?v=34.1.4a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
