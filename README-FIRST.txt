@@ -1,16 +1,17 @@
-BLUE CURRENT V34.1.6a — CC-017a EXECUTIVE FORECAST CENTER
+BLUE CURRENT V34.1.6b — CC-017b EXECUTIVE FORECAST TIMELINE
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/executiveForecastCenter.js
+- client/js/modules/executiveForecastTimeline.js
 
-This micro-update introduces:
-- Forecast timeline (Next Hour, Lunch, Afternoon, Dinner, Late Night)
-- Revenue projection
-- Portfolio risk forecast
-- Forecast drivers
-- Recommended actions
-- Auto-refresh hooks
+Adds the Forecast Timeline scaffold:
+- Next Hour
+- Lunch
+- Afternoon
+- Dinner Rush
+- Late Night
+
+Future updates will attach predictive models and live data.
