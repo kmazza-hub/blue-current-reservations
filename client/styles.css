@@ -8443,3 +8443,321 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     grid-template-columns:1fr;
   }
 }
+
+
+/* V35.0.5 — Waitlist Engine */
+.waitlist-engine{
+  margin:18px 0;
+  padding:22px;
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(216,174,98,.13),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.84),rgba(242,238,227,.96));
+  box-shadow:0 24px 72px rgba(4,28,36,.1);
+}
+.waitlist-heading,
+.waitlist-section-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+}
+.waitlist-heading small,
+.waitlist-section-heading small{
+  color:var(--sea);
+  font-size:.64rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+}
+.waitlist-heading h3{
+  margin:.35rem 0 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.55rem;
+}
+#waitlistUpdated{
+  display:block;
+  margin-top:6px;
+  color:#708587;
+  font-size:.66rem;
+}
+.waitlist-pressure{
+  min-width:200px;
+  padding:14px;
+  color:#eef6f3;
+  border-radius:16px;
+  background:linear-gradient(145deg,#0b3442,#071f29);
+}
+.waitlist-pressure small,
+.waitlist-pressure strong,
+.waitlist-pressure span{
+  display:block;
+}
+.waitlist-pressure small{
+  color:#9fcac0;
+  font-size:.58rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.waitlist-pressure strong{
+  margin-top:6px;
+  color:#fff;
+  font-size:1rem;
+}
+.waitlist-pressure span{
+  margin-top:5px;
+  color:#cbdad6;
+  font-size:.64rem;
+}
+.waitlist-pressure[data-tone="watch"]{
+  background:linear-gradient(145deg,#76592a,#3e2f18);
+}
+.waitlist-pressure[data-tone="risk"]{
+  background:linear-gradient(145deg,#7a4038,#43241f);
+}
+.waitlist-kpis{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+.waitlist-kpis article{
+  padding:13px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:14px;
+  background:rgba(255,255,255,.64);
+}
+.waitlist-kpis small,
+.waitlist-kpis strong,
+.waitlist-kpis span{
+  display:block;
+}
+.waitlist-kpis small{
+  color:#708587;
+  font-size:.59rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.waitlist-kpis strong{
+  margin-top:6px;
+  color:var(--atlantic);
+  font-size:1.14rem;
+}
+.waitlist-kpis span{
+  margin-top:4px;
+  color:#708587;
+  font-size:.62rem;
+}
+.waitlist-layout{
+  display:grid;
+  grid-template-columns:1.45fr .7fr;
+  gap:14px;
+  margin-top:15px;
+}
+.waitlist-queue-card,
+.waitlist-inspector{
+  padding:16px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:18px;
+  background:rgba(255,255,255,.64);
+}
+.waitlist-section-heading strong{
+  display:block;
+  margin-top:4px;
+  color:var(--atlantic);
+  font-size:.84rem;
+}
+.waitlist-section-heading label,
+.waitlist-inspector label{
+  color:#708587;
+  font-size:.6rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.waitlist-section-heading select,
+.waitlist-inspector input,
+.waitlist-inspector textarea{
+  display:block;
+  width:100%;
+  margin-top:6px;
+  padding:10px;
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.1);
+  border-radius:10px;
+  background:rgba(255,255,255,.76);
+  font:inherit;
+}
+.waitlist-list{
+  display:grid;
+  gap:9px;
+  margin-top:14px;
+}
+.waitlist-party-card{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:14px;
+  padding:13px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:14px;
+  background:rgba(255,255,255,.68);
+  cursor:pointer;
+}
+.waitlist-party-card.is-selected{
+  border-color:rgba(47,112,117,.34);
+  box-shadow:0 10px 24px rgba(4,28,36,.07);
+}
+.waitlist-party-card[data-priority="high"]{
+  border-color:rgba(223,128,108,.28);
+}
+.waitlist-party-card[data-priority="vip"]{
+  box-shadow:inset 4px 0 0 var(--gold);
+}
+.waitlist-party-copy small,
+.waitlist-party-copy strong{
+  display:block;
+}
+.waitlist-party-copy small{
+  color:#708587;
+  font-size:.58rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.waitlist-party-copy strong{
+  margin-top:5px;
+  color:var(--atlantic);
+  font-size:.8rem;
+}
+.waitlist-party-copy p{
+  margin:6px 0 0;
+  color:#60777a;
+  font-size:.68rem;
+  line-height:1.45;
+}
+.waitlist-party-meta-inline{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:9px;
+}
+.waitlist-party-meta-inline span{
+  padding:6px 8px;
+  color:#526f72;
+  border-radius:999px;
+  background:rgba(47,112,117,.07);
+  font-size:.6rem;
+  font-weight:700;
+}
+.waitlist-party-quote{
+  min-width:82px;
+  color:var(--atlantic);
+  font-size:.76rem;
+  font-weight:800;
+  text-align:right;
+}
+.waitlist-party-quote span{
+  display:block;
+  margin-top:5px;
+  color:#708587;
+  font-size:.6rem;
+  font-weight:700;
+}
+.waitlist-party-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:14px 0 0;
+}
+.waitlist-party-meta div{
+  padding:10px;
+  border-radius:11px;
+  background:rgba(47,112,117,.05);
+}
+.waitlist-party-meta dt{
+  color:#708587;
+  font-size:.57rem;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.waitlist-party-meta dd{
+  margin:4px 0 0;
+  color:var(--atlantic);
+  font-size:.72rem;
+  font-weight:800;
+}
+.waitlist-inspector label{
+  display:block;
+  margin-top:12px;
+}
+.waitlist-inspector-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:14px;
+}
+.waitlist-inspector-actions button{
+  min-height:38px;
+  padding:0 10px;
+  border-radius:999px;
+  font-size:.65rem;
+  font-weight:800;
+}
+.waitlist-secondary{
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.12);
+  background:rgba(255,255,255,.58);
+}
+#waitlistSeatParty{
+  grid-column:1/-1;
+  color:#082632;
+  border:0;
+  background:var(--gold);
+}
+#waitlistStatus{
+  display:block;
+  min-height:17px;
+  margin-top:10px;
+  color:#60777a;
+  font-size:.65rem;
+}
+.waitlist-empty{
+  padding:20px;
+  color:#708587;
+  border:1px dashed rgba(11,45,58,.12);
+  border-radius:14px;
+  text-align:center;
+  font-size:.74rem;
+}
+@media(max-width:980px){
+  .waitlist-kpis{
+    grid-template-columns:repeat(3,1fr);
+  }
+  .waitlist-layout{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:700px){
+  .waitlist-heading,
+  .waitlist-section-heading{
+    flex-direction:column;
+  }
+  .waitlist-pressure{
+    width:100%;
+  }
+  .waitlist-kpis{
+    grid-template-columns:1fr 1fr;
+  }
+  .waitlist-party-card{
+    grid-template-columns:1fr;
+  }
+  .waitlist-party-quote{
+    text-align:left;
+  }
+}
+@media(max-width:500px){
+  .waitlist-kpis,
+  .waitlist-party-meta{
+    grid-template-columns:1fr;
+  }
+}

@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="35.0.4">
+  <meta name="blue-current-build" content="35.0.5">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="35.0.4">
+  <meta name="blue-current-build" content="35.0.5">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=35.0.4">
+  <link rel="stylesheet" href="styles.css?v=35.0.5">
 </head>
 <body>
 
@@ -1441,6 +1441,108 @@
 
               <button type="button" id="hostStandAddGuest">Add guest</button>
               <span id="hostStandStatus" role="status"></span>
+            </aside>
+          </div>
+        </section>
+
+        <section class="waitlist-engine reveal" id="waitlistEngine" aria-labelledby="waitlistEngineTitle">
+          <div class="waitlist-heading">
+            <div>
+              <small>Guest queue intelligence</small>
+              <h3 id="waitlistEngineTitle">Waitlist Engine</h3>
+              <span id="waitlistUpdated">Calculating live wait times…</span>
+            </div>
+
+            <div class="waitlist-pressure" id="waitlistPressure" data-tone="stable">
+              <small>Queue pressure</small>
+              <strong id="waitlistPressureLabel">Stable</strong>
+              <span id="waitlistPressureDetail">Current seating capacity can absorb demand.</span>
+            </div>
+          </div>
+
+          <div class="waitlist-kpis">
+            <article>
+              <small>Active parties</small>
+              <strong id="waitlistActiveCount">0</strong>
+              <span>Waiting to be seated</span>
+            </article>
+            <article>
+              <small>Average quote</small>
+              <strong id="waitlistAverageQuote">0 min</strong>
+              <span>Current estimated wait</span>
+            </article>
+            <article>
+              <small>Longest wait</small>
+              <strong id="waitlistLongestWait">0 min</strong>
+              <span>Oldest active party</span>
+            </article>
+            <article>
+              <small>Ready now</small>
+              <strong id="waitlistReadyCount">0</strong>
+              <span>Matching table available</span>
+            </article>
+            <article>
+              <small>Texted</small>
+              <strong id="waitlistTextedCount">0</strong>
+              <span>Guests notified</span>
+            </article>
+          </div>
+
+          <div class="waitlist-layout">
+            <div class="waitlist-queue-card">
+              <div class="waitlist-section-heading">
+                <div>
+                  <small>Live waitlist</small>
+                  <strong>Prioritized seating queue</strong>
+                </div>
+                <label>
+                  Sort
+                  <select id="waitlistSort">
+                    <option value="priority">Smart priority</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="party-size">Party size</option>
+                    <option value="shortest-fit">Best table fit</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="waitlist-list" id="waitlistList" aria-live="polite"></div>
+            </div>
+
+            <aside class="waitlist-inspector">
+              <div class="waitlist-section-heading">
+                <div>
+                  <small>Selected party</small>
+                  <strong id="waitlistPartyName">Choose a party</strong>
+                </div>
+              </div>
+
+              <dl class="waitlist-party-meta">
+                <div><dt>Party size</dt><dd id="waitlistPartySize">—</dd></div>
+                <div><dt>Waiting</dt><dd id="waitlistPartyWaiting">—</dd></div>
+                <div><dt>Quoted</dt><dd id="waitlistPartyQuote">—</dd></div>
+                <div><dt>Best table</dt><dd id="waitlistPartyTable">—</dd></div>
+                <div><dt>Priority</dt><dd id="waitlistPartyPriority">—</dd></div>
+                <div><dt>Notification</dt><dd id="waitlistPartyNotification">—</dd></div>
+              </dl>
+
+              <label>
+                Adjust quoted wait
+                <input type="number" id="waitlistQuoteInput" min="0" max="180" step="5">
+              </label>
+
+              <label>
+                Host note
+                <textarea id="waitlistNoteInput" rows="4" placeholder="Add a seating preference, mobility need, VIP note, or update."></textarea>
+              </label>
+
+              <div class="waitlist-inspector-actions">
+                <button type="button" class="waitlist-secondary" id="waitlistTextGuest">Text guest</button>
+                <button type="button" class="waitlist-secondary" id="waitlistMarkReady">Mark ready</button>
+                <button type="button" id="waitlistSeatParty">Seat party</button>
+              </div>
+
+              <span id="waitlistStatus" role="status"></span>
             </aside>
           </div>
         </section>
@@ -3885,10 +3987,11 @@
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
   <script src="js/modules/regionalNotifications.js?v=34.1.7b"></script>
   <script src="js/modules/notificationRouting.js?v=34.1.7b"></script>
-  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.4"></script>
-  <script src="js/modules/liveServiceMode.js?v=35.0.4"></script>
-  <script src="js/modules/liveFloorOperationsV2.js?v=35.0.4"></script>
-  <script src="js/modules/hostStandDashboard.js?v=35.0.4"></script>
+  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.5"></script>
+  <script src="js/modules/liveServiceMode.js?v=35.0.5"></script>
+  <script src="js/modules/liveFloorOperationsV2.js?v=35.0.5"></script>
+  <script src="js/modules/hostStandDashboard.js?v=35.0.5"></script>
+  <script src="js/modules/waitlistEngine.js?v=35.0.5"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
