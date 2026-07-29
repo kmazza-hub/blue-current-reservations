@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="35.0.1">
+  <meta name="blue-current-build" content="35.0.2">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="35.0.1">
+  <meta name="blue-current-build" content="35.0.2">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=35.0.1">
+  <link rel="stylesheet" href="styles.css?v=35.0.2">
 </head>
 <body>
 
@@ -1144,6 +1144,94 @@
             <button type="button" data-opening-target="live-floor-operations">Floor map</button>
             <button type="button" data-opening-target="managerShiftBrief">Manager notes</button>
             <button type="button" data-opening-target="executiveForecastCenter">Today’s forecast</button>
+          </div>
+        </section>
+
+        <section class="live-service-mode reveal" id="liveServiceMode" aria-labelledby="liveServiceModeTitle">
+          <div class="live-service-heading">
+            <div>
+              <small>Restaurant operating state</small>
+              <h3 id="liveServiceModeTitle">Live Service Mode</h3>
+              <span id="liveServiceModeUpdated">Syncing restaurant state…</span>
+            </div>
+
+            <div class="live-service-current" id="liveServiceCurrent" data-mode="opening">
+              <small>Current mode</small>
+              <strong id="liveServiceCurrentLabel">Opening</strong>
+              <span id="liveServiceCurrentDetail">Preparing the restaurant for service.</span>
+            </div>
+          </div>
+
+          <div class="live-service-mode-grid" id="liveServiceModeGrid" role="list">
+            <button type="button" data-service-mode="closed">
+              <small>Closed</small>
+              <strong>Building secured</strong>
+              <span>No active service.</span>
+            </button>
+            <button type="button" data-service-mode="opening">
+              <small>Opening</small>
+              <strong>Team preparing</strong>
+              <span>Checklist and readiness.</span>
+            </button>
+            <button type="button" data-service-mode="lunch-prep">
+              <small>Lunch prep</small>
+              <strong>Stations getting ready</strong>
+              <span>Prep, lineup, and checks.</span>
+            </button>
+            <button type="button" data-service-mode="lunch-service">
+              <small>Lunch service</small>
+              <strong>Guests in the building</strong>
+              <span>Live seating and service.</span>
+            </button>
+            <button type="button" data-service-mode="afternoon">
+              <small>Afternoon</small>
+              <strong>Reset and recover</strong>
+              <span>Prepare for dinner.</span>
+            </button>
+            <button type="button" data-service-mode="dinner-prep">
+              <small>Dinner prep</small>
+              <strong>Pre-shift execution</strong>
+              <span>Lineup, sections, and forecast.</span>
+            </button>
+            <button type="button" data-service-mode="dinner-rush">
+              <small>Dinner rush</small>
+              <strong>Peak operating mode</strong>
+              <span>Live floor and kitchen pressure.</span>
+            </button>
+            <button type="button" data-service-mode="late-night">
+              <small>Late night</small>
+              <strong>Reduced service</strong>
+              <span>Protect labor and guest flow.</span>
+            </button>
+            <button type="button" data-service-mode="closing">
+              <small>Closing</small>
+              <strong>Secure the restaurant</strong>
+              <span>Checklist and handoff.</span>
+            </button>
+          </div>
+
+          <div class="live-service-summary">
+            <article>
+              <small>Primary focus</small>
+              <strong id="liveServicePrimaryFocus">Finish opening readiness</strong>
+              <span id="liveServicePrimaryDetail">Complete remaining checklist items before opening the doors.</span>
+            </article>
+            <article>
+              <small>Recommended screen</small>
+              <strong id="liveServiceRecommendedScreen">Opening Dashboard</strong>
+              <button type="button" id="liveServiceOpenScreen">Open recommended screen</button>
+            </article>
+            <article>
+              <small>Mode started</small>
+              <strong id="liveServiceStartedAt">—</strong>
+              <span id="liveServiceElapsed">0 min elapsed</span>
+            </article>
+          </div>
+
+          <div class="live-service-actions">
+            <span id="liveServiceStatus" role="status"></span>
+            <button type="button" class="live-service-secondary" id="liveServiceAutoMode">Use suggested mode</button>
+            <button type="button" id="liveServiceConfirmMode">Confirm mode</button>
           </div>
         </section>
 
@@ -3587,7 +3675,8 @@
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
   <script src="js/modules/regionalNotifications.js?v=34.1.7b"></script>
   <script src="js/modules/notificationRouting.js?v=34.1.7b"></script>
-  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.1"></script>
+  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.2"></script>
+  <script src="js/modules/liveServiceMode.js?v=35.0.2"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
