@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.7b">
+  <meta name="blue-current-build" content="35.0.1">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.7b">
+  <meta name="blue-current-build" content="35.0.1">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.7b">
+  <link rel="stylesheet" href="styles.css?v=35.0.1">
 </head>
 <body>
 
@@ -1026,6 +1026,124 @@
             <span id="notificationRoutingStatus" role="status"></span>
             <button type="button" class="notification-routing-secondary" id="notificationRoutingReset">Reset defaults</button>
             <button type="button" id="notificationRoutingSave">Save routing rules</button>
+          </div>
+        </section>
+
+        <section class="restaurant-opening-dashboard reveal" id="restaurantOpeningDashboard" aria-labelledby="restaurantOpeningTitle">
+          <div class="restaurant-opening-heading">
+            <div>
+              <small id="restaurantOpeningDaypart">Good morning</small>
+              <h3 id="restaurantOpeningTitle">Marina Grill Opening Dashboard</h3>
+              <span id="restaurantOpeningClock">Loading local time…</span>
+            </div>
+
+            <div class="restaurant-opening-status" id="restaurantOpeningStatusWrap" data-status="opening">
+              <small>Restaurant status</small>
+              <strong id="restaurantOpeningStatus">Opening</strong>
+              <button type="button" id="restaurantOpeningAdvance">Open restaurant</button>
+            </div>
+          </div>
+
+          <div class="restaurant-opening-overview">
+            <article class="opening-readiness-card">
+              <small>Opening readiness</small>
+              <strong id="restaurantOpeningReadiness">0%</strong>
+              <div class="opening-readiness-track"><i id="restaurantOpeningReadinessBar"></i></div>
+              <span id="restaurantOpeningReadinessDetail">Complete the opening checklist.</span>
+            </article>
+
+            <article>
+              <small>Weather</small>
+              <strong id="restaurantOpeningWeather">72° · Clear</strong>
+              <span id="restaurantOpeningWeatherDetail">Excellent patio conditions.</span>
+            </article>
+
+            <article>
+              <small>Reservations</small>
+              <strong id="restaurantOpeningReservations">147</strong>
+              <span id="restaurantOpeningReservationsDetail">42 lunch · 105 dinner</span>
+            </article>
+
+            <article>
+              <small>Staffing</small>
+              <strong id="restaurantOpeningStaffing">18 / 26</strong>
+              <span id="restaurantOpeningStaffingDetail">1 late · 2 open positions</span>
+            </article>
+
+            <article>
+              <small>Today’s forecast</small>
+              <strong id="restaurantOpeningForecast">Busy</strong>
+              <span id="restaurantOpeningForecastDetail">Dinner pressure expected at 6:30 PM.</span>
+            </article>
+          </div>
+
+          <div class="restaurant-opening-grid">
+            <article class="restaurant-opening-checklist-card">
+              <div class="restaurant-opening-card-heading">
+                <div>
+                  <small>Opening checklist</small>
+                  <strong>Prepare the restaurant for service</strong>
+                </div>
+                <span id="restaurantOpeningChecklistCount">0 / 10</span>
+              </div>
+
+              <div class="restaurant-opening-checklist" id="restaurantOpeningChecklist">
+                <label><input type="checkbox" data-opening-task="pos"> <span>POS online</span></label>
+                <label><input type="checkbox" data-opening-task="kitchen"> <span>Kitchen ready</span></label>
+                <label><input type="checkbox" data-opening-task="coffee"> <span>Coffee started</span></label>
+                <label><input type="checkbox" data-opening-task="music"> <span>Music on</span></label>
+                <label><input type="checkbox" data-opening-task="patio"> <span>Patio setup</span></label>
+                <label><input type="checkbox" data-opening-task="bathrooms"> <span>Bathrooms inspected</span></label>
+                <label><input type="checkbox" data-opening-task="deliveries"> <span>Deliveries received</span></label>
+                <label><input type="checkbox" data-opening-task="meeting"> <span>Staff meeting complete</span></label>
+                <label><input type="checkbox" data-opening-task="ice"> <span>Ice stocked</span></label>
+                <label><input type="checkbox" data-opening-task="bar"> <span>Bar setup complete</span></label>
+              </div>
+            </article>
+
+            <article class="restaurant-opening-assistant-card">
+              <div class="restaurant-opening-card-heading">
+                <div>
+                  <small>AI opening assistant</small>
+                  <strong id="restaurantOpeningAssistantTitle">Three items need attention.</strong>
+                </div>
+              </div>
+              <ul id="restaurantOpeningAssistantList">
+                <li>One bartender has not clocked in.</li>
+                <li>Patio reservations are above the normal Wednesday pace.</li>
+                <li>Beer delivery is expected at 11:00 AM.</li>
+              </ul>
+            </article>
+
+            <article class="restaurant-opening-notes-card">
+              <div class="restaurant-opening-card-heading">
+                <div>
+                  <small>Manager notes</small>
+                  <strong>Notes for today</strong>
+                </div>
+                <span id="restaurantOpeningNotesStatus"></span>
+              </div>
+              <textarea id="restaurantOpeningNotes" rows="7" placeholder="Add VIPs, deliveries, maintenance items, staffing concerns, or shift reminders."></textarea>
+              <button type="button" id="restaurantOpeningSaveNotes">Save notes</button>
+            </article>
+          </div>
+
+          <div class="restaurant-opening-timeline" id="restaurantOpeningTimeline" aria-label="Restaurant operating timeline">
+            <span data-phase="opening">Opening</span>
+            <span data-phase="lunch-prep">Lunch prep</span>
+            <span data-phase="lunch-service">Lunch service</span>
+            <span data-phase="afternoon">Afternoon</span>
+            <span data-phase="dinner-prep">Dinner prep</span>
+            <span data-phase="dinner-rush">Dinner rush</span>
+            <span data-phase="closing">Closing</span>
+          </div>
+
+          <div class="restaurant-opening-actions">
+            <button type="button" data-opening-target="staff-operations">Staff dashboard</button>
+            <button type="button" data-opening-target="reservation-operations">Reservations</button>
+            <button type="button" data-opening-target="live-floor-operations">Floor map</button>
+            <button type="button" data-opening-target="managerShiftBrief">Manager notes</button>
+            <button type="button" data-opening-target="executiveForecastCenter">Today’s forecast</button>
           </div>
         </section>
 
@@ -3469,6 +3587,7 @@
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
   <script src="js/modules/regionalNotifications.js?v=34.1.7b"></script>
   <script src="js/modules/notificationRouting.js?v=34.1.7b"></script>
+  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.1"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

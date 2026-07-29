@@ -1,31 +1,41 @@
-BLUE CURRENT V34.1.7b — CC-018b NOTIFICATION ROUTING RULES
+BLUE CURRENT V35.0.1 — RESTAURANT OPENING DASHBOARD
 
-REPLACE:
+BASELINE
+Built from the real V34.1.7b Notification Routing codebase.
+
+REPLACE
 - client/index.html
 - client/styles.css
-- client/js/modules/regionalNotifications.js
 
-ADD:
-- client/js/modules/notificationRouting.js
+ADD
+- client/js/modules/restaurantOpeningDashboard.js
 
-WHAT THIS MICRO-UPDATE ADDS
-- Notification routing-rule editor
-- Audience selection
-- Immediate or digest cadence
-- In-app, email, and SMS delivery options
-- Enable / mute controls
-- Active, critical, digest, and muted KPIs
-- Save and reset-default workflows
-- Browser persistence after refresh
-- Regional Notifications now emits routing events for new alerts
+WHAT THIS RELEASE ADDS
+- Morning / afternoon / evening greeting
+- Live restaurant clock
+- Opening and Open restaurant states
+- Persistent 10-item opening checklist
+- Live readiness percentage and progress bar
+- Weather, reservation, staffing, and forecast overview cards
+- AI Opening Assistant summary
+- Persistent manager notes
+- Operating-phase timeline
+- Quick navigation to staff, reservations, floor map, notes, and forecast
+- Automatic hydration from existing Blue Current values where available
+- Restaurant-opened and checklist-updated browser events
 
-TEST
-1. npm run check
-2. npm start
-3. Open Command Center
-4. Confirm Notification Routing Rules appears
-5. Change audience, cadence, and delivery settings
-6. Disable one rule
-7. Save and refresh
-8. Confirm settings remain
-9. Reset defaults and confirm the original rules return
+TEST CHECKLIST
+1. Copy the three files into the master project.
+2. Run: npm run check
+3. Run: npm start
+4. Open the Command Center.
+5. Confirm Restaurant Opening Dashboard appears.
+6. Check several tasks and refresh; confirm they remain checked.
+7. Complete all tasks and click Open Restaurant.
+8. Refresh; confirm Open status remains.
+9. Save manager notes and refresh; confirm notes remain.
+10. Test all quick-action buttons.
+
+ROLLBACK
+Restore the prior versions of client/index.html and client/styles.css, then remove:
+client/js/modules/restaurantOpeningDashboard.js

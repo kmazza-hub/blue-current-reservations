@@ -7345,3 +7345,284 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     grid-template-columns:1fr;
   }
 }
+
+
+/* V35.0.1 — Restaurant Opening Dashboard */
+.restaurant-opening-dashboard{
+  margin:18px 0;
+  padding:22px;
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 92% 6%,rgba(216,174,98,.13),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.84),rgba(242,238,227,.96));
+  box-shadow:0 24px 72px rgba(4,28,36,.1);
+}
+.restaurant-opening-heading,
+.restaurant-opening-card-heading,
+.restaurant-opening-actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+}
+.restaurant-opening-heading small,
+.restaurant-opening-card-heading small{
+  color:var(--sea);
+  font-size:.64rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+}
+.restaurant-opening-heading h3{
+  margin:.35rem 0 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.7rem;
+}
+#restaurantOpeningClock{
+  display:block;
+  margin-top:6px;
+  color:#708587;
+  font-size:.7rem;
+}
+.restaurant-opening-status{
+  min-width:180px;
+  padding:14px;
+  color:#eef6f3;
+  border-radius:16px;
+  background:linear-gradient(145deg,#0b3442,#071f29);
+}
+.restaurant-opening-status small,
+.restaurant-opening-status strong{
+  display:block;
+}
+.restaurant-opening-status small{
+  color:#9fcac0;
+  font-size:.6rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.restaurant-opening-status strong{
+  margin-top:6px;
+  color:#fff;
+  font-size:1.05rem;
+}
+.restaurant-opening-status button{
+  width:100%;
+  min-height:36px;
+  margin-top:11px;
+  color:#082632;
+  border:0;
+  border-radius:999px;
+  background:var(--gold);
+  font-size:.66rem;
+  font-weight:800;
+}
+.restaurant-opening-status[data-status="open"]{
+  background:linear-gradient(145deg,#225b49,#12392f);
+}
+.restaurant-opening-overview{
+  display:grid;
+  grid-template-columns:1.15fr repeat(4,1fr);
+  gap:10px;
+  margin-top:16px;
+}
+.restaurant-opening-overview article{
+  padding:14px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:15px;
+  background:rgba(255,255,255,.64);
+}
+.restaurant-opening-overview small,
+.restaurant-opening-overview strong,
+.restaurant-opening-overview span{
+  display:block;
+}
+.restaurant-opening-overview small{
+  color:#708587;
+  font-size:.59rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.restaurant-opening-overview strong{
+  margin-top:7px;
+  color:var(--atlantic);
+  font-size:1rem;
+}
+.restaurant-opening-overview span{
+  margin-top:5px;
+  color:#60777a;
+  font-size:.63rem;
+  line-height:1.4;
+}
+.opening-readiness-track{
+  height:8px;
+  margin-top:10px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(11,45,58,.07);
+}
+.opening-readiness-track i{
+  display:block;
+  width:0;
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,#d8ae62,#83c5bb);
+  transition:width .3s ease;
+}
+.restaurant-opening-grid{
+  display:grid;
+  grid-template-columns:1.25fr .9fr .95fr;
+  gap:12px;
+  margin-top:16px;
+}
+.restaurant-opening-grid>article{
+  padding:15px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:16px;
+  background:rgba(255,255,255,.64);
+}
+.restaurant-opening-card-heading strong{
+  display:block;
+  margin-top:4px;
+  color:var(--atlantic);
+  font-size:.82rem;
+}
+.restaurant-opening-card-heading>span{
+  color:#708587;
+  font-size:.64rem;
+}
+.restaurant-opening-checklist{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:13px;
+}
+.restaurant-opening-checklist label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:38px;
+  padding:9px 10px;
+  border:1px solid rgba(11,45,58,.07);
+  border-radius:11px;
+  background:rgba(47,112,117,.04);
+  color:#526f72;
+  font-size:.68rem;
+  cursor:pointer;
+}
+.restaurant-opening-checklist label.is-complete{
+  color:#2f6f57;
+  background:rgba(103,196,154,.1);
+}
+.restaurant-opening-checklist input{
+  accent-color:var(--sea);
+}
+.restaurant-opening-assistant-card ul,
+.restaurant-opening-notes-card textarea{
+  margin-top:13px;
+}
+.restaurant-opening-assistant-card ul{
+  padding-left:20px;
+}
+.restaurant-opening-assistant-card li{
+  padding:7px 0;
+  color:#526f72;
+  border-top:1px solid rgba(11,45,58,.07);
+  font-size:.69rem;
+  line-height:1.45;
+}
+.restaurant-opening-assistant-card li:first-child{
+  border-top:0;
+}
+.restaurant-opening-notes-card textarea{
+  width:100%;
+  resize:vertical;
+  padding:11px;
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.1);
+  border-radius:11px;
+  background:rgba(255,255,255,.72);
+  font:inherit;
+  font-size:.7rem;
+  line-height:1.45;
+}
+.restaurant-opening-notes-card button{
+  min-height:36px;
+  margin-top:9px;
+  padding:0 13px;
+  color:#fff;
+  border:0;
+  border-radius:999px;
+  background:var(--sea);
+  font-size:.66rem;
+  font-weight:800;
+}
+.restaurant-opening-timeline{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:7px;
+  margin-top:16px;
+}
+.restaurant-opening-timeline span{
+  padding:9px 7px;
+  color:#708587;
+  border:1px solid rgba(11,45,58,.07);
+  border-radius:999px;
+  background:rgba(255,255,255,.56);
+  font-size:.61rem;
+  font-weight:800;
+  text-align:center;
+}
+.restaurant-opening-timeline span.is-current{
+  color:#fff;
+  border-color:var(--sea);
+  background:var(--sea);
+}
+.restaurant-opening-actions{
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.restaurant-opening-actions button{
+  min-height:38px;
+  padding:0 13px;
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:999px;
+  background:rgba(255,255,255,.62);
+  font-size:.66rem;
+  font-weight:800;
+}
+@media(max-width:1050px){
+  .restaurant-opening-overview{
+    grid-template-columns:repeat(3,1fr);
+  }
+  .restaurant-opening-grid{
+    grid-template-columns:1fr 1fr;
+  }
+  .restaurant-opening-notes-card{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:720px){
+  .restaurant-opening-heading{
+    flex-direction:column;
+  }
+  .restaurant-opening-status{
+    width:100%;
+  }
+  .restaurant-opening-overview,
+  .restaurant-opening-grid{
+    grid-template-columns:1fr;
+  }
+  .restaurant-opening-notes-card{
+    grid-column:auto;
+  }
+  .restaurant-opening-checklist{
+    grid-template-columns:1fr;
+  }
+  .restaurant-opening-timeline{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
