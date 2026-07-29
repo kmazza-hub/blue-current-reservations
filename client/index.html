@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.7a">
+  <meta name="blue-current-build" content="34.1.7b">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.7a">
+  <meta name="blue-current-build" content="34.1.7b">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.7a">
+  <link rel="stylesheet" href="styles.css?v=34.1.7b">
 </head>
 <body>
 
@@ -986,6 +986,47 @@
 
           <div class="regional-notifications-list" id="regionalNotificationList" aria-live="polite"></div>
           <span class="regional-notifications-status" id="regionalNotificationStatus" role="status"></span>
+        </section>
+
+        <section class="notification-routing reveal" id="notificationRouting" aria-labelledby="notificationRoutingTitle">
+          <div class="notification-routing-heading">
+            <div>
+              <small>Alert governance</small>
+              <h3 id="notificationRoutingTitle">Notification Routing Rules</h3>
+            </div>
+            <span id="notificationRoutingUpdated">Rules ready</span>
+          </div>
+
+          <div class="notification-routing-kpis">
+            <article>
+              <small>Active rules</small>
+              <strong id="notificationRoutingActiveCount">0</strong>
+              <span>Enabled delivery paths</span>
+            </article>
+            <article>
+              <small>Critical routing</small>
+              <strong id="notificationRoutingCriticalCount">0</strong>
+              <span>Immediate escalations</span>
+            </article>
+            <article>
+              <small>Digest rules</small>
+              <strong id="notificationRoutingDigestCount">0</strong>
+              <span>Bundled notifications</span>
+            </article>
+            <article>
+              <small>Muted rules</small>
+              <strong id="notificationRoutingMutedCount">0</strong>
+              <span>Temporarily suppressed</span>
+            </article>
+          </div>
+
+          <div class="notification-routing-list" id="notificationRoutingList" aria-live="polite"></div>
+
+          <div class="notification-routing-actions">
+            <span id="notificationRoutingStatus" role="status"></span>
+            <button type="button" class="notification-routing-secondary" id="notificationRoutingReset">Reset defaults</button>
+            <button type="button" id="notificationRoutingSave">Save routing rules</button>
+          </div>
         </section>
 
         <div class="readiness-panel reveal">
@@ -3426,7 +3467,8 @@
   <script src="js/modules/executiveScorecards.js?v=34.1.5c"></script>
   <script src="js/modules/executiveDailyBrief.js?v=34.1.5d"></script>
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
-  <script src="js/modules/regionalNotifications.js?v=34.1.7a"></script>
+  <script src="js/modules/regionalNotifications.js?v=34.1.7b"></script>
+  <script src="js/modules/notificationRouting.js?v=34.1.7b"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

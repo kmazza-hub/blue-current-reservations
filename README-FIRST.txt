@@ -1,27 +1,31 @@
-BLUE CURRENT V34.1.7a — CC-018a REGIONAL NOTIFICATIONS
+BLUE CURRENT V34.1.7b — CC-018b NOTIFICATION ROUTING RULES
 
 REPLACE:
 - client/index.html
 - client/styles.css
-
-ADD:
 - client/js/modules/regionalNotifications.js
 
+ADD:
+- client/js/modules/notificationRouting.js
+
 WHAT THIS MICRO-UPDATE ADDS
-- Regional notification center
-- All, Critical, Unread, and Acknowledged views
-- Unread, critical, acknowledged, and escalated KPIs
-- Acknowledge / Mark Unread workflow
-- Create Action escalation
+- Notification routing-rule editor
+- Audience selection
+- Immediate or digest cadence
+- In-app, email, and SMS delivery options
+- Enable / mute controls
+- Active, critical, digest, and muted KPIs
+- Save and reset-default workflows
 - Browser persistence after refresh
-- Automatic notifications from forecast and action activity
+- Regional Notifications now emits routing events for new alerts
 
 TEST
 1. npm run check
 2. npm start
 3. Open Command Center
-4. Confirm Regional Notifications appears
-5. Test all four filters
-6. Acknowledge a notification
-7. Create an action from a notification
-8. Refresh and verify state remains
+4. Confirm Notification Routing Rules appears
+5. Change audience, cadence, and delivery settings
+6. Disable one rule
+7. Save and refresh
+8. Confirm settings remain
+9. Reset defaults and confirm the original rules return

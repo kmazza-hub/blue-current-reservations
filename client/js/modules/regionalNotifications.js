@@ -23,7 +23,7 @@
   }
 
   function add(notification) {
-    state.notifications.unshift({
+    const normalized = {
       id: notification.id || `note_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
       createdAt: notification.createdAt || new Date().toISOString(),
       locationId: notification.locationId || "loc_marina",
@@ -33,9 +33,15 @@
       detail: notification.detail || "",
       acknowledged: Boolean(notification.acknowledged),
       escalated: Boolean(notification.escalated)
-    });
+    };
+
+    state.notifications.unshift(normalized);
     save();
     render();
+
+    window.dispatchEvent(new CustomEvent("bluecurrent:regional-notification-created", {
+      detail:{ notification: normalized }
+    }));
   }
 
   function seed() {
