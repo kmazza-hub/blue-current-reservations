@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.6f">
+  <meta name="blue-current-build" content="34.1.7a">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.6f">
+  <meta name="blue-current-build" content="34.1.7a">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.6f">
+  <link rel="stylesheet" href="styles.css?v=34.1.7a">
 </head>
 <body>
 
@@ -936,6 +936,56 @@
           </div>
 
           <span class="executive-forecast-status" id="executiveForecastStatus" role="status"></span>
+        </section>
+
+        <section class="regional-notifications reveal" id="regionalNotifications" aria-labelledby="regionalNotificationsTitle">
+          <div class="regional-notifications-heading">
+            <div>
+              <small>Leadership alerts</small>
+              <h3 id="regionalNotificationsTitle">Regional Notifications</h3>
+            </div>
+
+            <label class="regional-notifications-filter">
+              View
+              <select id="regionalNotificationFilter">
+                <option value="all">All notifications</option>
+                <option value="critical">Critical only</option>
+                <option value="unread">Unread</option>
+                <option value="acknowledged">Acknowledged</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="regional-notifications-kpis">
+            <article>
+              <small>Unread</small>
+              <strong id="regionalNotificationUnread">0</strong>
+              <span>Needs leadership review</span>
+            </article>
+            <article>
+              <small>Critical</small>
+              <strong id="regionalNotificationCritical">0</strong>
+              <span>Immediate attention</span>
+            </article>
+            <article>
+              <small>Acknowledged</small>
+              <strong id="regionalNotificationAcknowledged">0</strong>
+              <span>Reviewed today</span>
+            </article>
+            <article>
+              <small>Escalated</small>
+              <strong id="regionalNotificationEscalated">0</strong>
+              <span>Converted to action</span>
+            </article>
+          </div>
+
+          <div class="regional-notifications-summary">
+            <strong id="regionalNotificationHeadline">No urgent regional notifications.</strong>
+            <span id="regionalNotificationUpdated">Live</span>
+          </div>
+
+          <div class="regional-notifications-list" id="regionalNotificationList" aria-live="polite"></div>
+          <span class="regional-notifications-status" id="regionalNotificationStatus" role="status"></span>
         </section>
 
         <div class="readiness-panel reveal">
@@ -3376,6 +3426,7 @@
   <script src="js/modules/executiveScorecards.js?v=34.1.5c"></script>
   <script src="js/modules/executiveDailyBrief.js?v=34.1.5d"></script>
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
+  <script src="js/modules/regionalNotifications.js?v=34.1.7a"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

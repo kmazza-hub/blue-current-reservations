@@ -1,31 +1,27 @@
-BLUE CURRENT V34.1.6f — CC-017f LIVE EXECUTIVE FORECAST CENTER
+BLUE CURRENT V34.1.7a — CC-018a REGIONAL NOTIFICATIONS
 
 REPLACE:
 - client/index.html
 - client/styles.css
 
 ADD:
-- client/js/modules/executiveForecastCenter.js
+- client/js/modules/regionalNotifications.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Working Executive Forecast Center
-- Next Hour, Lunch, Afternoon, Dinner Rush, and Late Night timeline
-- Labor, guest, kitchen, and revenue forecasts
-- Forecast confidence
-- Forecast-driven leadership recommendation
-- Review Location shortcut
-- Create Action workflow
-- Automatic refresh from district, analytics, event, and action data
-
-IMPORTANT
-This replaces the earlier forecast scaffolds with one working consolidated module.
+- Regional notification center
+- All, Critical, Unread, and Acknowledged views
+- Unread, critical, acknowledged, and escalated KPIs
+- Acknowledge / Mark Unread workflow
+- Create Action escalation
+- Browser persistence after refresh
+- Automatic notifications from forecast and action activity
 
 TEST
 1. npm run check
 2. npm start
 3. Open Command Center
-4. Confirm Executive Forecast Center appears
-5. Confirm all five forecast windows populate
-6. Test Review Location
-7. Sign in and create a forecast action
-8. Confirm the action appears and remains after refresh
+4. Confirm Regional Notifications appears
+5. Test all four filters
+6. Acknowledge a notification
+7. Create an action from a notification
+8. Refresh and verify state remains
