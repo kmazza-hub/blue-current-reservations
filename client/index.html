@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="35.0.2">
+  <meta name="blue-current-build" content="35.0.3">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="35.0.2">
+  <meta name="blue-current-build" content="35.0.3">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=35.0.2">
+  <link rel="stylesheet" href="styles.css?v=35.0.3">
 </head>
 <body>
 
@@ -1232,6 +1232,102 @@
             <span id="liveServiceStatus" role="status"></span>
             <button type="button" class="live-service-secondary" id="liveServiceAutoMode">Use suggested mode</button>
             <button type="button" id="liveServiceConfirmMode">Confirm mode</button>
+          </div>
+        </section>
+
+        <section class="live-floor-operations-v2 reveal" id="liveFloorOperationsV2" aria-labelledby="liveFloorOperationsV2Title">
+          <div class="live-floor-v2-heading">
+            <div>
+              <small>Dining room control</small>
+              <h3 id="liveFloorOperationsV2Title">Live Floor Operations 2.0</h3>
+              <span id="liveFloorV2Updated">Loading dining room state…</span>
+            </div>
+
+            <div class="live-floor-v2-occupancy">
+              <small>Dining room</small>
+              <strong id="liveFloorV2Occupancy">0%</strong>
+              <span id="liveFloorV2OccupancyDetail">0 of 0 tables occupied</span>
+            </div>
+          </div>
+
+          <div class="live-floor-v2-kpis">
+            <article>
+              <small>Occupied</small>
+              <strong id="liveFloorV2Occupied">0</strong>
+              <span>Active tables</span>
+            </article>
+            <article>
+              <small>Reserved</small>
+              <strong id="liveFloorV2Reserved">0</strong>
+              <span>Upcoming arrivals</span>
+            </article>
+            <article>
+              <small>Available</small>
+              <strong id="liveFloorV2Available">0</strong>
+              <span>Ready to seat</span>
+            </article>
+            <article>
+              <small>Needs attention</small>
+              <strong id="liveFloorV2Attention">0</strong>
+              <span>Stalled or delayed</span>
+            </article>
+            <article>
+              <small>Average seated</small>
+              <strong id="liveFloorV2AverageTime">0 min</strong>
+              <span>Current occupied tables</span>
+            </article>
+          </div>
+
+          <div class="live-floor-v2-layout">
+            <div class="live-floor-v2-map" id="liveFloorV2Map" aria-live="polite"></div>
+
+            <aside class="live-floor-v2-detail" id="liveFloorV2Detail">
+              <div>
+                <small>Selected table</small>
+                <strong id="liveFloorV2TableName">Choose a table</strong>
+                <span id="liveFloorV2TableStatus">No table selected</span>
+              </div>
+
+              <dl class="live-floor-v2-table-meta">
+                <div><dt>Guests</dt><dd id="liveFloorV2Guests">—</dd></div>
+                <div><dt>Server</dt><dd id="liveFloorV2Server">—</dd></div>
+                <div><dt>Time seated</dt><dd id="liveFloorV2Seated">—</dd></div>
+                <div><dt>Meal stage</dt><dd id="liveFloorV2Stage">—</dd></div>
+                <div><dt>Next reservation</dt><dd id="liveFloorV2NextReservation">—</dd></div>
+              </dl>
+
+              <label>
+                Update status
+                <select id="liveFloorV2StatusSelect">
+                  <option value="available">Available</option>
+                  <option value="reserved">Reserved</option>
+                  <option value="occupied">Occupied</option>
+                  <option value="attention">Needs attention</option>
+                  <option value="blocked">Blocked</option>
+                </select>
+              </label>
+
+              <label>
+                Meal stage
+                <select id="liveFloorV2StageSelect">
+                  <option value="waiting">Waiting</option>
+                  <option value="drinks">Drinks</option>
+                  <option value="appetizers">Appetizers</option>
+                  <option value="entrees">Entrees</option>
+                  <option value="dessert">Dessert</option>
+                  <option value="check">Check</option>
+                  <option value="reset">Reset</option>
+                </select>
+              </label>
+
+              <div class="live-floor-v2-detail-actions">
+                <button type="button" class="live-floor-v2-secondary" id="liveFloorV2Seat">Seat party</button>
+                <button type="button" class="live-floor-v2-secondary" id="liveFloorV2Clear">Clear table</button>
+                <button type="button" id="liveFloorV2Save">Save table</button>
+              </div>
+
+              <span id="liveFloorV2StatusMessage" role="status"></span>
+            </aside>
           </div>
         </section>
 
@@ -3675,8 +3771,9 @@
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
   <script src="js/modules/regionalNotifications.js?v=34.1.7b"></script>
   <script src="js/modules/notificationRouting.js?v=34.1.7b"></script>
-  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.2"></script>
-  <script src="js/modules/liveServiceMode.js?v=35.0.2"></script>
+  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.3"></script>
+  <script src="js/modules/liveServiceMode.js?v=35.0.3"></script>
+  <script src="js/modules/liveFloorOperationsV2.js?v=35.0.3"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
