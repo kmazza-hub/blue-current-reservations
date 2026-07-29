@@ -1,32 +1,27 @@
-BLUE CURRENT V34.1.4c — CC-015c EXECUTIVE RECOMMENDATIONS
+BLUE CURRENT V34.1.4d — CC-015d EXECUTIVE ACTION CENTER
 
 REPLACE:
 - client/index.html
 - client/styles.css
 
 ADD:
-- client/js/modules/executiveRecommendations.js
+- client/js/modules/executiveActionCenter.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Three live executive recommendations
-- Recommendations based on:
-  - Location health
-  - Labor
-  - Revenue
-  - Active alerts
-  - Current operating status
-- Priority, expected impact, suggested owner, and due timing
-- Review Location shortcut
-- Create Action workflow using the existing manager-action API
-- Recommendation rationale saved as a note
-- Automatic refresh when district data changes
+- Executive action queue
+- Open, All, Completed, and Awaiting Review views
+- Owner, location, priority, due time, and status
+- Mark Complete, Approve Result, Reopen, and Review Location controls
+- Open, completed, review, and risk-reduction KPIs
+- Browser persistence after refresh
+- Listens for Executive Intelligence actions created by the existing workflow
 
 TEST
 1. npm run check
 2. npm start
-3. Sign in and open Command Center
-4. Confirm Executive Recommendations appears
-5. Test Review Location
-6. Create an executive action
-7. Confirm the action appears in the location Action List
-8. Refresh and verify the action remains
+3. Open Command Center
+4. Confirm Executive Action Center appears
+5. Mark an action complete
+6. Approve its result
+7. Test every filter
+8. Refresh and verify state remains

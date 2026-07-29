@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.4c">
+  <meta name="blue-current-build" content="34.1.4d">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.4c">
+  <meta name="blue-current-build" content="34.1.4d">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.4c">
+  <link rel="stylesheet" href="styles.css?v=34.1.4d">
 </head>
 <body>
 
@@ -584,6 +584,39 @@
           <div class="executive-recommendations-list" id="executiveRecommendationsList" aria-live="polite"></div>
 
           <span class="executive-recommendations-status" id="executiveRecommendationsStatus" role="status"></span>
+        </section>
+
+        <section class="executive-action-center reveal" id="executiveActionCenter" aria-labelledby="executiveActionCenterTitle">
+          <div class="executive-action-heading">
+            <div>
+              <small>Portfolio execution</small>
+              <h3 id="executiveActionCenterTitle">Executive Action Center</h3>
+            </div>
+            <label class="executive-action-filter">
+              View
+              <select id="executiveActionFilter">
+                <option value="open">Open actions</option>
+                <option value="all">All actions</option>
+                <option value="completed">Completed</option>
+                <option value="review">Awaiting review</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="executive-action-kpis">
+            <article><small>Open actions</small><strong id="executiveActionOpenCount">0</strong><span>Portfolio-wide</span></article>
+            <article><small>Completed today</small><strong id="executiveActionCompletedCount">0</strong><span>Closed by leadership</span></article>
+            <article><small>Awaiting review</small><strong id="executiveActionReviewCount">0</strong><span>Needs sign-off</span></article>
+            <article><small>Risk reduction</small><strong id="executiveActionRiskReduction">0%</strong><span>Estimated impact</span></article>
+          </div>
+
+          <div class="executive-action-summary">
+            <strong id="executiveActionHeadline">No executive actions are open.</strong>
+            <span id="executiveActionUpdated">Ready</span>
+          </div>
+
+          <div class="executive-action-list" id="executiveActionList" aria-live="polite"></div>
+          <span class="executive-action-status" id="executiveActionStatus" role="status"></span>
         </section>
 
         <div class="readiness-panel reveal">
@@ -3018,6 +3051,7 @@
   <script src="js/modules/executiveMorningBrief.js?v=34.1.4a"></script>
   <script src="js/modules/crossLocationComparison.js?v=34.1.4b"></script>
   <script src="js/modules/executiveRecommendations.js?v=34.1.4c"></script>
+  <script src="js/modules/executiveActionCenter.js?v=34.1.4d"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
