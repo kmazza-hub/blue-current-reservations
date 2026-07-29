@@ -1,17 +1,21 @@
-IMPLEMENTATION
+NEXT BUILD
 
-Add a Shift Risk Heatmap panel below Predictive Operations.
+Panel:
+District Command Center
 
-New module:
-client/js/modules/shiftRiskHeatmap.js
+Module:
+client/js/modules/districtCommandCenter.js
 
 Functions:
-- calculateHourlyRisk()
-- buildHeatmap()
-- renderHeatmap()
-- selectForecastHour()
-- syncHeatmap()
+- loadPortfolio()
+- calculateLocationHealth()
+- renderPortfolioCards()
+- renderDistrictKPIs()
+- selectLocation()
+- syncDistrictDashboard()
 
-Purpose:
-Give managers a visual timeline of the next 12 operating hours so they can
-anticipate pressure before it develops.
+Future integrations:
+Restaurant Pulse
+Predictive Operations
+Shift Risk Heatmap
+AI Operations Timeline
