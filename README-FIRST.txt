@@ -1,17 +1,18 @@
-BLUE CURRENT V34.1.6b — CC-017b EXECUTIVE FORECAST TIMELINE
+BLUE CURRENT V34.1.6c — CC-017c EXECUTIVE FORECAST CARDS
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/executiveForecastTimeline.js
+- client/js/modules/executiveForecastCards.js
 
-Adds the Forecast Timeline scaffold:
-- Next Hour
-- Lunch
-- Afternoon
-- Dinner Rush
-- Late Night
+This update creates the Forecast Cards framework.
 
-Future updates will attach predictive models and live data.
+Upcoming:
+- Live guest-demand cards
+- Labor forecast
+- Reservation forecast
+- Revenue forecast
+- Kitchen forecast
+- AI confidence indicators
