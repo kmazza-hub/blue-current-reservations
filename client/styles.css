@@ -5384,3 +5384,249 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     grid-column:2;
   }
 }
+
+
+/* V34.1.3a — CC-014a District Command Center */
+.district-command-center{
+  margin:18px 0;
+  padding:22px;
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:22px;
+  background:linear-gradient(145deg,rgba(255,255,255,.76),rgba(242,238,227,.9));
+  box-shadow:0 22px 68px rgba(4,28,36,.09);
+}
+.district-command-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+}
+.district-command-heading small{
+  color:var(--sea);
+  font-size:.66rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.district-command-heading h3{
+  margin:.35rem 0 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.5rem;
+}
+.district-command-controls label{
+  color:#708587;
+  font-size:.64rem;
+  font-weight:800;
+}
+.district-command-controls select{
+  display:block;
+  min-width:165px;
+  margin-top:6px;
+  padding:9px 10px;
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:10px;
+  background:rgba(255,255,255,.68);
+}
+.district-alert-banner{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-top:16px;
+  padding:15px;
+  border:1px solid rgba(47,112,117,.12);
+  border-radius:15px;
+  background:rgba(47,112,117,.06);
+}
+.district-alert-banner[data-tone="warning"]{
+  border-color:rgba(216,174,98,.28);
+  background:rgba(216,174,98,.1);
+}
+.district-alert-banner[data-tone="risk"]{
+  border-color:rgba(223,128,108,.3);
+  background:rgba(223,128,108,.1);
+}
+.district-alert-banner small,
+.district-alert-banner strong{
+  display:block;
+}
+.district-alert-banner small{
+  color:#708587;
+  font-size:.62rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.district-alert-banner strong{
+  margin-top:4px;
+  color:var(--atlantic);
+  font-size:.88rem;
+}
+.district-alert-banner p{
+  margin:5px 0 0;
+  color:#60777a;
+  font-size:.7rem;
+}
+.district-alert-banner button{
+  flex:0 0 auto;
+  min-height:38px;
+  padding:0 13px;
+  color:#082632;
+  border:0;
+  border-radius:999px;
+  background:var(--gold);
+  font-size:.68rem;
+  font-weight:800;
+}
+.district-kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+.district-kpi-grid article{
+  padding:13px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:14px;
+  background:rgba(255,255,255,.6);
+}
+.district-kpi-grid small,
+.district-kpi-grid strong,
+.district-kpi-grid span{
+  display:block;
+}
+.district-kpi-grid small{
+  color:#708587;
+  font-size:.61rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.district-kpi-grid strong{
+  margin-top:6px;
+  color:var(--atlantic);
+  font-size:1.2rem;
+}
+.district-kpi-grid span{
+  margin-top:4px;
+  color:#708587;
+  font-size:.64rem;
+}
+.district-location-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:16px;
+}
+.district-location-card{
+  padding:15px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:16px;
+  background:rgba(255,255,255,.62);
+  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+.district-location-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(47,112,117,.24);
+  box-shadow:0 12px 26px rgba(4,28,36,.08);
+}
+.district-location-card[data-tone="watch"]{
+  border-color:rgba(216,174,98,.25);
+}
+.district-location-card[data-tone="risk"]{
+  border-color:rgba(223,128,108,.28);
+}
+.district-location-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+.district-location-top small,
+.district-location-top strong{
+  display:block;
+}
+.district-location-top small{
+  color:#708587;
+  font-size:.61rem;
+}
+.district-location-top strong{
+  margin-top:4px;
+  color:var(--atlantic);
+  font-size:.86rem;
+}
+.district-health-badge{
+  min-width:46px;
+  padding:7px 9px;
+  border-radius:999px;
+  color:#2f6f57;
+  background:rgba(103,196,154,.12);
+  font-size:.68rem;
+  font-weight:800;
+  text-align:center;
+}
+.district-location-card[data-tone="watch"] .district-health-badge{
+  color:#805f2d;
+  background:rgba(216,174,98,.12);
+}
+.district-location-card[data-tone="risk"] .district-health-badge{
+  color:#8a4438;
+  background:rgba(223,128,108,.12);
+}
+.district-location-metrics{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:13px;
+}
+.district-location-metrics div{
+  padding:9px;
+  border-radius:11px;
+  background:rgba(47,112,117,.05);
+}
+.district-location-metrics small,
+.district-location-metrics strong{
+  display:block;
+}
+.district-location-metrics small{
+  color:#708587;
+  font-size:.56rem;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.district-location-metrics strong{
+  margin-top:4px;
+  color:var(--atlantic);
+  font-size:.75rem;
+}
+.district-location-status{
+  margin:11px 0 0;
+  color:#60777a;
+  font-size:.68rem;
+  line-height:1.45;
+}
+.district-location-card button{
+  width:100%;
+  min-height:36px;
+  margin-top:12px;
+  color:#fff;
+  border:0;
+  border-radius:999px;
+  background:var(--sea);
+  font-size:.66rem;
+  font-weight:800;
+}
+@media(max-width:980px){
+  .district-kpi-grid{grid-template-columns:repeat(3,1fr)}
+  .district-location-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .district-command-heading,
+  .district-alert-banner{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .district-kpi-grid,
+  .district-location-grid{
+    grid-template-columns:1fr;
+  }
+}
