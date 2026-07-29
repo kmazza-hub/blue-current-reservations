@@ -1,37 +1,37 @@
-BLUE CURRENT V35.0.5 — WAITLIST ENGINE
+BLUE CURRENT V35.0.6 — RESERVATION TIMELINE
 
 BASELINE
-Built from the real V35.0.4 Host Stand Dashboard release.
+Built from the real V35.0.5 Waitlist Engine release.
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/waitlistEngine.js
+- client/js/modules/reservationTimeline.js
 
 WHAT THIS RELEASE ADDS
-- Live checked-in guest waitlist
-- Smart-priority, oldest-first, party-size, and best-fit sorting
-- Dynamic wait-time quotes
-- Longest-wait and average-quote KPIs
-- Automatic best-table matching
-- VIP and over-quote prioritization
-- Host notes and quote adjustments
-- Text Guest and Mark Ready workflows
-- One-click seating
-- Automatic updates to Host Stand and Live Floor Operations
-- Persistent waitlist state after refresh
+- Lunch, dinner, and full-day reservation timelines
+- 15- and 30-minute service intervals
+- Reservation and cover counts by time window
+- Peak-pressure detection
+- Large-party and unassigned-reservation KPIs
+- Live comparison against current floor capacity
+- Projected wait by arrival window
+- Blue Current seating recommendations
+- Create Seating Plan workflow
+- Host Stand shortcut
+- Automatic updates after seating or table clearing
+- Persistent timeline settings and seating plans
 
 TEST
 1. Copy the files into the master project.
 2. Run: npm run check
 3. Run: npm start
-4. Add or check in a party at the Host Stand.
-5. Confirm the party appears in Waitlist Engine.
-6. Change the sort mode.
-7. Adjust the quoted wait and add a note.
-8. Mark the guest as texted.
-9. Seat the party.
-10. Confirm Host Stand and Live Floor Operations update.
-11. Refresh and verify state remains.
+4. Confirm Reservation Timeline appears.
+5. Test lunch, dinner, and full-day windows.
+6. Test 15- and 30-minute intervals.
+7. Select several time windows.
+8. Confirm pressure, projected wait, and recommendation update.
+9. Create a seating plan.
+10. Seat a party or clear a table and confirm the timeline recalculates.

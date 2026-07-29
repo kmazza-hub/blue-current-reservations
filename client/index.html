@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="35.0.5">
+  <meta name="blue-current-build" content="35.0.6">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="35.0.5">
+  <meta name="blue-current-build" content="35.0.6">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=35.0.5">
+  <link rel="stylesheet" href="styles.css?v=35.0.6">
 </head>
 <body>
 
@@ -1543,6 +1543,103 @@
               </div>
 
               <span id="waitlistStatus" role="status"></span>
+            </aside>
+          </div>
+        </section>
+
+        <section class="reservation-timeline reveal" id="reservationTimeline" aria-labelledby="reservationTimelineTitle">
+          <div class="reservation-timeline-heading">
+            <div>
+              <small>Evening pacing</small>
+              <h3 id="reservationTimelineTitle">Reservation Timeline</h3>
+              <span id="reservationTimelineUpdated">Building service forecast…</span>
+            </div>
+
+            <div class="reservation-timeline-pressure" id="reservationTimelinePressure" data-tone="stable">
+              <small>Peak pressure</small>
+              <strong id="reservationTimelinePressureLabel">Stable</strong>
+              <span id="reservationTimelinePressureDetail">Reservation flow is balanced.</span>
+            </div>
+          </div>
+
+          <div class="reservation-timeline-kpis">
+            <article>
+              <small>Total reservations</small>
+              <strong id="reservationTimelineTotal">0</strong>
+              <span>Visible service window</span>
+            </article>
+            <article>
+              <small>Expected covers</small>
+              <strong id="reservationTimelineCovers">0</strong>
+              <span>Booked guests</span>
+            </article>
+            <article>
+              <small>Peak window</small>
+              <strong id="reservationTimelinePeak">—</strong>
+              <span>Highest arrival pressure</span>
+            </article>
+            <article>
+              <small>Large parties</small>
+              <strong id="reservationTimelineLargeParties">0</strong>
+              <span>Six or more guests</span>
+            </article>
+            <article>
+              <small>Unassigned</small>
+              <strong id="reservationTimelineUnassigned">0</strong>
+              <span>Needs a table plan</span>
+            </article>
+          </div>
+
+          <div class="reservation-timeline-layout">
+            <div class="reservation-timeline-board">
+              <div class="reservation-timeline-controls">
+                <label>
+                  Service window
+                  <select id="reservationTimelineWindow">
+                    <option value="dinner">Dinner service</option>
+                    <option value="lunch">Lunch service</option>
+                    <option value="full-day">Full day</option>
+                  </select>
+                </label>
+
+                <label>
+                  Interval
+                  <select id="reservationTimelineInterval">
+                    <option value="15">15 minutes</option>
+                    <option value="30">30 minutes</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="reservation-timeline-slots" id="reservationTimelineSlots" aria-live="polite"></div>
+            </div>
+
+            <aside class="reservation-timeline-inspector">
+              <div>
+                <small>Selected window</small>
+                <strong id="reservationTimelineSelectedTime">Choose a time</strong>
+                <span id="reservationTimelineSelectedPressure">No window selected</span>
+              </div>
+
+              <dl class="reservation-timeline-meta">
+                <div><dt>Reservations</dt><dd id="reservationTimelineSelectedReservations">—</dd></div>
+                <div><dt>Covers</dt><dd id="reservationTimelineSelectedCovers">—</dd></div>
+                <div><dt>Available tables</dt><dd id="reservationTimelineSelectedTables">—</dd></div>
+                <div><dt>Projected wait</dt><dd id="reservationTimelineSelectedWait">—</dd></div>
+              </dl>
+
+              <div class="reservation-timeline-recommendation">
+                <small>Blue Current recommendation</small>
+                <strong id="reservationTimelineRecommendation">Select a time window.</strong>
+                <p id="reservationTimelineRecommendationDetail">Blue Current will compare booked demand with current floor capacity.</p>
+              </div>
+
+              <div class="reservation-timeline-actions">
+                <button type="button" class="reservation-timeline-secondary" id="reservationTimelineOpenHost">Open host stand</button>
+                <button type="button" id="reservationTimelineCreatePlan">Create seating plan</button>
+              </div>
+
+              <span id="reservationTimelineStatus" role="status"></span>
             </aside>
           </div>
         </section>
@@ -3987,11 +4084,12 @@
   <script src="js/modules/executiveForecastCenter.js?v=34.1.6f"></script>
   <script src="js/modules/regionalNotifications.js?v=34.1.7b"></script>
   <script src="js/modules/notificationRouting.js?v=34.1.7b"></script>
-  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.5"></script>
-  <script src="js/modules/liveServiceMode.js?v=35.0.5"></script>
-  <script src="js/modules/liveFloorOperationsV2.js?v=35.0.5"></script>
-  <script src="js/modules/hostStandDashboard.js?v=35.0.5"></script>
-  <script src="js/modules/waitlistEngine.js?v=35.0.5"></script>
+  <script src="js/modules/restaurantOpeningDashboard.js?v=35.0.6"></script>
+  <script src="js/modules/liveServiceMode.js?v=35.0.6"></script>
+  <script src="js/modules/liveFloorOperationsV2.js?v=35.0.6"></script>
+  <script src="js/modules/hostStandDashboard.js?v=35.0.6"></script>
+  <script src="js/modules/waitlistEngine.js?v=35.0.6"></script>
+  <script src="js/modules/reservationTimeline.js?v=35.0.6"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

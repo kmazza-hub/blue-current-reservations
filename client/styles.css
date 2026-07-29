@@ -8761,3 +8761,316 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     grid-template-columns:1fr;
   }
 }
+
+
+/* V35.0.6 — Reservation Timeline */
+.reservation-timeline{
+  margin:18px 0;
+  padding:22px;
+  border:1px solid rgba(11,45,58,.11);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 92% 8%,rgba(131,197,187,.13),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.84),rgba(242,238,227,.96));
+  box-shadow:0 24px 72px rgba(4,28,36,.1);
+}
+.reservation-timeline-heading,
+.reservation-timeline-controls{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+}
+.reservation-timeline-heading small,
+.reservation-timeline-inspector small{
+  color:var(--sea);
+  font-size:.64rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+}
+.reservation-timeline-heading h3{
+  margin:.35rem 0 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.55rem;
+}
+#reservationTimelineUpdated{
+  display:block;
+  margin-top:6px;
+  color:#708587;
+  font-size:.66rem;
+}
+.reservation-timeline-pressure{
+  min-width:200px;
+  padding:14px;
+  color:#eef6f3;
+  border-radius:16px;
+  background:linear-gradient(145deg,#0b3442,#071f29);
+}
+.reservation-timeline-pressure small,
+.reservation-timeline-pressure strong,
+.reservation-timeline-pressure span{
+  display:block;
+}
+.reservation-timeline-pressure small{
+  color:#9fcac0;
+  font-size:.58rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.reservation-timeline-pressure strong{
+  margin-top:6px;
+  color:#fff;
+  font-size:1rem;
+}
+.reservation-timeline-pressure span{
+  margin-top:5px;
+  color:#cbdad6;
+  font-size:.64rem;
+}
+.reservation-timeline-pressure[data-tone="watch"]{
+  background:linear-gradient(145deg,#76592a,#3e2f18);
+}
+.reservation-timeline-pressure[data-tone="risk"]{
+  background:linear-gradient(145deg,#7a4038,#43241f);
+}
+.reservation-timeline-kpis{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:10px;
+  margin-top:15px;
+}
+.reservation-timeline-kpis article{
+  padding:13px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:14px;
+  background:rgba(255,255,255,.64);
+}
+.reservation-timeline-kpis small,
+.reservation-timeline-kpis strong,
+.reservation-timeline-kpis span{
+  display:block;
+}
+.reservation-timeline-kpis small{
+  color:#708587;
+  font-size:.59rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.reservation-timeline-kpis strong{
+  margin-top:6px;
+  color:var(--atlantic);
+  font-size:1.14rem;
+}
+.reservation-timeline-kpis span{
+  margin-top:4px;
+  color:#708587;
+  font-size:.62rem;
+}
+.reservation-timeline-layout{
+  display:grid;
+  grid-template-columns:1.45fr .7fr;
+  gap:14px;
+  margin-top:15px;
+}
+.reservation-timeline-board,
+.reservation-timeline-inspector{
+  padding:16px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:18px;
+  background:rgba(255,255,255,.64);
+}
+.reservation-timeline-controls{
+  justify-content:flex-start;
+}
+.reservation-timeline-controls label,
+.reservation-timeline-inspector label{
+  color:#708587;
+  font-size:.6rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.reservation-timeline-controls select{
+  display:block;
+  min-width:145px;
+  margin-top:6px;
+  padding:9px 10px;
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.1);
+  border-radius:10px;
+  background:rgba(255,255,255,.76);
+}
+.reservation-timeline-slots{
+  display:grid;
+  gap:8px;
+  margin-top:14px;
+}
+.reservation-timeline-slot{
+  display:grid;
+  grid-template-columns:84px 1fr 74px;
+  gap:12px;
+  align-items:center;
+  padding:10px 11px;
+  border:1px solid rgba(11,45,58,.07);
+  border-radius:12px;
+  background:rgba(255,255,255,.68);
+  cursor:pointer;
+}
+.reservation-timeline-slot.is-selected{
+  border-color:rgba(47,112,117,.34);
+  box-shadow:0 10px 24px rgba(4,28,36,.07);
+}
+.reservation-timeline-slot[data-tone="watch"]{
+  border-color:rgba(216,174,98,.26);
+}
+.reservation-timeline-slot[data-tone="risk"]{
+  border-color:rgba(223,128,108,.3);
+}
+.reservation-timeline-time{
+  color:var(--atlantic);
+  font-size:.72rem;
+  font-weight:800;
+}
+.reservation-timeline-track{
+  height:13px;
+  overflow:hidden;
+  border-radius:999px;
+  background:rgba(11,45,58,.07);
+}
+.reservation-timeline-fill{
+  height:100%;
+  border-radius:inherit;
+  background:linear-gradient(90deg,var(--sea),#83c5bb);
+}
+.reservation-timeline-slot[data-tone="watch"] .reservation-timeline-fill{
+  background:linear-gradient(90deg,#d8ae62,#efcf91);
+}
+.reservation-timeline-slot[data-tone="risk"] .reservation-timeline-fill{
+  background:linear-gradient(90deg,#df806c,#efaa9d);
+}
+.reservation-timeline-slot-value{
+  color:#526f72;
+  font-size:.66rem;
+  font-weight:800;
+  text-align:right;
+}
+.reservation-timeline-inspector>div:first-child strong,
+.reservation-timeline-inspector>div:first-child span{
+  display:block;
+}
+.reservation-timeline-inspector>div:first-child strong{
+  margin-top:5px;
+  color:var(--atlantic);
+  font-size:.95rem;
+}
+.reservation-timeline-inspector>div:first-child span{
+  margin-top:4px;
+  color:#60777a;
+  font-size:.65rem;
+}
+.reservation-timeline-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:14px 0 0;
+}
+.reservation-timeline-meta div{
+  padding:10px;
+  border-radius:11px;
+  background:rgba(47,112,117,.05);
+}
+.reservation-timeline-meta dt{
+  color:#708587;
+  font-size:.57rem;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.reservation-timeline-meta dd{
+  margin:4px 0 0;
+  color:var(--atlantic);
+  font-size:.72rem;
+  font-weight:800;
+}
+.reservation-timeline-recommendation{
+  margin-top:14px;
+  padding:12px;
+  border:1px solid rgba(216,174,98,.2);
+  border-radius:13px;
+  background:rgba(216,174,98,.08);
+}
+.reservation-timeline-recommendation strong{
+  display:block;
+  margin-top:5px;
+  color:var(--atlantic);
+  font-size:.8rem;
+}
+.reservation-timeline-recommendation p{
+  margin:6px 0 0;
+  color:#60777a;
+  font-size:.68rem;
+  line-height:1.45;
+}
+.reservation-timeline-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:14px;
+}
+.reservation-timeline-actions button{
+  min-height:38px;
+  padding:0 10px;
+  border-radius:999px;
+  font-size:.65rem;
+  font-weight:800;
+}
+.reservation-timeline-secondary{
+  color:var(--atlantic);
+  border:1px solid rgba(11,45,58,.12);
+  background:rgba(255,255,255,.58);
+}
+#reservationTimelineCreatePlan{
+  color:#082632;
+  border:0;
+  background:var(--gold);
+}
+#reservationTimelineStatus{
+  display:block;
+  min-height:17px;
+  margin-top:10px;
+  color:#60777a;
+  font-size:.65rem;
+}
+@media(max-width:980px){
+  .reservation-timeline-kpis{
+    grid-template-columns:repeat(3,1fr);
+  }
+  .reservation-timeline-layout{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:700px){
+  .reservation-timeline-heading,
+  .reservation-timeline-controls{
+    flex-direction:column;
+  }
+  .reservation-timeline-pressure{
+    width:100%;
+  }
+  .reservation-timeline-kpis{
+    grid-template-columns:1fr 1fr;
+  }
+  .reservation-timeline-slot{
+    grid-template-columns:1fr;
+  }
+  .reservation-timeline-slot-value{
+    text-align:left;
+  }
+}
+@media(max-width:500px){
+  .reservation-timeline-kpis,
+  .reservation-timeline-meta,
+  .reservation-timeline-actions{
+    grid-template-columns:1fr;
+  }
+}
