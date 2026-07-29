@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.5b">
+  <meta name="blue-current-build" content="34.1.5c">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.5b">
+  <meta name="blue-current-build" content="34.1.5c">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.5b">
+  <link rel="stylesheet" href="styles.css?v=34.1.5c">
 </head>
 <body>
 
@@ -743,6 +743,48 @@
           </div>
 
           <div class="executive-event-list" id="executiveEventList" aria-live="polite"></div>
+        </section>
+
+        <section class="executive-scorecards reveal" id="executiveScorecards" aria-labelledby="executiveScorecardsTitle">
+          <div class="executive-scorecards-heading">
+            <div>
+              <small>Leadership scorecards</small>
+              <h3 id="executiveScorecardsTitle">Executive Scorecards</h3>
+            </div>
+
+            <label class="executive-scorecards-view">
+              Scorecard
+              <select id="executiveScorecardView">
+                <option value="balanced">Balanced performance</option>
+                <option value="growth">Growth</option>
+                <option value="efficiency">Efficiency</option>
+                <option value="guest">Guest experience</option>
+                <option value="risk">Risk control</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="executive-scorecards-summary">
+            <div>
+              <small>Portfolio grade</small>
+              <strong id="executiveScorecardGrade">B+</strong>
+              <p id="executiveScorecardNarrative">Blue Current is evaluating the portfolio across growth, labor, guest experience, and risk.</p>
+            </div>
+            <button type="button" id="executiveScorecardFocus">Review weakest location</button>
+          </div>
+
+          <div class="executive-scorecards-grid" id="executiveScorecardsGrid" aria-live="polite"></div>
+
+          <div class="executive-scorecards-location">
+            <div class="executive-scorecards-location-heading">
+              <div>
+                <small>Location scorecards</small>
+                <strong id="executiveLocationScorecardTitle">Portfolio ranking</strong>
+              </div>
+              <span id="executiveLocationScorecardUpdated">Updated now</span>
+            </div>
+            <div id="executiveLocationScorecardList"></div>
+          </div>
         </section>
 
         <div class="readiness-panel reveal">
@@ -3180,6 +3222,7 @@
   <script src="js/modules/executiveActionCenter.js?v=34.1.4d"></script>
   <script src="js/modules/executiveAnalytics.js?v=34.1.5a"></script>
   <script src="js/modules/executiveEventFeed.js?v=34.1.5b"></script>
+  <script src="js/modules/executiveScorecards.js?v=34.1.5c"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

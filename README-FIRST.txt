@@ -1,40 +1,30 @@
-BLUE CURRENT V34.1.5b — CC-016b LIVE EXECUTIVE EVENT FEED
+BLUE CURRENT V34.1.5c — CC-016c EXECUTIVE SCORECARDS
 
 REPLACE:
 - client/index.html
 - client/styles.css
 
 ADD:
-- client/js/modules/executiveEventFeed.js
+- client/js/modules/executiveScorecards.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Live portfolio event feed
-- Filters for:
-  - All events
-  - Operations
-  - Guests
-  - Staffing
-  - Revenue
-  - AI
-  - Critical only
-- Event severity:
-  - Info
-  - Success
-  - Warning
-  - Critical
-- KPIs for events today, critical events, resolved events, and average response time
-- Browser persistence after refresh
-- Automatic events from:
-  - Manager and executive action creation
-  - District location selection
-  - Executive action completion
+- Executive portfolio grade
+- Scorecards for:
+  - Growth
+  - Efficiency
+  - Guest experience
+  - Risk control
+  - Execution
+- Balanced, Growth, Efficiency, Guest, and Risk views
+- Location-by-location scorecard ranking
+- Review weakest location shortcut
+- Automatic refresh from district and executive event data
 
 TEST
 1. npm run check
 2. npm start
 3. Open Command Center
-4. Confirm Live Executive Event Feed appears
-5. Test every filter
-6. Create an executive action and confirm a new event appears
-7. Complete an executive action and confirm a resolved event appears
-8. Refresh and verify event history remains
+4. Confirm Executive Scorecards appears
+5. Test all five scorecard views
+6. Confirm location rankings change
+7. Click Review Weakest Location
