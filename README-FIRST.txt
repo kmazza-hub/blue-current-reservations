@@ -1,4 +1,4 @@
-BLUE CURRENT V34.1.0c — CC-011c PREDICTIVE WATCHLIST
+BLUE CURRENT V34.1.0d — CC-011d PREDICTIVE ALERT ESCALATION
 
 REPLACE:
 - client/index.html
@@ -6,21 +6,23 @@ REPLACE:
 - client/js/modules/predictiveOperations.js
 
 WHAT THIS MICRO-UPDATE ADDS
-- Forecast Watchlist inside Predictive Operations
-- Top three signals ranked by risk:
-  - Guest arrival pace
-  - Staffing coverage
-  - Kitchen pressure
-  - Labor pace
-  - Weather effect
-- Stable, Watch, and Risk states
-- Automatic updates whenever live operating data changes
+- Dynamic alert level:
+  - Watch
+  - Warning
+  - Critical
+- Acknowledge control
+- Snooze for 30 minutes
+- Browser persistence after refresh
+- Automatic snooze expiration
+- Visual acknowledged and snoozed states
+- Existing preventive-action workflow remains unchanged
 
 TEST
 1. npm run check
 2. npm start
 3. Open Command Center
-4. Confirm Forecast Watchlist appears
-5. Verify the top three signals match current conditions
-6. Refresh or change operating data
-7. Confirm ranking and labels update
+4. Confirm the alert level appears
+5. Click Acknowledge and refresh
+6. Confirm acknowledged state remains
+7. Click Snooze 30 min and refresh
+8. Confirm the snooze-until time remains visible

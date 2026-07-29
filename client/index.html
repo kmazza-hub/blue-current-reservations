@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.0c">
+  <meta name="blue-current-build" content="34.1.0d">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.0c">
+  <meta name="blue-current-build" content="34.1.0d">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.0c">
+  <link rel="stylesheet" href="styles.css?v=34.1.0d">
 </head>
 <body>
 
@@ -323,7 +323,15 @@
             <div class="predictive-priority-meta">
               <span>Expected in</span>
               <strong id="predictiveRiskEta">60–90 min</strong>
+
+              <div class="predictive-alert-level">
+                <span>Alert level</span>
+                <strong id="predictiveAlertLevel">Watch</strong>
+              </div>
+
               <div class="predictive-priority-actions">
+                <button type="button" class="predictive-secondary-action" id="predictiveSnoozeAlert">Snooze 30 min</button>
+                <button type="button" class="predictive-secondary-action" id="predictiveAcknowledgeAlert">Acknowledge</button>
                 <button type="button" class="predictive-secondary-action" id="predictiveCreateAction">Create preventive action</button>
                 <button type="button" id="predictiveRiskAction">Go to priority</button>
               </div>
@@ -2757,7 +2765,7 @@
   <script src="js/modules/commandCenter.js?v=34.0.2"></script>
   <script src="js/modules/actionList.js?v=34.0.7b"></script>
   <script src="js/modules/managerShiftBrief.js?v=34.0.9a"></script>
-  <script src="js/modules/predictiveOperations.js?v=34.1.0c"></script>
+  <script src="js/modules/predictiveOperations.js?v=34.1.0d"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>

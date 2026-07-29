@@ -4990,3 +4990,54 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     justify-self:start;
   }
 }
+
+
+/* V34.1.0d — CC-011d Predictive Alert Escalation */
+.predictive-alert-level{
+  margin-top:11px;
+  padding:9px 10px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:11px;
+  background:rgba(255,255,255,.5);
+}
+.predictive-alert-level span,
+.predictive-alert-level strong{
+  display:block;
+}
+.predictive-alert-level span{
+  color:#708587;
+  font-size:.6rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.predictive-alert-level strong{
+  margin-top:4px;
+  color:var(--atlantic);
+  font-size:.78rem;
+}
+.predictive-alert-level[data-level="critical"]{
+  border-color:rgba(223,128,108,.3);
+  background:rgba(223,128,108,.1);
+}
+.predictive-alert-level[data-level="warning"]{
+  border-color:rgba(216,174,98,.3);
+  background:rgba(216,174,98,.1);
+}
+.predictive-alert-level[data-level="watch"]{
+  border-color:rgba(131,197,187,.25);
+  background:rgba(131,197,187,.08);
+}
+.predictive-priority[data-alert-state="acknowledged"]{
+  opacity:.78;
+}
+.predictive-priority[data-alert-state="snoozed"]{
+  border-style:dashed;
+}
+.predictive-priority-actions{
+  flex-wrap:wrap;
+}
+.predictive-priority-actions button.is-active{
+  color:#fff;
+  border-color:var(--sea);
+  background:var(--sea);
+}

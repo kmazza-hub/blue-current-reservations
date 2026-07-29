@@ -104,6 +104,95 @@
     };
   }
 
+  const PREDICTIVE_ALERT_KEY = "blueCurrent.predictiveAlert.v34.1.0d";
+
+  function loadPredictiveAlertState() {
+    try {
+      const value = JSON.parse(localStorage.getItem(PREDICTIVE_ALERT_KEY));
+      if (!value || typeof value !== "object") return {};
+      if (value.snoozedUntil && Date.now() >= new Date(value.snoozedUntil).getTime()) {
+        localStorage.removeItem(PREDICTIVE_ALERT_KEY);
+        return {};
+      }
+      return value;
+    } catch (error) {
+      return {};
+    }
+  }
+
+  function savePredictiveAlertState(state) {
+    try {
+      localStorage.setItem(PREDICTIVE_ALERT_KEY, JSON.stringify(state));
+    } catch (error) {
+      console.warn("[PredictiveOperations] Alert state could not be saved.", error);
+    }
+  }
+
+  function alertLevelFor(result) {
+    const peak = Math.max(...result.pressure);
+    if (peak >= 86) return "critical";
+    if (peak >= 72) return "warning";
+    return "watch";
+  }
+
+  function syncPredictiveAlertState(result) {
+    const container = document.querySelector(".predictive-priority");
+    const levelWrap = document.querySelector(".predictive-alert-level");
+    const level = byId("predictiveAlertLevel");
+    const acknowledge = byId("predictiveAcknowledgeAlert");
+    const snooze = byId("predictiveSnoozeAlert");
+    const status = byId("predictiveActionStatus");
+    if (!container || !levelWrap || !level || !acknowledge || !snooze) return;
+
+    const state = loadPredictiveAlertState();
+    const alertLevel = alertLevelFor(result);
+
+    levelWrap.dataset.level = alertLevel;
+    level.textContent = alertLevel.charAt(0).toUpperCase() + alertLevel.slice(1);
+
+    container.dataset.alertState = state.acknowledged
+      ? "acknowledged"
+      : state.snoozedUntil
+        ? "snoozed"
+        : "active";
+
+    acknowledge.classList.toggle("is-active", Boolean(state.acknowledged));
+    acknowledge.textContent = state.acknowledged ? "Acknowledged" : "Acknowledge";
+
+    snooze.classList.toggle("is-active", Boolean(state.snoozedUntil));
+    snooze.textContent = state.snoozedUntil ? "Snoozed" : "Snooze 30 min";
+
+    if (state.snoozedUntil && status) {
+      status.textContent = `Alert snoozed until ${new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "2-digit"
+      }).format(new Date(state.snoozedUntil))}.`;
+    } else if (state.acknowledged && status) {
+      status.textContent = "Predicted risk acknowledged.";
+    }
+  }
+
+  function acknowledgePredictiveAlert() {
+    const current = loadPredictiveAlertState();
+    const next = {
+      acknowledged: !current.acknowledged,
+      acknowledgedAt: !current.acknowledged ? new Date().toISOString() : null,
+      snoozedUntil: null
+    };
+    savePredictiveAlertState(next);
+    renderPrediction();
+  }
+
+  function snoozePredictiveAlert() {
+    const until = new Date(Date.now() + 30 * 60 * 1000).toISOString();
+    savePredictiveAlertState({
+      acknowledged: false,
+      acknowledgedAt: null,
+      snoozedUntil: until
+    });
+    renderPrediction();
+  }
+
   function apiClient() {
     const module = window.BlueCurrentModules?.cloudFoundation;
     return module?.api || (window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null);
@@ -279,6 +368,7 @@
     byId("predictiveRiskAction").dataset.target = result.risk.target;
     renderRiskSignals(result.risk.signals);
     renderForecastWatchlist(result);
+    syncPredictiveAlertState(result);
   }
 
   function observe() {
@@ -314,6 +404,8 @@
       const target = byId(event.currentTarget.dataset.target || "managerShiftBrief");
       target?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
+    byId("predictiveAcknowledgeAlert")?.addEventListener("click", acknowledgePredictiveAlert);
+    byId("predictiveSnoozeAlert")?.addEventListener("click", snoozePredictiveAlert);
     byId("predictiveCreateAction")?.addEventListener("click", createPreventiveAction);
     renderPrediction();
     observe();
