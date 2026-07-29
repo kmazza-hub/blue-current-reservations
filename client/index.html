@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.5c">
+  <meta name="blue-current-build" content="34.1.5d">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.5c">
+  <meta name="blue-current-build" content="34.1.5d">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.5c">
+  <link rel="stylesheet" href="styles.css?v=34.1.5d">
 </head>
 <body>
 
@@ -784,6 +784,96 @@
               <span id="executiveLocationScorecardUpdated">Updated now</span>
             </div>
             <div id="executiveLocationScorecardList"></div>
+          </div>
+        </section>
+
+        <section class="executive-daily-brief reveal" id="executiveDailyBrief" aria-labelledby="executiveDailyBriefTitle">
+          <div class="executive-daily-heading">
+            <div>
+              <small>Daily leadership briefing</small>
+              <h3 id="executiveDailyBriefTitle">Executive Daily Brief</h3>
+            </div>
+            <span id="executiveDailyBriefTime">Preparing today’s brief…</span>
+          </div>
+
+          <div class="executive-daily-hero">
+            <div>
+              <small>Blue Current summary</small>
+              <strong id="executiveDailyHeadline">Portfolio performance is stable.</strong>
+              <p id="executiveDailyNarrative">Blue Current is combining district health, executive analytics, actions, scorecards, and live events into one leadership briefing.</p>
+            </div>
+            <div class="executive-daily-confidence">
+              <small>AI confidence</small>
+              <strong id="executiveDailyConfidence">92%</strong>
+            </div>
+          </div>
+
+          <div class="executive-daily-kpis">
+            <article>
+              <small>Portfolio health</small>
+              <strong id="executiveDailyHealth">—</strong>
+              <span>Current average</span>
+            </article>
+            <article>
+              <small>Revenue today</small>
+              <strong id="executiveDailyRevenue">$0</strong>
+              <span>Portfolio total</span>
+            </article>
+            <article>
+              <small>Labor</small>
+              <strong id="executiveDailyLabor">—</strong>
+              <span>Weighted average</span>
+            </article>
+            <article>
+              <small>Critical events</small>
+              <strong id="executiveDailyCritical">0</strong>
+              <span>Needs attention</span>
+            </article>
+            <article>
+              <small>Open actions</small>
+              <strong id="executiveDailyOpenActions">0</strong>
+              <span>Leadership follow-through</span>
+            </article>
+          </div>
+
+          <div class="executive-daily-grid">
+            <article class="executive-daily-card">
+              <div class="executive-daily-card-heading">
+                <div>
+                  <small>Top priorities</small>
+                  <strong>What leadership should do today</strong>
+                </div>
+                <span id="executiveDailyPriorityCount">0</span>
+              </div>
+              <ol id="executiveDailyPriorities"></ol>
+            </article>
+
+            <article class="executive-daily-card">
+              <div class="executive-daily-card-heading">
+                <div>
+                  <small>Wins yesterday</small>
+                  <strong>What improved</strong>
+                </div>
+              </div>
+              <ul id="executiveDailyWins"></ul>
+            </article>
+
+            <article class="executive-daily-card">
+              <div class="executive-daily-card-heading">
+                <div>
+                  <small>Watch today</small>
+                  <strong>Where risk may develop</strong>
+                </div>
+              </div>
+              <ul id="executiveDailyWatch"></ul>
+            </article>
+          </div>
+
+          <div class="executive-daily-actions">
+            <span id="executiveDailyStatus" role="status"></span>
+            <button type="button" class="executive-daily-secondary" id="executiveDailyAnalytics">View analytics</button>
+            <button type="button" class="executive-daily-secondary" id="executiveDailyPriority">Open priority restaurant</button>
+            <button type="button" id="executiveDailyPrint">Print brief</button>
           </div>
         </section>
 
@@ -3223,6 +3313,7 @@
   <script src="js/modules/executiveAnalytics.js?v=34.1.5a"></script>
   <script src="js/modules/executiveEventFeed.js?v=34.1.5b"></script>
   <script src="js/modules/executiveScorecards.js?v=34.1.5c"></script>
+  <script src="js/modules/executiveDailyBrief.js?v=34.1.5d"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
