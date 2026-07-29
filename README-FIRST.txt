@@ -1,18 +1,14 @@
-BLUE CURRENT V34.1.6d — CC-017d EXECUTIVE FORECAST RISK MATRIX
+BLUE CURRENT V34.1.6e — CC-017e EXECUTIVE FORECAST RECOMMENDATIONS
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/executiveForecastRiskMatrix.js
+- client/js/modules/executiveForecastRecommendations.js
 
-This update establishes the Forecast Risk Matrix framework.
-
-Planned capabilities:
-- Portfolio risk heat map
-- Labor overrun probability
-- Reservation overflow probability
-- Kitchen bottleneck probability
-- Staffing shortage prediction
-- AI confidence scoring
+Foundation for:
+- Forecast-driven recommendations
+- Priority ranking
+- Operational playbooks
+- One-click action creation
