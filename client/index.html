@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.4a">
+  <meta name="blue-current-build" content="34.1.4b">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.1.4a">
+  <meta name="blue-current-build" content="34.1.4b">
   <meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.4a">
+  <link rel="stylesheet" href="styles.css?v=34.1.4b">
 </head>
 <body>
 
@@ -518,6 +518,51 @@
                 <strong id="executiveBriefPriorityCount">0</strong>
               </div>
               <ol id="executiveBriefPriorities"></ol>
+            </article>
+          </div>
+        </section>
+
+        <section class="cross-location-comparison reveal" id="crossLocationComparison" aria-labelledby="crossLocationComparisonTitle">
+          <div class="cross-location-heading">
+            <div>
+              <small>Portfolio benchmarking</small>
+              <h3 id="crossLocationComparisonTitle">Cross-Location Comparison</h3>
+            </div>
+            <div class="cross-location-controls">
+              <label>
+                Compare by
+                <select id="crossLocationMetric">
+                  <option value="health">Health score</option>
+                  <option value="revenue">Revenue</option>
+                  <option value="labor">Labor</option>
+                  <option value="alerts">Active alerts</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="cross-location-summary">
+            <strong id="crossLocationSummaryTitle">Portfolio comparison ready.</strong>
+            <span id="crossLocationSummaryDetail">Choose a metric to rank locations.</span>
+          </div>
+
+          <div class="cross-location-bars" id="crossLocationBars" aria-live="polite"></div>
+
+          <div class="cross-location-insights">
+            <article>
+              <small>Leader</small>
+              <strong id="crossLocationLeader">—</strong>
+              <p id="crossLocationLeaderDetail">No comparison available.</p>
+            </article>
+            <article>
+              <small>Needs attention</small>
+              <strong id="crossLocationLaggard">—</strong>
+              <p id="crossLocationLaggardDetail">No comparison available.</p>
+            </article>
+            <article>
+              <small>Portfolio spread</small>
+              <strong id="crossLocationSpread">—</strong>
+              <p id="crossLocationSpreadDetail">No comparison available.</p>
             </article>
           </div>
         </section>
@@ -2952,6 +2997,7 @@
   <script src="js/modules/operationsTimeline.js?v=34.1.2a"></script>
   <script src="js/modules/districtCommandCenter.js?v=34.1.3a"></script>
   <script src="js/modules/executiveMorningBrief.js?v=34.1.4a"></script>
+  <script src="js/modules/crossLocationComparison.js?v=34.1.4b"></script>
   <script src="js/eventBus.js?v=33.0.3"></script>
   <script src="js/core/platform.js?v=33.0.3"></script>
   <script src="js/appState.js?v=33.0.3"></script>
