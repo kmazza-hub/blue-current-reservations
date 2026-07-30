@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.8">
+  <meta name="blue-current-build" content="34.0.9">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.8">
+  <link rel="stylesheet" href="styles.css?v=34.0.9">
 </head>
 <body>
 
@@ -2328,6 +2328,59 @@
       </div>
     </section>
 
+    <section class="executive-operations-map reveal" id="executiveOperationsMap" aria-labelledby="executiveOperationsMapTitle">
+      <div class="executive-map-heading">
+        <div>
+          <small>Executive operating picture</small>
+          <h3 id="executiveOperationsMapTitle">Executive Operations Map</h3>
+          <span id="executiveMapUpdated">Synchronizing location, floor, kitchen, and incident intelligence…</span>
+        </div>
+        <div class="executive-map-health" id="executiveMapHealth" data-tone="stable">
+          <small>Portfolio health</small>
+          <strong id="executiveMapHealthScore">100</strong>
+          <span id="executiveMapHealthLabel">All systems aligned</span>
+        </div>
+      </div>
+
+      <div class="executive-map-kpis">
+        <article><small>Revenue at risk</small><strong id="executiveMapRevenueRisk">$0</strong><span>Open operational exposure</span></article>
+        <article><small>Locations at risk</small><strong id="executiveMapLocationsRisk">0</strong><span>Require executive attention</span></article>
+        <article><small>Guest recoveries</small><strong id="executiveMapRecoveries">0</strong><span>Resolved this shift</span></article>
+        <article><small>Average response</small><strong id="executiveMapResponse">0 min</strong><span>Incident acknowledgment</span></article>
+        <article><small>AI confidence</small><strong id="executiveMapConfidence">92%</strong><span>Operational assessment</span></article>
+      </div>
+
+      <div class="executive-map-layout">
+        <div class="executive-map-stage">
+          <div class="executive-map-stage-heading">
+            <div><small>Live portfolio map</small><strong>Where attention is needed now</strong></div>
+            <select id="executiveMapView">
+              <option value="portfolio">Portfolio view</option>
+              <option value="floor">Current floor</option>
+              <option value="pressure">Pressure overlay</option>
+            </select>
+          </div>
+          <div class="executive-location-grid" id="executiveLocationGrid" aria-live="polite"></div>
+        </div>
+
+        <aside class="executive-attention-panel">
+          <div class="executive-map-stage-heading">
+            <div><small>AI attention engine</small><strong>Top three priorities</strong></div>
+            <span id="executiveAttentionCount">0 priorities</span>
+          </div>
+          <div class="executive-attention-list" id="executiveAttentionList"></div>
+        </aside>
+      </div>
+
+      <div class="executive-predictive-strip">
+        <div class="executive-map-stage-heading">
+          <div><small>Predictive timeline</small><strong>Next two hours</strong></div>
+          <span id="executivePredictiveConfidence">Confidence 92%</span>
+        </div>
+        <div id="executivePredictiveTimeline" class="executive-predictive-timeline"></div>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3558,7 +3611,8 @@
   <script src="js/modules/missionControl.js?v=34.0.6"></script>
   <script src="js/modules/incidentResponseCenter.js?v=34.0.7"></script>
   <script src="js/modules/serviceRecoveryPlaybooks.js?v=34.0.8"></script>
-  <script src="js/modules/liveShiftCommander.js?v=34.0.8"></script>
+  <script src="js/modules/liveShiftCommander.js?v=34.0.9"></script>
+  <script src="js/modules/executiveOperationsMap.js?v=34.0.9"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
