@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.8">
+  <meta name="blue-current-build" content="34.0.13.9">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.8">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.9">
 </head>
 <body>
 
@@ -2760,6 +2760,73 @@
       </div>
     </section>
 
+    <section class="retraining-planner reveal" id="retrainingPlanner" aria-labelledby="retrainingPlannerTitle">
+      <div class="retraining-planner-heading">
+        <div>
+          <small>Model maintenance</small>
+          <h3 id="retrainingPlannerTitle">Retraining Planner</h3>
+          <span id="retrainingPlannerUpdated">Evaluating whether the current model needs recalibration or retraining…</span>
+        </div>
+
+        <div class="retraining-readiness" id="retrainingReadinessCard" data-tone="stable">
+          <small>Readiness score</small>
+          <strong id="retrainingReadinessScore">0</strong>
+          <span id="retrainingReadinessLabel">Not required</span>
+        </div>
+      </div>
+
+      <div class="retraining-planner-kpis">
+        <article><small>Drift score</small><strong id="retrainingDriftScore">0</strong><span>Current governance signal</span></article>
+        <article><small>Measured outcomes</small><strong id="retrainingMeasuredCount">0</strong><span>Available training signals</span></article>
+        <article><small>Recent accuracy</small><strong id="retrainingRecentAccuracy">0%</strong><span>Latest model performance</span></article>
+        <article><small>Baseline accuracy</small><strong id="retrainingBaselineAccuracy">0%</strong><span>Historical performance</span></article>
+        <article><small>Priority</small><strong id="retrainingPriority">Low</strong><span>Recommended response</span></article>
+      </div>
+
+      <div class="retraining-planner-layout">
+        <div class="retraining-plan-list-wrap">
+          <div class="retraining-section-heading">
+            <div><small>Maintenance plan</small><strong>Recommended actions in order</strong></div>
+            <span id="retrainingActionCount">0 actions</span>
+          </div>
+          <div id="retrainingActionList" class="retraining-action-list"></div>
+        </div>
+
+        <aside class="retraining-plan-summary">
+          <small>Recommended maintenance window</small>
+          <strong id="retrainingWindowTitle">Continue monitoring</strong>
+          <p id="retrainingWindowDetail">No intervention is currently required.</p>
+
+          <dl class="retraining-plan-meta">
+            <div><dt>Target window</dt><dd id="retrainingTargetWindow">Next 5 outcomes</dd></div>
+            <div><dt>Expected benefit</dt><dd id="retrainingExpectedBenefit">Maintain calibration</dd></div>
+            <div><dt>Operational risk</dt><dd id="retrainingOperationalRisk">Low</dd></div>
+            <div><dt>Estimated effort</dt><dd id="retrainingEstimatedEffort">15 min</dd></div>
+          </dl>
+
+          <label>
+            Maintenance note
+            <textarea id="retrainingMaintenanceNote" rows="4" placeholder="Add a note for the next model review."></textarea>
+          </label>
+
+          <div class="retraining-plan-actions">
+            <button type="button" id="retrainingCreatePlan">Create maintenance plan</button>
+            <button type="button" class="retraining-secondary" id="retrainingOpenDrift">Open drift monitor</button>
+          </div>
+
+          <span id="retrainingPlannerStatus" role="status"></span>
+        </aside>
+      </div>
+
+      <div class="retraining-history">
+        <div class="retraining-section-heading">
+          <div><small>Maintenance history</small><strong>Recorded retraining and calibration plans</strong></div>
+          <button type="button" id="retrainingClearHistory">Clear history</button>
+        </div>
+        <div id="retrainingHistoryList" class="retraining-history-list"></div>
+      </div>
+    </section>
+
     <section class="predictive-command-center reveal" id="predictiveCommandCenter" aria-labelledby="predictiveCommandCenterTitle">
       <div class="predictive-command-heading">
         <div>
@@ -4249,7 +4316,8 @@
   <script src="js/modules/predictiveDecisionLifecycle.js?v=34.0.13.6"></script>
   <script src="js/modules/outcomeLearningEngine.js?v=34.0.13.8"></script>
   <script src="js/modules/adaptiveForecastWeights.js?v=34.0.13.8"></script>
-  <script src="js/modules/confidenceDriftMonitor.js?v=34.0.13.8"></script>
+  <script src="js/modules/confidenceDriftMonitor.js?v=34.0.13.9"></script>
+  <script src="js/modules/retrainingPlanner.js?v=34.0.13.9"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
