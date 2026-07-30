@@ -1,18 +1,18 @@
-BLUE CURRENT V35.6.0 — HOSPITALITY INTELLIGENCE PLATFORM
+BLUE CURRENT V35.6.1 — OPERATIONAL DATA FABRIC
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/hospitalityIntelligencePlatform.js
+- client/js/modules/operationalDataFabric.js
 
 FEATURES
-- Unified Hospitality Intelligence workspace
-- Enterprise AI coordination layer
-- Cross-domain operational insights
-- Financial & operational intelligence
-- Guest lifecycle intelligence
-- Innovation intelligence dashboard
-- Global executive workspace
-- Generation 2 platform foundation
+- Live enterprise event streaming
+- Unified operational event bus
+- Time-series operational datastore foundation
+- Cross-module data synchronization
+- Real-time KPI calculation engine
+- Event replay for incident analysis
+- AI-ready feature pipeline
+- Foundation for predictive operations
