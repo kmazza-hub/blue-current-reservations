@@ -1,18 +1,18 @@
-BLUE CURRENT V35.3.6 — AI STUDIO
+BLUE CURRENT V35.3.7 — BLUE CURRENT MARKETPLACE
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/aiStudio.js
+- client/js/modules/marketplace.js
 
 FEATURES
-- Custom AI agent builder
-- Prompt and playbook editor
-- Workflow automation designer
-- AI testing sandbox
-- Organization-specific assistants
-- AI deployment manager
-- Prompt version history
-- Foundation for customer-configurable AI
+- Marketplace storefront
+- AI agent catalog
+- Integration catalog
+- Dashboard template library
+- Operational playbook exchange
+- One-click extension installer
+- Partner publishing framework
+- Foundation for the Blue Current ecosystem
