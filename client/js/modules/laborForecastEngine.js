@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Labor Forecast Engine v35.1.2'));
