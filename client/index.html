@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.0">
+  <meta name="blue-current-build" content="34.0.14.1">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.0">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.1">
 </head>
 <body>
 
@@ -2882,6 +2882,46 @@
         <button type="button" class="executive-timeline-secondary" id="executiveTimelineCopyBrief">Copy shift brief</button>
       </div>
 
+      <div class="executive-session-playback" id="executiveSessionPlayback">
+        <div class="executive-session-playback-heading">
+          <div>
+            <small>Session playback</small>
+            <strong id="executivePlaybackTitle">Replay the operating session</strong>
+            <span id="executivePlaybackDetail">Move through the timeline to review what leadership knew at each point.</span>
+          </div>
+
+          <div class="executive-playback-controls">
+            <button type="button" id="executivePlaybackStart">Start playback</button>
+            <button type="button" class="executive-playback-secondary" id="executivePlaybackPause" disabled>Pause</button>
+            <button type="button" class="executive-playback-secondary" id="executivePlaybackReset">Reset</button>
+
+            <label>
+              Speed
+              <select id="executivePlaybackSpeed">
+                <option value="1500">1×</option>
+                <option value="800">2×</option>
+                <option value="400">4×</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="executive-playback-progress">
+          <input id="executivePlaybackRange" type="range" min="0" max="0" value="0" step="1">
+          <div class="executive-playback-progress-meta">
+            <span id="executivePlaybackPosition">0 of 0 events</span>
+            <time id="executivePlaybackTime">—</time>
+          </div>
+        </div>
+
+        <div class="executive-playback-snapshot">
+          <article><small>Visible decisions</small><strong id="executivePlaybackDecisions">0</strong></article>
+          <article><small>Visible outcomes</small><strong id="executivePlaybackOutcomes">0</strong></article>
+          <article><small>Visible critical events</small><strong id="executivePlaybackCritical">0</strong></article>
+          <article><small>Session score</small><strong id="executivePlaybackScore">100</strong></article>
+        </div>
+      </div>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4400,7 +4440,8 @@
   <script src="js/modules/adaptiveForecastWeights.js?v=34.0.13.8"></script>
   <script src="js/modules/confidenceDriftMonitor.js?v=34.0.13.9"></script>
   <script src="js/modules/retrainingPlanner.js?v=34.0.14.0"></script>
-  <script src="js/modules/executiveIntelligenceTimeline.js?v=34.0.14.0"></script>
+  <script src="js/modules/executiveIntelligenceTimeline.js?v=34.0.14.1"></script>
+  <script src="js/modules/executiveSessionPlayback.js?v=34.0.14.1"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
