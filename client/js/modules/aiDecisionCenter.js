@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('AI Decision Center v35.1.4'));
