@@ -7002,3 +7002,273 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
     grid-column:auto;
   }
 }
+
+
+/* V34.0.6 — Mission Control Incident Response Center */
+.mission-incident-center{
+  margin:0 0 1rem;
+  padding:1rem;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  background:rgba(255,255,255,.025);
+}
+.mission-incident-center-heading,
+.mission-incident-toolbar{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:1rem;
+}
+.mission-incident-center-heading small,
+.mission-incident-inspector small{
+  color:rgba(255,255,255,.48);
+  font-size:.66rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.mission-incident-center-heading h3{
+  margin:.35rem 0 0;
+  color:#fff;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.35rem;
+}
+#missionIncidentCenterUpdated{
+  display:block;
+  margin-top:.35rem;
+  color:rgba(255,255,255,.42);
+  font-size:.66rem;
+}
+.mission-incident-summary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+}
+.mission-incident-summary span{
+  padding:.5rem .65rem;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:999px;
+  color:rgba(255,255,255,.6);
+  background:rgba(255,255,255,.035);
+  font-size:.66rem;
+}
+.mission-incident-summary strong{
+  color:#fff;
+}
+.mission-incident-layout{
+  display:grid;
+  grid-template-columns:1.45fr .72fr;
+  gap:.85rem;
+  margin-top:1rem;
+}
+.mission-incident-list-wrap,
+.mission-incident-inspector{
+  padding:.9rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:rgba(0,0,0,.08);
+}
+.mission-incident-toolbar{
+  justify-content:flex-start;
+}
+.mission-incident-toolbar label,
+.mission-incident-inspector label{
+  color:rgba(255,255,255,.5);
+  font-size:.61rem;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.mission-incident-toolbar select,
+.mission-incident-inspector select,
+.mission-incident-inspector textarea{
+  display:block;
+  width:100%;
+  margin-top:.35rem;
+  padding:.62rem .7rem;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  color:#fff;
+  background:rgba(255,255,255,.045);
+  font:inherit;
+}
+.mission-incident-toolbar button{
+  align-self:flex-end;
+  min-height:36px;
+  padding:0 .8rem;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:999px;
+  color:#fff;
+  background:rgba(255,255,255,.04);
+  font:inherit;
+  font-size:.65rem;
+  font-weight:800;
+  cursor:pointer;
+}
+.mission-incident-list{
+  display:grid;
+  gap:.55rem;
+  margin-top:.8rem;
+}
+.mission-incident-card{
+  display:grid;
+  grid-template-columns:10px 1fr auto;
+  gap:.75rem;
+  align-items:start;
+  padding:.8rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:13px;
+  background:rgba(255,255,255,.025);
+  cursor:pointer;
+}
+.mission-incident-card.is-selected{
+  border-color:rgba(217,182,95,.34);
+  box-shadow:0 10px 28px rgba(0,0,0,.13);
+}
+.mission-incident-card[data-severity="critical"]{
+  border-color:rgba(239,133,125,.25);
+}
+.mission-incident-card[data-severity="warning"]{
+  border-color:rgba(217,182,95,.22);
+}
+.mission-incident-marker{
+  width:10px;
+  height:10px;
+  margin-top:.2rem;
+  border-radius:50%;
+  background:#62d3a3;
+}
+.mission-incident-card[data-severity="critical"] .mission-incident-marker{
+  background:#ef857d;
+}
+.mission-incident-card[data-severity="warning"] .mission-incident-marker{
+  background:#d9b65f;
+}
+.mission-incident-copy small,
+.mission-incident-copy strong,
+.mission-incident-copy p{
+  display:block;
+}
+.mission-incident-copy small{
+  color:rgba(255,255,255,.42);
+  font-size:.58rem;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.mission-incident-copy strong{
+  margin-top:.25rem;
+  color:#fff;
+  font-size:.76rem;
+}
+.mission-incident-copy p{
+  margin:.32rem 0 0;
+  color:rgba(255,255,255,.52);
+  font-size:.66rem;
+  line-height:1.42;
+}
+.mission-incident-age{
+  color:rgba(255,255,255,.48);
+  font-size:.61rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+.mission-incident-inspector>div:first-child strong,
+.mission-incident-inspector>div:first-child span{
+  display:block;
+}
+.mission-incident-inspector>div:first-child strong{
+  margin-top:.3rem;
+  color:#fff;
+  font-size:.9rem;
+}
+.mission-incident-inspector>div:first-child span{
+  margin-top:.25rem;
+  color:rgba(255,255,255,.48);
+  font-size:.64rem;
+}
+.mission-incident-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.5rem;
+  margin:.8rem 0 0;
+}
+.mission-incident-meta div{
+  padding:.6rem;
+  border-radius:10px;
+  background:rgba(255,255,255,.035);
+}
+.mission-incident-meta dt{
+  color:rgba(255,255,255,.4);
+  font-size:.56rem;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.mission-incident-meta dd{
+  margin:.2rem 0 0;
+  color:#fff;
+  font-size:.68rem;
+  font-weight:800;
+}
+.mission-incident-inspector label{
+  display:block;
+  margin-top:.75rem;
+}
+.mission-incident-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.5rem;
+  margin-top:.8rem;
+}
+.mission-incident-actions button{
+  min-height:38px;
+  padding:0 .7rem;
+  border-radius:999px;
+  font:inherit;
+  font-size:.64rem;
+  font-weight:800;
+  cursor:pointer;
+}
+.mission-incident-secondary{
+  border:1px solid rgba(255,255,255,.08);
+  color:#fff;
+  background:rgba(255,255,255,.04);
+}
+#missionIncidentResolve{
+  grid-column:1/-1;
+  border:0;
+  color:#102a32;
+  background:#d9b65f;
+}
+#missionIncidentStatus{
+  display:block;
+  min-height:1rem;
+  margin-top:.55rem;
+  color:rgba(255,255,255,.5);
+  font-size:.63rem;
+}
+.mission-incident-empty{
+  padding:1rem;
+  border:1px dashed rgba(255,255,255,.09);
+  border-radius:12px;
+  color:rgba(255,255,255,.46);
+  text-align:center;
+  font-size:.7rem;
+}
+@media(max-width:980px){
+  .mission-incident-layout{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:640px){
+  .mission-incident-center-heading,
+  .mission-incident-toolbar{
+    flex-direction:column;
+  }
+  .mission-incident-meta,
+  .mission-incident-actions{
+    grid-template-columns:1fr;
+  }
+  #missionIncidentResolve{
+    grid-column:auto;
+  }
+}

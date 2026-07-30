@@ -1,31 +1,36 @@
-BLUE CURRENT V34.0.5 — MISSION CONTROL DEPTH
+BLUE CURRENT V34.0.6 — INCIDENT RESPONSE CENTER
 
 BASELINE
-Built from the recovered, validated V34.0.4 frontend.
+Built from the validated V34.0.5 Mission Control Depth release.
 
 REPLACE
 - client/index.html
 - client/styles.css
-- client/js/modules/missionControl.js
+
+ADD
+- client/js/modules/incidentResponseCenter.js
 
 WHAT THIS RELEASE ADDS
-- Mission Control command wall
-- Live incident count
-- Tables-needing-attention count
-- Kitchen handoff risk
-- Manager action queue
-- Stable / Watch / High Risk pressure state
-- Highest-priority navigation
-- Working incident-aware recommendations
-- Live synchronization with Floor, Kitchen, Handoff, and occupancy data
-- New incident events in the Mission Control feed
+- Live Incident Center inside Mission Control
+- Open, acknowledged, resolved, and all-incident views
+- Automatic incident detection from dining room, kitchen, and server handoff data
+- Critical and warning severity
+- Owner assignment
+- Resolution notes
+- Acknowledge Incident workflow
+- Resolve Incident workflow
+- Open Source navigation
+- Persistent incident history after refresh
+- Live incident KPIs
 
 TEST
-1. Replace the three files.
+1. Replace the files and add the new JavaScript module.
 2. Run: npm run check
 3. Run: npm start
 4. Open Mission Control.
-5. Confirm the command wall appears above the event feed.
-6. Flag a table for manager attention.
-7. Confirm incident count, action queue, recommendations, and priority navigation update.
-8. Mark a kitchen ticket late or ready and verify risk changes.
+5. Flag a table for manager attention.
+6. Confirm an incident appears.
+7. Assign an owner and add a note.
+8. Acknowledge the incident.
+9. Resolve the incident.
+10. Confirm filters and counts update.

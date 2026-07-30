@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.5">
+  <meta name="blue-current-build" content="34.0.6">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.5">
+  <link rel="stylesheet" href="styles.css?v=34.0.6">
 </head>
 <body>
 
@@ -2130,6 +2130,81 @@
       </article>
     </div>
 
+    <section class="mission-incident-center reveal" id="missionIncidentCenter" aria-labelledby="missionIncidentCenterTitle">
+      <div class="mission-incident-center-heading">
+        <div>
+          <small>Incident response</small>
+          <h3 id="missionIncidentCenterTitle">Live Incident Center</h3>
+          <span id="missionIncidentCenterUpdated">Monitoring operational exceptions…</span>
+        </div>
+
+        <div class="mission-incident-summary">
+          <span><strong id="missionIncidentOpen">0</strong> open</span>
+          <span><strong id="missionIncidentAcknowledged">0</strong> acknowledged</span>
+          <span><strong id="missionIncidentResolved">0</strong> resolved</span>
+        </div>
+      </div>
+
+      <div class="mission-incident-layout">
+        <div class="mission-incident-list-wrap">
+          <div class="mission-incident-toolbar">
+            <label>
+              View
+              <select id="missionIncidentFilter">
+                <option value="open">Open incidents</option>
+                <option value="acknowledged">Acknowledged</option>
+                <option value="resolved">Resolved</option>
+                <option value="all">All incidents</option>
+              </select>
+            </label>
+
+            <button type="button" id="missionIncidentRefresh">Refresh</button>
+          </div>
+
+          <div class="mission-incident-list" id="missionIncidentList" aria-live="polite"></div>
+        </div>
+
+        <aside class="mission-incident-inspector">
+          <div>
+            <small>Selected incident</small>
+            <strong id="missionIncidentSelectedTitle">Choose an incident</strong>
+            <span id="missionIncidentSelectedStatus">No incident selected</span>
+          </div>
+
+          <dl class="mission-incident-meta">
+            <div><dt>Source</dt><dd id="missionIncidentSource">—</dd></div>
+            <div><dt>Severity</dt><dd id="missionIncidentSeverity">—</dd></div>
+            <div><dt>Detected</dt><dd id="missionIncidentDetected">—</dd></div>
+            <div><dt>Owner</dt><dd id="missionIncidentOwner">—</dd></div>
+          </dl>
+
+          <label>
+            Assign owner
+            <select id="missionIncidentOwnerSelect">
+              <option value="">Unassigned</option>
+              <option value="General Manager">General Manager</option>
+              <option value="Floor Manager">Floor Manager</option>
+              <option value="Kitchen Manager">Kitchen Manager</option>
+              <option value="Host Lead">Host Lead</option>
+            </select>
+          </label>
+
+          <label>
+            Resolution note
+            <textarea id="missionIncidentNote" rows="4" placeholder="Document the response or resolution."></textarea>
+          </label>
+
+          <div class="mission-incident-actions">
+            <button type="button" class="mission-incident-secondary" id="missionIncidentAcknowledge">Acknowledge</button>
+            <button type="button" class="mission-incident-secondary" id="missionIncidentOpenSource">Open source</button>
+            <button type="button" id="missionIncidentResolve">Resolve incident</button>
+          </div>
+
+          <span id="missionIncidentStatus" role="status"></span>
+        </aside>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3357,7 +3432,8 @@
   <script src="js/modules/concierge.js"></script>
   <script src="js/modules/digitalTwin.js?v=33.0.3"></script>
   <script src="js/modules/executive.js"></script>
-  <script src="js/modules/missionControl.js?v=34.0.5"></script>
+  <script src="js/modules/missionControl.js?v=34.0.6"></script>
+  <script src="js/modules/incidentResponseCenter.js?v=34.0.6"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
