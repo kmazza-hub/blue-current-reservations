@@ -1,18 +1,18 @@
-BLUE CURRENT V35.3.1 — INTEGRATION HUB
+BLUE CURRENT V35.3.2 — DEVELOPER PLATFORM & SDK
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/integrationHub.js
+- client/js/modules/developerPlatformSDK.js
 
 FEATURES
-- POS integration framework
-- Accounting connector framework
-- Payroll connector framework
-- CRM synchronization
-- Public REST API gateway
-- Webhook manager
-- Third-party app marketplace foundation
-- Enterprise integration monitoring
+- Developer portal foundation
+- Public SDK architecture
+- Plugin development toolkit
+- Event subscription framework
+- Extension marketplace APIs
+- OAuth application registration
+- API documentation framework
+- Sandbox environment support
