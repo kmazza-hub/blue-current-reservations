@@ -1,18 +1,18 @@
-BLUE CURRENT V35.1.4 — AI DECISION CENTER
+BLUE CURRENT V35.1.6 — EXECUTIVE AI COMMAND CENTER
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/aiDecisionCenter.js
+- client/js/modules/executiveAICommandCenter.js
 
 FEATURES
-- AI operational recommendations
-- Reservation pacing suggestions
-- Dynamic section management
-- Staff reallocation guidance
-- Kitchen load balancing
-- VIP guest prioritization
-- One-click manager actions
-- Foundation for autonomous operations
+- Multi-location executive dashboard
+- Portfolio health scoring
+- Cross-location performance comparison
+- AI-generated operational briefings
+- Company-wide alerts
+- Regional KPI rollups
+- Executive action queue
+- Foundation for enterprise hospitality management
