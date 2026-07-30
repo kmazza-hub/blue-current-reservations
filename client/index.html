@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.9">
+  <meta name="blue-current-build" content="34.0.14.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.9">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.0">
 </head>
 <body>
 
@@ -2827,6 +2827,88 @@
       </div>
     </section>
 
+    <section class="executive-intelligence-timeline reveal" id="executiveIntelligenceTimeline" aria-labelledby="executiveIntelligenceTimelineTitle">
+      <div class="executive-timeline-heading">
+        <div>
+          <small>Executive session intelligence</small>
+          <h3 id="executiveIntelligenceTimelineTitle">Executive Intelligence Timeline</h3>
+          <span id="executiveTimelineUpdated">Reconstructing forecasts, decisions, outcomes, and maintenance events…</span>
+        </div>
+
+        <div class="executive-timeline-session" id="executiveTimelineSessionCard" data-tone="stable">
+          <small>Session health</small>
+          <strong id="executiveTimelineSessionScore">100</strong>
+          <span id="executiveTimelineSessionLabel">Stable session</span>
+        </div>
+      </div>
+
+      <div class="executive-timeline-kpis">
+        <article><small>Total events</small><strong id="executiveTimelineTotal">0</strong><span>Current retained history</span></article>
+        <article><small>Critical</small><strong id="executiveTimelineCritical">0</strong><span>High-severity events</span></article>
+        <article><small>Decisions</small><strong id="executiveTimelineDecisions">0</strong><span>Executive recommendations</span></article>
+        <article><small>Measured outcomes</small><strong id="executiveTimelineOutcomes">0</strong><span>Closed-loop results</span></article>
+        <article><small>Maintenance plans</small><strong id="executiveTimelinePlans">0</strong><span>Model-governance actions</span></article>
+      </div>
+
+      <div class="executive-timeline-toolbar">
+        <label>
+          Event type
+          <select id="executiveTimelineTypeFilter">
+            <option value="all">All events</option>
+            <option value="forecast">Forecasts</option>
+            <option value="decision">Decisions</option>
+            <option value="outcome">Outcomes</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="incident">Incidents</option>
+          </select>
+        </label>
+
+        <label>
+          Severity
+          <select id="executiveTimelineSeverityFilter">
+            <option value="all">All severities</option>
+            <option value="info">Informational</option>
+            <option value="watch">Watch</option>
+            <option value="critical">Critical</option>
+          </select>
+        </label>
+
+        <label class="executive-timeline-search-label">
+          Search
+          <input id="executiveTimelineSearch" type="search" placeholder="Search titles, reasons, or notes">
+        </label>
+
+        <button type="button" id="executiveTimelineRefresh">Refresh timeline</button>
+        <button type="button" class="executive-timeline-secondary" id="executiveTimelineCopyBrief">Copy shift brief</button>
+      </div>
+
+      <div class="executive-timeline-layout">
+        <div class="executive-timeline-list-wrap">
+          <div class="executive-timeline-section-heading">
+            <div><small>Chronological event log</small><strong>What happened, why it happened, and what changed</strong></div>
+            <span id="executiveTimelineVisibleCount">0 visible events</span>
+          </div>
+          <div id="executiveTimelineList" class="executive-timeline-list" aria-live="polite"></div>
+        </div>
+
+        <aside class="executive-timeline-inspector">
+          <small>Selected event</small>
+          <strong id="executiveTimelineSelectedTitle">Choose an event</strong>
+          <p id="executiveTimelineSelectedDetail">Select a timeline event to review its cause, impact, and related source.</p>
+
+          <dl class="executive-timeline-meta">
+            <div><dt>Type</dt><dd id="executiveTimelineSelectedType">—</dd></div>
+            <div><dt>Severity</dt><dd id="executiveTimelineSelectedSeverity">—</dd></div>
+            <div><dt>Time</dt><dd id="executiveTimelineSelectedTime">—</dd></div>
+            <div><dt>Impact</dt><dd id="executiveTimelineSelectedImpact">—</dd></div>
+          </dl>
+
+          <button type="button" id="executiveTimelineOpenSource" disabled>Open related module</button>
+          <span id="executiveTimelineStatus" role="status"></span>
+        </aside>
+      </div>
+    </section>
+
     <section class="predictive-command-center reveal" id="predictiveCommandCenter" aria-labelledby="predictiveCommandCenterTitle">
       <div class="predictive-command-heading">
         <div>
@@ -4317,7 +4399,8 @@
   <script src="js/modules/outcomeLearningEngine.js?v=34.0.13.8"></script>
   <script src="js/modules/adaptiveForecastWeights.js?v=34.0.13.8"></script>
   <script src="js/modules/confidenceDriftMonitor.js?v=34.0.13.9"></script>
-  <script src="js/modules/retrainingPlanner.js?v=34.0.13.9"></script>
+  <script src="js/modules/retrainingPlanner.js?v=34.0.14.0"></script>
+  <script src="js/modules/executiveIntelligenceTimeline.js?v=34.0.14.0"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
