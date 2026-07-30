@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.1">
+  <meta name="blue-current-build" content="34.0.13.2">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.1">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.2">
 </head>
 <body>
 
@@ -2706,6 +2706,84 @@
       </div>
     </section>
 
+    <section class="domain-forecasting-center reveal" id="domainForecastingCenter" aria-labelledby="domainForecastingCenterTitle">
+      <div class="domain-forecasting-heading">
+        <div>
+          <small>Domain forecasting</small>
+          <h3 id="domainForecastingCenterTitle">Operational Forecast Models</h3>
+          <span id="domainForecastingUpdated">Calculating reservation, kitchen, labor, and revenue forecasts…</span>
+        </div>
+        <div class="domain-forecasting-confidence">
+          <small>Model confidence</small>
+          <strong id="domainForecastingConfidence">0%</strong>
+          <span id="domainForecastingConfidenceLabel">Calibrating</span>
+        </div>
+      </div>
+
+      <div class="domain-forecasting-grid">
+        <article class="domain-forecast-card" data-domain="reservations">
+          <div class="domain-forecast-card-heading">
+            <div><small>Reservations</small><strong id="reservationForecastHeadline">Stable demand</strong></div>
+            <span id="reservationForecastScore">0</span>
+          </div>
+          <div class="domain-forecast-metrics">
+            <span>30 min <strong id="reservationForecast30">0%</strong></span>
+            <span>60 min <strong id="reservationForecast60">0%</strong></span>
+            <span>120 min <strong id="reservationForecast120">0%</strong></span>
+          </div>
+          <p id="reservationForecastDetail">No unusual arrival pressure is projected.</p>
+        </article>
+
+        <article class="domain-forecast-card" data-domain="kitchen">
+          <div class="domain-forecast-card-heading">
+            <div><small>Kitchen</small><strong id="kitchenForecastHeadline">Balanced stations</strong></div>
+            <span id="kitchenForecastScore">0</span>
+          </div>
+          <div class="domain-forecast-metrics">
+            <span>Ticket risk <strong id="kitchenForecastTicketRisk">Low</strong></span>
+            <span>Peak window <strong id="kitchenForecastPeak">—</strong></span>
+            <span>Support need <strong id="kitchenForecastSupport">0</strong></span>
+          </div>
+          <p id="kitchenForecastDetail">Current production flow is within target.</p>
+        </article>
+
+        <article class="domain-forecast-card" data-domain="labor">
+          <div class="domain-forecast-card-heading">
+            <div><small>Labor</small><strong id="laborForecastHeadline">Coverage aligned</strong></div>
+            <span id="laborForecastScore">0</span>
+          </div>
+          <div class="domain-forecast-metrics">
+            <span>Current need <strong id="laborForecastCurrent">0</strong></span>
+            <span>Recommended <strong id="laborForecastRecommended">0</strong></span>
+            <span>Difference <strong id="laborForecastDifference">0</strong></span>
+          </div>
+          <p id="laborForecastDetail">No labor adjustment is currently recommended.</p>
+        </article>
+
+        <article class="domain-forecast-card" data-domain="revenue">
+          <div class="domain-forecast-card-heading">
+            <div><small>Revenue</small><strong id="revenueForecastHeadline">Plan on track</strong></div>
+            <span id="revenueForecastScore">0</span>
+          </div>
+          <div class="domain-forecast-metrics">
+            <span>Next hour <strong id="revenueForecastHour">$0</strong></span>
+            <span>At risk <strong id="revenueForecastRisk">$0</strong></span>
+            <span>Upside <strong id="revenueForecastUpside">$0</strong></span>
+          </div>
+          <p id="revenueForecastDetail">Current conditions support the operating plan.</p>
+        </article>
+      </div>
+
+      <div class="domain-forecast-actions">
+        <div>
+          <small>Recommended preparation</small>
+          <strong id="domainForecastActionTitle">Maintain current plan</strong>
+          <p id="domainForecastActionDetail">No cross-functional preparation is required.</p>
+        </div>
+        <button type="button" id="domainForecastOpenSource">Open recommended source</button>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3941,7 +4019,8 @@
   <script src="js/modules/executiveEventWall.js?v=34.0.11"></script>
   <script src="js/modules/executiveDecisionCenter.js?v=34.0.12"></script>
   <script src="js/modules/decisionOutcomeTracker.js?v=34.0.13.1"></script>
-  <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.1"></script>
+  <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.2"></script>
+  <script src="js/modules/domainForecastingModels.js?v=34.0.13.2"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

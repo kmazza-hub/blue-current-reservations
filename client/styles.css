@@ -8631,3 +8631,29 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .predictive-model-status strong{display:block;margin-top:.3rem;font-size:.78rem}
 @media(max-width:980px){.predictive-command-kpis{grid-template-columns:repeat(3,1fr)}.predictive-command-layout,.predictive-command-bottom{grid-template-columns:1fr}.predictive-forecast-timeline{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:680px){.predictive-command-heading,.predictive-section-heading{flex-direction:column}.predictive-command-kpis{grid-template-columns:1fr 1fr}.predictive-forecast-timeline{grid-template-columns:1fr 1fr}}
+
+/* V34.0.13.2 — Domain Forecasting */
+.domain-forecasting-center{margin:0 0 1rem;padding:1rem;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:radial-gradient(circle at 88% 8%,rgba(217,182,95,.08),transparent 32%),rgba(255,255,255,.025)}
+.domain-forecasting-heading,.domain-forecast-card-heading,.domain-forecast-actions{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.domain-forecasting-heading small,.domain-forecast-card-heading small,.domain-forecast-actions small{color:rgba(255,255,255,.46);font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.domain-forecasting-heading h3{margin:.35rem 0 0;color:#fff;font-family:"Playfair Display",Georgia,serif;font-size:1.35rem}
+#domainForecastingUpdated{display:block;margin-top:.35rem;color:rgba(255,255,255,.42);font-size:.66rem}
+.domain-forecasting-confidence{min-width:160px;padding:.8rem;border-radius:15px;background:rgba(98,211,163,.1);text-align:right}
+.domain-forecasting-confidence small,.domain-forecasting-confidence strong,.domain-forecasting-confidence span{display:block}
+.domain-forecasting-confidence strong{margin-top:.25rem;color:#fff;font-size:1.45rem}
+.domain-forecasting-confidence span{margin-top:.2rem;color:rgba(255,255,255,.54);font-size:.61rem}
+.domain-forecasting-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;margin-top:.9rem}
+.domain-forecast-card{padding:.85rem;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(0,0,0,.08)}
+.domain-forecast-card[data-tone="watch"]{border-color:rgba(217,182,95,.24)}
+.domain-forecast-card[data-tone="risk"]{border-color:rgba(239,133,125,.28)}
+.domain-forecast-card-heading strong{display:block;margin-top:.25rem;color:#fff;font-size:.8rem}
+.domain-forecast-card-heading>span{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;color:#fff;background:rgba(255,255,255,.06);font-size:.72rem;font-weight:800}
+.domain-forecast-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin-top:.7rem}
+.domain-forecast-metrics span{padding:.5rem;border-radius:10px;color:rgba(255,255,255,.46);background:rgba(255,255,255,.03);font-size:.57rem}
+.domain-forecast-metrics strong{display:block;margin-top:.18rem;color:#fff;font-size:.66rem}
+.domain-forecast-card p,.domain-forecast-actions p{margin:.6rem 0 0;color:rgba(255,255,255,.5);font-size:.63rem;line-height:1.45}
+.domain-forecast-actions{margin-top:.75rem;padding:.85rem;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(0,0,0,.08)}
+.domain-forecast-actions strong{display:block;margin-top:.25rem;color:#fff;font-size:.78rem}
+#domainForecastOpenSource{min-height:38px;padding:0 .8rem;border:0;border-radius:999px;color:#102a32;background:#d9b65f;font:inherit;font-size:.61rem;font-weight:800;cursor:pointer}
+@media(max-width:900px){.domain-forecasting-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.domain-forecasting-heading,.domain-forecast-actions{flex-direction:column}.domain-forecast-metrics{grid-template-columns:1fr}}
