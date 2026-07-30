@@ -1,36 +1,25 @@
-BLUE CURRENT V34.0.12 — DECISION OUTCOME TRACKER
-
-BASELINE
-Built from the validated V34.0.11 Executive Decision Center release.
+BLUE CURRENT V34.0.13.1 — PREDICTIVE ENGINE FOUNDATION
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/decisionOutcomeTracker.js
+- client/js/modules/predictiveCommandCenter.js
 
-WHAT THIS RELEASE ADDS
-- Decision Outcome Tracker inside Mission Control
-- Automatic import of approved executive decisions
-- Pending, measured, and all-outcome views
-- Predicted versus observed business value
-- Outcome variance calculation
-- Successful, partial, and underperformed classifications
-- Decision quality score
-- Prediction accuracy
-- Verified business value
-- Outcome notes
-- Closed-loop learning insights
-- Persistent measurement history after refresh
+ADDS
+- Shared predictive risk model
+- Demand, kitchen, floor, labor, and incident pressure scores
+- Overall risk score and forecast confidence
+- Now / 30 / 60 / 90 / 120-minute forecast
+- Executive risk heat map
+- Highest-confidence recommendation
+- Estimated business impact
+- Direct navigation to affected operation
 
 TEST
-1. Replace the two files and add the new JavaScript module.
-2. Run: npm run check
-3. Run: npm start
+1. Replace the files.
+2. Run npm run check.
+3. Run npm start.
 4. Open Mission Control.
-5. Approve a recommendation in Executive Decision Center.
-6. Confirm it appears in Decision Outcome Tracker.
-7. Enter observed value, classification, and outcome note.
-8. Record the outcome.
-9. Confirm the KPIs, decision quality score, and learning summary update.
+5. Create a floor or kitchen incident and verify the forecast updates.

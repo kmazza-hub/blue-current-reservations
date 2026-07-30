@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.12">
+  <meta name="blue-current-build" content="34.0.13.1">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.12">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.1">
 </head>
 <body>
 
@@ -2645,6 +2645,67 @@
       </div>
     </section>
 
+    <section class="predictive-command-center reveal" id="predictiveCommandCenter" aria-labelledby="predictiveCommandCenterTitle">
+      <div class="predictive-command-heading">
+        <div>
+          <small>Predictive operations foundation</small>
+          <h3 id="predictiveCommandCenterTitle">Predictive Command Center</h3>
+          <span id="predictiveCommandUpdated">Building the next two hours of service…</span>
+        </div>
+        <div class="predictive-risk-score" id="predictiveRiskScoreCard" data-tone="stable">
+          <small>Overall risk</small>
+          <strong id="predictiveRiskScore">0</strong>
+          <span id="predictiveRiskLabel">Low</span>
+        </div>
+      </div>
+
+      <div class="predictive-command-kpis">
+        <article><small>Demand</small><strong id="predictiveDemandPressure">0</strong><span>Pressure score</span></article>
+        <article><small>Kitchen</small><strong id="predictiveKitchenPressure">0</strong><span>Projected load</span></article>
+        <article><small>Floor</small><strong id="predictiveFloorPressure">0</strong><span>Table-flow risk</span></article>
+        <article><small>Labor</small><strong id="predictiveLaborPressure">0</strong><span>Coverage risk</span></article>
+        <article><small>Confidence</small><strong id="predictiveConfidence">0%</strong><span>Model certainty</span></article>
+      </div>
+
+      <div class="predictive-command-layout">
+        <div class="predictive-timeline-wrap">
+          <div class="predictive-section-heading">
+            <div><small>Forecast timeline</small><strong>Now through 120 minutes</strong></div>
+            <button type="button" id="predictiveRefreshForecast">Refresh forecast</button>
+          </div>
+          <div id="predictiveForecastTimeline" class="predictive-forecast-timeline" aria-live="polite"></div>
+        </div>
+
+        <aside class="predictive-risk-heatmap">
+          <div class="predictive-section-heading">
+            <div><small>Executive risk heat map</small><strong>Where pressure is building</strong></div>
+          </div>
+          <div id="predictiveHeatmapList" class="predictive-heatmap-list"></div>
+        </aside>
+      </div>
+
+      <div class="predictive-command-bottom">
+        <div class="predictive-recommendation-panel">
+          <div class="predictive-section-heading">
+            <div><small>Highest-confidence prediction</small><strong id="predictiveRecommendationTitle">Service remains stable.</strong></div>
+            <span id="predictiveRecommendationConfidence">0% confidence</span>
+          </div>
+          <p id="predictiveRecommendationDetail">No material risk is currently projected.</p>
+          <div class="predictive-recommendation-meta">
+            <span>Expected impact <strong id="predictiveRecommendationImpact">$0</strong></span>
+            <span>Suggested action <strong id="predictiveRecommendationAction">Maintain plan</strong></span>
+          </div>
+          <button type="button" id="predictiveOpenSource">Open source</button>
+        </div>
+
+        <div class="predictive-model-status">
+          <small>Prediction engine</small>
+          <strong id="predictiveModelStatus">Listening to live operational data</strong>
+          <p id="predictiveModelDetail">The foundation model recalculates from incidents, floor state, kitchen timing, handoff timing, and measured decision outcomes.</p>
+        </div>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3879,7 +3940,8 @@
   <script src="js/modules/executiveOperationsMap.js?v=34.0.10"></script>
   <script src="js/modules/executiveEventWall.js?v=34.0.11"></script>
   <script src="js/modules/executiveDecisionCenter.js?v=34.0.12"></script>
-  <script src="js/modules/decisionOutcomeTracker.js?v=34.0.12"></script>
+  <script src="js/modules/decisionOutcomeTracker.js?v=34.0.13.1"></script>
+  <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.1"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
