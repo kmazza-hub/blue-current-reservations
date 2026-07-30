@@ -8657,3 +8657,40 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 #domainForecastOpenSource{min-height:38px;padding:0 .8rem;border:0;border-radius:999px;color:#102a32;background:#d9b65f;font:inherit;font-size:.61rem;font-weight:800;cursor:pointer}
 @media(max-width:900px){.domain-forecasting-grid{grid-template-columns:1fr}}
 @media(max-width:620px){.domain-forecasting-heading,.domain-forecast-actions{flex-direction:column}.domain-forecast-metrics{grid-template-columns:1fr}}
+
+/* V34.0.13.3 — What-If Simulator */
+.what-if-simulator{margin:0 0 1rem;padding:1rem;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:radial-gradient(circle at 90% 8%,rgba(153,120,255,.09),transparent 32%),rgba(255,255,255,.025)}
+.what-if-heading,.what-if-layout,.what-if-recommendation{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.what-if-heading small,.what-if-summary small,.what-if-comparison-grid small,.what-if-recommendation small{color:rgba(255,255,255,.46);font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.what-if-heading h3{margin:.35rem 0 0;color:#fff;font-family:"Playfair Display",Georgia,serif;font-size:1.35rem}
+#whatIfUpdated{display:block;margin-top:.35rem;color:rgba(255,255,255,.42);font-size:.66rem}
+.what-if-comparison{min-width:170px;padding:.8rem;border-radius:15px;background:rgba(98,211,163,.1);text-align:right}
+.what-if-comparison small,.what-if-comparison strong,.what-if-comparison span{display:block}
+.what-if-comparison strong{margin-top:.25rem;color:#fff;font-size:1.45rem}
+.what-if-comparison span{margin-top:.2rem;color:rgba(255,255,255,.54);font-size:.61rem}
+.what-if-comparison[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.what-if-comparison[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.what-if-layout{display:grid;grid-template-columns:1.2fr .8fr;margin-top:.9rem}
+.what-if-controls,.what-if-summary,.what-if-comparison-grid article,.what-if-recommendation{padding:.85rem;border:1px solid rgba(255,255,255,.07);border-radius:15px;background:rgba(0,0,0,.08)}
+.what-if-control-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.what-if-control-grid label{color:rgba(255,255,255,.46);font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.what-if-control-grid select{display:block;width:100%;margin-top:.35rem;padding:.62rem .7rem;border:1px solid rgba(255,255,255,.08);border-radius:10px;color:#fff;background:rgba(255,255,255,.045);font:inherit}
+.what-if-actions{display:flex;gap:.5rem;margin-top:.75rem}
+.what-if-actions button,#whatIfOpenSource{min-height:38px;padding:0 .8rem;border-radius:999px;font:inherit;font-size:.61rem;font-weight:800;cursor:pointer}
+#whatIfRun,#whatIfOpenSource{border:0;color:#102a32;background:#d9b65f}
+.what-if-secondary{border:1px solid rgba(255,255,255,.08);color:#fff;background:rgba(255,255,255,.04)}
+.what-if-summary strong,.what-if-summary p{display:block}
+.what-if-summary strong{margin-top:.3rem;color:#fff;font-size:.82rem}
+.what-if-summary p{margin:.4rem 0 0;color:rgba(255,255,255,.5);font-size:.63rem;line-height:1.45}
+.what-if-summary-meta{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.65rem}
+.what-if-summary-meta span{padding:.46rem .56rem;border-radius:999px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.035);font-size:.58rem}
+.what-if-summary-meta strong{display:inline;color:#fff;font-size:inherit}
+.what-if-comparison-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-top:.75rem}
+.what-if-metric{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.55rem}
+.what-if-metric span{padding:.5rem;border-radius:10px;color:rgba(255,255,255,.45);background:rgba(255,255,255,.03);font-size:.57rem}
+.what-if-metric strong{display:block;margin-top:.18rem;color:#fff;font-size:.7rem}
+.what-if-recommendation{margin-top:.75rem}
+.what-if-recommendation strong{display:block;margin-top:.25rem;color:#fff;font-size:.78rem}
+.what-if-recommendation p{margin:.35rem 0 0;color:rgba(255,255,255,.5);font-size:.63rem;line-height:1.45}
+@media(max-width:900px){.what-if-layout{grid-template-columns:1fr}.what-if-comparison-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.what-if-heading,.what-if-recommendation{flex-direction:column}.what-if-control-grid,.what-if-comparison-grid{grid-template-columns:1fr}}

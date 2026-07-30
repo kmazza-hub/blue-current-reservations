@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.2">
+  <meta name="blue-current-build" content="34.0.13.3">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.2">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.3">
 </head>
 <body>
 
@@ -2784,6 +2784,100 @@
       </div>
     </section>
 
+    <section class="what-if-simulator reveal" id="whatIfSimulator" aria-labelledby="whatIfSimulatorTitle">
+      <div class="what-if-heading">
+        <div>
+          <small>Scenario planning</small>
+          <h3 id="whatIfSimulatorTitle">What-If Simulator</h3>
+          <span id="whatIfUpdated">Ready to compare an operating scenario against the live forecast.</span>
+        </div>
+        <div class="what-if-comparison" id="whatIfComparisonCard" data-tone="stable">
+          <small>Projected risk change</small>
+          <strong id="whatIfRiskDelta">0</strong>
+          <span id="whatIfRiskDeltaLabel">No scenario applied</span>
+        </div>
+      </div>
+
+      <div class="what-if-layout">
+        <div class="what-if-controls">
+          <div class="what-if-control-grid">
+            <label>
+              Scenario
+              <select id="whatIfScenario">
+                <option value="server_callout">One server calls out</option>
+                <option value="reservation_surge">Reservation surge</option>
+                <option value="kitchen_station_down">Kitchen station goes down</option>
+                <option value="walkin_party">Large walk-in party</option>
+                <option value="rain_shift">Rain moves patio demand inside</option>
+              </select>
+            </label>
+
+            <label>
+              Severity
+              <select id="whatIfSeverity">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+
+            <label>
+              Start window
+              <select id="whatIfStartWindow">
+                <option value="0">Now</option>
+                <option value="30">In 30 minutes</option>
+                <option value="60">In 60 minutes</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="what-if-actions">
+            <button type="button" id="whatIfRun">Run simulation</button>
+            <button type="button" class="what-if-secondary" id="whatIfReset">Reset</button>
+          </div>
+        </div>
+
+        <aside class="what-if-summary">
+          <small>Simulation result</small>
+          <strong id="whatIfSummaryTitle">No scenario applied</strong>
+          <p id="whatIfSummaryDetail">Choose a scenario and run the model to compare projected operational impact.</p>
+          <div class="what-if-summary-meta">
+            <span>Confidence <strong id="whatIfConfidence">0%</strong></span>
+            <span>Revenue exposure <strong id="whatIfRevenueExposure">$0</strong></span>
+            <span>Recovery window <strong id="whatIfRecoveryWindow">—</strong></span>
+          </div>
+        </aside>
+      </div>
+
+      <div class="what-if-comparison-grid">
+        <article>
+          <small>Demand</small>
+          <div class="what-if-metric"><span>Baseline <strong id="whatIfDemandBaseline">0</strong></span><span>Scenario <strong id="whatIfDemandScenario">0</strong></span></div>
+        </article>
+        <article>
+          <small>Kitchen</small>
+          <div class="what-if-metric"><span>Baseline <strong id="whatIfKitchenBaseline">0</strong></span><span>Scenario <strong id="whatIfKitchenScenario">0</strong></span></div>
+        </article>
+        <article>
+          <small>Floor</small>
+          <div class="what-if-metric"><span>Baseline <strong id="whatIfFloorBaseline">0</strong></span><span>Scenario <strong id="whatIfFloorScenario">0</strong></span></div>
+        </article>
+        <article>
+          <small>Labor</small>
+          <div class="what-if-metric"><span>Baseline <strong id="whatIfLaborBaseline">0</strong></span><span>Scenario <strong id="whatIfLaborScenario">0</strong></span></div>
+        </article>
+      </div>
+
+      <div class="what-if-recommendation">
+        <div>
+          <small>Best response</small>
+          <strong id="whatIfRecommendationTitle">Maintain current plan</strong>
+          <p id="whatIfRecommendationDetail">The simulation has not identified a required response.</p>
+        </div>
+        <button type="button" id="whatIfOpenSource">Open recommended source</button>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -4020,7 +4114,8 @@
   <script src="js/modules/executiveDecisionCenter.js?v=34.0.12"></script>
   <script src="js/modules/decisionOutcomeTracker.js?v=34.0.13.1"></script>
   <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.2"></script>
-  <script src="js/modules/domainForecastingModels.js?v=34.0.13.2"></script>
+  <script src="js/modules/domainForecastingModels.js?v=34.0.13.3"></script>
+  <script src="js/modules/whatIfSimulator.js?v=34.0.13.3"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
