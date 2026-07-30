@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.6">
+  <meta name="blue-current-build" content="34.0.7">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.6">
+  <link rel="stylesheet" href="styles.css?v=34.0.7">
 </head>
 <body>
 
@@ -2205,6 +2205,71 @@
       </div>
     </section>
 
+    <section class="service-recovery-center reveal" id="serviceRecoveryCenter" aria-labelledby="serviceRecoveryCenterTitle">
+      <div class="service-recovery-heading">
+        <div>
+          <small>Operational recovery</small>
+          <h3 id="serviceRecoveryCenterTitle">Service Recovery Playbooks</h3>
+          <span id="serviceRecoveryUpdated">Matching incidents to response plans…</span>
+        </div>
+
+        <div class="service-recovery-summary">
+          <span><strong id="serviceRecoveryAvailable">0</strong> available</span>
+          <span><strong id="serviceRecoveryRunning">0</strong> running</span>
+          <span><strong id="serviceRecoveryCompleted">0</strong> completed</span>
+        </div>
+      </div>
+
+      <div class="service-recovery-layout">
+        <div class="service-recovery-library">
+          <div class="service-recovery-toolbar">
+            <label>
+              Incident type
+              <select id="serviceRecoveryFilter">
+                <option value="all">All playbooks</option>
+                <option value="floor">Dining room</option>
+                <option value="kitchen">Kitchen</option>
+                <option value="handoff">Server handoff</option>
+                <option value="capacity">Capacity</option>
+              </select>
+            </label>
+
+            <button type="button" id="serviceRecoveryRefresh">Refresh matches</button>
+          </div>
+
+          <div class="service-recovery-list" id="serviceRecoveryList" aria-live="polite"></div>
+        </div>
+
+        <aside class="service-recovery-inspector">
+          <div>
+            <small>Selected playbook</small>
+            <strong id="serviceRecoverySelectedTitle">Choose a playbook</strong>
+            <span id="serviceRecoverySelectedStatus">No playbook selected</span>
+          </div>
+
+          <dl class="service-recovery-meta">
+            <div><dt>Trigger</dt><dd id="serviceRecoveryTrigger">—</dd></div>
+            <div><dt>Owner</dt><dd id="serviceRecoveryOwner">—</dd></div>
+            <div><dt>Target time</dt><dd id="serviceRecoveryTarget">—</dd></div>
+            <div><dt>Impact</dt><dd id="serviceRecoveryImpact">—</dd></div>
+          </dl>
+
+          <div class="service-recovery-steps">
+            <small>Recovery steps</small>
+            <ol id="serviceRecoveryStepList"></ol>
+          </div>
+
+          <div class="service-recovery-actions">
+            <button type="button" class="service-recovery-secondary" id="serviceRecoveryAssign">Assign to me</button>
+            <button type="button" class="service-recovery-secondary" id="serviceRecoveryAdvance">Complete next step</button>
+            <button type="button" id="serviceRecoveryRun">Start playbook</button>
+          </div>
+
+          <span id="serviceRecoveryStatus" role="status"></span>
+        </aside>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3433,7 +3498,8 @@
   <script src="js/modules/digitalTwin.js?v=33.0.3"></script>
   <script src="js/modules/executive.js"></script>
   <script src="js/modules/missionControl.js?v=34.0.6"></script>
-  <script src="js/modules/incidentResponseCenter.js?v=34.0.6"></script>
+  <script src="js/modules/incidentResponseCenter.js?v=34.0.7"></script>
+  <script src="js/modules/serviceRecoveryPlaybooks.js?v=34.0.7"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

@@ -1,36 +1,35 @@
-BLUE CURRENT V34.0.6 — INCIDENT RESPONSE CENTER
+BLUE CURRENT V34.0.7 — SERVICE RECOVERY PLAYBOOKS
 
 BASELINE
-Built from the validated V34.0.5 Mission Control Depth release.
+Built from the validated V34.0.6 Incident Response Center release.
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/incidentResponseCenter.js
+- client/js/modules/serviceRecoveryPlaybooks.js
 
 WHAT THIS RELEASE ADDS
-- Live Incident Center inside Mission Control
-- Open, acknowledged, resolved, and all-incident views
-- Automatic incident detection from dining room, kitchen, and server handoff data
-- Critical and warning severity
-- Owner assignment
-- Resolution notes
-- Acknowledge Incident workflow
-- Resolve Incident workflow
-- Open Source navigation
-- Persistent incident history after refresh
-- Live incident KPIs
+- Service Recovery Playbook Center
+- Automatic playbook matching from live incidents
+- Dining room, kitchen, handoff, and capacity playbooks
+- Playbook owner and target-time visibility
+- Assign to Me workflow
+- Start Playbook workflow
+- Complete Next Step workflow
+- Progress tracking
+- Completed playbook history
+- Persistent recovery state after refresh
 
 TEST
-1. Replace the files and add the new JavaScript module.
+1. Replace the two files and add the JavaScript module.
 2. Run: npm run check
 3. Run: npm start
 4. Open Mission Control.
-5. Flag a table for manager attention.
-6. Confirm an incident appears.
-7. Assign an owner and add a note.
-8. Acknowledge the incident.
-9. Resolve the incident.
-10. Confirm filters and counts update.
+5. Create or detect an incident.
+6. Confirm a matching playbook appears.
+7. Assign it to yourself.
+8. Start it.
+9. Complete each step.
+10. Confirm the playbook moves to Completed.
