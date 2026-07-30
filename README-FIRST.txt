@@ -1,18 +1,18 @@
-BLUE CURRENT V35.2.6 — AUTONOMOUS EXECUTIVE ADVISOR
+BLUE CURRENT V35.2.8 — HOSPITALITY COPILOT
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/autonomousExecutiveAdvisor.js
+- client/js/modules/hospitalityCopilot.js
 
 FEATURES
-- Daily executive AI briefings
-- Natural-language business Q&A
-- Strategic opportunity detection
-- Enterprise risk monitoring
-- AI-generated executive summaries
-- Priority action recommendations
-- Portfolio health forecasting
-- Foundation for an executive AI copilot
+- Persistent AI copilot
+- Role-aware recommendations
+- Context-sensitive guidance
+- Proactive operational alerts
+- One-click workflow assistance
+- Voice-ready interactions
+- Personalized productivity workspace
+- Foundation for ambient hospitality AI
