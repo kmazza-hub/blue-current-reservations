@@ -1,18 +1,18 @@
-BLUE CURRENT V35.3.7 — BLUE CURRENT MARKETPLACE
+BLUE CURRENT V35.3.8 — CLOUD PLATFORM
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/marketplace.js
+- client/js/modules/cloudPlatform.js
 
 FEATURES
-- Marketplace storefront
-- AI agent catalog
-- Integration catalog
-- Dashboard template library
-- Operational playbook exchange
-- One-click extension installer
-- Partner publishing framework
-- Foundation for the Blue Current ecosystem
+- Central cloud control plane
+- Tenant lifecycle management
+- Global configuration synchronization
+- Cloud backup & disaster recovery
+- Real-time collaboration foundation
+- Automatic platform updates
+- Usage analytics & billing hooks
+- Enterprise cloud operations dashboard
