@@ -1,18 +1,18 @@
-BLUE CURRENT V35.6.1 — OPERATIONAL DATA FABRIC
+BLUE CURRENT V35.6.2 — PREDICTIVE INTELLIGENCE ENGINE
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/operationalDataFabric.js
+- client/js/modules/predictiveIntelligenceEngine.js
 
 FEATURES
-- Live enterprise event streaming
-- Unified operational event bus
-- Time-series operational datastore foundation
-- Cross-module data synchronization
-- Real-time KPI calculation engine
-- Event replay for incident analysis
-- AI-ready feature pipeline
-- Foundation for predictive operations
+- Reservation demand forecasting
+- Staffing prediction engine
+- Kitchen bottleneck forecasting
+- Revenue forecasting models
+- Guest behavior prediction
+- Operational anomaly detection
+- AI confidence scoring
+- Foundation for proactive hospitality operations
