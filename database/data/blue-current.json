@@ -322,6 +322,22 @@
       "category": "security",
       "createdAt": "2026-07-29T20:47:28.174Z",
       "id": "audit_1785358048174_ccovwo"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-07-29T22:09:01.946Z",
+      "id": "audit_1785362941946_y6nim3"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-07-29T22:10:20.174Z",
+      "id": "audit_1785363020174_9cfrip"
     }
   ],
   "reservations": [
@@ -612,6 +628,30 @@
       ],
       "createdAt": "2026-07-29T20:47:28.168Z",
       "expiresAt": "2026-07-30T08:47:28.168Z"
+    },
+    {
+      "id": "ses_1785362941939_mb8e0r",
+      "tokenHash": "d8825398d10c1e1838e3c627a150daafe9098909f47fdb079b7515a67241931c",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-07-29T22:09:01.940Z",
+      "expiresAt": "2026-07-30T10:09:01.940Z"
+    },
+    {
+      "id": "ses_1785363020169_00qokh",
+      "tokenHash": "6779c40c130b7516551c170717fccdb8500232fddf07226a61a58514dac4df6b",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-07-29T22:10:20.169Z",
+      "expiresAt": "2026-07-30T10:10:20.169Z"
     }
   ],
   "invitations": [
