@@ -198,6 +198,9 @@
     window.dispatchEvent(new CustomEvent("bluecurrent:forecast-calibration-updated", {
       detail:{profile}
     }));
+    window.dispatchEvent(new CustomEvent("bluecurrent:confidence-drift-source-updated", {
+      detail:{profile}
+    }));
   }
 
   function init() {

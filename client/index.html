@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.7">
+  <meta name="blue-current-build" content="34.0.13.8">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.7">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.8">
 </head>
 <body>
 
@@ -2706,6 +2706,60 @@
       </div>
     </section>
 
+    <section class="confidence-drift-monitor reveal" id="confidenceDriftMonitor" aria-labelledby="confidenceDriftMonitorTitle">
+      <div class="confidence-drift-heading">
+        <div>
+          <small>Model governance</small>
+          <h3 id="confidenceDriftMonitorTitle">Confidence Drift Monitor</h3>
+          <span id="confidenceDriftUpdated">Comparing recent forecast performance against the learned baseline…</span>
+        </div>
+
+        <div class="confidence-drift-score" id="confidenceDriftScoreCard" data-tone="stable">
+          <small>Drift score</small>
+          <strong id="confidenceDriftScore">0</strong>
+          <span id="confidenceDriftLabel">Stable</span>
+        </div>
+      </div>
+
+      <div class="confidence-drift-kpis">
+        <article><small>Recent accuracy</small><strong id="confidenceDriftRecentAccuracy">0%</strong><span>Latest measured outcomes</span></article>
+        <article><small>Baseline accuracy</small><strong id="confidenceDriftBaselineAccuracy">0%</strong><span>Full measured history</span></article>
+        <article><small>Confidence gap</small><strong id="confidenceDriftGap">0</strong><span>Recent minus baseline</span></article>
+        <article><small>Sample depth</small><strong id="confidenceDriftSamples">0</strong><span>Measured outcomes</span></article>
+        <article><small>Governance status</small><strong id="confidenceDriftGovernance">Healthy</strong><span>Retraining readiness</span></article>
+      </div>
+
+      <div class="confidence-drift-layout">
+        <div class="confidence-drift-history">
+          <div class="confidence-drift-section-heading">
+            <div><small>Accuracy trend</small><strong>Most recent measured outcomes</strong></div>
+            <span id="confidenceDriftWindowLabel">Last 0 outcomes</span>
+          </div>
+          <div id="confidenceDriftTrendList" class="confidence-drift-trend-list"></div>
+        </div>
+
+        <aside class="confidence-drift-recommendation">
+          <small>Governance recommendation</small>
+          <strong id="confidenceDriftRecommendationTitle">No retraining action required</strong>
+          <p id="confidenceDriftRecommendationDetail">The current model remains within acceptable calibration limits.</p>
+
+          <dl class="confidence-drift-recommendation-grid">
+            <div><dt>Action</dt><dd id="confidenceDriftAction">Continue monitoring</dd></div>
+            <div><dt>Priority</dt><dd id="confidenceDriftPriority">Low</dd></div>
+            <div><dt>Review window</dt><dd id="confidenceDriftReviewWindow">Next 5 outcomes</dd></div>
+            <div><dt>Expected benefit</dt><dd id="confidenceDriftBenefit">Maintain calibration</dd></div>
+          </dl>
+
+          <div class="confidence-drift-actions">
+            <button type="button" id="confidenceDriftAcknowledge">Acknowledge recommendation</button>
+            <button type="button" class="confidence-drift-secondary" id="confidenceDriftOpenLearning">Open learning engine</button>
+          </div>
+
+          <span id="confidenceDriftStatus" role="status"></span>
+        </aside>
+      </div>
+    </section>
+
     <section class="predictive-command-center reveal" id="predictiveCommandCenter" aria-labelledby="predictiveCommandCenterTitle">
       <div class="predictive-command-heading">
         <div>
@@ -4193,8 +4247,9 @@
   <script src="js/modules/whatIfSimulator.js?v=34.0.13.4"></script>
   <script src="js/modules/predictiveDecisionBridge.js?v=34.0.13.5"></script>
   <script src="js/modules/predictiveDecisionLifecycle.js?v=34.0.13.6"></script>
-  <script src="js/modules/outcomeLearningEngine.js?v=34.0.13.7"></script>
-  <script src="js/modules/adaptiveForecastWeights.js?v=34.0.13.7"></script>
+  <script src="js/modules/outcomeLearningEngine.js?v=34.0.13.8"></script>
+  <script src="js/modules/adaptiveForecastWeights.js?v=34.0.13.8"></script>
+  <script src="js/modules/confidenceDriftMonitor.js?v=34.0.13.8"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

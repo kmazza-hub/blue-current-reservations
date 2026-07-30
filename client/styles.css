@@ -9031,3 +9031,198 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 @media(max-width:680px){
   .adaptive-forecast-profile-grid{grid-template-columns:1fr 1fr}
 }
+
+
+/* V34.0.13.8 — Confidence Drift Monitor */
+.confidence-drift-monitor{
+  margin:0 0 1rem;
+  padding:1rem;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(239,133,125,.08),transparent 31%),
+    rgba(255,255,255,.025);
+}
+.confidence-drift-heading,
+.confidence-drift-section-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+}
+.confidence-drift-heading small,
+.confidence-drift-section-heading small,
+.confidence-drift-recommendation small{
+  color:rgba(255,255,255,.46);
+  font-size:.64rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.confidence-drift-heading h3{
+  margin:.35rem 0 0;
+  color:#fff;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:1.35rem;
+}
+#confidenceDriftUpdated{
+  display:block;
+  margin-top:.35rem;
+  color:rgba(255,255,255,.42);
+  font-size:.66rem;
+}
+.confidence-drift-score{
+  min-width:165px;
+  padding:.8rem;
+  border-radius:15px;
+  background:rgba(98,211,163,.11);
+  text-align:right;
+}
+.confidence-drift-score small,
+.confidence-drift-score strong,
+.confidence-drift-score span{display:block}
+.confidence-drift-score strong{margin-top:.25rem;color:#fff;font-size:1.5rem}
+.confidence-drift-score span{margin-top:.2rem;color:rgba(255,255,255,.55);font-size:.61rem}
+.confidence-drift-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.confidence-drift-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.confidence-drift-kpis{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:.6rem;
+  margin-top:.9rem;
+}
+.confidence-drift-kpis article{
+  padding:.75rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:13px;
+  background:rgba(255,255,255,.025);
+}
+.confidence-drift-kpis small,
+.confidence-drift-kpis strong,
+.confidence-drift-kpis span{display:block}
+.confidence-drift-kpis small{color:rgba(255,255,255,.42);font-size:.57rem;text-transform:uppercase}
+.confidence-drift-kpis strong{margin-top:.3rem;color:#fff;font-size:1rem}
+.confidence-drift-kpis span{margin-top:.22rem;color:rgba(255,255,255,.45);font-size:.59rem}
+.confidence-drift-layout{
+  display:grid;
+  grid-template-columns:1.35fr .75fr;
+  gap:.8rem;
+  margin-top:.85rem;
+}
+.confidence-drift-history,
+.confidence-drift-recommendation{
+  padding:.85rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:rgba(0,0,0,.08);
+}
+.confidence-drift-section-heading strong{display:block;margin-top:.25rem;color:#fff;font-size:.78rem}
+.confidence-drift-section-heading>span{color:rgba(255,255,255,.43);font-size:.61rem}
+.confidence-drift-trend-list{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:.5rem;
+  margin-top:.7rem;
+}
+.confidence-drift-trend-item{
+  padding:.65rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:11px;
+  background:rgba(255,255,255,.025);
+}
+.confidence-drift-trend-item[data-tone="watch"]{border-color:rgba(217,182,95,.22)}
+.confidence-drift-trend-item[data-tone="risk"]{border-color:rgba(239,133,125,.24)}
+.confidence-drift-trend-item small,
+.confidence-drift-trend-item strong,
+.confidence-drift-trend-item span{display:block}
+.confidence-drift-trend-item small{color:rgba(255,255,255,.4);font-size:.54rem;text-transform:uppercase}
+.confidence-drift-trend-item strong{margin-top:.24rem;color:#fff;font-size:.72rem}
+.confidence-drift-trend-item span{margin-top:.2rem;color:rgba(255,255,255,.46);font-size:.57rem}
+.confidence-drift-recommendation>strong{
+  display:block;
+  margin-top:.3rem;
+  color:#fff;
+  font-size:.82rem;
+}
+.confidence-drift-recommendation>p{
+  margin:.4rem 0 0;
+  color:rgba(255,255,255,.5);
+  font-size:.63rem;
+  line-height:1.45;
+}
+.confidence-drift-recommendation-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.5rem;
+  margin:.75rem 0 0;
+}
+.confidence-drift-recommendation-grid div{
+  padding:.58rem;
+  border-radius:10px;
+  background:rgba(255,255,255,.035);
+}
+.confidence-drift-recommendation-grid dt{
+  color:rgba(255,255,255,.4);
+  font-size:.54rem;
+  text-transform:uppercase;
+}
+.confidence-drift-recommendation-grid dd{
+  margin:.2rem 0 0;
+  color:#fff;
+  font-size:.67rem;
+  font-weight:800;
+}
+.confidence-drift-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.5rem;
+  margin-top:.75rem;
+}
+.confidence-drift-actions button{
+  min-height:38px;
+  padding:0 .7rem;
+  border-radius:999px;
+  font:inherit;
+  font-size:.61rem;
+  font-weight:800;
+  cursor:pointer;
+}
+#confidenceDriftAcknowledge{
+  border:0;
+  color:#082a31;
+  background:#d9b65f;
+}
+.confidence-drift-secondary{
+  border:1px solid rgba(255,255,255,.08);
+  color:#fff;
+  background:rgba(255,255,255,.04);
+}
+#confidenceDriftStatus{
+  display:block;
+  min-height:1rem;
+  margin-top:.5rem;
+  color:rgba(255,255,255,.46);
+  font-size:.6rem;
+}
+.confidence-drift-empty{
+  grid-column:1/-1;
+  padding:.9rem;
+  border:1px dashed rgba(255,255,255,.09);
+  border-radius:11px;
+  color:rgba(255,255,255,.46);
+  font-size:.64rem;
+  text-align:center;
+}
+@media(max-width:980px){
+  .confidence-drift-kpis{grid-template-columns:repeat(3,1fr)}
+  .confidence-drift-layout{grid-template-columns:1fr}
+  .confidence-drift-trend-list{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:680px){
+  .confidence-drift-heading,
+  .confidence-drift-section-heading{flex-direction:column}
+  .confidence-drift-kpis{grid-template-columns:1fr 1fr}
+  .confidence-drift-trend-list,
+  .confidence-drift-recommendation-grid,
+  .confidence-drift-actions{grid-template-columns:1fr}
+}

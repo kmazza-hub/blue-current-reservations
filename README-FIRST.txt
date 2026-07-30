@@ -1,27 +1,22 @@
-BLUE CURRENT V34.0.13.7 — ADAPTIVE FORECAST WEIGHTS
-
-BUILT FROM
-The actual uploaded project: blue-current-reservations(3).zip
+BLUE CURRENT V34.0.13.8 — CONFIDENCE DRIFT MONITOR
 
 REPLACE
 - client/index.html
 - client/styles.css
-- client/js/modules/predictiveCommandCenter.js
-- client/js/modules/domainForecastingModels.js
+- client/js/modules/outcomeLearningEngine.js
 
 ADD
-- client/js/modules/adaptiveForecastWeights.js
+- client/js/modules/confidenceDriftMonitor.js
 
 USER STORY
-Forecast weights adapt to the current weekday/weekend and opening/lunch/dinner/
-closing context using measured decision outcomes.
+As an executive, I can see when recent forecast accuracy is drifting away from
+the learned baseline and receive a clear retraining or calibration recommendation.
 
 TEST
-1. Replace/add the five files.
+1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Open Outcome Learning Engine.
-5. Confirm the Active Contextual Profile appears.
-6. Record measured outcomes and recalculate.
-7. Confirm demand, kitchen, floor, and labor weights update.
-8. Confirm Predictive Command Center and Domain Forecasting use the new weights.
+4. Record at least three measured decision outcomes.
+5. Confirm recent accuracy, baseline accuracy, confidence gap, and drift score update.
+6. Confirm the governance recommendation changes between Stable, Watch, and Review.
+7. Test Acknowledge Recommendation and Open Learning Engine.
