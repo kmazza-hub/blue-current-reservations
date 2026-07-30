@@ -2,6 +2,7 @@
   "use strict";
 
   const DECISION_KEY = "blueCurrent.executiveDecisionCenter.v34.0.11";
+  const BRIDGE_KEY = "blueCurrent.predictiveDecisionBridge.v34.0.13.5";
   const byId = id => document.getElementById(id);
 
   function readState() {
@@ -50,27 +51,35 @@
       updatedAt:new Date().toISOString()
     };
 
+    let decisionId;
+
     if (existing) {
       Object.assign(existing, decision);
       state.selectedId = existing.id;
+      decisionId = existing.id;
     } else {
-      const id = `decision_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
+      decisionId = `decision_${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
       state.decisions.push({
         ...decision,
-        id,
+        id:decisionId,
         status:"open",
         note:"",
         createdAt:new Date().toISOString(),
         approvedAt:null,
         completedAt:null
       });
-      state.selectedId = id;
+      state.selectedId = decisionId;
     }
 
     localStorage.setItem(DECISION_KEY, JSON.stringify(state));
+    localStorage.setItem(BRIDGE_KEY, JSON.stringify({
+      decisionId,
+      fingerprint,
+      createdAt:new Date().toISOString()
+    }));
 
     window.dispatchEvent(new CustomEvent("bluecurrent:predictive-decision-created", {
-      detail:{decision}
+      detail:{decision:{...decision,id:decisionId}}
     }));
 
     byId("executiveDecisionCenter")?.scrollIntoView({

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.4">
+  <meta name="blue-current-build" content="34.0.13.5">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.4">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.5">
 </head>
 <body>
 
@@ -2878,6 +2878,17 @@
           <button type="button" id="whatIfOpenSource">Open recommended source</button>
           <button type="button" id="whatIfCreateDecision" disabled>Create executive decision</button>
         </div>
+        <div class="predictive-decision-lifecycle" id="predictiveDecisionLifecycle" hidden>
+          <div>
+            <small>Decision lifecycle</small>
+            <strong id="predictiveDecisionLifecycleTitle">Executive decision created</strong>
+            <span id="predictiveDecisionLifecycleDetail">Waiting for executive review.</span>
+          </div>
+          <div class="predictive-decision-lifecycle-actions">
+            <span id="predictiveDecisionLifecycleStatus" data-status="open">Open</span>
+            <button type="button" id="predictiveDecisionLifecycleOpen">Open decision</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -4119,7 +4130,8 @@
   <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.2"></script>
   <script src="js/modules/domainForecastingModels.js?v=34.0.13.3"></script>
   <script src="js/modules/whatIfSimulator.js?v=34.0.13.4"></script>
-  <script src="js/modules/predictiveDecisionBridge.js?v=34.0.13.4"></script>
+  <script src="js/modules/predictiveDecisionBridge.js?v=34.0.13.5"></script>
+  <script src="js/modules/predictiveDecisionLifecycle.js?v=34.0.13.5"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
