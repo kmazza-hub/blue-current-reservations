@@ -1,34 +1,27 @@
-BLUE CURRENT FRONTEND RECOVERY — V34.0.13.3
+BLUE CURRENT V34.0.13.4 — PREDICTIVE DECISION BRIDGE
 
-CAUSE
-V34.0.13.4 replaced the real frontend with placeholder files:
-- client/index.html
-- client/styles.css
-
-RECOVERY SOURCE
-Your own Git commit:
-630d11d — 34.0.13.3
+BASELINE
+Built directly from your recovered V34.0.13.3 Git commit 630d11d.
 
 REPLACE
 - client/index.html
 - client/styles.css
+- client/js/modules/whatIfSimulator.js
 
-DO NOT ADD
-- client/js/modules/predictiveIntegration.js
+ADD
+- client/js/modules/predictiveDecisionBridge.js
 
-That file was part of the incomplete placeholder package and is not needed for this recovery.
+USER STORY
+As an executive, I can convert a completed What-If simulation into a real
+Executive Decision Center recommendation so the simulated response can be
+reviewed, noted, approved, and measured.
 
-INSTALL
-1. Stop the Node server.
-2. Replace the two files listed above.
-3. Run:
-   npm run check
-   npm start
-4. Hard refresh with Ctrl+Shift+R.
-5. Restart the Cloudflare tunnel only if the public URL stopped responding.
-
-EXPECTED RESULT
-The complete V34.0.13.3 interface should render again, including:
-- Predictive Command Center
-- Domain Forecasting
-- What-If Simulator
+TEST
+1. Replace/add the four files.
+2. Run npm run check.
+3. Run npm start.
+4. Open What-If Simulator and run a scenario.
+5. Click Create Executive Decision.
+6. Confirm the page scrolls to Executive Decision Center.
+7. Confirm the new recommendation appears with urgency, confidence,
+   revenue impact, guest impact, labor impact, and simulation rationale.

@@ -8694,3 +8694,28 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .what-if-recommendation p{margin:.35rem 0 0;color:rgba(255,255,255,.5);font-size:.63rem;line-height:1.45}
 @media(max-width:900px){.what-if-layout{grid-template-columns:1fr}.what-if-comparison-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.what-if-heading,.what-if-recommendation{flex-direction:column}.what-if-control-grid,.what-if-comparison-grid{grid-template-columns:1fr}}
+
+
+/* V34.0.13.4 — Predictive Decision Bridge */
+.what-if-recommendation-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+  align-items:center;
+}
+#whatIfCreateDecision{
+  min-height:38px;
+  padding:0 .8rem;
+  border:1px solid rgba(98,211,163,.28);
+  border-radius:999px;
+  color:#082a31;
+  background:#62d3a3;
+  font:inherit;
+  font-size:.61rem;
+  font-weight:800;
+  cursor:pointer;
+}
+#whatIfCreateDecision:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}

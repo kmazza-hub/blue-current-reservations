@@ -11,6 +11,7 @@
   const read=key=>{try{return JSON.parse(localStorage.getItem(key))||{}}catch{return{}}};
   const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,v));
   let target="liveShiftCommander";
+  let lastSimulation=null;
 
   const scenarioImpacts={
     server_callout:{demand:0,kitchen:4,floor:18,labor:32,revenue:320,recovery:"45–75 min"},
@@ -71,6 +72,8 @@
       return ["Control the arrival wave","Protect inventory and update host pacing before demand reaches the projected peak."];
     }
     target="liveShiftCommander";
+    lastSimulation=null;
+    byId("whatIfCreateDecision").disabled=true;
     return ["Maintain current plan","The scenario remains within controllable operating limits."];
   }
 
@@ -115,6 +118,24 @@
     byId("whatIfRecoveryWindow").textContent=impact.recovery;
     byId("whatIfRecommendationTitle").textContent=rec[0];
     byId("whatIfRecommendationDetail").textContent=rec[1];
+    lastSimulation={
+      scenario:type,
+      scenarioName:scenarioName(type),
+      severity,
+      startWindow:start,
+      baseline:base,
+      projected:result,
+      baselineRisk:baseRisk,
+      projectedRisk:scenarioRisk,
+      riskDelta:delta,
+      confidence,
+      revenueExposure:revenue,
+      recoveryWindow:impact.recovery,
+      recommendationTitle:rec[0],
+      recommendationDetail:rec[1],
+      sourceTarget:target
+    };
+    byId("whatIfCreateDecision").disabled=false;
     byId("whatIfUpdated").textContent=`Simulation run ${new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit"}).format(new Date())}`;
   }
 
@@ -138,6 +159,12 @@
     byId("whatIfRun").addEventListener("click",run);
     byId("whatIfReset").addEventListener("click",reset);
     byId("whatIfOpenSource").addEventListener("click",()=>byId(target)?.scrollIntoView({behavior:"smooth",block:"start"}));
+    byId("whatIfCreateDecision").addEventListener("click",()=>{
+      if(!lastSimulation)return;
+      window.dispatchEvent(new CustomEvent("bluecurrent:predictive-decision-requested",{
+        detail:{simulation:{...lastSimulation}}
+      }));
+    });
   }
 
   document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init,{once:true}):init();

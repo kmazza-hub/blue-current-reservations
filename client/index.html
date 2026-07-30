@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.3">
+  <meta name="blue-current-build" content="34.0.13.4">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.3">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.4">
 </head>
 <body>
 
@@ -2874,7 +2874,10 @@
           <strong id="whatIfRecommendationTitle">Maintain current plan</strong>
           <p id="whatIfRecommendationDetail">The simulation has not identified a required response.</p>
         </div>
-        <button type="button" id="whatIfOpenSource">Open recommended source</button>
+        <div class="what-if-recommendation-actions">
+          <button type="button" id="whatIfOpenSource">Open recommended source</button>
+          <button type="button" id="whatIfCreateDecision" disabled>Create executive decision</button>
+        </div>
       </div>
     </section>
 
@@ -4115,7 +4118,8 @@
   <script src="js/modules/decisionOutcomeTracker.js?v=34.0.13.1"></script>
   <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.2"></script>
   <script src="js/modules/domainForecastingModels.js?v=34.0.13.3"></script>
-  <script src="js/modules/whatIfSimulator.js?v=34.0.13.3"></script>
+  <script src="js/modules/whatIfSimulator.js?v=34.0.13.4"></script>
+  <script src="js/modules/predictiveDecisionBridge.js?v=34.0.13.4"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
