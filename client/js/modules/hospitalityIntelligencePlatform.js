@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Blue Current Hospitality Intelligence Platform v35.6.0'));

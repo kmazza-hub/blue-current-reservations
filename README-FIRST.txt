@@ -1,18 +1,18 @@
-BLUE CURRENT V35.5.4 — AUTONOMOUS INNOVATION ENGINE
+BLUE CURRENT V35.6.0 — HOSPITALITY INTELLIGENCE PLATFORM
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/autonomousInnovationEngine.js
+- client/js/modules/hospitalityIntelligencePlatform.js
 
 FEATURES
-- AI-generated improvement opportunities
-- Automatic experiment recommendations
-- Prototype workflow generation
-- Feature graduation pipeline
-- Innovation impact scoring
-- Customer usage intelligence
-- Continuous AI optimization loop
-- Foundation for self-improving Hospitality OS
+- Unified Hospitality Intelligence workspace
+- Enterprise AI coordination layer
+- Cross-domain operational insights
+- Financial & operational intelligence
+- Guest lifecycle intelligence
+- Innovation intelligence dashboard
+- Global executive workspace
+- Generation 2 platform foundation
