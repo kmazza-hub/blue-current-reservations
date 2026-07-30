@@ -8,6 +8,7 @@
     outcomes:"blueCurrent.decisionOutcomeTracker.v34.0.12"
   };
   const byId=id=>document.getElementById(id);
+  const CALIBRATION_KEY="blueCurrent.outcomeLearningCalibration.v34.0.13.6";
   const read=key=>{try{return JSON.parse(localStorage.getItem(key))||{}}catch{return{}}};
   const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,v));
   let sourceTarget="liveShiftCommander";
@@ -59,7 +60,8 @@
     const revenueUpside=Math.max(0,Math.round((100-reservation60)*12 + Math.max(0,laborDifference)*90));
     const revenueScore=clamp(Math.round(revenueRisk/12));
 
-    const confidence=clamp(Math.round(s.accuracy*.75+Math.min(100,(s.occupied.length+s.activeTickets.length)*4)*.25),68,97);
+    const calibration=read(CALIBRATION_KEY);
+    const confidence=clamp(Math.round(s.accuracy*.75+Math.min(100,(s.occupied.length+s.activeTickets.length)*4)*.25+Number(calibration.confidenceAdjustment||0)),68,97);
 
     byId("domainForecastingConfidence").textContent=`${confidence}%`;
     byId("domainForecastingConfidenceLabel").textContent=confidence>=88?"High confidence":confidence>=76?"Moderate confidence":"Limited live data";

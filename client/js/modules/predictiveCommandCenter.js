@@ -8,6 +8,7 @@
     handoff:"blueCurrent.serverHandoff.v35.1.0"
   };
   const byId=id=>document.getElementById(id);
+  const CALIBRATION_KEY="blueCurrent.outcomeLearningCalibration.v34.0.13.6";
   let target="liveShiftCommander";
   const read=key=>{try{return JSON.parse(localStorage.getItem(key))||{}}catch{return{}}};
   const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,v));
@@ -30,7 +31,9 @@
     const labor=clamp(Math.max(0,occupied.length-6)*9+lateHandoffs.length*14+attention.length*8);
     const incidentsScore=clamp(open.filter(i=>i.severity==="critical").length*28+open.filter(i=>i.severity!=="critical").length*16);
     const overall=clamp(Math.round(demand*.22+kitchen*.27+floor*.2+labor*.16+incidentsScore*.15));
-    const confidence=clamp(Math.round(accuracy*.7+Math.min(100,(tables.length+tickets.length+handoffs.length)*2)*.3),65,97);
+    const calibration=read(CALIBRATION_KEY);
+    const adjustment=Number(calibration.confidenceAdjustment||0);
+    const confidence=clamp(Math.round(accuracy*.7+Math.min(100,(tables.length+tickets.length+handoffs.length)*2)*.3+adjustment),65,97);
     return{open,attention,occupied,lateTickets,lateHandoffs,demand,kitchen,floor,labor,incidentsScore,overall,confidence};
   }
 
