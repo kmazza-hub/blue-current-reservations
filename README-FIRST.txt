@@ -1,34 +1,35 @@
-BLUE CURRENT V34.0.10 — LIVE EXECUTIVE EVENT WALL
+BLUE CURRENT V34.0.11 — EXECUTIVE DECISION CENTER
 
 BASELINE
-Built from the validated V34.0.9 Executive Operations Map release.
+Built from the validated V34.0.10 Live Executive Event Wall release.
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/executiveEventWall.js
+- client/js/modules/executiveDecisionCenter.js
 
 WHAT THIS RELEASE ADDS
-- Live Executive Event Wall inside Mission Control
-- Guest, floor, kitchen, incident, and recovery event filters
-- Pause and resume controls
-- Session event count
-- Critical event count
-- Recovered event count
-- Event velocity
-- AI event interpretation
-- Event pattern detection
-- Highest-priority navigation
-- Copyable executive briefing
-- Persistent event history after refresh
+- Executive Decision Center inside Mission Control
+- Ranked decision queue
+- Immediate, Today, Monitor, and Completed filters
+- Business Health Index
+- Revenue protected, at risk, and recovered
+- Recommendation confidence
+- Revenue, guest, labor, and cost impact
+- Executive notes
+- Approve, dismiss, and open-source workflows
+- 30, 60, and 120-minute operational forecast
+- Decision timeline with recorded outcomes
+- Persistent decision history after refresh
 
 TEST
 1. Replace the two files and add the new JavaScript module.
 2. Run: npm run check
 3. Run: npm start
 4. Open Mission Control.
-5. Create a table incident, update a kitchen ticket, or start a recovery playbook.
-6. Confirm the live event stream and AI interpretation update.
-7. Test filters, Pause Feed, Open Highest Priority, and Copy Briefing.
+5. Create a floor, kitchen, or handoff incident.
+6. Confirm the decision queue, health index, revenue exposure, and forecast update.
+7. Select a decision, add a note, open its source, and approve it.
+8. Confirm the approved decision appears in the timeline.

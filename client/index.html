@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.10">
+  <meta name="blue-current-build" content="34.0.11">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.10">
+  <link rel="stylesheet" href="styles.css?v=34.0.11">
 </head>
 <body>
 
@@ -2445,6 +2445,106 @@
       </div>
     </section>
 
+    <section class="executive-decision-center reveal" id="executiveDecisionCenter" aria-labelledby="executiveDecisionCenterTitle">
+      <div class="executive-decision-heading">
+        <div>
+          <small>Executive decision support</small>
+          <h3 id="executiveDecisionCenterTitle">Executive Decision Center</h3>
+          <span id="executiveDecisionUpdated">Evaluating operational choices and expected outcomes…</span>
+        </div>
+
+        <div class="executive-decision-index" id="executiveDecisionHealth" data-tone="stable">
+          <small>Business health index</small>
+          <strong id="executiveDecisionHealthScore">100</strong>
+          <span id="executiveDecisionHealthLabel">Strong operating position</span>
+        </div>
+      </div>
+
+      <div class="executive-decision-kpis">
+        <article><small>Revenue protected</small><strong id="executiveDecisionProtected">$0</strong><span>Estimated avoided loss</span></article>
+        <article><small>Revenue at risk</small><strong id="executiveDecisionRisk">$0</strong><span>Current operational exposure</span></article>
+        <article><small>Recovered today</small><strong id="executiveDecisionRecovered">$0</strong><span>Resolved decisions</span></article>
+        <article><small>Open decisions</small><strong id="executiveDecisionOpen">0</strong><span>Awaiting action</span></article>
+        <article><small>Average confidence</small><strong id="executiveDecisionConfidence">0%</strong><span>Recommendation quality</span></article>
+      </div>
+
+      <div class="executive-decision-layout">
+        <div class="executive-decision-queue-wrap">
+          <div class="executive-decision-toolbar">
+            <div>
+              <small>Executive decision queue</small>
+              <strong>Highest-impact actions first</strong>
+            </div>
+
+            <label>
+              View
+              <select id="executiveDecisionFilter">
+                <option value="all">All decisions</option>
+                <option value="immediate">Immediate</option>
+                <option value="today">Today</option>
+                <option value="monitor">Monitor</option>
+                <option value="completed">Completed</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="executiveDecisionQueue" class="executive-decision-queue" aria-live="polite"></div>
+        </div>
+
+        <aside class="executive-decision-inspector">
+          <div>
+            <small>Selected recommendation</small>
+            <strong id="executiveDecisionSelectedTitle">Choose a decision</strong>
+            <p id="executiveDecisionSelectedWhy">No recommendation selected.</p>
+          </div>
+
+          <dl class="executive-decision-meta">
+            <div><dt>Urgency</dt><dd id="executiveDecisionUrgency">—</dd></div>
+            <div><dt>Confidence</dt><dd id="executiveDecisionSelectedConfidence">—</dd></div>
+            <div><dt>Revenue impact</dt><dd id="executiveDecisionRevenueImpact">—</dd></div>
+            <div><dt>Guest impact</dt><dd id="executiveDecisionGuestImpact">—</dd></div>
+            <div><dt>Labor impact</dt><dd id="executiveDecisionLaborImpact">—</dd></div>
+            <div><dt>Estimated cost</dt><dd id="executiveDecisionEstimatedCost">—</dd></div>
+          </dl>
+
+          <label>
+            Executive note
+            <textarea id="executiveDecisionNote" rows="4" placeholder="Add rationale, constraints, or follow-up instructions."></textarea>
+          </label>
+
+          <div class="executive-decision-actions">
+            <button type="button" class="executive-decision-secondary" id="executiveDecisionOpenSource">Open source</button>
+            <button type="button" class="executive-decision-secondary" id="executiveDecisionDismiss">Dismiss</button>
+            <button type="button" id="executiveDecisionApprove">Approve decision</button>
+          </div>
+
+          <span id="executiveDecisionStatus" role="status"></span>
+        </aside>
+      </div>
+
+      <div class="executive-decision-forecast">
+        <div class="executive-decision-toolbar">
+          <div>
+            <small>Operational forecast</small>
+            <strong>Next 30, 60, and 120 minutes</strong>
+          </div>
+          <span id="executiveDecisionForecastConfidence">Confidence 0%</span>
+        </div>
+        <div id="executiveDecisionForecastGrid" class="executive-decision-forecast-grid"></div>
+      </div>
+
+      <div class="executive-decision-history">
+        <div class="executive-decision-toolbar">
+          <div>
+            <small>Decision timeline</small>
+            <strong>Approved actions and outcomes</strong>
+          </div>
+          <button type="button" id="executiveDecisionClearHistory">Clear completed history</button>
+        </div>
+        <div id="executiveDecisionHistoryList" class="executive-decision-history-list"></div>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3677,7 +3777,8 @@
   <script src="js/modules/serviceRecoveryPlaybooks.js?v=34.0.8"></script>
   <script src="js/modules/liveShiftCommander.js?v=34.0.9"></script>
   <script src="js/modules/executiveOperationsMap.js?v=34.0.10"></script>
-  <script src="js/modules/executiveEventWall.js?v=34.0.10"></script>
+  <script src="js/modules/executiveEventWall.js?v=34.0.11"></script>
+  <script src="js/modules/executiveDecisionCenter.js?v=34.0.11"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
