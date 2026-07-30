@@ -1,18 +1,18 @@
-BLUE CURRENT V35.2.9 — EXPERIENCE PLATFORM
+BLUE CURRENT V35.3.0 — HOSPITALITY OS
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/experiencePlatform.js
+- client/js/modules/hospitalityOS.js
 
 FEATURES
-- Unified guest profile
-- Loyalty and visit history
-- Personalized dining preferences
-- Marketing campaign orchestration
-- Guest feedback intelligence
-- Reputation management dashboard
-- Personalized AI engagement
-- Foundation for end-to-end guest experience
+- Unified application shell
+- Global navigation
+- Role-based permissions
+- Shared notification center
+- Cross-module search
+- Unified API/service layer
+- Plugin architecture
+- Enterprise deployment foundation
