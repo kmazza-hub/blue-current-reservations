@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.11">
+  <meta name="blue-current-build" content="34.0.12">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.11">
+  <link rel="stylesheet" href="styles.css?v=34.0.12">
 </head>
 <body>
 
@@ -2545,6 +2545,106 @@
       </div>
     </section>
 
+    <section class="decision-outcome-tracker reveal" id="decisionOutcomeTracker" aria-labelledby="decisionOutcomeTrackerTitle">
+      <div class="decision-outcome-heading">
+        <div>
+          <small>Closed-loop executive intelligence</small>
+          <h3 id="decisionOutcomeTrackerTitle">Decision Outcome Tracker</h3>
+          <span id="decisionOutcomeUpdated">Measuring approved decisions against actual operating outcomes…</span>
+        </div>
+
+        <div class="decision-outcome-score" id="decisionOutcomeScoreCard" data-tone="stable">
+          <small>Decision quality</small>
+          <strong id="decisionOutcomeScore">100</strong>
+          <span id="decisionOutcomeScoreLabel">Strong execution</span>
+        </div>
+      </div>
+
+      <div class="decision-outcome-kpis">
+        <article><small>Measured decisions</small><strong id="decisionOutcomeMeasured">0</strong><span>With recorded outcomes</span></article>
+        <article><small>Successful</small><strong id="decisionOutcomeSuccessful">0</strong><span>Met or beat target</span></article>
+        <article><small>Underperformed</small><strong id="decisionOutcomeUnderperformed">0</strong><span>Needs review</span></article>
+        <article><small>Verified value</small><strong id="decisionOutcomeValue">$0</strong><span>Observed benefit</span></article>
+        <article><small>Prediction accuracy</small><strong id="decisionOutcomeAccuracy">0%</strong><span>Estimated vs. observed</span></article>
+      </div>
+
+      <div class="decision-outcome-layout">
+        <div class="decision-outcome-list-wrap">
+          <div class="decision-outcome-toolbar">
+            <div>
+              <small>Outcome measurement queue</small>
+              <strong>Approved decisions awaiting verification</strong>
+            </div>
+
+            <label>
+              View
+              <select id="decisionOutcomeFilter">
+                <option value="pending">Pending measurement</option>
+                <option value="measured">Measured</option>
+                <option value="all">All outcomes</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="decisionOutcomeList" class="decision-outcome-list" aria-live="polite"></div>
+        </div>
+
+        <aside class="decision-outcome-inspector">
+          <div>
+            <small>Selected outcome</small>
+            <strong id="decisionOutcomeSelectedTitle">Choose a decision</strong>
+            <p id="decisionOutcomeSelectedDetail">No approved decision selected.</p>
+          </div>
+
+          <dl class="decision-outcome-meta">
+            <div><dt>Predicted value</dt><dd id="decisionOutcomePredicted">$0</dd></div>
+            <div><dt>Observed value</dt><dd id="decisionOutcomeObserved">$0</dd></div>
+            <div><dt>Variance</dt><dd id="decisionOutcomeVariance">0%</dd></div>
+            <div><dt>Confidence</dt><dd id="decisionOutcomeConfidence">0%</dd></div>
+            <div><dt>Approved</dt><dd id="decisionOutcomeApprovedAt">—</dd></div>
+            <div><dt>Status</dt><dd id="decisionOutcomeStatusLabel">—</dd></div>
+          </dl>
+
+          <label>
+            Observed business value
+            <input id="decisionOutcomeObservedInput" type="number" min="0" step="1" placeholder="Enter observed value">
+          </label>
+
+          <label>
+            Outcome classification
+            <select id="decisionOutcomeClassification">
+              <option value="successful">Successful</option>
+              <option value="partial">Partially successful</option>
+              <option value="underperformed">Underperformed</option>
+            </select>
+          </label>
+
+          <label>
+            Outcome note
+            <textarea id="decisionOutcomeNote" rows="4" placeholder="Describe what happened after the decision was approved."></textarea>
+          </label>
+
+          <div class="decision-outcome-actions">
+            <button type="button" class="decision-outcome-secondary" id="decisionOutcomeOpenDecision">Open decision</button>
+            <button type="button" id="decisionOutcomeRecord">Record outcome</button>
+          </div>
+
+          <span id="decisionOutcomeStatus" role="status"></span>
+        </aside>
+      </div>
+
+      <div class="decision-outcome-insights">
+        <div class="decision-outcome-toolbar">
+          <div>
+            <small>Learning summary</small>
+            <strong>What Blue Current is learning from executive decisions</strong>
+          </div>
+          <span id="decisionOutcomeLearningCount">0 learning signals</span>
+        </div>
+        <div id="decisionOutcomeInsightList" class="decision-outcome-insight-list"></div>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3778,7 +3878,8 @@
   <script src="js/modules/liveShiftCommander.js?v=34.0.9"></script>
   <script src="js/modules/executiveOperationsMap.js?v=34.0.10"></script>
   <script src="js/modules/executiveEventWall.js?v=34.0.11"></script>
-  <script src="js/modules/executiveDecisionCenter.js?v=34.0.11"></script>
+  <script src="js/modules/executiveDecisionCenter.js?v=34.0.12"></script>
+  <script src="js/modules/decisionOutcomeTracker.js?v=34.0.12"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

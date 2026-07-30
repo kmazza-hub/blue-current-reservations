@@ -1,35 +1,36 @@
-BLUE CURRENT V34.0.11 — EXECUTIVE DECISION CENTER
+BLUE CURRENT V34.0.12 — DECISION OUTCOME TRACKER
 
 BASELINE
-Built from the validated V34.0.10 Live Executive Event Wall release.
+Built from the validated V34.0.11 Executive Decision Center release.
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/executiveDecisionCenter.js
+- client/js/modules/decisionOutcomeTracker.js
 
 WHAT THIS RELEASE ADDS
-- Executive Decision Center inside Mission Control
-- Ranked decision queue
-- Immediate, Today, Monitor, and Completed filters
-- Business Health Index
-- Revenue protected, at risk, and recovered
-- Recommendation confidence
-- Revenue, guest, labor, and cost impact
-- Executive notes
-- Approve, dismiss, and open-source workflows
-- 30, 60, and 120-minute operational forecast
-- Decision timeline with recorded outcomes
-- Persistent decision history after refresh
+- Decision Outcome Tracker inside Mission Control
+- Automatic import of approved executive decisions
+- Pending, measured, and all-outcome views
+- Predicted versus observed business value
+- Outcome variance calculation
+- Successful, partial, and underperformed classifications
+- Decision quality score
+- Prediction accuracy
+- Verified business value
+- Outcome notes
+- Closed-loop learning insights
+- Persistent measurement history after refresh
 
 TEST
 1. Replace the two files and add the new JavaScript module.
 2. Run: npm run check
 3. Run: npm start
 4. Open Mission Control.
-5. Create a floor, kitchen, or handoff incident.
-6. Confirm the decision queue, health index, revenue exposure, and forecast update.
-7. Select a decision, add a note, open its source, and approve it.
-8. Confirm the approved decision appears in the timeline.
+5. Approve a recommendation in Executive Decision Center.
+6. Confirm it appears in Decision Outcome Tracker.
+7. Enter observed value, classification, and outcome note.
+8. Record the outcome.
+9. Confirm the KPIs, decision quality score, and learning summary update.
