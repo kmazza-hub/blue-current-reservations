@@ -1,18 +1,18 @@
-BLUE CURRENT V35.3.2 — DEVELOPER PLATFORM & SDK
+BLUE CURRENT V35.3.3 — ENTERPRISE DEPLOYMENT CENTER
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/developerPlatformSDK.js
+- client/js/modules/enterpriseDeploymentCenter.js
 
 FEATURES
-- Developer portal foundation
-- Public SDK architecture
-- Plugin development toolkit
-- Event subscription framework
-- Extension marketplace APIs
-- OAuth application registration
-- API documentation framework
-- Sandbox environment support
+- Multi-tenant management
+- Organization provisioning
+- Location onboarding workflows
+- Enterprise configuration templates
+- Feature flag management
+- Fleet-wide deployment controls
+- Configuration synchronization
+- Central administration console
