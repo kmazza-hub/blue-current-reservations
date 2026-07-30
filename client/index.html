@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.9">
+  <meta name="blue-current-build" content="34.0.10">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.9">
+  <link rel="stylesheet" href="styles.css?v=34.0.10">
 </head>
 <body>
 
@@ -717,7 +717,7 @@
           <div class="executive-event-kpis">
             <article>
               <small>Events today</small>
-              <strong id="executiveEventCount">0</strong>
+              <strong id="executiveWallSessionCount">0</strong>
               <span>Across all locations</span>
             </article>
             <article>
@@ -2381,6 +2381,70 @@
       </div>
     </section>
 
+    <section class="executive-event-wall reveal" id="executiveEventWall" aria-labelledby="executiveEventWallTitle">
+      <div class="executive-event-wall-heading">
+        <div>
+          <small>Live operational narrative</small>
+          <h3 id="executiveEventWallTitle">Executive Event Wall</h3>
+          <span id="executiveEventWallUpdated">Listening to live operating events…</span>
+        </div>
+
+        <div class="executive-event-wall-controls">
+          <label>
+            Event filter
+            <select id="executiveEventWallFilter">
+              <option value="all">All events</option>
+              <option value="guest">Guest</option>
+              <option value="floor">Dining room</option>
+              <option value="kitchen">Kitchen</option>
+              <option value="incident">Incidents</option>
+              <option value="recovery">Recovery</option>
+            </select>
+          </label>
+
+          <button type="button" id="executiveEventWallPause">Pause feed</button>
+          <button type="button" id="executiveEventWallClear">Clear view</button>
+        </div>
+      </div>
+
+      <div class="executive-event-wall-layout">
+        <div class="executive-event-stream-wrap">
+          <div class="executive-event-wall-kpis">
+            <article><small>Events this session</small><strong id="executiveEventCount">0</strong></article>
+            <article><small>Critical events</small><strong id="executiveCriticalEventCount">0</strong></article>
+            <article><small>Recovered events</small><strong id="executiveRecoveredEventCount">0</strong></article>
+            <article><small>Current velocity</small><strong id="executiveEventVelocity">0/hr</strong></article>
+          </div>
+
+          <div class="executive-event-stream" id="executiveEventStream" aria-live="polite">
+            <div class="executive-event-empty" id="executiveEventEmpty">
+              Waiting for the next live operational event.
+            </div>
+          </div>
+        </div>
+
+        <aside class="executive-event-insight">
+          <div>
+            <small>AI event interpretation</small>
+            <strong id="executiveEventInsightTitle">Operation is stable.</strong>
+            <p id="executiveEventInsightDetail">No event pattern currently requires executive intervention.</p>
+          </div>
+
+          <div class="executive-event-patterns">
+            <small>Detected patterns</small>
+            <div id="executiveEventPatternList"></div>
+          </div>
+
+          <div class="executive-event-actions">
+            <button type="button" id="executiveEventOpenPriority">Open highest priority</button>
+            <button type="button" class="executive-event-secondary" id="executiveEventExport">Copy briefing</button>
+          </div>
+
+          <span id="executiveEventStatus" role="status"></span>
+        </aside>
+      </div>
+    </section>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3612,7 +3676,8 @@
   <script src="js/modules/incidentResponseCenter.js?v=34.0.7"></script>
   <script src="js/modules/serviceRecoveryPlaybooks.js?v=34.0.8"></script>
   <script src="js/modules/liveShiftCommander.js?v=34.0.9"></script>
-  <script src="js/modules/executiveOperationsMap.js?v=34.0.9"></script>
+  <script src="js/modules/executiveOperationsMap.js?v=34.0.10"></script>
+  <script src="js/modules/executiveEventWall.js?v=34.0.10"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
