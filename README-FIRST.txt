@@ -1,18 +1,18 @@
-BLUE CURRENT V35.7.1 — GLOBAL HOSPITALITY KNOWLEDGE ENGINE
+BLUE CURRENT V35.7.2 — HOSPITALITY REASONING ENGINE
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/globalHospitalityKnowledgeEngine.js
+- client/js/modules/hospitalityReasoningEngine.js
 
 FEATURES
-- Enterprise knowledge graph expansion
-- AI decision history repository
-- Operational playbook intelligence
-- Guest behavior knowledge models
-- Industry benchmark knowledge base
-- Continuous learning pipeline
-- Executive knowledge explorer
-- Foundation for global hospitality intelligence
+- Explainable AI reasoning engine
+- Multi-path decision comparison
+- Confidence & uncertainty scoring
+- Business impact justification
+- Policy-aware recommendation engine
+- Operational reasoning timeline
+- Executive decision explanations
+- Foundation for transparent enterprise AI
