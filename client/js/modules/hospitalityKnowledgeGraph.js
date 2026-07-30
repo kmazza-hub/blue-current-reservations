@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Hospitality Knowledge Graph v35.1.9'));
