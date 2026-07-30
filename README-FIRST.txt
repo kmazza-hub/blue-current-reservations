@@ -1,18 +1,18 @@
-BLUE CURRENT V35.1.9 — HOSPITALITY KNOWLEDGE GRAPH
+BLUE CURRENT V35.2.0 — BLUE CURRENT AI ORCHESTRATOR
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/hospitalityKnowledgeGraph.js
+- client/js/modules/blueCurrentAIOrchestrator.js
 
 FEATURES
-- Unified hospitality data model
-- Guest relationship graph
-- Employee and team connections
-- Reservation and table graph
-- Menu and kitchen knowledge links
-- Operational dependency mapping
-- AI context engine
-- Foundation for enterprise reasoning
+- Central AI orchestration layer
+- Cross-module event coordination
+- Unified decision engine
+- Global workflow scheduler
+- Autonomous task prioritization
+- Context-aware operational actions
+- Enterprise AI service bus
+- Foundation for self-optimizing restaurant operations
