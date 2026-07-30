@@ -1,18 +1,18 @@
-BLUE CURRENT V35.2.1 — AUTONOMOUS OPERATIONS ENGINE
+BLUE CURRENT V35.2.2 — HOSPITALITY INTELLIGENCE NETWORK
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/autonomousOperationsEngine.js
+- client/js/modules/hospitalityIntelligenceNetwork.js
 
 FEATURES
-- Configurable automation playbooks
-- Manager approval workflows
-- Cross-module automation rules
-- Automatic bottleneck response
-- Intelligent task execution queue
-- AI confidence scoring
-- Audit trail for every automated action
-- Foundation for supervised autonomous operations
+- Portfolio-wide benchmarking
+- Privacy-aware operational insights
+- Cross-location forecasting improvements
+- AI recommendation refinement
+- Industry trend dashboards
+- Secure data-sharing controls
+- Executive benchmarking reports
+- Foundation for network intelligence
