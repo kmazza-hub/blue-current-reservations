@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Enterprise Performance Optimizer v35.2.5'));
