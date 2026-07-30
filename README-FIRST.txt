@@ -1,19 +1,15 @@
-BLUE CURRENT V34.0.13.3 — WHAT-IF SIMULATOR
+BLUE CURRENT V34.0.13.4 — Integration & Polish
 
-REPLACE
+Replace
 - client/index.html
 - client/styles.css
 
-ADD
-- client/js/modules/whatIfSimulator.js
+Add
+- client/js/modules/predictiveIntegration.js
 
-ADDS
-- Five operational scenarios
-- Low, medium, and high severity
-- Immediate, 30-minute, and 60-minute start windows
-- Baseline versus scenario comparison
-- Projected risk change
-- Revenue exposure
-- Recovery window
-- Best-response recommendation
-- Direct navigation to the recommended operational source
+Focus
+- Connect predictive engine to existing modules
+- Shared event wiring
+- Confidence calibration
+- UI polish
+- Final predictive layer integration
