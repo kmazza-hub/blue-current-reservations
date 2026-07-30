@@ -1,18 +1,18 @@
-BLUE CURRENT V35.1.2 — LABOR FORECAST ENGINE
+BLUE CURRENT V35.1.3 — AI OPERATIONS TIMELINE
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/laborForecastEngine.js
+- client/js/modules/aiOperationsTimeline.js
 
 FEATURES
-- Hourly labor demand forecast
-- Reservation-driven staffing projections
-- Labor cost tracking
-- Coverage gap detection
-- Overtime risk alerts
-- AI staffing recommendations
-- Sales vs labor forecasting
-- Foundation for predictive scheduling
+- Predictive shift timeline
+- Reservation demand overlay
+- Kitchen workload forecast
+- Staffing forecast integration
+- Table turn predictions
+- AI operational alerts
+- Timeline replay mode
+- Foundation for autonomous restaurant orchestration
