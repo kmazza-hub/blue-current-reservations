@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.4">
+  <meta name="blue-current-build" content="34.0.5">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.5d">
+  <link rel="stylesheet" href="styles.css?v=34.0.5">
 </head>
 <body>
 
@@ -2095,6 +2095,41 @@
       </div>
     </div>
 
+    <div class="mission-command-wall reveal" id="missionCommandWall">
+      <article class="mission-command-card mission-command-card-primary">
+        <div>
+          <small>Next critical window</small>
+          <strong id="missionCriticalWindow">7:00–7:30 PM</strong>
+          <p id="missionCriticalWindowDetail">Arrival volume and kitchen demand are projected to overlap.</p>
+        </div>
+        <span id="missionPressureBadge" data-tone="stable">Stable</span>
+      </article>
+
+      <article class="mission-command-card">
+        <small>Active incidents</small>
+        <strong id="missionIncidentCount">0</strong>
+        <p id="missionIncidentSummary">No active incidents.</p>
+      </article>
+
+      <article class="mission-command-card">
+        <small>Tables needing attention</small>
+        <strong id="missionAttentionTables">0</strong>
+        <p id="missionAttentionSummary">Dining room flow is normal.</p>
+      </article>
+
+      <article class="mission-command-card">
+        <small>Kitchen handoff risk</small>
+        <strong id="missionKitchenRisk">Low</strong>
+        <p id="missionKitchenRiskDetail">Ticket routing is within target.</p>
+      </article>
+
+      <article class="mission-command-card">
+        <small>Manager action queue</small>
+        <strong id="missionActionQueue">0</strong>
+        <button type="button" id="missionOpenPriority">Open highest priority</button>
+      </article>
+    </div>
+
     <div class="mission-control-shell reveal">
       <aside class="mission-status-rail">
         <div class="mission-live-badge"><i></i><span>System live</span></div>
@@ -3322,7 +3357,7 @@
   <script src="js/modules/concierge.js"></script>
   <script src="js/modules/digitalTwin.js?v=33.0.3"></script>
   <script src="js/modules/executive.js"></script>
-  <script src="js/modules/missionControl.js?v=33.0.3"></script>
+  <script src="js/modules/missionControl.js?v=34.0.5"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

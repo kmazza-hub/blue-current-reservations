@@ -338,6 +338,22 @@
       "category": "security",
       "createdAt": "2026-07-29T22:10:20.174Z",
       "id": "audit_1785363020174_9cfrip"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Maria Santos",
+      "action": "Signed in to Employee Portal",
+      "category": "employee_portal",
+      "createdAt": "2026-07-30T03:00:30.323Z",
+      "id": "audit_1785380430323_wzfl8o"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Maria Santos",
+      "action": "Requested vacation time off 2026-07-30 to 2026-07-30",
+      "category": "employee_portal",
+      "createdAt": "2026-07-30T03:01:42.539Z",
+      "id": "audit_1785380502539_o4h16n"
     }
   ],
   "reservations": [
@@ -1889,7 +1905,20 @@
   ],
   "workforceRoles": [],
   "employeeAvailability": [],
-  "ptoRequests": [],
+  "ptoRequests": [
+    {
+      "id": "pto_1785380502529",
+      "organizationId": "org_chefs",
+      "employeeId": "emp_maria",
+      "startDate": "2026-07-30",
+      "endDate": "2026-07-30",
+      "requestType": "vacation",
+      "reason": "baby is due",
+      "status": "pending",
+      "createdAt": "2026-07-30T03:01:42.529Z",
+      "updatedAt": "2026-07-30T03:01:42.529Z"
+    }
+  ],
   "shiftTemplates": [
     {
       "id": "shift_template_dinner_server",
@@ -1932,6 +1961,14 @@
       "organizationId": "org_chefs",
       "locationId": "loc_marina",
       "expiresAt": "2026-07-23T12:43:45.914Z"
+    },
+    {
+      "id": "eps_1785380430318",
+      "tokenHash": "149d350285a6a2780c72ad9a74ac3c94a0c601a169cd261d30c32fccaaf5048f",
+      "employeeId": "emp_maria",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "expiresAt": "2026-07-30T15:00:30.318Z"
     }
   ],
   "scheduleShifts": [

@@ -6888,3 +6888,117 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
   }
   .executive-daily-actions{display:none!important}
 }
+
+
+/* V34.0.5 — Mission Control Depth */
+.mission-command-wall{
+  display:grid;
+  grid-template-columns:1.55fr repeat(4,minmax(0,1fr));
+  gap:.75rem;
+  margin:0 0 1rem;
+  position:relative;
+}
+.mission-command-card{
+  min-height:132px;
+  padding:1rem;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:18px;
+  background:rgba(255,255,255,.035);
+  box-shadow:0 18px 44px rgba(0,0,0,.14);
+}
+.mission-command-card small,
+.mission-command-card strong,
+.mission-command-card p{
+  display:block;
+}
+.mission-command-card small{
+  color:rgba(255,255,255,.5);
+  font-size:.68rem;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.mission-command-card strong{
+  margin-top:.45rem;
+  color:#fff;
+  font-size:1.25rem;
+}
+.mission-command-card p{
+  margin:.4rem 0 0;
+  color:rgba(255,255,255,.56);
+  font-size:.74rem;
+  line-height:1.45;
+}
+.mission-command-card-primary{
+  display:flex;
+  justify-content:space-between;
+  gap:1rem;
+  background:
+    radial-gradient(circle at 90% 10%,rgba(217,182,95,.13),transparent 40%),
+    rgba(255,255,255,.04);
+}
+#missionPressureBadge{
+  align-self:flex-start;
+  min-width:74px;
+  padding:.48rem .7rem;
+  border-radius:999px;
+  color:#06232d;
+  background:#62d3a3;
+  font-size:.68rem;
+  font-weight:800;
+  text-align:center;
+}
+#missionPressureBadge[data-tone="watch"]{
+  background:#d9b65f;
+}
+#missionPressureBadge[data-tone="risk"]{
+  color:#fff;
+  background:#ef857d;
+}
+#missionOpenPriority{
+  margin-top:.7rem;
+  padding:.55rem .72rem;
+  border:1px solid rgba(217,182,95,.3);
+  border-radius:999px;
+  color:#102a32;
+  background:#d9b65f;
+  font:inherit;
+  font-size:.68rem;
+  font-weight:800;
+  cursor:pointer;
+}
+#missionOpenPriority:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.mission-event.is-incident{
+  background:rgba(239,133,125,.06);
+}
+.mission-event.is-incident .mission-event-icon{
+  color:#fff;
+  background:rgba(239,133,125,.16);
+  border-color:rgba(239,133,125,.34);
+}
+@media(max-width:1180px){
+  .mission-command-wall{
+    grid-template-columns:repeat(3,1fr);
+  }
+  .mission-command-card-primary{
+    grid-column:span 2;
+  }
+}
+@media(max-width:760px){
+  .mission-command-wall{
+    grid-template-columns:1fr 1fr;
+  }
+  .mission-command-card-primary{
+    grid-column:1/-1;
+  }
+}
+@media(max-width:520px){
+  .mission-command-wall{
+    grid-template-columns:1fr;
+  }
+  .mission-command-card-primary{
+    grid-column:auto;
+  }
+}
