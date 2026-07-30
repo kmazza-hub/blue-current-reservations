@@ -1,18 +1,18 @@
-BLUE CURRENT V35.7.0 — HOSPITALITY INTELLIGENCE NETWORK
+BLUE CURRENT V35.7.1 — GLOBAL HOSPITALITY KNOWLEDGE ENGINE
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/hospitalityIntelligenceNetworkV2.js
+- client/js/modules/globalHospitalityKnowledgeEngine.js
 
 FEATURES
-- Secure cross-organization intelligence network
-- Anonymous operational benchmarking
-- Federated AI learning foundation
-- Industry trend intelligence
-- Regional demand forecasting
-- Network-wide best practice discovery
-- Privacy controls & participation settings
-- Generation 3 platform foundation
+- Enterprise knowledge graph expansion
+- AI decision history repository
+- Operational playbook intelligence
+- Guest behavior knowledge models
+- Industry benchmark knowledge base
+- Continuous learning pipeline
+- Executive knowledge explorer
+- Foundation for global hospitality intelligence
