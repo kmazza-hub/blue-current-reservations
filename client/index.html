@@ -1,21 +1,20 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.13.6">
+  <meta name="blue-current-build" content="34.0.13.7">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
   <meta name="description" content="Blue Current answers reservation calls, confirms every detail, and gives hospitality groups one calm operating view.">
   <meta name="theme-color" content="#082632">
-  <meta name="blue-current-build" content="34.0.4">
-  <meta property="og:title" content="Blue Current | Hospitality That Answers">
+<meta property="og:title" content="Blue Current | Hospitality That Answers">
   <meta property="og:description" content="Great hospitality starts before guests walk through the door.">
   <meta property="og:type" content="website">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.13.6">
+  <link rel="stylesheet" href="styles.css?v=34.0.13.7">
 </head>
 <body>
 
@@ -2691,6 +2690,18 @@
 
           <button type="button" id="outcomeLearningRecalculate">Recalculate profile</button>
           <span id="outcomeLearningStatus" role="status"></span>
+
+          <div class="adaptive-forecast-profile" id="adaptiveForecastProfile">
+            <small>Active contextual profile</small>
+            <strong id="adaptiveForecastProfileTitle">Loading current shift profile…</strong>
+            <span id="adaptiveForecastProfileDetail">Weights will adapt by day and service period.</span>
+            <div class="adaptive-forecast-profile-grid">
+              <div><em>Demand</em><b id="adaptiveDemandWeight">1.00</b></div>
+              <div><em>Kitchen</em><b id="adaptiveKitchenWeight">1.00</b></div>
+              <div><em>Floor</em><b id="adaptiveFloorWeight">1.00</b></div>
+              <div><em>Labor</em><b id="adaptiveLaborWeight">1.00</b></div>
+            </div>
+          </div>
         </aside>
       </div>
     </section>
@@ -4177,12 +4188,13 @@
   <script src="js/modules/executiveEventWall.js?v=34.0.11"></script>
   <script src="js/modules/executiveDecisionCenter.js?v=34.0.12"></script>
   <script src="js/modules/decisionOutcomeTracker.js?v=34.0.13.1"></script>
-  <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.6"></script>
-  <script src="js/modules/domainForecastingModels.js?v=34.0.13.6"></script>
+  <script src="js/modules/predictiveCommandCenter.js?v=34.0.13.7"></script>
+  <script src="js/modules/domainForecastingModels.js?v=34.0.13.7"></script>
   <script src="js/modules/whatIfSimulator.js?v=34.0.13.4"></script>
   <script src="js/modules/predictiveDecisionBridge.js?v=34.0.13.5"></script>
   <script src="js/modules/predictiveDecisionLifecycle.js?v=34.0.13.6"></script>
-  <script src="js/modules/outcomeLearningEngine.js?v=34.0.13.6"></script>
+  <script src="js/modules/outcomeLearningEngine.js?v=34.0.13.7"></script>
+  <script src="js/modules/adaptiveForecastWeights.js?v=34.0.13.7"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

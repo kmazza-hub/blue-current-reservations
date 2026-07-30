@@ -1,4 +1,7 @@
-BLUE CURRENT V34.0.13.6 — OUTCOME LEARNING ENGINE
+BLUE CURRENT V34.0.13.7 — ADAPTIVE FORECAST WEIGHTS
+
+BUILT FROM
+The actual uploaded project: blue-current-reservations(3).zip
 
 REPLACE
 - client/index.html
@@ -7,18 +10,18 @@ REPLACE
 - client/js/modules/domainForecastingModels.js
 
 ADD
-- client/js/modules/outcomeLearningEngine.js
+- client/js/modules/adaptiveForecastWeights.js
 
 USER STORY
-Measured decision outcomes recalibrate forecast confidence and produce a visible
-learning profile for demand, kitchen, floor, and labor predictions.
+Forecast weights adapt to the current weekday/weekend and opening/lunch/dinner/
+closing context using measured decision outcomes.
 
 TEST
 1. Replace/add the five files.
 2. Run npm run check.
 3. Run npm start.
-4. Record one or more measured outcomes.
-5. Confirm Outcome Learning Engine updates accuracy, variance, success rate,
-   calibration score, confidence adjustment, and domain weights.
-6. Confirm Predictive Command Center and Domain Forecasting use the updated
-   confidence adjustment after refresh or recalculation.
+4. Open Outcome Learning Engine.
+5. Confirm the Active Contextual Profile appears.
+6. Record measured outcomes and recalculate.
+7. Confirm demand, kitchen, floor, and labor weights update.
+8. Confirm Predictive Command Center and Domain Forecasting use the new weights.

@@ -9,6 +9,7 @@
   };
   const byId=id=>document.getElementById(id);
   const CALIBRATION_KEY="blueCurrent.outcomeLearningCalibration.v34.0.13.6";
+  const ADAPTIVE_KEY="blueCurrent.adaptiveForecastWeights.v34.0.13.7";
   let target="liveShiftCommander";
   const read=key=>{try{return JSON.parse(localStorage.getItem(key))||{}}catch{return{}}};
   const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,v));
@@ -25,10 +26,12 @@
     const lateHandoffs=handoffs.filter(h=>h.readyAt&&h.status!=="complete"&&(Date.now()-new Date(h.readyAt).getTime())/60000>=Number(h.qualityWindow||8));
     const measured=outcomes.filter(o=>o.status==="measured");
     const accuracy=measured.length?clamp(Math.round(measured.reduce((sum,o)=>{if(!o.predictedValue)return sum+.7;const error=Math.abs(Number(o.observedValue||0)-Number(o.predictedValue))/Number(o.predictedValue);return sum+Math.max(0,1-error)},0)/measured.length*100),55,98):82;
-    const demand=clamp(occupied.length*8+open.length*6+lateHandoffs.length*5);
-    const kitchen=clamp(lateTickets.length*24+tickets.filter(t=>t.status!=="ready").length*5+occupied.length*3);
-    const floor=clamp(attention.length*25+occupied.length*6+open.filter(i=>i.sourceTarget==="liveFloorOperationsV2").length*12);
-    const labor=clamp(Math.max(0,occupied.length-6)*9+lateHandoffs.length*14+attention.length*8);
+    const adaptive=read(ADAPTIVE_KEY);
+    const weights=adaptive.weights||{};
+    const demand=clamp((occupied.length*8+open.length*6+lateHandoffs.length*5)*Number(weights.demand||1));
+    const kitchen=clamp((lateTickets.length*24+tickets.filter(t=>t.status!=="ready").length*5+occupied.length*3)*Number(weights.kitchen||1));
+    const floor=clamp((attention.length*25+occupied.length*6+open.filter(i=>i.sourceTarget==="liveFloorOperationsV2").length*12)*Number(weights.floor||1));
+    const labor=clamp((Math.max(0,occupied.length-6)*9+lateHandoffs.length*14+attention.length*8)*Number(weights.labor||1));
     const incidentsScore=clamp(open.filter(i=>i.severity==="critical").length*28+open.filter(i=>i.severity!=="critical").length*16);
     const overall=clamp(Math.round(demand*.22+kitchen*.27+floor*.2+labor*.16+incidentsScore*.15));
     const calibration=read(CALIBRATION_KEY);

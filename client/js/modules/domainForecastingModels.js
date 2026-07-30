@@ -9,6 +9,7 @@
   };
   const byId=id=>document.getElementById(id);
   const CALIBRATION_KEY="blueCurrent.outcomeLearningCalibration.v34.0.13.6";
+  const ADAPTIVE_KEY="blueCurrent.adaptiveForecastWeights.v34.0.13.7";
   const read=key=>{try{return JSON.parse(localStorage.getItem(key))||{}}catch{return{}}};
   const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,v));
   let sourceTarget="liveShiftCommander";
@@ -44,16 +45,18 @@
   function render(){
     const s=collect();
 
-    const reservationBase=clamp(s.occupied.length*8+s.open.length*5);
+    const adaptive=read(ADAPTIVE_KEY);
+    const weights=adaptive.weights||{};
+    const reservationBase=clamp((s.occupied.length*8+s.open.length*5)*Number(weights.demand||1));
     const reservation30=clamp(reservationBase+8);
     const reservation60=clamp(reservationBase+18);
     const reservation120=clamp(reservationBase-5);
 
-    const kitchenScore=clamp(s.activeTickets.length*6+s.lateTickets.length*28+s.occupied.length*3);
+    const kitchenScore=clamp((s.activeTickets.length*6+s.lateTickets.length*28+s.occupied.length*3)*Number(weights.kitchen||1));
     const laborCurrent=Math.max(4,Math.ceil(s.occupied.length/2));
     const laborRecommended=Math.max(laborCurrent,Math.ceil((s.occupied.length+s.attention.length+s.lateHandoffs.length)/2));
     const laborDifference=laborRecommended-laborCurrent;
-    const laborScore=clamp(Math.max(0,laborDifference)*28+s.lateHandoffs.length*16+s.attention.length*8);
+    const laborScore=clamp((Math.max(0,laborDifference)*28+s.lateHandoffs.length*16+s.attention.length*8)*Number(weights.labor||1));
 
     const revenueHour=Math.round((s.occupied.length*160)+(reservation60*18));
     const revenueRisk=Math.round(s.lateTickets.length*180+s.attention.length*140+s.lateHandoffs.length*120+s.open.length*100);
