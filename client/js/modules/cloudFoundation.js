@@ -37,15 +37,32 @@
       try {
         const health = await api.health();
         connected = true;
-        setStatus("Connected", `Cloud Core V${health.version} · Authentication ${health.auth || "ready"} · Database ${health.database}`);
-        if (api.token) renderBootstrap(await api.bootstrap());
         appState.update({ cloudConnected: true, cloudVersion: health.version, cloudLastSync: health.now });
         eventBus.emit("cloud:connected", health);
+
+        const auth = window.BlueCurrentAuthSession;
+        const readiness = auth?.restore ? await auth.restore(api) : { authenticated: Boolean(api.token) };
+
+        if (readiness.authenticated) {
+          setStatus("Connected", `Cloud Core V${health.version} · Session restored · Database ${health.database}`);
+          renderBootstrap(await api.bootstrap());
+          eventBus.emit("cloud:authenticated", readiness.session);
+        } else {
+          setStatus("Sign in required", `Cloud Core V${health.version} is online. Protected modules are waiting for authentication.`);
+          eventBus.emit("cloud:authentication-required", {});
+        }
       } catch (error) {
+        if (error.code === "AUTH_REQUIRED" || error.code === "SESSION_EXPIRED") {
+          setStatus("Sign in required", "Your session is unavailable or expired. Sign in to load protected operations.");
+          eventBus.emit("cloud:authentication-required", { error: error.message });
+          return;
+        }
         connected = false;
-        setStatus("Offline mode", "Start the included Node server to enable durable cloud persistence.");
+        setStatus("Offline mode", error.code === "NETWORK_UNAVAILABLE"
+          ? "Unable to reach the included Node service. Start npm start and retry."
+          : "Start the included Node server to enable durable cloud persistence.");
         appState.update({ cloudConnected: false });
-        eventBus.emit("cloud:disconnected", { error: error.message });
+        eventBus.emit("cloud:disconnected", { error: error.message, code: error.code || "UNKNOWN" });
       }
     }
 
@@ -91,20 +108,45 @@
       eventBus.emit("cloud:migration-complete", { sourceVersion: "21.0" });
     });
 
-    api.connect((type, payload) => {
-      eventBus.emit(type, payload);
-      if (type === "reservation:created") {
-        appState.appendReservation?.(payload);
-        api.bootstrap().then(renderBootstrap).catch(() => {});
-      }
-      if (type === "configuration:updated") {
-        appState.update({ cloudConfiguration: payload, cloudLastSync: new Date().toISOString() });
+    let disconnectEvents = null;
+
+    function connectEvents() {
+      disconnectEvents?.();
+      disconnectEvents = api.connect((type, payload) => {
+        eventBus.emit(type, payload);
+        if (type === "reservation:created") {
+          appState.appendReservation?.(payload);
+          api.bootstrap().then(renderBootstrap).catch(error => {
+            if (!["AUTH_REQUIRED","SESSION_EXPIRED"].includes(error.code)) {
+              console.warn("Cloud bootstrap refresh failed", error);
+            }
+          });
+        }
+        if (type === "configuration:updated") {
+          appState.update({ cloudConfiguration: payload, cloudLastSync: new Date().toISOString() });
+        }
+      });
+    }
+
+    window.addEventListener("bluecurrent:auth-session-state", event => {
+      if (event.detail?.status === "authenticated") {
+        connectEvents();
+        connect();
+      } else {
+        disconnectEvents?.();
+        disconnectEvents = null;
+        bootstrap = null;
       }
     });
 
     connect();
 
-    return { api, reconnect: connect, getBootstrap: () => bootstrap };
+    return {
+      api,
+      reconnect: connect,
+      getBootstrap: () => bootstrap,
+      getAuthReadiness: () => window.BlueCurrentAuthSession?.snapshot?.() || null
+    };
   }
 
   window.createBlueCurrentCloudFoundationModule = createCloudFoundationModule;

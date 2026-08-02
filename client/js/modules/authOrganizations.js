@@ -6,6 +6,7 @@
     const api = cloudFoundationModule?.api || new window.BlueCurrentCloudApi("");
     const $ = id => document.getElementById(id);
     let current = null;
+    const sessionCoordinator = window.BlueCurrentAuthSession;
 
     function validateApi() {
       const required = ["login", "logout", "me", "switchOrganization", "createInvitation"];
@@ -37,13 +38,16 @@
 
     function renderSession(session) {
       current = session;
-      $("authUserName").textContent = session.user.name;
-      $("authUserRole").textContent = String(session.role).replaceAll("_", " ");
-      $("authUserEmail").textContent = session.user.email;
-      $("authSessionStatus").textContent = "Authenticated";
-      $("authSessionStatus").className = "auth-session-status active";
+      sessionCoordinator?.updateSession?.(session);
+      if ($("authUserName")) $("authUserName").textContent = session.user.name;
+      if ($("authUserRole")) $("authUserRole").textContent = String(session.role).replaceAll("_", " ");
+      if ($("authUserEmail")) $("authUserEmail").textContent = session.user.email;
+      if ($("authSessionStatus")) {
+        $("authSessionStatus").textContent = "Authenticated";
+        $("authSessionStatus").className = "auth-session-status active";
+      }
       const orgSelect = $("authOrganizationSelect");
-      orgSelect.innerHTML = session.organizations.map(item =>
+      if (orgSelect) orgSelect.innerHTML = session.organizations.map(item =>
         `<option value="${item.organizationId}" ${item.organizationId === session.organizationId ? "selected" : ""}>${item.organizationId === "org_chefs" ? "Chefs International" : "Blue Harbor Hospitality"} · ${item.role.replaceAll("_"," ")}</option>`
       ).join("");
       appState.update({
@@ -63,15 +67,29 @@
         eventBus.emit("auth:compatibility-error", { message: error.message });
         return;
       }
-      if (!api.token) return openAuth();
       try {
-        const me = await api.me();
-        renderSession(me);
+        const readiness = sessionCoordinator?.restore
+          ? await sessionCoordinator.restore(api)
+          : api.token
+            ? { authenticated: true, session: await api.me() }
+            : { authenticated: false };
+
+        if (!readiness.authenticated) {
+          openAuth();
+          setMessage(readiness.lastError ? "Your session expired. Please sign in again." : "");
+          eventBus.emit("auth:required", { reason: readiness.lastError || "anonymous" });
+          return;
+        }
+
+        renderSession(readiness.session);
         closeAuth();
-        eventBus.emit("auth:restored", me);
-      } catch (_) {
+        setMessage("");
+        eventBus.emit("auth:restored", readiness.session);
+      } catch (error) {
         api.setToken("");
+        sessionCoordinator?.expire?.({ reason: error.message, path: "/api/auth/me" });
         openAuth();
+        setMessage("Your session could not be restored. Please sign in again.", true);
       }
     }
 
@@ -84,7 +102,7 @@
           email: $("authEmail").value.trim(),
           password: $("authPassword").value
         });
-        api.setToken(session.token);
+        sessionCoordinator?.authenticate?.(session, api);
         renderSession(session);
         closeAuth();
         setMessage("");
@@ -107,7 +125,7 @@
 
     $("authLogout")?.addEventListener("click", async () => {
       try { await api.logout(); } catch (_) {}
-      api.setToken("");
+      sessionCoordinator?.signOut?.(api);
       current = null;
       appState.update({ authenticatedUser: null, activeOrganizationId: null, activeRole: null });
       eventBus.emit("auth:signed-out", {});
@@ -145,8 +163,21 @@
       }
     });
 
+    window.addEventListener("bluecurrent:auth-session-expired", event => {
+      current = null;
+      appState.update({
+        authenticatedUser: null,
+        activeOrganizationId: null,
+        activeRole: null,
+        authorizedLocationIds: []
+      });
+      openAuth();
+      setMessage("Your session expired. Please sign in again.", true);
+      eventBus.emit("auth:expired", event.detail || {});
+    });
+
     eventBus.emit("auth:module-ready", {
-      version: "23.0.1",
+      version: "34.2.0",
       apiVersion: api.version || "unknown",
       compatible: typeof api.login === "function"
     });

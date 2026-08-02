@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.0.5f";
+    static VERSION = "34.2.0";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -15,6 +15,7 @@
       this.token = localStorage.getItem("blueCurrentV3230Token") || "";
       this.version = CloudApi.VERSION;
       this.capabilities = [...CloudApi.CAPABILITIES];
+      this.requestSequence = 0;
     }
 
     setToken(token) {
@@ -24,12 +25,72 @@
     }
 
     async request(path, options = {}) {
+      const requestId = ++this.requestSequence;
+      const method = String(options.method || "GET").toUpperCase();
+      const publicPaths = new Set([
+        "/api/health",
+        "/api/auth/login",
+        "/api/auth/me"
+      ]);
+      const isPublicRequest = publicPaths.has(path);
+      const coordinator = window.BlueCurrentAuthSession;
+
+      if (!isPublicRequest && coordinator?.whenReady) {
+        const readiness = await coordinator.whenReady();
+        if (!readiness.authenticated) {
+          const error = new Error("Authentication required.");
+          error.name = "BlueCurrentAuthError";
+          error.code = "AUTH_REQUIRED";
+          error.status = 401;
+          error.path = path;
+          error.requestId = requestId;
+          throw error;
+        }
+      }
+
       const headers = { "Content-Type": "application/json", ...(options.headers || {}) };
       if (this.token) headers.Authorization = `Bearer ${this.token}`;
-      const response = await fetch(`${this.baseUrl}${path}`, { ...options, headers });
+
+      let response;
+      try {
+        response = await fetch(`${this.baseUrl}${path}`, { ...options, headers });
+      } catch (cause) {
+        const error = new Error("Unable to reach the Blue Current Cloud service.");
+        error.name = "BlueCurrentNetworkError";
+        error.code = "NETWORK_UNAVAILABLE";
+        error.path = path;
+        error.method = method;
+        error.requestId = requestId;
+        error.cause = cause;
+        throw error;
+      }
+
       const payload = await response.json().catch(() => ({}));
-      if (response.status === 401) this.setToken("");
-      if (!response.ok) throw new Error(payload.error || `Request failed: ${response.status}`);
+
+      if (response.status === 401) {
+        const error = new Error(payload.error || "Authentication required.");
+        error.name = "BlueCurrentAuthError";
+        error.code = "SESSION_EXPIRED";
+        error.status = 401;
+        error.path = path;
+        error.method = method;
+        error.requestId = requestId;
+        coordinator?.expire?.({ reason: error.message, path });
+        throw error;
+      }
+
+      if (!response.ok) {
+        const error = new Error(payload.error || `Request failed: ${response.status}`);
+        error.name = "BlueCurrentApiError";
+        error.code = payload.code || `HTTP_${response.status}`;
+        error.status = response.status;
+        error.path = path;
+        error.method = method;
+        error.requestId = requestId;
+        error.payload = payload;
+        throw error;
+      }
+
       return payload;
     }
 
@@ -236,5 +297,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.0.5f";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.2.0";
 })();

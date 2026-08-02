@@ -1,45 +1,36 @@
-BLUECURRENTCO.COM V2.6 — LAUNCH POLISH, ACCESSIBILITY & PERFORMANCE
-
-BUILDS ON V2.5.
+BLUE CURRENT V34.2.0 — AUTHENTICATION & SESSION RELIABILITY
 
 REPLACE
-- All HTML pages
-- styles.css
-- js/site.js
+- client/index.html
+- client/js/cloud/cloudApi.js
+- client/js/modules/cloudFoundation.js
+- client/js/modules/authOrganizations.js
 
 ADD
-- 404.html
-- robots.txt
-- sitemap.xml
-- site.webmanifest
-- assets/social-card.svg
-- .well-known/security.txt
+- client/js/cloud/authSessionManager.js
 
 IMPLEMENTED
-- Canonical URLs
-- Open Graph and Twitter metadata
-- Search-engine robots directives
-- XML sitemap
-- Web app manifest
-- Branded social-sharing card
-- Custom 404 page
-- Security contact file
-- Improved keyboard focus states
-- Escape and click-away mobile-menu handling
-- Current-page navigation states
-- Sticky-header scroll refinement
-- Reduced-motion support
-- Increased-contrast support
-- Print styles
-- Lazy image loading and asynchronous decoding
-- Defensive progressive enhancement
-- Final responsive and interaction polish
+- Single authentication-session coordinator
+- Valid-session restoration before protected modules load
+- Protected-request gate that prevents cascading unauthorized fetches
+- Structured Auth, API, and Network error classification
+- Session-expiration detection and one-time cleanup
+- Organization, role, user, and authorized-location context persistence
+- Reliable sign-in, sign-out, and token cleanup
+- Auth-aware cloud bootstrap
+- Auth-aware real-time event connection
+- Clear Connected, Sign In Required, and Offline diagnostics
+- Defensive DOM handling in the authentication panel
+- Cross-module session-state events
 
-DEPLOYMENT
-Upload the complete contents of this folder to the bluecurrentco.com site root.
-
-IMPORTANT BEFORE FINAL PUBLIC LAUNCH
-- Replace privacy.html and terms.html placeholders with approved legal text.
-- Verify the production scheduler and email links.
-- Confirm the hosting platform serves 404.html for missing routes.
-- Submit sitemap.xml in the preferred search-console account.
+TEST
+1. Replace/add the five files.
+2. Run npm run check.
+3. Run npm start.
+4. Open http://localhost:8787/client/.
+5. With no token, confirm one sign-in overlay appears and protected endpoints do not flood the console with 401 errors.
+6. Sign in with a demo account and confirm Cloud Foundation bootstraps once.
+7. Refresh and confirm the session, organization, role, and location context restore.
+8. Switch organizations and refresh again.
+9. Log out and confirm token/context cleanup.
+10. Delete or invalidate the stored token, refresh, and confirm the app returns to the sign-in gate cleanly.
