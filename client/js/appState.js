@@ -38,7 +38,11 @@ class AppState {
       operationalContextHistory: [],
       orchestrationUpdatedAt: null,
       operationalDigitalTwin: null,
-      operationalDigitalTwinHistory: []
+      operationalDigitalTwinHistory: [],
+      portfolioIntelligence: null,
+      portfolioIntelligenceHistory: [],
+      portfolioExceptions: [],
+      portfolioRecommendations: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

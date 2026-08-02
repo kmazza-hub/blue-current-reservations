@@ -3720,6 +3720,42 @@
           <section class="digital-twin-forecast"><div class="digital-twin-section-title"><small>30-minute projection</small><strong>What the operation is becoming</strong></div><div class="digital-twin-forecast-grid"><article><small>Expected arrivals</small><strong id="digitalTwinForecastArrivals">0</strong></article><article><small>Expected turns</small><strong id="digitalTwinForecastTurns">0</strong></article><article><small>Projected occupancy</small><strong id="digitalTwinForecastOccupancy">0%</strong></article><article><small>Projected kitchen</small><strong id="digitalTwinForecastKitchen">0%</strong></article><article><small>Likely constraint</small><strong id="digitalTwinForecastConstraint">—</strong></article></div><p id="digitalTwinForecastNarrative">Awaiting sufficient context.</p></section>
         </section>
 
+
+        <section class="portfolio-intelligence-center" id="portfolioIntelligenceCenter" aria-labelledby="portfolioIntelligenceTitle">
+          <div class="portfolio-intelligence-heading">
+            <div><small>V34.6.5 · Cross-location operating intelligence</small><strong id="portfolioIntelligenceTitle">Portfolio Intelligence Center</strong><span id="portfolioIntelligenceUpdated">Building portfolio picture…</span></div>
+            <div class="portfolio-intelligence-health"><small>Portfolio health</small><strong id="portfolioIntelligenceHealth">—</strong><span id="portfolioIntelligenceHeadline">Evaluating locations…</span></div>
+            <button type="button" id="portfolioIntelligenceRefresh">Run portfolio pulse</button>
+          </div>
+          <div class="portfolio-intelligence-kpis">
+            <article><small>Locations</small><strong id="portfolioIntelligenceLocationCount">0</strong></article>
+            <article><small>Average occupancy</small><strong id="portfolioIntelligenceOccupancy">0%</strong></article>
+            <article><small>Expected guests</small><strong id="portfolioIntelligenceGuests">0</strong></article>
+            <article><small>Projected revenue</small><strong id="portfolioIntelligenceRevenue">$0</strong></article>
+            <article><small>Critical</small><strong id="portfolioIntelligenceCritical">0</strong></article>
+            <article><small>On watch</small><strong id="portfolioIntelligenceWatch">0</strong></article>
+            <article><small>Active recommendations</small><strong id="portfolioIntelligenceActiveRecommendations">0</strong></article>
+          </div>
+          <div class="portfolio-intelligence-layout">
+            <section><div class="portfolio-intelligence-section-title"><small>Location network</small><strong>Where leadership attention is needed</strong></div><div id="portfolioIntelligenceLocations" class="portfolio-intelligence-locations"></div></section>
+            <aside class="portfolio-intelligence-inspector">
+              <small id="portfolioIntelligenceSelectedMarket">Selected location</small><strong id="portfolioIntelligenceSelectedName">Choose a location</strong><span id="portfolioIntelligenceSelectedStatus" data-tone="healthy">—</span><p id="portfolioIntelligenceSelectedNarrative">Select a location to inspect its operating state.</p>
+              <dl><div><dt>Health</dt><dd id="portfolioIntelligenceSelectedHealth">—</dd></div><div><dt>Pressure</dt><dd id="portfolioIntelligenceSelectedPressure">—</dd></div><div><dt>Guest wait</dt><dd id="portfolioIntelligenceSelectedWait">—</dd></div><div><dt>Ticket time</dt><dd id="portfolioIntelligenceSelectedTickets">—</dd></div><div><dt>Labor</dt><dd id="portfolioIntelligenceSelectedLabor">—</dd></div><div><dt>Revenue</dt><dd id="portfolioIntelligenceSelectedRevenue">—</dd></div></dl>
+              <div class="portfolio-intelligence-constraint"><small>Primary constraint</small><strong id="portfolioIntelligenceSelectedConstraint">—</strong></div>
+              <button type="button" id="portfolioIntelligenceOpenLocation">Open location twin</button>
+            </aside>
+          </div>
+          <div class="portfolio-intelligence-lower">
+            <section><div class="portfolio-intelligence-section-title"><small>Exception management</small><strong>Items requiring regional attention</strong></div><div id="portfolioIntelligenceExceptions" class="portfolio-intelligence-exceptions"></div></section>
+            <section><div class="portfolio-intelligence-section-title"><small>Cross-location orchestration</small><strong>Recommended portfolio moves</strong></div><div id="portfolioIntelligenceRecommendations" class="portfolio-intelligence-recommendations"></div></section>
+          </div>
+          <aside class="portfolio-intelligence-recommendation-inspector">
+            <div><small>Selected portfolio recommendation</small><strong id="portfolioIntelligenceRecommendationTitle">Choose a recommendation</strong><p id="portfolioIntelligenceRecommendationAction">Select an item to review the proposed action.</p></div>
+            <dl><div><dt>Expected impact</dt><dd id="portfolioIntelligenceRecommendationImpact">—</dd></div><div><dt>Confidence</dt><dd id="portfolioIntelligenceRecommendationConfidence">—</dd></div><div><dt>Governance</dt><dd id="portfolioIntelligenceRecommendationApproval">—</dd></div></dl>
+            <button type="button" id="portfolioIntelligenceApprove" disabled>Approve portfolio action</button><span id="portfolioIntelligenceDecisionStatus" role="status"></span>
+          </aside>
+        </section>
+
         <section class="ai-brain-decision-orchestrator" id="aiBrainDecisionOrchestrator" aria-labelledby="aiBrainDecisionOrchestratorTitle">
           <div class="ai-brain-decision-orchestrator-heading">
             <div>
@@ -6671,6 +6707,8 @@
   <script src="js/modules/aiOrchestrationCenter.js?v=34.6.2"></script>
   <script src="js/modules/operationalDigitalTwinEngine.js?v=34.6.3"></script>
   <script src="js/modules/operationalDigitalTwinCenter.js?v=34.6.3"></script>
+  <script src="js/modules/portfolioIntelligenceEngine.js?v=34.6.5"></script>
+  <script src="js/modules/portfolioIntelligenceCenter.js?v=34.6.5"></script>
   <script src="js/app-v15.1.3.js?v=33.0.3"></script>
 </body>
 </html>
