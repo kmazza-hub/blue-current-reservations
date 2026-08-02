@@ -57,7 +57,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.5.0",
+        version: "34.5.1",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -144,6 +144,39 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
       return sendJson(response, 200, await telemetryService.snapshot());
+    }
+
+    if (url.pathname === "/api/reliability/slo" && request.method === "GET") {
+      return sendJson(response, 200, await reliabilityAutomationService.evaluate(organizationId));
+    }
+
+    if (url.pathname === "/api/reliability/slo" && request.method === "PUT") {
+      const body = request._jsonBody || await readJson(request);
+      const objectives = Array.isArray(body.objectives) ? body.objectives : [];
+      return sendJson(response, 200, {
+        objectives: await reliabilityAutomationService.saveObjectives(
+          objectives,
+          auth.user.name,
+          organizationId
+        )
+      });
+    }
+
+    if (url.pathname === "/api/reliability/history" && request.method === "GET") {
+      return sendJson(response, 200, await reliabilityAutomationService.history());
+    }
+
+    if (url.pathname.startsWith("/api/reliability/runbooks/") && request.method === "POST") {
+      const body = request._jsonBody || await readJson(request);
+      const runbookId = decodeURIComponent(url.pathname.split("/").pop());
+      const execution = await reliabilityAutomationService.executeRunbook(
+        runbookId,
+        body,
+        auth.user.name,
+        organizationId
+      );
+      if (!execution) return sendJson(response, 404, { error: "Runbook not found." });
+      return sendJson(response, 200, execution);
     }
 
     if (url.pathname === "/api/observability/incidents" && request.method === "POST") {

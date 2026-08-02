@@ -1,4 +1,4 @@
-BLUE CURRENT V34.5.0 — PRODUCTION OBSERVABILITY & INCIDENT COMMAND
+BLUE CURRENT V34.5.1 — SLO ALERTING & AUTOMATED RUNBOOKS
 
 REPLACE
 - server/api/router.js
@@ -9,35 +9,34 @@ REPLACE
 - client/js/modules/startupDiagnostics.js
 
 ADD
-- server/services/telemetryService.js
-- client/js/modules/observabilityIncidentCommand.js
+- server/services/reliabilityAutomationService.js
+- client/js/modules/reliabilitySloRunbooks.js
 
 IMPLEMENTED
-- Server-side request telemetry
-- Request counts, success rates, client errors, server errors, authentication failures, conflicts, and idempotency replays
-- Average, P50, P95, and P99 latency metrics
-- Server uptime and realtime-client tracking
-- Storage-volume telemetry
-- Automatic realtime signals for server errors and slow requests
-- Persistent incident records
-- Incident severity, ownership, status, description, and timeline
-- Incident create, acknowledge, resolve, and update APIs
-- Production Observability & Incident Command interface
-- Live platform-health score
-- Request-activity browser
-- Infrastructure and storage state
-- Incident declaration and response controls
-- Automatic 30-second telemetry refresh
-- Audit records for incident creation and updates
+- Service-level objectives for API availability, P95 latency, server errors, critical incidents, and synchronization conflicts
+- Warning and breach threshold evaluation
+- Reliability score and error-budget calculation
+- Realtime SLO evaluation and breach events
+- Persistent SLO configuration support
+- Controlled automated runbooks
+- Telemetry refresh, client-cache invalidation, incident declaration, critical-incident declaration, and incident acknowledgment actions
+- Persistent runbook execution history
+- Audit records for SLO configuration and runbook execution
+- New SLO Alerting & Automated Runbooks interface
+- Objective status cards
+- Error-budget and breach visibility
+- Runbook steps and safe-action controls
+- Automatic 60-second reevaluation
+- Responsive desktop, tablet, and mobile layouts
 
 TEST
 1. Replace/add the eight files.
 2. Run npm run check.
 3. Run npm start.
-4. Sign in and open Observability & Incident Command.
-5. Generate API activity and confirm requests, success rate, and latency update.
-6. Create a warning and critical incident.
-7. Acknowledge and resolve each incident.
-8. Confirm incident changes persist after refresh.
-9. Trigger a failed or slow request and confirm a realtime observability signal is generated.
-10. Inspect GET /api/observability/snapshot.
+4. Sign in and open SLO Alerting & Automated Runbooks.
+5. Generate normal and failed API requests and click Evaluate Now.
+6. Confirm warning and breach states update.
+7. Execute Refresh Telemetry and Declare Incident runbook actions.
+8. Create a critical incident and test Acknowledge Critical Incidents.
+9. Confirm runbook history persists after refresh.
+10. Inspect GET /api/reliability/slo and GET /api/reliability/history.

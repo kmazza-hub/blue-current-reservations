@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.5.0">
+  <meta name="blue-current-build" content="34.5.1">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -4687,7 +4687,56 @@
           </div>
         </section>
 
-                <section class="observability-command-center" id="observabilityCommandCenter" aria-labelledby="observabilityTitle">
+                        <section class="reliability-command-center" id="reliabilityCommandCenter" aria-labelledby="reliabilityTitle">
+          <div class="reliability-heading">
+            <div>
+              <small>Service reliability management</small>
+              <strong id="reliabilityTitle">SLO Alerting & Automated Runbooks</strong>
+              <span id="reliabilityUpdated">Service objectives, error budgets, breach detection, and controlled recovery actions.</span>
+            </div>
+            <div class="reliability-score" id="reliabilityScoreCard" data-tone="meeting">
+              <small>Reliability score</small>
+              <strong id="reliabilityScore">100</strong>
+              <span id="reliabilityStatus">Meeting objectives</span>
+            </div>
+          </div>
+
+          <div class="reliability-kpis">
+            <article><small>Objectives meeting</small><strong id="reliabilityMeeting">0</strong><span>Within target</span></article>
+            <article><small>Warnings</small><strong id="reliabilityWarnings">0</strong><span>Approaching threshold</span></article>
+            <article><small>Breaches</small><strong id="reliabilityBreaches">0</strong><span>Require action</span></article>
+            <article><small>Error budget</small><strong id="reliabilityErrorBudget">100%</strong><span>Remaining reliability capacity</span></article>
+            <article><small>Runbook executions</small><strong id="reliabilityExecutionCount">0</strong><span>Recorded recovery actions</span></article>
+          </div>
+
+          <div class="reliability-layout">
+            <section class="reliability-objectives-panel">
+              <div class="reliability-section-heading">
+                <div><small>Service-level objectives</small><strong>Current reliability commitments</strong></div>
+                <button type="button" id="reliabilityRefresh">Evaluate now</button>
+              </div>
+              <div id="reliabilityObjectiveList" class="reliability-list"></div>
+            </section>
+
+            <aside class="reliability-runbooks-panel">
+              <div class="reliability-section-heading">
+                <div><small>Automated runbooks</small><strong>Controlled response actions</strong></div>
+              </div>
+              <div id="reliabilityRunbookList" class="reliability-list"></div>
+              <span id="reliabilityMessage" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="reliability-history-panel">
+            <div class="reliability-section-heading">
+              <div><small>Runbook history</small><strong>Recovery actions and operational accountability</strong></div>
+              <button type="button" class="reliability-secondary" id="reliabilityRefreshHistory">Refresh history</button>
+            </div>
+            <div id="reliabilityHistoryList" class="reliability-history-list"></div>
+          </div>
+        </section>
+
+        <section class="observability-command-center" id="observabilityCommandCenter" aria-labelledby="observabilityTitle">
           <div class="observability-heading">
             <div>
               <small>Production reliability</small>
@@ -6519,13 +6568,14 @@
   <script src="js/cloud/requestPipeline.js?v=34.3.2"></script>
   <script src="js/cloud/offlineSyncManager.js?v=34.3.2"></script>
   <script src="js/cloud/auditReconciliationLedger.js?v=34.3.2"></script>
-  <script src="js/cloud/cloudApi.js?v=34.5.0"></script>
+  <script src="js/cloud/cloudApi.js?v=34.5.1"></script>
   <script src="js/cloud/authSessionManager.js?v=34.2.1"></script>
   <script src="js/cloud/bootstrapStateHydrator.js?v=34.2.1"></script>
   <script src="js/modules/cloudFoundation.js?v=34.3.2"></script>
   <script src="js/modules/startupDiagnostics.js?v=34.3.2"></script>
   <script src="js/modules/syncControlCenter.js?v=34.4.1"></script>
   <script src="js/modules/observabilityIncidentCommand.js?v=34.5.0"></script>
+  <script src="js/modules/reliabilitySloRunbooks.js?v=34.5.1"></script>
   <script src="js/modules/authOrganizations.js?v=34.2.0"></script>
   <script src="js/modules/liveFloorOperations.js?v=33.0.3"></script>
   <script src="js/modules/reservationOperations.js?v=33.0.3"></script>

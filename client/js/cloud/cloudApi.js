@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.5.0";
+    static VERSION = "34.5.1";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -274,6 +274,40 @@
       });
     }
 
+    reliabilitySloSnapshot() {
+      return this.get("/api/reliability/slo", {
+        cache: false,
+        priority: 85
+      });
+    }
+
+    saveReliabilityObjectives(objectives) {
+      return this.request("/api/reliability/slo", {
+        method: "PUT",
+        body: JSON.stringify({ objectives }),
+        cache: false,
+        priority: 90,
+        entityType: "service-level-objective"
+      });
+    }
+
+    reliabilityHistory() {
+      return this.get("/api/reliability/history", {
+        cache: false,
+        priority: 75
+      });
+    }
+
+    executeReliabilityRunbook(runbookId, payload = {}) {
+      return this.post(`/api/reliability/runbooks/${encodeURIComponent(runbookId)}`, payload, {
+        cache: false,
+        priority: 95,
+        entityType: "reliability-runbook",
+        entityId: runbookId,
+        offlineQueue: false
+      });
+    }
+
     health() { return this.request("/api/health"); }
     commandCenter(locationId = "loc_marina") { return this.request(`/api/command-center?locationId=${encodeURIComponent(locationId)}`); }
     operationsFeed(locationId = "loc_marina", category = "all", limit = 40) { return this.request(`/api/operations-feed?locationId=${encodeURIComponent(locationId)}&category=${encodeURIComponent(category)}&limit=${encodeURIComponent(limit)}`); }
@@ -468,5 +502,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.5.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.5.1";
 })();
