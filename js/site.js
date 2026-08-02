@@ -453,3 +453,51 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   };
   buttons.forEach((button,index) => button.addEventListener('click',() => render(index)));
 })();
+
+
+// Website SaaS Upgrade 08 — enterprise buyer-path explorer
+(() => {
+  const buttons = Array.from(document.querySelectorAll('[data-buyer-path]'));
+  if (!buttons.length) return;
+  const views = [
+    {
+      kicker:'For operations leaders',
+      title:'Where is execution breaking down across the guest journey?',
+      detail:'We map the moments where demand, service, staffing, and accountability disconnect—then define one workflow a pilot can improve without disrupting the operation.',
+      question:'Can Blue Current reduce friction while giving managers clearer control?',
+      review:['Current operating workflow and ownership','Baseline service and demand signals','Manager interventions and handoffs'],
+      leave:['A defined pilot use case','A measurable success scorecard','A practical deployment sequence']
+    },
+    {
+      kicker:'For technology leaders',
+      title:'How can Blue Current fit the stack without creating another silo?',
+      detail:'We review system boundaries, data flow, identity, permissions, integration options, and operational resilience before proposing any live deployment.',
+      question:'Can the platform connect safely, remain governable, and scale with the enterprise architecture?',
+      review:['Current systems and integration surfaces','Identity, access, and data boundaries','Reliability, audit, and deployment controls'],
+      leave:['A high-level architecture map','Integration and governance assumptions','A phased technical validation plan']
+    },
+    {
+      kicker:'For executive sponsors',
+      title:'Which operating outcome is important enough to prove now?',
+      detail:'We translate portfolio priorities into one measurable deployment thesis, with explicit ownership, review criteria, and a go-or-no-go expansion decision.',
+      question:'Can Blue Current produce credible operating leverage with evidence leadership can trust?',
+      review:['Strategic priority and economic rationale','Current baseline and decision cadence','Risk tolerance and expansion criteria'],
+      leave:['An executive pilot thesis','Defined outcome and evidence standards','A decision-ready 30-day review structure']
+    }
+  ];
+  const byId = id => document.getElementById(id);
+  const render = index => {
+    const view = views[index];
+    buttons.forEach((button,i) => {
+      button.classList.toggle('is-active',i === index);
+      button.setAttribute('aria-selected',String(i === index));
+    });
+    byId('buyerPathKicker').textContent = view.kicker;
+    byId('buyerPathTitle').textContent = view.title;
+    byId('buyerPathDetail').textContent = view.detail;
+    byId('buyerPathQuestion').textContent = view.question;
+    byId('buyerPathReview').innerHTML = view.review.map(item => `<li>${item}</li>`).join('');
+    byId('buyerPathLeave').innerHTML = view.leave.map(item => `<li>${item}</li>`).join('');
+  };
+  buttons.forEach((button,index) => button.addEventListener('click',() => render(index)));
+})();

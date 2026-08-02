@@ -1,6 +1,6 @@
-# Apply WEB-007
+# Apply Blue Current WEB-008
 
-Replace these files in the root of `blue-current-reservations`:
+Replace these files in the project root:
 
 - `index.html`
 - `styles.css`
@@ -8,15 +8,15 @@ Replace these files in the root of `blue-current-reservations`:
 
 Add:
 
-- `WEBSITE-SAAS-UPGRADE-07.md`
+- `WEBSITE-SAAS-UPGRADE-08.md`
 
 Then run:
 
 ```powershell
-git add index.html styles.css js/site.js WEBSITE-SAAS-UPGRADE-07.md
-git commit -m "WEB-007 operational evidence room"
+git add index.html styles.css js/site.js WEBSITE-SAAS-UPGRADE-08.md
+git commit -m "WEB-008 enterprise buyer paths"
 git pull --rebase origin live-service-timeline
 git push origin live-service-timeline
 ```
 
-If a rebase conflict occurs in these three website files and this patch is the version you intend to keep, use `git checkout --theirs <file>` during the rebase, then add the files and continue.
+No other project files changed.
