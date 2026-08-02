@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.4.0">
+  <meta name="blue-current-build" content="34.4.1">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -4687,6 +4687,85 @@
           </div>
         </section>
 
+        <section class="sync-control-center" id="syncControlCenter" aria-labelledby="syncControlCenterTitle">
+          <div class="sync-control-heading">
+            <div>
+              <small>Cloud reliability operations</small>
+              <strong id="syncControlCenterTitle">Synchronization Control & Recovery Center</strong>
+              <span id="syncControlUpdated">Inspect local writes, server versions, conflicts, reconciliation state, and recovery actions.</span>
+            </div>
+            <div class="sync-control-score" id="syncControlScoreCard" data-tone="stable">
+              <small>Synchronization health</small>
+              <strong id="syncControlScore">100</strong>
+              <span id="syncControlLabel">Healthy</span>
+            </div>
+          </div>
+
+          <div class="sync-control-kpis">
+            <article><small>Connection</small><strong id="syncControlConnection">Online</strong><span>Browser and cloud state</span></article>
+            <article><small>Queued writes</small><strong id="syncControlQueueCount">0</strong><span>Pending local changes</span></article>
+            <article><small>Open conflicts</small><strong id="syncControlConflictCount">0</strong><span>Require resolution</span></article>
+            <article><small>Version drift</small><strong id="syncControlDriftCount">0</strong><span>Client/server mismatches</span></article>
+            <article><small>Last reconciliation</small><strong id="syncControlLastReconcile">Never</strong><span>Most recent successful check</span></article>
+          </div>
+
+          <div class="sync-control-layout">
+            <section class="sync-control-queue-panel">
+              <div class="sync-control-section-heading">
+                <div><small>Offline write queue</small><strong>Changes awaiting cloud replay</strong></div>
+                <div class="sync-control-actions">
+                  <button type="button" id="syncControlReplay">Replay queue</button>
+                  <button type="button" class="sync-control-secondary" id="syncControlRefresh">Refresh</button>
+                </div>
+              </div>
+              <div id="syncControlQueueList" class="sync-control-list"></div>
+            </section>
+
+            <aside class="sync-control-version-panel">
+              <div class="sync-control-section-heading">
+                <div><small>Resource versions</small><strong>Server-side concurrency state</strong></div>
+                <button type="button" class="sync-control-secondary" id="syncControlReconcile">Reconcile</button>
+              </div>
+              <div id="syncControlVersionList" class="sync-control-version-list"></div>
+            </aside>
+          </div>
+
+          <div class="sync-control-layout">
+            <section class="sync-control-conflict-panel">
+              <div class="sync-control-section-heading">
+                <div><small>Conflict resolution</small><strong>Choose the authoritative state</strong></div>
+                <span id="syncControlConflictStatus">No open conflicts</span>
+              </div>
+              <div id="syncControlConflictList" class="sync-control-list"></div>
+            </section>
+
+            <aside class="sync-control-audit-panel">
+              <div class="sync-control-section-heading">
+                <div><small>Audit reconciliation</small><strong>Local ledger against cloud history</strong></div>
+                <button type="button" class="sync-control-secondary" id="syncControlAuditReconcile">Reconcile audit</button>
+              </div>
+              <div class="sync-control-audit-summary">
+                <article><span>Local entries</span><b id="syncControlAuditLocal">0</b></article>
+                <article><span>Cloud head</span><b id="syncControlAuditCloud">—</b></article>
+                <article><span>Status</span><b id="syncControlAuditStatus">Unverified</b></article>
+              </div>
+              <div class="sync-control-actions stacked">
+                <button type="button" id="syncControlVerifyAudit">Verify local ledger</button>
+                <button type="button" class="sync-control-secondary" id="syncControlDownloadAudit">Download audit package</button>
+              </div>
+              <span id="syncControlMessage" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="sync-control-history">
+            <div class="sync-control-section-heading">
+              <div><small>Recovery history</small><strong>Replay, reconciliation, conflict, and audit activity</strong></div>
+              <button type="button" class="sync-control-secondary" id="syncControlClearHistory">Clear local history</button>
+            </div>
+            <div id="syncControlHistoryList" class="sync-control-history-list"></div>
+          </div>
+        </section>
+
         <section class="compliance-evidence-vault" id="complianceEvidenceVault" aria-labelledby="complianceEvidenceVaultTitle">
           <div class="compliance-evidence-vault-heading">
             <div>
@@ -6372,11 +6451,12 @@
   <script src="js/cloud/requestPipeline.js?v=34.3.2"></script>
   <script src="js/cloud/offlineSyncManager.js?v=34.3.2"></script>
   <script src="js/cloud/auditReconciliationLedger.js?v=34.3.2"></script>
-  <script src="js/cloud/cloudApi.js?v=34.4.0"></script>
+  <script src="js/cloud/cloudApi.js?v=34.4.1"></script>
   <script src="js/cloud/authSessionManager.js?v=34.2.1"></script>
   <script src="js/cloud/bootstrapStateHydrator.js?v=34.2.1"></script>
   <script src="js/modules/cloudFoundation.js?v=34.3.2"></script>
   <script src="js/modules/startupDiagnostics.js?v=34.3.2"></script>
+  <script src="js/modules/syncControlCenter.js?v=34.4.1"></script>
   <script src="js/modules/authOrganizations.js?v=34.2.0"></script>
   <script src="js/modules/liveFloorOperations.js?v=33.0.3"></script>
   <script src="js/modules/reservationOperations.js?v=33.0.3"></script>

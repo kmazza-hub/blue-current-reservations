@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.4.0";
+    static VERSION = "34.4.1";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -240,6 +240,16 @@
       });
     }
 
+    syncControlSnapshot() {
+      return {
+        offline: window.BlueCurrentOfflineSync?.snapshot?.() || null,
+        audit: window.BlueCurrentAuditLedger?.snapshot?.() || null,
+        pipeline: window.BlueCurrentRequestPipeline?.metricsSnapshot?.() || null,
+        bootstrap: window.BlueCurrentBootstrapHydrator?.snapshot?.() || null,
+        auth: window.BlueCurrentAuthSession?.snapshot?.() || null
+      };
+    }
+
     health() { return this.request("/api/health"); }
     commandCenter(locationId = "loc_marina") { return this.request(`/api/command-center?locationId=${encodeURIComponent(locationId)}`); }
     operationsFeed(locationId = "loc_marina", category = "all", limit = 40) { return this.request(`/api/operations-feed?locationId=${encodeURIComponent(locationId)}&category=${encodeURIComponent(category)}&limit=${encodeURIComponent(limit)}`); }
@@ -434,5 +444,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.4.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.4.1";
 })();
