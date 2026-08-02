@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.5">
+  <meta name="blue-current-build" content="34.0.14.6">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.5">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.6">
 </head>
 <body>
 
@@ -3198,6 +3198,120 @@
         </div>
       </section>
 
+      <section class="executive-accountability-center" id="executiveAccountabilityCenter" aria-labelledby="executiveAccountabilityCenterTitle">
+        <div class="executive-accountability-heading">
+          <div>
+            <small>Leadership execution layer</small>
+            <h4 id="executiveAccountabilityCenterTitle">Executive Accountability Center</h4>
+            <span id="executiveAccountabilityUpdated">Converting executive recommendations into owned, measurable commitments…</span>
+          </div>
+
+          <div class="executive-accountability-score" id="executiveAccountabilityScoreCard" data-tone="stable">
+            <small>Accountability score</small>
+            <strong id="executiveAccountabilityScore">100</strong>
+            <span id="executiveAccountabilityLabel">Healthy execution</span>
+          </div>
+        </div>
+
+        <div class="executive-accountability-kpis">
+          <article><small>Open commitments</small><strong id="executiveAccountabilityOpen">0</strong><span>Assigned executive actions</span></article>
+          <article><small>Due soon</small><strong id="executiveAccountabilityDueSoon">0</strong><span>Due within 24 hours</span></article>
+          <article><small>Overdue</small><strong id="executiveAccountabilityOverdue">0</strong><span>Missed commitments</span></article>
+          <article><small>Verified results</small><strong id="executiveAccountabilityVerified">0</strong><span>Measured completed actions</span></article>
+          <article><small>On-time rate</small><strong id="executiveAccountabilityOnTimeRate">100%</strong><span>Leadership execution</span></article>
+        </div>
+
+        <div class="executive-accountability-layout">
+          <div class="executive-accountability-work-queue">
+            <div class="executive-accountability-section-heading">
+              <div><small>Owner work queue</small><strong>Assigned actions by urgency and due date</strong></div>
+              <button type="button" id="executiveAccountabilityImportActions">Import executive actions</button>
+            </div>
+            <div id="executiveAccountabilityQueueList" class="executive-accountability-queue-list"></div>
+          </div>
+
+          <aside class="executive-accountability-editor">
+            <small>Selected commitment</small>
+            <strong id="executiveAccountabilityEditorTitle">Choose an action</strong>
+            <p id="executiveAccountabilityEditorDetail">Select an accountability item to assign ownership, set a due date, verify completion, and record measured impact.</p>
+
+            <label>
+              Owner
+              <select id="executiveAccountabilityOwner" disabled>
+                <option>General Manager</option>
+                <option>Operations Director</option>
+                <option>Kitchen Manager</option>
+                <option>Floor Manager</option>
+                <option>Workforce Manager</option>
+                <option>Executive Team</option>
+              </select>
+            </label>
+
+            <label>
+              Due date
+              <input id="executiveAccountabilityDueDate" type="datetime-local" disabled>
+            </label>
+
+            <label>
+              Expected impact
+              <input id="executiveAccountabilityExpectedImpact" type="text" placeholder="Example: Reduce ticket time 15%" disabled>
+            </label>
+
+            <label>
+              Completion note
+              <textarea id="executiveAccountabilityCompletionNote" rows="3" placeholder="Document what was completed." disabled></textarea>
+            </label>
+
+            <label>
+              Verified result
+              <input id="executiveAccountabilityVerifiedResult" type="text" placeholder="Example: Ticket time improved 17%" disabled>
+            </label>
+
+            <div class="executive-accountability-editor-actions">
+              <button type="button" id="executiveAccountabilitySave" disabled>Save commitment</button>
+              <button type="button" class="executive-accountability-secondary" id="executiveAccountabilityComplete" disabled>Mark complete</button>
+              <button type="button" class="executive-accountability-secondary" id="executiveAccountabilityVerify" disabled>Verify result</button>
+            </div>
+
+            <span id="executiveAccountabilityStatus" role="status"></span>
+          </aside>
+        </div>
+
+        <div class="executive-accountability-lower">
+          <div class="executive-accountability-due-panel">
+            <div class="executive-accountability-section-heading">
+              <div><small>Due soon and overdue</small><strong>Commitments requiring leadership attention</strong></div>
+              <span id="executiveAccountabilityAttentionCount">0 items</span>
+            </div>
+            <div id="executiveAccountabilityAttentionList" class="executive-accountability-attention-list"></div>
+          </div>
+
+          <div class="executive-accountability-review-panel">
+            <div class="executive-accountability-section-heading">
+              <div><small>Weekly executive review</small><strong>Execution and verified impact</strong></div>
+              <button type="button" id="executiveAccountabilityCopyReview">Copy review</button>
+            </div>
+
+            <div class="executive-accountability-review-metrics">
+              <div><span>Completed</span><strong id="executiveAccountabilityCompleted">0</strong></div>
+              <div><span>Verified</span><strong id="executiveAccountabilityVerifiedReview">0</strong></div>
+              <div><span>Escalated</span><strong id="executiveAccountabilityEscalated">0</strong></div>
+              <div><span>Average cycle</span><strong id="executiveAccountabilityCycle">0h</strong></div>
+            </div>
+
+            <p id="executiveAccountabilityReviewSummary">No accountability history is available yet.</p>
+          </div>
+        </div>
+
+        <div class="executive-accountability-audit">
+          <div class="executive-accountability-section-heading">
+            <div><small>Action audit timeline</small><strong>Assignment, completion, verification, and escalation history</strong></div>
+            <button type="button" id="executiveAccountabilityClearAudit">Clear audit</button>
+          </div>
+          <div id="executiveAccountabilityAuditList" class="executive-accountability-audit-list"></div>
+        </div>
+      </section>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4721,7 +4835,8 @@
   <script src="js/modules/executiveReplayAnalytics.js?v=34.0.14.3"></script>
   <script src="js/modules/executiveShiftComparison.js?v=34.0.14.4"></script>
   <script src="js/modules/executivePerformanceTrends.js?v=34.0.14.5"></script>
-  <script src="js/modules/executiveOperationalIntelligence.js?v=34.0.14.5"></script>
+  <script src="js/modules/executiveOperationalIntelligence.js?v=34.0.14.6"></script>
+  <script src="js/modules/executiveAccountabilityCenter.js?v=34.0.14.6"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
