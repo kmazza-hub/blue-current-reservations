@@ -1,26 +1,28 @@
-BLUE CURRENT V34.0.14.9 — AUTONOMOUS EXECUTIVE BRIEFINGS
+BLUE CURRENT V34.1.0 — RESTAURANT AI BRAIN, PHASE 1
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/autonomousExecutiveBriefings.js
+- client/js/modules/restaurantAiBrainV341.js
 
 ADDS
-- Morning, pre-shift, post-shift, and portfolio briefing modes
-- Executive audience selection
-- Manual, daily, weekday, and weekly cadence settings
-- Automatic risk, action, win, and portfolio synthesis
-- Briefing readiness and confidence scoring
-- Copyable executive communication
-- Persistent briefing history
-- Saved-briefing reload
+- Unified cross-system executive operating picture
+- Natural-language operating questions
+- Suggested executive questions
+- Evidence-backed answers
+- Current executive priority
+- Owner, time horizon, expected value, and source module
+- Executive reasoning panel
+- Persistent operating-memory history
+- Copyable AI response
+- Direct navigation to source modules
 
 TEST
 1. Replace/add the three files.
 2. Run npm run check.
 3. Run npm start.
-4. Generate a briefing.
-5. Confirm risks, actions, wins, portfolio scope, confidence, and readiness update.
-6. Test Copy Briefing, Save Briefing, and saved briefing reload.
+4. Ask each suggested question.
+5. Confirm the answer, evidence count, confidence, priority, and source navigation update.
+6. Test Enter-to-submit, Copy Response, and history reload.
