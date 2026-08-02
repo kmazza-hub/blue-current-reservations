@@ -11895,3 +11895,165 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .ai-orchestration-timeline time{color:#d9b65f;font-size:.54rem}.ai-orchestration-timeline span{color:#68d7df;font-size:.52rem;text-transform:uppercase}.ai-orchestration-timeline p{margin:0;color:rgba(255,255,255,.66);font-size:.59rem}
 @media(max-width:1100px){.ai-orchestration-kpis{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:560px){.ai-orchestration-kpis{grid-template-columns:1fr 1fr}.ai-orchestration-timeline article{grid-template-columns:55px 1fr}.ai-orchestration-timeline p{grid-column:1/-1}}
+
+
+/* V34.6.3 Operational Digital Twin */
+.operational-digital-twin-center{margin-top:1.2rem;padding:1.15rem;border:1px solid rgba(217,182,95,.22);border-radius:1.25rem;background:linear-gradient(145deg,rgba(13,24,32,.98),rgba(7,17,27,.98));box-shadow:0 22px 60px rgba(0,0,0,.28)}
+.digital-twin-heading{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:1rem}.digital-twin-heading small,.digital-twin-section-title small,.digital-twin-health small{display:block;color:#d9b65f;font-size:.58rem;letter-spacing:.09em;text-transform:uppercase}.digital-twin-heading strong{display:block;margin:.25rem 0;color:#fff;font-size:1.06rem}.digital-twin-heading span{color:rgba(255,255,255,.5);font-size:.62rem}.digital-twin-heading>button{border:1px solid rgba(217,182,95,.35);border-radius:.68rem;background:rgba(217,182,95,.1);color:#fff1c7;padding:.62rem .78rem;cursor:pointer}.digital-twin-health{min-width:100px;padding:.55rem .7rem;border:1px solid rgba(217,182,95,.2);border-radius:.75rem;background:rgba(217,182,95,.05);text-align:center}.digital-twin-health strong{font-size:1.25rem}.digital-twin-health span{font-size:.53rem}
+.digital-twin-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.6rem;margin:1rem 0}.digital-twin-kpis article,.digital-twin-forecast-grid article{padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:.8rem;background:rgba(255,255,255,.032)}.digital-twin-kpis small,.digital-twin-kpis strong,.digital-twin-forecast-grid small,.digital-twin-forecast-grid strong{display:block}.digital-twin-kpis small,.digital-twin-forecast-grid small{color:rgba(255,255,255,.43);font-size:.56rem}.digital-twin-kpis strong,.digital-twin-forecast-grid strong{margin-top:.3rem;color:#fff;font-size:.88rem}
+.digital-twin-main{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,.5fr);gap:.8rem}.digital-twin-main>section,.digital-twin-inspector,.digital-twin-operations>section,.digital-twin-forecast{padding:.88rem;border:1px solid rgba(255,255,255,.07);border-radius:1rem;background:rgba(255,255,255,.024)}.digital-twin-section-title{display:flex;align-items:center;justify-content:space-between;gap:.7rem}.digital-twin-section-title strong{color:#fff;font-size:.7rem}.digital-twin-table-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:.42rem;margin-top:.7rem}.digital-twin-table{min-height:72px;padding:.45rem .25rem;border:1px solid rgba(255,255,255,.09);border-radius:.65rem;background:rgba(255,255,255,.035);color:#fff;cursor:pointer}.digital-twin-table strong,.digital-twin-table span,.digital-twin-table small{display:block}.digital-twin-table strong{font-size:.76rem}.digital-twin-table span{margin-top:.18rem;font-size:.48rem;color:#68d7df}.digital-twin-table small{margin-top:.2rem;font-size:.45rem;color:rgba(255,255,255,.4)}.digital-twin-table.status-dining,.digital-twin-table.status-seated{background:rgba(104,215,223,.08)}.digital-twin-table.status-reserved{background:rgba(217,182,95,.08)}.digital-twin-table.status-reset{background:rgba(255,255,255,.07)}.digital-twin-table.risk-high{border-color:rgba(255,105,105,.7)}.digital-twin-table.risk-watch{border-color:rgba(217,182,95,.55)}.digital-twin-table.is-selected{outline:2px solid rgba(104,215,223,.75);outline-offset:1px}
+.digital-twin-inspector>small{color:#d9b65f;font-size:.56rem;text-transform:uppercase}.digital-twin-inspector>strong{display:block;margin:.35rem 0 .65rem;color:#fff}.digital-twin-inspector dl{display:grid;gap:.35rem}.digital-twin-inspector dl>div{display:flex;justify-content:space-between;gap:.7rem;padding:.46rem .5rem;border-radius:.56rem;background:rgba(255,255,255,.035);font-size:.57rem}.digital-twin-inspector dt{color:rgba(255,255,255,.42)}.digital-twin-inspector dd{margin:0;color:#fff;text-align:right}
+.digital-twin-operations{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:.8rem;margin-top:.8rem}.digital-twin-list,.digital-twin-kitchen{display:grid;gap:.4rem;margin-top:.65rem}.digital-twin-list article,.digital-twin-kitchen article{display:flex;align-items:center;gap:.5rem;padding:.5rem .55rem;border-radius:.62rem;background:rgba(255,255,255,.034)}.digital-twin-list article span,.digital-twin-kitchen article span{flex:1}.digital-twin-list strong,.digital-twin-list small,.digital-twin-kitchen strong,.digital-twin-kitchen small{display:block}.digital-twin-list strong,.digital-twin-kitchen strong{color:#fff;font-size:.61rem}.digital-twin-list small,.digital-twin-kitchen small{margin-top:.15rem;color:rgba(255,255,255,.4);font-size:.49rem}.digital-twin-list b,.digital-twin-kitchen b{color:#68d7df;font-size:.59rem}.digital-twin-kitchen article>div{width:70px;height:5px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}.digital-twin-kitchen article>div i{display:block;height:100%;border-radius:inherit;background:#68d7df}.digital-twin-kitchen article.status-watch>div i{background:#d9b65f}.digital-twin-kitchen article.status-critical>div i{background:#ff6969}
+.digital-twin-forecast{margin-top:.8rem}.digital-twin-forecast-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.55rem;margin-top:.65rem}.digital-twin-forecast>p{margin:.65rem 0 0;color:rgba(255,255,255,.61);font-size:.62rem;line-height:1.5}
+@media(max-width:1100px){.digital-twin-kpis{grid-template-columns:repeat(3,1fr)}.digital-twin-table-grid{grid-template-columns:repeat(5,1fr)}.digital-twin-operations{grid-template-columns:1fr 1fr}.digital-twin-operations>section:last-child{grid-column:1/-1}.digital-twin-forecast-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.digital-twin-heading{grid-template-columns:1fr auto}.digital-twin-heading>button{grid-column:1/-1}.digital-twin-main,.digital-twin-operations{grid-template-columns:1fr}.digital-twin-operations>section:last-child{grid-column:auto}.digital-twin-table-grid{grid-template-columns:repeat(4,1fr)}.digital-twin-forecast-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.digital-twin-kpis{grid-template-columns:repeat(2,1fr)}.digital-twin-table-grid{grid-template-columns:repeat(3,1fr)}.digital-twin-forecast-grid{grid-template-columns:1fr}.digital-twin-heading{grid-template-columns:1fr}.digital-twin-health{text-align:left}}
+
+
+/* V34.6.4 — Application-wide readability and contrast pass */
+.app-high-contrast{
+  --bc-app-text:#f4f8fa;
+  --bc-app-text-strong:#ffffff;
+  --bc-app-text-secondary:#c7d5db;
+  --bc-app-text-muted:#9fb4bd;
+  --bc-app-surface:#0d2732;
+  --bc-app-surface-raised:#123440;
+  --bc-app-surface-soft:#173b47;
+  --bc-app-border:rgba(194,220,228,.24);
+  --bc-app-border-strong:rgba(194,220,228,.38);
+}
+
+/* Opaque foundations prevent ambient page gradients from washing out modules. */
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.autonomous-operations-section,
+  .ai-orchestration-center,.operational-digital-twin-center,.ai-brain-shell,
+  .restaurant-pulse,.live-shift-panel,.manager-shift-brief,.executive-decision-center
+){
+  color:var(--bc-app-text);
+  isolation:isolate;
+}
+
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.ai-orchestration-center,
+  .operational-digital-twin-center,.ai-brain-shell,.manager-shift-brief,
+  .executive-decision-center
+){
+  background-color:var(--bc-app-surface);
+  border-color:var(--bc-app-border);
+}
+
+/* Strengthen translucent cards and panels throughout authenticated operations. */
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.autonomous-operations-section,
+  .ai-orchestration-center,.operational-digital-twin-center,.ai-brain-shell,
+  .manager-shift-brief,.executive-decision-center
+) :is(
+  [class$="-panel"],[class*="-panel "],[class$="-card"],[class*="-card "],
+  [class$="-preview"],[class*="-preview "],[class$="-comparison"],
+  [class$="-inspector"],[class$="-timeline-panel"],[class$="-forecast"]
+){
+  border-color:var(--bc-app-border)!important;
+  background-color:rgba(16,46,58,.96)!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.18);
+}
+
+/* Primary and secondary copy are no longer allowed to fade below readable levels. */
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.autonomous-operations-section,
+  .ai-orchestration-center,.operational-digital-twin-center,.ai-brain-shell,
+  .manager-shift-brief,.executive-decision-center
+) :is(h1,h2,h3,h4,h5,h6,strong,b,blockquote,dd){
+  color:var(--bc-app-text-strong);
+}
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.autonomous-operations-section,
+  .ai-orchestration-center,.operational-digital-twin-center,.ai-brain-shell,
+  .manager-shift-brief,.executive-decision-center
+) :is(p,li,label,dt){
+  color:var(--bc-app-text-secondary);
+}
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.autonomous-operations-section,
+  .ai-orchestration-center,.operational-digital-twin-center,.ai-brain-shell,
+  .manager-shift-brief,.executive-decision-center
+) :is(small,time,.muted,[class*="-muted"],[class*="-updated"]){
+  color:var(--bc-app-text-muted);
+}
+
+/* Forms and controls remain readable in every operational module. */
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.autonomous-operations-section,
+  .ai-orchestration-center,.operational-digital-twin-center,.ai-brain-shell,
+  .manager-shift-brief,.executive-decision-center
+) :is(input,select,textarea){
+  color:var(--bc-app-text-strong)!important;
+  background:#081e28!important;
+  border-color:var(--bc-app-border-strong)!important;
+  opacity:1;
+}
+.app-high-contrast :is(input,textarea)::placeholder{color:#91a8b2;opacity:1}
+.app-high-contrast select option{color:#102832;background:#f6fafb}
+
+/* Buttons and disabled states preserve legibility rather than fading into the surface. */
+.app-high-contrast :is(
+  .brief-ai,.mission-control-shell,.time-machine-shell,.portfolio-command-shell,
+  .guest-journey-live-shell,.concierge-shell,.analytics-shell,.exec-shell,
+  .host-app,.twin-app,.evening-dashboard,.autonomous-operations-section,
+  .ai-orchestration-center,.operational-digital-twin-center,.ai-brain-shell,
+  .manager-shift-brief,.executive-decision-center
+) button:not(.button-primary):not(.button-gold){
+  color:#eef7f8;
+  border-color:var(--bc-app-border-strong);
+}
+.app-high-contrast button:disabled,
+.app-high-contrast [aria-disabled="true"]{
+  opacity:.68!important;
+  color:#c0ced4!important;
+}
+
+/* The decision-support area shown in the reported screenshot receives explicit contrast. */
+.app-high-contrast .ai-impact-preview,
+.app-high-contrast .ai-scenario-comparison{
+  background:#102f3a!important;
+  border-color:rgba(139,210,190,.38)!important;
+}
+.app-high-contrast .ai-impact-grid>div,
+.app-high-contrast .ai-scenario-grid article{
+  background:#173b47!important;
+  border-color:rgba(202,225,231,.26)!important;
+}
+.app-high-contrast .ai-scenario-grid article.is-recommended{
+  background:linear-gradient(145deg,#304538,#173b47)!important;
+  border-color:rgba(229,184,95,.7)!important;
+}
+.app-high-contrast :is(.ai-impact-preview,.ai-scenario-comparison) :is(h4,strong){color:#fff!important}
+.app-high-contrast :is(.ai-impact-preview,.ai-scenario-comparison) p{color:#d4e0e4!important}
+.app-high-contrast :is(.ai-impact-preview,.ai-scenario-comparison) small,
+.app-high-contrast .ai-scenario-heading>span{color:#afc5cc!important}
+.app-high-contrast .ai-impact-grid strong,
+.app-high-contrast .ai-scenario-grid>article>strong{color:#ffe0a3!important}
+.app-high-contrast #aiImpactSummary{color:#d4e0e4!important}
+
+/* Keyboard focus is visible across the full backend. */
+.app-high-contrast :is(button,a,input,select,textarea):focus-visible{
+  outline:3px solid #8bd9cc!important;
+  outline-offset:3px;
+}
+
+@media (prefers-contrast:more){
+  .app-high-contrast{--bc-app-border:rgba(220,239,244,.42);--bc-app-text-muted:#bfd0d6}
+}

@@ -16,7 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=34.1.12">
 </head>
-<body>
+<body class="app-high-contrast">
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
@@ -3693,6 +3693,33 @@
           <section class="ai-orchestration-timeline-panel"><div class="ai-orchestration-section-title"><small>Context timeline</small><strong>How the operating picture developed</strong></div><div id="aiOrchestrationTimeline" class="ai-orchestration-timeline"></div></section>
         </section>
 
+
+        <section class="operational-digital-twin-center" id="operationalDigitalTwinCenter" aria-labelledby="operationalDigitalTwinTitle">
+          <div class="digital-twin-heading">
+            <div><small>V34.6.3 · Live restaurant model</small><strong id="operationalDigitalTwinTitle">Operational Digital Twin</strong><span id="digitalTwinUpdated">Building operating picture…</span></div>
+            <div class="digital-twin-health"><small>System health</small><strong id="digitalTwinHealthScore">—</strong><span id="digitalTwinHealthBand">Awaiting state</span></div>
+            <button type="button" id="digitalTwinRefresh">Refresh twin</button>
+          </div>
+          <div class="digital-twin-kpis">
+            <article><small>Occupied tables</small><strong id="digitalTwinOccupiedCount">0</strong></article>
+            <article><small>Guests in service</small><strong id="digitalTwinGuestsCount">0</strong></article>
+            <article><small>Tables turning</small><strong id="digitalTwinTurningCount">0</strong></article>
+            <article><small>Kitchen load</small><strong id="digitalTwinKitchenLoad">0%</strong></article>
+            <article><small>Active staff</small><strong id="digitalTwinStaffCount">0/0</strong></article>
+            <article><small>AI workflows</small><strong id="digitalTwinWorkflowCount">0</strong></article>
+          </div>
+          <div class="digital-twin-main">
+            <section><div class="digital-twin-section-title"><small>Dining room</small><strong>Live table state</strong></div><div class="digital-twin-table-grid" id="digitalTwinTableGrid"></div></section>
+            <aside class="digital-twin-inspector"><small>Selected entity</small><strong id="digitalTwinSelectedTable">No table selected</strong><dl><div><dt>Status</dt><dd id="digitalTwinSelectedStatus">—</dd></div><div><dt>Zone</dt><dd id="digitalTwinSelectedZone">—</dd></div><div><dt>Party</dt><dd id="digitalTwinSelectedParty">—</dd></div><div><dt>Elapsed</dt><dd id="digitalTwinSelectedElapsed">—</dd></div><div><dt>Predicted turn</dt><dd id="digitalTwinSelectedTurn">—</dd></div><div><dt>Risk</dt><dd id="digitalTwinSelectedRisk">—</dd></div></dl></aside>
+          </div>
+          <div class="digital-twin-operations">
+            <section><div class="digital-twin-section-title"><small>Zones</small><strong>Dining-room pressure</strong></div><div class="digital-twin-list" id="digitalTwinZones"></div></section>
+            <section><div class="digital-twin-section-title"><small>Kitchen</small><strong>Station load</strong></div><div class="digital-twin-kitchen" id="digitalTwinKitchenStations"></div></section>
+            <section><div class="digital-twin-section-title"><small>Workforce</small><strong>Role utilization</strong></div><div class="digital-twin-list" id="digitalTwinStaffRoles"></div></section>
+          </div>
+          <section class="digital-twin-forecast"><div class="digital-twin-section-title"><small>30-minute projection</small><strong>What the operation is becoming</strong></div><div class="digital-twin-forecast-grid"><article><small>Expected arrivals</small><strong id="digitalTwinForecastArrivals">0</strong></article><article><small>Expected turns</small><strong id="digitalTwinForecastTurns">0</strong></article><article><small>Projected occupancy</small><strong id="digitalTwinForecastOccupancy">0%</strong></article><article><small>Projected kitchen</small><strong id="digitalTwinForecastKitchen">0%</strong></article><article><small>Likely constraint</small><strong id="digitalTwinForecastConstraint">—</strong></article></div><p id="digitalTwinForecastNarrative">Awaiting sufficient context.</p></section>
+        </section>
+
         <section class="ai-brain-decision-orchestrator" id="aiBrainDecisionOrchestrator" aria-labelledby="aiBrainDecisionOrchestratorTitle">
           <div class="ai-brain-decision-orchestrator-heading">
             <div>
@@ -6642,6 +6669,8 @@
   <script src="js/modules/recommendationEngine.js?v=34.6.2"></script>
   <script src="js/modules/orchestrationEngine.js?v=34.6.2"></script>
   <script src="js/modules/aiOrchestrationCenter.js?v=34.6.2"></script>
+  <script src="js/modules/operationalDigitalTwinEngine.js?v=34.6.3"></script>
+  <script src="js/modules/operationalDigitalTwinCenter.js?v=34.6.3"></script>
   <script src="js/app-v15.1.3.js?v=33.0.3"></script>
 </body>
 </html>

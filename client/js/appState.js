@@ -36,7 +36,9 @@ class AppState {
       orchestrationTimeline: [],
       operationalContext: null,
       operationalContextHistory: [],
-      orchestrationUpdatedAt: null
+      orchestrationUpdatedAt: null,
+      operationalDigitalTwin: null,
+      operationalDigitalTwinHistory: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });
