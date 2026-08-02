@@ -43,9 +43,25 @@
       }
       if ($("cloudReservationCount")) $("cloudReservationCount").textContent = data.reservations.length;
 
+      const importedAuditEntries = auditLedger?.importCloudEntries?.(data.auditLogs || []) || 0;
+      const reconciliation = auditLedger?.reconcile?.({
+        auditLogs: data.auditLogs || [],
+        headHash: data.auditHeadHash || null
+      }) || null;
+
+      appState.update({
+        auditLedgerEntries: auditLedger?.snapshot?.().entries || 0,
+        auditLedgerIntegrity: reconciliation?.verification?.valid ?? true,
+        auditReconciliationStatus: reconciliation?.status || "unavailable",
+        auditPendingCloudCount: reconciliation?.pendingCloud?.length || 0,
+        auditMissingLocalCount: reconciliation?.missingLocally?.length || 0
+      });
+
       eventBus.emit("cloud:bootstrap-hydrated", {
         source: options.source || "network",
-        snapshot
+        snapshot,
+        importedAuditEntries,
+        reconciliation
       });
       return snapshot;
     }
@@ -195,6 +211,31 @@
       });
     }
 
+    window.addEventListener("bluecurrent:audit-verified", event => {
+      const result = event.detail || {};
+      appState.update({
+        auditLedgerIntegrity: Boolean(result.valid),
+        auditLedgerHeadHash: result.headHash || null,
+        auditLedgerFailureCount: result.failures?.length || 0,
+        auditLedgerLastVerifiedAt: result.verifiedAt || null
+      });
+      if (!result.valid) {
+        setStatus("Audit integrity warning", "The local audit ledger requires review.");
+        eventBus.emit("cloud:audit-integrity-failure", result);
+      }
+    });
+
+    window.addEventListener("bluecurrent:audit-reconciled", event => {
+      const result = event.detail || {};
+      appState.update({
+        auditReconciliationStatus: result.status || "unknown",
+        auditPendingCloudCount: result.pendingCloud?.length || 0,
+        auditMissingLocalCount: result.missingLocally?.length || 0,
+        auditLedgerLastReconciledAt: result.reconciledAt || null
+      });
+      eventBus.emit("cloud:audit-reconciled", result);
+    });
+
     window.addEventListener("bluecurrent:offline-sync-started", () => {
       setStatus("Synchronizing", "Replaying locally saved operating changes…");
       appState.update({ offlineSyncing: true });
@@ -260,6 +301,11 @@
       getBootstrapStatus: () => window.BlueCurrentBootstrapHydrator?.snapshot?.() || null,
       getRequestPipelineStatus: () => pipeline?.metricsSnapshot?.() || null,
       getOfflineSyncStatus: () => offlineSync?.snapshot?.() || null,
+      getAuditLedgerStatus: () => auditLedger?.snapshot?.() || null,
+      verifyAuditLedger: () => auditLedger?.verify?.() || null,
+      reconcileAuditLedger: cloudState => auditLedger?.reconcile?.(cloudState) || null,
+      exportAuditLedger: filters => auditLedger?.exportPackage?.(filters || {}) || null,
+      downloadAuditLedger: filters => auditLedger?.download?.(filters || {}) || null,
       replayOfflineWrites: () => offlineSync?.replay?.(),
       resolveOfflineConflict: (id, strategy, body) => offlineSync?.resolveConflict?.(id, strategy, body),
       discardOfflineWrite: id => offlineSync?.discard?.(id),

@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.3.1";
+    static VERSION = "34.3.2";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -49,7 +49,20 @@
       };
 
       try {
-        return await execute();
+        const result = await execute();
+        if (["POST","PUT","PATCH","DELETE"].includes(method)) {
+          window.BlueCurrentAuditLedger?.append?.("write", "cloud-write-completed", {
+            path,
+            method,
+            entityType: options.entityType || null,
+            entityId: options.entityId || null,
+            result
+          }, {
+            domain: options.entityType || "cloud",
+            source: "cloud-api"
+          });
+        }
+        return result;
       } catch (error) {
         const offlineSync = window.BlueCurrentOfflineSync;
         if (offlineSync?.isQueueable?.(path, method, options) && offlineSync.shouldQueue(error)) {
@@ -147,7 +160,8 @@
         capabilities: [...this.capabilities],
         loginAvailable: typeof this.login === "function",
         requestPipeline: Boolean(window.BlueCurrentRequestPipeline),
-        offlineSync: Boolean(window.BlueCurrentOfflineSync)
+        offlineSync: Boolean(window.BlueCurrentOfflineSync),
+        auditLedger: Boolean(window.BlueCurrentAuditLedger)
       };
     }
 
@@ -181,6 +195,18 @@
 
     offlineSyncStatus() {
       return window.BlueCurrentOfflineSync?.snapshot?.() || null;
+    }
+
+    auditLedgerStatus() {
+      return window.BlueCurrentAuditLedger?.snapshot?.() || null;
+    }
+
+    verifyAuditLedger() {
+      return window.BlueCurrentAuditLedger?.verify?.() || null;
+    }
+
+    exportAuditLedger(filters = {}) {
+      return window.BlueCurrentAuditLedger?.exportPackage?.(filters) || null;
     }
 
     replayOfflineWrites() {
@@ -385,5 +411,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.3.1";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.3.2";
 })();
