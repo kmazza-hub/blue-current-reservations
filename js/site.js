@@ -501,3 +501,24 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   };
   buttons.forEach((button,index) => button.addEventListener('click',() => render(index)));
 })();
+
+
+// Website SaaS Upgrade 09 — interactive operating loop
+(() => {
+  const buttons = Array.from(document.querySelectorAll('[data-loop-view]'));
+  if (!buttons.length) return;
+  const views = [
+    {kicker:'Guest demand enters the system',title:'Capture the request without losing context.',detail:'A guest call, reservation request, or event inquiry becomes a structured operating signal instead of an isolated conversation.',owner:'AI Concierge + host team',evidence:'Intent, policy, disposition',status:'Captured',type:'Guest request',event:'Anniversary dinner · party of six',eventDetail:'Waterfront preference, date flexibility, and celebration context preserved.',source:'AI Concierge',action:'Create reservation record',control:'Policy checked · escalation not required'},
+    {kicker:'Context is assembled in real time',title:'Understand what the operation can support.',detail:'Reservation pace, table readiness, kitchen pressure, staffing, and guest history are evaluated together before the next action is recommended.',owner:'Restaurant Brain',evidence:'Source signals + confidence',status:'Interpreted',type:'Operating context',event:'7:30 PM arrival window tightening',eventDetail:'Three large parties, slower table turns, and elevated kitchen load detected.',source:'Live operations',action:'Assess capacity and risk',control:'Confidence 92% · manager visibility enabled'},
+    {kicker:'The right team receives the next move',title:'Coordinate action without another group chat.',detail:'Blue Current routes the recommendation, owner, timing, and supporting context to the people responsible for the outcome.',owner:'Manager + service teams',evidence:'Owner, action, acknowledgement',status:'Assigned',type:'Recommended action',event:'Hold two reservation releases for 12 minutes',eventDetail:'Redeploy one host to arrivals and protect kitchen pacing during the peak window.',source:'Restaurant Brain',action:'Manager acknowledgement',control:'Human approval required · timer active'},
+    {kicker:'The operation closes the loop',title:'Verify whether the intervention actually worked.',detail:'The platform compares the observed result against the expected outcome so recommendations become evidence—not just alerts.',owner:'Operations intelligence',evidence:'Action + observed outcome',status:'Verified',type:'Outcome review',event:'Arrival delay reduced by 8 minutes',eventDetail:'Kitchen pressure stabilized and reservation releases resumed without guest escalation.',source:'Service telemetry',action:'Record verified outcome',control:'Outcome linked to source decision'},
+    {kicker:'Leadership sees only what matters',title:'Brief the portfolio with traceable evidence.',detail:'Executives receive exceptions, decisions, owners, and results across locations without waiting for fragmented end-of-day reporting.',owner:'Executive command',evidence:'Exception, owner, result',status:'Briefed',type:'Portfolio insight',event:'One pacing intervention worth replicating',eventDetail:'Workflow, decision evidence, and measured outcome packaged for multi-location review.',source:'Executive command',action:'Review expansion candidate',control:'Audit history available · rollout not automatic'}
+  ];
+  const byId = id => document.getElementById(id);
+  const render = index => {
+    const view = views[index];
+    buttons.forEach((button,i) => { button.classList.toggle('is-active',i===index); button.setAttribute('aria-selected',String(i===index)); });
+    byId('loopKicker').textContent=view.kicker; byId('loopTitle').textContent=view.title; byId('loopDetail').textContent=view.detail; byId('loopOwner').textContent=view.owner; byId('loopEvidence').textContent=view.evidence; byId('loopStatus').textContent=view.status; byId('loopEventType').textContent=view.type; byId('loopEventTitle').textContent=view.event; byId('loopEventDetail').textContent=view.eventDetail; byId('loopSource').textContent=view.source; byId('loopAction').textContent=view.action; byId('loopControl').textContent=view.control;
+  };
+  buttons.forEach((button,index)=>button.addEventListener('click',()=>render(index)));
+})();
