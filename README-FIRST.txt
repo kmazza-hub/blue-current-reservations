@@ -1,19 +1,19 @@
-BLUECURRENTCO.COM V2.2 — HERO EXPERIENCE & EXECUTIVE PRODUCT SHOWCASE
+BLUECURRENTCO.COM V2.3 — PLATFORM & OPERATIONS PRODUCT TOURS
 
 REPLACE
-- index.html
+- platform.html
+- operations.html
 - styles.css
 - js/site.js
 
 ADDS
-- Animated executive homepage hero
-- Live portfolio clock and counters
-- Leadership attention carousel
-- Portfolio health visualization
-- Live operations metrics
-- Rotating system event stream
-- Premium metrics and trust sections
-- Responsive mobile layouts
+- Interactive Platform tour
+- Interactive Operations tour
+- Four scenarios on each page
+- Animated architecture orbit controls
+- Dynamic product interface content
+- Auto-rotation and manual tabs
+- Responsive layouts
 
 TEST
-Open index.html, test Next Signal, wait for event rotation, and resize across desktop/tablet/mobile.
+Open platform.html and operations.html, click all four tabs, test the orbit controls, and verify the tours auto-rotate.
