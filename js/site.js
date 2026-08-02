@@ -337,3 +337,47 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   [calls, conversion, ticket].forEach((input) => input.addEventListener('input', render));
   render();
 })();
+
+// Website SaaS Upgrade 05 — pilot outcome scorecard
+(() => {
+  const buttons = Array.from(document.querySelectorAll('[data-pilot-view]'));
+  if (!buttons.length) return;
+  const views = [
+    {
+      kicker:'Example scorecard', title:'Recover high-intent guest demand.',
+      metrics:[['Baseline','31%','Calls unanswered during peak windows'],['Target','<10%','Unanswered high-intent demand'],['Review','Weekly','Conversion, escalation, and guest quality']],
+      deploy:['Location-specific AI call handling','Reservation and event intent capture','Manager escalation and review rules'],
+      receive:['Baseline and outcome comparison','Conversation-level evidence','Expansion recommendation with risks'],
+      outcome:'Decision: expand only if captured demand, guest quality, and manager confidence improve against the agreed baseline.'
+    },
+    {
+      kicker:'Example scorecard', title:'Reduce service pressure before it becomes disruption.',
+      metrics:[['Baseline','18m','Average peak seating delay'],['Target','<10m','Average peak seating delay'],['Review','Nightly','Pacing, handoffs, and intervention quality']],
+      deploy:['Live arrival and table-readiness view','Service-pressure alerts with ownership','Floor, kitchen, and host handoff workflow'],
+      receive:['Delay and throughput comparison','Intervention timeline and accountability','Operational playbook for repeatability'],
+      outcome:'Decision: expand only if service delays fall without transferring pressure to guests, staff, or kitchen throughput.'
+    },
+    {
+      kicker:'Example scorecard', title:'Give leadership a reliable daily operating picture.',
+      metrics:[['Baseline','6 hrs','Weekly manual reporting effort'],['Target','<1 hr','Weekly manual reporting effort'],['Review','Daily','Accuracy, exceptions, and follow-through']],
+      deploy:['Location-level operating health model','Evidence-backed executive briefing','Decision, owner, and outcome ledger'],
+      receive:['Time-to-insight comparison','Exception quality and source traceability','Portfolio rollout recommendation'],
+      outcome:'Decision: expand only if leaders receive faster, more trustworthy insight with clear ownership and less reporting overhead.'
+    }
+  ];
+  const byId = id => document.getElementById(id);
+  const render = index => {
+    const view = views[index];
+    buttons.forEach((button,i) => {
+      button.classList.toggle('is-active',i === index);
+      button.setAttribute('aria-selected',String(i === index));
+    });
+    byId('pilotScoreKicker').textContent = view.kicker;
+    byId('pilotScoreTitle').textContent = view.title;
+    byId('pilotScoreMetrics').innerHTML = view.metrics.map(metric => `<article><small>${metric[0]}</small><strong>${metric[1]}</strong><span>${metric[2]}</span></article>`).join('');
+    byId('pilotScoreDeploy').innerHTML = view.deploy.map(item => `<li>${item}</li>`).join('');
+    byId('pilotScoreReceive').innerHTML = view.receive.map(item => `<li>${item}</li>`).join('');
+    byId('pilotScoreOutcome').textContent = view.outcome;
+  };
+  buttons.forEach((button,index) => button.addEventListener('click',() => render(index)));
+})();

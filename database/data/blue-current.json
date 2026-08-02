@@ -450,6 +450,14 @@
       "category": "security",
       "createdAt": "2026-08-02T16:25:36.676Z",
       "id": "audit_1785687936676_vv220t"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-02T17:04:22.956Z",
+      "id": "audit_1785690262956_4c1zra"
     }
   ],
   "reservations": [
@@ -820,6 +828,18 @@
       ],
       "createdAt": "2026-08-02T16:25:36.670Z",
       "expiresAt": "2026-08-03T04:25:36.670Z"
+    },
+    {
+      "id": "ses_1785690262950_svcc9k",
+      "tokenHash": "f08078bc8678fa8f6a35a61800ac0e6b0b13469314028a92eb929017396a8fe7",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-02T17:04:22.950Z",
+      "expiresAt": "2026-08-03T05:04:22.950Z"
     }
   ],
   "invitations": [

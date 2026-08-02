@@ -274,3 +274,39 @@ img{max-width:100%;height:auto}
 .proof-framework-section{padding-block:122px;border-top:1px solid rgba(255,255,255,.06)}.proof-framework-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px}.proof-framework-grid article{min-height:265px;padding:30px;border:1px solid rgba(255,255,255,.075);border-radius:20px;background:linear-gradient(150deg,rgba(255,255,255,.032),rgba(255,255,255,.012))}.proof-framework-grid span,.proof-framework-grid strong{display:block}.proof-framework-grid span{color:var(--gold);font-size:.47rem;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.proof-framework-grid strong{margin-top:54px;font-size:.8rem}.proof-framework-grid p{margin:13px 0 0;color:#7d98a2;font-size:.55rem;line-height:1.65}.proof-quote{display:flex;justify-content:space-between;align-items:center;gap:30px;margin-top:15px;padding:28px 30px;border:1px solid rgba(130,223,207,.13);border-radius:18px;background:rgba(130,223,207,.045)}.proof-quote small,.proof-quote strong{display:block}.proof-quote small{color:#6f8c96;font-size:.43rem;text-transform:uppercase;letter-spacing:.1em}.proof-quote strong{margin-top:8px;font-family:Georgia,"Times New Roman",serif;font-size:1.25rem;font-weight:500}
 @media(max-width:980px){.trust-center-grid,.roi-grid{grid-template-columns:1fr}.proof-framework-grid{grid-template-columns:1fr}.roi-grid{gap:42px}}
 @media(max-width:680px){.trust-control-grid,.roi-breakdown{grid-template-columns:1fr}.proof-quote{align-items:flex-start;flex-direction:column}.trust-center-lead,.roi-calculator{padding:24px}}
+
+/* Website SaaS Upgrade 05 — measurable pilot proof */
+.pilot-proof-section{background:linear-gradient(180deg,rgba(245,248,250,.72),#fff);border-top:1px solid rgba(20,44,58,.08);border-bottom:1px solid rgba(20,44,58,.08)}
+.pilot-proof-layout{display:grid;grid-template-columns:minmax(220px,.34fr) minmax(0,1fr);gap:28px;align-items:stretch;margin-top:44px}
+.pilot-proof-tabs{display:grid;gap:10px;align-content:start}
+.pilot-proof-tabs button{display:flex;align-items:center;gap:14px;width:100%;padding:18px 20px;border:1px solid rgba(19,53,70,.12);border-radius:16px;background:#fff;color:#183848;font:inherit;font-weight:700;text-align:left;cursor:pointer;transition:.2s ease}
+.pilot-proof-tabs button span{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#edf3f5;color:#55727f;font-size:.75rem;letter-spacing:.08em}
+.pilot-proof-tabs button:hover,.pilot-proof-tabs button.is-active{transform:translateY(-1px);border-color:rgba(15,87,113,.35);box-shadow:0 16px 36px rgba(18,55,72,.1)}
+.pilot-proof-tabs button.is-active{background:#123444;color:#fff}
+.pilot-proof-tabs button.is-active span{background:rgba(255,255,255,.12);color:#fff}
+.pilot-scorecard{border:1px solid rgba(17,48,64,.12);border-radius:24px;background:#fff;box-shadow:0 26px 70px rgba(19,54,70,.12);overflow:hidden}
+.pilot-scorecard-top,.pilot-scorecard-footer{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;padding:26px 28px}
+.pilot-scorecard-top{border-bottom:1px solid rgba(17,48,64,.09)}
+.pilot-scorecard-top small,.pilot-scorecard-body small{display:block;color:#6a7e88;font-weight:800;letter-spacing:.09em;text-transform:uppercase;font-size:.7rem;margin-bottom:7px}
+.pilot-scorecard-top h3{margin:0;font-size:clamp(1.45rem,2.4vw,2.1rem);color:#143545}
+.pilot-scorecard-top>span{padding:7px 10px;border-radius:999px;background:#eef4f5;color:#58717c;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.pilot-scorecard-metrics{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid rgba(17,48,64,.09)}
+.pilot-scorecard-metrics article{padding:25px 28px;min-height:145px}
+.pilot-scorecard-metrics article+article{border-left:1px solid rgba(17,48,64,.09)}
+.pilot-scorecard-metrics small{display:block;color:#6b808a;font-weight:700;margin-bottom:8px}
+.pilot-scorecard-metrics strong{display:block;color:#123b4e;font-size:2rem;line-height:1;margin-bottom:10px}
+.pilot-scorecard-metrics span{color:#58707b;font-size:.86rem;line-height:1.45}
+.pilot-scorecard-body{display:grid;grid-template-columns:1fr 1fr;gap:32px;padding:28px}
+.pilot-scorecard-body ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+.pilot-scorecard-body li{position:relative;padding-left:22px;color:#355461}
+.pilot-scorecard-body li:before{content:"";position:absolute;left:0;top:.55em;width:8px;height:8px;border-radius:50%;background:#bd9a5f;box-shadow:0 0 0 4px rgba(189,154,95,.13)}
+.pilot-scorecard-footer{align-items:center;background:#f8fafb;border-top:1px solid rgba(17,48,64,.09)}
+.pilot-scorecard-footer p{max-width:720px;margin:0;color:#4d6671;font-size:.92rem;line-height:1.55}
+.pilot-scorecard-footer a{white-space:nowrap;color:#0d607d;font-weight:800;text-decoration:none}
+.pilot-timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.pilot-timeline article{position:relative;padding:22px;border:1px solid rgba(19,53,70,.1);border-radius:18px;background:#fff}
+.pilot-timeline span{display:block;color:#997b48;text-transform:uppercase;letter-spacing:.08em;font-size:.7rem;font-weight:800;margin-bottom:9px}
+.pilot-timeline strong{display:block;color:#173a4a;font-size:1.05rem;margin-bottom:7px}
+.pilot-timeline p{margin:0;color:#617680;font-size:.84rem;line-height:1.5}
+@media (max-width:900px){.pilot-proof-layout{grid-template-columns:1fr}.pilot-proof-tabs{grid-template-columns:repeat(3,1fr)}.pilot-proof-tabs button{justify-content:center}.pilot-timeline{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.pilot-proof-tabs{grid-template-columns:1fr}.pilot-proof-tabs button{justify-content:flex-start}.pilot-scorecard-metrics,.pilot-scorecard-body{grid-template-columns:1fr}.pilot-scorecard-metrics article+article{border-left:0;border-top:1px solid rgba(17,48,64,.09)}.pilot-scorecard-top,.pilot-scorecard-footer{display:block}.pilot-scorecard-top>span{display:inline-block;margin-top:14px}.pilot-scorecard-footer a{display:inline-block;margin-top:16px}.pilot-timeline{grid-template-columns:1fr}}
