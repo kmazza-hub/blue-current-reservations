@@ -370,6 +370,14 @@
       "category": "security",
       "createdAt": "2026-08-02T03:18:10.339Z",
       "id": "audit_1785640690339_55621c"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Created employee Julie",
+      "category": "workforce-foundation",
+      "createdAt": "2026-08-02T03:26:12.635Z",
+      "id": "audit_1785641172635_6x7eck"
     }
   ],
   "reservations": [
@@ -1071,6 +1079,22 @@
       "shiftStart": "2026-07-20T15:30:00.000Z",
       "shiftEnd": "2026-07-20T22:30:00.000Z",
       "maxCovers": 0
+    },
+    {
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "name": "Julie",
+      "email": "",
+      "phone": "",
+      "role": "server",
+      "department": "Service",
+      "hourlyRate": 12,
+      "employmentStatus": "active",
+      "skills": [],
+      "certifications": [],
+      "preferredHours": 30,
+      "createdAt": "2026-08-02T03:26:12.630Z",
+      "id": "emp_1785641172630_35z83n"
     }
   ],
   "sections": [

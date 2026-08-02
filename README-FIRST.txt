@@ -1,32 +1,31 @@
-BLUE CURRENT V34.0.14.3 — EXECUTIVE SHIFT COMPARISON
+BLUE CURRENT V34.0.14.4 — EXECUTIVE PERFORMANCE TRENDS
 
 BUILT FROM
-The uploaded blue-current-reservations(5).zip project.
+The uploaded blue-current-reservations(6).zip project.
 
 REPLACE
 - client/index.html
 - client/styles.css
-- client/js/modules/executiveReplayAnalytics.js
 
 ADD
-- client/js/modules/executiveShiftComparison.js
+- client/js/modules/executivePerformanceTrends.js
 
 ADDS
-- Compare two saved replay sessions
-- Session score, decision, outcome, critical-event, and bookmark deltas
-- Side-by-side shift metrics
-- AI-generated comparison summary
-- Stronger-shift and primary-driver identification
-- Comparison confidence score
-- Copyable executive comparison report
+- Multi-shift performance trend score
+- Average session score
+- First-shift to latest-shift score, critical-event, and outcome deltas
+- Shift score trajectory chart
+- Consistency score
+- Primary performance driver
+- Recommended executive focus
+- Full saved-shift history table
+- Copyable executive trend brief
 - Automatic refresh when a replay session is saved
 
 TEST
-1. Replace/add the four files.
+1. Replace/add the three files.
 2. Run npm run check.
 3. Run npm start.
-4. Save two replay sessions with different playback positions or shift histories.
-5. Select a baseline and comparison shift.
-6. Click Compare Shifts.
-7. Confirm metric deltas, side-by-side values, and AI summary update.
-8. Test Copy Report and Open Session Playback.
+4. Save at least two replay sessions with different metrics.
+5. Confirm trend score, KPI deltas, chart, summary, and table update.
+6. Test Refresh Trends and Copy Trend Brief.

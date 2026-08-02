@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.3">
+  <meta name="blue-current-build" content="34.0.14.4">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.3">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.4">
 </head>
 <body>
 
@@ -3056,6 +3056,68 @@
         </div>
       </section>
 
+      <section class="executive-performance-trends" id="executivePerformanceTrends" aria-labelledby="executivePerformanceTrendsTitle">
+        <div class="executive-performance-trends-heading">
+          <div>
+            <small>Multi-shift performance intelligence</small>
+            <h4 id="executivePerformanceTrendsTitle">Executive Performance Trends</h4>
+            <span id="executivePerformanceTrendsUpdated">Analyzing saved replay sessions for recurring performance patterns…</span>
+          </div>
+
+          <div class="executive-performance-trend-score" id="executivePerformanceTrendScoreCard" data-tone="stable">
+            <small>Trend score</small>
+            <strong id="executivePerformanceTrendScore">0</strong>
+            <span id="executivePerformanceTrendLabel">Awaiting sessions</span>
+          </div>
+        </div>
+
+        <div class="executive-performance-trend-kpis">
+          <article><small>Saved shifts</small><strong id="executiveTrendShiftCount">0</strong><span>Replay sessions analyzed</span></article>
+          <article><small>Average score</small><strong id="executiveTrendAverageScore">0</strong><span>Across retained shifts</span></article>
+          <article><small>Score trend</small><strong id="executiveTrendScoreChange">0</strong><span>First shift to latest</span></article>
+          <article><small>Critical trend</small><strong id="executiveTrendCriticalChange">0</strong><span>First shift to latest</span></article>
+          <article><small>Outcome trend</small><strong id="executiveTrendOutcomeChange">0</strong><span>First shift to latest</span></article>
+        </div>
+
+        <div class="executive-performance-trend-layout">
+          <div class="executive-performance-chart-wrap">
+            <div class="executive-performance-trend-section-heading">
+              <div><small>Shift score trajectory</small><strong>Saved sessions in chronological order</strong></div>
+              <span id="executiveTrendWindowLabel">0 shifts</span>
+            </div>
+            <div id="executivePerformanceTrendChart" class="executive-performance-trend-chart"></div>
+          </div>
+
+          <aside class="executive-performance-trend-insight">
+            <small>Executive trend summary</small>
+            <strong id="executiveTrendInsightTitle">No trend available</strong>
+            <p id="executiveTrendInsightDetail">Save replay sessions over multiple shifts to identify recurring performance patterns.</p>
+
+            <dl class="executive-performance-trend-meta">
+              <div><dt>Direction</dt><dd id="executiveTrendDirection">—</dd></div>
+              <div><dt>Primary driver</dt><dd id="executiveTrendPrimaryDriver">—</dd></div>
+              <div><dt>Consistency</dt><dd id="executiveTrendConsistency">0%</dd></div>
+              <div><dt>Recommended focus</dt><dd id="executiveTrendFocus">Save more shifts</dd></div>
+            </dl>
+
+            <div class="executive-performance-trend-actions">
+              <button type="button" id="executiveTrendRefresh">Refresh trends</button>
+              <button type="button" class="executive-performance-trend-secondary" id="executiveTrendCopyBrief">Copy trend brief</button>
+            </div>
+
+            <span id="executiveTrendStatus" role="status"></span>
+          </aside>
+        </div>
+
+        <div class="executive-performance-trend-table-wrap">
+          <div class="executive-performance-trend-section-heading">
+            <div><small>Shift history</small><strong>Performance metrics by saved replay</strong></div>
+            <span id="executiveTrendHistoryCount">0 records</span>
+          </div>
+          <div id="executivePerformanceTrendTable" class="executive-performance-trend-table"></div>
+        </div>
+      </section>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4577,7 +4639,8 @@
   <script src="js/modules/executiveIntelligenceTimeline.js?v=34.0.14.1"></script>
   <script src="js/modules/executiveSessionPlayback.js?v=34.0.14.2"></script>
   <script src="js/modules/executiveReplayAnalytics.js?v=34.0.14.3"></script>
-  <script src="js/modules/executiveShiftComparison.js?v=34.0.14.3"></script>
+  <script src="js/modules/executiveShiftComparison.js?v=34.0.14.4"></script>
+  <script src="js/modules/executivePerformanceTrends.js?v=34.0.14.4"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

@@ -10184,3 +10184,225 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
   .executive-shift-comparison-meta{grid-template-columns:1fr}
   .executive-shift-comparison-row{grid-template-columns:1.3fr repeat(3,.8fr)}
 }
+
+
+/* V34.0.14.4 — Executive Performance Trends */
+.executive-performance-trends{
+  margin-top:.8rem;
+  padding:.85rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 88% 8%,rgba(217,182,95,.06),transparent 31%),
+    rgba(0,0,0,.08);
+}
+.executive-performance-trends-heading,
+.executive-performance-trend-section-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+}
+.executive-performance-trends-heading small,
+.executive-performance-trend-section-heading small,
+.executive-performance-trend-insight small,
+.executive-performance-trend-kpis small{
+  color:rgba(255,255,255,.45);
+  font-size:.58rem;
+  font-weight:800;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+.executive-performance-trends-heading h4{
+  margin:.28rem 0 0;
+  color:#fff;
+  font-size:.95rem;
+}
+#executivePerformanceTrendsUpdated{
+  display:block;
+  margin-top:.22rem;
+  color:rgba(255,255,255,.45);
+  font-size:.6rem;
+}
+.executive-performance-trend-score{
+  min-width:160px;
+  padding:.7rem;
+  border-radius:13px;
+  background:rgba(98,211,163,.1);
+  text-align:right;
+}
+.executive-performance-trend-score small,
+.executive-performance-trend-score strong,
+.executive-performance-trend-score span{display:block}
+.executive-performance-trend-score strong{margin-top:.22rem;color:#fff;font-size:1.35rem}
+.executive-performance-trend-score span{margin-top:.18rem;color:rgba(255,255,255,.52);font-size:.58rem}
+.executive-performance-trend-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.executive-performance-trend-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.executive-performance-trend-kpis{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:.48rem;
+  margin-top:.7rem;
+}
+.executive-performance-trend-kpis article{
+  padding:.58rem;
+  border-radius:10px;
+  background:rgba(255,255,255,.03);
+}
+.executive-performance-trend-kpis strong,
+.executive-performance-trend-kpis span{display:block}
+.executive-performance-trend-kpis strong{margin-top:.2rem;color:#fff;font-size:.76rem}
+.executive-performance-trend-kpis span{margin-top:.17rem;color:rgba(255,255,255,.42);font-size:.55rem}
+.executive-performance-trend-layout{
+  display:grid;
+  grid-template-columns:1.35fr .75fr;
+  gap:.7rem;
+  margin-top:.7rem;
+}
+.executive-performance-chart-wrap,
+.executive-performance-trend-insight,
+.executive-performance-trend-table-wrap{
+  padding:.72rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:13px;
+  background:rgba(255,255,255,.02);
+}
+.executive-performance-trend-section-heading strong{display:block;margin-top:.22rem;color:#fff;font-size:.7rem}
+.executive-performance-trend-section-heading>span{color:rgba(255,255,255,.42);font-size:.56rem}
+.executive-performance-trend-chart{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(52px,1fr));
+  gap:.45rem;
+  align-items:end;
+  min-height:190px;
+  margin-top:.65rem;
+  padding:.55rem;
+  border-radius:11px;
+  background:rgba(255,255,255,.02);
+}
+.executive-performance-trend-bar{
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  min-height:155px;
+}
+.executive-performance-trend-bar i{
+  display:block;
+  width:100%;
+  min-height:4px;
+  border-radius:7px 7px 3px 3px;
+  background:linear-gradient(180deg,#62d3a3,#5da4ff);
+}
+.executive-performance-trend-bar strong,
+.executive-performance-trend-bar span{
+  display:block;
+  text-align:center;
+}
+.executive-performance-trend-bar strong{margin-top:.35rem;color:#fff;font-size:.58rem}
+.executive-performance-trend-bar span{margin-top:.14rem;color:rgba(255,255,255,.4);font-size:.5rem}
+.executive-performance-trend-insight>strong{
+  display:block;
+  margin-top:.28rem;
+  color:#fff;
+  font-size:.78rem;
+}
+.executive-performance-trend-insight>p{
+  margin:.38rem 0 0;
+  color:rgba(255,255,255,.48);
+  font-size:.61rem;
+  line-height:1.45;
+}
+.executive-performance-trend-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.45rem;
+  margin:.68rem 0;
+}
+.executive-performance-trend-meta div{
+  padding:.54rem;
+  border-radius:9px;
+  background:rgba(255,255,255,.035);
+}
+.executive-performance-trend-meta dt{color:rgba(255,255,255,.4);font-size:.52rem;text-transform:uppercase}
+.executive-performance-trend-meta dd{margin:.18rem 0 0;color:#fff;font-size:.64rem;font-weight:800}
+.executive-performance-trend-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.45rem;
+}
+.executive-performance-trend-actions button{
+  min-height:36px;
+  padding:0 .65rem;
+  border-radius:999px;
+  font:inherit;
+  font-size:.58rem;
+  font-weight:800;
+  cursor:pointer;
+}
+#executiveTrendRefresh{
+  border:0;
+  color:#082a31;
+  background:#d9b65f;
+}
+.executive-performance-trend-secondary{
+  border:1px solid rgba(255,255,255,.08);
+  color:#fff;
+  background:rgba(255,255,255,.04);
+}
+#executiveTrendStatus{
+  display:block;
+  min-height:1rem;
+  margin-top:.45rem;
+  color:rgba(255,255,255,.44);
+  font-size:.58rem;
+}
+.executive-performance-trend-table-wrap{margin-top:.7rem}
+.executive-performance-trend-table{
+  display:grid;
+  gap:.35rem;
+  margin-top:.6rem;
+}
+.executive-performance-trend-row{
+  display:grid;
+  grid-template-columns:1.5fr repeat(5,.8fr);
+  gap:.4rem;
+  align-items:center;
+  padding:.5rem;
+  border-radius:9px;
+  background:rgba(255,255,255,.025);
+}
+.executive-performance-trend-row span,
+.executive-performance-trend-row strong{
+  color:rgba(255,255,255,.7);
+  font-size:.57rem;
+}
+.executive-performance-trend-row strong{color:#fff}
+.executive-performance-trend-header{
+  background:rgba(255,255,255,.045);
+}
+.executive-performance-trend-header span{
+  color:rgba(255,255,255,.42);
+  font-size:.52rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+.executive-performance-trend-empty{
+  padding:.75rem;
+  border:1px dashed rgba(255,255,255,.08);
+  border-radius:10px;
+  color:rgba(255,255,255,.44);
+  font-size:.58rem;
+  text-align:center;
+}
+@media(max-width:980px){
+  .executive-performance-trend-kpis{grid-template-columns:repeat(3,1fr)}
+  .executive-performance-trend-layout{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+  .executive-performance-trends-heading,
+  .executive-performance-trend-section-heading{flex-direction:column}
+  .executive-performance-trend-kpis,
+  .executive-performance-trend-meta,
+  .executive-performance-trend-actions{grid-template-columns:1fr}
+  .executive-performance-trend-row{grid-template-columns:1.3fr repeat(5,.7fr)}
+}
