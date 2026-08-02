@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.3.2";
+    static VERSION = "34.4.0";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -217,6 +217,29 @@
       return window.BlueCurrentOfflineSync?.resolveConflict?.(conflictId, strategy, mergedBody) || null;
     }
 
+    syncVersions() {
+      return this.get("/api/sync/versions", {
+        cache: false,
+        priority: 70
+      });
+    }
+
+    reconcileSync(entries = []) {
+      return this.post("/api/sync/reconcile", { entries }, {
+        cache: false,
+        priority: 75,
+        offlineQueue: false
+      });
+    }
+
+    reconcileAudit(entryIds = [], headHash = null) {
+      return this.post("/api/audit/reconcile", { entryIds, headHash }, {
+        cache: false,
+        priority: 75,
+        offlineQueue: false
+      });
+    }
+
     health() { return this.request("/api/health"); }
     commandCenter(locationId = "loc_marina") { return this.request(`/api/command-center?locationId=${encodeURIComponent(locationId)}`); }
     operationsFeed(locationId = "loc_marina", category = "all", limit = 40) { return this.request(`/api/operations-feed?locationId=${encodeURIComponent(locationId)}&category=${encodeURIComponent(category)}&limit=${encodeURIComponent(limit)}`); }
@@ -411,5 +434,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.3.2";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.4.0";
 })();

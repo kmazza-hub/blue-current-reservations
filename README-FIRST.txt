@@ -1,47 +1,46 @@
-BLUE CURRENT V34.3.2 — DURABLE AUDIT & RECONCILIATION LEDGER
+BLUE CURRENT V34.4.0 — SERVER IDEMPOTENCY & VERSIONED SYNCHRONIZATION
 
 REPLACE
 - client/index.html
 - client/js/cloud/cloudApi.js
-- client/js/modules/cloudFoundation.js
-- client/js/modules/startupDiagnostics.js
+- server/api/router.js
+- server/server.js
 
 ADD
-- client/js/cloud/auditReconciliationLedger.js
+- server/services/idempotencyService.js
+- server/services/syncReconciliationService.js
 
 IMPLEMENTED
-- Durable local audit ledger
-- Hash-chained, sequence-validated audit records
-- Automatic sensitive-field redaction
-- Authentication, API, offline sync, bootstrap, configuration, reservation, and governance event capture
-- Successful cloud-write auditing
-- Organization, user, role, domain, source, severity, and timestamp attribution
-- Full ledger integrity verification
-- Cloud audit-log import
-- Local-to-cloud audit reconciliation
-- Missing-local and pending-cloud discrepancy detection
-- Audit checkpoint status and head hashes
-- AppState audit integrity and reconciliation status
-- Cloud Foundation verify, reconcile, export, and download APIs
-- Filterable audit querying
-- Downloadable JSON audit packages
-- Persistent audit export and reconciliation history
-- Startup Diagnostics audit metrics
-- Integrity-failure events and operating status warnings
+- Server-side idempotency-key storage and replay
+- Twenty-four-hour idempotency retention
+- Duplicate in-progress operation protection
+- Replayed-response headers
+- Optimistic concurrency using If-Match or baseVersion
+- HTTP 412 version-conflict responses
+- Current server state returned with conflicts
+- Per-organization, path, and entity resource versions
+- Version increments after successful writes
+- ETag and resource-version response headers
+- Versioned-resource realtime events
+- Synchronization reconciliation endpoint
+- Server resource-version endpoint
+- Audit reconciliation endpoint
+- Synchronization audit records
+- Expanded CORS support for idempotency and version headers
+- Cloud API helpers for sync and audit reconciliation
 
 TEST
-1. Replace/add the five files.
+1. Replace/add the six files.
 2. Run npm run check.
 3. Run npm start.
-4. Sign in and perform several writes, offline replays, configuration updates, and reservation actions.
-5. Inspect:
-   BlueCurrentAuditLedger.snapshot()
-6. Verify the chain:
-   BlueCurrentAuditLedger.verify()
-7. Export an audit package:
-   BlueCurrentAuditLedger.exportPackage()
-8. Download an audit package:
-   BlueCurrentAuditLedger.download()
-9. Refresh and confirm the ledger remains durable.
-10. Confirm cloud audit logs are imported during bootstrap and reconciliation status appears in Startup Diagnostics.
-11. For a controlled integrity test, modify one stored audit entry in localStorage and run verify(); confirm the failure is detected.
+4. Sign in and make a write with X-Blue-Current-Idempotency-Key.
+5. Repeat the same request and confirm the original response is replayed with:
+   X-Blue-Current-Idempotency-Replayed: true
+6. Make a versioned write using If-Match.
+7. Repeat with an outdated version and confirm HTTP 412 with current server state.
+8. Inspect:
+   GET /api/sync/versions
+9. Reconcile client versions with:
+   POST /api/sync/reconcile
+10. Reconcile audit records with:
+    POST /api/audit/reconcile

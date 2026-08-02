@@ -4,14 +4,42 @@
 const { URL } = require("url");
 
 function sendJson(response, status, payload) {
-  response.writeHead(status, {
+  const headers = {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS"
-  });
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match",
+    "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+  };
+  if (response._idempotencyReplayed) headers["X-Blue-Current-Idempotency-Replayed"] = "true";
+  if (response._resourceVersion != null) {
+    headers["X-Blue-Current-Resource-Version"] = String(response._resourceVersion);
+    headers.ETag = `"${response._resourceVersion}"`;
+  }
+  response.writeHead(status, headers);
   response.end(JSON.stringify(payload));
+
+  const context = response._writeContext;
+  if (context && !context.completed) {
+    context.completed = true;
+    const operation = status < 500
+      ? context.idempotencyService.complete(context.idempotencyKey, status, payload)
+      : context.idempotencyService.fail(context.idempotencyKey, status, payload);
+    operation.catch(() => {});
+    if (status >= 200 && status < 400 && context.syncPreparation?.ok) {
+      context.syncService.commit({
+        key: context.syncPreparation.key,
+        organizationId: context.organizationId,
+        path: context.path,
+        entityId: context.entityId,
+        actor: context.actor,
+        payload
+      }).then(version => {
+        response._resourceVersion = version.version;
+      }).catch(() => {});
+    }
+  }
 }
 
 async function readJson(request) {
@@ -20,7 +48,8 @@ async function readJson(request) {
     body += chunk;
     if (body.length > 1_000_000) throw new Error("Payload too large");
   }
-  return body ? JSON.parse(body) : {};
+  request._jsonBody = body ? JSON.parse(body) : {};
+  return request._jsonBody;
 }
 
 function bearerToken(request) {
@@ -28,15 +57,15 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
     if (request.method === "OPTIONS") {
       response.writeHead(204, {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS"
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
       });
       return response.end();
     }
@@ -44,7 +73,7 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.0.5f",
+        version: "34.4.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -112,6 +141,107 @@ function createRouter({ database, auditService, reservationService, realtimeHub,
     const allowedLocations = auth.membership.locationIds || [];
     const canAccessLocation = locationId =>
       allowedLocations.includes("*") || allowedLocations.includes(locationId);
+
+    const writeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+    if (writeMethods.has(request.method)) {
+      const idempotencyKey = idempotencyService.key(request, organizationId);
+      if (idempotencyKey) {
+        const existing = await idempotencyService.find(idempotencyKey);
+        if (existing?.status === "complete" || existing?.status === "failed") {
+          response._idempotencyReplayed = true;
+          return sendJson(response, existing.responseStatus, existing.responsePayload);
+        }
+        if (existing?.status === "processing") {
+          return sendJson(response, 409, {
+            error: "An operation with this idempotency key is already processing.",
+            code: "IDEMPOTENCY_IN_PROGRESS"
+          });
+        }
+        await idempotencyService.reserve(idempotencyKey, {
+          method: request.method,
+          path: url.pathname,
+          organizationId,
+          userId: auth.user.id
+        });
+      }
+
+      const body = request._jsonBody || await readJson(request);
+      const entityId = body.id || body.entityId || body.reservationId || body.tableId ||
+        decodeURIComponent(url.pathname.split("/").filter(Boolean).pop() || "collection");
+      const ifMatch = request.headers["if-match"];
+      const expectedVersion = ifMatch
+        ? Number(String(ifMatch).replaceAll('"', ""))
+        : body.baseVersion ?? null;
+      const preparation = await syncReconciliationService.prepare({
+        organizationId,
+        path: url.pathname,
+        entityId,
+        expectedVersion
+      });
+
+      if (!preparation.ok) {
+        const current = await database.get("resourceVersions", preparation.key);
+        if (idempotencyKey) {
+          await idempotencyService.fail(idempotencyKey, 412, {
+            error: "The resource changed after the client snapshot.",
+            code: "VERSION_CONFLICT",
+            version: preparation.currentVersion,
+            expectedVersion: preparation.expectedVersion,
+            current: current?.lastPayload || null
+          });
+        }
+        return sendJson(response, 412, {
+          error: "The resource changed after the client snapshot.",
+          code: "VERSION_CONFLICT",
+          version: preparation.currentVersion,
+          expectedVersion: preparation.expectedVersion,
+          current: current?.lastPayload || null
+        });
+      }
+
+      response._writeContext = {
+        idempotencyService,
+        syncService: syncReconciliationService,
+        idempotencyKey,
+        syncPreparation: preparation,
+        organizationId,
+        path: url.pathname,
+        entityId,
+        actor: auth.user.name,
+        completed: false
+      };
+    }
+
+    if (url.pathname === "/api/sync/reconcile" && request.method === "POST") {
+      const body = request._jsonBody || await readJson(request);
+      return sendJson(response, 200, await syncReconciliationService.reconcile(
+        organizationId,
+        Array.isArray(body.entries) ? body.entries : []
+      ));
+    }
+
+    if (url.pathname === "/api/sync/versions" && request.method === "GET") {
+      const db = await database.read();
+      return sendJson(response, 200, {
+        organizationId,
+        versions: (db.resourceVersions || []).filter(item => item.organizationId === organizationId)
+      });
+    }
+
+    if (url.pathname === "/api/audit/reconcile" && request.method === "POST") {
+      const body = request._jsonBody || await readJson(request);
+      const db = await database.read();
+      const cloudEntries = (db.auditLogs || []).filter(item => item.organizationId === organizationId);
+      const clientIds = new Set(Array.isArray(body.entryIds) ? body.entryIds : []);
+      return sendJson(response, 200, {
+        organizationId,
+        reconciledAt: new Date().toISOString(),
+        cloudHead: cloudEntries.at(-1)?.id || null,
+        cloudEntries,
+        missingOnClient: cloudEntries.filter(item => !clientIds.has(item.id)),
+        receivedClientHead: body.headHash || null
+      });
+    }
 
     if (url.pathname === "/api/operations-feed" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || "loc_marina";
