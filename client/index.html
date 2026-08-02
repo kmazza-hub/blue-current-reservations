@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.1">
+  <meta name="blue-current-build" content="34.0.14.2">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.1">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.2">
 </head>
 <body>
 
@@ -2920,6 +2920,35 @@
           <article><small>Visible critical events</small><strong id="executivePlaybackCritical">0</strong></article>
           <article><small>Session score</small><strong id="executivePlaybackScore">100</strong></article>
         </div>
+
+        <div class="executive-playback-analytics">
+          <div class="executive-playback-analytics-heading">
+            <div>
+              <small>Replay analytics</small>
+              <strong id="executivePlaybackAnalyticsTitle">No event selected</strong>
+              <span id="executivePlaybackAnalyticsDetail">Playback analytics appear as events are revealed.</span>
+            </div>
+            <div class="executive-playback-analytics-actions">
+              <button type="button" id="executivePlaybackBookmark" disabled>Bookmark event</button>
+              <button type="button" class="executive-playback-secondary" id="executivePlaybackSaveSession">Save replay</button>
+            </div>
+          </div>
+
+          <div class="executive-playback-deltas">
+            <article><small>Score delta</small><strong id="executivePlaybackScoreDelta">0</strong></article>
+            <article><small>Decision delta</small><strong id="executivePlaybackDecisionDelta">0</strong></article>
+            <article><small>Outcome delta</small><strong id="executivePlaybackOutcomeDelta">0</strong></article>
+            <article><small>Critical delta</small><strong id="executivePlaybackCriticalDelta">0</strong></article>
+          </div>
+
+          <div class="executive-playback-bookmarks-wrap">
+            <div class="executive-playback-analytics-heading">
+              <div><small>Bookmarks</small><strong>Saved executive moments</strong></div>
+              <span id="executivePlaybackBookmarkCount">0 bookmarks</span>
+            </div>
+            <div id="executivePlaybackBookmarkList" class="executive-playback-bookmark-list"></div>
+          </div>
+        </div>
       </div>
 
       <div class="executive-timeline-layout">
@@ -4441,7 +4470,8 @@
   <script src="js/modules/confidenceDriftMonitor.js?v=34.0.13.9"></script>
   <script src="js/modules/retrainingPlanner.js?v=34.0.14.0"></script>
   <script src="js/modules/executiveIntelligenceTimeline.js?v=34.0.14.1"></script>
-  <script src="js/modules/executiveSessionPlayback.js?v=34.0.14.1"></script>
+  <script src="js/modules/executiveSessionPlayback.js?v=34.0.14.2"></script>
+  <script src="js/modules/executiveReplayAnalytics.js?v=34.0.14.2"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

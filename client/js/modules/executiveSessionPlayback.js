@@ -74,7 +74,27 @@
     byId("executivePlaybackDecisions").textContent = String(decisions);
     byId("executivePlaybackOutcomes").textContent = String(outcomes);
     byId("executivePlaybackCritical").textContent = String(critical);
-    byId("executivePlaybackScore").textContent = String(sessionScore(visible));
+    const score = sessionScore(visible);
+    byId("executivePlaybackScore").textContent = String(score);
+
+    window.dispatchEvent(new CustomEvent("bluecurrent:executive-playback-position-changed", {
+      detail:{
+        position:state.position,
+        total:state.events.length,
+        current:current ? {
+          type:current.type,
+          severity:current.severity,
+          title:current.title,
+          time:current.time
+        } : null,
+        snapshot:{
+          decisions,
+          outcomes,
+          critical,
+          score
+        }
+      }
+    }));
 
     const range = byId("executivePlaybackRange");
     range.value = String(state.position);
@@ -103,7 +123,16 @@
     const speed = Number(byId("executivePlaybackSpeed").value || 1500);
     state.timer = setInterval(() => {
       state.position += 1;
+      const revealed = state.events[state.position - 1];
       render();
+
+      if (revealed?.severity === "critical") {
+        stop();
+        window.dispatchEvent(new CustomEvent("bluecurrent:executive-playback-critical-pause", {
+          detail:{event:revealed,position:state.position}
+        }));
+        return;
+      }
 
       if (state.position >= state.events.length) {
         stop();
