@@ -21,3 +21,154 @@ const section=document.querySelector("[data-product-tour]");if(!section)return;c
 function render(i){active=i;const d=data[i];tabs.forEach((t,x)=>t.classList.toggle("is-active",x===i));orbit.forEach((t,x)=>t.classList.toggle("is-active",x===i));document.getElementById("tourKicker").textContent=d[0];document.getElementById("tourTitle").textContent=d[1];document.getElementById("tourDescription").textContent=d[2];points(d[3]);document.getElementById("tourPanelEyebrow").textContent=d[4][0];document.getElementById("tourPanelTitle").textContent=d[4][1];document.getElementById("tourPanelStatus").textContent=d[4][2];document.getElementById("tourScreenLabel").textContent=d[0];details(d[5]);if(section.dataset.productTour==="operations"){document.getElementById("tourRecommendation").textContent=d[6];document.getElementById("tourReason").textContent=d[7];document.getElementById("tourConfidence").textContent=d[8];document.querySelectorAll("#arrivalChart span").forEach((b,x)=>b.style.setProperty("--height",`${d[9][x]}%`));}}
 tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,i)=>t.addEventListener("click",()=>{render(i);section.scrollIntoView({behavior:"smooth"});}));setInterval(()=>render((active+1)%data.length),11000);
 })();
+
+
+(() => {
+  "use strict";
+
+  const conciergeScenarios = [
+    {
+      caller:"Private caller · Marina Grille",
+      state:"In progress",
+      intent:"Reservation request",
+      confidence:"96% confidence",
+      transcript:[
+        ["Guest","Hi, I’m looking for a table for six this Saturday around seven. It’s my wife’s birthday."],
+        ["Blue Current","I can help with that. Would you prefer waterfront seating or the main dining room?"]
+      ],
+      details:[["Party size","6 guests"],["Requested time","7:00–7:30 PM"],["Preference","Waterfront"],["Occasion","Birthday"]],
+      outcome:"Offer 7:15 PM waterfront and send immediate confirmation."
+    },
+    {
+      caller:"Returning guest · Harbor House",
+      state:"In progress",
+      intent:"Reservation change",
+      confidence:"93% confidence",
+      transcript:[
+        ["Guest","Can we move our reservation from six thirty to seven? We’re running late."],
+        ["Blue Current","I can check that. Your reservation is for four guests under Morgan, correct?"]
+      ],
+      details:[["Party size","4 guests"],["Current time","6:30 PM"],["Requested time","7:00 PM"],["Guest status","Returning"]],
+      outcome:"Move reservation to 7:00 PM and notify the host stand."
+    },
+    {
+      caller:"Private caller · River & Rail",
+      state:"Escalation",
+      intent:"Private dining inquiry",
+      confidence:"89% confidence",
+      transcript:[
+        ["Guest","I’m planning a rehearsal dinner for about forty people in October."],
+        ["Blue Current","I can collect the details and connect you with the events manager. Do you have a preferred date?"]
+      ],
+      details:[["Event","Rehearsal dinner"],["Guests","Approx. 40"],["Timing","October"],["Priority","High value"]],
+      outcome:"Capture event requirements and escalate to the events manager."
+    }
+  ];
+
+  const nextScenario = document.getElementById("conciergeNextScenario");
+  let conciergeIndex = 0;
+
+  function renderConcierge(index) {
+    const scenario = conciergeScenarios[index];
+    if (!scenario) return;
+
+    document.getElementById("conciergeCallerName").textContent = scenario.caller;
+    document.getElementById("conciergeCallState").textContent = scenario.state;
+    document.getElementById("conciergeIntentLabel").textContent = scenario.intent;
+    document.getElementById("conciergeIntentConfidence").textContent = scenario.confidence;
+    document.getElementById("conciergeOutcome").textContent = scenario.outcome;
+
+    const transcript = document.getElementById("conciergeTranscript");
+    transcript.replaceChildren();
+    scenario.transcript.forEach((entry,entryIndex) => {
+      const article = document.createElement("article");
+      article.className = entryIndex === 0 ? "guest" : "ai";
+      article.innerHTML = "<b></b><p></p>";
+      article.querySelector("b").textContent = entry[0];
+      article.querySelector("p").textContent = entry[1];
+      transcript.append(article);
+    });
+
+    const details = document.getElementById("conciergeDetails");
+    details.replaceChildren();
+    scenario.details.forEach(entry => {
+      const article = document.createElement("article");
+      article.innerHTML = "<span></span><b></b>";
+      article.querySelector("span").textContent = entry[0];
+      article.querySelector("b").textContent = entry[1];
+      details.append(article);
+    });
+  }
+
+  nextScenario?.addEventListener("click",() => {
+    conciergeIndex = (conciergeIndex+1)%conciergeScenarios.length;
+    renderConcierge(conciergeIndex);
+  });
+
+  let callSeconds = 42;
+  const timer = document.getElementById("conciergeCallTimer");
+  if (timer) {
+    setInterval(() => {
+      callSeconds += 1;
+      const minutes = String(Math.floor(callSeconds/60)).padStart(2,"0");
+      const seconds = String(callSeconds%60).padStart(2,"0");
+      timer.textContent = `${minutes}:${seconds}`;
+    },1000);
+  }
+
+  const executiveDecisions = [
+    {
+      title:"Marina Grille arrival compression",
+      detail:"Move one host to waterfront arrivals before 7:30 PM to protect the guest arrival experience.",
+      owner:"Regional Manager",
+      urgency:"Today",
+      confidence:"94%",
+      value:"$1,100"
+    },
+    {
+      title:"Harbor House kitchen pacing",
+      detail:"Hold large-party reservation releases for twelve minutes while expo pressure normalizes.",
+      owner:"General Manager",
+      urgency:"Now",
+      confidence:"91%",
+      value:"$850"
+    },
+    {
+      title:"River & Rail guest opportunity",
+      detail:"Assign a manager to follow up on seven high-value guest requests captured by AI Concierge.",
+      owner:"Events Manager",
+      urgency:"Today",
+      confidence:"89%",
+      value:"$2,400"
+    }
+  ];
+
+  const decisionCards = Array.from(document.querySelectorAll("[data-executive-decision]"));
+  const nextDecision = document.getElementById("executiveNextDecision");
+  let decisionIndex = 0;
+
+  function renderDecision(index) {
+    decisionIndex = index;
+    const item = executiveDecisions[index];
+    decisionCards.forEach((card,cardIndex) => card.classList.toggle("is-active",cardIndex === index));
+    document.getElementById("executiveDecisionTitle").textContent = item.title;
+    document.getElementById("executiveDecisionDetail").textContent = item.detail;
+    document.getElementById("executiveDecisionOwner").textContent = item.owner;
+    document.getElementById("executiveDecisionUrgency").textContent = item.urgency;
+    document.getElementById("executiveDecisionConfidence").textContent = item.confidence;
+    document.getElementById("executiveDecisionValue").textContent = item.value;
+  }
+
+  decisionCards.forEach((card,index) => card.addEventListener("click",() => renderDecision(index)));
+  nextDecision?.addEventListener("click",() => renderDecision((decisionIndex+1)%executiveDecisions.length));
+
+  const portfolioTime = document.getElementById("executivePortfolioTime");
+  if (portfolioTime) {
+    const update = () => {
+      const now = new Date();
+      portfolioTime.textContent = `${new Intl.DateTimeFormat("en-US",{weekday:"long"}).format(now)} · ${new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit"}).format(now)}`;
+    };
+    update();
+    setInterval(update,30000);
+  }
+})();

@@ -1,19 +1,30 @@
-BLUECURRENTCO.COM V2.3 — PLATFORM & OPERATIONS PRODUCT TOURS
+BLUECURRENTCO.COM V2.4 — AI CONCIERGE & EXECUTIVE COMMAND SHOWCASES
+
+BUILDS ON V2.3.
 
 REPLACE
-- platform.html
-- operations.html
+- concierge.html
+- executive.html
 - styles.css
 - js/site.js
 
-ADDS
-- Interactive Platform tour
-- Interactive Operations tour
-- Four scenarios on each page
-- Animated architecture orbit controls
-- Dynamic product interface content
-- Auto-rotation and manual tabs
-- Responsive layouts
+IMPLEMENTED
+- Interactive AI Concierge call console
+- Multiple guest-call scenarios
+- Live call timer and animated voice waveform
+- Intent detection, confidence, captured details, and recommended outcome
+- Concierge operating flow and capability showcase
+- Interactive Executive Command dashboard
+- Portfolio KPIs and location health
+- Ranked executive decision queue
+- Dynamic decision inspector
+- Owner, urgency, confidence, and expected value
+- Executive capability showcase
+- Responsive desktop, tablet, and mobile layouts
 
 TEST
-Open platform.html and operations.html, click all four tabs, test the orbit controls, and verify the tours auto-rotate.
+1. Open concierge.html.
+2. Test Next Call Scenario and confirm the call timer runs.
+3. Open executive.html.
+4. Test Next Decision and click each decision card.
+5. Confirm desktop, tablet, and mobile layouts.
