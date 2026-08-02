@@ -9,6 +9,7 @@
   const INCIDENT_KEY = "blueCurrent.autonomyIncidentResponseCenter.v34.1.8";
   const RECOVERY_KEY = "blueCurrent.autonomyRecoveryRequalification.v34.1.9";
   const CERTIFICATION_KEY = "blueCurrent.autonomyAssuranceCertification.v34.1.10";
+  const RENEWAL_KEY = "blueCurrent.certificationRenewalMonitor.v34.1.11";
   const byId = id => document.getElementById(id);
 
   const DEFAULT_POLICY = {
@@ -82,7 +83,20 @@
     const incidentState = read(INCIDENT_KEY);
     const recoveryState = read(RECOVERY_KEY);
     const certificationState = read(CERTIFICATION_KEY);
+    const renewalState = read(RENEWAL_KEY);
     const reasons = [];
+
+    const renewalDecisions = Array.isArray(renewalState.decisions)
+      ? renewalState.decisions
+      : [];
+    const renewalText = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+    const renewalBlock = renewalDecisions.find(item =>
+      ["expired","suspended"].includes(item.state) &&
+      renewalText.includes(String(item.domain || "").toLowerCase())
+    );
+    if (renewalBlock) {
+      return {result:"blocked",reason:`${renewalBlock.domain} certification is ${renewalBlock.state}.`};
+    }
 
     const certificates = Array.isArray(certificationState.certificates)
       ? certificationState.certificates
@@ -479,7 +493,7 @@
       },0);
     });
     window.addEventListener("storage",event => {
-      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY,INCIDENT_KEY,RECOVERY_KEY,CERTIFICATION_KEY].includes(event.key)) {
+      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY,INCIDENT_KEY,RECOVERY_KEY,CERTIFICATION_KEY,RENEWAL_KEY].includes(event.key)) {
         load();
         reviewAll();
         render();

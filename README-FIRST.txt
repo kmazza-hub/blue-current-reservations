@@ -1,4 +1,4 @@
-BLUE CURRENT V34.1.10 — AUTONOMY ASSURANCE & CERTIFICATION CENTER
+BLUE CURRENT V34.1.11 — CERTIFICATION RENEWAL & COMPLIANCE MONITOR
 
 REPLACE
 - client/index.html
@@ -6,29 +6,28 @@ REPLACE
 - client/js/modules/aiBrainAutonomyGuardrails.js
 
 ADD
-- client/js/modules/autonomyAssuranceCertification.js
+- client/js/modules/certificationRenewalMonitor.js
 
 ADDS
-- Domain certification matrix for Kitchen, Staffing, Floor, Demand, and Executive Recovery
-- Eight certification gates covering outcomes, value, rollout, incidents, recovery, governor authorization, and audit continuity
-- Evidence and control scoring
-- Certified, Conditional, and Not Certified states
-- 90-day full certificates and 30-day conditional certificates
-- Certification expiry monitoring
-- Certificate issuance and revocation
-- Copyable assurance report
-- One-click certification-aligned guardrail policy
-- Persistent certification audit history
-- Guardrail enforcement requiring a current domain certificate for bounded execution
+- Continuous certificate-validity monitoring
+- Renewal-due and expired-certificate detection
+- Evidence and control drift analysis
+- Eight continuous-compliance renewal gates
+- Full 90-day renewal approval
+- Conditional 30-day renewal
+- Certificate suspension
+- Compliance-coverage and posture scoring
+- Copyable renewal and compliance brief
+- Persistent renewal audit trail
+- Guardrail enforcement for expired or suspended certifications
 
 TEST
 1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Select each domain and review its certification gates.
-5. Build sufficient outcome, rollout, incident, and recovery evidence.
-6. Issue a Conditional or Certified certificate.
-7. Confirm bounded execution requires a current certificate.
-8. Apply the certification policy and confirm Autonomy Guardrails updates.
-9. Revoke a certificate and confirm the domain returns to approval-required operation.
-10. Test Copy Assurance Report.
+4. Issue a certificate in Autonomy Assurance & Certification Center.
+5. Open Certification Renewal & Compliance Monitor.
+6. Review days remaining, evidence drift, control drift, and renewal gates.
+7. Approve a full or conditional renewal.
+8. Suspend a certificate and confirm matching bounded-autonomy actions become blocked.
+9. Test Copy Compliance Brief.

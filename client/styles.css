@@ -11608,3 +11608,65 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .autonomy-assurance-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
 @media(max-width:980px){.autonomy-assurance-kpis{grid-template-columns:repeat(3,1fr)}.autonomy-assurance-layout,.autonomy-assurance-lower{grid-template-columns:1fr}}
 @media(max-width:650px){.autonomy-assurance-heading,.autonomy-assurance-section-heading{flex-direction:column}.autonomy-assurance-kpis,.autonomy-assurance-meta{grid-template-columns:1fr}.autonomy-assurance-domain-item{grid-template-columns:34px 1fr}.autonomy-assurance-badge{grid-column:2;justify-self:start}}
+
+
+/* V34.1.11 — Certification Renewal & Compliance Monitor */
+.certification-renewal-monitor{margin-top:.7rem;padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:radial-gradient(circle at 88% 8%,rgba(93,164,255,.07),transparent 32%),rgba(255,255,255,.02)}
+.certification-renewal-heading,.certification-renewal-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.certification-renewal-heading small,.certification-renewal-section-heading small,.certification-renewal-inspector small,.certification-renewal-kpis small,.certification-renewal-brief-panel small{color:rgba(255,255,255,.45);font-size:.56rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.certification-renewal-heading>div:first-child>strong{display:block;margin-top:.22rem;color:#fff;font-size:.78rem}
+.certification-renewal-heading>div:first-child>span{display:block;margin-top:.18rem;color:rgba(255,255,255,.44);font-size:.57rem}
+.certification-renewal-score{min-width:155px;padding:.66rem;border-radius:12px;background:rgba(98,211,163,.1);text-align:right}
+.certification-renewal-score small,.certification-renewal-score strong,.certification-renewal-score span{display:block}
+.certification-renewal-score strong{margin-top:.2rem;color:#fff;font-size:1.2rem}
+.certification-renewal-score span{margin-top:.15rem;color:rgba(255,255,255,.5);font-size:.55rem}
+.certification-renewal-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.certification-renewal-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.certification-renewal-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.44rem;margin-top:.65rem}
+.certification-renewal-kpis article{padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.certification-renewal-kpis strong,.certification-renewal-kpis span{display:block}
+.certification-renewal-kpis strong{margin-top:.18rem;color:#fff;font-size:.72rem}
+.certification-renewal-kpis span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.certification-renewal-layout,.certification-renewal-lower{display:grid;grid-template-columns:1.25fr .75fr;gap:.65rem;margin-top:.65rem}
+.certification-renewal-queue-panel,.certification-renewal-inspector,.certification-renewal-gates-panel,.certification-renewal-brief-panel,.certification-renewal-history{padding:.66rem;border:1px solid rgba(255,255,255,.06);border-radius:11px;background:rgba(0,0,0,.08)}
+.certification-renewal-section-heading strong{display:block;margin-top:.2rem;color:#fff;font-size:.68rem}
+.certification-renewal-section-heading>span{color:rgba(255,255,255,.42);font-size:.54rem}
+.certification-renewal-section-heading button{min-height:32px;padding:0 .56rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#fff;background:rgba(255,255,255,.04);font:inherit;font-size:.53rem;font-weight:800;cursor:pointer}
+.certification-renewal-queue-list,.certification-renewal-gate-list,.certification-renewal-history-list{display:grid;gap:.42rem;margin-top:.55rem}
+.certification-renewal-item{display:grid;grid-template-columns:38px 1fr auto;gap:.5rem;align-items:start;padding:.58rem;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.025);cursor:pointer}
+.certification-renewal-item[data-state="current"]{border-color:rgba(98,211,163,.22)}
+.certification-renewal-item[data-state="due"],.certification-renewal-item[data-state="drift"]{border-color:rgba(217,182,95,.24)}
+.certification-renewal-item[data-state="expired"],.certification-renewal-item[data-state="suspended"]{border-color:rgba(239,133,125,.26)}
+.certification-renewal-item.is-selected{border-color:rgba(93,164,255,.34)}
+.certification-renewal-rank{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;color:#fff;background:rgba(255,255,255,.06);font-size:.57rem;font-weight:800}
+.certification-renewal-copy strong,.certification-renewal-copy span{display:block}
+.certification-renewal-copy strong{color:#fff;font-size:.64rem}
+.certification-renewal-copy span{margin-top:.16rem;color:rgba(255,255,255,.43);font-size:.55rem;line-height:1.4}
+.certification-renewal-badge{padding:.34rem .48rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.51rem;font-weight:800;text-transform:uppercase}
+.certification-renewal-inspector>strong,.certification-renewal-brief-panel>strong{display:block;margin-top:.25rem;color:#fff;font-size:.75rem}
+.certification-renewal-inspector>p,.certification-renewal-brief-panel>p{margin:.34rem 0 0;color:rgba(255,255,255,.47);font-size:.59rem;line-height:1.45}
+.certification-renewal-meta{display:grid;grid-template-columns:1fr 1fr;gap:.42rem;margin:.62rem 0}
+.certification-renewal-meta div{padding:.5rem;border-radius:9px;background:rgba(255,255,255,.035)}
+.certification-renewal-meta dt{color:rgba(255,255,255,.39);font-size:.5rem;text-transform:uppercase}
+.certification-renewal-meta dd{margin:.16rem 0 0;color:#fff;font-size:.61rem;font-weight:800}
+.certification-renewal-actions,.certification-renewal-brief-actions{display:grid;gap:.4rem;margin-top:.6rem}
+.certification-renewal-actions button,.certification-renewal-brief-actions button{min-height:36px;padding:0 .64rem;border-radius:999px;font:inherit;font-size:.55rem;font-weight:800;cursor:pointer}
+#certificationRenewalApprove,#certificationRenewalCopyBrief{border:0;color:#082a31;background:#62d3a3}
+.certification-renewal-secondary{border:1px solid rgba(255,255,255,.08);color:#fff;background:rgba(255,255,255,.04)}
+.certification-renewal-actions button:disabled,.certification-renewal-brief-actions button:disabled{opacity:.42;cursor:not-allowed}
+#certificationRenewalStatus{display:block;min-height:1rem;margin-top:.42rem;color:rgba(255,255,255,.43);font-size:.56rem}
+.certification-renewal-gate-item{display:grid;grid-template-columns:28px 1fr auto;gap:.45rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.certification-renewal-gate-item b{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;color:#fff;background:rgba(255,255,255,.06);font-size:.52rem}
+.certification-renewal-gate-item strong,.certification-renewal-gate-item span{display:block}
+.certification-renewal-gate-item strong{color:#fff;font-size:.61rem}
+.certification-renewal-gate-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem;line-height:1.4}
+.certification-renewal-gate-item em{align-self:center;font-style:normal;padding:.32rem .45rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.49rem;text-transform:uppercase}
+.certification-renewal-history-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.certification-renewal-history-item strong,.certification-renewal-history-item span{display:block}
+.certification-renewal-history-item strong{color:#fff;font-size:.61rem}
+.certification-renewal-history-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.certification-renewal-history-item time{color:#d9b65f;font-size:.52rem;font-weight:800}
+.certification-renewal-history{margin-top:.65rem}
+.certification-renewal-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
+@media(max-width:980px){.certification-renewal-kpis{grid-template-columns:repeat(3,1fr)}.certification-renewal-layout,.certification-renewal-lower{grid-template-columns:1fr}}
+@media(max-width:650px){.certification-renewal-heading,.certification-renewal-section-heading{flex-direction:column}.certification-renewal-kpis,.certification-renewal-meta{grid-template-columns:1fr}.certification-renewal-item{grid-template-columns:34px 1fr}.certification-renewal-badge{grid-column:2;justify-self:start}}

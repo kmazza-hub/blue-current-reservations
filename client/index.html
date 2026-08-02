@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.10">
+  <meta name="blue-current-build" content="34.1.11">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.10">
+  <link rel="stylesheet" href="styles.css?v=34.1.11">
 </head>
 <body>
 
@@ -4603,6 +4603,90 @@
           </div>
         </section>
 
+        <section class="certification-renewal-monitor" id="certificationRenewalMonitor" aria-labelledby="certificationRenewalMonitorTitle">
+          <div class="certification-renewal-heading">
+            <div>
+              <small>Continuous autonomy compliance</small>
+              <strong id="certificationRenewalMonitorTitle">Certification Renewal &amp; Compliance Monitor</strong>
+              <span id="certificationRenewalUpdated">Monitoring certificate validity, evidence drift, control degradation, and renewal readiness across autonomous operating domains…</span>
+            </div>
+
+            <div class="certification-renewal-score" id="certificationRenewalScoreCard" data-tone="stable">
+              <small>Compliance posture</small>
+              <strong id="certificationRenewalScore">0</strong>
+              <span id="certificationRenewalLabel">Awaiting certificates</span>
+            </div>
+          </div>
+
+          <div class="certification-renewal-kpis">
+            <article><small>Current certificates</small><strong id="certificationRenewalCurrentCount">0</strong><span>Valid certifications</span></article>
+            <article><small>Renewal due</small><strong id="certificationRenewalDueCount">0</strong><span>Within 30 days</span></article>
+            <article><small>Expired</small><strong id="certificationRenewalExpiredCount">0</strong><span>Execution restricted</span></article>
+            <article><small>Evidence drift</small><strong id="certificationRenewalDriftCount">0</strong><span>Performance below issue baseline</span></article>
+            <article><small>Compliance coverage</small><strong id="certificationRenewalCoverage">0%</strong><span>Domains continuously monitored</span></article>
+          </div>
+
+          <div class="certification-renewal-layout">
+            <div class="certification-renewal-queue-panel">
+              <div class="certification-renewal-section-heading">
+                <div><small>Renewal queue</small><strong>Certificates requiring review, evidence refresh, or remediation</strong></div>
+                <button type="button" id="certificationRenewalRefresh">Refresh compliance</button>
+              </div>
+              <div id="certificationRenewalQueueList" class="certification-renewal-queue-list"></div>
+            </div>
+
+            <aside class="certification-renewal-inspector">
+              <small>Selected renewal</small>
+              <strong id="certificationRenewalSelectedTitle">Choose a certificate</strong>
+              <p id="certificationRenewalSelectedDetail">Select a certificate to review expiry, evidence drift, compliance gaps, and its renewal recommendation.</p>
+
+              <dl class="certification-renewal-meta">
+                <div><dt>Renewal state</dt><dd id="certificationRenewalSelectedState">—</dd></div>
+                <div><dt>Days remaining</dt><dd id="certificationRenewalSelectedDays">—</dd></div>
+                <div><dt>Evidence delta</dt><dd id="certificationRenewalSelectedEvidenceDelta">—</dd></div>
+                <div><dt>Control delta</dt><dd id="certificationRenewalSelectedControlDelta">—</dd></div>
+              </dl>
+
+              <div class="certification-renewal-actions">
+                <button type="button" id="certificationRenewalApprove" disabled>Approve renewal</button>
+                <button type="button" class="certification-renewal-secondary" id="certificationRenewalConditional" disabled>Issue conditional renewal</button>
+                <button type="button" class="certification-renewal-secondary" id="certificationRenewalSuspend" disabled>Suspend certificate</button>
+              </div>
+
+              <span id="certificationRenewalStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="certification-renewal-lower">
+            <div class="certification-renewal-gates-panel">
+              <div class="certification-renewal-section-heading">
+                <div><small>Renewal gates</small><strong>Continuous evidence and control requirements</strong></div>
+                <span id="certificationRenewalGateCount">0 gates</span>
+              </div>
+              <div id="certificationRenewalGateList" class="certification-renewal-gate-list"></div>
+            </div>
+
+            <div class="certification-renewal-brief-panel">
+              <small>Compliance brief</small>
+              <strong id="certificationRenewalBriefTitle">No renewal selected</strong>
+              <p id="certificationRenewalBriefDetail">Select a certificate to generate its renewal recommendation and corrective-action summary.</p>
+
+              <div class="certification-renewal-brief-actions">
+                <button type="button" id="certificationRenewalCopyBrief">Copy compliance brief</button>
+                <button type="button" class="certification-renewal-secondary" id="certificationRenewalOpenCertification" disabled>Open Certification Center</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="certification-renewal-history">
+            <div class="certification-renewal-section-heading">
+              <div><small>Renewal audit</small><strong>Assessments, renewals, conditional approvals, and suspensions</strong></div>
+              <button type="button" id="certificationRenewalClearHistory">Clear history</button>
+            </div>
+            <div id="certificationRenewalHistoryList" class="certification-renewal-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -6160,7 +6244,8 @@
   <script src="js/modules/autonomyDeploymentObservatory.js?v=34.1.8"></script>
   <script src="js/modules/autonomyIncidentResponseCenter.js?v=34.1.9"></script>
   <script src="js/modules/autonomyRecoveryRequalification.js?v=34.1.10"></script>
-  <script src="js/modules/autonomyAssuranceCertification.js?v=34.1.10"></script>
+  <script src="js/modules/autonomyAssuranceCertification.js?v=34.1.11"></script>
+  <script src="js/modules/certificationRenewalMonitor.js?v=34.1.11"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
