@@ -4,6 +4,7 @@
   const POLICY_KEY = "blueCurrent.aiBrainAutonomyGuardrails.v34.1.3";
   const ORCHESTRATOR_KEY = "blueCurrent.aiBrainDecisionOrchestrator.v34.1.1";
   const ACCOUNTABILITY_KEY = "blueCurrent.executiveAccountabilityCenter.v34.0.14.6";
+  const GOVERNOR_KEY = "blueCurrent.autonomyPerformanceGovernor.v34.1.5";
   const byId = id => document.getElementById(id);
 
   const DEFAULT_POLICY = {
@@ -72,7 +73,23 @@
 
   function evaluate(recommendation) {
     const p = state.policy;
+    const governor = read(GOVERNOR_KEY);
     const reasons = [];
+
+    if (governor.emergencyStop) {
+      return {result:"blocked",reason:"Emergency stop is active in the Autonomy Performance Governor."};
+    }
+
+    const suspendedDomains = Array.isArray(governor.suspendedDomains)
+      ? governor.suspendedDomains
+      : [];
+    const domainText = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+    const blockedDomain = suspendedDomains.find(domain =>
+      domainText.includes(domain.toLowerCase())
+    );
+    if (blockedDomain) {
+      return {result:"blocked",reason:`${blockedDomain} autonomy is suspended by the performance governor.`};
+    }
 
     if (p.mode === "advisory") {
       return {result:"approval",reason:"Policy is advisory-only; every recommendation requires human approval."};
@@ -392,7 +409,7 @@
       },0);
     });
     window.addEventListener("storage",event => {
-      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY].includes(event.key)) {
+      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY].includes(event.key)) {
         load();
         reviewAll();
         render();

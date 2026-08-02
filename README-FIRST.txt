@@ -1,4 +1,4 @@
-BLUE CURRENT V34.1.4 — AUTONOMY OUTCOME VERIFIER
+BLUE CURRENT V34.1.5 — AUTONOMY PERFORMANCE GOVERNOR
 
 REPLACE
 - client/index.html
@@ -6,29 +6,26 @@ REPLACE
 - client/js/modules/aiBrainAutonomyGuardrails.js
 
 ADD
-- client/js/modules/autonomyOutcomeVerifier.js
+- client/js/modules/autonomyPerformanceGovernor.js
 
 ADDS
-- Verification queue for bounded-autonomy commitments
-- Observed-value capture
-- Successful, partial, and underperformed classifications
-- Verification notes and accountability synchronization
-- Autonomous success rate
-- Expected-versus-observed value delivery
-- Autonomy trust score
-- Recommended confidence floor
-- Recommended maximum automatic value
-- One-click application of recommended guardrails
-- Persistent autonomous outcome history
-- Guardrail execution event enrichment
+- System-wide autonomy trust band
+- Domain-level autonomy scoring for staffing, kitchen, floor, demand, and recovery
+- Active, supervised, and suspended domain states
+- Automatic rollback recommendations
+- Recommended autonomy mode, confidence floor, and maximum value
+- One-click governor policy application
+- Emergency stop for all automatic execution
+- Estimated protected value from failed autonomous actions
+- Persistent governor audit trail
+- Guardrail enforcement of emergency stop and suspended domains
 
 TEST
 1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Execute an eligible recommendation through Autonomy Guardrails.
-5. Open Autonomy Outcome Verifier.
-6. Select the autonomous commitment and record an observed result.
-7. Confirm trust score, success rate, value delivery, and guardrail recommendations update.
-8. Apply the recommended guardrails.
-9. Confirm the Autonomy Guardrails policy reflects the new thresholds.
+4. Record several successful and underperforming autonomous outcomes.
+5. Confirm trust band, domain states, rollback recommendations, and protected value update.
+6. Apply the governor policy.
+7. Confirm Autonomy Guardrails reflects the recommended mode and thresholds.
+8. Activate Emergency Stop and confirm eligible recommendations become blocked.

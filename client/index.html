@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.4">
+  <meta name="blue-current-build" content="34.1.5">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.4">
+  <link rel="stylesheet" href="styles.css?v=34.1.5">
 </head>
 <body>
 
@@ -4019,6 +4019,78 @@
           </div>
         </section>
 
+        <section class="autonomy-performance-governor" id="autonomyPerformanceGovernor" aria-labelledby="autonomyPerformanceGovernorTitle">
+          <div class="autonomy-performance-governor-heading">
+            <div>
+              <small>Autonomy governance layer</small>
+              <strong id="autonomyPerformanceGovernorTitle">Autonomy Performance Governor</strong>
+              <span id="autonomyPerformanceGovernorUpdated">Monitoring verified autonomous outcomes and enforcing safe operating limits in real time…</span>
+            </div>
+
+            <div class="autonomy-performance-governor-score" id="autonomyPerformanceGovernorScoreCard" data-tone="stable">
+              <small>Governor status</small>
+              <strong id="autonomyPerformanceGovernorScore">0</strong>
+              <span id="autonomyPerformanceGovernorLabel">Awaiting outcomes</span>
+            </div>
+          </div>
+
+          <div class="autonomy-performance-governor-kpis">
+            <article><small>Trust band</small><strong id="autonomyPerformanceTrustBand">Unrated</strong><span>Current autonomy tier</span></article>
+            <article><small>Active domains</small><strong id="autonomyPerformanceActiveDomains">0</strong><span>Allowed automatic execution</span></article>
+            <article><small>Suspended domains</small><strong id="autonomyPerformanceSuspendedDomains">0</strong><span>Temporarily blocked</span></article>
+            <article><small>Rollback events</small><strong id="autonomyPerformanceRollbackCount">0</strong><span>Governance interventions</span></article>
+            <article><small>Value protected</small><strong id="autonomyPerformanceProtectedValue">$0</strong><span>Estimated avoided exposure</span></article>
+          </div>
+
+          <div class="autonomy-performance-governor-layout">
+            <div class="autonomy-performance-domain-panel">
+              <div class="autonomy-performance-governor-section-heading">
+                <div><small>Domain autonomy controls</small><strong>Autonomy status by operating domain</strong></div>
+                <button type="button" id="autonomyPerformanceRefresh">Refresh governor</button>
+              </div>
+              <div id="autonomyPerformanceDomainList" class="autonomy-performance-domain-list"></div>
+            </div>
+
+            <aside class="autonomy-performance-decision-panel">
+              <small>Current governor decision</small>
+              <strong id="autonomyPerformanceDecisionTitle">No intervention required</strong>
+              <p id="autonomyPerformanceDecisionDetail">Verified outcomes will determine whether autonomy expands, remains supervised, or is rolled back.</p>
+
+              <dl class="autonomy-performance-governor-meta">
+                <div><dt>Recommended mode</dt><dd id="autonomyPerformanceRecommendedMode">Supervised</dd></div>
+                <div><dt>Confidence floor</dt><dd id="autonomyPerformanceConfidenceFloor">88%</dd></div>
+                <div><dt>Maximum value</dt><dd id="autonomyPerformanceMaxValue">$500</dd></div>
+                <div><dt>Review window</dt><dd id="autonomyPerformanceReviewWindow">Next 3 outcomes</dd></div>
+              </dl>
+
+              <div class="autonomy-performance-governor-actions">
+                <button type="button" id="autonomyPerformanceApply">Apply governor policy</button>
+                <button type="button" class="autonomy-performance-secondary" id="autonomyPerformanceEmergencyStop">Emergency stop</button>
+              </div>
+
+              <span id="autonomyPerformanceStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="autonomy-performance-governor-lower">
+            <div class="autonomy-performance-rollback-panel">
+              <div class="autonomy-performance-governor-section-heading">
+                <div><small>Rollback and recovery</small><strong>Corrective actions triggered by poor autonomous performance</strong></div>
+                <span id="autonomyPerformanceRollbackLabel">0 recommendations</span>
+              </div>
+              <div id="autonomyPerformanceRollbackList" class="autonomy-performance-rollback-list"></div>
+            </div>
+
+            <div class="autonomy-performance-audit-panel">
+              <div class="autonomy-performance-governor-section-heading">
+                <div><small>Governor audit</small><strong>Policy applications, suspensions, and emergency stops</strong></div>
+                <button type="button" id="autonomyPerformanceClearAudit">Clear audit</button>
+              </div>
+              <div id="autonomyPerformanceAuditList" class="autonomy-performance-audit-list"></div>
+            </div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5570,7 +5642,8 @@
   <script src="js/modules/aiBrainDecisionOrchestrator.js?v=34.1.2"></script>
   <script src="js/modules/aiBrainScenarioSimulator.js?v=34.1.3"></script>
   <script src="js/modules/aiBrainAutonomyGuardrails.js?v=34.1.4"></script>
-  <script src="js/modules/autonomyOutcomeVerifier.js?v=34.1.4"></script>
+  <script src="js/modules/autonomyOutcomeVerifier.js?v=34.1.5"></script>
+  <script src="js/modules/autonomyPerformanceGovernor.js?v=34.1.5"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

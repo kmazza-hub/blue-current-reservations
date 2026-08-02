@@ -11253,3 +11253,55 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .autonomy-outcome-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
 @media(max-width:980px){.autonomy-outcome-verifier-kpis{grid-template-columns:repeat(3,1fr)}.autonomy-outcome-verifier-layout,.autonomy-outcome-verifier-lower{grid-template-columns:1fr}.autonomy-outcome-trust-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.autonomy-outcome-verifier-heading,.autonomy-outcome-verifier-section-heading{flex-direction:column}.autonomy-outcome-verifier-kpis,.autonomy-outcome-trust-grid{grid-template-columns:1fr}.autonomy-outcome-queue-item{grid-template-columns:34px 1fr}.autonomy-outcome-badge{grid-column:2;justify-self:start}}
+
+
+/* V34.1.5 — Autonomy Performance Governor */
+.autonomy-performance-governor{margin-top:.7rem;padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:radial-gradient(circle at 88% 8%,rgba(239,133,125,.07),transparent 32%),rgba(255,255,255,.02)}
+.autonomy-performance-governor-heading,.autonomy-performance-governor-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.autonomy-performance-governor-heading small,.autonomy-performance-governor-section-heading small,.autonomy-performance-decision-panel small,.autonomy-performance-governor-kpis small{color:rgba(255,255,255,.45);font-size:.56rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.autonomy-performance-governor-heading>div:first-child>strong{display:block;margin-top:.22rem;color:#fff;font-size:.78rem}
+.autonomy-performance-governor-heading>div:first-child>span{display:block;margin-top:.18rem;color:rgba(255,255,255,.44);font-size:.57rem}
+.autonomy-performance-governor-score{min-width:155px;padding:.66rem;border-radius:12px;background:rgba(98,211,163,.1);text-align:right}
+.autonomy-performance-governor-score small,.autonomy-performance-governor-score strong,.autonomy-performance-governor-score span{display:block}
+.autonomy-performance-governor-score strong{margin-top:.2rem;color:#fff;font-size:1.2rem}
+.autonomy-performance-governor-score span{margin-top:.15rem;color:rgba(255,255,255,.5);font-size:.55rem}
+.autonomy-performance-governor-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.autonomy-performance-governor-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.autonomy-performance-governor-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.44rem;margin-top:.65rem}
+.autonomy-performance-governor-kpis article{padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.autonomy-performance-governor-kpis strong,.autonomy-performance-governor-kpis span{display:block}
+.autonomy-performance-governor-kpis strong{margin-top:.18rem;color:#fff;font-size:.72rem}
+.autonomy-performance-governor-kpis span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.autonomy-performance-governor-layout,.autonomy-performance-governor-lower{display:grid;grid-template-columns:1.25fr .75fr;gap:.65rem;margin-top:.65rem}
+.autonomy-performance-domain-panel,.autonomy-performance-decision-panel,.autonomy-performance-rollback-panel,.autonomy-performance-audit-panel{padding:.66rem;border:1px solid rgba(255,255,255,.06);border-radius:11px;background:rgba(0,0,0,.08)}
+.autonomy-performance-governor-section-heading strong{display:block;margin-top:.2rem;color:#fff;font-size:.68rem}
+.autonomy-performance-governor-section-heading>span{color:rgba(255,255,255,.42);font-size:.54rem}
+.autonomy-performance-governor-section-heading button{min-height:32px;padding:0 .56rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#fff;background:rgba(255,255,255,.04);font:inherit;font-size:.53rem;font-weight:800;cursor:pointer}
+.autonomy-performance-domain-list,.autonomy-performance-rollback-list,.autonomy-performance-audit-list{display:grid;gap:.42rem;margin-top:.55rem}
+.autonomy-performance-domain-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.58rem;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.025)}
+.autonomy-performance-domain-item[data-status="supervised"]{border-color:rgba(217,182,95,.22)}
+.autonomy-performance-domain-item[data-status="suspended"]{border-color:rgba(239,133,125,.24)}
+.autonomy-performance-domain-item strong,.autonomy-performance-domain-item span{display:block}
+.autonomy-performance-domain-item strong{color:#fff;font-size:.64rem}
+.autonomy-performance-domain-item span{margin-top:.16rem;color:rgba(255,255,255,.43);font-size:.55rem;line-height:1.4}
+.autonomy-performance-domain-item b{align-self:center;padding:.34rem .48rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.5rem;text-transform:uppercase}
+.autonomy-performance-decision-panel>strong{display:block;margin-top:.25rem;color:#fff;font-size:.75rem}
+.autonomy-performance-decision-panel>p{margin:.34rem 0 0;color:rgba(255,255,255,.47);font-size:.59rem;line-height:1.45}
+.autonomy-performance-governor-meta{display:grid;grid-template-columns:1fr 1fr;gap:.42rem;margin:.62rem 0}
+.autonomy-performance-governor-meta div{padding:.5rem;border-radius:9px;background:rgba(255,255,255,.035)}
+.autonomy-performance-governor-meta dt{color:rgba(255,255,255,.39);font-size:.5rem;text-transform:uppercase}
+.autonomy-performance-governor-meta dd{margin:.16rem 0 0;color:#fff;font-size:.61rem;font-weight:800}
+.autonomy-performance-governor-actions{display:grid;gap:.4rem}
+.autonomy-performance-governor-actions button{min-height:36px;padding:0 .64rem;border-radius:999px;font:inherit;font-size:.55rem;font-weight:800;cursor:pointer}
+#autonomyPerformanceApply{border:0;color:#082a31;background:#62d3a3}
+.autonomy-performance-secondary{border:1px solid rgba(239,133,125,.3);color:#fff;background:rgba(239,133,125,.09)}
+#autonomyPerformanceStatus{display:block;min-height:1rem;margin-top:.42rem;color:rgba(255,255,255,.43);font-size:.56rem}
+.autonomy-performance-rollback-item,.autonomy-performance-audit-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.autonomy-performance-rollback-item strong,.autonomy-performance-rollback-item span,.autonomy-performance-audit-item strong,.autonomy-performance-audit-item span{display:block}
+.autonomy-performance-rollback-item strong,.autonomy-performance-audit-item strong{color:#fff;font-size:.61rem}
+.autonomy-performance-rollback-item span,.autonomy-performance-audit-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem;line-height:1.4}
+.autonomy-performance-rollback-item b{align-self:center;padding:.34rem .48rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.5rem;text-transform:uppercase}
+.autonomy-performance-audit-item time{color:#d9b65f;font-size:.52rem;font-weight:800}
+.autonomy-performance-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
+@media(max-width:980px){.autonomy-performance-governor-kpis{grid-template-columns:repeat(3,1fr)}.autonomy-performance-governor-layout,.autonomy-performance-governor-lower{grid-template-columns:1fr}}
+@media(max-width:650px){.autonomy-performance-governor-heading,.autonomy-performance-governor-section-heading{flex-direction:column}.autonomy-performance-governor-kpis,.autonomy-performance-governor-meta{grid-template-columns:1fr}}
