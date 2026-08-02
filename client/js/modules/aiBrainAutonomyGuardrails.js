@@ -79,8 +79,17 @@
     const reasons = [];
 
     const rollouts = Array.isArray(rolloutState.rollouts) ? rolloutState.rollouts : [];
+    const pausedRollouts = rollouts.filter(item => item.status === "paused");
+    const recommendationText = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+    const pausedMatch = pausedRollouts.find(item =>
+      recommendationText.includes(String(item.domain || "").toLowerCase())
+    );
+    if (pausedMatch) {
+      return {result:"blocked",reason:`${pausedMatch.domain} autonomy is paused by the Deployment Observatory.`};
+    }
+
     if (rollouts.length && p.mode === "bounded") {
-      const text = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+      const text = recommendationText;
       const matchingRollout = rollouts.find(item =>
         ["pilot","promoted"].includes(item.status) &&
         text.includes(String(item.domain || "").toLowerCase())

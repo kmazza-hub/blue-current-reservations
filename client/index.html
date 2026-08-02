@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.6">
+  <meta name="blue-current-build" content="34.1.7">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.6">
+  <link rel="stylesheet" href="styles.css?v=34.1.7">
 </head>
 <body>
 
@@ -4228,6 +4228,97 @@
           </div>
         </section>
 
+        <section class="autonomy-deployment-observatory" id="autonomyDeploymentObservatory" aria-labelledby="autonomyDeploymentObservatoryTitle">
+          <div class="autonomy-deployment-observatory-heading">
+            <div>
+              <small>Live autonomy deployment intelligence</small>
+              <strong id="autonomyDeploymentObservatoryTitle">Autonomy Deployment Observatory</strong>
+              <span id="autonomyDeploymentObservatoryUpdated">Watching rollout exposure, location risk, domain performance, and rollback pressure across the autonomy portfolio…</span>
+            </div>
+
+            <div class="autonomy-deployment-observatory-score" id="autonomyDeploymentObservatoryScoreCard" data-tone="stable">
+              <small>Deployment health</small>
+              <strong id="autonomyDeploymentObservatoryScore">0</strong>
+              <span id="autonomyDeploymentObservatoryLabel">Awaiting rollouts</span>
+            </div>
+          </div>
+
+          <div class="autonomy-deployment-observatory-kpis">
+            <article><small>Live exposure</small><strong id="autonomyDeploymentExposure">0%</strong><span>Weighted portfolio rollout</span></article>
+            <article><small>Healthy deployments</small><strong id="autonomyDeploymentHealthy">0</strong><span>Passing all gates</span></article>
+            <article><small>Watch deployments</small><strong id="autonomyDeploymentWatch">0</strong><span>Require intervention</span></article>
+            <article><small>Critical deployments</small><strong id="autonomyDeploymentCritical">0</strong><span>Rollback pressure</span></article>
+            <article><small>Locations protected</small><strong id="autonomyDeploymentProtected">0</strong><span>Active guardrail coverage</span></article>
+          </div>
+
+          <div class="autonomy-deployment-observatory-layout">
+            <div class="autonomy-deployment-map-panel">
+              <div class="autonomy-deployment-observatory-section-heading">
+                <div><small>Deployment map</small><strong>Autonomy exposure by location and domain</strong></div>
+                <label>
+                  Filter
+                  <select id="autonomyDeploymentFilter">
+                    <option value="all">All deployments</option>
+                    <option value="healthy">Healthy</option>
+                    <option value="watch">Watch</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </label>
+              </div>
+              <div id="autonomyDeploymentMapList" class="autonomy-deployment-map-list"></div>
+            </div>
+
+            <aside class="autonomy-deployment-inspector">
+              <small>Selected deployment</small>
+              <strong id="autonomyDeploymentSelectedTitle">Choose a deployment</strong>
+              <p id="autonomyDeploymentSelectedDetail">Select a rollout to review exposure, gate performance, risk trajectory, and the recommended next action.</p>
+
+              <dl class="autonomy-deployment-observatory-meta">
+                <div><dt>Health state</dt><dd id="autonomyDeploymentSelectedHealth">—</dd></div>
+                <div><dt>Exposure</dt><dd id="autonomyDeploymentSelectedExposure">—</dd></div>
+                <div><dt>Success rate</dt><dd id="autonomyDeploymentSelectedSuccess">—</dd></div>
+                <div><dt>Value delivery</dt><dd id="autonomyDeploymentSelectedValue">—</dd></div>
+              </dl>
+
+              <div class="autonomy-deployment-observatory-actions">
+                <button type="button" id="autonomyDeploymentOpenRollout" disabled>Open rollout manager</button>
+                <button type="button" class="autonomy-deployment-secondary" id="autonomyDeploymentPause" disabled>Pause deployment</button>
+              </div>
+
+              <span id="autonomyDeploymentStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="autonomy-deployment-observatory-lower">
+            <div class="autonomy-deployment-alert-panel">
+              <div class="autonomy-deployment-observatory-section-heading">
+                <div><small>Deployment alerts</small><strong>Early warnings before a rollback is required</strong></div>
+                <span id="autonomyDeploymentAlertCount">0 alerts</span>
+              </div>
+              <div id="autonomyDeploymentAlertList" class="autonomy-deployment-alert-list"></div>
+            </div>
+
+            <div class="autonomy-deployment-brief-panel">
+              <small>Portfolio deployment brief</small>
+              <strong id="autonomyDeploymentBriefTitle">No deployment brief available</strong>
+              <p id="autonomyDeploymentBriefDetail">Create and evaluate rollout plans to generate live deployment intelligence.</p>
+
+              <div class="autonomy-deployment-brief-actions">
+                <button type="button" id="autonomyDeploymentRefresh">Refresh observatory</button>
+                <button type="button" class="autonomy-deployment-secondary" id="autonomyDeploymentCopyBrief">Copy deployment brief</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="autonomy-deployment-observatory-history">
+            <div class="autonomy-deployment-observatory-section-heading">
+              <div><small>Deployment event history</small><strong>Promotions, pauses, alerts, and risk-state changes</strong></div>
+              <button type="button" id="autonomyDeploymentClearHistory">Clear history</button>
+            </div>
+            <div id="autonomyDeploymentHistoryList" class="autonomy-deployment-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5781,7 +5872,8 @@
   <script src="js/modules/aiBrainAutonomyGuardrails.js?v=34.1.4"></script>
   <script src="js/modules/autonomyOutcomeVerifier.js?v=34.1.5"></script>
   <script src="js/modules/autonomyPerformanceGovernor.js?v=34.1.6"></script>
-  <script src="js/modules/autonomyRolloutManager.js?v=34.1.6"></script>
+  <script src="js/modules/autonomyRolloutManager.js?v=34.1.7"></script>
+  <script src="js/modules/autonomyDeploymentObservatory.js?v=34.1.7"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
