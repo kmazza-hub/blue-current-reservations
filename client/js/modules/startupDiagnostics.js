@@ -2,7 +2,7 @@
   "use strict";
 
   function createStartupDiagnosticsModule(eventBus, appState) {
-    const BUILD = "34.3.0";
+    const BUILD = "34.3.1";
     const $ = id => document.getElementById(id);
     const setText = (id, value) => { const el = $(id); if (el) el.textContent = String(value); };
     const setClass = (id, value) => { const el = $(id); if (el) el.className = value; };
@@ -13,6 +13,7 @@
       const startup = registry?.report?.() || { build: BUILD, counts: {}, modules: {}, durationMs: 0 };
       const api = window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null;
       const pipeline = window.BlueCurrentRequestPipeline?.metricsSnapshot?.() || null;
+      const offlineSync = window.BlueCurrentOfflineSync?.snapshot?.() || null;
       const checks = {
         styles: { ok: Boolean($("authOverlay")), detail: $("authOverlay") ? "Application styles loaded" : "Auth overlay unavailable" },
         cloudApi: { ok: api?.version === BUILD, detail: api ? `V${api.version} API client` : "API client unavailable" },
@@ -20,7 +21,7 @@
         application: {
           ok: Boolean(eventBus?.emit && appState?.update && pipeline),
           detail: pipeline
-            ? `Core active · ${startup.counts.ready || 0} modules · queue ${pipeline.queueDepth} · ${pipeline.successRate}% API success`
+            ? `Core active · ${startup.counts.ready || 0} modules · API queue ${pipeline.queueDepth} · offline ${offlineSync?.queueDepth || 0} · conflicts ${offlineSync?.openConflicts || 0}`
             : `Core active · ${startup.counts.ready || 0} modules ready`
         }
       };
@@ -36,9 +37,10 @@
       const blocked = Object.entries(startup.modules).filter(([,m]) => m.status === "blocked").map(([n]) => n);
       setText("diagCompatibility", `Build V${BUILD} · ${startup.durationMs}ms · ready ${startup.counts.ready || 0}` +
         (pipeline ? ` · API ${pipeline.averageLatencyMs}ms avg · cache ${pipeline.cacheHitRatio}% · retries ${pipeline.retried} · active ${pipeline.activeRequests}` : "") +
+        (offlineSync ? ` · sync queued ${offlineSync.queueDepth} · replayed ${offlineSync.metrics.replayed} · conflicts ${offlineSync.openConflicts}` : "") +
         (skipped.length ? ` · retired ${skipped.join(", ")}` : "") +
         (blocked.length ? ` · blocked ${blocked.join(", ")}` : ""));
-      lastReport = { build: BUILD, checks, startup, pipeline };
+      lastReport = { build: BUILD, checks, startup, pipeline, offlineSync };
       eventBus?.emit("diagnostics:complete", lastReport);
       return JSON.parse(JSON.stringify(lastReport));
     }

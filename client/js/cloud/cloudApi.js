@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.3.0";
+    static VERSION = "34.3.1";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -41,11 +41,33 @@
         signal: options.signal
       };
 
-      if (!pipeline?.execute) return this.transportRequest(path, options);
+      const execute = () => {
+        if (!pipeline?.execute) return this.transportRequest(path, options);
+        return pipeline.execute(config, ({ signal }) =>
+          this.transportRequest(path, { ...options, signal })
+        );
+      };
 
-      return pipeline.execute(config, ({ signal }) =>
-        this.transportRequest(path, { ...options, signal })
-      );
+      try {
+        return await execute();
+      } catch (error) {
+        const offlineSync = window.BlueCurrentOfflineSync;
+        if (offlineSync?.isQueueable?.(path, method, options) && offlineSync.shouldQueue(error)) {
+          return offlineSync.enqueue({
+            path,
+            method,
+            body: options.body || null,
+            headers: options.headers || {},
+            scope: options.scope || "cloud",
+            entityType: options.entityType,
+            entityId: options.entityId,
+            baseVersion: options.baseVersion,
+            optimistic: options.optimistic,
+            idempotencyKey: options.idempotencyKey
+          }, error);
+        }
+        throw error;
+      }
     }
 
     async transportRequest(path, options = {}) {
@@ -124,7 +146,8 @@
         version: this.version,
         capabilities: [...this.capabilities],
         loginAvailable: typeof this.login === "function",
-        requestPipeline: Boolean(window.BlueCurrentRequestPipeline)
+        requestPipeline: Boolean(window.BlueCurrentRequestPipeline),
+        offlineSync: Boolean(window.BlueCurrentOfflineSync)
       };
     }
 
@@ -154,6 +177,18 @@
 
     requestMetrics() {
       return window.BlueCurrentRequestPipeline?.metricsSnapshot?.() || null;
+    }
+
+    offlineSyncStatus() {
+      return window.BlueCurrentOfflineSync?.snapshot?.() || null;
+    }
+
+    replayOfflineWrites() {
+      return window.BlueCurrentOfflineSync?.replay?.() || Promise.resolve(null);
+    }
+
+    resolveSyncConflict(conflictId, strategy, mergedBody = null) {
+      return window.BlueCurrentOfflineSync?.resolveConflict?.(conflictId, strategy, mergedBody) || null;
     }
 
     health() { return this.request("/api/health"); }
@@ -350,5 +385,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.3.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.3.1";
 })();

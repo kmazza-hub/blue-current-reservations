@@ -195,6 +195,42 @@
       });
     }
 
+    window.addEventListener("bluecurrent:offline-sync-started", () => {
+      setStatus("Synchronizing", "Replaying locally saved operating changes…");
+      appState.update({ offlineSyncing: true });
+    });
+
+    window.addEventListener("bluecurrent:offline-sync-complete", event => {
+      const snapshot = event.detail || offlineSync?.snapshot?.();
+      appState.update({
+        offlineSyncing: false,
+        offlineQueueDepth: snapshot?.queueDepth || 0,
+        offlineConflictCount: snapshot?.openConflicts || 0,
+        offlineLastSyncAt: snapshot?.metrics?.lastSyncAt || null
+      });
+      if (connected && window.BlueCurrentAuthSession?.snapshot?.().authenticated) {
+        loadBootstrap({ force: true }).catch(() => {});
+      }
+    });
+
+    window.addEventListener("bluecurrent:offline-queue-changed", event => {
+      const snapshot = event.detail || offlineSync?.snapshot?.();
+      appState.update({
+        offlineQueueDepth: snapshot?.queueDepth || 0,
+        offlineConflictCount: snapshot?.openConflicts || 0
+      });
+    });
+
+    window.addEventListener("bluecurrent:offline-conflict-created", event => {
+      const snapshot = offlineSync?.snapshot?.();
+      setStatus("Conflict review", "A locally saved change conflicts with newer cloud data.");
+      appState.update({
+        offlineConflictCount: snapshot?.openConflicts || 0,
+        offlineLastConflict: event.detail?.conflict || null
+      });
+      eventBus.emit("cloud:sync-conflict", event.detail || {});
+    });
+
     window.addEventListener("bluecurrent:auth-session-state", event => {
       if (event.detail?.status === "authenticated") {
         connectEvents();
@@ -223,6 +259,10 @@
       refreshBootstrap: () => loadBootstrap({ force: true }),
       getBootstrapStatus: () => window.BlueCurrentBootstrapHydrator?.snapshot?.() || null,
       getRequestPipelineStatus: () => pipeline?.metricsSnapshot?.() || null,
+      getOfflineSyncStatus: () => offlineSync?.snapshot?.() || null,
+      replayOfflineWrites: () => offlineSync?.replay?.(),
+      resolveOfflineConflict: (id, strategy, body) => offlineSync?.resolveConflict?.(id, strategy, body),
+      discardOfflineWrite: id => offlineSync?.discard?.(id),
       invalidateRequestCache: predicate => pipeline?.invalidate?.(predicate),
       registerCloudModule: (name, options) => pipeline?.registerModule?.(name, options),
       getAuthReadiness: () => window.BlueCurrentAuthSession?.snapshot?.() || null
