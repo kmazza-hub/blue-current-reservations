@@ -560,3 +560,26 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   window.addEventListener('resize',updateDock,{passive:true});
   updateDock();
 })();
+
+// WEB-011 — Platform architecture explorer
+(() => {
+  const buttons = [...document.querySelectorAll('[data-platform-layer]')];
+  if (!buttons.length) return;
+  const layers = [
+    {kicker:'Guest demand and context',title:'Turn every guest interaction into structured operating context.',detail:'Calls, reservation requests, preferences, celebrations, and service recovery moments enter one connected record that can move safely across the operation.',points:['Voice and reservation intent','Guest profile and visit context','Escalations with clear ownership'],source:'Phone · Reservations · CRM',core:'Guest intelligence',output:'Context · Routing · Evidence'},
+    {kicker:'Live restaurant execution',title:'Give every operator the same live operating picture.',detail:'Reservation pace, floor readiness, kitchen pressure, staffing coverage, and manager interventions remain connected as service conditions change.',points:['Live floor and pacing signals','Kitchen and workforce coordination','Manager decisions and handoffs'],source:'POS · Floor · Kitchen · Labor',core:'Operational coordination',output:'Priorities · Ownership · Action'},
+    {kicker:'Portfolio intelligence',title:'Translate operating activity into leadership clarity.',detail:'Blue Current identifies exceptions, compares locations, preserves decision context, and produces concise operating briefings for regional and executive teams.',points:['Portfolio health and exceptions','Cross-location trends','Executive-ready briefing'],source:'Location events · KPIs · Outcomes',core:'Executive intelligence',output:'Risk · Opportunity · Briefing'},
+    {kicker:'Governed AI and automation',title:'Allow AI to act only inside explicit operating boundaries.',detail:'Permissions, approval thresholds, audit history, versioning, and incident controls create a reliable framework for human-supervised automation.',points:['Role and policy enforcement','Human approval boundaries','Immutable evidence and recovery'],source:'Policies · Roles · Runbooks',core:'Governed autonomy',output:'Approved action · Audit · Recovery'}
+  ];
+  const els = {
+    kicker:document.getElementById('platformLayerKicker'),title:document.getElementById('platformLayerTitle'),detail:document.getElementById('platformLayerDetail'),points:document.getElementById('platformLayerPoints'),source:document.getElementById('platformLayerSource'),core:document.getElementById('platformLayerCore'),output:document.getElementById('platformLayerOutput')
+  };
+  const render = index => {
+    const layer = layers[index];
+    buttons.forEach((button,i)=>{button.classList.toggle('is-active',i===index);button.setAttribute('aria-selected',String(i===index));});
+    els.kicker.textContent=layer.kicker; els.title.textContent=layer.title; els.detail.textContent=layer.detail;
+    els.points.innerHTML=layer.points.map(point=>`<li>${point}</li>`).join('');
+    els.source.textContent=layer.source; els.core.textContent=layer.core; els.output.textContent=layer.output;
+  };
+  buttons.forEach((button,index)=>button.addEventListener('click',()=>render(index)));
+})();
