@@ -401,3 +401,55 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   };
   buttons.forEach((button,index)=>button.addEventListener('click',()=>render(index)));
 })();
+
+
+// Website SaaS Upgrade 07 — operational evidence room
+(() => {
+  const buttons = Array.from(document.querySelectorAll('[data-evidence-view]'));
+  if (!buttons.length) return;
+  const views = [
+    {
+      kicker:'Illustrative deployment narrative',
+      title:'Recover demand that disappears during peak call windows.',
+      signal:'Peak-period calls are going unanswered while hosts are managing arrivals.',
+      decision:'Route qualified reservation demand through a policy-controlled AI Concierge.',
+      outcome:'Compare captured demand, guest quality, and manager confidence against baseline.',
+      ledger:['Original guest request and intent','Policy applied and escalation path','Reservation or follow-up outcome','Manager review and disposition'],
+      expansion:'Did the workflow recover valuable demand without creating service or governance risk?'
+    },
+    {
+      kicker:'Illustrative deployment narrative',
+      title:'Intervene before arrival pressure becomes a guest-facing delay.',
+      signal:'Arrival pace, table readiness, and kitchen throughput are diverging during peak service.',
+      decision:'Recommend a timed host redeployment and controlled reservation-release hold.',
+      outcome:'Compare seating delay, throughput, intervention quality, and staff impact.',
+      ledger:['Source operating signals','Recommendation and confidence','Owner acknowledgment and action','Observed service outcome'],
+      expansion:'Did the intervention improve flow without shifting pressure elsewhere in the operation?'
+    },
+    {
+      kicker:'Illustrative deployment narrative',
+      title:'Replace fragmented reporting with an evidence-backed operating brief.',
+      signal:'Leadership receives delayed summaries without the operating context behind exceptions.',
+      decision:'Generate a portfolio briefing linked to source events, owners, and open decisions.',
+      outcome:'Compare reporting effort, exception quality, decision speed, and follow-through.',
+      ledger:['Location-level source evidence','Exception classification','Decision owner and due date','Resolution and verified outcome'],
+      expansion:'Did leadership gain faster insight while preserving trust, traceability, and accountability?'
+    }
+  ];
+  const byId = id => document.getElementById(id);
+  const render = index => {
+    const view = views[index];
+    buttons.forEach((button,i) => {
+      button.classList.toggle('is-active',i === index);
+      button.setAttribute('aria-selected',String(i === index));
+    });
+    byId('evidenceKicker').textContent = view.kicker;
+    byId('evidenceTitle').textContent = view.title;
+    byId('evidenceSignal').textContent = view.signal;
+    byId('evidenceDecision').textContent = view.decision;
+    byId('evidenceOutcome').textContent = view.outcome;
+    byId('evidenceLedger').innerHTML = view.ledger.map(item => `<li>${item}</li>`).join('');
+    byId('evidenceExpansion').textContent = view.expansion;
+  };
+  buttons.forEach((button,index) => button.addEventListener('click',() => render(index)));
+})();
