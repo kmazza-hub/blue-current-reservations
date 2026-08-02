@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "34.0.4",
+  "version": "34.5.1",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 CC-005 Operations Feed",
+  "description": "Blue Current Hospitality OS \u2014 SLO Alerting & Automated Runbooks",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
