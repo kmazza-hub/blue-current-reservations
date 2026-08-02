@@ -11138,3 +11138,62 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
   .ai-brain-scenario-kpis,.ai-brain-scenario-meta,.ai-brain-scenario-controls{grid-template-columns:1fr}
   .ai-brain-scenario-row{grid-template-columns:1.3fr repeat(3,.75fr)}
 }
+
+
+/* V34.1.3 — AI Brain Autonomy Guardrails */
+.ai-brain-autonomy-guardrails{margin-top:.7rem;padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:radial-gradient(circle at 88% 8%,rgba(239,133,125,.06),transparent 32%),rgba(255,255,255,.02)}
+.ai-brain-autonomy-heading,.ai-brain-autonomy-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.ai-brain-autonomy-heading small,.ai-brain-autonomy-section-heading small,.ai-brain-autonomy-decision small,.ai-brain-autonomy-kpis small{color:rgba(255,255,255,.45);font-size:.56rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.ai-brain-autonomy-heading>div:first-child>strong{display:block;margin-top:.22rem;color:#fff;font-size:.78rem}
+.ai-brain-autonomy-heading>div:first-child>span{display:block;margin-top:.18rem;color:rgba(255,255,255,.44);font-size:.57rem}
+.ai-brain-autonomy-score{min-width:155px;padding:.66rem;border-radius:12px;background:rgba(98,211,163,.1);text-align:right}
+.ai-brain-autonomy-score small,.ai-brain-autonomy-score strong,.ai-brain-autonomy-score span{display:block}
+.ai-brain-autonomy-score strong{margin-top:.2rem;color:#fff;font-size:1.2rem}
+.ai-brain-autonomy-score span{margin-top:.15rem;color:rgba(255,255,255,.5);font-size:.55rem}
+.ai-brain-autonomy-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.ai-brain-autonomy-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.ai-brain-autonomy-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.44rem;margin-top:.65rem}
+.ai-brain-autonomy-kpis article{padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.ai-brain-autonomy-kpis strong,.ai-brain-autonomy-kpis span{display:block}
+.ai-brain-autonomy-kpis strong{margin-top:.18rem;color:#fff;font-size:.72rem}
+.ai-brain-autonomy-kpis span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.ai-brain-autonomy-layout{display:grid;grid-template-columns:1.2fr .8fr;gap:.65rem;margin-top:.65rem}
+.ai-brain-autonomy-policy,.ai-brain-autonomy-decision,.ai-brain-autonomy-review,.ai-brain-autonomy-audit{padding:.66rem;border:1px solid rgba(255,255,255,.06);border-radius:11px;background:rgba(0,0,0,.08)}
+.ai-brain-autonomy-section-heading strong{display:block;margin-top:.2rem;color:#fff;font-size:.68rem}
+.ai-brain-autonomy-section-heading button{min-height:32px;padding:0 .56rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#fff;background:rgba(255,255,255,.04);font:inherit;font-size:.53rem;font-weight:800;cursor:pointer}
+.ai-brain-autonomy-policy-grid{display:grid;grid-template-columns:1fr 1fr;gap:.48rem;margin-top:.58rem}
+.ai-brain-autonomy-policy-grid label{color:rgba(255,255,255,.43);font-size:.52rem;font-weight:800;text-transform:uppercase}
+.ai-brain-autonomy-policy-grid input,.ai-brain-autonomy-policy-grid select{display:block;width:100%;margin-top:.28rem;padding:.54rem .6rem;border:1px solid rgba(255,255,255,.08);border-radius:9px;color:#fff;background:rgba(255,255,255,.04);font:inherit}
+.ai-brain-autonomy-policy-grid .ai-brain-autonomy-checkbox{display:flex;align-items:center;gap:.42rem;padding:.5rem;border-radius:9px;background:rgba(255,255,255,.025);text-transform:none}
+.ai-brain-autonomy-policy-grid .ai-brain-autonomy-checkbox input{width:auto;margin:0}
+#aiBrainAutonomySavePolicy,.ai-brain-autonomy-actions button{min-height:36px;padding:0 .64rem;border-radius:999px;font:inherit;font-size:.55rem;font-weight:800;cursor:pointer}
+#aiBrainAutonomySavePolicy,#aiBrainAutonomyExecute{border:0;color:#082a31;background:#62d3a3}
+#aiBrainAutonomySavePolicy{margin-top:.58rem}
+#aiBrainAutonomyPolicyStatus,#aiBrainAutonomyStatus{display:block;min-height:1rem;margin-top:.42rem;color:rgba(255,255,255,.43);font-size:.56rem}
+.ai-brain-autonomy-decision>strong{display:block;margin-top:.25rem;color:#fff;font-size:.75rem}
+.ai-brain-autonomy-decision>p{margin:.34rem 0 0;color:rgba(255,255,255,.47);font-size:.59rem;line-height:1.45}
+.ai-brain-autonomy-meta{display:grid;grid-template-columns:1fr 1fr;gap:.42rem;margin:.62rem 0}
+.ai-brain-autonomy-meta div{padding:.5rem;border-radius:9px;background:rgba(255,255,255,.035)}
+.ai-brain-autonomy-meta dt{color:rgba(255,255,255,.39);font-size:.5rem;text-transform:uppercase}
+.ai-brain-autonomy-meta dd{margin:.16rem 0 0;color:#fff;font-size:.61rem;font-weight:800}
+.ai-brain-autonomy-actions{display:grid;gap:.4rem}
+.ai-brain-autonomy-secondary{border:1px solid rgba(255,255,255,.08);color:#fff;background:rgba(255,255,255,.04)}
+.ai-brain-autonomy-actions button:disabled{opacity:.42;cursor:not-allowed}
+.ai-brain-autonomy-review,.ai-brain-autonomy-audit{margin-top:.65rem}
+.ai-brain-autonomy-review-list,.ai-brain-autonomy-audit-list{display:grid;gap:.42rem;margin-top:.55rem}
+.ai-brain-autonomy-review-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.56rem;border:1px solid rgba(255,255,255,.06);border-radius:9px;background:rgba(255,255,255,.025)}
+.ai-brain-autonomy-review-item[data-result="eligible"]{border-color:rgba(98,211,163,.2)}
+.ai-brain-autonomy-review-item[data-result="approval"]{border-color:rgba(217,182,95,.22)}
+.ai-brain-autonomy-review-item[data-result="blocked"]{border-color:rgba(239,133,125,.24)}
+.ai-brain-autonomy-review-item strong,.ai-brain-autonomy-review-item span{display:block}
+.ai-brain-autonomy-review-item strong{color:#fff;font-size:.61rem}
+.ai-brain-autonomy-review-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem;line-height:1.4}
+.ai-brain-autonomy-review-item b{align-self:center;padding:.34rem .48rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.5rem;text-transform:uppercase}
+.ai-brain-autonomy-audit-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.ai-brain-autonomy-audit-item strong,.ai-brain-autonomy-audit-item span{display:block}
+.ai-brain-autonomy-audit-item strong{color:#fff;font-size:.61rem}
+.ai-brain-autonomy-audit-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.ai-brain-autonomy-audit-item time{color:#d9b65f;font-size:.52rem;font-weight:800}
+.ai-brain-autonomy-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
+@media(max-width:980px){.ai-brain-autonomy-kpis{grid-template-columns:repeat(3,1fr)}.ai-brain-autonomy-layout{grid-template-columns:1fr}}
+@media(max-width:650px){.ai-brain-autonomy-heading,.ai-brain-autonomy-section-heading{flex-direction:column}.ai-brain-autonomy-kpis,.ai-brain-autonomy-meta,.ai-brain-autonomy-policy-grid{grid-template-columns:1fr}}

@@ -200,6 +200,9 @@
         state.selectedId = item.id;
         save();
         render();
+        window.dispatchEvent(new CustomEvent("bluecurrent:ai-brain-recommendation-selected", {
+          detail:{recommendation:item}
+        }));
       });
 
       root.append(card);

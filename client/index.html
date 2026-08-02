@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.2">
+  <meta name="blue-current-build" content="34.1.3">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.2">
+  <link rel="stylesheet" href="styles.css?v=34.1.3">
 </head>
 <body>
 
@@ -3814,6 +3814,118 @@
           </div>
         </section>
 
+        <section class="ai-brain-autonomy-guardrails" id="aiBrainAutonomyGuardrails" aria-labelledby="aiBrainAutonomyGuardrailsTitle">
+          <div class="ai-brain-autonomy-heading">
+            <div>
+              <small>AI Brain autonomy controls</small>
+              <strong id="aiBrainAutonomyGuardrailsTitle">Autonomy Guardrails</strong>
+              <span id="aiBrainAutonomyUpdated">Defining which recommendations Blue Current may execute automatically, which require approval, and which must remain advisory…</span>
+            </div>
+
+            <div class="ai-brain-autonomy-score" id="aiBrainAutonomyScoreCard" data-tone="stable">
+              <small>Autonomy readiness</small>
+              <strong id="aiBrainAutonomyScore">0</strong>
+              <span id="aiBrainAutonomyLabel">Awaiting policy</span>
+            </div>
+          </div>
+
+          <div class="ai-brain-autonomy-kpis">
+            <article><small>Eligible actions</small><strong id="aiBrainAutonomyEligible">0</strong><span>Within policy limits</span></article>
+            <article><small>Approval required</small><strong id="aiBrainAutonomyApprovalRequired">0</strong><span>Human review needed</span></article>
+            <article><small>Blocked</small><strong id="aiBrainAutonomyBlocked">0</strong><span>Outside guardrails</span></article>
+            <article><small>Auto-executed</small><strong id="aiBrainAutonomyExecuted">0</strong><span>Committed automatically</span></article>
+            <article><small>Policy confidence</small><strong id="aiBrainAutonomyConfidence">0%</strong><span>Evidence and control strength</span></article>
+          </div>
+
+          <div class="ai-brain-autonomy-layout">
+            <div class="ai-brain-autonomy-policy">
+              <div class="ai-brain-autonomy-section-heading">
+                <div><small>Execution policy</small><strong>Define safe operating limits</strong></div>
+                <button type="button" id="aiBrainAutonomyResetPolicy">Reset policy</button>
+              </div>
+
+              <div class="ai-brain-autonomy-policy-grid">
+                <label>
+                  Autonomy mode
+                  <select id="aiBrainAutonomyMode">
+                    <option value="advisory">Advisory only</option>
+                    <option value="supervised" selected>Supervised autonomy</option>
+                    <option value="bounded">Bounded autonomy</option>
+                  </select>
+                </label>
+
+                <label>
+                  Maximum automatic value
+                  <input id="aiBrainAutonomyMaxValue" type="number" min="0" step="50" value="500">
+                </label>
+
+                <label>
+                  Minimum confidence
+                  <input id="aiBrainAutonomyMinConfidence" type="number" min="50" max="99" step="1" value="88">
+                </label>
+
+                <label>
+                  Maximum urgency
+                  <select id="aiBrainAutonomyMaxUrgency">
+                    <option value="monitor">Monitor only</option>
+                    <option value="today" selected>Today</option>
+                    <option value="immediate">Immediate</option>
+                  </select>
+                </label>
+
+                <label class="ai-brain-autonomy-checkbox">
+                  <input id="aiBrainAutonomyRequireOwner" type="checkbox" checked>
+                  Require an assigned owner
+                </label>
+
+                <label class="ai-brain-autonomy-checkbox">
+                  <input id="aiBrainAutonomyRequireCheckpoint" type="checkbox" checked>
+                  Require a review checkpoint
+                </label>
+              </div>
+
+              <button type="button" id="aiBrainAutonomySavePolicy">Save autonomy policy</button>
+              <span id="aiBrainAutonomyPolicyStatus" role="status"></span>
+            </div>
+
+            <aside class="ai-brain-autonomy-decision">
+              <small>Next policy decision</small>
+              <strong id="aiBrainAutonomyDecisionTitle">No recommendation selected</strong>
+              <p id="aiBrainAutonomyDecisionDetail">Select a recommendation in the Decision Orchestrator to evaluate it against the autonomy policy.</p>
+
+              <dl class="ai-brain-autonomy-meta">
+                <div><dt>Policy result</dt><dd id="aiBrainAutonomyDecisionResult">—</dd></div>
+                <div><dt>Reason</dt><dd id="aiBrainAutonomyDecisionReason">—</dd></div>
+                <div><dt>Value threshold</dt><dd id="aiBrainAutonomyValueThreshold">$0</dd></div>
+                <div><dt>Confidence threshold</dt><dd id="aiBrainAutonomyConfidenceThreshold">0%</dd></div>
+              </dl>
+
+              <div class="ai-brain-autonomy-actions">
+                <button type="button" id="aiBrainAutonomyEvaluate">Evaluate selected recommendation</button>
+                <button type="button" class="ai-brain-autonomy-secondary" id="aiBrainAutonomyExecute" disabled>Execute within guardrails</button>
+              </div>
+
+              <span id="aiBrainAutonomyStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="ai-brain-autonomy-review">
+            <div class="ai-brain-autonomy-section-heading">
+              <div><small>Autonomy review queue</small><strong>Recommendations classified by policy outcome</strong></div>
+              <button type="button" id="aiBrainAutonomyRefresh">Refresh review</button>
+            </div>
+            <div id="aiBrainAutonomyReviewList" class="ai-brain-autonomy-review-list"></div>
+          </div>
+
+          <div class="ai-brain-autonomy-audit">
+            <div class="ai-brain-autonomy-section-heading">
+              <div><small>Autonomy audit</small><strong>Policy changes, evaluations, and automatic executions</strong></div>
+              <button type="button" id="aiBrainAutonomyClearAudit">Clear audit</button>
+            </div>
+            <div id="aiBrainAutonomyAuditList" class="ai-brain-autonomy-audit-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5363,7 +5475,8 @@
   <script src="js/modules/autonomousExecutiveBriefings.js?v=34.1.0"></script>
   <script src="js/modules/restaurantAiBrainV341.js?v=34.1.1"></script>
   <script src="js/modules/aiBrainDecisionOrchestrator.js?v=34.1.2"></script>
-  <script src="js/modules/aiBrainScenarioSimulator.js?v=34.1.2"></script>
+  <script src="js/modules/aiBrainScenarioSimulator.js?v=34.1.3"></script>
+  <script src="js/modules/aiBrainAutonomyGuardrails.js?v=34.1.3"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
