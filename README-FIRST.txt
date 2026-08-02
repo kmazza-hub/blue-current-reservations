@@ -1,4 +1,4 @@
-BLUE CURRENT V34.1.7 — AUTONOMY DEPLOYMENT OBSERVATORY
+BLUE CURRENT V34.1.8 — AUTONOMY INCIDENT RESPONSE CENTER
 
 REPLACE
 - client/index.html
@@ -6,28 +6,27 @@ REPLACE
 - client/js/modules/aiBrainAutonomyGuardrails.js
 
 ADD
-- client/js/modules/autonomyDeploymentObservatory.js
+- client/js/modules/autonomyIncidentResponseCenter.js
 
 ADDS
-- Live deployment-health score
-- Weighted autonomy-exposure tracking
-- Healthy, Watch, and Critical rollout states
-- Deployment map by location and operating domain
-- Rollout filtering
-- Selected-deployment inspector
-- Early-warning deployment alerts
-- Portfolio deployment brief
-- Pause and resume controls
-- Persistent deployment-event history
-- Guardrail blocking for paused rollout domains
+- Automatic incident detection from rollout failures, underperformance, pauses, and emergency stops
+- Medium, High, and Critical severity levels
+- Incident ownership and response queue
+- One-click containment that pauses the affected rollout
+- Incident resolution notes and status tracking
+- Domain-specific response playbooks
+- Protected-value estimation
+- Postmortem generation and copy
+- Persistent incident audit history
+- Guardrail blocking for domains with active critical incidents
 
 TEST
 1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Create multiple rollout plans across locations and domains.
-5. Record successful and underperforming outcomes.
-6. Confirm health states, exposure, alerts, and portfolio brief update.
-7. Pause a deployment and confirm matching bounded-autonomy actions become blocked.
-8. Resume the deployment and verify the guardrail restriction clears.
-9. Test filtering and Copy Deployment Brief.
+4. Create a rollout at 50% or higher exposure.
+5. Record two underperforming outcomes for the same domain.
+6. Click Detect Incidents.
+7. Select the critical incident and contain it.
+8. Confirm the rollout is paused and matching bounded-autonomy actions are blocked.
+9. Add a resolution note, resolve the incident, and copy the postmortem.

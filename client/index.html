@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.7">
+  <meta name="blue-current-build" content="34.1.8">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.7">
+  <link rel="stylesheet" href="styles.css?v=34.1.8">
 </head>
 <body>
 
@@ -4319,6 +4319,105 @@
           </div>
         </section>
 
+        <section class="autonomy-incident-response-center" id="autonomyIncidentResponseCenter" aria-labelledby="autonomyIncidentResponseCenterTitle">
+          <div class="autonomy-incident-response-heading">
+            <div>
+              <small>Autonomy exception management</small>
+              <strong id="autonomyIncidentResponseCenterTitle">Autonomy Incident Response Center</strong>
+              <span id="autonomyIncidentResponseUpdated">Detecting, containing, resolving, and learning from autonomy deployment failures…</span>
+            </div>
+
+            <div class="autonomy-incident-response-score" id="autonomyIncidentResponseScoreCard" data-tone="stable">
+              <small>Response posture</small>
+              <strong id="autonomyIncidentResponseScore">100</strong>
+              <span id="autonomyIncidentResponseLabel">No active incidents</span>
+            </div>
+          </div>
+
+          <div class="autonomy-incident-response-kpis">
+            <article><small>Open incidents</small><strong id="autonomyIncidentOpenCount">0</strong><span>Require response</span></article>
+            <article><small>Critical</small><strong id="autonomyIncidentCriticalCount">0</strong><span>Immediate containment</span></article>
+            <article><small>Contained</small><strong id="autonomyIncidentContainedCount">0</strong><span>Risk isolated</span></article>
+            <article><small>Resolved</small><strong id="autonomyIncidentResolvedCount">0</strong><span>Closed with evidence</span></article>
+            <article><small>Protected value</small><strong id="autonomyIncidentProtectedValue">$0</strong><span>Estimated avoided exposure</span></article>
+          </div>
+
+          <div class="autonomy-incident-response-layout">
+            <div class="autonomy-incident-response-queue">
+              <div class="autonomy-incident-response-section-heading">
+                <div><small>Incident queue</small><strong>Autonomy exceptions requiring leadership action</strong></div>
+                <button type="button" id="autonomyIncidentDetect">Detect incidents</button>
+              </div>
+              <div id="autonomyIncidentQueueList" class="autonomy-incident-queue-list"></div>
+            </div>
+
+            <aside class="autonomy-incident-response-inspector">
+              <small>Selected incident</small>
+              <strong id="autonomyIncidentSelectedTitle">Choose an incident</strong>
+              <p id="autonomyIncidentSelectedDetail">Select an incident to review severity, affected deployment, containment status, and recommended response.</p>
+
+              <dl class="autonomy-incident-response-meta">
+                <div><dt>Severity</dt><dd id="autonomyIncidentSelectedSeverity">—</dd></div>
+                <div><dt>Domain</dt><dd id="autonomyIncidentSelectedDomain">—</dd></div>
+                <div><dt>Location</dt><dd id="autonomyIncidentSelectedLocation">—</dd></div>
+                <div><dt>Status</dt><dd id="autonomyIncidentSelectedStatus">—</dd></div>
+              </dl>
+
+              <label>
+                Incident owner
+                <select id="autonomyIncidentOwner" disabled>
+                  <option>Operations Director</option>
+                  <option>Regional Manager</option>
+                  <option>General Manager</option>
+                  <option>Kitchen Manager</option>
+                  <option>Workforce Manager</option>
+                  <option>Executive Team</option>
+                </select>
+              </label>
+
+              <label>
+                Resolution note
+                <textarea id="autonomyIncidentResolutionNote" rows="3" placeholder="Document the containment or corrective action." disabled></textarea>
+              </label>
+
+              <div class="autonomy-incident-response-actions">
+                <button type="button" id="autonomyIncidentContain" disabled>Contain incident</button>
+                <button type="button" class="autonomy-incident-secondary" id="autonomyIncidentResolve" disabled>Resolve incident</button>
+                <button type="button" class="autonomy-incident-secondary" id="autonomyIncidentOpenDeployment" disabled>Open deployment</button>
+              </div>
+
+              <span id="autonomyIncidentStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="autonomy-incident-response-lower">
+            <div class="autonomy-incident-playbook-panel">
+              <div class="autonomy-incident-response-section-heading">
+                <div><small>Response playbook</small><strong>Recommended containment and recovery steps</strong></div>
+                <span id="autonomyIncidentPlaybookCount">0 steps</span>
+              </div>
+              <div id="autonomyIncidentPlaybookList" class="autonomy-incident-playbook-list"></div>
+            </div>
+
+            <div class="autonomy-incident-postmortem-panel">
+              <div class="autonomy-incident-response-section-heading">
+                <div><small>Postmortem summary</small><strong>Root cause and prevention intelligence</strong></div>
+                <button type="button" id="autonomyIncidentCopyPostmortem">Copy postmortem</button>
+              </div>
+              <strong id="autonomyIncidentPostmortemTitle">No resolved incident selected</strong>
+              <p id="autonomyIncidentPostmortemDetail">Resolve an incident to generate a postmortem summary and prevention recommendation.</p>
+            </div>
+          </div>
+
+          <div class="autonomy-incident-response-history">
+            <div class="autonomy-incident-response-section-heading">
+              <div><small>Incident audit</small><strong>Detection, containment, resolution, and learning history</strong></div>
+              <button type="button" id="autonomyIncidentClearHistory">Clear history</button>
+            </div>
+            <div id="autonomyIncidentHistoryList" class="autonomy-incident-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5873,7 +5972,8 @@
   <script src="js/modules/autonomyOutcomeVerifier.js?v=34.1.5"></script>
   <script src="js/modules/autonomyPerformanceGovernor.js?v=34.1.6"></script>
   <script src="js/modules/autonomyRolloutManager.js?v=34.1.7"></script>
-  <script src="js/modules/autonomyDeploymentObservatory.js?v=34.1.7"></script>
+  <script src="js/modules/autonomyDeploymentObservatory.js?v=34.1.8"></script>
+  <script src="js/modules/autonomyIncidentResponseCenter.js?v=34.1.8"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

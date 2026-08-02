@@ -6,6 +6,7 @@
   const ACCOUNTABILITY_KEY = "blueCurrent.executiveAccountabilityCenter.v34.0.14.6";
   const GOVERNOR_KEY = "blueCurrent.autonomyPerformanceGovernor.v34.1.5";
   const ROLLOUT_KEY = "blueCurrent.autonomyRolloutManager.v34.1.6";
+  const INCIDENT_KEY = "blueCurrent.autonomyIncidentResponseCenter.v34.1.8";
   const byId = id => document.getElementById(id);
 
   const DEFAULT_POLICY = {
@@ -76,7 +77,22 @@
     const p = state.policy;
     const governor = read(GOVERNOR_KEY);
     const rolloutState = read(ROLLOUT_KEY);
+    const incidentState = read(INCIDENT_KEY);
     const reasons = [];
+
+    const activeIncidents = Array.isArray(incidentState.incidents)
+      ? incidentState.incidents.filter(item =>
+          ["open","contained"].includes(item.status) &&
+          item.severity === "critical"
+        )
+      : [];
+    const incidentText = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+    const incidentMatch = activeIncidents.find(item =>
+      incidentText.includes(String(item.domain || "").toLowerCase())
+    );
+    if (incidentMatch) {
+      return {result:"blocked",reason:`${incidentMatch.domain} autonomy is blocked by an active critical incident.`};
+    }
 
     const rollouts = Array.isArray(rolloutState.rollouts) ? rolloutState.rollouts : [];
     const pausedRollouts = rollouts.filter(item => item.status === "paused");
@@ -432,7 +448,7 @@
       },0);
     });
     window.addEventListener("storage",event => {
-      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY].includes(event.key)) {
+      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY,INCIDENT_KEY].includes(event.key)) {
         load();
         reviewAll();
         render();
