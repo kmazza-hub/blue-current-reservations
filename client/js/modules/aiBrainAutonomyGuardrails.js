@@ -5,6 +5,7 @@
   const ORCHESTRATOR_KEY = "blueCurrent.aiBrainDecisionOrchestrator.v34.1.1";
   const ACCOUNTABILITY_KEY = "blueCurrent.executiveAccountabilityCenter.v34.0.14.6";
   const GOVERNOR_KEY = "blueCurrent.autonomyPerformanceGovernor.v34.1.5";
+  const ROLLOUT_KEY = "blueCurrent.autonomyRolloutManager.v34.1.6";
   const byId = id => document.getElementById(id);
 
   const DEFAULT_POLICY = {
@@ -74,7 +75,20 @@
   function evaluate(recommendation) {
     const p = state.policy;
     const governor = read(GOVERNOR_KEY);
+    const rolloutState = read(ROLLOUT_KEY);
     const reasons = [];
+
+    const rollouts = Array.isArray(rolloutState.rollouts) ? rolloutState.rollouts : [];
+    if (rollouts.length && p.mode === "bounded") {
+      const text = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+      const matchingRollout = rollouts.find(item =>
+        ["pilot","promoted"].includes(item.status) &&
+        text.includes(String(item.domain || "").toLowerCase())
+      );
+      if (!matchingRollout) {
+        return {result:"approval",reason:"Bounded execution requires an active rollout plan for this operating domain."};
+      }
+    }
 
     if (governor.emergencyStop) {
       return {result:"blocked",reason:"Emergency stop is active in the Autonomy Performance Governor."};
@@ -409,7 +423,7 @@
       },0);
     });
     window.addEventListener("storage",event => {
-      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY].includes(event.key)) {
+      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY].includes(event.key)) {
         load();
         reviewAll();
         render();

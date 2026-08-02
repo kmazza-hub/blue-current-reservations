@@ -11305,3 +11305,60 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .autonomy-performance-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
 @media(max-width:980px){.autonomy-performance-governor-kpis{grid-template-columns:repeat(3,1fr)}.autonomy-performance-governor-layout,.autonomy-performance-governor-lower{grid-template-columns:1fr}}
 @media(max-width:650px){.autonomy-performance-governor-heading,.autonomy-performance-governor-section-heading{flex-direction:column}.autonomy-performance-governor-kpis,.autonomy-performance-governor-meta{grid-template-columns:1fr}}
+
+
+/* V34.1.6 — Autonomy Rollout Manager */
+.autonomy-rollout-manager{margin-top:.7rem;padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:radial-gradient(circle at 88% 8%,rgba(98,211,163,.07),transparent 32%),rgba(255,255,255,.02)}
+.autonomy-rollout-manager-heading,.autonomy-rollout-manager-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.autonomy-rollout-manager-heading small,.autonomy-rollout-manager-section-heading small,.autonomy-rollout-decision-panel small,.autonomy-rollout-manager-kpis small{color:rgba(255,255,255,.45);font-size:.56rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.autonomy-rollout-manager-heading>div:first-child>strong{display:block;margin-top:.22rem;color:#fff;font-size:.78rem}
+.autonomy-rollout-manager-heading>div:first-child>span{display:block;margin-top:.18rem;color:rgba(255,255,255,.44);font-size:.57rem}
+.autonomy-rollout-manager-score{min-width:155px;padding:.66rem;border-radius:12px;background:rgba(98,211,163,.1);text-align:right}
+.autonomy-rollout-manager-score small,.autonomy-rollout-manager-score strong,.autonomy-rollout-manager-score span{display:block}
+.autonomy-rollout-manager-score strong{margin-top:.2rem;color:#fff;font-size:1.2rem}
+.autonomy-rollout-manager-score span{margin-top:.15rem;color:rgba(255,255,255,.5);font-size:.55rem}
+.autonomy-rollout-manager-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.autonomy-rollout-manager-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.autonomy-rollout-manager-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.44rem;margin-top:.65rem}
+.autonomy-rollout-manager-kpis article{padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.autonomy-rollout-manager-kpis strong,.autonomy-rollout-manager-kpis span{display:block}
+.autonomy-rollout-manager-kpis strong{margin-top:.18rem;color:#fff;font-size:.72rem}
+.autonomy-rollout-manager-kpis span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.autonomy-rollout-manager-layout,.autonomy-rollout-manager-lower{display:grid;grid-template-columns:1.2fr .8fr;gap:.65rem;margin-top:.65rem}
+.autonomy-rollout-plan-panel,.autonomy-rollout-decision-panel,.autonomy-rollout-list-panel,.autonomy-rollout-audit-panel{padding:.66rem;border:1px solid rgba(255,255,255,.06);border-radius:11px;background:rgba(0,0,0,.08)}
+.autonomy-rollout-manager-section-heading strong{display:block;margin-top:.2rem;color:#fff;font-size:.68rem}
+.autonomy-rollout-manager-section-heading button{min-height:32px;padding:0 .56rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#fff;background:rgba(255,255,255,.04);font:inherit;font-size:.53rem;font-weight:800;cursor:pointer}
+.autonomy-rollout-plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:.48rem;margin-top:.58rem}
+.autonomy-rollout-plan-grid label{color:rgba(255,255,255,.43);font-size:.52rem;font-weight:800;text-transform:uppercase}
+.autonomy-rollout-plan-grid input,.autonomy-rollout-plan-grid select{display:block;width:100%;margin-top:.28rem;padding:.54rem .6rem;border:1px solid rgba(255,255,255,.08);border-radius:9px;color:#fff;background:rgba(255,255,255,.04);font:inherit}
+#autonomyRolloutCreate,.autonomy-rollout-manager-actions button{min-height:36px;padding:0 .64rem;border-radius:999px;font:inherit;font-size:.55rem;font-weight:800;cursor:pointer}
+#autonomyRolloutCreate,#autonomyRolloutEvaluate{border:0;color:#082a31;background:#62d3a3}
+#autonomyRolloutCreate{margin-top:.58rem}
+#autonomyRolloutPlanStatus,#autonomyRolloutStatus{display:block;min-height:1rem;margin-top:.42rem;color:rgba(255,255,255,.43);font-size:.56rem}
+.autonomy-rollout-decision-panel>strong{display:block;margin-top:.25rem;color:#fff;font-size:.75rem}
+.autonomy-rollout-decision-panel>p{margin:.34rem 0 0;color:rgba(255,255,255,.47);font-size:.59rem;line-height:1.45}
+.autonomy-rollout-manager-meta{display:grid;grid-template-columns:1fr 1fr;gap:.42rem;margin:.62rem 0}
+.autonomy-rollout-manager-meta div{padding:.5rem;border-radius:9px;background:rgba(255,255,255,.035)}
+.autonomy-rollout-manager-meta dt{color:rgba(255,255,255,.39);font-size:.5rem;text-transform:uppercase}
+.autonomy-rollout-manager-meta dd{margin:.16rem 0 0;color:#fff;font-size:.61rem;font-weight:800}
+.autonomy-rollout-manager-actions{display:grid;gap:.4rem}
+.autonomy-rollout-secondary{border:1px solid rgba(255,255,255,.08);color:#fff;background:rgba(255,255,255,.04)}
+.autonomy-rollout-manager-actions button:disabled{opacity:.42;cursor:not-allowed}
+.autonomy-rollout-list,.autonomy-rollout-audit-list{display:grid;gap:.42rem;margin-top:.55rem}
+.autonomy-rollout-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.58rem;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.025);cursor:pointer}
+.autonomy-rollout-item[data-status="promoted"]{border-color:rgba(98,211,163,.22)}
+.autonomy-rollout-item[data-status="rollback"]{border-color:rgba(239,133,125,.24)}
+.autonomy-rollout-item[data-status="pilot"]{border-color:rgba(217,182,95,.2)}
+.autonomy-rollout-item.is-selected{border-color:rgba(93,164,255,.34)}
+.autonomy-rollout-item strong,.autonomy-rollout-item span{display:block}
+.autonomy-rollout-item strong{color:#fff;font-size:.63rem}
+.autonomy-rollout-item span{margin-top:.15rem;color:rgba(255,255,255,.42);font-size:.54rem;line-height:1.4}
+.autonomy-rollout-item b{align-self:center;padding:.34rem .48rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.5rem;text-transform:uppercase}
+.autonomy-rollout-audit-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.autonomy-rollout-audit-item strong,.autonomy-rollout-audit-item span{display:block}
+.autonomy-rollout-audit-item strong{color:#fff;font-size:.61rem}
+.autonomy-rollout-audit-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.autonomy-rollout-audit-item time{color:#d9b65f;font-size:.52rem;font-weight:800}
+.autonomy-rollout-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
+@media(max-width:980px){.autonomy-rollout-manager-kpis{grid-template-columns:repeat(3,1fr)}.autonomy-rollout-manager-layout,.autonomy-rollout-manager-lower{grid-template-columns:1fr}}
+@media(max-width:650px){.autonomy-rollout-manager-heading,.autonomy-rollout-manager-section-heading{flex-direction:column}.autonomy-rollout-manager-kpis,.autonomy-rollout-manager-meta,.autonomy-rollout-plan-grid{grid-template-columns:1fr}}

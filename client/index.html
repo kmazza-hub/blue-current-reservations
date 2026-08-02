@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.5">
+  <meta name="blue-current-build" content="34.1.6">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.5">
+  <link rel="stylesheet" href="styles.css?v=34.1.6">
 </head>
 <body>
 
@@ -4091,6 +4091,143 @@
           </div>
         </section>
 
+        <section class="autonomy-rollout-manager" id="autonomyRolloutManager" aria-labelledby="autonomyRolloutManagerTitle">
+          <div class="autonomy-rollout-manager-heading">
+            <div>
+              <small>Autonomy deployment layer</small>
+              <strong id="autonomyRolloutManagerTitle">Autonomy Rollout Manager</strong>
+              <span id="autonomyRolloutManagerUpdated">Controlling how bounded autonomy moves from pilot to broader operating deployment…</span>
+            </div>
+
+            <div class="autonomy-rollout-manager-score" id="autonomyRolloutManagerScoreCard" data-tone="stable">
+              <small>Rollout readiness</small>
+              <strong id="autonomyRolloutManagerScore">0</strong>
+              <span id="autonomyRolloutManagerLabel">Awaiting rollout plan</span>
+            </div>
+          </div>
+
+          <div class="autonomy-rollout-manager-kpis">
+            <article><small>Active pilots</small><strong id="autonomyRolloutActivePilots">0</strong><span>Controlled autonomy tests</span></article>
+            <article><small>Locations exposed</small><strong id="autonomyRolloutLocationCount">0</strong><span>Current deployment scope</span></article>
+            <article><small>Domains enabled</small><strong id="autonomyRolloutDomainCount">0</strong><span>Approved operating areas</span></article>
+            <article><small>Promotion ready</small><strong id="autonomyRolloutPromotionCount">0</strong><span>Passed rollout gates</span></article>
+            <article><small>Rollback required</small><strong id="autonomyRolloutRollbackCount">0</strong><span>Failed safety gates</span></article>
+          </div>
+
+          <div class="autonomy-rollout-manager-layout">
+            <div class="autonomy-rollout-plan-panel">
+              <div class="autonomy-rollout-manager-section-heading">
+                <div><small>Rollout plan</small><strong>Create a controlled autonomy deployment</strong></div>
+                <button type="button" id="autonomyRolloutResetPlan">Reset form</button>
+              </div>
+
+              <div class="autonomy-rollout-plan-grid">
+                <label>
+                  Rollout name
+                  <input id="autonomyRolloutName" type="text" placeholder="Example: Kitchen pacing pilot">
+                </label>
+
+                <label>
+                  Operating domain
+                  <select id="autonomyRolloutDomain">
+                    <option value="Kitchen">Kitchen</option>
+                    <option value="Staffing">Staffing</option>
+                    <option value="Floor">Floor</option>
+                    <option value="Demand">Demand</option>
+                    <option value="Executive recovery">Executive recovery</option>
+                  </select>
+                </label>
+
+                <label>
+                  Pilot location
+                  <select id="autonomyRolloutLocation">
+                    <option>Marina Grill</option>
+                    <option>The Dock Room</option>
+                    <option>Shoreline Kitchen</option>
+                    <option>Harbor House</option>
+                  </select>
+                </label>
+
+                <label>
+                  Exposure level
+                  <select id="autonomyRolloutExposure">
+                    <option value="10">10% canary</option>
+                    <option value="25" selected>25% pilot</option>
+                    <option value="50">50% controlled rollout</option>
+                    <option value="100">100% full deployment</option>
+                  </select>
+                </label>
+
+                <label>
+                  Minimum success rate
+                  <input id="autonomyRolloutMinSuccess" type="number" min="50" max="100" step="1" value="80">
+                </label>
+
+                <label>
+                  Minimum value delivery
+                  <input id="autonomyRolloutMinValue" type="number" min="0" max="150" step="1" value="85">
+                </label>
+
+                <label>
+                  Minimum verified outcomes
+                  <input id="autonomyRolloutMinOutcomes" type="number" min="1" max="20" step="1" value="3">
+                </label>
+
+                <label>
+                  Review window
+                  <select id="autonomyRolloutReviewWindow">
+                    <option value="next_shift">Next shift</option>
+                    <option value="three_shifts" selected>Next 3 shifts</option>
+                    <option value="week">Next 7 days</option>
+                  </select>
+                </label>
+              </div>
+
+              <button type="button" id="autonomyRolloutCreate">Create rollout plan</button>
+              <span id="autonomyRolloutPlanStatus" role="status"></span>
+            </div>
+
+            <aside class="autonomy-rollout-decision-panel">
+              <small>Selected rollout</small>
+              <strong id="autonomyRolloutSelectedTitle">Choose a rollout</strong>
+              <p id="autonomyRolloutSelectedDetail">Select a rollout to review its safety gates, measured outcomes, and recommended next step.</p>
+
+              <dl class="autonomy-rollout-manager-meta">
+                <div><dt>Status</dt><dd id="autonomyRolloutSelectedStatus">—</dd></div>
+                <div><dt>Exposure</dt><dd id="autonomyRolloutSelectedExposure">—</dd></div>
+                <div><dt>Gate result</dt><dd id="autonomyRolloutSelectedGate">—</dd></div>
+                <div><dt>Next decision</dt><dd id="autonomyRolloutSelectedDecision">—</dd></div>
+              </dl>
+
+              <div class="autonomy-rollout-manager-actions">
+                <button type="button" id="autonomyRolloutEvaluate" disabled>Evaluate rollout gates</button>
+                <button type="button" class="autonomy-rollout-secondary" id="autonomyRolloutPromote" disabled>Promote rollout</button>
+                <button type="button" class="autonomy-rollout-secondary" id="autonomyRolloutRollback" disabled>Rollback rollout</button>
+              </div>
+
+              <span id="autonomyRolloutStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="autonomy-rollout-manager-lower">
+            <div class="autonomy-rollout-list-panel">
+              <div class="autonomy-rollout-manager-section-heading">
+                <div><small>Deployment queue</small><strong>Active, promoted, and rolled-back autonomy plans</strong></div>
+                <button type="button" id="autonomyRolloutRefresh">Refresh rollouts</button>
+              </div>
+              <div id="autonomyRolloutList" class="autonomy-rollout-list"></div>
+            </div>
+
+            <div class="autonomy-rollout-audit-panel">
+              <div class="autonomy-rollout-manager-section-heading">
+                <div><small>Rollout audit</small><strong>Creation, evaluation, promotion, and rollback history</strong></div>
+                <button type="button" id="autonomyRolloutClearAudit">Clear audit</button>
+              </div>
+              <div id="autonomyRolloutAuditList" class="autonomy-rollout-audit-list"></div>
+            </div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5643,7 +5780,8 @@
   <script src="js/modules/aiBrainScenarioSimulator.js?v=34.1.3"></script>
   <script src="js/modules/aiBrainAutonomyGuardrails.js?v=34.1.4"></script>
   <script src="js/modules/autonomyOutcomeVerifier.js?v=34.1.5"></script>
-  <script src="js/modules/autonomyPerformanceGovernor.js?v=34.1.5"></script>
+  <script src="js/modules/autonomyPerformanceGovernor.js?v=34.1.6"></script>
+  <script src="js/modules/autonomyRolloutManager.js?v=34.1.6"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
