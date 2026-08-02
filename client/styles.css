@@ -10723,3 +10723,60 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .executive-accountability-empty{padding:.75rem;border:1px dashed rgba(255,255,255,.08);border-radius:10px;color:rgba(255,255,255,.44);font-size:.58rem;text-align:center}
 @media(max-width:980px){.executive-accountability-kpis{grid-template-columns:repeat(3,1fr)}.executive-accountability-layout,.executive-accountability-lower{grid-template-columns:1fr}}
 @media(max-width:650px){.executive-accountability-heading,.executive-accountability-section-heading{flex-direction:column}.executive-accountability-kpis,.executive-accountability-review-metrics,.executive-accountability-editor-actions{grid-template-columns:1fr}.executive-accountability-item{grid-template-columns:36px 1fr}.executive-accountability-badge{grid-column:2;justify-self:start}}
+
+
+/* V34.0.14.7 — AI Operations Coach */
+.ai-operations-coach{
+  margin-top:.8rem;padding:.85rem;border:1px solid rgba(255,255,255,.07);border-radius:16px;
+  background:radial-gradient(circle at 88% 8%,rgba(153,120,255,.07),transparent 31%),rgba(0,0,0,.08)
+}
+.ai-operations-coach-heading,.ai-operations-coach-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.ai-operations-coach-heading small,.ai-operations-coach-section-heading small,.ai-operations-coach-session small,.ai-operations-coach-kpis small{
+  color:rgba(255,255,255,.45);font-size:.58rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase
+}
+.ai-operations-coach-heading h4{margin:.28rem 0 0;color:#fff;font-size:.95rem}
+#aiOperationsCoachUpdated{display:block;margin-top:.22rem;color:rgba(255,255,255,.45);font-size:.6rem}
+.ai-operations-coach-score{min-width:165px;padding:.7rem;border-radius:13px;background:rgba(98,211,163,.1);text-align:right}
+.ai-operations-coach-score small,.ai-operations-coach-score strong,.ai-operations-coach-score span{display:block}
+.ai-operations-coach-score strong{margin-top:.22rem;color:#fff;font-size:1.35rem}
+.ai-operations-coach-score span{margin-top:.18rem;color:rgba(255,255,255,.52);font-size:.58rem}
+.ai-operations-coach-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.ai-operations-coach-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.ai-operations-coach-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.48rem;margin-top:.7rem}
+.ai-operations-coach-kpis article{padding:.58rem;border-radius:10px;background:rgba(255,255,255,.03)}
+.ai-operations-coach-kpis strong,.ai-operations-coach-kpis span{display:block}
+.ai-operations-coach-kpis strong{margin-top:.2rem;color:#fff;font-size:.76rem}
+.ai-operations-coach-kpis span{margin-top:.17rem;color:rgba(255,255,255,.42);font-size:.55rem}
+.ai-operations-coach-layout,.ai-operations-coach-lower{display:grid;grid-template-columns:1.3fr .7fr;gap:.7rem;margin-top:.7rem}
+.ai-operations-coach-lessons,.ai-operations-coach-session,.ai-operations-coach-patterns,.ai-operations-coach-history{
+  padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.02)
+}
+.ai-operations-coach-section-heading strong{display:block;margin-top:.22rem;color:#fff;font-size:.7rem}
+.ai-operations-coach-section-heading>span{color:rgba(255,255,255,.42);font-size:.56rem}
+.ai-operations-coach-section-heading button{min-height:34px;padding:0 .62rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#fff;background:rgba(255,255,255,.04);font:inherit;font-size:.56rem;font-weight:800;cursor:pointer}
+.ai-operations-coach-lesson-list,.ai-operations-coach-pattern-list,.ai-operations-coach-history-list{display:grid;gap:.45rem;margin-top:.6rem}
+.ai-operations-coach-card{padding:.62rem;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.025)}
+.ai-operations-coach-card[data-tone="watch"]{border-color:rgba(217,182,95,.22)}
+.ai-operations-coach-card[data-tone="risk"]{border-color:rgba(239,133,125,.24)}
+.ai-operations-coach-card strong,.ai-operations-coach-card span{display:block}
+.ai-operations-coach-card strong{color:#fff;font-size:.66rem}
+.ai-operations-coach-card span{margin-top:.18rem;color:rgba(255,255,255,.44);font-size:.57rem;line-height:1.42}
+.ai-operations-coach-session>strong{display:block;margin-top:.28rem;color:#fff;font-size:.78rem}
+.ai-operations-coach-session>p{margin:.38rem 0 0;color:rgba(255,255,255,.48);font-size:.61rem;line-height:1.45}
+.ai-operations-coach-session-meta{display:grid;grid-template-columns:1fr 1fr;gap:.45rem;margin:.68rem 0}
+.ai-operations-coach-session-meta div{padding:.54rem;border-radius:9px;background:rgba(255,255,255,.035)}
+.ai-operations-coach-session-meta dt{color:rgba(255,255,255,.4);font-size:.52rem;text-transform:uppercase}
+.ai-operations-coach-session-meta dd{margin:.18rem 0 0;color:#fff;font-size:.64rem;font-weight:800}
+.ai-operations-coach-actions{display:grid;grid-template-columns:1fr 1fr;gap:.45rem}
+.ai-operations-coach-actions button{min-height:36px;padding:0 .62rem;border-radius:999px;font:inherit;font-size:.57rem;font-weight:800;cursor:pointer}
+#aiOperationsCoachCreateSession{border:0;color:#082a31;background:#d9b65f}
+.ai-operations-coach-secondary{border:1px solid rgba(255,255,255,.08);color:#fff;background:rgba(255,255,255,.04)}
+#aiOperationsCoachStatus{display:block;min-height:1rem;margin-top:.45rem;color:rgba(255,255,255,.44);font-size:.58rem}
+.ai-operations-coach-history-item{display:grid;grid-template-columns:1fr auto;gap:.6rem;padding:.58rem;border-radius:10px;background:rgba(255,255,255,.03)}
+.ai-operations-coach-history-item strong,.ai-operations-coach-history-item span{display:block}
+.ai-operations-coach-history-item strong{color:#fff;font-size:.64rem}
+.ai-operations-coach-history-item span{margin-top:.16rem;color:rgba(255,255,255,.43);font-size:.55rem}
+.ai-operations-coach-history-item time{color:#d9b65f;font-size:.54rem;font-weight:800}
+.ai-operations-coach-empty{padding:.75rem;border:1px dashed rgba(255,255,255,.08);border-radius:10px;color:rgba(255,255,255,.44);font-size:.58rem;text-align:center}
+@media(max-width:980px){.ai-operations-coach-kpis{grid-template-columns:repeat(3,1fr)}.ai-operations-coach-layout,.ai-operations-coach-lower{grid-template-columns:1fr}}
+@media(max-width:650px){.ai-operations-coach-heading,.ai-operations-coach-section-heading{flex-direction:column}.ai-operations-coach-kpis,.ai-operations-coach-session-meta,.ai-operations-coach-actions{grid-template-columns:1fr}}

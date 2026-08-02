@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.6">
+  <meta name="blue-current-build" content="34.0.14.7">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.6">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.7">
 </head>
 <body>
 
@@ -3312,6 +3312,78 @@
         </div>
       </section>
 
+      <section class="ai-operations-coach" id="aiOperationsCoach" aria-labelledby="aiOperationsCoachTitle">
+        <div class="ai-operations-coach-heading">
+          <div>
+            <small>Leadership coaching layer</small>
+            <h4 id="aiOperationsCoachTitle">AI Operations Coach</h4>
+            <span id="aiOperationsCoachUpdated">Translating operational intelligence and accountability signals into focused coaching…</span>
+          </div>
+
+          <div class="ai-operations-coach-score" id="aiOperationsCoachScoreCard" data-tone="stable">
+            <small>Coaching readiness</small>
+            <strong id="aiOperationsCoachScore">0</strong>
+            <span id="aiOperationsCoachLabel">Awaiting signals</span>
+          </div>
+        </div>
+
+        <div class="ai-operations-coach-kpis">
+          <article><small>Active lessons</small><strong id="aiOperationsCoachLessonCount">0</strong><span>Current coaching priorities</span></article>
+          <article><small>At-risk commitments</small><strong id="aiOperationsCoachRiskCount">0</strong><span>Overdue or due soon</span></article>
+          <article><small>Verified wins</small><strong id="aiOperationsCoachWinCount">0</strong><span>Repeatable success patterns</span></article>
+          <article><small>Manager focus</small><strong id="aiOperationsCoachManagerFocus">Balanced</strong><span>Primary leadership theme</span></article>
+          <article><small>Confidence</small><strong id="aiOperationsCoachConfidence">0%</strong><span>Evidence strength</span></article>
+        </div>
+
+        <div class="ai-operations-coach-layout">
+          <div class="ai-operations-coach-lessons">
+            <div class="ai-operations-coach-section-heading">
+              <div><small>Coaching plan</small><strong>What leadership should do next</strong></div>
+              <span id="aiOperationsCoachLessonLabel">0 lessons</span>
+            </div>
+            <div id="aiOperationsCoachLessonList" class="ai-operations-coach-lesson-list"></div>
+          </div>
+
+          <aside class="ai-operations-coach-session">
+            <small>Recommended coaching session</small>
+            <strong id="aiOperationsCoachSessionTitle">No session available</strong>
+            <p id="aiOperationsCoachSessionDetail">Import and manage executive commitments to generate a targeted leadership coaching session.</p>
+
+            <dl class="ai-operations-coach-session-meta">
+              <div><dt>Audience</dt><dd id="aiOperationsCoachAudience">Leadership team</dd></div>
+              <div><dt>Duration</dt><dd id="aiOperationsCoachDuration">10 minutes</dd></div>
+              <div><dt>Primary goal</dt><dd id="aiOperationsCoachGoal">Improve execution</dd></div>
+              <div><dt>Review window</dt><dd id="aiOperationsCoachReviewWindow">Next shift</dd></div>
+            </dl>
+
+            <div class="ai-operations-coach-actions">
+              <button type="button" id="aiOperationsCoachCreateSession">Create coaching session</button>
+              <button type="button" class="ai-operations-coach-secondary" id="aiOperationsCoachCopyBrief">Copy coaching brief</button>
+            </div>
+
+            <span id="aiOperationsCoachStatus" role="status"></span>
+          </aside>
+        </div>
+
+        <div class="ai-operations-coach-lower">
+          <div class="ai-operations-coach-patterns">
+            <div class="ai-operations-coach-section-heading">
+              <div><small>Behavior patterns</small><strong>What management behavior is reinforcing results</strong></div>
+              <span id="aiOperationsCoachPatternCount">0 patterns</span>
+            </div>
+            <div id="aiOperationsCoachPatternList" class="ai-operations-coach-pattern-list"></div>
+          </div>
+
+          <div class="ai-operations-coach-history">
+            <div class="ai-operations-coach-section-heading">
+              <div><small>Coaching history</small><strong>Saved leadership coaching sessions</strong></div>
+              <button type="button" id="aiOperationsCoachClearHistory">Clear history</button>
+            </div>
+            <div id="aiOperationsCoachHistoryList" class="ai-operations-coach-history-list"></div>
+          </div>
+        </div>
+      </section>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4836,7 +4908,8 @@
   <script src="js/modules/executiveShiftComparison.js?v=34.0.14.4"></script>
   <script src="js/modules/executivePerformanceTrends.js?v=34.0.14.5"></script>
   <script src="js/modules/executiveOperationalIntelligence.js?v=34.0.14.6"></script>
-  <script src="js/modules/executiveAccountabilityCenter.js?v=34.0.14.6"></script>
+  <script src="js/modules/executiveAccountabilityCenter.js?v=34.0.14.7"></script>
+  <script src="js/modules/aiOperationsCoach.js?v=34.0.14.7"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

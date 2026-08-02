@@ -1,34 +1,31 @@
-BLUE CURRENT V34.0.14.6 — EXECUTIVE ACCOUNTABILITY CENTER
+BLUE CURRENT V34.0.14.7 — AI OPERATIONS COACH
 
 BUILT FROM
-The uploaded blue-current-reservations(8).zip project.
+The validated V34.0.14.6 project.
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/executiveAccountabilityCenter.js
+- client/js/modules/aiOperationsCoach.js
 
 ADDS
-- Import executive recommendations into an accountability queue
-- Action owner assignment
-- Due dates and SLA monitoring
-- Due-soon and overdue detection
-- Automatic escalation to Operations Director / Executive Team
-- Completion notes and expected impact
-- Result verification
-- Leadership accountability score
-- On-time completion rate
-- Weekly executive review
-- Persistent action audit timeline
+- Coaching readiness score
+- At-risk commitment detection
+- Verified-win detection
+- Targeted leadership lessons
+- Recommended coaching session
+- Manager focus identification
+- Behavioral pattern analysis
+- Saved coaching-session history
+- Copyable coaching brief
 
 TEST
 1. Replace/add the three files.
 2. Run npm run check.
 3. Run npm start.
-4. Generate executive actions in Operational Intelligence.
-5. Click Import Executive Actions.
-6. Assign an owner, due date, expected impact, and save.
-7. Mark the action complete, then enter and verify a measured result.
-8. Confirm KPIs, weekly review, and audit timeline update.
+4. Import and manage commitments in Executive Accountability Center.
+5. Confirm coaching score, lessons, patterns, and recommended session update.
+6. Create a coaching session and verify it appears in history.
+7. Test Copy Coaching Brief.
