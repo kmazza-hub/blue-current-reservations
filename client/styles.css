@@ -11039,3 +11039,102 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
   .ai-brain-decision-recommendation{grid-template-columns:34px 1fr}
   .ai-brain-decision-badge{grid-column:2;justify-self:start}
 }
+
+
+/* V34.1.2 — AI Brain Decision Scenario Simulator */
+.ai-brain-scenario-simulator{
+  margin-top:.7rem;padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:13px;
+  background:radial-gradient(circle at 88% 8%,rgba(93,164,255,.06),transparent 32%),rgba(255,255,255,.02)
+}
+.ai-brain-scenario-heading,.ai-brain-scenario-section-heading{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:1rem
+}
+.ai-brain-scenario-heading small,.ai-brain-scenario-section-heading small,
+.ai-brain-scenario-recommendation small,.ai-brain-scenario-kpis small{
+  color:rgba(255,255,255,.45);font-size:.56rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase
+}
+.ai-brain-scenario-heading>div:first-child>strong{display:block;margin-top:.22rem;color:#fff;font-size:.78rem}
+.ai-brain-scenario-heading>div:first-child>span{display:block;margin-top:.18rem;color:rgba(255,255,255,.44);font-size:.57rem}
+.ai-brain-scenario-score{
+  min-width:155px;padding:.66rem;border-radius:12px;background:rgba(98,211,163,.1);text-align:right
+}
+.ai-brain-scenario-score small,.ai-brain-scenario-score strong,.ai-brain-scenario-score span{display:block}
+.ai-brain-scenario-score strong{margin-top:.2rem;color:#fff;font-size:1.2rem}
+.ai-brain-scenario-score span{margin-top:.15rem;color:rgba(255,255,255,.5);font-size:.55rem}
+.ai-brain-scenario-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.ai-brain-scenario-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.ai-brain-scenario-controls{
+  display:grid;grid-template-columns:1.2fr 1fr 1fr auto;gap:.45rem;align-items:end;margin-top:.65rem
+}
+.ai-brain-scenario-controls label{
+  color:rgba(255,255,255,.43);font-size:.53rem;font-weight:800;text-transform:uppercase
+}
+.ai-brain-scenario-controls select{
+  display:block;width:100%;margin-top:.28rem;padding:.56rem .62rem;border:1px solid rgba(255,255,255,.08);
+  border-radius:9px;color:#fff;background:rgba(255,255,255,.04);font:inherit
+}
+.ai-brain-scenario-controls button,.ai-brain-scenario-actions button{
+  min-height:36px;padding:0 .64rem;border-radius:999px;font:inherit;font-size:.55rem;font-weight:800;cursor:pointer
+}
+#aiBrainScenarioRun,#aiBrainScenarioPromote{border:0;color:#082a31;background:#62d3a3}
+.ai-brain-scenario-kpis{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:.44rem;margin-top:.65rem
+}
+.ai-brain-scenario-kpis article{padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.ai-brain-scenario-kpis strong,.ai-brain-scenario-kpis span{display:block}
+.ai-brain-scenario-kpis strong{margin-top:.18rem;color:#fff;font-size:.72rem}
+.ai-brain-scenario-kpis span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.ai-brain-scenario-layout{display:grid;grid-template-columns:1.3fr .7fr;gap:.65rem;margin-top:.65rem}
+.ai-brain-scenario-comparison,.ai-brain-scenario-recommendation,.ai-brain-scenario-history{
+  padding:.66rem;border:1px solid rgba(255,255,255,.06);border-radius:11px;background:rgba(0,0,0,.08)
+}
+.ai-brain-scenario-section-heading strong{display:block;margin-top:.2rem;color:#fff;font-size:.68rem}
+.ai-brain-scenario-section-heading>span{color:rgba(255,255,255,.42);font-size:.54rem}
+.ai-brain-scenario-section-heading button{
+  min-height:32px;padding:0 .56rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;
+  color:#fff;background:rgba(255,255,255,.04);font:inherit;font-size:.53rem;font-weight:800;cursor:pointer
+}
+.ai-brain-scenario-table{display:grid;gap:.34rem;margin-top:.55rem}
+.ai-brain-scenario-row{
+  display:grid;grid-template-columns:1.35fr repeat(3,.85fr);gap:.4rem;align-items:center;
+  padding:.5rem;border-radius:9px;background:rgba(255,255,255,.025)
+}
+.ai-brain-scenario-row span,.ai-brain-scenario-row strong,.ai-brain-scenario-row b{
+  color:rgba(255,255,255,.7);font-size:.56rem
+}
+.ai-brain-scenario-row strong,.ai-brain-scenario-row b{color:#fff}
+.ai-brain-scenario-header{background:rgba(255,255,255,.045)}
+.ai-brain-scenario-header span{color:rgba(255,255,255,.42);font-size:.5rem;font-weight:800;text-transform:uppercase}
+.ai-brain-scenario-recommendation>strong{display:block;margin-top:.25rem;color:#fff;font-size:.75rem}
+.ai-brain-scenario-recommendation>p{margin:.34rem 0 0;color:rgba(255,255,255,.47);font-size:.59rem;line-height:1.45}
+.ai-brain-scenario-meta{display:grid;grid-template-columns:1fr 1fr;gap:.42rem;margin:.62rem 0}
+.ai-brain-scenario-meta div{padding:.5rem;border-radius:9px;background:rgba(255,255,255,.035)}
+.ai-brain-scenario-meta dt{color:rgba(255,255,255,.39);font-size:.5rem;text-transform:uppercase}
+.ai-brain-scenario-meta dd{margin:.16rem 0 0;color:#fff;font-size:.61rem;font-weight:800}
+.ai-brain-scenario-actions{display:grid;gap:.4rem}
+.ai-brain-scenario-secondary{border:1px solid rgba(255,255,255,.08);color:#fff;background:rgba(255,255,255,.04)}
+.ai-brain-scenario-actions button:disabled{opacity:.42;cursor:not-allowed}
+#aiBrainScenarioStatus{display:block;min-height:1rem;margin-top:.42rem;color:rgba(255,255,255,.43);font-size:.56rem}
+.ai-brain-scenario-history{margin-top:.65rem}
+.ai-brain-scenario-history-list{display:grid;gap:.42rem;margin-top:.55rem}
+.ai-brain-scenario-history-item{
+  display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03);cursor:pointer
+}
+.ai-brain-scenario-history-item strong,.ai-brain-scenario-history-item span{display:block}
+.ai-brain-scenario-history-item strong{color:#fff;font-size:.61rem}
+.ai-brain-scenario-history-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.ai-brain-scenario-history-item time{color:#d9b65f;font-size:.52rem;font-weight:800}
+.ai-brain-scenario-empty{
+  padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;
+  color:rgba(255,255,255,.43);font-size:.56rem;text-align:center
+}
+@media(max-width:980px){
+  .ai-brain-scenario-kpis{grid-template-columns:repeat(3,1fr)}
+  .ai-brain-scenario-layout{grid-template-columns:1fr}
+  .ai-brain-scenario-controls{grid-template-columns:1fr 1fr}
+}
+@media(max-width:650px){
+  .ai-brain-scenario-heading,.ai-brain-scenario-section-heading{flex-direction:column}
+  .ai-brain-scenario-kpis,.ai-brain-scenario-meta,.ai-brain-scenario-controls{grid-template-columns:1fr}
+  .ai-brain-scenario-row{grid-template-columns:1.3fr repeat(3,.75fr)}
+}

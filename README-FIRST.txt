@@ -1,30 +1,30 @@
-BLUE CURRENT V34.1.1 — AI BRAIN DECISION ORCHESTRATOR
+BLUE CURRENT V34.1.2 — AI BRAIN DECISION SCENARIO SIMULATOR
 
 REPLACE
 - client/index.html
 - client/styles.css
-- client/js/modules/restaurantAiBrainV341.js
-
-ADD
 - client/js/modules/aiBrainDecisionOrchestrator.js
 
+ADD
+- client/js/modules/aiBrainScenarioSimulator.js
+
 ADDS
-- Proactive AI recommendation queue
-- Immediate, today, and monitor urgency levels
-- Evidence-based owner, confidence, and expected-value estimates
-- Recommendation selection and source navigation
-- One-click accountability commitment creation
-- Commitment due dates and priorities derived from urgency
-- Recommendation dismissal
-- Persistent execution history
-- Automatic refresh after AI Brain answers and operating events
+- Staffing, kitchen, floor, demand, and recovery scenarios
+- Conservative, balanced, and aggressive intervention strengths
+- Next-shift, three-shift, and seven-day horizons
+- Before-and-after operating-state comparison
+- Projected portfolio score, revenue, risk reduction, effort, and success probability
+- AI recommendation with owner, dependency, checkpoint, and proceed/revise decision
+- Scenario history
+- One-click promotion into the Decision Orchestrator
+- Decision Orchestrator support for promoted scenarios
 
 TEST
 1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Review proactive recommendations in the Decision Orchestrator.
-5. Select a recommendation and inspect urgency, owner, value, and confidence.
-6. Create an accountability commitment.
-7. Confirm it appears in Executive Accountability Center.
-8. Test Open Source, Dismiss, Refresh, and Clear History.
+4. Run multiple scenario types and strengths.
+5. Confirm projected metrics and recommendation update.
+6. Save a scenario and reload it from history.
+7. Promote a scenario.
+8. Confirm it appears in the Decision Orchestrator.

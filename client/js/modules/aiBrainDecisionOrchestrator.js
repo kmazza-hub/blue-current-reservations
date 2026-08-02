@@ -144,6 +144,14 @@
       });
     }
 
+    const orchestratorState = read(ORCHESTRATOR_KEY);
+    const promotedScenarios = Array.isArray(orchestratorState.promotedScenarios)
+      ? orchestratorState.promotedScenarios
+      : [];
+    promotedScenarios.forEach(item => {
+      if (!items.some(existing => existing.id === item.id)) items.unshift(item);
+    });
+
     const completedIds = new Set(
       state.history
         .filter(item => ["committed","dismissed"].includes(item.status))
@@ -410,7 +418,8 @@
     [
       "bluecurrent:restaurant-ai-brain-answered",
       "bluecurrent:decision-outcome-recorded",
-      "bluecurrent:executive-replay-session-saved"
+      "bluecurrent:executive-replay-session-saved",
+      "bluecurrent:ai-brain-scenario-promoted"
     ].forEach(name => window.addEventListener(name,refresh));
 
     window.addEventListener("storage",event => {

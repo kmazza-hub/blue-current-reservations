@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.1">
+  <meta name="blue-current-build" content="34.1.2">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.1">
+  <link rel="stylesheet" href="styles.css?v=34.1.2">
 </head>
 <body>
 
@@ -3702,6 +3702,118 @@
           </div>
         </section>
 
+        <section class="ai-brain-scenario-simulator" id="aiBrainScenarioSimulator" aria-labelledby="aiBrainScenarioSimulatorTitle">
+          <div class="ai-brain-scenario-heading">
+            <div>
+              <small>AI Brain simulation layer</small>
+              <strong id="aiBrainScenarioSimulatorTitle">Decision Scenario Simulator</strong>
+              <span id="aiBrainScenarioUpdated">Modeling likely operational outcomes before leadership commits to an action…</span>
+            </div>
+
+            <div class="ai-brain-scenario-score" id="aiBrainScenarioScoreCard" data-tone="stable">
+              <small>Scenario confidence</small>
+              <strong id="aiBrainScenarioScore">0</strong>
+              <span id="aiBrainScenarioLabel">Awaiting scenario</span>
+            </div>
+          </div>
+
+          <div class="ai-brain-scenario-controls">
+            <label>
+              Scenario
+              <select id="aiBrainScenarioType">
+                <option value="staffing">Add targeted staffing coverage</option>
+                <option value="kitchen">Rebalance kitchen stations</option>
+                <option value="floor">Change floor and section assignments</option>
+                <option value="demand">Adjust reservation pacing</option>
+                <option value="recovery">Launch executive recovery plan</option>
+              </select>
+            </label>
+
+            <label>
+              Intervention strength
+              <select id="aiBrainScenarioStrength">
+                <option value="conservative">Conservative</option>
+                <option value="balanced" selected>Balanced</option>
+                <option value="aggressive">Aggressive</option>
+              </select>
+            </label>
+
+            <label>
+              Time horizon
+              <select id="aiBrainScenarioHorizon">
+                <option value="next_shift">Next shift</option>
+                <option value="three_shifts">Next 3 shifts</option>
+                <option value="week">Next 7 days</option>
+              </select>
+            </label>
+
+            <button type="button" id="aiBrainScenarioRun">Run simulation</button>
+          </div>
+
+          <div class="ai-brain-scenario-kpis">
+            <article><small>Projected score</small><strong id="aiBrainScenarioProjectedScore">0</strong><span id="aiBrainScenarioProjectedScoreDelta">No change</span></article>
+            <article><small>Revenue impact</small><strong id="aiBrainScenarioRevenue">$0</strong><span>Estimated upside</span></article>
+            <article><small>Risk reduction</small><strong id="aiBrainScenarioRiskReduction">0%</strong><span>Operational exposure</span></article>
+            <article><small>Execution effort</small><strong id="aiBrainScenarioEffort">Low</strong><span>Management load</span></article>
+            <article><small>Success probability</small><strong id="aiBrainScenarioProbability">0%</strong><span>Evidence-weighted</span></article>
+          </div>
+
+          <div class="ai-brain-scenario-layout">
+            <div class="ai-brain-scenario-comparison">
+              <div class="ai-brain-scenario-section-heading">
+                <div><small>Before and after</small><strong>Projected operating-state comparison</strong></div>
+                <span id="aiBrainScenarioComparisonLabel">No simulation</span>
+              </div>
+
+              <div class="ai-brain-scenario-table">
+                <div class="ai-brain-scenario-row ai-brain-scenario-header">
+                  <span>Metric</span><span>Current</span><span>Projected</span><span>Change</span>
+                </div>
+                <div class="ai-brain-scenario-row">
+                  <span>Executive risk</span><strong id="aiBrainScenarioCurrentRisk">—</strong><strong id="aiBrainScenarioFutureRisk">—</strong><b id="aiBrainScenarioRiskDelta">—</b>
+                </div>
+                <div class="ai-brain-scenario-row">
+                  <span>Accountability health</span><strong id="aiBrainScenarioCurrentAccountability">—</strong><strong id="aiBrainScenarioFutureAccountability">—</strong><b id="aiBrainScenarioAccountabilityDelta">—</b>
+                </div>
+                <div class="ai-brain-scenario-row">
+                  <span>Portfolio score</span><strong id="aiBrainScenarioCurrentPortfolio">—</strong><strong id="aiBrainScenarioFuturePortfolio">—</strong><b id="aiBrainScenarioPortfolioDelta">—</b>
+                </div>
+                <div class="ai-brain-scenario-row">
+                  <span>Open commitments</span><strong id="aiBrainScenarioCurrentOpen">—</strong><strong id="aiBrainScenarioFutureOpen">—</strong><b id="aiBrainScenarioOpenDelta">—</b>
+                </div>
+              </div>
+            </div>
+
+            <aside class="ai-brain-scenario-recommendation">
+              <small>Simulation recommendation</small>
+              <strong id="aiBrainScenarioRecommendationTitle">Run a scenario</strong>
+              <p id="aiBrainScenarioRecommendationDetail">Blue Current will compare the projected upside, execution effort, and operational risk before recommending whether to proceed.</p>
+
+              <dl class="ai-brain-scenario-meta">
+                <div><dt>Recommended owner</dt><dd id="aiBrainScenarioOwner">—</dd></div>
+                <div><dt>Review checkpoint</dt><dd id="aiBrainScenarioCheckpoint">—</dd></div>
+                <div><dt>Primary dependency</dt><dd id="aiBrainScenarioDependency">—</dd></div>
+                <div><dt>Decision</dt><dd id="aiBrainScenarioDecision">—</dd></div>
+              </dl>
+
+              <div class="ai-brain-scenario-actions">
+                <button type="button" id="aiBrainScenarioPromote" disabled>Promote to Decision Orchestrator</button>
+                <button type="button" class="ai-brain-scenario-secondary" id="aiBrainScenarioSave" disabled>Save scenario</button>
+              </div>
+
+              <span id="aiBrainScenarioStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="ai-brain-scenario-history">
+            <div class="ai-brain-scenario-section-heading">
+              <div><small>Scenario history</small><strong>Saved simulations and projected outcomes</strong></div>
+              <button type="button" id="aiBrainScenarioClearHistory">Clear history</button>
+            </div>
+            <div id="aiBrainScenarioHistoryList" class="ai-brain-scenario-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5250,7 +5362,8 @@
   <script src="js/modules/crossLocationIntelligence.js?v=34.0.14.9"></script>
   <script src="js/modules/autonomousExecutiveBriefings.js?v=34.1.0"></script>
   <script src="js/modules/restaurantAiBrainV341.js?v=34.1.1"></script>
-  <script src="js/modules/aiBrainDecisionOrchestrator.js?v=34.1.1"></script>
+  <script src="js/modules/aiBrainDecisionOrchestrator.js?v=34.1.2"></script>
+  <script src="js/modules/aiBrainScenarioSimulator.js?v=34.1.2"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
