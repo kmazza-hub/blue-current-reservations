@@ -1,0 +1,16 @@
+{
+  "name": "Blue Current Hospitality OS",
+  "short_name": "Blue Current",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#061A24",
+  "theme_color": "#061A24",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

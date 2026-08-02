@@ -1,27 +1,45 @@
-BLUECURRENTCO.COM V2.5 — ENTERPRISE, TRUST & ABOUT
+BLUECURRENTCO.COM V2.6 — LAUNCH POLISH, ACCESSIBILITY & PERFORMANCE
 
-BUILDS ON V2.4.
+BUILDS ON V2.5.
 
 REPLACE
-- enterprise.html
-- trust.html
-- about.html
+- All HTML pages
 - styles.css
 - js/site.js
 
-IMPLEMENTED
-- Interactive enterprise organization and location-control showcase
-- Role-based access and rollout-state visuals
-- Enterprise capability and value sections
-- Interactive trust lifecycle
-- Guardrails, verification, incident response, recovery, certification, and evidence architecture
-- Trust capability and value sections
-- Interactive company story
-- Mission, principles, and product philosophy sections
-- Responsive desktop, tablet, and mobile layouts
+ADD
+- 404.html
+- robots.txt
+- sitemap.xml
+- site.webmanifest
+- assets/social-card.svg
+- .well-known/security.txt
 
-TEST
-1. Open enterprise.html and click each location.
-2. Open trust.html and click all six trust-lifecycle controls.
-3. Open about.html and click each story step.
-4. Confirm all pages remain responsive on tablet and mobile.
+IMPLEMENTED
+- Canonical URLs
+- Open Graph and Twitter metadata
+- Search-engine robots directives
+- XML sitemap
+- Web app manifest
+- Branded social-sharing card
+- Custom 404 page
+- Security contact file
+- Improved keyboard focus states
+- Escape and click-away mobile-menu handling
+- Current-page navigation states
+- Sticky-header scroll refinement
+- Reduced-motion support
+- Increased-contrast support
+- Print styles
+- Lazy image loading and asynchronous decoding
+- Defensive progressive enhancement
+- Final responsive and interaction polish
+
+DEPLOYMENT
+Upload the complete contents of this folder to the bluecurrentco.com site root.
+
+IMPORTANT BEFORE FINAL PUBLIC LAUNCH
+- Replace privacy.html and terms.html placeholders with approved legal text.
+- Verify the production scheduler and email links.
+- Confirm the hosting platform serves 404.html for missing routes.
+- Submit sitemap.xml in the preferred search-console account.

@@ -1,0 +1,3 @@
+Contact: mailto:keith@bluecurrentco.com
+Canonical: https://bluecurrentco.com/.well-known/security.txt
+Preferred-Languages: en

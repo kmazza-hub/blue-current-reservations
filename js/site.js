@@ -227,3 +227,54 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   storySteps.forEach((step,index) => step.addEventListener("click",() => renderStory(index)));
   if (storySteps.length) setInterval(() => renderStory((storyIndex+1)%storySteps.length),7000);
 })();
+
+
+(() => {
+  "use strict";
+
+  const header = document.querySelector(".site-header");
+  const updateHeader = () => header?.classList.toggle("is-scrolled",window.scrollY > 12);
+  updateHeader();
+  addEventListener("scroll",updateHeader,{passive:true});
+
+  const current = location.pathname.split("/").pop() || "index.html";
+  document.querySelectorAll(".desktop-nav a,.mobile-nav a").forEach(link => {
+    const target = (link.getAttribute("href") || "").split("#")[0];
+    if (target === current || (current === "" && target === "index.html")) {
+      link.setAttribute("aria-current","page");
+    }
+  });
+
+  const menuButton = document.querySelector(".menu-button");
+  const mobileNav = document.getElementById("mobileNav");
+
+  function closeMenu() {
+    if (!menuButton || !mobileNav) return;
+    menuButton.setAttribute("aria-expanded","false");
+    mobileNav.hidden = true;
+  }
+
+  document.addEventListener("keydown",event => {
+    if (event.key === "Escape") closeMenu();
+  });
+
+  document.addEventListener("click",event => {
+    if (!mobileNav || mobileNav.hidden) return;
+    if (!mobileNav.contains(event.target) && !menuButton?.contains(event.target)) closeMenu();
+  });
+
+  if ("IntersectionObserver" in window) {
+    document.querySelectorAll("img:not([loading])").forEach((img,index) => {
+      if (index > 0) img.loading = "lazy";
+      img.decoding = "async";
+    });
+  }
+
+  document.documentElement.classList.add("js");
+  addEventListener("load",() => document.body.classList.add("loading-complete"),{once:true});
+
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  if (reducedMotion.matches) {
+    document.querySelectorAll(".reveal").forEach(node => node.classList.add("is-visible"));
+  }
+})();
