@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.9">
+  <meta name="blue-current-build" content="34.1.10">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.9">
+  <link rel="stylesheet" href="styles.css?v=34.1.10">
 </head>
 <body>
 
@@ -4519,6 +4519,90 @@
           </div>
         </section>
 
+        <section class="autonomy-assurance-certification" id="autonomyAssuranceCertification" aria-labelledby="autonomyAssuranceCertificationTitle">
+          <div class="autonomy-assurance-heading">
+            <div>
+              <small>Autonomy governance assurance</small>
+              <strong id="autonomyAssuranceCertificationTitle">Autonomy Assurance &amp; Certification Center</strong>
+              <span id="autonomyAssuranceUpdated">Evaluating whether each autonomous operating domain has sufficient evidence, controls, recovery readiness, and audit coverage for certification…</span>
+            </div>
+
+            <div class="autonomy-assurance-score" id="autonomyAssuranceScoreCard" data-tone="stable">
+              <small>Assurance score</small>
+              <strong id="autonomyAssuranceScore">0</strong>
+              <span id="autonomyAssuranceLabel">Awaiting evidence</span>
+            </div>
+          </div>
+
+          <div class="autonomy-assurance-kpis">
+            <article><small>Certified domains</small><strong id="autonomyAssuranceCertifiedCount">0</strong><span>Approved for bounded autonomy</span></article>
+            <article><small>Conditional</small><strong id="autonomyAssuranceConditionalCount">0</strong><span>Limited certification</span></article>
+            <article><small>Not certified</small><strong id="autonomyAssuranceFailedCount">0</strong><span>Controls incomplete</span></article>
+            <article><small>Expiring soon</small><strong id="autonomyAssuranceExpiringCount">0</strong><span>Review required</span></article>
+            <article><small>Audit coverage</small><strong id="autonomyAssuranceAuditCoverage">0%</strong><span>Required evidence present</span></article>
+          </div>
+
+          <div class="autonomy-assurance-layout">
+            <div class="autonomy-assurance-domain-panel">
+              <div class="autonomy-assurance-section-heading">
+                <div><small>Domain certification matrix</small><strong>Evidence and control posture by operating domain</strong></div>
+                <button type="button" id="autonomyAssuranceRefresh">Refresh assessment</button>
+              </div>
+              <div id="autonomyAssuranceDomainList" class="autonomy-assurance-domain-list"></div>
+            </div>
+
+            <aside class="autonomy-assurance-inspector">
+              <small>Selected certification</small>
+              <strong id="autonomyAssuranceSelectedTitle">Choose a domain</strong>
+              <p id="autonomyAssuranceSelectedDetail">Select a domain to review its assurance gates, current certification status, and required corrective actions.</p>
+
+              <dl class="autonomy-assurance-meta">
+                <div><dt>Status</dt><dd id="autonomyAssuranceSelectedStatus">—</dd></div>
+                <div><dt>Evidence score</dt><dd id="autonomyAssuranceSelectedEvidence">—</dd></div>
+                <div><dt>Control score</dt><dd id="autonomyAssuranceSelectedControl">—</dd></div>
+                <div><dt>Valid through</dt><dd id="autonomyAssuranceSelectedExpiry">—</dd></div>
+              </dl>
+
+              <div class="autonomy-assurance-actions">
+                <button type="button" id="autonomyAssuranceIssue" disabled>Issue certification</button>
+                <button type="button" class="autonomy-assurance-secondary" id="autonomyAssuranceRevoke" disabled>Revoke certification</button>
+                <button type="button" class="autonomy-assurance-secondary" id="autonomyAssuranceOpenSource" disabled>Open source controls</button>
+              </div>
+
+              <span id="autonomyAssuranceStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="autonomy-assurance-lower">
+            <div class="autonomy-assurance-gates-panel">
+              <div class="autonomy-assurance-section-heading">
+                <div><small>Certification gates</small><strong>Required evidence, controls, and recovery readiness</strong></div>
+                <span id="autonomyAssuranceGateCount">0 gates</span>
+              </div>
+              <div id="autonomyAssuranceGateList" class="autonomy-assurance-gate-list"></div>
+            </div>
+
+            <div class="autonomy-assurance-report-panel">
+              <small>Assurance report</small>
+              <strong id="autonomyAssuranceReportTitle">No certification selected</strong>
+              <p id="autonomyAssuranceReportDetail">Select a domain to generate a certification summary and corrective-action report.</p>
+
+              <div class="autonomy-assurance-report-actions">
+                <button type="button" id="autonomyAssuranceCopyReport">Copy assurance report</button>
+                <button type="button" class="autonomy-assurance-secondary" id="autonomyAssuranceApplyPolicy" disabled>Apply certification policy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="autonomy-assurance-history">
+            <div class="autonomy-assurance-section-heading">
+              <div><small>Certification audit</small><strong>Assessment, issuance, revocation, and policy history</strong></div>
+              <button type="button" id="autonomyAssuranceClearHistory">Clear history</button>
+            </div>
+            <div id="autonomyAssuranceHistoryList" class="autonomy-assurance-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -6075,7 +6159,8 @@
   <script src="js/modules/autonomyRolloutManager.js?v=34.1.7"></script>
   <script src="js/modules/autonomyDeploymentObservatory.js?v=34.1.8"></script>
   <script src="js/modules/autonomyIncidentResponseCenter.js?v=34.1.9"></script>
-  <script src="js/modules/autonomyRecoveryRequalification.js?v=34.1.9"></script>
+  <script src="js/modules/autonomyRecoveryRequalification.js?v=34.1.10"></script>
+  <script src="js/modules/autonomyAssuranceCertification.js?v=34.1.10"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

@@ -1,4 +1,4 @@
-BLUE CURRENT V34.1.9 — AUTONOMY RECOVERY & REQUALIFICATION
+BLUE CURRENT V34.1.10 — AUTONOMY ASSURANCE & CERTIFICATION CENTER
 
 REPLACE
 - client/index.html
@@ -6,29 +6,29 @@ REPLACE
 - client/js/modules/aiBrainAutonomyGuardrails.js
 
 ADD
-- client/js/modules/autonomyRecoveryRequalification.js
+- client/js/modules/autonomyAssuranceCertification.js
 
 ADDS
-- Recovery-plan import from resolved autonomy incidents
-- Configurable successful-outcome and value-delivery requirements
-- Recovery ownership and corrective-action documentation
-- Five requalification gates
-- Ready, active, failed, and reinstated recovery states
-- Repeat-failure detection
-- Safe reinstatement at controlled pilot exposure
-- Preventive learning recommendations
-- One-click learning application to Autonomy Guardrails
-- Persistent recovery audit trail
-- Guardrail blocking while a domain is in active or failed requalification
+- Domain certification matrix for Kitchen, Staffing, Floor, Demand, and Executive Recovery
+- Eight certification gates covering outcomes, value, rollout, incidents, recovery, governor authorization, and audit continuity
+- Evidence and control scoring
+- Certified, Conditional, and Not Certified states
+- 90-day full certificates and 30-day conditional certificates
+- Certification expiry monitoring
+- Certificate issuance and revocation
+- Copyable assurance report
+- One-click certification-aligned guardrail policy
+- Persistent certification audit history
+- Guardrail enforcement requiring a current domain certificate for bounded execution
 
 TEST
 1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Resolve an incident in Autonomy Incident Response Center.
-5. Import the resolved incident into Recovery & Requalification.
-6. Add the recovery owner, required outcomes, value threshold, and corrective note.
-7. Record successful autonomous outcomes for the affected domain.
-8. Evaluate the requalification gates.
-9. Reinstate autonomy and confirm the rollout returns at controlled pilot exposure.
-10. Apply preventive learning and confirm Autonomy Guardrails updates.
+4. Select each domain and review its certification gates.
+5. Build sufficient outcome, rollout, incident, and recovery evidence.
+6. Issue a Conditional or Certified certificate.
+7. Confirm bounded execution requires a current certificate.
+8. Apply the certification policy and confirm Autonomy Guardrails updates.
+9. Revoke a certificate and confirm the domain returns to approval-required operation.
+10. Test Copy Assurance Report.

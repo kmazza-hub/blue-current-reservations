@@ -8,6 +8,7 @@
   const ROLLOUT_KEY = "blueCurrent.autonomyRolloutManager.v34.1.6";
   const INCIDENT_KEY = "blueCurrent.autonomyIncidentResponseCenter.v34.1.8";
   const RECOVERY_KEY = "blueCurrent.autonomyRecoveryRequalification.v34.1.9";
+  const CERTIFICATION_KEY = "blueCurrent.autonomyAssuranceCertification.v34.1.10";
   const byId = id => document.getElementById(id);
 
   const DEFAULT_POLICY = {
@@ -80,7 +81,23 @@
     const rolloutState = read(ROLLOUT_KEY);
     const incidentState = read(INCIDENT_KEY);
     const recoveryState = read(RECOVERY_KEY);
+    const certificationState = read(CERTIFICATION_KEY);
     const reasons = [];
+
+    const certificates = Array.isArray(certificationState.certificates)
+      ? certificationState.certificates
+      : [];
+    if (certificates.length && p.mode === "bounded") {
+      const certText = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+      const matchingCertificate = certificates.find(item =>
+        item.status === "certified" &&
+        new Date(item.validThrough || 0).getTime() > Date.now() &&
+        certText.includes(String(item.domain || "").toLowerCase())
+      );
+      if (!matchingCertificate) {
+        return {result:"approval",reason:"Bounded execution requires a current domain certification."};
+      }
+    }
 
     const recoveryPlans = Array.isArray(recoveryState.plans)
       ? recoveryState.plans
@@ -462,7 +479,7 @@
       },0);
     });
     window.addEventListener("storage",event => {
-      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY,INCIDENT_KEY,RECOVERY_KEY].includes(event.key)) {
+      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY,INCIDENT_KEY,RECOVERY_KEY,CERTIFICATION_KEY].includes(event.key)) {
         load();
         reviewAll();
         render();

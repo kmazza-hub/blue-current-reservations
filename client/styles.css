@@ -11546,3 +11546,65 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .autonomy-recovery-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
 @media(max-width:980px){.autonomy-recovery-kpis{grid-template-columns:repeat(3,1fr)}.autonomy-recovery-layout,.autonomy-recovery-lower{grid-template-columns:1fr}}
 @media(max-width:650px){.autonomy-recovery-heading,.autonomy-recovery-section-heading{flex-direction:column}.autonomy-recovery-kpis{grid-template-columns:1fr}.autonomy-recovery-plan-item{grid-template-columns:34px 1fr}.autonomy-recovery-badge{grid-column:2;justify-self:start}}
+
+
+/* V34.1.10 — Autonomy Assurance & Certification Center */
+.autonomy-assurance-certification{margin-top:.7rem;padding:.72rem;border:1px solid rgba(255,255,255,.07);border-radius:13px;background:radial-gradient(circle at 88% 8%,rgba(217,182,95,.07),transparent 32%),rgba(255,255,255,.02)}
+.autonomy-assurance-heading,.autonomy-assurance-section-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+.autonomy-assurance-heading small,.autonomy-assurance-section-heading small,.autonomy-assurance-inspector small,.autonomy-assurance-kpis small,.autonomy-assurance-report-panel small{color:rgba(255,255,255,.45);font-size:.56rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.autonomy-assurance-heading>div:first-child>strong{display:block;margin-top:.22rem;color:#fff;font-size:.78rem}
+.autonomy-assurance-heading>div:first-child>span{display:block;margin-top:.18rem;color:rgba(255,255,255,.44);font-size:.57rem}
+.autonomy-assurance-score{min-width:155px;padding:.66rem;border-radius:12px;background:rgba(98,211,163,.1);text-align:right}
+.autonomy-assurance-score small,.autonomy-assurance-score strong,.autonomy-assurance-score span{display:block}
+.autonomy-assurance-score strong{margin-top:.2rem;color:#fff;font-size:1.2rem}
+.autonomy-assurance-score span{margin-top:.15rem;color:rgba(255,255,255,.5);font-size:.55rem}
+.autonomy-assurance-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.autonomy-assurance-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.autonomy-assurance-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:.44rem;margin-top:.65rem}
+.autonomy-assurance-kpis article{padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.autonomy-assurance-kpis strong,.autonomy-assurance-kpis span{display:block}
+.autonomy-assurance-kpis strong{margin-top:.18rem;color:#fff;font-size:.72rem}
+.autonomy-assurance-kpis span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.autonomy-assurance-layout,.autonomy-assurance-lower{display:grid;grid-template-columns:1.25fr .75fr;gap:.65rem;margin-top:.65rem}
+.autonomy-assurance-domain-panel,.autonomy-assurance-inspector,.autonomy-assurance-gates-panel,.autonomy-assurance-report-panel,.autonomy-assurance-history{padding:.66rem;border:1px solid rgba(255,255,255,.06);border-radius:11px;background:rgba(0,0,0,.08)}
+.autonomy-assurance-section-heading strong{display:block;margin-top:.2rem;color:#fff;font-size:.68rem}
+.autonomy-assurance-section-heading>span{color:rgba(255,255,255,.42);font-size:.54rem}
+.autonomy-assurance-section-heading button{min-height:32px;padding:0 .56rem;border:1px solid rgba(255,255,255,.08);border-radius:999px;color:#fff;background:rgba(255,255,255,.04);font:inherit;font-size:.53rem;font-weight:800;cursor:pointer}
+.autonomy-assurance-domain-list,.autonomy-assurance-gate-list,.autonomy-assurance-history-list{display:grid;gap:.42rem;margin-top:.55rem}
+.autonomy-assurance-domain-item{display:grid;grid-template-columns:38px 1fr auto;gap:.5rem;align-items:start;padding:.58rem;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.025);cursor:pointer}
+.autonomy-assurance-domain-item[data-status="certified"]{border-color:rgba(98,211,163,.24)}
+.autonomy-assurance-domain-item[data-status="conditional"]{border-color:rgba(217,182,95,.24)}
+.autonomy-assurance-domain-item[data-status="not-certified"]{border-color:rgba(239,133,125,.26)}
+.autonomy-assurance-domain-item.is-selected{border-color:rgba(93,164,255,.34)}
+.autonomy-assurance-rank{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;color:#fff;background:rgba(255,255,255,.06);font-size:.57rem;font-weight:800}
+.autonomy-assurance-copy strong,.autonomy-assurance-copy span{display:block}
+.autonomy-assurance-copy strong{color:#fff;font-size:.64rem}
+.autonomy-assurance-copy span{margin-top:.16rem;color:rgba(255,255,255,.43);font-size:.55rem;line-height:1.4}
+.autonomy-assurance-badge{padding:.34rem .48rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.51rem;font-weight:800;text-transform:uppercase}
+.autonomy-assurance-inspector>strong,.autonomy-assurance-report-panel>strong{display:block;margin-top:.25rem;color:#fff;font-size:.75rem}
+.autonomy-assurance-inspector>p,.autonomy-assurance-report-panel>p{margin:.34rem 0 0;color:rgba(255,255,255,.47);font-size:.59rem;line-height:1.45}
+.autonomy-assurance-meta{display:grid;grid-template-columns:1fr 1fr;gap:.42rem;margin:.62rem 0}
+.autonomy-assurance-meta div{padding:.5rem;border-radius:9px;background:rgba(255,255,255,.035)}
+.autonomy-assurance-meta dt{color:rgba(255,255,255,.39);font-size:.5rem;text-transform:uppercase}
+.autonomy-assurance-meta dd{margin:.16rem 0 0;color:#fff;font-size:.61rem;font-weight:800}
+.autonomy-assurance-actions,.autonomy-assurance-report-actions{display:grid;gap:.4rem;margin-top:.6rem}
+.autonomy-assurance-actions button,.autonomy-assurance-report-actions button{min-height:36px;padding:0 .64rem;border-radius:999px;font:inherit;font-size:.55rem;font-weight:800;cursor:pointer}
+#autonomyAssuranceIssue,#autonomyAssuranceCopyReport{border:0;color:#082a31;background:#62d3a3}
+.autonomy-assurance-secondary{border:1px solid rgba(255,255,255,.08);color:#fff;background:rgba(255,255,255,.04)}
+.autonomy-assurance-actions button:disabled,.autonomy-assurance-report-actions button:disabled{opacity:.42;cursor:not-allowed}
+#autonomyAssuranceStatus{display:block;min-height:1rem;margin-top:.42rem;color:rgba(255,255,255,.43);font-size:.56rem}
+.autonomy-assurance-gate-item{display:grid;grid-template-columns:28px 1fr auto;gap:.45rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.autonomy-assurance-gate-item b{display:grid;place-items:center;width:26px;height:26px;border-radius:8px;color:#fff;background:rgba(255,255,255,.06);font-size:.52rem}
+.autonomy-assurance-gate-item strong,.autonomy-assurance-gate-item span{display:block}
+.autonomy-assurance-gate-item strong{color:#fff;font-size:.61rem}
+.autonomy-assurance-gate-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem;line-height:1.4}
+.autonomy-assurance-gate-item em{align-self:center;font-style:normal;padding:.32rem .45rem;border-radius:999px;color:#fff;background:rgba(255,255,255,.06);font-size:.49rem;text-transform:uppercase}
+.autonomy-assurance-history-item{display:grid;grid-template-columns:1fr auto;gap:.55rem;padding:.54rem;border-radius:9px;background:rgba(255,255,255,.03)}
+.autonomy-assurance-history-item strong,.autonomy-assurance-history-item span{display:block}
+.autonomy-assurance-history-item strong{color:#fff;font-size:.61rem}
+.autonomy-assurance-history-item span{margin-top:.14rem;color:rgba(255,255,255,.42);font-size:.53rem}
+.autonomy-assurance-history-item time{color:#d9b65f;font-size:.52rem;font-weight:800}
+.autonomy-assurance-history{margin-top:.65rem}
+.autonomy-assurance-empty{padding:.7rem;border:1px dashed rgba(255,255,255,.08);border-radius:9px;color:rgba(255,255,255,.43);font-size:.56rem;text-align:center}
+@media(max-width:980px){.autonomy-assurance-kpis{grid-template-columns:repeat(3,1fr)}.autonomy-assurance-layout,.autonomy-assurance-lower{grid-template-columns:1fr}}
+@media(max-width:650px){.autonomy-assurance-heading,.autonomy-assurance-section-heading{flex-direction:column}.autonomy-assurance-kpis,.autonomy-assurance-meta{grid-template-columns:1fr}.autonomy-assurance-domain-item{grid-template-columns:34px 1fr}.autonomy-assurance-badge{grid-column:2;justify-self:start}}
