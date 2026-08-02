@@ -1,34 +1,34 @@
-BLUE CURRENT V34.1.3 — AI BRAIN AUTONOMY GUARDRAILS
+BLUE CURRENT V34.1.4 — AUTONOMY OUTCOME VERIFIER
 
 REPLACE
 - client/index.html
 - client/styles.css
-- client/js/modules/aiBrainDecisionOrchestrator.js
-
-ADD
 - client/js/modules/aiBrainAutonomyGuardrails.js
 
+ADD
+- client/js/modules/autonomyOutcomeVerifier.js
+
 ADDS
-- Advisory, supervised, and bounded-autonomy modes
-- Maximum automatic value threshold
-- Minimum confidence threshold
-- Maximum allowed urgency
-- Owner and checkpoint requirements
-- Recommendation policy evaluation
-- Eligible, approval-required, and blocked classifications
-- One-click bounded-autonomy execution
-- Automatic accountability commitment creation
-- Autonomy review queue
-- Persistent autonomy audit trail
-- Decision Orchestrator selection events for policy evaluation
+- Verification queue for bounded-autonomy commitments
+- Observed-value capture
+- Successful, partial, and underperformed classifications
+- Verification notes and accountability synchronization
+- Autonomous success rate
+- Expected-versus-observed value delivery
+- Autonomy trust score
+- Recommended confidence floor
+- Recommended maximum automatic value
+- One-click application of recommended guardrails
+- Persistent autonomous outcome history
+- Guardrail execution event enrichment
 
 TEST
 1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Select a recommendation in the Decision Orchestrator.
-5. Evaluate it against the autonomy policy.
-6. Switch to Bounded Autonomy and adjust thresholds.
-7. Execute an eligible recommendation.
-8. Confirm the commitment appears in Executive Accountability Center.
-9. Review the autonomy audit history.
+4. Execute an eligible recommendation through Autonomy Guardrails.
+5. Open Autonomy Outcome Verifier.
+6. Select the autonomous commitment and record an observed result.
+7. Confirm trust score, success rate, value delivery, and guardrail recommendations update.
+8. Apply the recommended guardrails.
+9. Confirm the Autonomy Guardrails policy reflects the new thresholds.

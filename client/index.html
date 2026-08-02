@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.3">
+  <meta name="blue-current-build" content="34.1.4">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.3">
+  <link rel="stylesheet" href="styles.css?v=34.1.4">
 </head>
 <body>
 
@@ -3926,6 +3926,99 @@
           </div>
         </section>
 
+        <section class="autonomy-outcome-verifier" id="autonomyOutcomeVerifier" aria-labelledby="autonomyOutcomeVerifierTitle">
+          <div class="autonomy-outcome-verifier-heading">
+            <div>
+              <small>Autonomy assurance layer</small>
+              <strong id="autonomyOutcomeVerifierTitle">Autonomy Outcome Verifier</strong>
+              <span id="autonomyOutcomeVerifierUpdated">Measuring whether automatically executed recommendations produced the expected operating result…</span>
+            </div>
+
+            <div class="autonomy-outcome-verifier-score" id="autonomyOutcomeVerifierScoreCard" data-tone="stable">
+              <small>Autonomy trust score</small>
+              <strong id="autonomyOutcomeVerifierScore">0</strong>
+              <span id="autonomyOutcomeVerifierLabel">Awaiting outcomes</span>
+            </div>
+          </div>
+
+          <div class="autonomy-outcome-verifier-kpis">
+            <article><small>Executed actions</small><strong id="autonomyOutcomeExecutedCount">0</strong><span>Bounded-autonomy commitments</span></article>
+            <article><small>Awaiting verification</small><strong id="autonomyOutcomePendingCount">0</strong><span>Need measured proof</span></article>
+            <article><small>Validated</small><strong id="autonomyOutcomeValidatedCount">0</strong><span>Met or exceeded target</span></article>
+            <article><small>Underperformed</small><strong id="autonomyOutcomeUnderperformedCount">0</strong><span>Below expected impact</span></article>
+            <article><small>Verified value</small><strong id="autonomyOutcomeVerifiedValue">$0</strong><span>Measured operating impact</span></article>
+          </div>
+
+          <div class="autonomy-outcome-verifier-layout">
+            <div class="autonomy-outcome-verifier-queue">
+              <div class="autonomy-outcome-verifier-section-heading">
+                <div><small>Verification queue</small><strong>Automatically executed actions requiring measured outcomes</strong></div>
+                <button type="button" id="autonomyOutcomeRefresh">Refresh queue</button>
+              </div>
+              <div id="autonomyOutcomeQueueList" class="autonomy-outcome-queue-list"></div>
+            </div>
+
+            <aside class="autonomy-outcome-verifier-editor">
+              <small>Selected autonomous action</small>
+              <strong id="autonomyOutcomeSelectedTitle">Choose an action</strong>
+              <p id="autonomyOutcomeSelectedDetail">Select an auto-executed commitment to record the observed result and verify whether the intervention worked.</p>
+
+              <label>
+                Observed value
+                <input id="autonomyOutcomeObservedValue" type="number" step="1" min="0" placeholder="0" disabled>
+              </label>
+
+              <label>
+                Result classification
+                <select id="autonomyOutcomeClassification" disabled>
+                  <option value="successful">Successful</option>
+                  <option value="partial">Partially successful</option>
+                  <option value="underperformed">Underperformed</option>
+                </select>
+              </label>
+
+              <label>
+                Verification note
+                <textarea id="autonomyOutcomeNote" rows="4" placeholder="Document what changed and why." disabled></textarea>
+              </label>
+
+              <div class="autonomy-outcome-verifier-actions">
+                <button type="button" id="autonomyOutcomeVerify" disabled>Verify outcome</button>
+                <button type="button" class="autonomy-outcome-secondary" id="autonomyOutcomeOpenCommitment" disabled>Open accountability item</button>
+              </div>
+
+              <span id="autonomyOutcomeStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="autonomy-outcome-verifier-lower">
+            <div class="autonomy-outcome-trust-panel">
+              <div class="autonomy-outcome-verifier-section-heading">
+                <div><small>Autonomy trust model</small><strong>How verified outcomes change future autonomy</strong></div>
+                <span id="autonomyOutcomeTrustLabel">No verified history</span>
+              </div>
+
+              <div class="autonomy-outcome-trust-grid">
+                <article><small>Success rate</small><strong id="autonomyOutcomeSuccessRate">0%</strong></article>
+                <article><small>Average value delivery</small><strong id="autonomyOutcomeValueDelivery">0%</strong></article>
+                <article><small>Recommended confidence floor</small><strong id="autonomyOutcomeRecommendedConfidence">88%</strong></article>
+                <article><small>Recommended max value</small><strong id="autonomyOutcomeRecommendedMaxValue">$500</strong></article>
+              </div>
+
+              <p id="autonomyOutcomeTrustSummary">Verified autonomous outcomes will calibrate the recommended confidence and value limits.</p>
+              <button type="button" id="autonomyOutcomeApplyRecommendations" disabled>Apply recommended guardrails</button>
+            </div>
+
+            <div class="autonomy-outcome-history">
+              <div class="autonomy-outcome-verifier-section-heading">
+                <div><small>Verification history</small><strong>Measured results from autonomous decisions</strong></div>
+                <button type="button" id="autonomyOutcomeClearHistory">Clear history</button>
+              </div>
+              <div id="autonomyOutcomeHistoryList" class="autonomy-outcome-history-list"></div>
+            </div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5476,7 +5569,8 @@
   <script src="js/modules/restaurantAiBrainV341.js?v=34.1.1"></script>
   <script src="js/modules/aiBrainDecisionOrchestrator.js?v=34.1.2"></script>
   <script src="js/modules/aiBrainScenarioSimulator.js?v=34.1.3"></script>
-  <script src="js/modules/aiBrainAutonomyGuardrails.js?v=34.1.3"></script>
+  <script src="js/modules/aiBrainAutonomyGuardrails.js?v=34.1.4"></script>
+  <script src="js/modules/autonomyOutcomeVerifier.js?v=34.1.4"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

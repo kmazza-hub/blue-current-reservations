@@ -339,7 +339,11 @@
     byId("aiBrainAutonomyStatus").textContent =
       "Recommendation executed within guardrails.";
     window.dispatchEvent(new CustomEvent("bluecurrent:ai-brain-autonomy-executed", {
-      detail:{recommendation:state.selected,commitmentId}
+      detail:{
+        recommendation:state.selected,
+        commitmentId,
+        autonomyPolicySnapshot:{...state.policy}
+      }
     }));
 
     state.selected = null;
