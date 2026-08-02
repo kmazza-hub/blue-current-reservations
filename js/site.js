@@ -664,3 +664,60 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   };
   buttons.forEach((b,i)=>b.addEventListener('click',()=>render(i)));
 })();
+
+
+// WEB-020 — ROI Calculator and executive business case
+(() => {
+  const scenarioButtons=[...document.querySelectorAll('[data-roi-scenario]')];
+  const inputList=document.getElementById('roiInputList');
+  if(!scenarioButtons.length || !inputList) return;
+  const money=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(Math.max(0,n));
+  const number=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:1}).format(Math.max(0,n));
+  const scenarios={
+    demand:{label:'Guest demand recovery',title:'Guest demand recovery',detail:'Estimate reservation value that may be recoverable when calls and requests are captured, structured, and routed consistently.',inputs:[
+      {key:'volume',label:'Missed or abandoned requests per week',min:10,max:250,step:5,value:60,format:v=>number(v),hint:'Use call logs, abandoned-call data, or inquiry records during discovery.'},
+      {key:'conversion',label:'Potential conversion rate',min:5,max:70,step:5,value:30,format:v=>v+'%',hint:'Share of captured requests that could become completed reservations.'},
+      {key:'value',label:'Average reservation value',min:50,max:750,step:10,value:200,format:v=>money(v),hint:'Use average check × expected party size where appropriate.'}],
+      calc:v=>({annual:v.volume*(v.conversion/100)*v.value*52,weekly:v.volume*(v.conversion/100),weeklyText:'reservations',weeklyLabel:'potentially recovered'}),
+      meaning:'A directional estimate of recoverable guest demand—not expected revenue and not a performance guarantee.',brief:'Recover high-value guest demand with a controlled AI Concierge pilot.',metric:'recovered reservations'},
+    labor:{label:'Labor coordination',title:'Labor coordination efficiency',detail:'Estimate manager and team time that may be redirected when scheduling exceptions, callouts, handoffs, and approvals are coordinated in one workflow.',inputs:[
+      {key:'hours',label:'Avoidable coordination hours per location / week',min:2,max:60,step:1,value:14,format:v=>number(v)+' hrs',hint:'Estimate time spent on calls, texts, spreadsheets, and manual follow-up.'},
+      {key:'locations',label:'Locations in scope',min:1,max:100,step:1,value:8,format:v=>number(v),hint:'Start with the locations included in the likely expansion decision.'},
+      {key:'cost',label:'Blended hourly operating cost',min:20,max:150,step:5,value:48,format:v=>money(v),hint:'Use fully loaded manager or administrative cost where available.'}],
+      calc:v=>({annual:v.hours*v.locations*v.cost*52,weekly:v.hours*v.locations,weeklyText:'hours',weeklyLabel:'potentially redirected'}),
+      meaning:'A directional estimate of time value that could be redirected—not a promise of headcount reduction.',brief:'Reduce avoidable coordination work with one governed workforce workflow.',metric:'manager hours redirected'},
+    service:{label:'Service pacing',title:'Service pacing protection',detail:'Estimate the economic value of protecting covers when arrival compression, table readiness, kitchen pressure, or service handoffs create preventable friction.',inputs:[
+      {key:'covers',label:'At-risk covers per location / week',min:5,max:300,step:5,value:45,format:v=>number(v),hint:'Use walk-away, cancellation, comp, and service recovery patterns.'},
+      {key:'locations',label:'Locations in scope',min:1,max:100,step:1,value:6,format:v=>number(v),hint:'Model only the locations likely to share the same operating workflow.'},
+      {key:'margin',label:'Contribution value per protected cover',min:10,max:250,step:5,value:62,format:v=>money(v),hint:'Use contribution value rather than gross check when possible.'}],
+      calc:v=>({annual:v.covers*v.locations*v.margin*52,weekly:v.covers*v.locations,weeklyText:'covers',weeklyLabel:'potentially protected'}),
+      meaning:'A directional estimate of protected contribution value—not guaranteed incremental revenue.',brief:'Protect covers and guest experience with a controlled service-pacing pilot.',metric:'at-risk covers protected'},
+    portfolio:{label:'Portfolio visibility',title:'Portfolio reporting efficiency',detail:'Estimate leadership and analyst time that may be redirected when exceptions, operating decisions, and results are assembled automatically across locations.',inputs:[
+      {key:'hours',label:'Reporting and reconciliation hours / week',min:2,max:120,step:2,value:32,format:v=>number(v)+' hrs',hint:'Include recurring collection, reconciliation, formatting, and follow-up.'},
+      {key:'leaders',label:'Leaders and analysts involved',min:1,max:40,step:1,value:6,format:v=>number(v),hint:'Count people who regularly build, validate, or interpret the same operating picture.'},
+      {key:'cost',label:'Blended hourly leadership cost',min:35,max:300,step:5,value:95,format:v=>money(v),hint:'Use a consistent loaded-cost assumption for directional modeling.'}],
+      calc:v=>({annual:v.hours*v.cost*52,weekly:v.hours,weeklyText:'hours',weeklyLabel:'potentially redirected'}),
+      meaning:'A directional estimate of reporting and decision time—not a claim that all administrative work disappears.',brief:'Create a decision-ready portfolio briefing with traceable operating evidence.',metric:'reporting hours redirected'}
+  };
+  let active='demand';
+  const values={}; Object.entries(scenarios).forEach(([key,s])=>values[key]=Object.fromEntries(s.inputs.map(i=>[i.key,i.value])));
+  const ids=['roiPageAnnual','roiPageMonthly','roiPagePayback','roiPageScenarioLabel','roiOutputAnnual','roiOutputMonthly','roiOutputWeekly','roiOutputWeeklyLabel','roiOutputPayback','roiOutputThreeYear','roiMeaning','roiBriefTitle','roiBriefSummary','roiBriefMetric'];
+  const els=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));
+  const pilot=document.getElementById('roiPilotCost'),pilotValue=document.getElementById('roiPilotCostValue');
+  const modelTitle=document.getElementById('roiModelTitle'),modelDetail=document.getElementById('roiModelDetail');
+  const update=()=>{
+    const s=scenarios[active],v=values[active],result=s.calc(v),cost=Number(pilot.value),monthly=result.annual/12,payback=monthly>0?cost/monthly:0;
+    const annualText=money(result.annual),monthlyText=money(monthly),paybackText=payback<.1?'< 0.1 months':number(payback)+' months';
+    els.roiPageAnnual.textContent=annualText;els.roiPageMonthly.textContent=monthlyText;els.roiPagePayback.textContent=paybackText;els.roiPageScenarioLabel.textContent=s.label;els.roiOutputAnnual.textContent=annualText;els.roiOutputMonthly.textContent=monthlyText;els.roiOutputWeekly.textContent=number(result.weekly)+' '+result.weeklyText;els.roiOutputWeeklyLabel.textContent=result.weeklyLabel;els.roiOutputPayback.textContent=paybackText;els.roiOutputThreeYear.textContent=money(result.annual*3);els.roiMeaning.textContent=s.meaning;els.roiBriefTitle.textContent=s.brief;els.roiBriefSummary.textContent=`The current model indicates an illustrative annual opportunity of ${annualText}. Discovery should validate each assumption, the operating baseline, implementation cost, and workflow ownership before deployment.`;els.roiBriefMetric.textContent='Primary metric: '+s.metric;pilotValue.textContent=money(cost);
+  };
+  const renderInputs=()=>{
+    const s=scenarios[active];modelTitle.textContent=s.title;modelDetail.textContent=s.detail;
+    inputList.innerHTML=s.inputs.map(i=>`<div class="roi-input-item"><label for="roi-${active}-${i.key}"><span>${i.label}</span><b id="roi-value-${i.key}">${i.format(values[active][i.key])}</b></label><input id="roi-${active}-${i.key}" data-roi-input="${i.key}" type="range" min="${i.min}" max="${i.max}" step="${i.step}" value="${values[active][i.key]}"><small>${i.hint}</small></div>`).join('');
+    inputList.querySelectorAll('[data-roi-input]').forEach(input=>input.addEventListener('input',()=>{const key=input.dataset.roiInput;values[active][key]=Number(input.value);const cfg=scenarios[active].inputs.find(i=>i.key===key);document.getElementById('roi-value-'+key).textContent=cfg.format(Number(input.value));update();}));
+    update();
+  };
+  scenarioButtons.forEach(button=>button.addEventListener('click',()=>{active=button.dataset.roiScenario;scenarioButtons.forEach(b=>{const selected=b===button;b.classList.toggle('is-active',selected);b.setAttribute('aria-selected',String(selected));});renderInputs();}));
+  pilot.addEventListener('input',update);
+  document.getElementById('roiPrint')?.addEventListener('click',()=>window.print());
+  renderInputs();
+})();
