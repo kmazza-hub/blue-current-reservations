@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.7">
+  <meta name="blue-current-build" content="34.0.14.8">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.7">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.8">
 </head>
 <body>
 
@@ -3384,6 +3384,84 @@
         </div>
       </section>
 
+      <section class="cross-location-intelligence" id="crossLocationIntelligence" aria-labelledby="crossLocationIntelligenceTitle">
+        <div class="cross-location-heading">
+          <div>
+            <small>Portfolio operations layer</small>
+            <h4 id="crossLocationIntelligenceTitle">Cross-Location Intelligence</h4>
+            <span id="crossLocationUpdated">Comparing location health, revenue, occupancy, ticket time, labor, and alert pressure…</span>
+          </div>
+          <div class="cross-location-health" id="crossLocationHealthCard" data-tone="stable">
+            <small>Portfolio health</small>
+            <strong id="crossLocationHealth">0</strong>
+            <span id="crossLocationHealthLabel">Loading portfolio</span>
+          </div>
+        </div>
+
+        <div class="cross-location-kpis">
+          <article><small>Locations</small><strong id="crossLocationCount">0</strong><span>Active portfolio</span></article>
+          <article><small>Portfolio revenue</small><strong id="crossLocationRevenue">$0</strong><span>Current modeled total</span></article>
+          <article><small>Best performer</small><strong id="crossLocationBest">—</strong><span>Highest composite score</span></article>
+          <article><small>Needs attention</small><strong id="crossLocationAttention">0</strong><span>Watch or critical locations</span></article>
+          <article><small>Transfer opportunities</small><strong id="crossLocationTransferCount">0</strong><span>Best practices to share</span></article>
+        </div>
+
+        <div class="cross-location-layout">
+          <div class="cross-location-ranking-wrap">
+            <div class="cross-location-section-heading">
+              <div><small>Location ranking</small><strong>Performance across the portfolio</strong></div>
+              <label>Sort by
+                <select id="crossLocationSort">
+                  <option value="score">Composite score</option>
+                  <option value="revenue">Revenue</option>
+                  <option value="health">Health</option>
+                  <option value="occupancy">Occupancy</option>
+                  <option value="ticket">Ticket time</option>
+                  <option value="labor">Labor efficiency</option>
+                </select>
+              </label>
+            </div>
+            <div id="crossLocationRankingList" class="cross-location-ranking-list"></div>
+          </div>
+
+          <aside class="cross-location-inspector">
+            <small>Selected location</small>
+            <strong id="crossLocationSelectedTitle">Choose a location</strong>
+            <p id="crossLocationSelectedDetail">Select a location to review its performance gap, risk drivers, and recommended action.</p>
+
+            <dl class="cross-location-meta">
+              <div><dt>Composite score</dt><dd id="crossLocationSelectedScore">—</dd></div>
+              <div><dt>Revenue trend</dt><dd id="crossLocationSelectedTrend">—</dd></div>
+              <div><dt>Primary risk</dt><dd id="crossLocationSelectedRisk">—</dd></div>
+              <div><dt>Best-practice match</dt><dd id="crossLocationSelectedMatch">—</dd></div>
+            </dl>
+
+            <button type="button" id="crossLocationOpenSource" disabled>Open related command center</button>
+            <span id="crossLocationStatus" role="status"></span>
+          </aside>
+        </div>
+
+        <div class="cross-location-lower">
+          <div class="cross-location-transfer">
+            <div class="cross-location-section-heading">
+              <div><small>Best-practice transfer</small><strong>What top locations should teach the rest</strong></div>
+              <span id="crossLocationTransferLabel">0 recommendations</span>
+            </div>
+            <div id="crossLocationTransferList" class="cross-location-transfer-list"></div>
+          </div>
+
+          <div class="cross-location-brief">
+            <small>Executive portfolio briefing</small>
+            <strong id="crossLocationBriefTitle">Portfolio analysis pending</strong>
+            <p id="crossLocationBriefDetail">Location comparisons will produce a focused regional leadership briefing.</p>
+            <div class="cross-location-brief-actions">
+              <button type="button" id="crossLocationRefresh">Refresh portfolio</button>
+              <button type="button" class="cross-location-secondary" id="crossLocationCopyBrief">Copy portfolio brief</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4909,7 +4987,8 @@
   <script src="js/modules/executivePerformanceTrends.js?v=34.0.14.5"></script>
   <script src="js/modules/executiveOperationalIntelligence.js?v=34.0.14.6"></script>
   <script src="js/modules/executiveAccountabilityCenter.js?v=34.0.14.7"></script>
-  <script src="js/modules/aiOperationsCoach.js?v=34.0.14.7"></script>
+  <script src="js/modules/aiOperationsCoach.js?v=34.0.14.8"></script>
+  <script src="js/modules/crossLocationIntelligence.js?v=34.0.14.8"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
