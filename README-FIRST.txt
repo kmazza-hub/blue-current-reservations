@@ -1,27 +1,26 @@
-BLUE CURRENT V34.0.14.8 — CROSS-LOCATION INTELLIGENCE
+BLUE CURRENT V34.0.14.9 — AUTONOMOUS EXECUTIVE BRIEFINGS
 
 REPLACE
 - client/index.html
 - client/styles.css
 
 ADD
-- client/js/modules/crossLocationIntelligence.js
+- client/js/modules/autonomousExecutiveBriefings.js
 
 ADDS
-- Portfolio health and revenue aggregation
-- Multi-location composite scoring
-- Best and underperforming location detection
-- Sortable location ranking
-- Location risk inspection
-- Best-practice transfer recommendations
-- Executive portfolio briefing
-- Direct navigation to District Command Center
+- Morning, pre-shift, post-shift, and portfolio briefing modes
+- Executive audience selection
+- Manual, daily, weekday, and weekly cadence settings
+- Automatic risk, action, win, and portfolio synthesis
+- Briefing readiness and confidence scoring
+- Copyable executive communication
+- Persistent briefing history
+- Saved-briefing reload
 
 TEST
 1. Replace/add the three files.
 2. Run npm run check.
 3. Run npm start.
-4. Open Cross-Location Intelligence.
-5. Test ranking sorts and location selection.
-6. Confirm best performer, attention count, transfer recommendations, and portfolio brief.
-7. Test Copy Portfolio Brief and Open Related Command Center.
+4. Generate a briefing.
+5. Confirm risks, actions, wins, portfolio scope, confidence, and readiness update.
+6. Test Copy Briefing, Save Briefing, and saved briefing reload.

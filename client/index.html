@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.8">
+  <meta name="blue-current-build" content="34.0.14.9">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.8">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.9">
 </head>
 <body>
 
@@ -3462,6 +3462,109 @@
         </div>
       </section>
 
+      <section class="autonomous-executive-briefings" id="autonomousExecutiveBriefings" aria-labelledby="autonomousExecutiveBriefingsTitle">
+        <div class="autonomous-briefing-heading">
+          <div>
+            <small>Autonomous leadership communication</small>
+            <h4 id="autonomousExecutiveBriefingsTitle">Autonomous Executive Briefings</h4>
+            <span id="autonomousBriefingUpdated">Synthesizing portfolio, accountability, coaching, and operating signals into scheduled executive briefings…</span>
+          </div>
+
+          <div class="autonomous-briefing-score" id="autonomousBriefingScoreCard" data-tone="stable">
+            <small>Briefing readiness</small>
+            <strong id="autonomousBriefingScore">0</strong>
+            <span id="autonomousBriefingLabel">Awaiting signals</span>
+          </div>
+        </div>
+
+        <div class="autonomous-briefing-kpis">
+          <article><small>Open risks</small><strong id="autonomousBriefingRiskCount">0</strong><span>Portfolio and accountability</span></article>
+          <article><small>Priority actions</small><strong id="autonomousBriefingActionCount">0</strong><span>Leadership follow-up</span></article>
+          <article><small>Verified wins</small><strong id="autonomousBriefingWinCount">0</strong><span>Measured positive results</span></article>
+          <article><small>Locations covered</small><strong id="autonomousBriefingLocationCount">0</strong><span>Portfolio scope</span></article>
+          <article><small>Briefing confidence</small><strong id="autonomousBriefingConfidence">0%</strong><span>Evidence strength</span></article>
+        </div>
+
+        <div class="autonomous-briefing-layout">
+          <div class="autonomous-briefing-preview">
+            <div class="autonomous-briefing-section-heading">
+              <div><small>Generated executive brief</small><strong id="autonomousBriefingTitle">No briefing generated</strong></div>
+              <span id="autonomousBriefingTimestamp">—</span>
+            </div>
+
+            <div class="autonomous-briefing-body">
+              <p id="autonomousBriefingSummary">Generate a briefing to summarize the most important operational developments.</p>
+
+              <div class="autonomous-briefing-columns">
+                <div>
+                  <small>Top risks</small>
+                  <div id="autonomousBriefingRiskList" class="autonomous-briefing-list"></div>
+                </div>
+                <div>
+                  <small>Top actions</small>
+                  <div id="autonomousBriefingActionList" class="autonomous-briefing-list"></div>
+                </div>
+                <div>
+                  <small>Verified wins</small>
+                  <div id="autonomousBriefingWinList" class="autonomous-briefing-list"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="autonomous-briefing-controls">
+            <small>Briefing controls</small>
+            <strong>Generate and retain leadership briefings</strong>
+
+            <label>
+              Briefing type
+              <select id="autonomousBriefingType">
+                <option value="morning">Morning briefing</option>
+                <option value="pre_shift">Pre-shift briefing</option>
+                <option value="post_shift">Post-shift recap</option>
+                <option value="portfolio">Portfolio briefing</option>
+              </select>
+            </label>
+
+            <label>
+              Audience
+              <select id="autonomousBriefingAudience">
+                <option>Executive Team</option>
+                <option>Operations Director</option>
+                <option>Regional Managers</option>
+                <option>General Managers</option>
+              </select>
+            </label>
+
+            <label>
+              Delivery cadence
+              <select id="autonomousBriefingCadence">
+                <option value="manual">Manual</option>
+                <option value="daily">Daily</option>
+                <option value="weekdays">Weekdays</option>
+                <option value="weekly">Weekly</option>
+              </select>
+            </label>
+
+            <div class="autonomous-briefing-actions">
+              <button type="button" id="autonomousBriefingGenerate">Generate briefing</button>
+              <button type="button" class="autonomous-briefing-secondary" id="autonomousBriefingCopy">Copy briefing</button>
+              <button type="button" class="autonomous-briefing-secondary" id="autonomousBriefingSave">Save briefing</button>
+            </div>
+
+            <span id="autonomousBriefingStatus" role="status"></span>
+          </aside>
+        </div>
+
+        <div class="autonomous-briefing-history">
+          <div class="autonomous-briefing-section-heading">
+            <div><small>Briefing history</small><strong>Saved executive communications</strong></div>
+            <button type="button" id="autonomousBriefingClearHistory">Clear history</button>
+          </div>
+          <div id="autonomousBriefingHistoryList" class="autonomous-briefing-history-list"></div>
+        </div>
+      </section>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4988,7 +5091,8 @@
   <script src="js/modules/executiveOperationalIntelligence.js?v=34.0.14.6"></script>
   <script src="js/modules/executiveAccountabilityCenter.js?v=34.0.14.7"></script>
   <script src="js/modules/aiOperationsCoach.js?v=34.0.14.8"></script>
-  <script src="js/modules/crossLocationIntelligence.js?v=34.0.14.8"></script>
+  <script src="js/modules/crossLocationIntelligence.js?v=34.0.14.9"></script>
+  <script src="js/modules/autonomousExecutiveBriefings.js?v=34.0.14.9"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

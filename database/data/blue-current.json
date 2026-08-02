@@ -410,6 +410,22 @@
       "category": "guest_intelligence",
       "createdAt": "2026-08-02T03:35:33.631Z",
       "id": "audit_1785641733631_uyioyj"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Reservation created for Cloud Guest 481",
+      "category": "reservation",
+      "createdAt": "2026-08-02T03:56:17.490Z",
+      "id": "audit_1785642977490_gt0hbq"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Imported V21 configuration for Chefs International",
+      "category": "migration",
+      "createdAt": "2026-08-02T03:56:21.159Z",
+      "id": "audit_1785642981159_kxk4bp"
     }
   ],
   "reservations": [
@@ -476,6 +492,14 @@
       "accessibility": "",
       "notes": "Birthday cake requested",
       "createdAt": "2026-07-20T14:30:00.000Z"
+    },
+    {
+      "id": "res_1785642977483_ra1bmy",
+      "locationId": "loc_marina",
+      "guestName": "Cloud Guest 481",
+      "partySize": 4,
+      "reservationTime": "2026-08-02T03:56:17.483Z",
+      "status": "confirmed"
     }
   ],
   "operationalEvents": [],
