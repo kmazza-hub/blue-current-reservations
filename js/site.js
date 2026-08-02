@@ -644,3 +644,23 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   const render=i=>{const v=views[i];buttons.forEach((b,n)=>{b.classList.toggle('is-active',n===i);b.setAttribute('aria-selected',String(n===i));});Object.entries(map).forEach(([id,key])=>{const el=document.getElementById('api'+id);if(el)el.textContent=v[key];});const list=document.getElementById('apiPoints');if(list)list.innerHTML=v.points.map(p=>`<li>${p}</li>`).join('');};
   buttons.forEach((b,i)=>b.addEventListener('click',()=>render(i)));
 })();
+
+// WEB-016 — About page principle explorer
+(() => {
+  const buttons=[...document.querySelectorAll('[data-company-principle]')];
+  if(!buttons.length)return;
+  const views=[
+    {kicker:'Trust before autonomy',title:'AI earns authority through transparent, governed performance.',detail:'Blue Current separates advice, supervised action, and bounded automation. Higher-impact decisions remain subject to explicit policy and human ownership.',points:['Clear role and location scope','Approval boundaries for consequential actions','Decision and outcome evidence by default']},
+    {kicker:'Hospitality before abstraction',title:'The product must respect how restaurants actually operate.',detail:'Workflows are designed around service periods, managers, guests, locations, pressure, handoffs, and systems of record—not generic automation diagrams.',points:['Built around real operating moments','Designed for managers under time pressure','Works with existing restaurant systems']},
+    {kicker:'Evidence before expansion',title:'A pilot should prove a decision, not merely demonstrate software.',detail:'Every engagement starts with a measurable operating problem, a baseline, a named owner, a bounded workflow, and explicit expansion criteria.',points:['Baseline and target agreed up front','Interventions linked to outcomes','Expansion based on verified evidence']},
+    {kicker:'Architecture before shortcuts',title:'Enterprise scale requires identity, observability, resilience, and version discipline.',detail:'Blue Current is built as an operating platform, with tenant and location scope, audit history, offline resilience, incident response, and controlled integration patterns.',points:['Multi-location and portfolio thinking','Observable and recoverable workflows','Backward-compatible, additive development']}
+  ];
+  const render=i=>{
+    const v=views[i];
+    buttons.forEach((b,n)=>{b.classList.toggle('is-active',n===i);b.setAttribute('aria-selected',String(n===i));});
+    const map={companyPrincipleKicker:v.kicker,companyPrincipleTitle:v.title,companyPrincipleDetail:v.detail};
+    Object.entries(map).forEach(([id,text])=>{const el=document.getElementById(id);if(el)el.textContent=text;});
+    const list=document.getElementById('companyPrinciplePoints');if(list)list.innerHTML=v.points.map(p=>`<li>${p}</li>`).join('');
+  };
+  buttons.forEach((b,i)=>b.addEventListener('click',()=>render(i)));
+})();
