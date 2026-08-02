@@ -583,3 +583,18 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   };
   buttons.forEach((button,index)=>button.addEventListener('click',()=>render(index)));
 })();
+
+
+// WEB-012 — Solutions audience explorer
+(() => {
+  const buttons=[...document.querySelectorAll('[data-solution-view]')];
+  if(!buttons.length)return;
+  const views=[
+    {kicker:'For operations leaders',title:'See pressure earlier and coordinate the next move.',detail:'Bring reservations, floor conditions, kitchen pressure, staffing, and manager decisions into one live operating picture.',outcome:'More consistent service execution',pilot:'Peak-period pacing and guest recovery',points:['One shared picture of service conditions','Clear ownership for interventions and handoffs','Measured outcomes instead of untracked alerts'],cta:'Plan an operations pilot',label:'Live service command',signal:'Arrival demand is outpacing table readiness.',signalDetail:'The system connects reservation flow, floor status, and kitchen pressure before recommending an intervention.',owner:'General manager',decision:'Adjust release pacing',control:'Human approval required',evidence:'Action and outcome linked'},
+    {kicker:'For technology leaders',title:'Add intelligence without creating another disconnected system.',detail:'Connect the signals Blue Current needs, preserve existing systems of record, and keep identity, permissions, audit, reliability, and recovery visible.',outcome:'A governable operating layer',pilot:'One workflow with scoped integrations',points:['API-first connection to existing systems','Role, policy, and approval enforcement','Observable services with rollback and audit evidence'],cta:'Plan a technology review',label:'Enterprise control plane',signal:'A pilot workflow needs access to reservation and labor signals.',signalDetail:'Blue Current scopes the integration, enforces permissions, and records every automated and human decision.',owner:'Platform administrator',decision:'Approve scoped connector',control:'RBAC + policy boundary',evidence:'Versioned access and audit trail'},
+    {kicker:'For executive sponsors',title:'Turn operating activity into portfolio-level clarity.',detail:'See exceptions, accountable owners, repeatable wins, and emerging risk across locations without waiting for fragmented reports.',outcome:'Faster, evidence-backed decisions',pilot:'Executive briefing for one operating domain',points:['Portfolio health and exception visibility','Location comparisons with operating context','Expansion decisions tied to measured outcomes'],cta:'Plan an executive review',label:'Executive command',signal:'Three locations show the same preventable demand-loss pattern.',signalDetail:'Blue Current packages the pattern, owner, intervention history, and expansion recommendation into one review.',owner:'Regional leadership',decision:'Approve next-location pilot',control:'Evidence threshold met',evidence:'Baseline, result, and rollout decision'}
+  ];
+  const ids=['Kicker','Title','Detail','Outcome','Pilot','Cta','ConsoleLabel','Signal','SignalDetail','Owner','Decision','Control','Evidence'];
+  const render=i=>{const v=views[i];buttons.forEach((b,n)=>{b.classList.toggle('is-active',n===i);b.setAttribute('aria-selected',String(n===i));});ids.forEach(k=>{const el=document.getElementById('solution'+k);if(el)el.textContent=v[k.charAt(0).toLowerCase()+k.slice(1)];});const list=document.getElementById('solutionPoints');if(list)list.innerHTML=v.points.map(p=>`<li>${p}</li>`).join('');};
+  buttons.forEach((b,i)=>b.addEventListener('click',()=>render(i)));
+})();
