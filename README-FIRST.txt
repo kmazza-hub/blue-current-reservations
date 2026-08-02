@@ -1,28 +1,30 @@
-BLUE CURRENT V34.1.0 — RESTAURANT AI BRAIN, PHASE 1
+BLUE CURRENT V34.1.1 — AI BRAIN DECISION ORCHESTRATOR
 
 REPLACE
 - client/index.html
 - client/styles.css
-
-ADD
 - client/js/modules/restaurantAiBrainV341.js
 
+ADD
+- client/js/modules/aiBrainDecisionOrchestrator.js
+
 ADDS
-- Unified cross-system executive operating picture
-- Natural-language operating questions
-- Suggested executive questions
-- Evidence-backed answers
-- Current executive priority
-- Owner, time horizon, expected value, and source module
-- Executive reasoning panel
-- Persistent operating-memory history
-- Copyable AI response
-- Direct navigation to source modules
+- Proactive AI recommendation queue
+- Immediate, today, and monitor urgency levels
+- Evidence-based owner, confidence, and expected-value estimates
+- Recommendation selection and source navigation
+- One-click accountability commitment creation
+- Commitment due dates and priorities derived from urgency
+- Recommendation dismissal
+- Persistent execution history
+- Automatic refresh after AI Brain answers and operating events
 
 TEST
-1. Replace/add the three files.
+1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Ask each suggested question.
-5. Confirm the answer, evidence count, confidence, priority, and source navigation update.
-6. Test Enter-to-submit, Copy Response, and history reload.
+4. Review proactive recommendations in the Decision Orchestrator.
+5. Select a recommendation and inspect urgency, owner, value, and confidence.
+6. Create an accountability commitment.
+7. Confirm it appears in Executive Accountability Center.
+8. Test Open Source, Dismiss, Refresh, and Clear History.

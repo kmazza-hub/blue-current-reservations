@@ -114,6 +114,9 @@
     localStorage.setItem(KEYS.history,JSON.stringify({history:history.slice(-50)}));
     renderHistory();
     byId("restaurantAiBrainV341QueryStatus").textContent="Answered";
+    window.dispatchEvent(new CustomEvent("bluecurrent:restaurant-ai-brain-answered", {
+      detail:{answer:current}
+    }));
   }
 
   function refresh(){

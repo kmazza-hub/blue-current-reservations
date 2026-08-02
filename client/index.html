@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.0">
+  <meta name="blue-current-build" content="34.1.1">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.0">
+  <link rel="stylesheet" href="styles.css?v=34.1.1">
 </head>
 <body>
 
@@ -3639,6 +3639,69 @@
           </aside>
         </div>
 
+        <section class="ai-brain-decision-orchestrator" id="aiBrainDecisionOrchestrator" aria-labelledby="aiBrainDecisionOrchestratorTitle">
+          <div class="ai-brain-decision-orchestrator-heading">
+            <div>
+              <small>AI Brain execution layer</small>
+              <strong id="aiBrainDecisionOrchestratorTitle">Decision Orchestrator</strong>
+              <span id="aiBrainDecisionOrchestratorUpdated">Evaluating current evidence for proactive executive recommendations…</span>
+            </div>
+
+            <div class="ai-brain-decision-orchestrator-score" id="aiBrainDecisionOrchestratorScoreCard" data-tone="stable">
+              <small>Execution readiness</small>
+              <strong id="aiBrainDecisionOrchestratorScore">0</strong>
+              <span id="aiBrainDecisionOrchestratorLabel">Awaiting evidence</span>
+            </div>
+          </div>
+
+          <div class="ai-brain-decision-orchestrator-kpis">
+            <article><small>Recommendations</small><strong id="aiBrainDecisionRecommendationCount">0</strong><span>Current AI proposals</span></article>
+            <article><small>Immediate</small><strong id="aiBrainDecisionImmediateCount">0</strong><span>Act before next shift</span></article>
+            <article><small>Estimated value</small><strong id="aiBrainDecisionEstimatedValue">$0</strong><span>Potential operating impact</span></article>
+            <article><small>Committed</small><strong id="aiBrainDecisionCommittedCount">0</strong><span>Sent to accountability</span></article>
+            <article><small>Confidence</small><strong id="aiBrainDecisionConfidence">0%</strong><span>Evidence strength</span></article>
+          </div>
+
+          <div class="ai-brain-decision-orchestrator-layout">
+            <div>
+              <div class="ai-brain-decision-orchestrator-section-heading">
+                <div><small>Proactive recommendation queue</small><strong>Actions the AI Brain recommends without waiting for a question</strong></div>
+                <button type="button" id="aiBrainDecisionRefresh">Refresh recommendations</button>
+              </div>
+              <div id="aiBrainDecisionRecommendationList" class="ai-brain-decision-recommendation-list"></div>
+            </div>
+
+            <aside class="ai-brain-decision-inspector">
+              <small>Selected recommendation</small>
+              <strong id="aiBrainDecisionSelectedTitle">Choose a recommendation</strong>
+              <p id="aiBrainDecisionSelectedDetail">Select an AI recommendation to review its evidence, expected impact, owner, and execution window.</p>
+
+              <dl class="ai-brain-decision-meta">
+                <div><dt>Urgency</dt><dd id="aiBrainDecisionSelectedUrgency">—</dd></div>
+                <div><dt>Owner</dt><dd id="aiBrainDecisionSelectedOwner">—</dd></div>
+                <div><dt>Expected value</dt><dd id="aiBrainDecisionSelectedValue">$0</dd></div>
+                <div><dt>Confidence</dt><dd id="aiBrainDecisionSelectedConfidence">0%</dd></div>
+              </dl>
+
+              <div class="ai-brain-decision-actions">
+                <button type="button" id="aiBrainDecisionCommit" disabled>Create accountability commitment</button>
+                <button type="button" class="ai-brain-decision-secondary" id="aiBrainDecisionOpenSource" disabled>Open source</button>
+                <button type="button" class="ai-brain-decision-secondary" id="aiBrainDecisionDismiss" disabled>Dismiss</button>
+              </div>
+
+              <span id="aiBrainDecisionStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="ai-brain-decision-orchestrator-history">
+            <div class="ai-brain-decision-orchestrator-section-heading">
+              <div><small>Execution history</small><strong>Committed and dismissed AI recommendations</strong></div>
+              <button type="button" id="aiBrainDecisionClearHistory">Clear history</button>
+            </div>
+            <div id="aiBrainDecisionHistoryList" class="ai-brain-decision-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5186,7 +5249,8 @@
   <script src="js/modules/aiOperationsCoach.js?v=34.0.14.8"></script>
   <script src="js/modules/crossLocationIntelligence.js?v=34.0.14.9"></script>
   <script src="js/modules/autonomousExecutiveBriefings.js?v=34.1.0"></script>
-  <script src="js/modules/restaurantAiBrainV341.js?v=34.1.0"></script>
+  <script src="js/modules/restaurantAiBrainV341.js?v=34.1.1"></script>
+  <script src="js/modules/aiBrainDecisionOrchestrator.js?v=34.1.1"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
