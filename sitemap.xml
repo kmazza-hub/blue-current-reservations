@@ -52,4 +52,5 @@
   </url>
   <url><loc>https://bluecurrentco.com/product-demo.html</loc></url>
   <url><loc>https://bluecurrentco.com/docs.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://bluecurrentco.com/pilot-workspace.html</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>
