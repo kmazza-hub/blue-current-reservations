@@ -1,32 +1,17 @@
-BLUE CURRENT V34.1.12 — COMPLIANCE EVIDENCE VAULT
+BLUECURRENTCO.COM V2.1 — INFORMATION ARCHITECTURE & NAVIGATION
 
-REPLACE
-- client/index.html
-- client/styles.css
+STANDALONE WEBSITE BUILD
 
-ADD
-- client/js/modules/complianceEvidenceVault.js
+IMPLEMENTED
+- Enterprise SaaS site architecture
+- Home, Platform, AI Concierge, Operations, Executive, Enterprise, Trust, and About pages
+- Consistent desktop/mobile navigation
+- Outcome-focused messaging reflecting current product capabilities
+- Preserved demo scheduler and email links
+- Responsive visual system and accessible navigation
 
-ADDS
-- Unified evidence index across certificates, renewals, outcomes, incidents, recovery, rollouts, and policies
-- Domain and evidence-type filtering
-- Deterministic record-integrity hashes
-- One-click evidence verification
-- Evidence-gap detection by operating domain
-- Audit-readiness scoring
-- Audit package generation
-- Copyable audit package
-- Downloadable JSON evidence package
-- Persistent vault audit history
-- Direct navigation to source modules
+DEPLOYMENT
+Upload the complete contents of this folder to the bluecurrentco.com site root.
 
-TEST
-1. Replace/add the three files.
-2. Run npm run check.
-3. Run npm start.
-4. Create certificates, renewals, outcomes, incidents, recovery plans, and rollout records.
-5. Open Compliance Evidence Vault.
-6. Test domain and evidence-type filters.
-7. Select records and verify integrity.
-8. Review evidence gaps and audit-readiness scoring.
-9. Generate, copy, and download the audit package.
+IMPORTANT
+privacy.html and terms.html contain explicit placeholders. Replace them with approved legal copy before production launch.
