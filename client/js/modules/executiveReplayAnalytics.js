@@ -160,7 +160,14 @@
       position:state.current?.position || 0,
       total:state.current?.total || 0,
       snapshot:state.current?.snapshot || null,
-      bookmarks:[...state.bookmarks]
+      bookmarks:[...state.bookmarks],
+      metrics:{
+        score:Number(state.current?.snapshot?.score || 100),
+        decisions:Number(state.current?.snapshot?.decisions || 0),
+        outcomes:Number(state.current?.snapshot?.outcomes || 0),
+        critical:Number(state.current?.snapshot?.critical || 0),
+        bookmarks:state.bookmarks.length
+      }
     };
 
     state.savedSessions.push(session);
@@ -169,6 +176,10 @@
 
     byId("executiveTimelineStatus").textContent =
       `Replay saved with ${session.bookmarks.length} bookmark${session.bookmarks.length === 1 ? "" : "s"}.`;
+
+    window.dispatchEvent(new CustomEvent("bluecurrent:executive-replay-session-saved", {
+      detail:{session}
+    }));
   }
 
   function init() {

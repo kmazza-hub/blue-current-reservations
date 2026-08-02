@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.2">
+  <meta name="blue-current-build" content="34.0.14.3">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.2">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.3">
 </head>
 <body>
 
@@ -2951,6 +2951,111 @@
         </div>
       </div>
 
+      <section class="executive-shift-comparison" id="executiveShiftComparison" aria-labelledby="executiveShiftComparisonTitle">
+        <div class="executive-shift-comparison-heading">
+          <div>
+            <small>Cross-shift intelligence</small>
+            <h4 id="executiveShiftComparisonTitle">Executive Shift Comparison</h4>
+            <span id="executiveShiftComparisonUpdated">Save at least two replay sessions to compare operating performance.</span>
+          </div>
+
+          <div class="executive-shift-comparison-score" id="executiveShiftComparisonScoreCard" data-tone="stable">
+            <small>Comparison score</small>
+            <strong id="executiveShiftComparisonScore">0</strong>
+            <span id="executiveShiftComparisonLabel">Awaiting sessions</span>
+          </div>
+        </div>
+
+        <div class="executive-shift-comparison-controls">
+          <label>
+            Baseline shift
+            <select id="executiveShiftBaseline"></select>
+          </label>
+
+          <label>
+            Comparison shift
+            <select id="executiveShiftCandidate"></select>
+          </label>
+
+          <button type="button" id="executiveShiftCompare">Compare shifts</button>
+          <button type="button" class="executive-shift-comparison-secondary" id="executiveShiftCopyReport">Copy report</button>
+        </div>
+
+        <div class="executive-shift-comparison-grid">
+          <article>
+            <small>Session score</small>
+            <strong id="executiveShiftScoreDelta">0</strong>
+            <span id="executiveShiftScoreDetail">No comparison</span>
+          </article>
+          <article>
+            <small>Decision count</small>
+            <strong id="executiveShiftDecisionDelta">0</strong>
+            <span id="executiveShiftDecisionDetail">No comparison</span>
+          </article>
+          <article>
+            <small>Outcome count</small>
+            <strong id="executiveShiftOutcomeDelta">0</strong>
+            <span id="executiveShiftOutcomeDetail">No comparison</span>
+          </article>
+          <article>
+            <small>Critical events</small>
+            <strong id="executiveShiftCriticalDelta">0</strong>
+            <span id="executiveShiftCriticalDetail">No comparison</span>
+          </article>
+          <article>
+            <small>Bookmarks</small>
+            <strong id="executiveShiftBookmarkDelta">0</strong>
+            <span id="executiveShiftBookmarkDetail">No comparison</span>
+          </article>
+        </div>
+
+        <div class="executive-shift-comparison-layout">
+          <div class="executive-shift-comparison-table-wrap">
+            <div class="executive-shift-comparison-section-heading">
+              <div><small>Side-by-side metrics</small><strong>Baseline versus comparison shift</strong></div>
+              <span id="executiveShiftComparisonSessionCount">0 saved sessions</span>
+            </div>
+
+            <div class="executive-shift-comparison-table">
+              <div class="executive-shift-comparison-row executive-shift-comparison-header">
+                <span>Metric</span><span>Baseline</span><span>Comparison</span><span>Change</span>
+              </div>
+              <div class="executive-shift-comparison-row">
+                <span>Session score</span><strong id="executiveShiftBaselineScore">—</strong><strong id="executiveShiftCandidateScore">—</strong><b id="executiveShiftTableScoreDelta">—</b>
+              </div>
+              <div class="executive-shift-comparison-row">
+                <span>Decisions</span><strong id="executiveShiftBaselineDecisions">—</strong><strong id="executiveShiftCandidateDecisions">—</strong><b id="executiveShiftTableDecisionDelta">—</b>
+              </div>
+              <div class="executive-shift-comparison-row">
+                <span>Outcomes</span><strong id="executiveShiftBaselineOutcomes">—</strong><strong id="executiveShiftCandidateOutcomes">—</strong><b id="executiveShiftTableOutcomeDelta">—</b>
+              </div>
+              <div class="executive-shift-comparison-row">
+                <span>Critical events</span><strong id="executiveShiftBaselineCritical">—</strong><strong id="executiveShiftCandidateCritical">—</strong><b id="executiveShiftTableCriticalDelta">—</b>
+              </div>
+              <div class="executive-shift-comparison-row">
+                <span>Bookmarks</span><strong id="executiveShiftBaselineBookmarks">—</strong><strong id="executiveShiftCandidateBookmarks">—</strong><b id="executiveShiftTableBookmarkDelta">—</b>
+              </div>
+            </div>
+          </div>
+
+          <aside class="executive-shift-comparison-insight">
+            <small>AI comparison summary</small>
+            <strong id="executiveShiftComparisonInsightTitle">No shifts selected</strong>
+            <p id="executiveShiftComparisonInsightDetail">Save two replay sessions, then compare them to identify what changed.</p>
+
+            <dl class="executive-shift-comparison-meta">
+              <div><dt>Stronger shift</dt><dd id="executiveShiftStronger">—</dd></div>
+              <div><dt>Primary driver</dt><dd id="executiveShiftDriver">—</dd></div>
+              <div><dt>Confidence</dt><dd id="executiveShiftConfidence">0%</dd></div>
+              <div><dt>Recommended review</dt><dd id="executiveShiftReview">Save sessions</dd></div>
+            </dl>
+
+            <button type="button" id="executiveShiftOpenPlayback">Open session playback</button>
+            <span id="executiveShiftComparisonStatus" role="status"></span>
+          </aside>
+        </div>
+      </section>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4471,7 +4576,8 @@
   <script src="js/modules/retrainingPlanner.js?v=34.0.14.0"></script>
   <script src="js/modules/executiveIntelligenceTimeline.js?v=34.0.14.1"></script>
   <script src="js/modules/executiveSessionPlayback.js?v=34.0.14.2"></script>
-  <script src="js/modules/executiveReplayAnalytics.js?v=34.0.14.2"></script>
+  <script src="js/modules/executiveReplayAnalytics.js?v=34.0.14.3"></script>
+  <script src="js/modules/executiveShiftComparison.js?v=34.0.14.3"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>

@@ -9979,3 +9979,208 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 @media(max-width:480px){
   .executive-playback-deltas{grid-template-columns:1fr}
 }
+
+
+/* V34.0.14.3 — Executive Shift Comparison */
+.executive-shift-comparison{
+  margin-top:.8rem;
+  padding:.85rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:
+    radial-gradient(circle at 90% 8%,rgba(98,211,163,.06),transparent 32%),
+    rgba(0,0,0,.08);
+}
+.executive-shift-comparison-heading,
+.executive-shift-comparison-section-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+}
+.executive-shift-comparison-heading small,
+.executive-shift-comparison-section-heading small,
+.executive-shift-comparison-insight small,
+.executive-shift-comparison-grid small{
+  color:rgba(255,255,255,.45);
+  font-size:.58rem;
+  font-weight:800;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+.executive-shift-comparison-heading h4{
+  margin:.28rem 0 0;
+  color:#fff;
+  font-size:.95rem;
+}
+#executiveShiftComparisonUpdated{
+  display:block;
+  margin-top:.22rem;
+  color:rgba(255,255,255,.45);
+  font-size:.6rem;
+}
+.executive-shift-comparison-score{
+  min-width:160px;
+  padding:.7rem;
+  border-radius:13px;
+  background:rgba(98,211,163,.1);
+  text-align:right;
+}
+.executive-shift-comparison-score small,
+.executive-shift-comparison-score strong,
+.executive-shift-comparison-score span{display:block}
+.executive-shift-comparison-score strong{margin-top:.22rem;color:#fff;font-size:1.35rem}
+.executive-shift-comparison-score span{margin-top:.18rem;color:rgba(255,255,255,.52);font-size:.58rem}
+.executive-shift-comparison-score[data-tone="watch"]{background:rgba(217,182,95,.12)}
+.executive-shift-comparison-score[data-tone="risk"]{background:rgba(239,133,125,.13)}
+.executive-shift-comparison-controls{
+  display:grid;
+  grid-template-columns:1fr 1fr auto auto;
+  gap:.55rem;
+  align-items:end;
+  margin-top:.75rem;
+}
+.executive-shift-comparison-controls label{
+  color:rgba(255,255,255,.45);
+  font-size:.55rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+.executive-shift-comparison-controls select{
+  display:block;
+  width:100%;
+  margin-top:.3rem;
+  padding:.58rem .66rem;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  color:#fff;
+  background:rgba(255,255,255,.045);
+  font:inherit;
+}
+.executive-shift-comparison-controls button,
+#executiveShiftOpenPlayback{
+  min-height:36px;
+  padding:0 .72rem;
+  border-radius:999px;
+  font:inherit;
+  font-size:.59rem;
+  font-weight:800;
+  cursor:pointer;
+}
+#executiveShiftCompare,
+#executiveShiftOpenPlayback{
+  border:0;
+  color:#082a31;
+  background:#62d3a3;
+}
+.executive-shift-comparison-secondary{
+  border:1px solid rgba(255,255,255,.08);
+  color:#fff;
+  background:rgba(255,255,255,.04);
+}
+.executive-shift-comparison-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:.48rem;
+  margin-top:.7rem;
+}
+.executive-shift-comparison-grid article{
+  padding:.58rem;
+  border-radius:10px;
+  background:rgba(255,255,255,.03);
+}
+.executive-shift-comparison-grid strong,
+.executive-shift-comparison-grid span{display:block}
+.executive-shift-comparison-grid strong{margin-top:.2rem;color:#fff;font-size:.76rem}
+.executive-shift-comparison-grid span{margin-top:.17rem;color:rgba(255,255,255,.42);font-size:.55rem}
+.executive-shift-comparison-layout{
+  display:grid;
+  grid-template-columns:1.35fr .75fr;
+  gap:.7rem;
+  margin-top:.7rem;
+}
+.executive-shift-comparison-table-wrap,
+.executive-shift-comparison-insight{
+  padding:.72rem;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:13px;
+  background:rgba(255,255,255,.02);
+}
+.executive-shift-comparison-section-heading strong{display:block;margin-top:.22rem;color:#fff;font-size:.7rem}
+.executive-shift-comparison-section-heading>span{color:rgba(255,255,255,.42);font-size:.56rem}
+.executive-shift-comparison-table{
+  display:grid;
+  gap:.35rem;
+  margin-top:.6rem;
+}
+.executive-shift-comparison-row{
+  display:grid;
+  grid-template-columns:1.4fr repeat(3,1fr);
+  gap:.45rem;
+  align-items:center;
+  padding:.52rem;
+  border-radius:9px;
+  background:rgba(255,255,255,.025);
+}
+.executive-shift-comparison-row span,
+.executive-shift-comparison-row strong,
+.executive-shift-comparison-row b{
+  color:rgba(255,255,255,.7);
+  font-size:.59rem;
+}
+.executive-shift-comparison-row strong,
+.executive-shift-comparison-row b{color:#fff}
+.executive-shift-comparison-header{
+  background:rgba(255,255,255,.045);
+}
+.executive-shift-comparison-header span{
+  color:rgba(255,255,255,.43);
+  font-size:.54rem;
+  font-weight:800;
+  text-transform:uppercase;
+}
+.executive-shift-comparison-insight>strong{
+  display:block;
+  margin-top:.28rem;
+  color:#fff;
+  font-size:.78rem;
+}
+.executive-shift-comparison-insight>p{
+  margin:.38rem 0 0;
+  color:rgba(255,255,255,.48);
+  font-size:.61rem;
+  line-height:1.45;
+}
+.executive-shift-comparison-meta{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.45rem;
+  margin:.68rem 0;
+}
+.executive-shift-comparison-meta div{
+  padding:.54rem;
+  border-radius:9px;
+  background:rgba(255,255,255,.035);
+}
+.executive-shift-comparison-meta dt{color:rgba(255,255,255,.4);font-size:.52rem;text-transform:uppercase}
+.executive-shift-comparison-meta dd{margin:.18rem 0 0;color:#fff;font-size:.64rem;font-weight:800}
+#executiveShiftComparisonStatus{
+  display:block;
+  min-height:1rem;
+  margin-top:.45rem;
+  color:rgba(255,255,255,.44);
+  font-size:.58rem;
+}
+@media(max-width:980px){
+  .executive-shift-comparison-controls{grid-template-columns:1fr 1fr}
+  .executive-shift-comparison-grid{grid-template-columns:repeat(3,1fr)}
+  .executive-shift-comparison-layout{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .executive-shift-comparison-heading,
+  .executive-shift-comparison-section-heading{flex-direction:column}
+  .executive-shift-comparison-controls,
+  .executive-shift-comparison-grid,
+  .executive-shift-comparison-meta{grid-template-columns:1fr}
+  .executive-shift-comparison-row{grid-template-columns:1.3fr repeat(3,.8fr)}
+}
