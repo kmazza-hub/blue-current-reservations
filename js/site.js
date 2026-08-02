@@ -172,3 +172,58 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
     setInterval(update,30000);
   }
 })();
+
+
+(() => {
+  "use strict";
+
+  const locations = [
+    {title:"Marina Grille",detail:"Local policies, operating limits, access roles, and rollout state remain visible at the enterprise level.",mode:"Supervised",roles:"18",rollout:"25% pilot",compliance:"Certified"},
+    {title:"Harbor House",detail:"Kitchen pacing and reservation release controls are under active review during peak service.",mode:"Advisory",roles:"22",rollout:"10% canary",compliance:"Conditional"},
+    {title:"River & Rail",detail:"Private-event demand and manager escalation workflows are active for the current service period.",mode:"Supervised",roles:"16",rollout:"50% controlled",compliance:"Certified"},
+    {title:"Shoreline Kitchen",detail:"High-volume service workflows are operating under a measured bounded-autonomy pilot.",mode:"Bounded",roles:"14",rollout:"25% pilot",compliance:"Certified"}
+  ];
+
+  const locationCards = Array.from(document.querySelectorAll("[data-enterprise-location]"));
+  function renderLocation(index) {
+    const item = locations[index];
+    if (!item) return;
+    locationCards.forEach((card,cardIndex) => card.classList.toggle("is-active",cardIndex === index));
+    document.getElementById("enterpriseLocationTitle").textContent = item.title;
+    document.getElementById("enterpriseLocationDetail").textContent = item.detail;
+    document.getElementById("enterpriseLocationMode").textContent = item.mode;
+    document.getElementById("enterpriseLocationRoles").textContent = item.roles;
+    document.getElementById("enterpriseLocationRollout").textContent = item.rollout;
+    document.getElementById("enterpriseLocationCompliance").textContent = item.compliance;
+  }
+  locationCards.forEach((card,index) => card.addEventListener("click",() => renderLocation(index)));
+
+  const trustSteps = [
+    ["Guardrails","Set the operating boundaries before automation begins.","Confidence, value, urgency, ownership, rollout, and certification requirements determine whether an action is blocked, approval-required, or eligible for bounded execution.","Policy active"],
+    ["Outcome verification","Measure whether the autonomous action delivered the expected result.","Observed value, success classification, and operating impact determine whether trust should expand, hold, or decline.","Verification required"],
+    ["Incident response","Contain failures before they spread through the operation.","Critical incidents pause affected domains, assign an owner, preserve evidence, and create a structured response path.","Containment ready"],
+    ["Recovery & requalification","Require proof before autonomy returns.","Corrective actions, successful outcomes, value thresholds, and accountable ownership must be satisfied before reinstatement.","Recovery controlled"],
+    ["Certification","Authorize each operating domain with evidence and controls.","Outcome quality, rollout posture, incident state, recovery readiness, governor authorization, and audit continuity determine certification.","Certification monitored"],
+    ["Evidence integrity","Keep the full governance record audit-ready.","Certificates, renewals, outcomes, incidents, recovery plans, rollouts, and policy decisions are indexed and integrity-verified.","Evidence indexed"]
+  ];
+
+  const trustButtons = Array.from(document.querySelectorAll("[data-trust-step]"));
+  function renderTrust(index) {
+    const item = trustSteps[index];
+    trustButtons.forEach((button,buttonIndex) => button.classList.toggle("is-active",buttonIndex === index));
+    document.getElementById("trustInspectorKicker").textContent = item[0];
+    document.getElementById("trustInspectorTitle").textContent = item[1];
+    document.getElementById("trustInspectorDetail").textContent = item[2];
+    document.getElementById("trustInspectorStatus").textContent = item[3];
+  }
+  trustButtons.forEach((button,index) => button.addEventListener("click",() => renderTrust(index)));
+
+  const storySteps = Array.from(document.querySelectorAll(".about-story-step"));
+  let storyIndex = 0;
+  function renderStory(index) {
+    storyIndex = index;
+    storySteps.forEach((step,stepIndex) => step.classList.toggle("is-active",stepIndex === index));
+  }
+  storySteps.forEach((step,index) => step.addEventListener("click",() => renderStory(index)));
+  if (storySteps.length) setInterval(() => renderStory((storyIndex+1)%storySteps.length),7000);
+})();

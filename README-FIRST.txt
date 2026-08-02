@@ -1,30 +1,27 @@
-BLUECURRENTCO.COM V2.4 — AI CONCIERGE & EXECUTIVE COMMAND SHOWCASES
+BLUECURRENTCO.COM V2.5 — ENTERPRISE, TRUST & ABOUT
 
-BUILDS ON V2.3.
+BUILDS ON V2.4.
 
 REPLACE
-- concierge.html
-- executive.html
+- enterprise.html
+- trust.html
+- about.html
 - styles.css
 - js/site.js
 
 IMPLEMENTED
-- Interactive AI Concierge call console
-- Multiple guest-call scenarios
-- Live call timer and animated voice waveform
-- Intent detection, confidence, captured details, and recommended outcome
-- Concierge operating flow and capability showcase
-- Interactive Executive Command dashboard
-- Portfolio KPIs and location health
-- Ranked executive decision queue
-- Dynamic decision inspector
-- Owner, urgency, confidence, and expected value
-- Executive capability showcase
+- Interactive enterprise organization and location-control showcase
+- Role-based access and rollout-state visuals
+- Enterprise capability and value sections
+- Interactive trust lifecycle
+- Guardrails, verification, incident response, recovery, certification, and evidence architecture
+- Trust capability and value sections
+- Interactive company story
+- Mission, principles, and product philosophy sections
 - Responsive desktop, tablet, and mobile layouts
 
 TEST
-1. Open concierge.html.
-2. Test Next Call Scenario and confirm the call timer runs.
-3. Open executive.html.
-4. Test Next Decision and click each decision card.
-5. Confirm desktop, tablet, and mobile layouts.
+1. Open enterprise.html and click each location.
+2. Open trust.html and click all six trust-lifecycle controls.
+3. Open about.html and click each story step.
+4. Confirm all pages remain responsive on tablet and mobile.
