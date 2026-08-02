@@ -3756,6 +3756,31 @@
           </aside>
         </section>
 
+        <section class="predictive-service-center" id="predictiveServiceCenter" aria-labelledby="predictiveServiceTitle">
+          <div class="predictive-service-heading">
+            <div><small>V34.6.7 · Forward operating intelligence</small><strong id="predictiveServiceTitle">Predictive Service Center</strong><span id="predictiveServiceUpdated">Building one-hour forecast…</span></div>
+            <div class="predictive-service-confidence"><small>Forecast confidence</small><strong id="predictiveServiceConfidence">—</strong><span id="predictiveServiceHeadline">Awaiting operating evidence.</span></div>
+            <button type="button" id="predictiveServiceRefresh">Run service forecast</button>
+          </div>
+          <div class="predictive-service-kpis">
+            <article><small>Risk windows</small><strong id="predictiveServiceRiskCount">0</strong></article>
+            <article><small>Peak pressure</small><strong id="predictiveServicePeakPressure">0</strong></article>
+            <article><small>Peak window</small><strong id="predictiveServicePeakWindow">0 min</strong></article>
+            <article><small>Preemptive moves</small><strong id="predictiveServiceInterventionCount">0</strong></article>
+          </div>
+          <section><div class="predictive-service-section-title"><small>15 · 30 · 60 minute outlook</small><strong>How service pressure is expected to develop</strong></div><div id="predictiveServiceHorizons" class="predictive-service-horizons"></div></section>
+          <div class="predictive-service-layout">
+            <section><div class="predictive-service-section-title"><small>Emerging risk windows</small><strong>Where leadership should act before pressure arrives</strong></div><div id="predictiveServiceRiskWindows" class="predictive-service-risk-windows"></div></section>
+            <section><div class="predictive-service-section-title"><small>Preemptive operating moves</small><strong>Recommended actions ranked by urgency</strong></div><div id="predictiveServiceInterventions" class="predictive-service-interventions"></div></section>
+          </div>
+          <aside class="predictive-service-inspector">
+            <div><small>Selected intervention</small><strong id="predictiveServiceSelectedTitle">Choose an intervention</strong><p id="predictiveServiceSelectedAction">Select a recommendation to inspect the action.</p></div>
+            <dl><div><dt>Expected impact</dt><dd id="predictiveServiceSelectedImpact">—</dd></div><div><dt>Owner</dt><dd id="predictiveServiceSelectedOwner">—</dd></div><div><dt>Confidence</dt><dd id="predictiveServiceSelectedConfidence">—</dd></div><div><dt>Governance</dt><dd id="predictiveServiceSelectedGovernance">—</dd></div></dl>
+            <button type="button" id="predictiveServiceApprove" disabled>Approve preemptive move</button><span id="predictiveServiceDecisionStatus" role="status"></span>
+          </aside>
+          <section><div class="predictive-service-section-title"><small>Forecast evidence</small><strong>Signals supporting this outlook</strong></div><div id="predictiveServiceEvidence" class="predictive-service-evidence"></div></section>
+        </section>
+
         <section class="ai-brain-decision-orchestrator" id="aiBrainDecisionOrchestrator" aria-labelledby="aiBrainDecisionOrchestratorTitle">
           <div class="ai-brain-decision-orchestrator-heading">
             <div>
@@ -6709,6 +6734,8 @@
   <script src="js/modules/operationalDigitalTwinCenter.js?v=34.6.3"></script>
   <script src="js/modules/portfolioIntelligenceEngine.js?v=34.6.5"></script>
   <script src="js/modules/portfolioIntelligenceCenter.js?v=34.6.5"></script>
+  <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
+  <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/app-v15.1.3.js?v=33.0.3"></script>
 </body>
 </html>

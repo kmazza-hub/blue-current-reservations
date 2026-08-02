@@ -42,7 +42,11 @@ class AppState {
       portfolioIntelligence: null,
       portfolioIntelligenceHistory: [],
       portfolioExceptions: [],
-      portfolioRecommendations: []
+      portfolioRecommendations: [],
+      predictiveService: null,
+      predictiveServiceHistory: [],
+      predictiveServiceRiskWindows: [],
+      predictiveServiceInterventions: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });
