@@ -57,7 +57,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.4.0",
+        version: "34.5.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -141,6 +141,39 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const allowedLocations = auth.membership.locationIds || [];
     const canAccessLocation = locationId =>
       allowedLocations.includes("*") || allowedLocations.includes(locationId);
+
+    if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
+      return sendJson(response, 200, await telemetryService.snapshot());
+    }
+
+    if (url.pathname === "/api/observability/incidents" && request.method === "POST") {
+      const body = request._jsonBody || await readJson(request);
+      const incident = await telemetryService.createIncident({
+        ...body,
+        organizationId
+      }, auth.user.name);
+      await auditService.record({
+        organizationId,
+        actor: auth.user.name,
+        action: `Observability incident created: ${incident.title}`,
+        category: "observability"
+      });
+      return sendJson(response, 201, incident);
+    }
+
+    if (url.pathname.startsWith("/api/observability/incidents/") && request.method === "PATCH") {
+      const body = request._jsonBody || await readJson(request);
+      const incidentId = decodeURIComponent(url.pathname.split("/").pop());
+      const incident = await telemetryService.updateIncident(incidentId, body, auth.user.name);
+      if (!incident) return sendJson(response, 404, { error: "Incident not found." });
+      await auditService.record({
+        organizationId,
+        actor: auth.user.name,
+        action: `Observability incident updated: ${incident.title}`,
+        category: "observability"
+      });
+      return sendJson(response, 200, incident);
+    }
 
     const writeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
     if (writeMethods.has(request.method)) {

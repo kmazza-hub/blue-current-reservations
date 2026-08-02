@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.4.1">
+  <meta name="blue-current-build" content="34.5.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -4687,6 +4687,74 @@
           </div>
         </section>
 
+                <section class="observability-command-center" id="observabilityCommandCenter" aria-labelledby="observabilityTitle">
+          <div class="observability-heading">
+            <div>
+              <small>Production reliability</small>
+              <strong id="observabilityTitle">Observability & Incident Command</strong>
+              <span id="observabilityUpdated">Live request health, latency, infrastructure state, and incident response.</span>
+            </div>
+            <div class="observability-health" id="observabilityHealthCard" data-tone="healthy">
+              <small>Platform health</small>
+              <strong id="observabilityHealthScore">100</strong>
+              <span id="observabilityHealthLabel">Healthy</span>
+            </div>
+          </div>
+
+          <div class="observability-kpis">
+            <article><small>API success</small><strong id="observabilitySuccessRate">100%</strong><span>All measured requests</span></article>
+            <article><small>Average latency</small><strong id="observabilityAverageLatency">0 ms</strong><span>Recent request window</span></article>
+            <article><small>P95 latency</small><strong id="observabilityP95Latency">0 ms</strong><span>Tail performance</span></article>
+            <article><small>Open incidents</small><strong id="observabilityOpenIncidents">0</strong><span>Active response records</span></article>
+            <article><small>Realtime clients</small><strong id="observabilityRealtimeClients">0</strong><span>Connected event streams</span></article>
+          </div>
+
+          <div class="observability-layout">
+            <section class="observability-traffic-panel">
+              <div class="observability-section-heading">
+                <div><small>Request telemetry</small><strong>Recent API activity</strong></div>
+                <button type="button" id="observabilityRefresh">Refresh telemetry</button>
+              </div>
+              <div id="observabilityRequestList" class="observability-list"></div>
+            </section>
+
+            <aside class="observability-storage-panel">
+              <div class="observability-section-heading">
+                <div><small>Platform state</small><strong>Storage and reliability signals</strong></div>
+              </div>
+              <div class="observability-storage-grid">
+                <article><span>Reservations</span><b id="observabilityReservations">0</b></article>
+                <article><span>Audit records</span><b id="observabilityAuditLogs">0</b></article>
+                <article><span>Idempotency records</span><b id="observabilityIdempotency">0</b></article>
+                <article><span>Resource versions</span><b id="observabilityVersions">0</b></article>
+                <article><span>Auth failures</span><b id="observabilityAuthFailures">0</b></article>
+                <article><span>Version conflicts</span><b id="observabilityConflicts">0</b></article>
+              </div>
+            </aside>
+          </div>
+
+          <div class="observability-layout">
+            <section class="observability-incidents-panel">
+              <div class="observability-section-heading">
+                <div><small>Incident command</small><strong>Open and historical incidents</strong></div>
+                <button type="button" id="observabilityCreateIncident">Create incident</button>
+              </div>
+              <div id="observabilityIncidentList" class="observability-list"></div>
+            </section>
+
+            <aside class="observability-response-panel">
+              <div class="observability-section-heading">
+                <div><small>Response controls</small><strong>Incident declaration</strong></div>
+              </div>
+              <label>Title<input id="observabilityIncidentTitle" type="text" placeholder="Describe the operational issue"></label>
+              <label>Severity<select id="observabilityIncidentSeverity"><option value="warning">Warning</option><option value="critical">Critical</option><option value="info">Information</option></select></label>
+              <label>Owner<input id="observabilityIncidentOwner" type="text" placeholder="Incident owner"></label>
+              <label>Description<textarea id="observabilityIncidentDescription" rows="4" placeholder="Impact, symptoms, and immediate response"></textarea></label>
+              <span id="observabilityMessage" role="status"></span>
+            </aside>
+          </div>
+        </section>
+
         <section class="sync-control-center" id="syncControlCenter" aria-labelledby="syncControlCenterTitle">
           <div class="sync-control-heading">
             <div>
@@ -6451,12 +6519,13 @@
   <script src="js/cloud/requestPipeline.js?v=34.3.2"></script>
   <script src="js/cloud/offlineSyncManager.js?v=34.3.2"></script>
   <script src="js/cloud/auditReconciliationLedger.js?v=34.3.2"></script>
-  <script src="js/cloud/cloudApi.js?v=34.4.1"></script>
+  <script src="js/cloud/cloudApi.js?v=34.5.0"></script>
   <script src="js/cloud/authSessionManager.js?v=34.2.1"></script>
   <script src="js/cloud/bootstrapStateHydrator.js?v=34.2.1"></script>
   <script src="js/modules/cloudFoundation.js?v=34.3.2"></script>
   <script src="js/modules/startupDiagnostics.js?v=34.3.2"></script>
   <script src="js/modules/syncControlCenter.js?v=34.4.1"></script>
+  <script src="js/modules/observabilityIncidentCommand.js?v=34.5.0"></script>
   <script src="js/modules/authOrganizations.js?v=34.2.0"></script>
   <script src="js/modules/liveFloorOperations.js?v=33.0.3"></script>
   <script src="js/modules/reservationOperations.js?v=33.0.3"></script>

@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.4.1";
+    static VERSION = "34.5.0";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -250,6 +250,30 @@
       };
     }
 
+    observabilitySnapshot() {
+      return this.get("/api/observability/snapshot", {
+        cache: false,
+        priority: 80
+      });
+    }
+
+    createObservabilityIncident(payload) {
+      return this.post("/api/observability/incidents", payload, {
+        cache: false,
+        priority: 85,
+        entityType: "observability-incident"
+      });
+    }
+
+    updateObservabilityIncident(id, payload) {
+      return this.patch(`/api/observability/incidents/${encodeURIComponent(id)}`, payload, {
+        cache: false,
+        priority: 85,
+        entityType: "observability-incident",
+        entityId: id
+      });
+    }
+
     health() { return this.request("/api/health"); }
     commandCenter(locationId = "loc_marina") { return this.request(`/api/command-center?locationId=${encodeURIComponent(locationId)}`); }
     operationsFeed(locationId = "loc_marina", category = "all", limit = 40) { return this.request(`/api/operations-feed?locationId=${encodeURIComponent(locationId)}&category=${encodeURIComponent(category)}&limit=${encodeURIComponent(limit)}`); }
@@ -444,5 +468,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.4.1";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.5.0";
 })();
