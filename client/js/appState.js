@@ -46,7 +46,11 @@ class AppState {
       predictiveService: null,
       predictiveServiceHistory: [],
       predictiveServiceRiskWindows: [],
-      predictiveServiceInterventions: []
+      predictiveServiceInterventions: [],
+      autonomousPolicies: [],
+      autonomousPolicySnapshot: null,
+      autonomousPolicyCandidates: [],
+      autonomousPolicyHistory: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

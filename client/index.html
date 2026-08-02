@@ -3781,6 +3781,32 @@
           <section><div class="predictive-service-section-title"><small>Forecast evidence</small><strong>Signals supporting this outlook</strong></div><div id="predictiveServiceEvidence" class="predictive-service-evidence"></div></section>
         </section>
 
+        <section class="autonomous-policy-center" id="autonomousPolicyCenter" aria-labelledby="autonomousPolicyTitle">
+          <div class="autonomous-policy-heading">
+            <div><small>V34.6.8 · Governed autonomous operations</small><strong id="autonomousPolicyTitle">Autonomous Policy Center</strong><span id="autonomousPolicyUpdated">Evaluating operating guardrails…</span></div>
+            <div class="autonomous-policy-summary"><small>Policy posture</small><strong id="autonomousPolicyHeadline">Awaiting forecast evidence.</strong><span id="autonomousPolicyGovernance">Human approval required</span></div>
+            <button type="button" id="autonomousPolicyRefresh">Evaluate policies</button>
+          </div>
+          <div class="autonomous-policy-kpis">
+            <article><small>Enabled policies</small><strong id="autonomousPolicyActiveCount">0</strong></article>
+            <article><small>Matched actions</small><strong id="autonomousPolicyMatchedCount">0</strong></article>
+            <article><small>Execution mode</small><strong>Approval gated</strong></article>
+            <article><small>Audit posture</small><strong>Evidence recorded</strong></article>
+          </div>
+          <div class="autonomous-policy-layout">
+            <section><div class="autonomous-policy-section-title"><small>Operating guardrails</small><strong>Policies leadership has authorized for evaluation</strong></div><div id="autonomousPolicyList" class="autonomous-policy-list"></div></section>
+            <section><div class="autonomous-policy-section-title"><small>Actions ready for review</small><strong>Matched policy actions</strong></div><div id="autonomousPolicyCandidates" class="autonomous-policy-candidates"></div></section>
+          </div>
+          <aside class="autonomous-policy-inspector">
+            <div><small>Selected policy action</small><strong id="autonomousPolicySelectedTitle">No action selected</strong><p id="autonomousPolicySelectedAction">—</p></div>
+            <dl><div><dt>Trigger</dt><dd id="autonomousPolicySelectedTrigger">—</dd></div><div><dt>Owner</dt><dd id="autonomousPolicySelectedOwner">—</dd></div><div><dt>Confidence</dt><dd id="autonomousPolicySelectedConfidence">—</dd></div><div><dt>Governance</dt><dd>Explicit manager approval</dd></div></dl>
+            <ul id="autonomousPolicySelectedEvidence"></ul>
+            <textarea id="autonomousPolicyNote" rows="2" placeholder="Optional approval note"></textarea>
+            <button type="button" id="autonomousPolicyApprove" disabled>Approve governed action</button><span id="autonomousPolicyStatus" role="status"></span>
+          </aside>
+          <section><div class="autonomous-policy-section-title"><small>Decision history</small><strong>Approved autonomous policy actions</strong></div><div id="autonomousPolicyHistory" class="autonomous-policy-history"></div></section>
+        </section>
+
         <section class="ai-brain-decision-orchestrator" id="aiBrainDecisionOrchestrator" aria-labelledby="aiBrainDecisionOrchestratorTitle">
           <div class="ai-brain-decision-orchestrator-heading">
             <div>
@@ -6736,6 +6762,8 @@
   <script src="js/modules/portfolioIntelligenceCenter.js?v=34.6.5"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
-  <script src="js/app-v15.1.3.js?v=33.0.3"></script>
+  <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
+  <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
+  <script src="js/app-v15.1.3.js?v=34.6.8"></script>
 </body>
 </html>
