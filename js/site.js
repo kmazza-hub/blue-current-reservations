@@ -278,3 +278,38 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
     document.querySelectorAll(".reveal").forEach(node => node.classList.add("is-visible"));
   }
 })();
+
+(() => {
+  "use strict";
+  const buttons = Array.from(document.querySelectorAll("[data-product-view]"));
+  if (!buttons.length) return;
+  const views = [
+    {
+      kicker:"AI Concierge", title:"Turn every guest conversation into structured demand.", detail:"Answer calls, preserve context, capture intent, and route the next action without forcing the guest or the operator through another disconnected workflow.",
+      list:["Natural guest conversations with location-specific policies","Reservation, event, and follow-up intent captured in one record","Escalation rules for high-value or sensitive requests"], link:"concierge.html", linkText:"Explore AI Concierge", mode:"Guest demand", eyebrow:"Guest intelligence", uiTitle:"Saturday demand stream", metrics:[["98%","176 conversations"],["42","Today"],["6","Manager review"]],
+      feed:[["Reservation","Anniversary dinner · 6 guests","Preferred waterfront seating noted","Confirmed"],["Private event","Corporate dinner · 28 guests","Budget and date flexibility captured","Qualified"],["Guest recovery","Manager follow-up requested","Escalated with full conversation context","Priority"]]
+    },
+    {
+      kicker:"Live Operations", title:"Coordinate tonight before pressure becomes disruption.", detail:"Combine arrival pace, table readiness, kitchen throughput, staffing coverage, and guest context in a single manager command view.",
+      list:["Real-time service pressure across floor, kitchen, and workforce","Recommended interventions with ownership and urgency","Shared handoffs that remain visible across teams"], link:"operations.html", linkText:"Explore Live Operations", mode:"Live service", eyebrow:"Service coordination", uiTitle:"Saturday service command", metrics:[["86%","Reservation pace"],["14.2m","Average ticket"],["94%","Staffing coverage"]],
+      feed:[["Arrival pace","Waterfront arrivals compressing","Move one host before 7:30 PM","Act now"],["Kitchen","Expo pressure trending upward","Hold large-party releases for 12 minutes","Watch"],["Floor","Table 14 reset complete","Priority party cleared for seating","Resolved"]]
+    },
+    {
+      kicker:"Executive Command", title:"Manage the portfolio by exception—not by spreadsheet.", detail:"Give leadership a live view of performance, risk, opportunity, and accountability across every location without losing the operating context behind the number.",
+      list:["Location-level health and portfolio-wide comparisons","AI-generated briefings tied to source evidence","Decisions, owners, outcomes, and follow-through in one ledger"], link:"executive.html", linkText:"Explore Executive Command", mode:"Executive command", eyebrow:"Portfolio intelligence", uiTitle:"Leadership attention queue", metrics:[["92","Portfolio health"],["4","Locations live"],["2","Need attention"]],
+      feed:[["Operational risk","Marina Grille arrival compression","Regional manager assigned","Owned"],["Revenue opportunity","Seven qualified event requests","Estimated opportunity $2,400","Review"],["Service recovery","Harbor House pacing normalized","Intervention outcome verified","Closed"]]
+    }
+  ];
+  const $ = id => document.getElementById(id);
+  function render(index){
+    const v=views[index];
+    buttons.forEach((b,i)=>{b.classList.toggle("is-active",i===index);b.setAttribute("aria-selected",String(i===index));});
+    $("productProofKicker").textContent=v.kicker; $("productProofTitle").textContent=v.title; $("productProofDetail").textContent=v.detail;
+    $("productProofList").innerHTML=v.list.map(x=>`<li>${x}</li>`).join("");
+    $("productProofLink").href=v.link; $("productProofLink").innerHTML=`${v.linkText} <span>↗</span>`;
+    $("productProofMode").textContent=v.mode; $("productUiEyebrow").textContent=v.eyebrow; $("productUiTitle").textContent=v.uiTitle;
+    [["productMetricOne","productMetricOneLabel"],["productMetricTwo","productMetricTwoLabel"],["productMetricThree","productMetricThreeLabel"]].forEach((ids,i)=>{$(ids[0]).textContent=v.metrics[i][0];$(ids[1]).textContent=v.metrics[i][1];});
+    $("productUiFeed").innerHTML=v.feed.map(row=>`<article><span>${row[0]}</span><div><strong>${row[1]}</strong><small>${row[2]}</small></div><b>${row[3]}</b></article>`).join("");
+  }
+  buttons.forEach((button,index)=>button.addEventListener("click",()=>render(index)));
+})();
