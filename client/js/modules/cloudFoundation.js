@@ -73,9 +73,11 @@
     }
 
     async function connect() {
+      pipeline?.markStartupPhase?.("Authenticate", "running");
       setStatus("Connecting", "Contacting local Blue Current Cloud service…");
       try {
         const health = await api.health();
+        pipeline?.markStartupPhase?.("Connect Cloud", "complete", { version: health.version });
         connected = true;
         appState.update({ cloudConnected: true, cloudVersion: health.version, cloudLastSync: health.now });
         eventBus.emit("cloud:connected", health);
@@ -84,6 +86,9 @@
         const readiness = auth?.restore ? await auth.restore(api) : { authenticated: Boolean(api.token) };
 
         if (readiness.authenticated) {
+          pipeline?.markStartupPhase?.("Authenticate", "complete", { restored: true });
+          pipeline?.markStartupPhase?.("Restore Session", "complete");
+          pipeline?.markStartupPhase?.("Hydrate State", "running");
           const cached = window.BlueCurrentBootstrapHydrator?.hydrateFromCache?.(appState, readiness.session);
           if (cached?.fresh) {
             setStatus("Restoring", `Cached operating state restored. Refreshing Cloud Core V${health.version}…`);
@@ -94,10 +99,19 @@
           }
 
           await loadBootstrap({ force: true });
+          pipeline?.markStartupPhase?.("Hydrate State", "complete", {
+            source: window.BlueCurrentBootstrapHydrator?.snapshot?.().source || "network"
+          });
+          pipeline?.markStartupPhase?.("Start EventBus", "complete");
+          pipeline?.markStartupPhase?.("Register Modules", "complete", {
+            order: pipeline?.resolveDependencies?.() || []
+          });
+          pipeline?.markStartupPhase?.("Ready", "complete");
           setStatus("Connected", `Cloud Core V${health.version} · Operating state synchronized · Database ${health.database}`);
           eventBus.emit("cloud:authenticated", readiness.session);
         } else {
           setStatus("Sign in required", `Cloud Core V${health.version} is online. Protected modules are waiting for authentication.`);
+          pipeline?.markStartupPhase?.("Authenticate", "blocked", { reason: "sign-in-required" });
           eventBus.emit("cloud:authentication-required", {});
         }
       } catch (error) {
@@ -164,6 +178,8 @@
       disconnectEvents = api.connect((type, payload) => {
         eventBus.emit(type, payload);
         if (type === "reservation:created") {
+          pipeline?.invalidate?.(key => key.includes("reservation") || key.includes("bootstrap"));
+          window.dispatchEvent(new CustomEvent("bluecurrent:reservation-created", { detail: payload }));
           appState.appendReservation?.(payload);
           loadBootstrap({ force: true }).catch(error => {
             if (!["AUTH_REQUIRED","SESSION_EXPIRED"].includes(error.code)) {
@@ -172,6 +188,8 @@
           });
         }
         if (type === "configuration:updated") {
+          pipeline?.invalidate?.(key => key.includes("configuration") || key.includes("bootstrap"));
+          window.dispatchEvent(new CustomEvent("bluecurrent:configuration-updated", { detail: payload }));
           appState.update({ cloudConfiguration: payload, cloudLastSync: new Date().toISOString() });
         }
       });
@@ -204,6 +222,9 @@
       getBootstrap: () => bootstrap,
       refreshBootstrap: () => loadBootstrap({ force: true }),
       getBootstrapStatus: () => window.BlueCurrentBootstrapHydrator?.snapshot?.() || null,
+      getRequestPipelineStatus: () => pipeline?.metricsSnapshot?.() || null,
+      invalidateRequestCache: predicate => pipeline?.invalidate?.(predicate),
+      registerCloudModule: (name, options) => pipeline?.registerModule?.(name, options),
       getAuthReadiness: () => window.BlueCurrentAuthSession?.snapshot?.() || null
     };
   }

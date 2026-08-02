@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.2.1";
+    static VERSION = "34.3.0";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -25,6 +25,30 @@
     }
 
     async request(path, options = {}) {
+      const method = String(options.method || "GET").toUpperCase();
+      const pipeline = window.BlueCurrentRequestPipeline;
+      const config = {
+        path,
+        method,
+        body: options.body || null,
+        priority: options.priority,
+        timeoutMs: options.timeoutMs,
+        retries: options.retries,
+        cache: options.cache,
+        forceRefresh: options.forceRefresh,
+        cachePolicy: options.cachePolicy,
+        scope: options.scope || "cloud",
+        signal: options.signal
+      };
+
+      if (!pipeline?.execute) return this.transportRequest(path, options);
+
+      return pipeline.execute(config, ({ signal }) =>
+        this.transportRequest(path, { ...options, signal })
+      );
+    }
+
+    async transportRequest(path, options = {}) {
       const requestId = ++this.requestSequence;
       const method = String(options.method || "GET").toUpperCase();
       const publicPaths = new Set([
@@ -99,8 +123,37 @@
       return {
         version: this.version,
         capabilities: [...this.capabilities],
-        loginAvailable: typeof this.login === "function"
+        loginAvailable: typeof this.login === "function",
+        requestPipeline: Boolean(window.BlueCurrentRequestPipeline)
       };
+    }
+
+    batch(requests, options = {}) {
+      const pipeline = window.BlueCurrentRequestPipeline;
+      if (!pipeline?.batch) {
+        return Promise.all(requests.map(item =>
+          this.request(item.path, { ...(item.options || {}), ...options })
+        ));
+      }
+      return pipeline.batch(
+        requests.map(item => ({
+          path: item.path,
+          method: item.options?.method || "GET",
+          body: item.options?.body || null,
+          ...(item.options || {})
+        })),
+        item => ({ signal }) => this.transportRequest(item.path, {
+          ...(item.options || {}),
+          method: item.method,
+          body: item.body,
+          signal
+        }),
+        options
+      );
+    }
+
+    requestMetrics() {
+      return window.BlueCurrentRequestPipeline?.metricsSnapshot?.() || null;
     }
 
     health() { return this.request("/api/health"); }
@@ -297,5 +350,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.2.1";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.3.0";
 })();
