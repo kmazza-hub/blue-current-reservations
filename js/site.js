@@ -721,3 +721,16 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   document.getElementById('roiPrint')?.addEventListener('click',()=>window.print());
   renderInputs();
 })();
+
+
+// WEB-021 — Public changelog filters
+(() => {
+  const buttons=[...document.querySelectorAll('[data-release-filter]')];
+  const cards=[...document.querySelectorAll('[data-release-category]')];
+  if(!buttons.length||!cards.length)return;
+  const apply=(filter)=>{
+    buttons.forEach(button=>{const active=button.dataset.releaseFilter===filter;button.classList.toggle('is-active',active);button.setAttribute('aria-selected',String(active));});
+    cards.forEach(card=>{card.hidden=filter!=='all'&&card.dataset.releaseCategory!==filter;});
+  };
+  buttons.forEach(button=>button.addEventListener('click',()=>apply(button.dataset.releaseFilter)));
+})();
