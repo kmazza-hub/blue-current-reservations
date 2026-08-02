@@ -1,36 +1,36 @@
-BLUE CURRENT V34.2.0 — AUTHENTICATION & SESSION RELIABILITY
+BLUE CURRENT V34.2.1 — DURABLE BOOTSTRAP & STATE HYDRATION
 
 REPLACE
 - client/index.html
 - client/js/cloud/cloudApi.js
 - client/js/modules/cloudFoundation.js
-- client/js/modules/authOrganizations.js
 
 ADD
-- client/js/cloud/authSessionManager.js
+- client/js/cloud/bootstrapStateHydrator.js
 
 IMPLEMENTED
-- Single authentication-session coordinator
-- Valid-session restoration before protected modules load
-- Protected-request gate that prevents cascading unauthorized fetches
-- Structured Auth, API, and Network error classification
-- Session-expiration detection and one-time cleanup
-- Organization, role, user, and authorized-location context persistence
-- Reliable sign-in, sign-out, and token cleanup
-- Auth-aware cloud bootstrap
-- Auth-aware real-time event connection
-- Clear Connected, Sign In Required, and Offline diagnostics
-- Defensive DOM handling in the authentication panel
-- Cross-module session-state events
+- Central cloud-bootstrap state hydrator
+- Authenticated organization and location context normalization
+- Durable organization-scoped bootstrap cache
+- Immediate cached-state restoration after refresh
+- Fresh and stale cache classification
+- Network refresh after cache hydration
+- Single in-flight bootstrap request deduplication
+- Protection against outdated bootstrap responses
+- AppState hydration for organizations, locations, users, configuration, feature flags, audit logs, reservations, role, and authorized locations
+- Clear Restoring, Refreshing, Connected, Sign In Required, and Offline states
+- Cross-module bootstrap-hydrated events
+- Manual bootstrap refresh API for future modules
+- Defensive Cloud Foundation DOM rendering
 
 TEST
-1. Replace/add the five files.
+1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Open http://localhost:8787/client/.
-5. With no token, confirm one sign-in overlay appears and protected endpoints do not flood the console with 401 errors.
-6. Sign in with a demo account and confirm Cloud Foundation bootstraps once.
-7. Refresh and confirm the session, organization, role, and location context restore.
-8. Switch organizations and refresh again.
-9. Log out and confirm token/context cleanup.
-10. Delete or invalidate the stored token, refresh, and confirm the app returns to the sign-in gate cleanly.
+4. Sign in and confirm Cloud Foundation loads organization, location, users, audit, and reservations.
+5. Refresh and confirm cached operating state appears immediately while the network refresh completes.
+6. Confirm only one /api/bootstrap request runs during startup.
+7. Switch organizations and verify a separate organization-scoped cache is used.
+8. Stop the Node server after one successful sign-in and refresh; confirm the cached snapshot is marked stale rather than presented as current.
+9. Restart the server and use Cloud Refresh; confirm the state returns to synchronized.
+10. Log out and confirm protected cloud state becomes unavailable.

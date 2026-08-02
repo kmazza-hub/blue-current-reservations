@@ -7,6 +7,8 @@
     const $ = id => document.getElementById(id);
     let connected = false;
     let bootstrap = null;
+    let bootstrapPromise = null;
+    let bootstrapGeneration = 0;
 
     function setStatus(status, detail) {
       const badge = $("cloudConnectionStatus");
@@ -17,19 +19,57 @@
       if ($("cloudConnectionDetail")) $("cloudConnectionDetail").textContent = detail;
     }
 
-    function renderBootstrap(data) {
+    function renderBootstrap(data, options = {}) {
       bootstrap = data;
-      $("cloudOrgCount").textContent = data.organizations.length;
-      $("cloudLocationCount").textContent = data.locations.length;
-      $("cloudUserCount").textContent = data.users.length;
-      $("cloudAuditCount").textContent = data.auditLogs.length;
-      $("cloudOrganizationList").innerHTML = data.organizations.map(org => `
-        <article><span>${org.name.slice(0,2).toUpperCase()}</span><div><strong>${org.name}</strong><small>${org.status} environment</small></div><em>${data.locations.filter(loc => loc.organizationId === org.id).length} locations</em></article>
-      `).join("");
-      $("cloudRecentAudit").innerHTML = data.auditLogs.slice(0, 6).map(log => `
-        <article><time>${new Date(log.createdAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</time><div><strong>${log.actor}</strong><p>${log.action}</p></div></article>
-      `).join("") || "<p>No cloud audit records yet.</p>";
-      $("cloudReservationCount").textContent = data.reservations.length;
+      const session = window.BlueCurrentAuthSession?.snapshot?.().session || data.auth || null;
+      const hydrator = window.BlueCurrentBootstrapHydrator;
+      const snapshot = hydrator?.hydrate
+        ? hydrator.hydrate(appState, data, session, { source: options.source || "network" })
+        : data;
+
+      if ($("cloudOrgCount")) $("cloudOrgCount").textContent = data.organizations.length;
+      if ($("cloudLocationCount")) $("cloudLocationCount").textContent = data.locations.length;
+      if ($("cloudUserCount")) $("cloudUserCount").textContent = data.users.length;
+      if ($("cloudAuditCount")) $("cloudAuditCount").textContent = data.auditLogs.length;
+      if ($("cloudOrganizationList")) {
+        $("cloudOrganizationList").innerHTML = data.organizations.map(org => `
+          <article><span>${org.name.slice(0,2).toUpperCase()}</span><div><strong>${org.name}</strong><small>${org.status} environment</small></div><em>${data.locations.filter(loc => loc.organizationId === org.id).length} locations</em></article>
+        `).join("");
+      }
+      if ($("cloudRecentAudit")) {
+        $("cloudRecentAudit").innerHTML = data.auditLogs.slice(0, 6).map(log => `
+          <article><time>${new Date(log.createdAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</time><div><strong>${log.actor}</strong><p>${log.action}</p></div></article>
+        `).join("") || "<p>No cloud audit records yet.</p>";
+      }
+      if ($("cloudReservationCount")) $("cloudReservationCount").textContent = data.reservations.length;
+
+      eventBus.emit("cloud:bootstrap-hydrated", {
+        source: options.source || "network",
+        snapshot
+      });
+      return snapshot;
+    }
+
+    async function loadBootstrap(options = {}) {
+      if (bootstrapPromise && !options.force) return bootstrapPromise;
+      const generation = ++bootstrapGeneration;
+
+      bootstrapPromise = (async () => {
+        const data = await api.bootstrap();
+        if (generation !== bootstrapGeneration) return bootstrap;
+        renderBootstrap(data, { source: "network" });
+        appState.update({
+          cloudBootstrapStale: false,
+          cloudBootstrapLastRefresh: new Date().toISOString()
+        });
+        return data;
+      })();
+
+      try {
+        return await bootstrapPromise;
+      } finally {
+        bootstrapPromise = null;
+      }
     }
 
     async function connect() {
@@ -44,8 +84,17 @@
         const readiness = auth?.restore ? await auth.restore(api) : { authenticated: Boolean(api.token) };
 
         if (readiness.authenticated) {
-          setStatus("Connected", `Cloud Core V${health.version} · Session restored · Database ${health.database}`);
-          renderBootstrap(await api.bootstrap());
+          const cached = window.BlueCurrentBootstrapHydrator?.hydrateFromCache?.(appState, readiness.session);
+          if (cached?.fresh) {
+            setStatus("Restoring", `Cached operating state restored. Refreshing Cloud Core V${health.version}…`);
+          } else if (cached) {
+            setStatus("Refreshing", `A stale cached snapshot was found. Loading current Cloud Core V${health.version} state…`);
+          } else {
+            setStatus("Connected", `Cloud Core V${health.version} · Session restored · Loading operating state…`);
+          }
+
+          await loadBootstrap({ force: true });
+          setStatus("Connected", `Cloud Core V${health.version} · Operating state synchronized · Database ${health.database}`);
           eventBus.emit("cloud:authenticated", readiness.session);
         } else {
           setStatus("Sign in required", `Cloud Core V${health.version} is online. Protected modules are waiting for authentication.`);
@@ -81,7 +130,7 @@
         });
         eventBus.emit("reservation:created", reservation);
         appState.appendReservation?.(reservation);
-        if (api.token) renderBootstrap(await api.bootstrap());
+        if (api.token) await loadBootstrap({ force: true });
       } catch (error) {
         setStatus("Cloud error", error.message);
       } finally {
@@ -104,7 +153,7 @@
         category: "migration"
       });
       $("cloudMigrationResult").textContent = "V21 configuration detected and migration audit recorded successfully.";
-      if (api.token) renderBootstrap(await api.bootstrap());
+      if (api.token) await loadBootstrap({ force: true });
       eventBus.emit("cloud:migration-complete", { sourceVersion: "21.0" });
     });
 
@@ -116,7 +165,7 @@
         eventBus.emit(type, payload);
         if (type === "reservation:created") {
           appState.appendReservation?.(payload);
-          api.bootstrap().then(renderBootstrap).catch(error => {
+          loadBootstrap({ force: true }).catch(error => {
             if (!["AUTH_REQUIRED","SESSION_EXPIRED"].includes(error.code)) {
               console.warn("Cloud bootstrap refresh failed", error);
             }
@@ -135,7 +184,15 @@
       } else {
         disconnectEvents?.();
         disconnectEvents = null;
+        bootstrapGeneration += 1;
+        bootstrapPromise = null;
         bootstrap = null;
+        appState.update({
+          cloudBootstrapReady: false,
+          cloudBootstrapStale: false,
+          cloudBootstrapSource: null,
+          cloudBootstrapHydratedAt: null
+        });
       }
     });
 
@@ -145,6 +202,8 @@
       api,
       reconnect: connect,
       getBootstrap: () => bootstrap,
+      refreshBootstrap: () => loadBootstrap({ force: true }),
+      getBootstrapStatus: () => window.BlueCurrentBootstrapHydrator?.snapshot?.() || null,
       getAuthReadiness: () => window.BlueCurrentAuthSession?.snapshot?.() || null
     };
   }

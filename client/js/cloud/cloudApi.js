@@ -3,7 +3,7 @@
   "use strict";
 
   class CloudApi {
-    static VERSION = "34.2.0";
+    static VERSION = "34.2.1";
     static CAPABILITIES = Object.freeze([
       "health", "login", "logout", "me", "switchOrganization", "floor", "reservationOperations", "staffOperations", "serviceCoordination", "aiBrain", "executiveCommand", "autonomousOperations", "guestIntelligence", "workforceIntelligence", "inventoryIntelligence", "timeClock", "workforceFoundation", "scheduling",
       "commandCenter", "createShiftHandoff", "acknowledgeShiftHandoff", "operationsFeed", "managerActions", "createManagerAction", "updateManagerAction", "deleteManagerAction", "bootstrap", "reservations", "audit", "invitations", "configuration"
@@ -297,5 +297,5 @@
   }
 
   window.BlueCurrentCloudApi = CloudApi;
-  window.BLUE_CURRENT_CLIENT_BUILD = "34.2.0";
+  window.BLUE_CURRENT_CLIENT_BUILD = "34.2.1";
 })();
