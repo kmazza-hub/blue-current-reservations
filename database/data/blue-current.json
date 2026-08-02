@@ -378,6 +378,38 @@
       "category": "workforce-foundation",
       "createdAt": "2026-08-02T03:26:12.635Z",
       "id": "audit_1785641172635_6x7eck"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Labor plan updated",
+      "category": "workforce",
+      "createdAt": "2026-08-02T03:29:00.602Z",
+      "id": "audit_1785641340603_hztzkp"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Labor recommendation approved: wf_add_cook",
+      "category": "workforce",
+      "createdAt": "2026-08-02T03:29:06.769Z",
+      "id": "audit_1785641346769_5zy45g"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Guest campaign launched: 30-Day Win Back",
+      "category": "guest_intelligence",
+      "createdAt": "2026-08-02T03:35:28.586Z",
+      "id": "audit_1785641728586_uvaniv"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Guest campaign launched: VIP Friday Preview",
+      "category": "guest_intelligence",
+      "createdAt": "2026-08-02T03:35:33.631Z",
+      "id": "audit_1785641733631_uyioyj"
     }
   ],
   "reservations": [
@@ -1526,9 +1558,11 @@
       "segment": "at_risk",
       "channel": "sms",
       "offer": "Complimentary appetizer",
-      "status": "draft",
+      "status": "active",
       "estimatedGuests": 38,
-      "estimatedRevenue": 2850
+      "estimatedRevenue": 2850,
+      "launchedAt": "2026-08-02T03:35:28.574Z",
+      "updatedAt": "2026-08-02T03:35:28.576Z"
     },
     {
       "id": "camp_vip",
@@ -1537,9 +1571,11 @@
       "segment": "vip",
       "channel": "email",
       "offer": "Priority reservation access",
-      "status": "draft",
+      "status": "active",
       "estimatedGuests": 16,
-      "estimatedRevenue": 4320
+      "estimatedRevenue": 4320,
+      "launchedAt": "2026-08-02T03:35:33.619Z",
+      "updatedAt": "2026-08-02T03:35:33.620Z"
     },
     {
       "id": "camp_regular",
@@ -1553,7 +1589,26 @@
       "estimatedRevenue": 4860
     }
   ],
-  "guestEngagements": [],
+  "guestEngagements": [
+    {
+      "id": "ge_1785641728580",
+      "organizationId": "org_chefs",
+      "campaignId": "camp_winback",
+      "type": "campaign_launched",
+      "actor": "Keith Mazza",
+      "createdAt": "2026-08-02T03:35:28.574Z",
+      "detail": "30-Day Win Back launched to 38 guests"
+    },
+    {
+      "id": "ge_1785641733624",
+      "organizationId": "org_chefs",
+      "campaignId": "camp_vip",
+      "type": "campaign_launched",
+      "actor": "Keith Mazza",
+      "createdAt": "2026-08-02T03:35:33.619Z",
+      "detail": "VIP Friday Preview launched to 16 guests"
+    }
+  ],
   "laborPlans": [
     {
       "id": "labor_plan_marina",
@@ -1564,7 +1619,7 @@
       "laborBudget": 4032,
       "targetLaborPercent": 18,
       "status": "draft",
-      "updatedAt": "2026-07-21T14:00:00.000Z"
+      "updatedAt": "2026-08-02T03:29:00.598Z"
     }
   ],
   "laborActions": [
@@ -1597,6 +1652,16 @@
       "note": "",
       "actor": "Keith Mazza",
       "createdAt": "2026-07-29T20:29:15.785Z"
+    },
+    {
+      "id": "labor_1785641346761",
+      "recommendationId": "wf_add_cook",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "decision": "approved",
+      "note": "",
+      "actor": "Keith Mazza",
+      "createdAt": "2026-08-02T03:29:06.761Z"
     }
   ],
   "shiftOffers": [
@@ -1619,6 +1684,16 @@
       "shift": "5:00 PM–9:00 PM",
       "status": "open",
       "createdAt": "2026-07-29T20:29:15.785Z"
+    },
+    {
+      "id": "offer_1785641346763",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "recommendationId": "wf_add_cook",
+      "role": "cook",
+      "shift": "5:00 PM–9:00 PM",
+      "status": "open",
+      "createdAt": "2026-08-02T03:29:06.761Z"
     }
   ],
   "inventoryItems": [

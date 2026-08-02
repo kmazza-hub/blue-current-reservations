@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.0.14.4">
+  <meta name="blue-current-build" content="34.0.14.5">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.0.14.4">
+  <link rel="stylesheet" href="styles.css?v=34.0.14.5">
 </head>
 <body>
 
@@ -3118,6 +3118,86 @@
         </div>
       </section>
 
+      <section class="executive-operational-intelligence" id="executiveOperationalIntelligence" aria-labelledby="executiveOperationalIntelligenceTitle">
+        <div class="executive-operational-intelligence-heading">
+          <div>
+            <small>Executive advisory layer</small>
+            <h4 id="executiveOperationalIntelligenceTitle">Executive Operational Intelligence</h4>
+            <span id="executiveOperationalIntelligenceUpdated">Correlating shifts, decisions, outcomes, incidents, and model-governance signals…</span>
+          </div>
+
+          <div class="executive-operational-intelligence-score" id="executiveOperationalIntelligenceScoreCard" data-tone="stable">
+            <small>Priority score</small>
+            <strong id="executiveOperationalIntelligenceScore">0</strong>
+            <span id="executiveOperationalIntelligenceLabel">Awaiting signals</span>
+          </div>
+        </div>
+
+        <div class="executive-operational-intelligence-kpis">
+          <article><small>Correlated signals</small><strong id="executiveIntelligenceSignalCount">0</strong><span>Cross-module evidence</span></article>
+          <article><small>Recurring issues</small><strong id="executiveIntelligenceRecurringCount">0</strong><span>Repeated operating patterns</span></article>
+          <article><small>Revenue opportunity</small><strong id="executiveIntelligenceRevenueOpportunity">$0</strong><span>Estimated recoverable value</span></article>
+          <article><small>Open priorities</small><strong id="executiveIntelligencePriorityCount">0</strong><span>Executive action queue</span></article>
+          <article><small>Insight confidence</small><strong id="executiveIntelligenceConfidence">0%</strong><span>Evidence strength</span></article>
+        </div>
+
+        <div class="executive-operational-intelligence-layout">
+          <div class="executive-root-cause-panel">
+            <div class="executive-operational-intelligence-section-heading">
+              <div><small>Root-cause analysis</small><strong>Why performance changed</strong></div>
+              <span id="executiveRootCauseCount">0 causes</span>
+            </div>
+            <div id="executiveRootCauseList" class="executive-root-cause-list"></div>
+          </div>
+
+          <aside class="executive-morning-brief">
+            <small>Tomorrow morning briefing</small>
+            <strong id="executiveOperationalMorningBriefTitle">No briefing available</strong>
+            <p id="executiveOperationalMorningBriefDetail">Operational evidence will appear here as saved shifts and measured outcomes accumulate.</p>
+
+            <dl class="executive-morning-brief-meta">
+              <div><dt>Top risk</dt><dd id="executiveMorningTopRisk">—</dd></div>
+              <div><dt>Top opportunity</dt><dd id="executiveMorningTopOpportunity">—</dd></div>
+              <div><dt>Owner</dt><dd id="executiveMorningOwner">General Manager</dd></div>
+              <div><dt>Review window</dt><dd id="executiveMorningReviewWindow">Next shift</dd></div>
+            </dl>
+
+            <div class="executive-morning-brief-actions">
+              <button type="button" id="executiveMorningCopyBrief">Copy morning brief</button>
+              <button type="button" class="executive-operational-intelligence-secondary" id="executiveMorningRefresh">Refresh intelligence</button>
+            </div>
+
+            <span id="executiveMorningBriefStatus" role="status"></span>
+          </aside>
+        </div>
+
+        <div class="executive-operational-intelligence-lower">
+          <div class="executive-recurring-patterns">
+            <div class="executive-operational-intelligence-section-heading">
+              <div><small>Recurring issue detection</small><strong>Patterns repeating across shifts</strong></div>
+              <span id="executiveRecurringPatternCount">0 patterns</span>
+            </div>
+            <div id="executiveRecurringPatternList" class="executive-recurring-pattern-list"></div>
+          </div>
+
+          <div class="executive-opportunity-ranking">
+            <div class="executive-operational-intelligence-section-heading">
+              <div><small>Opportunity ranking</small><strong>Highest-value management actions</strong></div>
+              <span id="executiveOpportunityCount">0 opportunities</span>
+            </div>
+            <div id="executiveOpportunityList" class="executive-opportunity-list"></div>
+          </div>
+        </div>
+
+        <div class="executive-action-queue">
+          <div class="executive-operational-intelligence-section-heading">
+            <div><small>Executive action queue</small><strong>Prioritized recommendations ready for ownership</strong></div>
+            <button type="button" id="executiveClearCompletedActions">Clear completed</button>
+          </div>
+          <div id="executiveActionQueueList" class="executive-action-queue-list"></div>
+        </div>
+      </section>
+
       <div class="executive-timeline-layout">
         <div class="executive-timeline-list-wrap">
           <div class="executive-timeline-section-heading">
@@ -4640,7 +4720,8 @@
   <script src="js/modules/executiveSessionPlayback.js?v=34.0.14.2"></script>
   <script src="js/modules/executiveReplayAnalytics.js?v=34.0.14.3"></script>
   <script src="js/modules/executiveShiftComparison.js?v=34.0.14.4"></script>
-  <script src="js/modules/executivePerformanceTrends.js?v=34.0.14.4"></script>
+  <script src="js/modules/executivePerformanceTrends.js?v=34.0.14.5"></script>
+  <script src="js/modules/executiveOperationalIntelligence.js?v=34.0.14.5"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
