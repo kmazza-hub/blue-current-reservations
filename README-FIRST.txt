@@ -1,17 +1,19 @@
-BLUECURRENTCO.COM V2.1 — INFORMATION ARCHITECTURE & NAVIGATION
+BLUECURRENTCO.COM V2.2 — HERO EXPERIENCE & EXECUTIVE PRODUCT SHOWCASE
 
-STANDALONE WEBSITE BUILD
+REPLACE
+- index.html
+- styles.css
+- js/site.js
 
-IMPLEMENTED
-- Enterprise SaaS site architecture
-- Home, Platform, AI Concierge, Operations, Executive, Enterprise, Trust, and About pages
-- Consistent desktop/mobile navigation
-- Outcome-focused messaging reflecting current product capabilities
-- Preserved demo scheduler and email links
-- Responsive visual system and accessible navigation
+ADDS
+- Animated executive homepage hero
+- Live portfolio clock and counters
+- Leadership attention carousel
+- Portfolio health visualization
+- Live operations metrics
+- Rotating system event stream
+- Premium metrics and trust sections
+- Responsive mobile layouts
 
-DEPLOYMENT
-Upload the complete contents of this folder to the bluecurrentco.com site root.
-
-IMPORTANT
-privacy.html and terms.html contain explicit placeholders. Replace them with approved legal copy before production launch.
+TEST
+Open index.html, test Next Signal, wait for event rotation, and resize across desktop/tablet/mobile.
