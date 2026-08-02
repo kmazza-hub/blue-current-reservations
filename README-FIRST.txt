@@ -1,4 +1,4 @@
-BLUE CURRENT V34.1.8 — AUTONOMY INCIDENT RESPONSE CENTER
+BLUE CURRENT V34.1.9 — AUTONOMY RECOVERY & REQUALIFICATION
 
 REPLACE
 - client/index.html
@@ -6,27 +6,29 @@ REPLACE
 - client/js/modules/aiBrainAutonomyGuardrails.js
 
 ADD
-- client/js/modules/autonomyIncidentResponseCenter.js
+- client/js/modules/autonomyRecoveryRequalification.js
 
 ADDS
-- Automatic incident detection from rollout failures, underperformance, pauses, and emergency stops
-- Medium, High, and Critical severity levels
-- Incident ownership and response queue
-- One-click containment that pauses the affected rollout
-- Incident resolution notes and status tracking
-- Domain-specific response playbooks
-- Protected-value estimation
-- Postmortem generation and copy
-- Persistent incident audit history
-- Guardrail blocking for domains with active critical incidents
+- Recovery-plan import from resolved autonomy incidents
+- Configurable successful-outcome and value-delivery requirements
+- Recovery ownership and corrective-action documentation
+- Five requalification gates
+- Ready, active, failed, and reinstated recovery states
+- Repeat-failure detection
+- Safe reinstatement at controlled pilot exposure
+- Preventive learning recommendations
+- One-click learning application to Autonomy Guardrails
+- Persistent recovery audit trail
+- Guardrail blocking while a domain is in active or failed requalification
 
 TEST
 1. Replace/add the four files.
 2. Run npm run check.
 3. Run npm start.
-4. Create a rollout at 50% or higher exposure.
-5. Record two underperforming outcomes for the same domain.
-6. Click Detect Incidents.
-7. Select the critical incident and contain it.
-8. Confirm the rollout is paused and matching bounded-autonomy actions are blocked.
-9. Add a resolution note, resolve the incident, and copy the postmortem.
+4. Resolve an incident in Autonomy Incident Response Center.
+5. Import the resolved incident into Recovery & Requalification.
+6. Add the recovery owner, required outcomes, value threshold, and corrective note.
+7. Record successful autonomous outcomes for the affected domain.
+8. Evaluate the requalification gates.
+9. Reinstate autonomy and confirm the rollout returns at controlled pilot exposure.
+10. Apply preventive learning and confirm Autonomy Guardrails updates.

@@ -7,6 +7,7 @@
   const GOVERNOR_KEY = "blueCurrent.autonomyPerformanceGovernor.v34.1.5";
   const ROLLOUT_KEY = "blueCurrent.autonomyRolloutManager.v34.1.6";
   const INCIDENT_KEY = "blueCurrent.autonomyIncidentResponseCenter.v34.1.8";
+  const RECOVERY_KEY = "blueCurrent.autonomyRecoveryRequalification.v34.1.9";
   const byId = id => document.getElementById(id);
 
   const DEFAULT_POLICY = {
@@ -78,7 +79,20 @@
     const governor = read(GOVERNOR_KEY);
     const rolloutState = read(ROLLOUT_KEY);
     const incidentState = read(INCIDENT_KEY);
+    const recoveryState = read(RECOVERY_KEY);
     const reasons = [];
+
+    const recoveryPlans = Array.isArray(recoveryState.plans)
+      ? recoveryState.plans
+      : [];
+    const recoveryText = `${recommendation.title || ""} ${recommendation.detail || ""}`.toLowerCase();
+    const activeRecovery = recoveryPlans.find(item =>
+      ["active","failed"].includes(item.status) &&
+      recoveryText.includes(String(item.domain || "").toLowerCase())
+    );
+    if (activeRecovery) {
+      return {result:"blocked",reason:`${activeRecovery.domain} autonomy is blocked during requalification.`};
+    }
 
     const activeIncidents = Array.isArray(incidentState.incidents)
       ? incidentState.incidents.filter(item =>
@@ -448,7 +462,7 @@
       },0);
     });
     window.addEventListener("storage",event => {
-      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY,INCIDENT_KEY].includes(event.key)) {
+      if ([POLICY_KEY,ORCHESTRATOR_KEY,ACCOUNTABILITY_KEY,GOVERNOR_KEY,ROLLOUT_KEY,INCIDENT_KEY,RECOVERY_KEY].includes(event.key)) {
         load();
         reviewAll();
         render();

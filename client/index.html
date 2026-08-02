@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.8">
+  <meta name="blue-current-build" content="34.1.9">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.8">
+  <link rel="stylesheet" href="styles.css?v=34.1.9">
 </head>
 <body>
 
@@ -4418,6 +4418,107 @@
           </div>
         </section>
 
+        <section class="autonomy-recovery-requalification" id="autonomyRecoveryRequalification" aria-labelledby="autonomyRecoveryRequalificationTitle">
+          <div class="autonomy-recovery-heading">
+            <div>
+              <small>Post-incident autonomy recovery</small>
+              <strong id="autonomyRecoveryRequalificationTitle">Autonomy Recovery &amp; Requalification</strong>
+              <span id="autonomyRecoveryUpdated">Turning resolved incidents into controlled recovery plans, proof requirements, and safe autonomy reinstatement…</span>
+            </div>
+
+            <div class="autonomy-recovery-score" id="autonomyRecoveryScoreCard" data-tone="stable">
+              <small>Recovery readiness</small>
+              <strong id="autonomyRecoveryScore">0</strong>
+              <span id="autonomyRecoveryLabel">Awaiting resolved incidents</span>
+            </div>
+          </div>
+
+          <div class="autonomy-recovery-kpis">
+            <article><small>Recovery plans</small><strong id="autonomyRecoveryPlanCount">0</strong><span>Post-incident programs</span></article>
+            <article><small>In requalification</small><strong id="autonomyRecoveryActiveCount">0</strong><span>Collecting proof</span></article>
+            <article><small>Ready to restore</small><strong id="autonomyRecoveryReadyCount">0</strong><span>Passed recovery gates</span></article>
+            <article><small>Reinstated</small><strong id="autonomyRecoveryReinstatedCount">0</strong><span>Autonomy safely restored</span></article>
+            <article><small>Repeat failures</small><strong id="autonomyRecoveryRepeatFailureCount">0</strong><span>Escalation required</span></article>
+          </div>
+
+          <div class="autonomy-recovery-layout">
+            <div class="autonomy-recovery-plan-panel">
+              <div class="autonomy-recovery-section-heading">
+                <div><small>Recovery plan builder</small><strong>Create requalification requirements from a resolved incident</strong></div>
+                <button type="button" id="autonomyRecoveryImportIncidents">Import resolved incidents</button>
+              </div>
+              <div id="autonomyRecoveryPlanList" class="autonomy-recovery-plan-list"></div>
+            </div>
+
+            <aside class="autonomy-recovery-inspector">
+              <small>Selected recovery plan</small>
+              <strong id="autonomyRecoverySelectedTitle">Choose a recovery plan</strong>
+              <p id="autonomyRecoverySelectedDetail">Select a plan to define proof requirements, track successful outcomes, and safely restore autonomy.</p>
+
+              <label>
+                Recovery owner
+                <select id="autonomyRecoveryOwner" disabled>
+                  <option>Operations Director</option>
+                  <option>Regional Manager</option>
+                  <option>General Manager</option>
+                  <option>Kitchen Manager</option>
+                  <option>Workforce Manager</option>
+                </select>
+              </label>
+
+              <label>
+                Required successful outcomes
+                <input id="autonomyRecoveryRequiredOutcomes" type="number" min="1" max="10" step="1" value="2" disabled>
+              </label>
+
+              <label>
+                Minimum value delivery
+                <input id="autonomyRecoveryMinValue" type="number" min="0" max="150" step="1" value="90" disabled>
+              </label>
+
+              <label>
+                Recovery note
+                <textarea id="autonomyRecoveryNote" rows="3" placeholder="Document corrective actions and operating changes." disabled></textarea>
+              </label>
+
+              <div class="autonomy-recovery-actions">
+                <button type="button" id="autonomyRecoverySave" disabled>Save recovery plan</button>
+                <button type="button" class="autonomy-recovery-secondary" id="autonomyRecoveryEvaluate" disabled>Evaluate requalification</button>
+                <button type="button" class="autonomy-recovery-secondary" id="autonomyRecoveryReinstate" disabled>Reinstate autonomy</button>
+              </div>
+
+              <span id="autonomyRecoveryStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="autonomy-recovery-lower">
+            <div class="autonomy-recovery-gates-panel">
+              <div class="autonomy-recovery-section-heading">
+                <div><small>Requalification gates</small><strong>Evidence required before autonomy can resume</strong></div>
+                <span id="autonomyRecoveryGateCount">0 gates</span>
+              </div>
+              <div id="autonomyRecoveryGateList" class="autonomy-recovery-gate-list"></div>
+            </div>
+
+            <div class="autonomy-recovery-learning-panel">
+              <div class="autonomy-recovery-section-heading">
+                <div><small>Preventive learning</small><strong>How the incident changes future autonomy policy</strong></div>
+                <button type="button" id="autonomyRecoveryApplyLearning" disabled>Apply preventive learning</button>
+              </div>
+              <strong id="autonomyRecoveryLearningTitle">No recovery plan selected</strong>
+              <p id="autonomyRecoveryLearningDetail">Select a recovery plan to generate a preventive policy recommendation.</p>
+            </div>
+          </div>
+
+          <div class="autonomy-recovery-history">
+            <div class="autonomy-recovery-section-heading">
+              <div><small>Recovery audit</small><strong>Plan creation, gate evaluation, learning, and reinstatement history</strong></div>
+              <button type="button" id="autonomyRecoveryClearHistory">Clear history</button>
+            </div>
+            <div id="autonomyRecoveryHistoryList" class="autonomy-recovery-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -5973,7 +6074,8 @@
   <script src="js/modules/autonomyPerformanceGovernor.js?v=34.1.6"></script>
   <script src="js/modules/autonomyRolloutManager.js?v=34.1.7"></script>
   <script src="js/modules/autonomyDeploymentObservatory.js?v=34.1.8"></script>
-  <script src="js/modules/autonomyIncidentResponseCenter.js?v=34.1.8"></script>
+  <script src="js/modules/autonomyIncidentResponseCenter.js?v=34.1.9"></script>
+  <script src="js/modules/autonomyRecoveryRequalification.js?v=34.1.9"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
