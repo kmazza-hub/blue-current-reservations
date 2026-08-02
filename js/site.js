@@ -381,3 +381,23 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   };
   buttons.forEach((button,index) => button.addEventListener('click',() => render(index)));
 })();
+
+// Website SaaS Upgrade 06 — enterprise readiness explorer
+(() => {
+  const buttons = Array.from(document.querySelectorAll('[data-readiness-view]'));
+  if (!buttons.length) return;
+  const views = [
+    { kicker:'Connect the demand layer', title:'Preserve the systems guests and teams already know.', detail:'Blue Current can sit above phone, reservation, CRM, and loyalty workflows while creating one structured guest-intelligence layer for operators.', inputs:['Voice and telephony','Reservation and waitlist systems','CRM, loyalty, and guest profiles'], outputs:['Intent capture and routing','Conversation context','Manager escalation controls'], source:'Voice · Reservations · CRM', core:'Guest intelligence layer', result:'Structured demand · Escalations · Evidence' },
+    { kicker:'Coordinate the operating layer', title:'Unify service signals without rebuilding the restaurant stack.', detail:'Blue Current can connect floor, kitchen, staffing, and reservation signals into one manager view while leaving transactional systems in place.', inputs:['POS and kitchen systems','Scheduling and timekeeping','Floor and reservation workflows'], outputs:['Live service-pressure model','Recommended interventions','Shared ownership and handoffs'], source:'POS · Kitchen · Workforce', core:'Operations coordination layer', result:'Pressure signals · Actions · Accountability' },
+    { kicker:'Govern the enterprise layer', title:'Add control, evidence, and portfolio visibility above every location.', detail:'Blue Current gives enterprise teams scoped access, policy boundaries, audit history, and executive reporting across locations and brands.', inputs:['Identity and SSO','Business intelligence and data exports','Compliance and incident workflows'], outputs:['Portfolio health and exception views','Approval and policy controls','Traceable decisions and outcomes'], source:'Identity · BI · Compliance', core:'Enterprise control layer', result:'Portfolio insight · Governance · Audit evidence' }
+  ];
+  const byId = id => document.getElementById(id);
+  const render = index => {
+    const view = views[index];
+    buttons.forEach((button,i) => { button.classList.toggle('is-active',i===index); button.setAttribute('aria-selected',String(i===index)); });
+    byId('readinessKicker').textContent=view.kicker; byId('readinessTitle').textContent=view.title; byId('readinessDetail').textContent=view.detail;
+    byId('readinessInputs').innerHTML=view.inputs.map(item=>`<li>${item}</li>`).join(''); byId('readinessOutputs').innerHTML=view.outputs.map(item=>`<li>${item}</li>`).join('');
+    byId('readinessSource').innerHTML=`<span>Existing stack</span><b>${view.source}</b>`; byId('readinessCoreLabel').textContent=view.core; byId('readinessResult').innerHTML=`<span>Operating output</span><b>${view.result}</b>`;
+  };
+  buttons.forEach((button,index)=>button.addEventListener('click',()=>render(index)));
+})();
