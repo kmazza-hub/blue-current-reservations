@@ -313,3 +313,27 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   }
   buttons.forEach((button,index)=>button.addEventListener("click",()=>render(index)));
 })();
+
+// Website SaaS Upgrade 04 — illustrative ROI estimator
+(() => {
+  const calls = document.getElementById('roiCalls');
+  const conversion = document.getElementById('roiConversion');
+  const ticket = document.getElementById('roiTicket');
+  if (!calls || !conversion || !ticket) return;
+  const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const render = () => {
+    const weeklyCalls = Number(calls.value);
+    const rate = Number(conversion.value) / 100;
+    const averageTicket = Number(ticket.value);
+    const recovered = Math.round(weeklyCalls * rate);
+    const annual = recovered * averageTicket * 52;
+    document.getElementById('roiCallsValue').textContent = weeklyCalls;
+    document.getElementById('roiConversionValue').textContent = `${conversion.value}%`;
+    document.getElementById('roiTicketValue').textContent = money.format(averageTicket);
+    document.getElementById('roiRecovered').textContent = recovered;
+    document.getElementById('roiMonthly').textContent = money.format(annual / 12);
+    document.getElementById('roiAnnualValue').textContent = money.format(annual);
+  };
+  [calls, conversion, ticket].forEach((input) => input.addEventListener('input', render));
+  render();
+})();
