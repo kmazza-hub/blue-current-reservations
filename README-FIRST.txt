@@ -1,33 +1,32 @@
-BLUE CURRENT V34.1.11 — CERTIFICATION RENEWAL & COMPLIANCE MONITOR
+BLUE CURRENT V34.1.12 — COMPLIANCE EVIDENCE VAULT
 
 REPLACE
 - client/index.html
 - client/styles.css
-- client/js/modules/aiBrainAutonomyGuardrails.js
 
 ADD
-- client/js/modules/certificationRenewalMonitor.js
+- client/js/modules/complianceEvidenceVault.js
 
 ADDS
-- Continuous certificate-validity monitoring
-- Renewal-due and expired-certificate detection
-- Evidence and control drift analysis
-- Eight continuous-compliance renewal gates
-- Full 90-day renewal approval
-- Conditional 30-day renewal
-- Certificate suspension
-- Compliance-coverage and posture scoring
-- Copyable renewal and compliance brief
-- Persistent renewal audit trail
-- Guardrail enforcement for expired or suspended certifications
+- Unified evidence index across certificates, renewals, outcomes, incidents, recovery, rollouts, and policies
+- Domain and evidence-type filtering
+- Deterministic record-integrity hashes
+- One-click evidence verification
+- Evidence-gap detection by operating domain
+- Audit-readiness scoring
+- Audit package generation
+- Copyable audit package
+- Downloadable JSON evidence package
+- Persistent vault audit history
+- Direct navigation to source modules
 
 TEST
-1. Replace/add the four files.
+1. Replace/add the three files.
 2. Run npm run check.
 3. Run npm start.
-4. Issue a certificate in Autonomy Assurance & Certification Center.
-5. Open Certification Renewal & Compliance Monitor.
-6. Review days remaining, evidence drift, control drift, and renewal gates.
-7. Approve a full or conditional renewal.
-8. Suspend a certificate and confirm matching bounded-autonomy actions become blocked.
-9. Test Copy Compliance Brief.
+4. Create certificates, renewals, outcomes, incidents, recovery plans, and rollout records.
+5. Open Compliance Evidence Vault.
+6. Test domain and evidence-type filters.
+7. Select records and verify integrity.
+8. Review evidence gaps and audit-readiness scoring.
+9. Generate, copy, and download the audit package.

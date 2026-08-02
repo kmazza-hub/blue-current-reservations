@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.1.11">
+  <meta name="blue-current-build" content="34.1.12">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=34.1.11">
+  <link rel="stylesheet" href="styles.css?v=34.1.12">
 </head>
 <body>
 
@@ -4687,6 +4687,115 @@
           </div>
         </section>
 
+        <section class="compliance-evidence-vault" id="complianceEvidenceVault" aria-labelledby="complianceEvidenceVaultTitle">
+          <div class="compliance-evidence-vault-heading">
+            <div>
+              <small>Autonomy compliance records</small>
+              <strong id="complianceEvidenceVaultTitle">Compliance Evidence Vault</strong>
+              <span id="complianceEvidenceVaultUpdated">Consolidating certificates, renewals, outcomes, incidents, recoveries, rollouts, and policy decisions into one audit-ready evidence record…</span>
+            </div>
+
+            <div class="compliance-evidence-vault-score" id="complianceEvidenceVaultScoreCard" data-tone="stable">
+              <small>Evidence integrity</small>
+              <strong id="complianceEvidenceVaultScore">0</strong>
+              <span id="complianceEvidenceVaultLabel">Awaiting evidence</span>
+            </div>
+          </div>
+
+          <div class="compliance-evidence-vault-kpis">
+            <article><small>Evidence records</small><strong id="complianceEvidenceVaultRecordCount">0</strong><span>Indexed governance events</span></article>
+            <article><small>Domains covered</small><strong id="complianceEvidenceVaultDomainCount">0</strong><span>Operating areas represented</span></article>
+            <article><small>Integrity verified</small><strong id="complianceEvidenceVaultVerifiedCount">0</strong><span>Hash-validated records</span></article>
+            <article><small>Missing evidence</small><strong id="complianceEvidenceVaultMissingCount">0</strong><span>Required records absent</span></article>
+            <article><small>Audit readiness</small><strong id="complianceEvidenceVaultReadiness">0%</strong><span>Export completeness</span></article>
+          </div>
+
+          <div class="compliance-evidence-vault-layout">
+            <div class="compliance-evidence-vault-index-panel">
+              <div class="compliance-evidence-vault-section-heading">
+                <div><small>Evidence index</small><strong>Unified autonomy governance record</strong></div>
+                <div class="compliance-evidence-vault-filter">
+                  <label>
+                    Domain
+                    <select id="complianceEvidenceVaultDomainFilter">
+                      <option value="all">All domains</option>
+                      <option value="Kitchen">Kitchen</option>
+                      <option value="Staffing">Staffing</option>
+                      <option value="Floor">Floor</option>
+                      <option value="Demand">Demand</option>
+                      <option value="Executive recovery">Executive recovery</option>
+                    </select>
+                  </label>
+                  <label>
+                    Type
+                    <select id="complianceEvidenceVaultTypeFilter">
+                      <option value="all">All evidence</option>
+                      <option value="certificate">Certificates</option>
+                      <option value="renewal">Renewals</option>
+                      <option value="outcome">Outcomes</option>
+                      <option value="incident">Incidents</option>
+                      <option value="recovery">Recovery</option>
+                      <option value="rollout">Rollouts</option>
+                      <option value="policy">Policies</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div id="complianceEvidenceVaultRecordList" class="compliance-evidence-vault-record-list"></div>
+            </div>
+
+            <aside class="compliance-evidence-vault-inspector">
+              <small>Selected evidence record</small>
+              <strong id="complianceEvidenceVaultSelectedTitle">Choose a record</strong>
+              <p id="complianceEvidenceVaultSelectedDetail">Select an evidence record to review its source, domain, timestamp, integrity hash, and supporting metadata.</p>
+
+              <dl class="compliance-evidence-vault-meta">
+                <div><dt>Evidence type</dt><dd id="complianceEvidenceVaultSelectedType">—</dd></div>
+                <div><dt>Domain</dt><dd id="complianceEvidenceVaultSelectedDomain">—</dd></div>
+                <div><dt>Recorded</dt><dd id="complianceEvidenceVaultSelectedTime">—</dd></div>
+                <div><dt>Integrity</dt><dd id="complianceEvidenceVaultSelectedIntegrity">—</dd></div>
+              </dl>
+
+              <div class="compliance-evidence-vault-actions">
+                <button type="button" id="complianceEvidenceVaultVerify" disabled>Verify record integrity</button>
+                <button type="button" class="compliance-evidence-vault-secondary" id="complianceEvidenceVaultOpenSource" disabled>Open source module</button>
+              </div>
+
+              <span id="complianceEvidenceVaultStatus" role="status"></span>
+            </aside>
+          </div>
+
+          <div class="compliance-evidence-vault-lower">
+            <div class="compliance-evidence-vault-gap-panel">
+              <div class="compliance-evidence-vault-section-heading">
+                <div><small>Evidence gaps</small><strong>Missing records blocking audit readiness</strong></div>
+                <span id="complianceEvidenceVaultGapCount">0 gaps</span>
+              </div>
+              <div id="complianceEvidenceVaultGapList" class="compliance-evidence-vault-gap-list"></div>
+            </div>
+
+            <div class="compliance-evidence-vault-export-panel">
+              <small>Audit package</small>
+              <strong id="complianceEvidenceVaultExportTitle">Audit package not generated</strong>
+              <p id="complianceEvidenceVaultExportDetail">Generate a complete governance package with indexed evidence, integrity hashes, gaps, and certification status.</p>
+
+              <div class="compliance-evidence-vault-export-actions">
+                <button type="button" id="complianceEvidenceVaultGenerate">Generate audit package</button>
+                <button type="button" class="compliance-evidence-vault-secondary" id="complianceEvidenceVaultCopy" disabled>Copy audit package</button>
+                <button type="button" class="compliance-evidence-vault-secondary" id="complianceEvidenceVaultDownload" disabled>Download JSON</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="compliance-evidence-vault-history">
+            <div class="compliance-evidence-vault-section-heading">
+              <div><small>Vault audit</small><strong>Indexing, verification, export, and evidence-gap history</strong></div>
+              <button type="button" id="complianceEvidenceVaultClearHistory">Clear history</button>
+            </div>
+            <div id="complianceEvidenceVaultHistoryList" class="compliance-evidence-vault-history-list"></div>
+          </div>
+        </section>
+
         <div class="restaurant-ai-brain-v341-lower">
           <div>
             <div class="restaurant-ai-brain-v341-section-heading">
@@ -6245,7 +6354,8 @@
   <script src="js/modules/autonomyIncidentResponseCenter.js?v=34.1.9"></script>
   <script src="js/modules/autonomyRecoveryRequalification.js?v=34.1.10"></script>
   <script src="js/modules/autonomyAssuranceCertification.js?v=34.1.11"></script>
-  <script src="js/modules/certificationRenewalMonitor.js?v=34.1.11"></script>
+  <script src="js/modules/certificationRenewalMonitor.js?v=34.1.12"></script>
+  <script src="js/modules/complianceEvidenceVault.js?v=34.1.12"></script>
   <script src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
   <script src="js/modules/guestJourney.js?v=33.0.3"></script>
   <script src="js/modules/timeMachine.js?v=33.0.3"></script>
