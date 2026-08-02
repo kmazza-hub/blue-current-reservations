@@ -3639,6 +3639,55 @@
           </aside>
         </div>
 
+        <section class="ai-orchestration-center" id="aiOrchestrationCenter" aria-labelledby="aiOrchestrationCenterTitle">
+          <div class="ai-orchestration-heading">
+            <div>
+              <small>V34.6.1 · Intelligence execution layer</small>
+              <strong id="aiOrchestrationCenterTitle">AI Orchestration Center</strong>
+              <span id="aiOrchestrationUpdated">Awaiting operating signals</span>
+            </div>
+            <button type="button" id="aiOrchestrationRefresh">Re-evaluate operation</button>
+          </div>
+
+          <div class="ai-orchestration-kpis">
+            <article><small>Pending recommendations</small><strong id="aiOrchestrationQueueCount">0</strong></article>
+            <article><small>Active workflows</small><strong id="aiOrchestrationWorkflowCount">0</strong></article>
+            <article><small>Approval gates</small><strong id="aiOrchestrationApprovalCount">0</strong></article>
+            <article><small>Operating mode</small><strong>Human governed</strong></article>
+          </div>
+
+          <div class="ai-orchestration-layout">
+            <div>
+              <div class="ai-orchestration-section-title"><small>Live recommendation queue</small><strong>What should happen next</strong></div>
+              <div class="ai-orchestration-queue" id="aiOrchestrationQueue" aria-live="polite"></div>
+            </div>
+
+            <aside class="ai-orchestration-inspector">
+              <small>Selected recommendation</small>
+              <strong id="aiOrchestrationSelectedTitle">Choose a recommendation</strong>
+              <p id="aiOrchestrationSelectedAction">Select an item to review its reasoning and controls.</p>
+              <ul id="aiOrchestrationSignals"></ul>
+              <dl>
+                <div><dt>Owner</dt><dd id="aiOrchestrationOwner">—</dd></div>
+                <div><dt>Confidence</dt><dd id="aiOrchestrationConfidence">—</dd></div>
+                <div><dt>Expected impact</dt><dd id="aiOrchestrationImpact">—</dd></div>
+                <div><dt>Approval</dt><dd id="aiOrchestrationApproval">—</dd></div>
+              </dl>
+              <textarea id="aiOrchestrationNote" rows="2" placeholder="Optional manager note"></textarea>
+              <div class="ai-orchestration-actions">
+                <button type="button" id="aiOrchestrationApprove">Approve & start</button>
+                <button type="button" id="aiOrchestrationSnooze">Snooze</button>
+                <button type="button" id="aiOrchestrationDismiss">Dismiss</button>
+              </div>
+            </aside>
+          </div>
+
+          <div class="ai-orchestration-lower">
+            <section><div class="ai-orchestration-section-title"><small>Governed execution</small><strong>Active workflows</strong></div><div id="aiOrchestrationWorkflows" class="ai-orchestration-workflows"></div></section>
+            <section><div class="ai-orchestration-section-title"><small>Evidence trail</small><strong>Recent decisions</strong></div><div id="aiOrchestrationHistory" class="ai-orchestration-history"></div></section>
+          </div>
+        </section>
+
         <section class="ai-brain-decision-orchestrator" id="aiBrainDecisionOrchestrator" aria-labelledby="aiBrainDecisionOrchestratorTitle">
           <div class="ai-brain-decision-orchestrator-heading">
             <div>
@@ -6584,6 +6633,9 @@
   <script src="js/modules/serviceCoordination.js?v=33.0.3"></script>
   <script src="js/modules/aiRestaurantBrain.js?v=33.0.3"></script>
   <script src="js/modules/timeClock.js?v=33.0.3"></script>
+  <script src="js/modules/recommendationEngine.js?v=34.6.1"></script>
+  <script src="js/modules/orchestrationEngine.js?v=34.6.1"></script>
+  <script src="js/modules/aiOrchestrationCenter.js?v=34.6.1"></script>
   <script src="js/app-v15.1.3.js?v=33.0.3"></script>
 </body>
 </html>

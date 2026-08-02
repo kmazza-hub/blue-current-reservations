@@ -1161,6 +1161,14 @@ const aiRestaurantBrainModule = startupRegistry.register(
   ["eventBus","appState","cloudFoundation","authOrganizations","serviceCoordination","kitchenCommandCenter"]
 );
 
+const aiOrchestrationCenterModule = startupRegistry.register(
+  "aiOrchestrationCenter",
+  document.getElementById("aiOrchestrationCenter")
+    ? window.createBlueCurrentAiOrchestrationCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState"]
+);
+
 const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
 
 // V32.3 retires the legacy Autonomous Operations renderer. Its DOM contract
@@ -1192,7 +1200,8 @@ window.blueCurrent = {
     predictiveOperations: predictiveOperationsModule,
     blueCurrentLive: blueCurrentLiveModule,
     intelligenceNetwork: intelligenceNetworkModule,
-    autonomousOperations: operationsDirectorModule
+    autonomousOperations: operationsDirectorModule,
+    aiOrchestrationCenter: aiOrchestrationCenterModule
   }
 };
 window.appState = appState;

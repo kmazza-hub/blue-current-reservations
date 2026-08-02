@@ -29,7 +29,11 @@ class AppState {
       intelligenceNetwork: { status: "online", learnedOutcomes: 42, confidence: 93 },
 
       executiveBrief: "Waiting for dinner service…",
-      lastOperationalEvent: null
+      lastOperationalEvent: null,
+      orchestrationQueue: [],
+      orchestrationHistory: [],
+      activeOrchestrationWorkflows: [],
+      orchestrationUpdatedAt: null
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });
