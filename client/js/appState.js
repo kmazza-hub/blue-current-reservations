@@ -33,6 +33,9 @@ class AppState {
       orchestrationQueue: [],
       orchestrationHistory: [],
       activeOrchestrationWorkflows: [],
+      orchestrationTimeline: [],
+      operationalContext: null,
+      operationalContextHistory: [],
       orchestrationUpdatedAt: null
     };
 

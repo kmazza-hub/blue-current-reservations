@@ -2,22 +2,25 @@
   "use strict";
 
   class BlueCurrentRecommendationEngine {
-    constructor({ eventBus, appState }) {
+    constructor({ eventBus, appState, contextEngine }) {
       if (!eventBus || !appState) throw new Error("RecommendationEngine requires EventBus and AppState.");
       this.eventBus = eventBus;
       this.appState = appState;
+      this.contextEngine = contextEngine || null;
       this.sequence = 0;
     }
 
     evaluate(context = {}) {
       const state = this.appState.getState();
       const now = new Date().toISOString();
+      const operationalContext = this.contextEngine ? this.contextEngine.capture(context) : null;
       const recommendations = [];
       const occupancy = Number(context.occupancyPercent ?? state.occupancyPercent ?? 0);
       const kitchenLoad = Number(context.kitchenLoad ?? state.kitchenLoad ?? 72);
       const waitlist = Number(context.waitlistCount ?? state.waitlistCount ?? 0);
       const atRiskTables = Number(context.atRiskTables ?? state.atRiskTables ?? 0);
       const laborPercent = Number(context.laborPercent ?? state.laborPercent ?? 18);
+      const explain = () => this.contextEngine ? this.contextEngine.explain(operationalContext) : [];
 
       if (kitchenLoad >= 86 || atRiskTables >= 3) {
         recommendations.push(this.#create({
@@ -30,6 +33,9 @@
           expectedImpact: "Reduce ticket congestion and protect quoted times",
           expiresInMinutes: 15,
           approvalRequired: true,
+          reasoning: explain(),
+          priorityScore: this.contextEngine ? this.contextEngine.score({ impact: 92, urgency: 94, confidence: Math.min(97, 76 + Math.round((kitchenLoad - 80) * 1.5) + atRiskTables), affectedGuests: atRiskTables * 4, expiresInMinutes: 15 }) : 90,
+          context: operationalContext,
           signals: [
             { label: "Kitchen utilization", value: `${kitchenLoad}%` },
             { label: "At-risk tables", value: String(atRiskTables) },
@@ -50,6 +56,9 @@
           expectedImpact: `Protect up to ${Math.min(waitlist, 4)} reservations from abandonment`,
           expiresInMinutes: 20,
           approvalRequired: false,
+          reasoning: explain(),
+          priorityScore: this.contextEngine ? this.contextEngine.score({ impact: 78, urgency: 76, confidence: Math.min(95, 78 + waitlist), affectedGuests: waitlist * 2, expiresInMinutes: 20 }) : 78,
+          context: operationalContext,
           signals: [
             { label: "Waitlist parties", value: String(waitlist) },
             { label: "Occupancy", value: `${occupancy}%` },
@@ -70,6 +79,9 @@
           expectedImpact: "Improve labor efficiency without reducing guest coverage",
           expiresInMinutes: 45,
           approvalRequired: true,
+          reasoning: explain(),
+          priorityScore: this.contextEngine ? this.contextEngine.score({ impact: 68, urgency: 48, confidence: 84, affectedGuests: 2, expiresInMinutes: 45 }) : 62,
+          context: operationalContext,
           signals: [
             { label: "Projected labor", value: `${laborPercent.toFixed(1)}%` },
             { label: "Occupancy", value: `${occupancy}%` },
@@ -90,6 +102,9 @@
           expectedImpact: "Preserve stable service execution",
           expiresInMinutes: 30,
           approvalRequired: false,
+          reasoning: explain(),
+          priorityScore: this.contextEngine ? this.contextEngine.score({ impact: 35, urgency: 20, confidence: 91, affectedGuests: 0, expiresInMinutes: 30 }) : 40,
+          context: operationalContext,
           signals: [
             { label: "Occupancy", value: `${occupancy}%` },
             { label: "Kitchen utilization", value: `${kitchenLoad}%` },
@@ -104,7 +119,7 @@
         context: { occupancy, kitchenLoad, waitlist, atRiskTables, laborPercent },
         generatedAt: now
       });
-      return recommendations;
+      return recommendations.sort((a, b) => (b.priorityScore || 0) - (a.priorityScore || 0));
     }
 
     #create(input) {

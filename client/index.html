@@ -3642,7 +3642,7 @@
         <section class="ai-orchestration-center" id="aiOrchestrationCenter" aria-labelledby="aiOrchestrationCenterTitle">
           <div class="ai-orchestration-heading">
             <div>
-              <small>V34.6.1 · Intelligence execution layer</small>
+              <small>V34.6.2 · Explainable operational intelligence</small>
               <strong id="aiOrchestrationCenterTitle">AI Orchestration Center</strong>
               <span id="aiOrchestrationUpdated">Awaiting operating signals</span>
             </div>
@@ -3653,7 +3653,9 @@
             <article><small>Pending recommendations</small><strong id="aiOrchestrationQueueCount">0</strong></article>
             <article><small>Active workflows</small><strong id="aiOrchestrationWorkflowCount">0</strong></article>
             <article><small>Approval gates</small><strong id="aiOrchestrationApprovalCount">0</strong></article>
-            <article><small>Operating mode</small><strong>Human governed</strong></article>
+            <article><small>Operating pressure</small><strong id="aiContextPressure">—</strong></article>
+            <article><small>Service period</small><strong id="aiContextPeriod">—</strong></article>
+            <article><small>Context trend</small><strong id="aiContextTrend">—</strong></article>
           </div>
 
           <div class="ai-orchestration-layout">
@@ -3666,12 +3668,14 @@
               <small>Selected recommendation</small>
               <strong id="aiOrchestrationSelectedTitle">Choose a recommendation</strong>
               <p id="aiOrchestrationSelectedAction">Select an item to review its reasoning and controls.</p>
+              <div class="ai-orchestration-reasoning"><small>Why Blue Current is recommending this</small><ul id="aiOrchestrationReasoning"></ul></div>
               <ul id="aiOrchestrationSignals"></ul>
               <dl>
                 <div><dt>Owner</dt><dd id="aiOrchestrationOwner">—</dd></div>
                 <div><dt>Confidence</dt><dd id="aiOrchestrationConfidence">—</dd></div>
                 <div><dt>Expected impact</dt><dd id="aiOrchestrationImpact">—</dd></div>
                 <div><dt>Approval</dt><dd id="aiOrchestrationApproval">—</dd></div>
+                <div><dt>Priority score</dt><dd id="aiOrchestrationPriorityScore">—</dd></div>
               </dl>
               <textarea id="aiOrchestrationNote" rows="2" placeholder="Optional manager note"></textarea>
               <div class="ai-orchestration-actions">
@@ -3686,6 +3690,7 @@
             <section><div class="ai-orchestration-section-title"><small>Governed execution</small><strong>Active workflows</strong></div><div id="aiOrchestrationWorkflows" class="ai-orchestration-workflows"></div></section>
             <section><div class="ai-orchestration-section-title"><small>Evidence trail</small><strong>Recent decisions</strong></div><div id="aiOrchestrationHistory" class="ai-orchestration-history"></div></section>
           </div>
+          <section class="ai-orchestration-timeline-panel"><div class="ai-orchestration-section-title"><small>Context timeline</small><strong>How the operating picture developed</strong></div><div id="aiOrchestrationTimeline" class="ai-orchestration-timeline"></div></section>
         </section>
 
         <section class="ai-brain-decision-orchestrator" id="aiBrainDecisionOrchestrator" aria-labelledby="aiBrainDecisionOrchestratorTitle">
@@ -6633,9 +6638,10 @@
   <script src="js/modules/serviceCoordination.js?v=33.0.3"></script>
   <script src="js/modules/aiRestaurantBrain.js?v=33.0.3"></script>
   <script src="js/modules/timeClock.js?v=33.0.3"></script>
-  <script src="js/modules/recommendationEngine.js?v=34.6.1"></script>
-  <script src="js/modules/orchestrationEngine.js?v=34.6.1"></script>
-  <script src="js/modules/aiOrchestrationCenter.js?v=34.6.1"></script>
+  <script src="js/modules/contextEngine.js?v=34.6.2"></script>
+  <script src="js/modules/recommendationEngine.js?v=34.6.2"></script>
+  <script src="js/modules/orchestrationEngine.js?v=34.6.2"></script>
+  <script src="js/modules/aiOrchestrationCenter.js?v=34.6.2"></script>
   <script src="js/app-v15.1.3.js?v=33.0.3"></script>
 </body>
 </html>

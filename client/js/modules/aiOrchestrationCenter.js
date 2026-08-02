@@ -5,7 +5,8 @@
     const root = document.getElementById("aiOrchestrationCenter");
     if (!root) return null;
 
-    const recommendationEngine = new window.BlueCurrentRecommendationEngine({ eventBus, appState });
+    const contextEngine = new window.BlueCurrentOperationalContextEngine({ eventBus, appState });
+    const recommendationEngine = new window.BlueCurrentRecommendationEngine({ eventBus, appState, contextEngine });
     const engine = new window.BlueCurrentOrchestrationEngine({ eventBus, appState, recommendationEngine });
     let selectedId = null;
     const byId = id => document.getElementById(id);
@@ -30,7 +31,7 @@
           <span>${escapeHtml(titleCase(item.priority))}</span>
           <strong>${escapeHtml(item.title)}</strong>
           <p>${escapeHtml(item.action)}</p>
-          <footer><b>${escapeHtml(item.confidence)}% confidence</b><em>${escapeHtml(item.owner)}</em></footer>
+          <footer><b>${escapeHtml(item.confidence)}% confidence · score ${escapeHtml(item.priorityScore || "—")}</b><em>${escapeHtml(item.owner)}</em></footer>
         </button>`).join("");
     }
 
@@ -41,6 +42,9 @@
       byId("aiOrchestrationConfidence").textContent = item ? `${item.confidence}%` : "—";
       byId("aiOrchestrationImpact").textContent = item?.expectedImpact || "—";
       byId("aiOrchestrationApproval").textContent = item ? (item.approvalRequired ? "Required" : "Policy permitted") : "—";
+      const reasoning = byId("aiOrchestrationReasoning");
+      if (reasoning) reasoning.innerHTML = item?.reasoning?.map(reason => `<li>${escapeHtml(reason)}</li>`).join("") || "<li>No additional pressure signals.</li>";
+      byId("aiOrchestrationPriorityScore").textContent = item?.priorityScore ?? "—";
       const signals = byId("aiOrchestrationSignals");
       if (signals) signals.innerHTML = item?.signals?.map(signal => `<li><span>${escapeHtml(signal.label)}</span><strong>${escapeHtml(signal.value)}</strong></li>`).join("") || "";
       ["aiOrchestrationApprove", "aiOrchestrationSnooze", "aiOrchestrationDismiss"].forEach(id => { if (byId(id)) byId(id).disabled = !item; });
@@ -64,12 +68,24 @@
         <article><span>${escapeHtml(titleCase(item.status))}</span><div><strong>${escapeHtml(item.title)}</strong><small>${new Date(item.decidedAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</small></div></article>`).join("") : '<p class="ai-orchestration-empty">No decisions recorded in this browser yet.</p>';
     }
 
+
+    function renderContext(state) {
+      const context = state.queue[0]?.context || appState.get("operationalContext");
+      byId("aiContextPressure").textContent = context ? `${context.pressureScore} · ${titleCase(context.pressureBand)}` : "—";
+      byId("aiContextPeriod").textContent = context ? titleCase(context.servicePeriod) : "—";
+      byId("aiContextTrend").textContent = context ? titleCase(context.trend) : "—";
+      const timeline = byId("aiOrchestrationTimeline");
+      if (timeline) timeline.innerHTML = state.timeline?.length ? state.timeline.slice(0, 8).map(item => `
+        <article><time>${new Date(item.occurredAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</time><span>${escapeHtml(titleCase(item.kind))}</span><p>${escapeHtml(item.message)}</p></article>`).join("") : '<p class="ai-orchestration-empty">Context events will appear as the operation changes.</p>';
+    }
+
     function render() {
       const state = engine.snapshot();
       renderQueue(state);
       renderInspector(current());
       renderWorkflows(state);
       renderHistory(state);
+      renderContext(state);
       byId("aiOrchestrationQueueCount").textContent = state.queue.length;
       byId("aiOrchestrationWorkflowCount").textContent = state.activeWorkflows.filter(item => item.status === "in-progress").length;
       byId("aiOrchestrationApprovalCount").textContent = state.queue.filter(item => item.approvalRequired).length;
@@ -90,7 +106,7 @@
 
     ["orchestration:queue-updated", "orchestration:workflow-list-updated"].forEach(name => eventBus.on(name, render));
     render();
-    return { engine, recommendationEngine, refresh: () => { engine.refresh({ reason: "module-refresh" }); render(); }, getState: () => engine.snapshot() };
+    return { engine, recommendationEngine, contextEngine, refresh: () => { engine.refresh({ reason: "module-refresh" }); render(); }, getState: () => engine.snapshot() };
   }
 
   window.createBlueCurrentAiOrchestrationCenterModule = createBlueCurrentAiOrchestrationCenterModule;

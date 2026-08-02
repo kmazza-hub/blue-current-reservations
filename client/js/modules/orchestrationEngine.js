@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "blueCurrent.aiOrchestration.v34.6.1";
+  const STORAGE_KEY = "blueCurrent.aiOrchestration.v34.6.2";
 
   class BlueCurrentOrchestrationEngine {
     constructor({ eventBus, appState, recommendationEngine }) {
@@ -26,6 +26,7 @@
       });
       this.state.lastEvaluatedAt = new Date().toISOString();
       this.state.lastReason = context.reason || "manual";
+      this.#recordTimeline("context", `Operating picture evaluated: ${this.state.queue.length} recommendation${this.state.queue.length === 1 ? "" : "s"}`, generated[0]?.context);
       this.#commit("orchestration:queue-updated", { reason: this.state.lastReason });
       return this.snapshot();
     }
@@ -40,6 +41,7 @@
       const decidedAt = new Date().toISOString();
       const historyItem = { ...item, status: decision, note: String(note || ""), decidedAt };
       this.state.history.unshift(historyItem);
+      this.#recordTimeline("decision", `${item.title}: ${decision}`, item.context);
       this.state.history = this.state.history.slice(0, 30);
       this.state.queue = this.state.queue.filter(entry => entry.id !== id);
 
@@ -55,6 +57,7 @@
         });
         this.state.activeWorkflows = this.state.activeWorkflows.slice(0, 10);
         this.eventBus.emit("orchestration:workflow-started", { recommendation: structuredClone(item) });
+        this.#recordTimeline("workflow", `Workflow started: ${item.title}`, item.context);
       }
 
       this.eventBus.emit("orchestration:decision-recorded", { recommendation: structuredClone(item), decision, note, decidedAt });
@@ -69,6 +72,7 @@
       workflow.completedAt = new Date().toISOString();
       workflow.outcome = outcome;
       this.eventBus.emit("orchestration:workflow-completed", structuredClone(workflow));
+      this.#recordTimeline("outcome", `${workflow.title}: ${outcome}`);
       this.#commit("orchestration:workflow-list-updated", {});
       return true;
     }
@@ -100,6 +104,7 @@
             queue: Array.isArray(stored.queue) ? stored.queue : [],
             history: Array.isArray(stored.history) ? stored.history : [],
             activeWorkflows: Array.isArray(stored.activeWorkflows) ? stored.activeWorkflows : [],
+            timeline: Array.isArray(stored.timeline) ? stored.timeline : [],
             lastEvaluatedAt: stored.lastEvaluatedAt || null,
             lastReason: stored.lastReason || "restored"
           };
@@ -107,7 +112,18 @@
       } catch (error) {
         console.warn("Blue Current orchestration state could not be restored.", error);
       }
-      return { queue: [], history: [], activeWorkflows: [], lastEvaluatedAt: null, lastReason: "new" };
+      return { queue: [], history: [], activeWorkflows: [], timeline: [], lastEvaluatedAt: null, lastReason: "new" };
+    }
+
+    #recordTimeline(kind, message, context = null) {
+      this.state.timeline.unshift({
+        id: `timeline_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+        kind,
+        message,
+        context: context ? structuredClone(context) : null,
+        occurredAt: new Date().toISOString()
+      });
+      this.state.timeline = this.state.timeline.slice(0, 40);
     }
 
     #commit(eventName, detail) {
@@ -117,6 +133,7 @@
         orchestrationQueue: snapshot.queue,
         orchestrationHistory: snapshot.history,
         activeOrchestrationWorkflows: snapshot.activeWorkflows,
+        orchestrationTimeline: snapshot.timeline,
         orchestrationUpdatedAt: snapshot.lastEvaluatedAt
       });
       this.eventBus.emit(eventName, { ...detail, state: snapshot });
