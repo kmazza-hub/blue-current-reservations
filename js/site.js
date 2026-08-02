@@ -522,3 +522,41 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
   };
   buttons.forEach((button,index)=>button.addEventListener('click',()=>render(index)));
 })();
+
+
+// Website SaaS Upgrade 10 — homepage journey navigation and conversion dock
+(() => {
+  const journeyLinks = Array.from(document.querySelectorAll('[data-journey-link]'));
+  const sections = journeyLinks.map(link => document.getElementById(link.dataset.journeyLink)).filter(Boolean);
+  if (journeyLinks.length && sections.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(entry => entry.isIntersecting).sort((a,b) => b.intersectionRatio-a.intersectionRatio)[0];
+      if (!visible) return;
+      journeyLinks.forEach(link => {
+        const active = link.dataset.journeyLink === visible.target.id;
+        link.classList.toggle('is-active',active);
+        if (active) link.setAttribute('aria-current','location'); else link.removeAttribute('aria-current');
+      });
+    },{rootMargin:'-30% 0px -55% 0px',threshold:[0,.2,.5,.8]});
+    sections.forEach(section => observer.observe(section));
+  }
+
+  const dock = document.getElementById('conversionDock');
+  const close = document.getElementById('conversionDockClose');
+  const demo = document.getElementById('demo');
+  if (!dock || !close || !demo) return;
+  let dismissed = sessionStorage.getItem('bcConversionDockDismissed') === '1';
+  const updateDock = () => {
+    const demoTop = demo.getBoundingClientRect().top;
+    const shouldShow = !dismissed && window.scrollY > Math.max(900,window.innerHeight*.9) && demoTop > window.innerHeight*.85;
+    dock.classList.toggle('is-visible',shouldShow);
+  };
+  close.addEventListener('click',() => {
+    dismissed = true;
+    sessionStorage.setItem('bcConversionDockDismissed','1');
+    dock.classList.remove('is-visible');
+  });
+  window.addEventListener('scroll',updateDock,{passive:true});
+  window.addEventListener('resize',updateDock,{passive:true});
+  updateDock();
+})();
