@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.5.0-performance-control">
+  <meta name="blue-current-build" content="37.8.0-performance-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3885,6 +3885,9 @@
           <div class="v375-kpis"><article><small>Boot state</small><strong id="brgStatus">—</strong></article><article><small>Failures</small><strong id="brgFailures">0</strong></article><article><small>Last good profile</small><strong id="brgLastGood">Focused</strong></article></div>
           <div id="brgHistory" class="v375-checks"></div>
         </section>
+<section class="v378-center" id="startupProfileCenter" aria-labelledby="sprTitle"><header><div><small>V37.6 · Startup Profiles</small><strong id="sprTitle">Save repeatable startup profiles for each role and workflow.</strong><span id="sprHeadline">Create a reusable startup profile.</span></div><button type="button" id="sprFocused">Focused mode</button></header><div class="v378-kpis"><article><small>Current profile</small><strong id="sprCurrent">focused</strong></article><article><small>Saved profiles</small><strong id="sprSaved">0</strong></article></div><div class="v378-form"><input id="sprName" type="text" placeholder="Profile name, e.g. Regional leader"><input id="sprPacks" type="text" placeholder="operations,intelligence"><button type="button" id="sprSave">Save profile</button></div><div id="sprProfiles" class="v378-list"></div><span id="sprStatus" role="status"></span></section>
+<section class="v378-center" id="backgroundActivityGovernorCenter" aria-labelledby="bagTitle"><header><div><small>V37.7 · Background Activity Governor</small><strong id="bagTitle">Pause recurring work when Blue Current is not visible.</strong><span id="bagHeadline">Measuring recurring activity…</span></div><button type="button" id="bagRefresh">Refresh activity</button></header><div class="v378-kpis v378-four"><article><small>State</small><strong id="bagState">active</strong></article><article><small>Intervals</small><strong id="bagIntervals">0</strong></article><article><small>Skipped callbacks</small><strong id="bagSkipped">0</strong></article><article><small>Visible rate</small><strong id="bagRate">0/min</strong></article></div><div id="bagChecks" class="v378-checks"></div></section>
+<section class="v378-center" id="assetHealthCenter" aria-labelledby="ahTitle"><header><div><small>V37.8 · Asset Health Audit</small><strong id="ahTitle">Prove every startup profile stays inside a safe asset budget.</strong><span id="ahHeadline">Auditing loaded assets…</span></div><div class="v378-actions"><button type="button" id="ahRefresh">Run audit</button><button type="button" id="ahExport">Export report</button></div></header><div class="v378-kpis v378-four"><article><small>Health score</small><strong id="ahScore">0%</strong></article><article><small>Status</small><strong id="ahStatus">—</strong></article><article><small>Loaded scripts</small><strong id="ahLoaded">0</strong></article><article><small>Deferred scripts</small><strong id="ahDeferred">0</strong></article></div><div id="ahChecks" class="v378-checks"></div></section>
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -7664,6 +7667,12 @@
   <script src="js/modules/startupPerformanceCenter.js?v=37.5.0"></script>
   <script src="js/modules/bootRecoveryEngine.js?v=37.5.0"></script>
   <script src="js/modules/bootRecoveryCenter.js?v=37.5.0"></script>
-  <script src="js/startup-loader.js?v=37.5.0"></script>
+  <script src="js/modules/backgroundActivityGovernorEngine.js?v=37.8.0"></script>
+  <script src="js/modules/backgroundActivityGovernorCenter.js?v=37.8.0"></script>
+  <script src="js/modules/startupProfileEngine.js?v=37.8.0"></script>
+  <script src="js/modules/startupProfileCenter.js?v=37.8.0"></script>
+  <script src="js/modules/assetHealthEngine.js?v=37.8.0"></script>
+  <script src="js/modules/assetHealthCenter.js?v=37.8.0"></script>
+  <script src="js/startup-loader.js?v=37.8.0"></script>
 </body>
 </html>

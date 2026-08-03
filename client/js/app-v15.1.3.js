@@ -1495,6 +1495,21 @@ const bootRecoveryCenterModule = startupRegistry.register(
   shouldInitializeCenter("bootRecoveryCenter") ? window.createBlueCurrentBootRecoveryCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "startupPerformanceCenter"]
 );
+const backgroundActivityGovernorCenterModule = startupRegistry.register(
+  "backgroundActivityGovernorCenter",
+  shouldInitializeCenter("backgroundActivityGovernorCenter") ? window.createBlueCurrentBackgroundActivityGovernorCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const startupProfileCenterModule = startupRegistry.register(
+  "startupProfileCenter",
+  shouldInitializeCenter("startupProfileCenter") ? window.createBlueCurrentStartupProfileCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const assetHealthCenterModule = startupRegistry.register(
+  "assetHealthCenter",
+  shouldInitializeCenter("assetHealthCenter") ? window.createBlueCurrentAssetHealthCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "startupPerformanceCenter"]
+);
 const pilotLaunchCenterModule = startupRegistry.register(
   "pilotLaunchCenter",
   shouldInitializeCenter("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
@@ -1777,6 +1792,9 @@ window.blueCurrent = {
     featurePackLoader: featurePackLoaderCenterModule,
     startupPerformance: startupPerformanceCenterModule,
     bootRecovery: bootRecoveryCenterModule,
+    backgroundActivityGovernor: backgroundActivityGovernorCenterModule,
+    startupProfiles: startupProfileCenterModule,
+    assetHealth: assetHealthCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,
