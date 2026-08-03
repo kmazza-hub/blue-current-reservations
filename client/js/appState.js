@@ -82,7 +82,14 @@ class AppState {
       pilotReview: null,
       pilotReviewHistory: [],
       pilotRolloutRecommendation: null,
-      pilotRolloutDecision: null
+      pilotRolloutDecision: null,
+      deploymentReadiness: null,
+      deploymentReadinessHistory: [],
+      deploymentRoleAssignments: [],
+      deploymentTraining: [],
+      deploymentLocations: [],
+      deploymentLaunchWindow: null,
+      deploymentRollbackPlan: null
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

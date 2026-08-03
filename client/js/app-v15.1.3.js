@@ -1275,6 +1275,14 @@ const pilotReviewCenterModule = startupRegistry.register(
   ["eventBus", "appState", "pilotOperationsCenter", "pilotReleaseCenter", "outcomeIntelligenceCenter", "executiveBriefingCenter"]
 );
 
+const deploymentReadinessCenterModule = startupRegistry.register(
+  "deploymentReadinessCenter",
+  document.getElementById("deploymentReadinessCenter")
+    ? window.createBlueCurrentDeploymentReadinessCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "pilotReviewCenter", "pilotReleaseCenter"]
+);
+
 const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
 
 // V32.3 retires the legacy Autonomous Operations renderer. Its DOM contract
@@ -1318,6 +1326,7 @@ window.blueCurrent = {
     pilotRelease: pilotReleaseCenterModule,
     pilotOperations: pilotOperationsCenterModule,
     pilotReview: pilotReviewCenterModule,
+    deploymentReadiness: deploymentReadinessCenterModule,
     predictiveService: predictiveServiceCenterModule,
     autonomousPolicyCenter: autonomousPolicyCenterModule,
     executiveWorkflowCenter: executiveWorkflowCenterModule

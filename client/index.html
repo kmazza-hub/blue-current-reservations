@@ -6906,7 +6906,32 @@
           </section>
           <p id="pilotReviewMessage" class="pilot-review-message" role="status"></p>
         </section>
-  </main>
+  
+        <section class="deployment-readiness-center" id="deploymentReadinessCenter" aria-labelledby="deploymentReadinessTitle">
+          <header class="deployment-readiness-header">
+            <div><small>V35.8 · Deployment readiness and go-live control</small><strong id="deploymentReadinessTitle">Deployment Readiness & Go-Live Center</strong><span>Convert the approved pilot into a controlled, trained, and supportable launch.</span></div>
+            <div class="deployment-readiness-score"><small>Launch readiness</small><strong id="deploymentReadinessScore">0%</strong><span id="deploymentReadinessGate" data-tone="preparation">preparation</span></div>
+            <div class="deployment-readiness-buttons"><button type="button" id="deploymentReadinessRefresh">Run launch audit</button><button type="button" id="deploymentReadinessExport">Export manifest</button></div>
+          </header>
+          <p class="deployment-readiness-summary" id="deploymentReadinessSummary">Assign owners, complete training, and define launch safeguards.</p>
+          <div class="deployment-readiness-kpis"><article><small>Checks ready</small><strong id="deploymentReadinessReady">0/0</strong></article><article><small>Watch conditions</small><strong id="deploymentReadinessWatch">0</strong></article><article><small>Blocking conditions</small><strong id="deploymentReadinessBlocked">0</strong></article></div>
+          <div class="deployment-readiness-grid">
+            <section><div class="deployment-readiness-title"><small>Go-live controls</small><strong>Every requirement before launch</strong></div><div id="deploymentReadinessChecks" class="deployment-readiness-checks"></div></section>
+            <section><div class="deployment-readiness-title"><small>Launch ownership</small><strong>Named responsibility across the rollout</strong></div><div id="deploymentReadinessRoles" class="deployment-readiness-roles"></div></section>
+          </div>
+          <div class="deployment-readiness-grid deployment-readiness-grid-secondary">
+            <section><div class="deployment-readiness-title"><small>Training plan</small><strong>Operator and leadership readiness</strong></div><div id="deploymentReadinessTraining" class="deployment-readiness-training"></div></section>
+            <section><div class="deployment-readiness-title"><small>Launch locations</small><strong>Location-by-location control</strong></div><div id="deploymentReadinessLocations" class="deployment-readiness-locations"></div></section>
+          </div>
+          <div class="deployment-readiness-plan">
+            <div><label for="deploymentLaunchWindow">Approved launch window</label><input id="deploymentLaunchWindow" type="text" placeholder="Example: Tuesday, 3:00 PM pre-service" /></div>
+            <div><label for="deploymentRollbackPlan">Rollback and support plan</label><textarea id="deploymentRollbackPlan" rows="3" placeholder="Define rollback criteria, owner, communication path, and recovery steps."></textarea></div>
+            <button type="button" id="deploymentReadinessSavePlan">Save launch plan</button>
+          </div>
+          <section class="deployment-readiness-actions"><div class="deployment-readiness-title"><small>Next actions</small><strong>Highest-priority work before go-live</strong></div><ol id="deploymentReadinessActions"></ol></section>
+          <p id="deploymentReadinessMessage" class="deployment-readiness-message" role="status"></p>
+        </section>
+</main>
 
   <footer class="site-footer">
     <div class="container footer-grid">
@@ -7058,6 +7083,8 @@
   <script src="js/modules/pilotOperationsCenter.js?v=35.6.0"></script>
   <script src="js/modules/pilotReviewEngine.js?v=35.7.0"></script>
   <script src="js/modules/pilotReviewCenter.js?v=35.7.0"></script>
+  <script src="js/modules/deploymentReadinessEngine.js?v=35.8.0"></script>
+  <script src="js/modules/deploymentReadinessCenter.js?v=35.8.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
