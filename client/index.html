@@ -3901,6 +3901,21 @@
             </div>
           </section>
 
+          <section class="operator-copilot-center" id="operatorCopilotCenter" aria-labelledby="operatorCopilotTitle">
+            <header class="operator-copilot-header">
+              <div><small>V36.2 · AI Operator Copilot</small><strong id="operatorCopilotTitle">One clear recommendation. One-tap shift actions.</strong><span id="operatorCopilotUpdated">Building operator guidance…</span></div>
+              <div class="operator-copilot-header-actions"><span id="operatorCopilotState" data-tone="clear">Shift stable</span><button type="button" id="operatorCopilotRefresh">Refresh</button><button type="button" id="operatorCopilotSnooze">Snooze 5m</button></div>
+            </header>
+            <section class="operator-copilot-brief">
+              <div><small>Blue Current says</small><strong id="operatorCopilotHeadline">The shift is stable.</strong><p id="operatorCopilotMessage">Connecting performance, profit, service, and active workflows.</p></div>
+              <div class="operator-copilot-bundle-summary"><article><small>Actions</small><strong id="operatorCopilotActionCount">0</strong></article><article><small>Profit impact</small><strong id="operatorCopilotProfit">$0</strong></article><article><small>RPI recovery</small><strong id="operatorCopilotRpi">+0.0</strong></article><article><small>Confidence</small><strong id="operatorCopilotConfidence">0%</strong></article></div>
+            </section>
+            <div class="operator-copilot-layout">
+              <section class="operator-copilot-actions-panel"><div class="operator-copilot-section-title"><small>Recommended shift bundle</small><strong>Approve the highest-value actions together.</strong></div><div id="operatorCopilotActions"></div><div class="operator-copilot-approval"><button type="button" id="operatorCopilotApproveAll">No action required</button><span id="operatorCopilotStatus" role="status"></span></div></section>
+              <aside class="operator-copilot-chat"><small>Ask Blue Current</small><strong>Get the answer without opening another dashboard.</strong><div id="operatorCopilotPrompts" class="operator-copilot-prompts"></div><output id="operatorCopilotAnswer" aria-live="polite"></output><div class="operator-copilot-question"><input id="operatorCopilotQuestion" type="text" placeholder="Ask about profit, risk, or the next action…"><button type="button" id="operatorCopilotAsk">Ask</button></div></aside>
+            </div>
+          </section>
+
           <section class="unified-command-technical" id="unifiedCommandTechnical" hidden></section>
         </section>
 
@@ -7385,6 +7400,8 @@
   <script src="js/modules/unifiedCommandCenter.js?v=36.0.0"></script>
   <script src="js/modules/guidedShiftEngine.js?v=36.1.0"></script>
   <script src="js/modules/guidedShiftCenter.js?v=36.1.0"></script>
+  <script src="js/modules/operatorCopilotEngine.js?v=36.2.0"></script>
+  <script src="js/modules/operatorCopilotCenter.js?v=36.2.0"></script>
   <script src="js/modules/restaurantPerformanceEngine.js?v=35.0.1"></script>
   <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.1"></script>
   <script src="js/modules/outcomeIntelligenceEngine.js?v=35.1.0"></script>

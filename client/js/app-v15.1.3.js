@@ -1177,6 +1177,14 @@ const guidedShiftCenterModule = startupRegistry.register(
   ["eventBus", "appState", "unifiedCommandCenter"]
 );
 
+const operatorCopilotCenterModule = startupRegistry.register(
+  "operatorCopilotCenter",
+  document.getElementById("operatorCopilotCenter")
+    ? window.createBlueCurrentOperatorCopilotCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "guidedShiftCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1382,6 +1390,7 @@ window.blueCurrent = {
     autonomousOperations: operationsDirectorModule,
     unifiedCommand: unifiedCommandCenterModule,
     guidedShift: guidedShiftCenterModule,
+    operatorCopilot: operatorCopilotCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
