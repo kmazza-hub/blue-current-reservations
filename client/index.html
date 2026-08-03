@@ -3916,6 +3916,25 @@
             </div>
           </section>
 
+          <section class="role-experience-center" id="roleExperienceCenter" aria-labelledby="roleExperienceTitle" data-role-experience-section>
+            <header><div><small>V36.3 · Role-Aware Experience</small><strong id="roleExperienceTitle">Shift manager</strong><span id="roleExperiencePromise">Actions, handoffs, and live operating pressure.</span></div><span id="roleExperienceUpdated">Building role view…</span></header>
+            <div class="role-experience-controls"><div><button type="button" data-role-choice="manager">Manager</button><button type="button" data-role-choice="executive">Executive</button><button type="button" data-role-choice="technical">Technical</button></div><button type="button" id="roleExperienceDensity">Use compact spacing</button><button type="button" id="roleExperienceShowAll">Explore full platform</button></div>
+            <p id="roleExperienceHeadline">Connecting the right information to the right role.</p><div class="role-experience-metrics" id="roleExperienceMetrics"></div>
+          </section>
+
+          <section class="command-action-inbox-center" id="commandActionInboxCenter" aria-labelledby="commandActionInboxTitle" data-role-experience-section>
+            <header><div><small>V36.4 · Unified Action Inbox</small><strong id="commandActionInboxTitle">Everything requiring a decision, in one queue.</strong><span id="commandActionInboxUpdated">Building action inbox…</span></div><button type="button" id="commandActionInboxRefresh">Refresh inbox</button></header>
+            <div class="command-inbox-kpis"><article><small>Total</small><strong id="commandActionInboxTotal">0</strong></article><article><small>Urgent</small><strong id="commandActionInboxUrgent">0</strong></article><article><small>Approvals</small><strong id="commandActionInboxApprovals">0</strong></article><article><small>Handoffs</small><strong id="commandActionInboxHandoffs">0</strong></article></div>
+            <div class="command-inbox-items" id="commandActionInboxItems"></div>
+          </section>
+
+          <section class="shift-closeout-center" id="shiftCloseoutCenter" aria-labelledby="shiftCloseoutTitle" data-role-experience-section>
+            <header><div><small>V36.5 · Shift Closeout</small><strong id="shiftCloseoutTitle">End every shift with proof, ownership, and a clean handoff.</strong><span id="shiftCloseoutUpdated">Building closeout…</span></div><div><button type="button" id="shiftCloseoutRefresh">Refresh</button><button type="button" id="shiftCloseoutExport">Export</button></div></header>
+            <div class="shift-closeout-hero"><div><small>Shift score</small><strong id="shiftCloseoutScore">0</strong><span id="shiftCloseoutState">Preparing</span></div><p id="shiftCloseoutSummary">Connecting outcomes and unresolved work.</p></div>
+            <div class="shift-closeout-kpis"><article><small>RPI</small><strong id="shiftCloseoutRpi">0.0</strong></article><article><small>Measured value</small><strong id="shiftCloseoutValue">$0</strong></article><article><small>Profit opportunity</small><strong id="shiftCloseoutOpportunity">$0</strong></article><article><small>Unresolved</small><strong id="shiftCloseoutUnresolved">0</strong></article></div>
+            <div class="shift-closeout-grid"><section><small>Measured wins</small><div id="shiftCloseoutWins"></div></section><section><label>Manager note<textarea id="shiftCloseoutNote" rows="4" maxlength="600" placeholder="What should leadership know about this shift?"></textarea></label><button type="button" id="shiftCloseoutComplete">Complete shift closeout</button><span id="shiftCloseoutMessage" role="status"></span></section></div>
+          </section>
+
           <section class="unified-command-technical" id="unifiedCommandTechnical" hidden></section>
         </section>
 
@@ -7402,6 +7421,12 @@
   <script src="js/modules/guidedShiftCenter.js?v=36.1.0"></script>
   <script src="js/modules/operatorCopilotEngine.js?v=36.2.0"></script>
   <script src="js/modules/operatorCopilotCenter.js?v=36.2.0"></script>
+  <script src="js/modules/roleExperienceEngine.js?v=36.5.0"></script>
+  <script src="js/modules/roleExperienceCenter.js?v=36.5.0"></script>
+  <script src="js/modules/commandActionInboxEngine.js?v=36.5.0"></script>
+  <script src="js/modules/commandActionInboxCenter.js?v=36.5.0"></script>
+  <script src="js/modules/shiftCloseoutEngine.js?v=36.5.0"></script>
+  <script src="js/modules/shiftCloseoutCenter.js?v=36.5.0"></script>
   <script src="js/modules/restaurantPerformanceEngine.js?v=35.0.1"></script>
   <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.1"></script>
   <script src="js/modules/outcomeIntelligenceEngine.js?v=35.1.0"></script>

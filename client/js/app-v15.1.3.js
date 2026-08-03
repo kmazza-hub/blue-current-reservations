@@ -1185,6 +1185,30 @@ const operatorCopilotCenterModule = startupRegistry.register(
   ["eventBus", "appState", "unifiedCommandCenter", "guidedShiftCenter"]
 );
 
+const roleExperienceCenterModule = startupRegistry.register(
+  "roleExperienceCenter",
+  document.getElementById("roleExperienceCenter")
+    ? window.createBlueCurrentRoleExperienceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "guidedShiftCenter", "operatorCopilotCenter"]
+);
+
+const commandActionInboxCenterModule = startupRegistry.register(
+  "commandActionInboxCenter",
+  document.getElementById("commandActionInboxCenter")
+    ? window.createBlueCurrentCommandActionInboxCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "operatorCopilotCenter", "guidedShiftCenter"]
+);
+
+const shiftCloseoutCenterModule = startupRegistry.register(
+  "shiftCloseoutCenter",
+  document.getElementById("shiftCloseoutCenter")
+    ? window.createBlueCurrentShiftCloseoutCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "commandActionInboxCenter", "guidedShiftCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1391,6 +1415,9 @@ window.blueCurrent = {
     unifiedCommand: unifiedCommandCenterModule,
     guidedShift: guidedShiftCenterModule,
     operatorCopilot: operatorCopilotCenterModule,
+    roleExperience: roleExperienceCenterModule,
+    commandActionInbox: commandActionInboxCenterModule,
+    shiftCloseout: shiftCloseoutCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
