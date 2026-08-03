@@ -1169,6 +1169,14 @@ const restaurantPerformanceCenterModule = startupRegistry.register(
   ["eventBus", "appState"]
 );
 
+const outcomeIntelligenceCenterModule = startupRegistry.register(
+  "outcomeIntelligenceCenter",
+  document.getElementById("outcomeIntelligenceCenter")
+    ? window.createBlueCurrentOutcomeIntelligenceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter"]
+);
+
 const aiOrchestrationCenterModule = startupRegistry.register(
   "aiOrchestrationCenter",
   document.getElementById("aiOrchestrationCenter")
@@ -1250,6 +1258,7 @@ window.blueCurrent = {
     intelligenceNetwork: intelligenceNetworkModule,
     autonomousOperations: operationsDirectorModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
+    outcomeIntelligence: outcomeIntelligenceCenterModule,
     aiOrchestrationCenter: aiOrchestrationCenterModule,
     operationalDigitalTwin: operationalDigitalTwinCenterModule,
     portfolioIntelligence: portfolioIntelligenceCenterModule,
