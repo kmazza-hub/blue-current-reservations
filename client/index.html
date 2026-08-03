@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="34.5.1">
+  <meta name="blue-current-build" content="35.14.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -1986,6 +1986,44 @@
           </section>
           <p id="marginIntelligenceMessage" class="margin-intelligence-message" role="status"></p>
           <p class="margin-intelligence-disclaimer">Modeled contribution margin is an operational decision-support estimate. It is not audited accounting data and should be reconciled with the restaurant’s financial systems.</p>
+        </section>
+
+
+        <section class="cost-variance-center" id="costVarianceCenter" aria-labelledby="costVarianceTitle">
+          <header class="cost-variance-header">
+            <div>
+              <small>V35.14 · Profit protection</small>
+              <strong id="costVarianceTitle">Cost Forecasting, Variance Control & Profit Protection</strong>
+              <span>Project labor, food, waste, and discount variance before it reaches the P&amp;L, then prioritize corrective action by protected profit.</span>
+            </div>
+            <div class="cost-variance-score">
+              <small>Protection score</small>
+              <strong id="costVarianceScore">0%</strong>
+              <span id="costVarianceStatus" data-tone="watch">watch</span>
+            </div>
+            <button type="button" id="costVarianceRefresh">Refresh forecast</button>
+          </header>
+          <p class="cost-variance-summary" id="costVarianceSummary">Building the next four-hour contribution-margin forecast.</p>
+          <div class="cost-variance-kpis">
+            <article><small>Current margin</small><strong id="costVarianceCurrentMargin">0%</strong></article>
+            <article><small>Projected margin</small><strong id="costVarianceProjectedMargin">0%</strong></article>
+            <article><small>Margin variance</small><strong id="costVarianceMarginDelta">0 pts</strong></article>
+            <article><small>Profit at risk</small><strong id="costVarianceProfitRisk">$0</strong></article>
+            <article><small>Protected profit</small><strong id="costVarianceProtectedProfit">$0</strong></article>
+            <article><small>Forecast confidence</small><strong id="costVarianceConfidence">0%</strong></article>
+          </div>
+          <div class="cost-variance-grid">
+            <section>
+              <div class="cost-variance-section-title"><small>Four-hour outlook</small><strong>Cost variance before close</strong></div>
+              <div class="cost-variance-forecast" id="costVarianceForecast"></div>
+            </section>
+            <section>
+              <div class="cost-variance-section-title"><small>Profit protection</small><strong>Highest-value corrective actions</strong></div>
+              <div class="cost-variance-actions" id="costVarianceActions"></div>
+            </section>
+          </div>
+          <p id="costVarianceMessage" class="cost-variance-message" role="status"></p>
+          <p class="cost-variance-disclaimer">Forecasts are operational decision-support estimates. Reconcile actual labor, inventory, discounts, waste, and contribution margin with connected financial systems.</p>
         </section>
 
 
@@ -7254,12 +7292,14 @@
   <script src="js/modules/enterpriseValuePlanCenter.js?v=35.12.0"></script>
   <script src="js/modules/marginIntelligenceEngine.js?v=35.13.0"></script>
   <script src="js/modules/marginIntelligenceCenter.js?v=35.13.0"></script>
+  <script src="js/modules/costVarianceEngine.js?v=35.14.0"></script>
+  <script src="js/modules/costVarianceCenter.js?v=35.14.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.12.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.14.0"></script>
 </body>
 </html>

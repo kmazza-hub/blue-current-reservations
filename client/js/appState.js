@@ -109,7 +109,11 @@ class AppState {
       enterpriseValueInitiatives: [],
       marginIntelligence: null,
       marginIntelligenceHistory: [],
-      marginAssumptions: null
+      marginAssumptions: null,
+      costVariance: null,
+      costVarianceHistory: [],
+      projectedCostVariance: {},
+      profitProtectionActions: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

@@ -12624,3 +12624,131 @@ radial-gradient(circle at 50% 40%,#123644,#0a222e);background-size:32px 32px,32p
 .margin-actions-section{margin-top:16px}.margin-action-list article{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:14px;border:1px solid #3b5675;border-radius:15px;background:#0d2035}.margin-action-list article>div:first-child{display:grid;gap:4px}.margin-action-value{text-align:right}.margin-action-value b{display:block;font-size:1.2rem;color:#7ee0ae}.margin-intelligence-message{min-height:24px;margin:12px 0 0;color:#9dd8ff;font-weight:800}.margin-intelligence-disclaimer{margin:8px 0 0;font-size:.88rem}
 @media(max-width:1100px){.margin-intelligence-kpis{grid-template-columns:repeat(3,1fr)}.margin-intelligence-header{grid-template-columns:1fr auto}.margin-intelligence-header button{grid-column:1/-1}.margin-intelligence-grid{grid-template-columns:1fr}}
 @media(max-width:720px){.margin-intelligence-center{padding:16px}.margin-intelligence-header{grid-template-columns:1fr}.margin-intelligence-score{text-align:left}.margin-intelligence-kpis{grid-template-columns:repeat(2,1fr)}.margin-assumptions{grid-template-columns:1fr}.margin-cost-breakdown{grid-template-columns:repeat(2,1fr)}.margin-action-list article{grid-template-columns:1fr}.margin-action-value{text-align:left}.margin-action-list button{width:100%}}
+
+
+/* V35.14.0 — Cost Forecasting, Variance Control & Profit Protection */
+.cost-variance-center {
+  margin: 32px 0 0;
+  padding: 28px;
+  border: 1px solid rgba(96, 165, 250, .35);
+  border-radius: 24px;
+  background: linear-gradient(145deg, #071827 0%, #0b2233 58%, #10283a 100%);
+  color: #f8fbff;
+  box-shadow: 0 24px 60px rgba(1, 9, 18, .34);
+}
+.cost-variance-header {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 20px;
+  align-items: center;
+}
+.cost-variance-header > div:first-child { display: grid; gap: 6px; }
+.cost-variance-header small,
+.cost-variance-section-title small,
+.cost-variance-kpis small,
+.cost-variance-forecast small,
+.cost-variance-actions small { color: #a9c3d8; font-weight: 700; letter-spacing: .04em; }
+.cost-variance-header > div:first-child > strong { font-size: clamp(1.35rem, 2vw, 2rem); color: #fff; }
+.cost-variance-header > div:first-child > span { color: #d6e5f2; max-width: 860px; line-height: 1.6; }
+.cost-variance-score {
+  min-width: 130px;
+  padding: 14px 18px;
+  border-radius: 18px;
+  background: #102d42;
+  border: 1px solid rgba(125, 211, 252, .28);
+  display: grid;
+  text-align: center;
+  gap: 4px;
+}
+.cost-variance-score strong { font-size: 1.8rem; color: #fff; }
+.cost-variance-score span { text-transform: uppercase; font-size: .75rem; font-weight: 800; color: #7dd3fc; }
+.cost-variance-score span[data-tone="critical"],
+.cost-variance-score span[data-tone="pressure"] { color: #fda4af; }
+.cost-variance-score span[data-tone="protected"] { color: #86efac; }
+.cost-variance-header button,
+.cost-variance-actions button {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: #38bdf8;
+  color: #03131f;
+  font-weight: 850;
+  cursor: pointer;
+}
+.cost-variance-summary { margin: 20px 0; color: #e5f1fa; font-size: 1.05rem; font-weight: 650; }
+.cost-variance-kpis {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: 12px;
+}
+.cost-variance-kpis article {
+  padding: 16px;
+  border-radius: 16px;
+  background: #0e293d;
+  border: 1px solid rgba(148, 184, 209, .2);
+  display: grid;
+  gap: 6px;
+}
+.cost-variance-kpis strong { color: #fff; font-size: 1.2rem; }
+.cost-variance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.08fr;
+  gap: 18px;
+  margin-top: 18px;
+}
+.cost-variance-grid > section {
+  padding: 18px;
+  border-radius: 18px;
+  background: #0a2132;
+  border: 1px solid rgba(148, 184, 209, .18);
+}
+.cost-variance-section-title { display: grid; gap: 4px; margin-bottom: 14px; }
+.cost-variance-section-title strong { color: #fff; font-size: 1.1rem; }
+.cost-variance-forecast,
+.cost-variance-actions { display: grid; gap: 10px; }
+.cost-variance-forecast article,
+.cost-variance-actions article {
+  padding: 14px;
+  border-radius: 14px;
+  background: #102b3f;
+  border: 1px solid rgba(148, 184, 209, .18);
+}
+.cost-variance-forecast article {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.cost-variance-forecast strong,
+.cost-variance-actions strong { display: block; color: #fff; margin-top: 3px; }
+.cost-variance-values { display: flex; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+.cost-variance-values span { color: #bad0df; font-size: .78rem; display: grid; gap: 2px; }
+.cost-variance-values b { color: #fff; font-size: .92rem; }
+.cost-variance-forecast article[data-direction="unfavorable"] { border-color: rgba(251, 113, 133, .38); }
+.cost-variance-actions article {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+}
+.cost-variance-actions span { display: block; color: #c3d7e5; line-height: 1.45; margin-top: 4px; }
+.cost-variance-action-value { min-width: 155px; text-align: right; }
+.cost-variance-action-value b { color: #86efac; font-size: 1.1rem; }
+.cost-variance-message { min-height: 1.4em; color: #7dd3fc; font-weight: 750; margin: 14px 0 0; }
+.cost-variance-disclaimer { margin: 10px 0 0; color: #9eb7c9; font-size: .82rem; line-height: 1.5; }
+@media (max-width: 1100px) {
+  .cost-variance-header { grid-template-columns: 1fr auto; }
+  .cost-variance-header button { grid-column: 1 / -1; }
+  .cost-variance-kpis { grid-template-columns: repeat(3, 1fr); }
+  .cost-variance-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .cost-variance-center { padding: 18px; }
+  .cost-variance-header { grid-template-columns: 1fr; }
+  .cost-variance-score { width: 100%; }
+  .cost-variance-kpis { grid-template-columns: repeat(2, 1fr); }
+  .cost-variance-forecast article,
+  .cost-variance-actions article { grid-template-columns: 1fr; }
+  .cost-variance-values { justify-content: flex-start; }
+  .cost-variance-action-value { text-align: left; }
+}

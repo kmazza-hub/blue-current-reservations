@@ -1324,6 +1324,14 @@ const marginIntelligenceCenterModule = startupRegistry.register(
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "enterpriseValuePlanCenter"]
 );
 
+const costVarianceCenterModule = startupRegistry.register(
+  "costVarianceCenter",
+  document.getElementById("costVarianceCenter")
+    ? window.createBlueCurrentCostVarianceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "marginIntelligenceCenter", "predictiveServiceCenter", "outcomeIntelligenceCenter"]
+);
+
 const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
 
 // V32.3 retires the legacy Autonomous Operations renderer. Its DOM contract
@@ -1373,6 +1381,7 @@ window.blueCurrent = {
     performanceGovernance: performanceGovernanceCenterModule,
     enterpriseValuePlan: enterpriseValuePlanCenterModule,
     marginIntelligence: marginIntelligenceCenterModule,
+    costVariance: costVarianceCenterModule,
     predictiveService: predictiveServiceCenterModule,
     autonomousPolicyCenter: autonomousPolicyCenterModule,
     executiveWorkflowCenter: executiveWorkflowCenterModule
