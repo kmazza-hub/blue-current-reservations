@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.23.0-production-runtime">
+  <meta name="blue-current-build" content="37.26.0-release-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3903,6 +3903,10 @@
 <section class="v3723-center" id="performanceBaselineCenter" aria-labelledby="pbTitle"><header><div><small>V37.21 · Performance Baseline</small><strong id="pbTitle">Capture a trusted runtime baseline before every material release.</strong><span id="pbHeadline">Preparing baseline…</span></div><div class="v3723-actions"><button type="button" id="pbCapture">Capture baseline</button><button type="button" id="pbExport">Export baseline</button></div></header><div class="v3723-kpis"><article><small>Baseline score</small><strong id="pbScore">0%</strong></article><article><small>Mode</small><strong id="pbMode">—</strong></article><article><small>Scripts</small><strong id="pbScripts">0</strong></article><article><small>DOM nodes</small><strong id="pbNodes">0</strong></article></div><div id="pbChecks" class="v3723-list"></div></section>
 <section class="v3723-center" id="performanceRegressionCenter" aria-labelledby="prTitle"><header><div><small>V37.22 · Regression Control</small><strong id="prTitle">Compare each runtime baseline and catch performance loss immediately.</strong><span id="prHeadline">Waiting for baseline evidence…</span></div><button type="button" id="prRefresh">Run comparison</button></header><div class="v3723-kpis"><article><small>Regression score</small><strong id="prScore">0%</strong></article><article><small>Status</small><strong id="prStatus">—</strong></article><article><small>Score delta</small><strong id="prDelta">0</strong></article><article><small>Regressions</small><strong id="prIssues">0</strong></article></div><div id="prChecks" class="v3723-list"></div></section>
 <section class="v3723-center" id="productionRuntimeCenter" aria-labelledby="prodTitle"><header><div><small>V37.23 · Production Runtime Gate</small><strong id="prodTitle">Certify focused startup for controlled production validation.</strong><span id="prodHeadline">Evaluating production controls…</span></div><div class="v3723-actions"><button type="button" id="prodRefresh">Run gate</button><button type="button" id="prodExport">Export evidence</button></div></header><div class="v3723-kpis"><article><small>Production score</small><strong id="prodScore">0%</strong></article><article><small>Status</small><strong id="prodStatus">—</strong></article><article><small>Blockers</small><strong id="prodBlockers">0</strong></article><article><small>Watch controls</small><strong id="prodWatch">0</strong></article></div><div id="prodChecks" class="v3723-list"></div></section>
+<section class="v3726-center" id="releaseCandidateCenter" aria-labelledby="rcdTitle"><header><div><small>V37.24 · Release Candidate Control</small><strong id="rcdTitle">Promote only builds that satisfy the production runtime controls.</strong><span id="rcdHeadline">Evaluating release candidate…</span></div><div class="v3726-actions"><button type="button" id="rcdRefresh">Refresh</button><button type="button" id="rcdPromote">Promote candidate</button><button type="button" id="rcdExport">Export</button></div></header><div class="v3726-kpis"><article><small>Candidate score</small><strong id="rcdScore">0%</strong></article><article><small>Status</small><strong id="rcdStatus">—</strong></article><article><small>Candidate ID</small><strong id="rcdId">—</strong></article><article><small>Blockers</small><strong id="rcdBlockers">0</strong></article></div><div id="rcdChecks" class="v3726-list"></div></section>
+<section class="v3726-center" id="rollbackCheckpointCenter" aria-labelledby="rbkTitle"><header><div><small>V37.25 · Rollback Checkpoints</small><strong id="rbkTitle">Preserve a known-good recovery point before every promotion.</strong><span id="rbkHeadline">Create a rollback checkpoint before promotion.</span></div><div class="v3726-actions"><button type="button" id="rbkCreate">Create checkpoint</button><button type="button" id="rbkExport">Export history</button></div></header><div class="v3726-kpis"><article><small>Checkpoints</small><strong id="rbkCount">0</strong></article><article><small>Latest</small><strong id="rbkLatest">—</strong></article><article><small>Build</small><strong id="rbkBuild">—</strong></article><article><small>Verified</small><strong id="rbkVerified">0</strong></article></div><div id="rbkList" class="v3726-list"></div></section>
+<section class="v3726-center" id="productionSmokeTestCenter" aria-labelledby="smtTitle"><header><div><small>V37.26 · Production Smoke Test</small><strong id="smtTitle">Verify the focused command path before controlled deployment.</strong><span id="smtHeadline">Waiting for smoke-test evidence…</span></div><div class="v3726-actions"><button type="button" id="smtRun">Run smoke test</button><button type="button" id="smtExport">Export evidence</button></div></header><div class="v3726-kpis"><article><small>Smoke score</small><strong id="smtScore">0%</strong></article><article><small>Status</small><strong id="smtStatus">—</strong></article><article><small>Checks passed</small><strong id="smtPassed">0/0</strong></article><article><small>Last run</small><strong id="smtRunAt">—</strong></article></div><div id="smtChecks" class="v3726-list"></div></section>
+
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -7718,6 +7722,12 @@
   <script src="js/modules/performanceRegressionCenter.js?v=37.23.0"></script>
   <script src="js/modules/productionRuntimeEngine.js?v=37.23.0"></script>
   <script src="js/modules/productionRuntimeCenter.js?v=37.23.0"></script>
-  <script src="js/startup-loader.js?v=37.23.0"></script>
+  <script src="js/modules/releaseCandidateEngine.js?v=37.26.0"></script>
+  <script src="js/modules/releaseCandidateCenter.js?v=37.26.0"></script>
+  <script src="js/modules/rollbackCheckpointEngine.js?v=37.26.0"></script>
+  <script src="js/modules/rollbackCheckpointCenter.js?v=37.26.0"></script>
+  <script src="js/modules/productionSmokeTestEngine.js?v=37.26.0"></script>
+  <script src="js/modules/productionSmokeTestCenter.js?v=37.26.0"></script>
+  <script src="js/startup-loader.js?v=37.26.0"></script>
 </body>
 </html>

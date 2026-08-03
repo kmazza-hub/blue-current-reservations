@@ -1069,7 +1069,10 @@ const ESSENTIAL_STARTUP_CENTERS = new Set([
   "runtimeReadinessCenter",
   "performanceBaselineCenter",
   "performanceRegressionCenter",
-  "productionRuntimeCenter"
+  "productionRuntimeCenter",
+  "releaseCandidateCenter",
+  "rollbackCheckpointCenter",
+  "productionSmokeTestCenter"
 ]);
 function shouldInitializeCenter(id) {
   return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id) || activatedCenters.has(id));
@@ -1077,7 +1080,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "37.23.0-production-runtime", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "37.26.0-release-control", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1603,6 +1606,21 @@ const productionRuntimeCenterModule = startupRegistry.register(
   shouldInitializeCenter("productionRuntimeCenter") ? window.createBlueCurrentProductionRuntimeCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "runtimeReadinessCenter", "performanceBaselineCenter", "performanceRegressionCenter"]
 );
+const releaseCandidateCenterModule = startupRegistry.register(
+  "releaseCandidateCenter",
+  shouldInitializeCenter("releaseCandidateCenter") ? window.createBlueCurrentReleaseCandidateCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "productionRuntimeCenter", "performanceRegressionCenter"]
+);
+const rollbackCheckpointCenterModule = startupRegistry.register(
+  "rollbackCheckpointCenter",
+  shouldInitializeCenter("rollbackCheckpointCenter") ? window.createBlueCurrentRollbackCheckpointCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "releaseCandidateCenter"]
+);
+const productionSmokeTestCenterModule = startupRegistry.register(
+  "productionSmokeTestCenter",
+  shouldInitializeCenter("productionSmokeTestCenter") ? window.createBlueCurrentProductionSmokeTestCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "releaseCandidateCenter", "rollbackCheckpointCenter"]
+);
 const pilotLaunchCenterModule = startupRegistry.register(
   "pilotLaunchCenter",
   shouldInitializeCenter("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
@@ -1903,6 +1921,9 @@ window.blueCurrent = {
     performanceBaseline: performanceBaselineCenterModule,
     performanceRegression: performanceRegressionCenterModule,
     productionRuntime: productionRuntimeCenterModule,
+    releaseCandidate: releaseCandidateCenterModule,
+    rollbackCheckpoint: rollbackCheckpointCenterModule,
+    productionSmokeTest: productionSmokeTestCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,
