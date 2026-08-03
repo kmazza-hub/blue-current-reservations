@@ -106,7 +106,10 @@ class AppState {
       enterpriseValuePlan: null,
       enterpriseValuePlanHistory: [],
       enterpriseValueTargets: [],
-      enterpriseValueInitiatives: []
+      enterpriseValueInitiatives: [],
+      marginIntelligence: null,
+      marginIntelligenceHistory: [],
+      marginAssumptions: null
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

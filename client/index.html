@@ -1939,6 +1939,55 @@
           </div>
           <p id="enterpriseValuePlanMessage" class="enterprise-value-plan-message" role="status"></p>
         </section>
+        <section class="margin-intelligence-center" id="marginIntelligenceCenter" aria-labelledby="marginIntelligenceTitle">
+          <header class="margin-intelligence-header">
+            <div>
+              <small>V35.13 · Profit control</small>
+              <strong id="marginIntelligenceTitle">Margin Intelligence & Profit Control</strong>
+              <span>Translate revenue, labor, food cost, discounts, waste, and capacity into a clear contribution-margin picture and prioritized profit actions.</span>
+            </div>
+            <div class="margin-intelligence-score">
+              <small>Margin health</small>
+              <strong id="marginIntelligenceScore">0%</strong>
+              <span id="marginIntelligenceStatus" data-tone="watch">watch</span>
+            </div>
+            <button type="button" id="marginIntelligenceRefresh">Refresh</button>
+          </header>
+          <p class="margin-intelligence-summary" id="marginIntelligenceSummary">Calculating contribution margin and recoverable profit opportunity.</p>
+          <div class="margin-intelligence-kpis">
+            <article><small>Captured revenue</small><strong id="marginCapturedRevenue">$0</strong></article>
+            <article><small>Modeled contribution</small><strong id="marginGrossMargin">$0</strong></article>
+            <article><small>Contribution margin</small><strong id="marginPercent">0%</strong></article>
+            <article><small>Profit opportunity</small><strong id="marginProfitOpportunity">$0</strong></article>
+            <article><small>Realized profit</small><strong id="marginRealizedProfit">$0</strong></article>
+            <article><small>Model confidence</small><strong id="marginConfidence">0%</strong></article>
+          </div>
+          <div class="margin-intelligence-grid">
+            <section>
+              <div class="margin-section-title"><small>Cost model</small><strong>Operating assumptions</strong></div>
+              <div class="margin-assumptions">
+                <label>Food cost %<input id="marginFoodCost" type="number" min="10" max="60" step=".5"></label>
+                <label>Labor cost %<input id="marginLaborCost" type="number" min="10" max="60" step=".5"></label>
+                <label>Discounts %<input id="marginDiscounts" type="number" min="0" max="25" step=".5"></label>
+                <label>Waste %<input id="marginWaste" type="number" min="0" max="20" step=".5"></label>
+                <label>Target margin %<input id="marginTarget" type="number" min="1" max="50" step=".5"></label>
+                <button type="button" id="marginAssumptionsApply">Apply assumptions</button>
+              </div>
+              <div class="margin-cost-breakdown" id="marginCostBreakdown"></div>
+            </section>
+            <section>
+              <div class="margin-section-title"><small>Profit leakage</small><strong>Where margin is being lost</strong></div>
+              <div class="margin-leakage-list" id="marginLeakageList"></div>
+            </section>
+          </div>
+          <section class="margin-actions-section">
+            <div class="margin-section-title"><small>Highest-impact actions</small><strong>Prioritized by projected profit, not revenue alone</strong></div>
+            <div class="margin-action-list" id="marginActionList"></div>
+          </section>
+          <p id="marginIntelligenceMessage" class="margin-intelligence-message" role="status"></p>
+          <p class="margin-intelligence-disclaimer">Modeled contribution margin is an operational decision-support estimate. It is not audited accounting data and should be reconciled with the restaurant’s financial systems.</p>
+        </section>
+
 
 </main>
           </div>
@@ -7203,6 +7252,8 @@
   <script src="js/modules/performanceGovernanceCenter.js?v=35.11.0"></script>
   <script src="js/modules/enterpriseValuePlanEngine.js?v=35.12.0"></script>
   <script src="js/modules/enterpriseValuePlanCenter.js?v=35.12.0"></script>
+  <script src="js/modules/marginIntelligenceEngine.js?v=35.13.0"></script>
+  <script src="js/modules/marginIntelligenceCenter.js?v=35.13.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
