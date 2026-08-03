@@ -1671,6 +1671,21 @@ const sourcePromotionCenterModule = startupRegistry.register(
   shouldInitializeCenter("sourcePromotionCenter") ? window.createBlueCurrentSourcePromotionCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "ingestionQueueCenter"]
 );
+const trustedDatasetCenterModule = startupRegistry.register(
+  "trustedDatasetCenter",
+  shouldInitializeCenter("trustedDatasetCenter") ? window.createBlueCurrentTrustedDatasetCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "sourcePromotionCenter"]
+);
+const dataLineageCenterModule = startupRegistry.register(
+  "dataLineageCenter",
+  shouldInitializeCenter("dataLineageCenter") ? window.createBlueCurrentDataLineageCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "trustedDatasetCenter"]
+);
+const pilotSyncRehearsalCenterModule = startupRegistry.register(
+  "pilotSyncRehearsalCenter",
+  shouldInitializeCenter("pilotSyncRehearsalCenter") ? window.createBlueCurrentPilotSyncRehearsalCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "trustedDatasetCenter", "dataLineageCenter", "connectorConfigurationCenter"]
+);
 const v37CertificationCenterModule = startupRegistry.register(
   "v37CertificationCenter",
   shouldInitializeCenter("v37CertificationCenter") ? window.createBlueCurrentV37CertificationCenterModule?.(eventBus, appState) : null,
@@ -1989,6 +2004,9 @@ window.blueCurrent = {
     canonicalMapping: canonicalMappingCenterModule,
     ingestionQueue: ingestionQueueCenterModule,
     sourcePromotion: sourcePromotionCenterModule,
+    trustedDataset: trustedDatasetCenterModule,
+    dataLineage: dataLineageCenterModule,
+    pilotSyncRehearsal: pilotSyncRehearsalCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,
