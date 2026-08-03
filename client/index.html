@@ -3920,6 +3920,30 @@
           <p id="pilotReleaseStatus" class="pilot-release-status" role="status"></p>
         </section>
 
+
+
+        <section class="pilot-operations-center" id="pilotOperationsCenter" aria-labelledby="pilotOperationsTitle">
+          <div class="pilot-operations-header">
+            <div><small>V35.6 · Controlled restaurant validation</small><strong id="pilotOperationsTitle">Pilot Operations & Validation Center</strong><span>Run one shift through a governed, evidence-based validation sequence.</span></div>
+            <div class="pilot-operations-score"><small>Validation score</small><strong id="pilotOperationsScore">0%</strong><span id="pilotOperationsState" data-tone="draft">draft</span></div>
+            <div class="pilot-operations-buttons"><button type="button" id="pilotOperationsStart">Start pilot</button><button type="button" id="pilotOperationsAddIssue">Record issue</button><button type="button" id="pilotOperationsComplete" disabled>Complete session</button><button type="button" id="pilotOperationsExport">Export record</button></div>
+          </div>
+          <p class="pilot-operations-summary" id="pilotOperationsSummary">Configure the pilot lead and shift, then begin the controlled validation run.</p>
+          <div class="pilot-operations-kpis">
+            <article><small>Location</small><strong id="pilotOperationsLocation">—</strong></article>
+            <article><small>Pilot lead</small><strong id="pilotOperationsLeadValue">Pilot Lead</strong></article>
+            <article><small>Shift</small><strong id="pilotOperationsShiftValue">Dinner service</strong></article>
+            <article><small>Checkpoints passed</small><strong id="pilotOperationsPassedCount">0/6</strong></article>
+            <article><small>Open issues</small><strong id="pilotOperationsIssueCount">0</strong></article>
+          </div>
+          <div class="pilot-operations-next"><small>Next required action</small><strong id="pilotOperationsNextAction">Validate pre-service preflight</strong></div>
+          <div class="pilot-operations-layout">
+            <section><div class="pilot-operations-title"><small>Shift validation sequence</small><strong>Every checkpoint required for a controlled pilot</strong></div><div id="pilotOperationsCheckpoints" class="pilot-operations-checkpoints"></div></section>
+            <aside><div class="pilot-operations-title"><small>Issue register</small><strong>Watch conditions and blockers</strong></div><ul id="pilotOperationsIssues" class="pilot-operations-issues"></ul><div class="pilot-operations-title pilot-operations-timeline-title"><small>Session evidence</small><strong>Decision and validation timeline</strong></div><ul id="pilotOperationsTimeline" class="pilot-operations-timeline"></ul></aside>
+          </div>
+          <p id="pilotOperationsStatus" class="pilot-operations-status" role="status"></p>
+        </section>
+
         <section class="predictive-service-center" id="predictiveServiceCenter" aria-labelledby="predictiveServiceTitle">
           <div class="predictive-service-heading">
             <div><small>V34.6.7 · Forward operating intelligence</small><strong id="predictiveServiceTitle">Predictive Service Center</strong><span id="predictiveServiceUpdated">Building one-hour forecast…</span></div>
@@ -6963,12 +6987,14 @@
   <script src="js/modules/performanceLearningCenter.js?v=35.4.0"></script>
   <script src="js/modules/pilotReleaseEngine.js?v=35.5.0"></script>
   <script src="js/modules/pilotReleaseCenter.js?v=35.5.0"></script>
+  <script src="js/modules/pilotOperationsEngine.js?v=35.6.0"></script>
+  <script src="js/modules/pilotOperationsCenter.js?v=35.6.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.5.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.6.0"></script>
 </body>
 </html>
