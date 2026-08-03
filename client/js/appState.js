@@ -61,7 +61,9 @@ class AppState {
       restaurantPerformanceActions: [],
       outcomeMeasurements: [],
       outcomeIntelligence: null,
-      outcomeIntelligenceHistory: []
+      outcomeIntelligenceHistory: [],
+      executiveBriefing: null,
+      executiveBriefingHistory: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

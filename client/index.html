@@ -3690,6 +3690,28 @@
           <p id="outcomeIntelligenceStatus" class="outcome-intelligence-status" role="status"></p>
         </section>
 
+        <section class="executive-briefing-center" id="executiveBriefingCenter" aria-labelledby="executiveBriefingCenterTitle">
+          <header class="executive-briefing-header">
+            <div><small>V35.2 · Executive Briefing</small><strong id="executiveBriefingCenterTitle">The entire restaurant in one leadership brief</strong><span id="executiveBriefingUpdated">Preparing executive briefing…</span></div>
+            <div class="executive-briefing-actions"><button type="button" id="executiveBriefingRefresh">Refresh brief</button><button type="button" id="executiveBriefingExport">Copy / export</button></div>
+          </header>
+          <section class="executive-briefing-lead">
+            <div><span id="executiveBriefingConfidence">Building confidence</span><strong id="executiveBriefingHeadline">Connecting performance, outcomes, risks, and action.</strong><p id="executiveBriefingNarrative">Blue Current is synthesizing the live operating picture.</p></div>
+            <dl><div><dt>RPI</dt><dd id="executiveBriefingRpi">—</dd></div><div><dt>Opportunity</dt><dd id="executiveBriefingOpportunity">$0</dd></div><div><dt>Realized</dt><dd id="executiveBriefingRealized">$0</dd></div><div><dt>Approvals</dt><dd id="executiveBriefingApprovals">0</dd></div></dl>
+          </section>
+          <div class="executive-briefing-questions" id="executiveBriefingQuestions"></div>
+          <div class="executive-briefing-grid">
+            <section><div class="executive-briefing-title"><small>Leadership priorities</small><strong>What to do next</strong></div><div id="executiveBriefingPriorities" class="executive-briefing-priorities"></div></section>
+            <section><div class="executive-briefing-title"><small>Risks and exceptions</small><strong>What could reduce performance</strong></div><div id="executiveBriefingRisks" class="executive-briefing-risks"></div></section>
+            <section><div class="executive-briefing-title"><small>Measured wins</small><strong>What improved and why</strong></div><div id="executiveBriefingWins" class="executive-briefing-wins"></div></section>
+          </div>
+          <footer class="executive-briefing-next">
+            <div><small>Highest-impact next action</small><strong id="executiveBriefingNextAction">Maintain current posture</strong><p id="executiveBriefingNextActionDetail">No immediate intervention required.</p></div>
+            <b id="executiveBriefingNextActionImpact">Monitoring</b><button type="button" id="executiveBriefingAct">Send into action path</button>
+          </footer>
+          <p id="executiveBriefingStatus" class="executive-briefing-status" role="status"></p>
+        </section>
+
         <section class="ai-orchestration-center" id="aiOrchestrationCenter" aria-labelledby="aiOrchestrationCenterTitle">
           <div class="ai-orchestration-heading">
             <div>
@@ -6837,6 +6859,8 @@
   <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.1"></script>
   <script src="js/modules/outcomeIntelligenceEngine.js?v=35.1.0"></script>
   <script src="js/modules/outcomeIntelligenceCenter.js?v=35.1.0"></script>
+  <script src="js/modules/executiveBriefingEngine.js?v=35.2.0"></script>
+  <script src="js/modules/executiveBriefingCenter.js?v=35.2.0"></script>
   <script src="js/modules/aiOrchestrationCenter.js?v=34.6.2"></script>
   <script src="js/modules/operationalDigitalTwinEngine.js?v=34.6.3"></script>
   <script src="js/modules/operationalDigitalTwinCenter.js?v=34.6.3"></script>
