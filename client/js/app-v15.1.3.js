@@ -1035,49 +1035,79 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 
 const motionEngine = new window.BlueCurrentMotionEngine();
 
+// V37.1.1 startup stabilization
+// Safe startup is the default. Use ?full=1 only when detailed platform centers are needed.
+const startupParams = new URLSearchParams(window.location.search);
+const fullPlatformStartup = startupParams.get("full") === "1";
+const safeStartup = !fullPlatformStartup;
+const ESSENTIAL_STARTUP_CENTERS = new Set([
+  "unifiedCommandCenter",
+  "guidedShiftCenter",
+  "operatorCopilotCenter",
+  "roleExperienceCenter",
+  "commandActionInboxCenter",
+  "shiftProfitPulseCenter",
+  "runtimeRecoveryCenter"
+]);
+function shouldInitializeCenter(id) {
+  return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id));
+}
+document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
+window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "35.9.0", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "37.1.1-stable", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
 startupRegistry.register("eventBus", eventBus);
 startupRegistry.register("appState", appState, ["eventBus"]);
 
-const conciergeModule =
-  window.createBlueCurrentConciergeModule?.(eventBus, appState);
+const conciergeModule = fullPlatformStartup
+  ? window.createBlueCurrentConciergeModule?.(eventBus, appState)
+  : null;
 
-const digitalTwinModule =
-  window.createBlueCurrentDigitalTwinModule?.(eventBus, appState);
+const digitalTwinModule = fullPlatformStartup
+  ? window.createBlueCurrentDigitalTwinModule?.(eventBus, appState)
+  : null;
 
-const executiveModule =
-  window.createBlueCurrentExecutiveModule?.(eventBus, appState);
+const executiveModule = fullPlatformStartup
+  ? window.createBlueCurrentExecutiveModule?.(eventBus, appState)
+  : null;
 
-const missionControlModule =
-  window.createBlueCurrentMissionControlModule?.(eventBus, appState, motionEngine);
+const missionControlModule = fullPlatformStartup
+  ? window.createBlueCurrentMissionControlModule?.(eventBus, appState, motionEngine)
+  : null;
 
-const guestJourneyModule =
-  window.createBlueCurrentGuestJourneyModule?.(eventBus, appState);
+const guestJourneyModule = fullPlatformStartup
+  ? window.createBlueCurrentGuestJourneyModule?.(eventBus, appState)
+  : null;
 
-const timeMachineModule =
-  window.createBlueCurrentTimeMachineModule?.(eventBus, appState);
+const timeMachineModule = fullPlatformStartup
+  ? window.createBlueCurrentTimeMachineModule?.(eventBus, appState)
+  : null;
 
-const portfolioModeModule =
-  window.createBlueCurrentPortfolioModeModule?.(eventBus, appState);
+const portfolioModeModule = fullPlatformStartup
+  ? window.createBlueCurrentPortfolioModeModule?.(eventBus, appState)
+  : null;
 
-const predictiveOperationsModule =
-  window.createBlueCurrentPredictiveOperationsModule?.(eventBus, appState);
+const predictiveOperationsModule = fullPlatformStartup
+  ? window.createBlueCurrentPredictiveOperationsModule?.(eventBus, appState)
+  : null;
 
-const blueCurrentLiveModule =
-  window.createBlueCurrentLiveModule?.(eventBus, appState);
+const blueCurrentLiveModule = fullPlatformStartup
+  ? window.createBlueCurrentLiveModule?.(eventBus, appState)
+  : null;
 
-const intelligenceNetworkModule =
-  window.createBlueCurrentIntelligenceNetworkModule?.(eventBus, appState);
+const intelligenceNetworkModule = fullPlatformStartup
+  ? window.createBlueCurrentIntelligenceNetworkModule?.(eventBus, appState)
+  : null;
 
 // The legacy autonomous module is superseded by Operations Director.
 const autonomousOperationsModule = null;
 
-const productionReadinessModule =
-  window.createBlueCurrentProductionReadinessModule?.(eventBus, appState);
+const productionReadinessModule = fullPlatformStartup
+  ? window.createBlueCurrentProductionReadinessModule?.(eventBus, appState)
+  : null;
 
 const cloudFoundationModule =
   startupRegistry.register(
@@ -1103,7 +1133,7 @@ const authOrganizationsModule =
 const liveFloorOperationsModule =
   startupRegistry.register(
     "liveFloorOperations",
-    document.getElementById("live-floor-operations")
+    shouldInitializeCenter("live-floor-operations")
       ? window.createBlueCurrentLiveFloorOperationsModule?.(eventBus, appState, cloudFoundationModule)
       : null,
     ["eventBus", "appState", "cloudFoundation", "authOrganizations"]
@@ -1112,7 +1142,7 @@ const liveFloorOperationsModule =
 const reservationOperationsModule =
   startupRegistry.register(
     "reservationOperations",
-    document.getElementById("reservation-operations")
+    shouldInitializeCenter("reservation-operations")
       ? window.createBlueCurrentReservationOperationsModule?.(
           eventBus,
           appState,
@@ -1126,7 +1156,7 @@ const reservationOperationsModule =
 const staffSectionsModule =
   startupRegistry.register(
     "staffSections",
-    document.getElementById("staff-sections")
+    shouldInitializeCenter("staff-sections")
       ? window.createBlueCurrentStaffSectionsModule?.(
           eventBus,
           appState,
@@ -1139,7 +1169,7 @@ const staffSectionsModule =
 
 const kitchenCommandCenterModule = startupRegistry.register(
   "kitchenCommandCenter",
-  document.getElementById("kitchen-command-center")
+  shouldInitializeCenter("kitchen-command-center")
     ? window.createBlueCurrentKitchenCommandCenterModule?.(eventBus, appState, cloudFoundationModule)
     : null,
   ["eventBus","appState","cloudFoundation","authOrganizations"]
@@ -1147,7 +1177,7 @@ const kitchenCommandCenterModule = startupRegistry.register(
 
 const serviceCoordinationModule = startupRegistry.register(
   "serviceCoordination",
-  document.getElementById("service-coordination")
+  shouldInitializeCenter("service-coordination")
     ? window.createBlueCurrentServiceCoordinationModule?.(eventBus, appState, cloudFoundationModule)
     : null,
   ["eventBus","appState","cloudFoundation","authOrganizations","kitchenCommandCenter"]
@@ -1155,7 +1185,7 @@ const serviceCoordinationModule = startupRegistry.register(
 
 const aiRestaurantBrainModule = startupRegistry.register(
   "aiRestaurantBrain",
-  document.getElementById("ai-restaurant-brain")
+  shouldInitializeCenter("ai-restaurant-brain")
     ? window.createBlueCurrentAiRestaurantBrainModule?.(eventBus, appState, cloudFoundationModule)
     : null,
   ["eventBus","appState","cloudFoundation","authOrganizations","serviceCoordination","kitchenCommandCenter"]
@@ -1163,7 +1193,7 @@ const aiRestaurantBrainModule = startupRegistry.register(
 
 const unifiedCommandCenterModule = startupRegistry.register(
   "unifiedCommandCenter",
-  document.getElementById("unifiedCommandCenter")
+  shouldInitializeCenter("unifiedCommandCenter")
     ? window.createBlueCurrentUnifiedCommandCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState"]
@@ -1171,7 +1201,7 @@ const unifiedCommandCenterModule = startupRegistry.register(
 
 const guidedShiftCenterModule = startupRegistry.register(
   "guidedShiftCenter",
-  document.getElementById("guidedShiftCenter")
+  shouldInitializeCenter("guidedShiftCenter")
     ? window.createBlueCurrentGuidedShiftCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter"]
@@ -1179,7 +1209,7 @@ const guidedShiftCenterModule = startupRegistry.register(
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
-  document.getElementById("operatorCopilotCenter")
+  shouldInitializeCenter("operatorCopilotCenter")
     ? window.createBlueCurrentOperatorCopilotCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter", "guidedShiftCenter"]
@@ -1187,7 +1217,7 @@ const operatorCopilotCenterModule = startupRegistry.register(
 
 const roleExperienceCenterModule = startupRegistry.register(
   "roleExperienceCenter",
-  document.getElementById("roleExperienceCenter")
+  shouldInitializeCenter("roleExperienceCenter")
     ? window.createBlueCurrentRoleExperienceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter", "guidedShiftCenter", "operatorCopilotCenter"]
@@ -1195,7 +1225,7 @@ const roleExperienceCenterModule = startupRegistry.register(
 
 const commandActionInboxCenterModule = startupRegistry.register(
   "commandActionInboxCenter",
-  document.getElementById("commandActionInboxCenter")
+  shouldInitializeCenter("commandActionInboxCenter")
     ? window.createBlueCurrentCommandActionInboxCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "operatorCopilotCenter", "guidedShiftCenter"]
@@ -1203,7 +1233,7 @@ const commandActionInboxCenterModule = startupRegistry.register(
 
 const shiftCloseoutCenterModule = startupRegistry.register(
   "shiftCloseoutCenter",
-  document.getElementById("shiftCloseoutCenter")
+  shouldInitializeCenter("shiftCloseoutCenter")
     ? window.createBlueCurrentShiftCloseoutCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "commandActionInboxCenter", "guidedShiftCenter"]
@@ -1211,7 +1241,7 @@ const shiftCloseoutCenterModule = startupRegistry.register(
 
 const digitalTwinVisualizationCenterModule = startupRegistry.register(
   "digitalTwinVisualizationCenter",
-  document.getElementById("digitalTwinVisualizationCenter")
+  shouldInitializeCenter("digitalTwinVisualizationCenter")
     ? window.createBlueCurrentDigitalTwinVisualizationCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter"]
@@ -1219,7 +1249,7 @@ const digitalTwinVisualizationCenterModule = startupRegistry.register(
 
 const executiveMorningBriefCenterModule = startupRegistry.register(
   "executiveMorningBriefCenter",
-  document.getElementById("executiveMorningBriefCenter")
+  shouldInitializeCenter("executiveMorningBriefCenter")
     ? window.createBlueCurrentExecutiveMorningBriefCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter"]
@@ -1227,7 +1257,7 @@ const executiveMorningBriefCenterModule = startupRegistry.register(
 
 const intelligenceGraphCenterModule = startupRegistry.register(
   "intelligenceGraphCenter",
-  document.getElementById("intelligenceGraphCenter")
+  shouldInitializeCenter("intelligenceGraphCenter")
     ? window.createBlueCurrentIntelligenceGraphCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter", "digitalTwinVisualizationCenter"]
@@ -1235,7 +1265,7 @@ const intelligenceGraphCenterModule = startupRegistry.register(
 
 const predictiveOverlayCenterModule = startupRegistry.register(
   "predictiveOverlayCenter",
-  document.getElementById("predictiveOverlayCenter")
+  shouldInitializeCenter("predictiveOverlayCenter")
     ? window.createBlueCurrentPredictiveOverlayCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter", "digitalTwinVisualizationCenter"]
@@ -1243,7 +1273,7 @@ const predictiveOverlayCenterModule = startupRegistry.register(
 
 const restaurantReplayCenterModule = startupRegistry.register(
   "restaurantReplayCenter",
-  document.getElementById("restaurantReplayCenter")
+  shouldInitializeCenter("restaurantReplayCenter")
     ? window.createBlueCurrentRestaurantReplayCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter"]
@@ -1251,7 +1281,7 @@ const restaurantReplayCenterModule = startupRegistry.register(
 
 const explainableDecisionCenterModule = startupRegistry.register(
   "explainableDecisionCenter",
-  document.getElementById("explainableDecisionCenter")
+  shouldInitializeCenter("explainableDecisionCenter")
     ? window.createBlueCurrentExplainableDecisionCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "unifiedCommandCenter", "intelligenceGraphCenter"]
@@ -1259,7 +1289,7 @@ const explainableDecisionCenterModule = startupRegistry.register(
 
 const crossLocationPulseCenterModule = startupRegistry.register(
   "crossLocationPulseCenter",
-  document.getElementById("crossLocationPulseCenter")
+  shouldInitializeCenter("crossLocationPulseCenter")
     ? window.createBlueCurrentCrossLocationPulseCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "portfolioPerformanceCenter"]
@@ -1267,7 +1297,7 @@ const crossLocationPulseCenterModule = startupRegistry.register(
 
 const profitScenarioCenterModule = startupRegistry.register(
   "profitScenarioCenter",
-  document.getElementById("profitScenarioCenter")
+  shouldInitializeCenter("profitScenarioCenter")
     ? window.createBlueCurrentProfitScenarioCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter", "costVarianceCenter"]
@@ -1275,7 +1305,7 @@ const profitScenarioCenterModule = startupRegistry.register(
 
 const smartAlertRouterCenterModule = startupRegistry.register(
   "smartAlertRouterCenter",
-  document.getElementById("smartAlertRouterCenter")
+  shouldInitializeCenter("smartAlertRouterCenter")
     ? window.createBlueCurrentSmartAlertRouterCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "predictiveOverlayCenter", "commandActionInboxCenter"]
@@ -1283,7 +1313,7 @@ const smartAlertRouterCenterModule = startupRegistry.register(
 
 const guestRecoveryCenterModule = startupRegistry.register(
   "guestRecoveryCenter",
-  document.getElementById("guestRecoveryCenter")
+  shouldInitializeCenter("guestRecoveryCenter")
     ? window.createBlueCurrentGuestRecoveryCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "smartAlertRouterCenter"]
@@ -1291,7 +1321,7 @@ const guestRecoveryCenterModule = startupRegistry.register(
 
 const laborDeploymentCenterModule = startupRegistry.register(
   "laborDeploymentCenter",
-  document.getElementById("laborDeploymentCenter")
+  shouldInitializeCenter("laborDeploymentCenter")
     ? window.createBlueCurrentLaborDeploymentCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "predictiveOverlayCenter"]
@@ -1299,7 +1329,7 @@ const laborDeploymentCenterModule = startupRegistry.register(
 
 const serviceQualityCenterModule = startupRegistry.register(
   "serviceQualityCenter",
-  document.getElementById("serviceQualityCenter")
+  shouldInitializeCenter("serviceQualityCenter")
     ? window.createBlueCurrentServiceQualityCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "guestRecoveryCenter", "laborDeploymentCenter"]
@@ -1307,7 +1337,7 @@ const serviceQualityCenterModule = startupRegistry.register(
 
 const reservationYieldCenterModule = startupRegistry.register(
   "reservationYieldCenter",
-  document.getElementById("reservationYieldCenter")
+  shouldInitializeCenter("reservationYieldCenter")
     ? window.createBlueCurrentReservationYieldCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "serviceQualityCenter"]
@@ -1315,7 +1345,7 @@ const reservationYieldCenterModule = startupRegistry.register(
 
 const kitchenThroughputCenterModule = startupRegistry.register(
   "kitchenThroughputCenter",
-  document.getElementById("kitchenThroughputCenter")
+  shouldInitializeCenter("kitchenThroughputCenter")
     ? window.createBlueCurrentKitchenThroughputCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "laborDeploymentCenter", "reservationYieldCenter"]
@@ -1323,7 +1353,7 @@ const kitchenThroughputCenterModule = startupRegistry.register(
 
 const shiftProfitPulseCenterModule = startupRegistry.register(
   "shiftProfitPulseCenter",
-  document.getElementById("shiftProfitPulseCenter")
+  shouldInitializeCenter("shiftProfitPulseCenter")
     ? window.createBlueCurrentShiftProfitPulseCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "reservationYieldCenter", "kitchenThroughputCenter", "serviceQualityCenter"]
@@ -1331,7 +1361,7 @@ const shiftProfitPulseCenterModule = startupRegistry.register(
 
 const inventoryWasteCenterModule = startupRegistry.register(
   "inventoryWasteCenter",
-  document.getElementById("inventoryWasteCenter")
+  shouldInitializeCenter("inventoryWasteCenter")
     ? window.createBlueCurrentInventoryWasteCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "kitchenThroughputCenter"]
@@ -1339,7 +1369,7 @@ const inventoryWasteCenterModule = startupRegistry.register(
 
 const menuMixCenterModule = startupRegistry.register(
   "menuMixCenter",
-  document.getElementById("menuMixCenter")
+  shouldInitializeCenter("menuMixCenter")
     ? window.createBlueCurrentMenuMixCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "inventoryWasteCenter", "serviceQualityCenter"]
@@ -1347,7 +1377,7 @@ const menuMixCenterModule = startupRegistry.register(
 
 const dailyProfitPlanCenterModule = startupRegistry.register(
   "dailyProfitPlanCenter",
-  document.getElementById("dailyProfitPlanCenter")
+  shouldInitializeCenter("dailyProfitPlanCenter")
     ? window.createBlueCurrentDailyProfitPlanCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "menuMixCenter", "reservationYieldCenter", "kitchenThroughputCenter"]
@@ -1355,7 +1385,7 @@ const dailyProfitPlanCenterModule = startupRegistry.register(
 
 const vendorPurchaseCenterModule = startupRegistry.register(
   "vendorPurchaseCenter",
-  document.getElementById("vendorPurchaseCenter")
+  shouldInitializeCenter("vendorPurchaseCenter")
     ? window.createBlueCurrentVendorPurchaseCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "inventoryWasteCenter", "menuMixCenter"]
@@ -1363,7 +1393,7 @@ const vendorPurchaseCenterModule = startupRegistry.register(
 
 const demandPrepForecastCenterModule = startupRegistry.register(
   "demandPrepForecastCenter",
-  document.getElementById("demandPrepForecastCenter")
+  shouldInitializeCenter("demandPrepForecastCenter")
     ? window.createBlueCurrentDemandPrepForecastCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "reservationYieldCenter", "kitchenThroughputCenter", "vendorPurchaseCenter"]
@@ -1371,7 +1401,7 @@ const demandPrepForecastCenterModule = startupRegistry.register(
 
 const profitCloseoutCenterModule = startupRegistry.register(
   "profitCloseoutCenter",
-  document.getElementById("profitCloseoutCenter")
+  shouldInitializeCenter("profitCloseoutCenter")
     ? window.createBlueCurrentProfitCloseoutCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "dailyProfitPlanCenter", "vendorPurchaseCenter", "demandPrepForecastCenter"]
@@ -1379,7 +1409,7 @@ const profitCloseoutCenterModule = startupRegistry.register(
 
 const supplierVarianceCenterModule = startupRegistry.register(
   "supplierVarianceCenter",
-  document.getElementById("supplierVarianceCenter")
+  shouldInitializeCenter("supplierVarianceCenter")
     ? window.createBlueCurrentSupplierVarianceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "vendorPurchaseCenter", "inventoryWasteCenter"]
@@ -1387,7 +1417,7 @@ const supplierVarianceCenterModule = startupRegistry.register(
 
 const prepExecutionCenterModule = startupRegistry.register(
   "prepExecutionCenter",
-  document.getElementById("prepExecutionCenter")
+  shouldInitializeCenter("prepExecutionCenter")
     ? window.createBlueCurrentPrepExecutionCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "demandPrepForecastCenter", "kitchenThroughputCenter"]
@@ -1395,7 +1425,7 @@ const prepExecutionCenterModule = startupRegistry.register(
 
 const weeklyProfitReviewCenterModule = startupRegistry.register(
   "weeklyProfitReviewCenter",
-  document.getElementById("weeklyProfitReviewCenter")
+  shouldInitializeCenter("weeklyProfitReviewCenter")
     ? window.createBlueCurrentWeeklyProfitReviewCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "profitCloseoutCenter", "supplierVarianceCenter", "prepExecutionCenter"]
@@ -1403,89 +1433,89 @@ const weeklyProfitReviewCenterModule = startupRegistry.register(
 
 const teamCollaborationCenterModule = startupRegistry.register(
   "teamCollaborationCenter",
-  document.getElementById("teamCollaborationCenter") ? window.createBlueCurrentTeamCollaborationCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("teamCollaborationCenter") ? window.createBlueCurrentTeamCollaborationCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "commandActionInboxCenter", "guidedShiftCenter"]
 );
 
 const enterpriseOperationsCenterModule = startupRegistry.register(
   "enterpriseOperationsCenter",
-  document.getElementById("enterpriseOperationsCenter") ? window.createBlueCurrentEnterpriseOperationsCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("enterpriseOperationsCenter") ? window.createBlueCurrentEnterpriseOperationsCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "portfolioPerformanceCenter"]
 );
 
 const operationalKnowledgeCenterModule = startupRegistry.register(
   "operationalKnowledgeCenter",
-  document.getElementById("operationalKnowledgeCenter") ? window.createBlueCurrentOperationalKnowledgeCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("operationalKnowledgeCenter") ? window.createBlueCurrentOperationalKnowledgeCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "serviceQualityCenter", "kitchenThroughputCenter"]
 );
 
 const experienceQualityCenterModule = startupRegistry.register(
   "experienceQualityCenter",
-  document.getElementById("experienceQualityCenter") ? window.createBlueCurrentExperienceQualityCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("experienceQualityCenter") ? window.createBlueCurrentExperienceQualityCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState"]
 );
 const demoModeCenterModule = startupRegistry.register(
   "demoModeCenter",
-  document.getElementById("demoModeCenter") ? window.createBlueCurrentDemoModeCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("demoModeCenter") ? window.createBlueCurrentDemoModeCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState"]
 );
 const pilotOnboardingCenterModule = startupRegistry.register(
   "pilotOnboardingCenter",
-  document.getElementById("pilotOnboardingCenter") ? window.createBlueCurrentPilotOnboardingCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("pilotOnboardingCenter") ? window.createBlueCurrentPilotOnboardingCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "experienceQualityCenter", "demoModeCenter"]
 );
 
 const operatorWorkspaceCenterModule = startupRegistry.register(
   "operatorWorkspaceCenter",
-  document.getElementById("operatorWorkspaceCenter") ? window.createBlueCurrentOperatorWorkspaceCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("operatorWorkspaceCenter") ? window.createBlueCurrentOperatorWorkspaceCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "unifiedCommandCenter"]
 );
 const runtimeRecoveryCenterModule = startupRegistry.register(
   "runtimeRecoveryCenter",
-  document.getElementById("runtimeRecoveryCenter") ? window.createBlueCurrentRuntimeRecoveryCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("runtimeRecoveryCenter") ? window.createBlueCurrentRuntimeRecoveryCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState"]
 );
 const pilotLaunchCenterModule = startupRegistry.register(
   "pilotLaunchCenter",
-  document.getElementById("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "experienceQualityCenter", "pilotOnboardingCenter", "runtimeRecoveryCenter"]
 );
 
 const pilotEvidenceCenterModule = startupRegistry.register(
   "pilotEvidenceCenter",
-  document.getElementById("pilotEvidenceCenter") ? window.createBlueCurrentPilotEvidenceCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("pilotEvidenceCenter") ? window.createBlueCurrentPilotEvidenceCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "pilotLaunchCenter"]
 );
 const accessReadinessCenterModule = startupRegistry.register(
   "accessReadinessCenter",
-  document.getElementById("accessReadinessCenter") ? window.createBlueCurrentAccessReadinessCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("accessReadinessCenter") ? window.createBlueCurrentAccessReadinessCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "pilotLaunchCenter"]
 );
 const releaseCertificationCenterModule = startupRegistry.register(
   "releaseCertificationCenter",
-  document.getElementById("releaseCertificationCenter") ? window.createBlueCurrentReleaseCertificationCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("releaseCertificationCenter") ? window.createBlueCurrentReleaseCertificationCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "pilotEvidenceCenter", "accessReadinessCenter", "runtimeRecoveryCenter"]
 );
 
 const integrationControlCenterModule = startupRegistry.register(
   "integrationControlCenter",
-  document.getElementById("integrationControlCenter") ? window.createBlueCurrentIntegrationControlCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("integrationControlCenter") ? window.createBlueCurrentIntegrationControlCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "releaseCertificationCenter"]
 );
 const signalQualityCenterModule = startupRegistry.register(
   "signalQualityCenter",
-  document.getElementById("signalQualityCenter") ? window.createBlueCurrentSignalQualityCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("signalQualityCenter") ? window.createBlueCurrentSignalQualityCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "integrationControlCenter"]
 );
 const pilotTelemetryCenterModule = startupRegistry.register(
   "pilotTelemetryCenter",
-  document.getElementById("pilotTelemetryCenter") ? window.createBlueCurrentPilotTelemetryCenterModule?.(eventBus, appState) : null,
+  shouldInitializeCenter("pilotTelemetryCenter") ? window.createBlueCurrentPilotTelemetryCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "integrationControlCenter", "signalQualityCenter", "runtimeRecoveryCenter"]
 );
 
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
-  document.getElementById("restaurantPerformanceCenter")
+  shouldInitializeCenter("restaurantPerformanceCenter")
     ? window.createBlueCurrentRestaurantPerformanceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState"]
@@ -1493,7 +1523,7 @@ const restaurantPerformanceCenterModule = startupRegistry.register(
 
 const outcomeIntelligenceCenterModule = startupRegistry.register(
   "outcomeIntelligenceCenter",
-  document.getElementById("outcomeIntelligenceCenter")
+  shouldInitializeCenter("outcomeIntelligenceCenter")
     ? window.createBlueCurrentOutcomeIntelligenceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter"]
@@ -1501,7 +1531,7 @@ const outcomeIntelligenceCenterModule = startupRegistry.register(
 
 const executiveBriefingCenterModule = startupRegistry.register(
   "executiveBriefingCenter",
-  document.getElementById("executiveBriefingCenter")
+  shouldInitializeCenter("executiveBriefingCenter")
     ? window.createBlueCurrentExecutiveBriefingCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter"]
@@ -1509,7 +1539,7 @@ const executiveBriefingCenterModule = startupRegistry.register(
 
 const aiOrchestrationCenterModule = startupRegistry.register(
   "aiOrchestrationCenter",
-  document.getElementById("aiOrchestrationCenter")
+  shouldInitializeCenter("aiOrchestrationCenter")
     ? window.createBlueCurrentAiOrchestrationCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState"]
@@ -1517,7 +1547,7 @@ const aiOrchestrationCenterModule = startupRegistry.register(
 
 const operationalDigitalTwinCenterModule = startupRegistry.register(
   "operationalDigitalTwinCenter",
-  document.getElementById("operationalDigitalTwinCenter")
+  shouldInitializeCenter("operationalDigitalTwinCenter")
     ? window.createBlueCurrentOperationalDigitalTwinCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "aiOrchestrationCenter"]
@@ -1525,7 +1555,7 @@ const operationalDigitalTwinCenterModule = startupRegistry.register(
 
 const portfolioIntelligenceCenterModule = startupRegistry.register(
   "portfolioIntelligenceCenter",
-  document.getElementById("portfolioIntelligenceCenter")
+  shouldInitializeCenter("portfolioIntelligenceCenter")
     ? window.createBlueCurrentPortfolioIntelligenceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "operationalDigitalTwinCenter"]
@@ -1533,7 +1563,7 @@ const portfolioIntelligenceCenterModule = startupRegistry.register(
 
 const portfolioPerformanceCenterModule = startupRegistry.register(
   "portfolioPerformanceCenter",
-  document.getElementById("portfolioPerformanceCenter")
+  shouldInitializeCenter("portfolioPerformanceCenter")
     ? window.createBlueCurrentPortfolioPerformanceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "portfolioIntelligenceCenter"]
@@ -1541,7 +1571,7 @@ const portfolioPerformanceCenterModule = startupRegistry.register(
 
 const performanceLearningCenterModule = startupRegistry.register(
   "performanceLearningCenter",
-  document.getElementById("performanceLearningCenter")
+  shouldInitializeCenter("performanceLearningCenter")
     ? window.createBlueCurrentPerformanceLearningCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "portfolioPerformanceCenter"]
@@ -1549,7 +1579,7 @@ const performanceLearningCenterModule = startupRegistry.register(
 
 const pilotReleaseCenterModule = startupRegistry.register(
   "pilotReleaseCenter",
-  document.getElementById("pilotReleaseCenter")
+  shouldInitializeCenter("pilotReleaseCenter")
     ? window.createBlueCurrentPilotReleaseCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "executiveBriefingCenter", "portfolioPerformanceCenter", "performanceLearningCenter"]
@@ -1557,7 +1587,7 @@ const pilotReleaseCenterModule = startupRegistry.register(
 
 const predictiveServiceCenterModule = startupRegistry.register(
   "predictiveServiceCenter",
-  document.getElementById("predictiveServiceCenter")
+  shouldInitializeCenter("predictiveServiceCenter")
     ? window.createBlueCurrentPredictiveServiceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "operationalDigitalTwinCenter", "portfolioIntelligenceCenter"]
@@ -1565,7 +1595,7 @@ const predictiveServiceCenterModule = startupRegistry.register(
 
 const autonomousPolicyCenterModule = startupRegistry.register(
   "autonomousPolicyCenter",
-  document.getElementById("autonomousPolicyCenter")
+  shouldInitializeCenter("autonomousPolicyCenter")
     ? window.createBlueCurrentAutonomousPolicyCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "predictiveServiceCenter", "portfolioIntelligenceCenter"]
@@ -1573,7 +1603,7 @@ const autonomousPolicyCenterModule = startupRegistry.register(
 
 const executiveWorkflowCenterModule = startupRegistry.register(
   "executiveWorkflowCenter",
-  document.getElementById("executiveWorkflowCenter")
+  shouldInitializeCenter("executiveWorkflowCenter")
     ? window.createBlueCurrentExecutiveWorkflowCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "autonomousPolicyCenter", "predictiveServiceCenter"]
@@ -1583,7 +1613,7 @@ const executiveWorkflowCenterModule = startupRegistry.register(
 
 const pilotOperationsCenterModule = startupRegistry.register(
   "pilotOperationsCenter",
-  document.getElementById("pilotOperationsCenter")
+  shouldInitializeCenter("pilotOperationsCenter")
     ? window.createBlueCurrentPilotOperationsCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "pilotReleaseCenter", "executiveWorkflowCenter"]
@@ -1591,7 +1621,7 @@ const pilotOperationsCenterModule = startupRegistry.register(
 
 const pilotReviewCenterModule = startupRegistry.register(
   "pilotReviewCenter",
-  document.getElementById("pilotReviewCenter")
+  shouldInitializeCenter("pilotReviewCenter")
     ? window.createBlueCurrentPilotReviewCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "pilotOperationsCenter", "pilotReleaseCenter", "outcomeIntelligenceCenter", "executiveBriefingCenter"]
@@ -1599,7 +1629,7 @@ const pilotReviewCenterModule = startupRegistry.register(
 
 const deploymentReadinessCenterModule = startupRegistry.register(
   "deploymentReadinessCenter",
-  document.getElementById("deploymentReadinessCenter")
+  shouldInitializeCenter("deploymentReadinessCenter")
     ? window.createBlueCurrentDeploymentReadinessCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "pilotReviewCenter", "pilotReleaseCenter"]
@@ -1607,7 +1637,7 @@ const deploymentReadinessCenterModule = startupRegistry.register(
 
 const postLaunchValueCenterModule = startupRegistry.register(
   "postLaunchValueCenter",
-  document.getElementById("postLaunchValueCenter")
+  shouldInitializeCenter("postLaunchValueCenter")
     ? window.createBlueCurrentPostLaunchValueCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "deploymentReadinessCenter", "outcomeIntelligenceCenter", "restaurantPerformanceCenter", "portfolioPerformanceCenter"]
@@ -1615,7 +1645,7 @@ const postLaunchValueCenterModule = startupRegistry.register(
 
 const expansionBenchmarkCenterModule = startupRegistry.register(
   "expansionBenchmarkCenter",
-  document.getElementById("expansionBenchmarkCenter")
+  shouldInitializeCenter("expansionBenchmarkCenter")
     ? window.createBlueCurrentExpansionBenchmarkCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "postLaunchValueCenter", "portfolioPerformanceCenter", "outcomeIntelligenceCenter", "performanceLearningCenter"]
@@ -1623,7 +1653,7 @@ const expansionBenchmarkCenterModule = startupRegistry.register(
 
 const performanceGovernanceCenterModule = startupRegistry.register(
   "performanceGovernanceCenter",
-  document.getElementById("performanceGovernanceCenter")
+  shouldInitializeCenter("performanceGovernanceCenter")
     ? window.createBlueCurrentPerformanceGovernanceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "expansionBenchmarkCenter", "postLaunchValueCenter", "executiveBriefingCenter", "outcomeIntelligenceCenter", "performanceLearningCenter"]
@@ -1632,7 +1662,7 @@ const performanceGovernanceCenterModule = startupRegistry.register(
 
 const enterpriseValuePlanCenterModule = startupRegistry.register(
   "enterpriseValuePlanCenter",
-  document.getElementById("enterpriseValuePlanCenter")
+  shouldInitializeCenter("enterpriseValuePlanCenter")
     ? window.createBlueCurrentEnterpriseValuePlanCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "performanceGovernanceCenter", "expansionBenchmarkCenter", "postLaunchValueCenter", "outcomeIntelligenceCenter"]
@@ -1640,7 +1670,7 @@ const enterpriseValuePlanCenterModule = startupRegistry.register(
 
 const marginIntelligenceCenterModule = startupRegistry.register(
   "marginIntelligenceCenter",
-  document.getElementById("marginIntelligenceCenter")
+  shouldInitializeCenter("marginIntelligenceCenter")
     ? window.createBlueCurrentMarginIntelligenceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "enterpriseValuePlanCenter"]
@@ -1648,13 +1678,13 @@ const marginIntelligenceCenterModule = startupRegistry.register(
 
 const costVarianceCenterModule = startupRegistry.register(
   "costVarianceCenter",
-  document.getElementById("costVarianceCenter")
+  shouldInitializeCenter("costVarianceCenter")
     ? window.createBlueCurrentCostVarianceCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "marginIntelligenceCenter", "predictiveServiceCenter", "outcomeIntelligenceCenter"]
 );
 
-const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
+const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", fullPlatformStartup ? window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule) : null, ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
 
 // V32.3 retires the legacy Autonomous Operations renderer. Its DOM contract
 // belonged to an older view and was the final source of startup-time null errors.
@@ -1933,23 +1963,25 @@ motionEngine.load(
   window.createBlueCurrentLiveServiceTimeline(eventBus)
 );
 
-motionEngine.start();  const operationalIntelligence = typeof window.createBlueCurrentOperationalIntelligenceModule === "function"
+if (fullPlatformStartup) motionEngine.start();
+
+const operationalIntelligence = typeof window.createBlueCurrentOperationalIntelligenceModule === "function"
     ? window.createBlueCurrentOperationalIntelligenceModule(eventBus, appState)
     : null;
 
 
-const guestIntelligenceModule = startupRegistry.register("guestIntelligence", window.createBlueCurrentGuestIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations"]);
+const guestIntelligenceModule = startupRegistry.register("guestIntelligence", fullPlatformStartup ? window.createBlueCurrentGuestIntelligenceModule?.(eventBus, appState, cloudFoundationModule) : null, ["eventBus","appState","cloudFoundation","authOrganizations"]);
 if (window.blueCurrent?.modules) window.blueCurrent.modules.guestIntelligence = guestIntelligenceModule;
 
-const workforceFoundationModule = startupRegistry.register("workforceFoundation", window.createBlueCurrentWorkforceFoundationModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations"]);
+const workforceFoundationModule = startupRegistry.register("workforceFoundation", fullPlatformStartup ? window.createBlueCurrentWorkforceFoundationModule?.(eventBus, appState, cloudFoundationModule) : null, ["eventBus","appState","cloudFoundation","authOrganizations"]);
 
-const schedulingModule = startupRegistry.register("scheduling", window.createBlueCurrentSchedulingModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceFoundation"]);
+const schedulingModule = startupRegistry.register("scheduling", fullPlatformStartup ? window.createBlueCurrentSchedulingModule?.(eventBus, appState, cloudFoundationModule) : null, ["eventBus","appState","cloudFoundation","authOrganizations","workforceFoundation"]);
 
-const workforceIntelligenceModule = startupRegistry.register("workforceIntelligence", window.createBlueCurrentWorkforceIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","guestIntelligence","workforceFoundation"]);
+const workforceIntelligenceModule = startupRegistry.register("workforceIntelligence", fullPlatformStartup ? window.createBlueCurrentWorkforceIntelligenceModule?.(eventBus, appState, cloudFoundationModule) : null, ["eventBus","appState","cloudFoundation","authOrganizations","guestIntelligence","workforceFoundation"]);
 
-const inventoryIntelligenceModule = startupRegistry.register("inventoryIntelligence", window.createBlueCurrentInventoryIntelligenceModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
+const inventoryIntelligenceModule = startupRegistry.register("inventoryIntelligence", fullPlatformStartup ? window.createBlueCurrentInventoryIntelligenceModule?.(eventBus, appState, cloudFoundationModule) : null, ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
 
-const timeClockModule = startupRegistry.register("timeClock", window.createBlueCurrentTimeClockModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
+const timeClockModule = startupRegistry.register("timeClock", fullPlatformStartup ? window.createBlueCurrentTimeClockModule?.(eventBus, appState, cloudFoundationModule) : null, ["eventBus","appState","cloudFoundation","authOrganizations","workforceIntelligence"]);
 
 // Publish one deterministic startup summary after all active modules register.
 queueMicrotask(() => {
