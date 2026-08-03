@@ -1036,7 +1036,7 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 const motionEngine = new window.BlueCurrentMotionEngine();
 
 
-const platform = window.BlueCurrentPlatform.create({ build: "35.4.0", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "35.7.0", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1257,6 +1257,24 @@ const executiveWorkflowCenterModule = startupRegistry.register(
   ["eventBus", "appState", "autonomousPolicyCenter", "predictiveServiceCenter"]
 );
 
+
+
+const pilotOperationsCenterModule = startupRegistry.register(
+  "pilotOperationsCenter",
+  document.getElementById("pilotOperationsCenter")
+    ? window.createBlueCurrentPilotOperationsCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "pilotReleaseCenter", "executiveWorkflowCenter"]
+);
+
+const pilotReviewCenterModule = startupRegistry.register(
+  "pilotReviewCenter",
+  document.getElementById("pilotReviewCenter")
+    ? window.createBlueCurrentPilotReviewCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "pilotOperationsCenter", "pilotReleaseCenter", "outcomeIntelligenceCenter", "executiveBriefingCenter"]
+);
+
 const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
 
 // V32.3 retires the legacy Autonomous Operations renderer. Its DOM contract
@@ -1298,6 +1316,8 @@ window.blueCurrent = {
     portfolioPerformance: portfolioPerformanceCenterModule,
     performanceLearning: performanceLearningCenterModule,
     pilotRelease: pilotReleaseCenterModule,
+    pilotOperations: pilotOperationsCenterModule,
+    pilotReview: pilotReviewCenterModule,
     predictiveService: predictiveServiceCenterModule,
     autonomousPolicyCenter: autonomousPolicyCenterModule,
     executiveWorkflowCenter: executiveWorkflowCenterModule
