@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.2.0-performance">
+  <meta name="blue-current-build" content="37.5.0-performance-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3869,7 +3869,23 @@
             </aside>
           </div>
 
-          <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+          
+        <section class="v375-center feature-pack-center" id="featurePackLoaderCenter" aria-labelledby="fplTitle">
+          <header><div><small>V37.3 · Progressive Feature Packs</small><strong id="fplTitle">Load only the operating tools needed for this session.</strong><span id="fplHeadline">Focused command mode is active.</span></div><button type="button" id="fplReset">Focused mode</button></header>
+          <div class="v375-kpis"><article><small>Startup profile</small><strong id="fplProfile">Focused</strong></article><article><small>Active packs</small><strong id="fplActive">0</strong></article><article><small>Deferred scripts</small><strong id="fplDeferred">0</strong></article></div>
+          <div id="fplPacks" class="v375-pack-grid"></div>
+        </section>
+        <section class="v375-center startup-performance-center" id="startupPerformanceCenter" aria-labelledby="spmTitle">
+          <header><div><small>V37.4 · Startup Performance</small><strong id="spmTitle">Keep the command experience fast, measurable, and within budget.</strong><span id="spmHeadline">Measuring current session…</span></div><button type="button" id="spmRefresh">Refresh metrics</button></header>
+          <div class="v375-kpis"><article><small>Boot time</small><strong id="spmBoot">—</strong></article><article><small>Scripts loaded</small><strong id="spmScripts">—</strong></article><article><small>Long tasks</small><strong id="spmLongTasks">0</strong></article><article><small>Performance score</small><strong id="spmScore">—</strong></article></div>
+          <div id="spmChecks" class="v375-checks"></div>
+        </section>
+        <section class="v375-center boot-recovery-center" id="bootRecoveryCenter" aria-labelledby="brgTitle">
+          <header><div><small>V37.5 · Boot Recovery Guard</small><strong id="brgTitle">Recover quickly if a startup profile becomes unstable.</strong><span id="brgHeadline">The current startup profile is healthy.</span></div><div class="v375-actions"><button type="button" id="brgRetry">Retry current</button><button type="button" id="brgFocused">Return to focused</button></div></header>
+          <div class="v375-kpis"><article><small>Boot state</small><strong id="brgStatus">—</strong></article><article><small>Failures</small><strong id="brgFailures">0</strong></article><article><small>Last good profile</small><strong id="brgLastGood">Focused</strong></article></div>
+          <div id="brgHistory" class="v375-checks"></div>
+        </section>
+<section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
               <div class="guided-shift-header-actions"><span id="guidedShiftStatus">Monitoring live operations</span><button type="button" id="guidedShiftRefresh">Refresh flow</button></div>
@@ -7642,6 +7658,12 @@
   <script type="text/bluecurrent-deferred" data-src="js/modules/signalQualityCenter.js?v=37.0.0"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/pilotTelemetryEngine.js?v=37.0.0"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/pilotTelemetryCenter.js?v=37.0.0"></script>
-  <script src="js/startup-loader.js?v=37.2.0"></script>
+  <script src="js/modules/featurePackLoaderEngine.js?v=37.5.0"></script>
+  <script src="js/modules/featurePackLoaderCenter.js?v=37.5.0"></script>
+  <script src="js/modules/startupPerformanceEngine.js?v=37.5.0"></script>
+  <script src="js/modules/startupPerformanceCenter.js?v=37.5.0"></script>
+  <script src="js/modules/bootRecoveryEngine.js?v=37.5.0"></script>
+  <script src="js/modules/bootRecoveryCenter.js?v=37.5.0"></script>
+  <script src="js/startup-loader.js?v=37.5.0"></script>
 </body>
 </html>

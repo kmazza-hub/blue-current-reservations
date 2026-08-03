@@ -12876,7 +12876,7 @@ body[data-blue-current-density="compact"] .role-experience-center,body[data-blue
 html[data-startup-mode="safe"] body .v3641-center,
 html[data-startup-mode="safe"] body .v371-center,
 html[data-startup-mode="safe"] body .v370-center,
-html[data-startup-mode="safe"] body [id$="Center"]:not(#unifiedCommandCenter):not(#guidedShiftCenter):not(#operatorCopilotCenter):not(#roleExperienceCenter):not(#commandActionInboxCenter):not(#shiftProfitPulseCenter):not(#runtimeRecoveryCenter) {
+html[data-startup-mode="safe"] body [id$="Center"]:not(#unifiedCommandCenter):not(#guidedShiftCenter):not(#operatorCopilotCenter):not(#roleExperienceCenter):not(#commandActionInboxCenter):not(#shiftProfitPulseCenter):not(#runtimeRecoveryCenter):not(#featurePackLoaderCenter):not(#startupPerformanceCenter):not(#bootRecoveryCenter) {
   display: none !important;
 }
 html[data-startup-mode="safe"] #unifiedCommandCenter,
@@ -12890,7 +12890,7 @@ html[data-startup-mode="safe"] #shiftProfitPulseCenter {
 }
 
 /* V37.2 — focused asset startup */
-html[data-asset-mode="focused"] body [id$="Center"]:not(#unifiedCommandCenter):not(#guidedShiftCenter):not(#operatorCopilotCenter):not(#roleExperienceCenter):not(#commandActionInboxCenter):not(#shiftProfitPulseCenter):not(#runtimeRecoveryCenter):not(#restaurantPerformanceCenter):not(#outcomeIntelligenceCenter):not(#marginIntelligenceCenter) {
+html[data-asset-mode="focused"] body [id$="Center"]:not(#unifiedCommandCenter):not(#guidedShiftCenter):not(#operatorCopilotCenter):not(#roleExperienceCenter):not(#commandActionInboxCenter):not(#shiftProfitPulseCenter):not(#runtimeRecoveryCenter):not(#restaurantPerformanceCenter):not(#outcomeIntelligenceCenter):not(#marginIntelligenceCenter):not(#featurePackLoaderCenter):not(#startupPerformanceCenter):not(#bootRecoveryCenter) {
   display: none !important;
 }
 .startup-failure-banner {
@@ -12914,3 +12914,8 @@ html[data-asset-mode="focused"] body [id$="Center"]:not(#unifiedCommandCenter):n
   border-radius: .55rem;
   font-weight: 700;
 }
+
+
+/* V37.3–V37.5 — progressive startup control */
+.v375-center{margin:24px 0;padding:24px;border:1px solid rgba(130,169,206,.28);border-radius:20px;background:#0d1b2a;color:#f4f8fc;box-shadow:0 18px 48px rgba(2,8,23,.24)}
+.v375-center header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:18px}.v375-center header div{display:grid;gap:5px}.v375-center header small{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8fc5e8}.v375-center header strong{font-size:1.22rem;line-height:1.25}.v375-center header span{color:#c5d5e4;font-size:.95rem}.v375-center button{border:1px solid rgba(143,197,232,.45);border-radius:10px;background:#17324a;color:#f7fbff;padding:10px 14px;font-weight:800;cursor:pointer}.v375-center button:hover,.v375-center button:focus-visible{background:#214764;outline:2px solid #9ed7ff;outline-offset:2px}.v375-actions{display:flex!important;grid-auto-flow:column;gap:8px}.v375-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.v375-kpis article{padding:15px;border:1px solid rgba(143,197,232,.18);border-radius:14px;background:#12263a}.v375-kpis small{display:block;color:#a9bfd1;font-weight:700;margin-bottom:7px}.v375-kpis strong{font-size:1.35rem}.v375-pack-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.v375-pack-card{display:grid;gap:10px;padding:16px;border-radius:14px;border:1px solid rgba(143,197,232,.2);background:#12263a}.v375-pack-card[data-active="true"]{border-color:#78d7b0;background:#12352f}.v375-pack-card p{margin:0;color:#bfd0df;min-height:44px}.v375-pack-card .meta{display:flex;justify-content:space-between;color:#9fb4c6;font-size:.86rem}.v375-checks{display:grid;gap:10px}.v375-checks article{display:flex;justify-content:space-between;gap:14px;padding:13px 15px;border-radius:12px;background:#12263a;border:1px solid rgba(143,197,232,.18)}.v375-checks article[data-pass="true"] b{color:#78d7b0}.v375-checks article[data-pass="false"] b{color:#ffb4a2}.v375-checks article div{display:grid;gap:3px}.v375-checks article span{color:#afc3d4;font-size:.88rem}@media(max-width:900px){.v375-kpis,.v375-pack-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:620px){.v375-center{padding:18px}.v375-center header{display:grid}.v375-kpis,.v375-pack-grid{grid-template-columns:1fr}.v375-actions{display:grid!important;grid-auto-flow:row}}

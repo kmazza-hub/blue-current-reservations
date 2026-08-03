@@ -1039,6 +1039,7 @@ const motionEngine = new window.BlueCurrentMotionEngine();
 // Safe startup is the default. Use ?full=1 only when detailed platform centers are needed.
 const startupParams = new URLSearchParams(window.location.search);
 const fullPlatformStartup = startupParams.get("full") === "1";
+const activatedCenters = window.BlueCurrentActivatedCenters instanceof Set ? window.BlueCurrentActivatedCenters : new Set();
 const safeStartup = !fullPlatformStartup;
 const ESSENTIAL_STARTUP_CENTERS = new Set([
   "unifiedCommandCenter",
@@ -1047,15 +1048,18 @@ const ESSENTIAL_STARTUP_CENTERS = new Set([
   "roleExperienceCenter",
   "commandActionInboxCenter",
   "shiftProfitPulseCenter",
-  "runtimeRecoveryCenter"
+  "runtimeRecoveryCenter",
+  "featurePackLoaderCenter",
+  "startupPerformanceCenter",
+  "bootRecoveryCenter"
 ]);
 function shouldInitializeCenter(id) {
-  return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id));
+  return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id) || activatedCenters.has(id));
 }
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "37.2.0-performance", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "37.5.0-performance-control", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1475,6 +1479,22 @@ const runtimeRecoveryCenterModule = startupRegistry.register(
   shouldInitializeCenter("runtimeRecoveryCenter") ? window.createBlueCurrentRuntimeRecoveryCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState"]
 );
+
+const featurePackLoaderCenterModule = startupRegistry.register(
+  "featurePackLoaderCenter",
+  shouldInitializeCenter("featurePackLoaderCenter") ? window.createBlueCurrentFeaturePackLoaderCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const startupPerformanceCenterModule = startupRegistry.register(
+  "startupPerformanceCenter",
+  shouldInitializeCenter("startupPerformanceCenter") ? window.createBlueCurrentStartupPerformanceCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const bootRecoveryCenterModule = startupRegistry.register(
+  "bootRecoveryCenter",
+  shouldInitializeCenter("bootRecoveryCenter") ? window.createBlueCurrentBootRecoveryCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "startupPerformanceCenter"]
+);
 const pilotLaunchCenterModule = startupRegistry.register(
   "pilotLaunchCenter",
   shouldInitializeCenter("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
@@ -1754,6 +1774,9 @@ window.blueCurrent = {
     pilotOnboarding: pilotOnboardingCenterModule,
     operatorWorkspace: operatorWorkspaceCenterModule,
     runtimeRecovery: runtimeRecoveryCenterModule,
+    featurePackLoader: featurePackLoaderCenterModule,
+    startupPerformance: startupPerformanceCenterModule,
+    bootRecovery: bootRecoveryCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,
