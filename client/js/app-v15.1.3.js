@@ -1467,6 +1467,22 @@ const releaseCertificationCenterModule = startupRegistry.register(
   ["eventBus", "appState", "pilotEvidenceCenter", "accessReadinessCenter", "runtimeRecoveryCenter"]
 );
 
+const dataContractCenterModule = startupRegistry.register(
+  "dataContractCenter",
+  document.getElementById("dataContractCenter") ? window.createBlueCurrentDataContractCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const connectorSyncCenterModule = startupRegistry.register(
+  "connectorSyncCenter",
+  document.getElementById("connectorSyncCenter") ? window.createBlueCurrentConnectorSyncCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "dataContractCenter"]
+);
+const reconciliationCenterModule = startupRegistry.register(
+  "reconciliationCenter",
+  document.getElementById("reconciliationCenter") ? window.createBlueCurrentReconciliationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "connectorSyncCenter"]
+);
+
 const integrationControlCenterModule = startupRegistry.register(
   "integrationControlCenter",
   document.getElementById("integrationControlCenter") ? window.createBlueCurrentIntegrationControlCenterModule?.(eventBus, appState) : null,

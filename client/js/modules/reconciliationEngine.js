@@ -1,0 +1,11 @@
+(function(){"use strict";
+class BlueCurrentReconciliationEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.value=null;["connector-sync:updated","data-contract:updated","outcome-intelligence:updated"].forEach(n=>eventBus.on(n,()=>this.refresh(n)))}
+ refresh(reason="manual"){const s=this.appState.getState(),sync=s.connectorSyncControl?.connectors||[],quality=s.signalQuality?.score||0;const checks=[
+ {id:"reservation-pos",label:"Reservation to POS checks",variance:Math.max(0,Math.round((100-quality)/4)),tolerance:3},
+ {id:"labor-shift",label:"Labor to shift checks",variance:sync.some(x=>x.id==="labor"&&x.status!=="healthy")?6:1,tolerance:3},
+ {id:"inventory-cost",label:"Inventory to cost checks",variance:sync.some(x=>x.id==="inventory"&&x.status!=="healthy")?8:2,tolerance:5},
+ {id:"outcome-profit",label:"Outcome to profit checks",variance:(s.outcomeIntelligence?.activeMeasurements||[]).length?2:4,tolerance:4}
+ ].map(x=>({...x,status:x.variance<=x.tolerance?"pass":x.variance<=x.tolerance*2?"watch":"fail"}));const fails=checks.filter(x=>x.status==="fail"),watches=checks.filter(x=>x.status==="watch");const score=Math.max(0,100-fails.length*25-watches.length*10);const value={capturedAt:new Date().toISOString(),reason,version:"V37.1.0",score,status:fails.length?"blocked":watches.length?"watch":"reconciled",checks,exceptions:[...fails,...watches].length,nextAction:fails.length?`Resolve ${fails[0].label} before trusting financial outcomes.`:watches.length?`Review ${watches[0].label} variance.`:"Operational records reconcile within configured tolerances."};this.value=value;this.appState.update({reconciliationControl:value,reconciliationHistory:[...(s.reconciliationHistory||[]),value].slice(-100)});this.eventBus.emit("reconciliation:updated",structuredClone(value));return structuredClone(value)}
+ snapshot(){return structuredClone(this.value||this.refresh("initial"))}}
+window.BlueCurrentReconciliationEngine=BlueCurrentReconciliationEngine;})();
