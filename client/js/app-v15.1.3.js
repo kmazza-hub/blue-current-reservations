@@ -1419,6 +1419,22 @@ const operationalKnowledgeCenterModule = startupRegistry.register(
   ["eventBus", "appState", "serviceQualityCenter", "kitchenThroughputCenter"]
 );
 
+const experienceQualityCenterModule = startupRegistry.register(
+  "experienceQualityCenter",
+  document.getElementById("experienceQualityCenter") ? window.createBlueCurrentExperienceQualityCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const demoModeCenterModule = startupRegistry.register(
+  "demoModeCenter",
+  document.getElementById("demoModeCenter") ? window.createBlueCurrentDemoModeCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const pilotOnboardingCenterModule = startupRegistry.register(
+  "pilotOnboardingCenter",
+  document.getElementById("pilotOnboardingCenter") ? window.createBlueCurrentPilotOnboardingCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "experienceQualityCenter", "demoModeCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1655,6 +1671,9 @@ window.blueCurrent = {
     teamCollaboration: teamCollaborationCenterModule,
     enterpriseOperations: enterpriseOperationsCenterModule,
     operationalKnowledge: operationalKnowledgeCenterModule,
+    experienceQuality: experienceQualityCenterModule,
+    demoMode: demoModeCenterModule,
+    pilotOnboarding: pilotOnboardingCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
