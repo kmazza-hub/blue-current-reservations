@@ -1377,6 +1377,30 @@ const profitCloseoutCenterModule = startupRegistry.register(
   ["eventBus", "appState", "dailyProfitPlanCenter", "vendorPurchaseCenter", "demandPrepForecastCenter"]
 );
 
+const supplierVarianceCenterModule = startupRegistry.register(
+  "supplierVarianceCenter",
+  document.getElementById("supplierVarianceCenter")
+    ? window.createBlueCurrentSupplierVarianceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "vendorPurchaseCenter", "inventoryWasteCenter"]
+);
+
+const prepExecutionCenterModule = startupRegistry.register(
+  "prepExecutionCenter",
+  document.getElementById("prepExecutionCenter")
+    ? window.createBlueCurrentPrepExecutionCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "demandPrepForecastCenter", "kitchenThroughputCenter"]
+);
+
+const weeklyProfitReviewCenterModule = startupRegistry.register(
+  "weeklyProfitReviewCenter",
+  document.getElementById("weeklyProfitReviewCenter")
+    ? window.createBlueCurrentWeeklyProfitReviewCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "profitCloseoutCenter", "supplierVarianceCenter", "prepExecutionCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1607,6 +1631,9 @@ window.blueCurrent = {
     vendorPurchase: vendorPurchaseCenterModule,
     demandPrepForecast: demandPrepForecastCenterModule,
     profitCloseout: profitCloseoutCenterModule,
+    supplierVariance: supplierVarianceCenterModule,
+    prepExecution: prepExecutionCenterModule,
+    weeklyProfitReview: weeklyProfitReviewCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
