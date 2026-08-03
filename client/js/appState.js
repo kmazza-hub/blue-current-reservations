@@ -221,13 +221,7 @@ class AppState {
       costVariance: null,
       costVarianceHistory: [],
       projectedCostVariance: {},
-      profitProtectionActions: [],
-      dataContractRegistry: null,
-      dataContractHistory: [],
-      connectorSyncControl: null,
-      connectorSyncHistory: [],
-      reconciliationControl: null,
-      reconciliationHistory: [],
+      profitProtectionActions: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });
