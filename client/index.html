@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.30.0-v37-final">
+  <meta name="blue-current-build" content="38.0.0-live-data-bridge">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3909,6 +3909,23 @@
 <section class="v3730-center" id="deploymentRehearsalCenter" aria-labelledby="drTitle"><header><div><small>V37.27 · Deployment Rehearsal</small><strong id="drTitle">Practice the production path before making it real.</strong><span id="drHeadline">Waiting for rehearsal evidence…</span></div><div class="v3730-actions"><button type="button" id="drRun">Run rehearsal</button><button type="button" id="drExport">Export evidence</button></div></header><div class="v3730-kpis"><article><small>Rehearsal score</small><strong id="drScore">0%</strong></article><article><small>Status</small><strong id="drStatus">—</strong></article><article><small>Checks passed</small><strong id="drPassed">0/0</strong></article><article><small>Last run</small><strong id="drRunAt">—</strong></article></div><div id="drChecks" class="v3730-list"></div></section>
 <section class="v3730-center" id="environmentGateCenter" aria-labelledby="egTitle"><header><div><small>V37.28 · Environment Gate</small><strong id="egTitle">Verify the build, origin, API, and focused startup environment.</strong><span id="egHeadline">Waiting for environment evidence…</span></div><button type="button" id="egRun">Run environment gate</button></header><div class="v3730-kpis"><article><small>Environment score</small><strong id="egScore">0%</strong></article><article><small>Status</small><strong id="egStatus">—</strong></article><article><small>Checks passed</small><strong id="egPassed">0/0</strong></article></div><div id="egChecks" class="v3730-list"></div></section>
 <section class="v3730-center" id="acceptanceSignoffCenter" aria-labelledby="asTitle"><header><div><small>V37.29 · Acceptance Signoff</small><strong id="asTitle">Capture named approval from operations, leadership, and technology.</strong><span id="asHeadline">Waiting for acceptance signoff…</span></div></header><div class="v3730-kpis"><article><small>Signoff score</small><strong id="asScore">0%</strong></article><article><small>Status</small><strong id="asStatus">—</strong></article><article><small>Approved</small><strong id="asApproved">0/3</strong></article></div><div class="v3730-signoffs"><label><span>Manager</span><input id="as-manager-name" type="text" placeholder="Manager name"><input id="as-manager-approved" type="checkbox"> Approved</label><label><span>Executive</span><input id="as-executive-name" type="text" placeholder="Executive name"><input id="as-executive-approved" type="checkbox"> Approved</label><label><span>Technical</span><input id="as-technical-name" type="text" placeholder="Technical owner"><input id="as-technical-approved" type="checkbox"> Approved</label></div></section>
+
+<section class="v380-center" id="connectorConfigurationCenter" aria-labelledby="ccfgTitle">
+  <header><div><small>V38.0 · Connector Configuration</small><strong id="ccfgTitle">Prepare each live source without storing credentials in the browser.</strong><span id="ccfgHeadline">Reviewing connector setup…</span></div><button type="button" id="ccfgRefresh">Refresh setup</button></header>
+  <div class="v380-kpis"><article><small>Readiness</small><strong id="ccfgScore">0%</strong></article><article><small>Configured</small><strong id="ccfgConfigured">0/0</strong></article><article><small>Required blockers</small><strong id="ccfgBlockers">0</strong></article></div>
+  <div id="ccfgConnectors" class="v380-list"></div>
+</section>
+<section class="v380-center" id="dataIntakeSandboxCenter" aria-labelledby="disTitle">
+  <header><div><small>V38.0 · Data Intake Sandbox</small><strong id="disTitle">Validate a sample payload before any live connector is trusted.</strong><span id="disHeadline">Choose a source and paste a JSON sample.</span></div><div class="v380-actions"><button type="button" id="disSample">Load sample</button><button type="button" id="disValidate">Validate payload</button></div></header>
+  <div class="v380-form"><label><span>Source</span><select id="disSource"><option value="reservations">Reservations</option><option value="pos">POS / revenue</option><option value="labor">Labor / time clock</option><option value="inventory">Inventory / purchasing</option></select></label><label class="wide"><span>JSON payload</span><textarea id="disPayload" rows="10" spellcheck="false" placeholder='{"locationId":"loc_marina"}'></textarea></label></div>
+  <div class="v380-kpis"><article><small>Validation</small><strong id="disStatus">Not run</strong></article><article><small>Required fields</small><strong id="disRequired">0/0</strong></article><article><small>Records</small><strong id="disRecords">0</strong></article></div>
+  <div id="disChecks" class="v380-list"></div>
+</section>
+<section class="v380-center v380-bridge" id="pilotSignalBridgeCenter" aria-labelledby="psbTitle">
+  <header><div><small>V38.0 · Pilot Signal Bridge</small><strong id="psbTitle">Stage validated samples without overwriting source-of-truth systems.</strong><span id="psbHeadline">No validated samples are staged.</span></div><div class="v380-actions"><button type="button" id="psbRefresh">Refresh bridge</button><button type="button" id="psbClear">Clear staged data</button><button type="button" id="psbExport">Export evidence</button></div></header>
+  <div class="v380-kpis"><article><small>Bridge status</small><strong id="psbStatus">Idle</strong></article><article><small>Staged sources</small><strong id="psbSources">0</strong></article><article><small>Staged records</small><strong id="psbRecords">0</strong></article><article><small>Confidence</small><strong id="psbConfidence">0%</strong></article></div>
+  <div id="psbSourcesList" class="v380-list"></div>
+</section>
 <section class="v3730-center v3730-cert" id="v37CertificationCenter" aria-labelledby="v37cTitle"><header><div><small>V37.30 · Final V37 Certification</small><strong id="v37cTitle">Close V37 with one production-readiness certificate.</strong><span id="v37cHeadline">Waiting for final certification…</span></div><div class="v3730-actions"><button type="button" id="v37cRun">Run certification</button><button type="button" id="v37cExport">Export certificate</button></div></header><div class="v3730-kpis"><article><small>Certification score</small><strong id="v37cScore">0%</strong></article><article><small>Status</small><strong id="v37cStatus">—</strong></article><article><small>Checks passed</small><strong id="v37cPassed">0/0</strong></article><article><small>Certificate</small><strong id="v37cId">Pending</strong></article></div><div id="v37cChecks" class="v3730-list"></div></section>
 
 
@@ -7741,6 +7758,12 @@
   <script src="js/modules/acceptanceSignoffCenter.js?v=37.30.0"></script>
   <script src="js/modules/v37CertificationEngine.js?v=37.30.0"></script>
   <script src="js/modules/v37CertificationCenter.js?v=37.30.0"></script>
-  <script src="js/startup-loader.js?v=37.30.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/connectorConfigurationEngine.js?v=38.0.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/connectorConfigurationCenter.js?v=38.0.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/dataIntakeSandboxEngine.js?v=38.0.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/dataIntakeSandboxCenter.js?v=38.0.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSignalBridgeEngine.js?v=38.0.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSignalBridgeCenter.js?v=38.0.0"></script>
+  <script src="js/startup-loader.js?v=38.0.0"></script>
 </body>
 </html>

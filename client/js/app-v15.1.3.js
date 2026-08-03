@@ -1084,7 +1084,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "37.30.0-v37-final", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "38.0.0-live-data-bridge", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1640,6 +1640,22 @@ const acceptanceSignoffCenterModule = startupRegistry.register(
   shouldInitializeCenter("acceptanceSignoffCenter") ? window.createBlueCurrentAcceptanceSignoffCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState"]
 );
+
+const connectorConfigurationCenterModule = startupRegistry.register(
+  "connectorConfigurationCenter",
+  shouldInitializeCenter("connectorConfigurationCenter") ? window.createBlueCurrentConnectorConfigurationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const dataIntakeSandboxCenterModule = startupRegistry.register(
+  "dataIntakeSandboxCenter",
+  shouldInitializeCenter("dataIntakeSandboxCenter") ? window.createBlueCurrentDataIntakeSandboxCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "connectorConfigurationCenter"]
+);
+const pilotSignalBridgeCenterModule = startupRegistry.register(
+  "pilotSignalBridgeCenter",
+  shouldInitializeCenter("pilotSignalBridgeCenter") ? window.createBlueCurrentPilotSignalBridgeCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "dataIntakeSandboxCenter"]
+);
 const v37CertificationCenterModule = startupRegistry.register(
   "v37CertificationCenter",
   shouldInitializeCenter("v37CertificationCenter") ? window.createBlueCurrentV37CertificationCenterModule?.(eventBus, appState) : null,
@@ -1952,6 +1968,9 @@ window.blueCurrent = {
     environmentGate: environmentGateCenterModule,
     acceptanceSignoff: acceptanceSignoffCenterModule,
     v37Certification: v37CertificationCenterModule,
+    connectorConfiguration: connectorConfigurationCenterModule,
+    dataIntakeSandbox: dataIntakeSandboxCenterModule,
+    pilotSignalBridge: pilotSignalBridgeCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,

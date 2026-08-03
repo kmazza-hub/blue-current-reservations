@@ -1,0 +1,9 @@
+(function(){"use strict";
+const CONTRACTS={reservations:["locationId","reservationId","scheduledAt","partySize","status"],pos:["locationId","checkId","openedAt","netSales"],labor:["locationId","employeeId","clockIn","role"],inventory:["locationId","itemId","quantity","unitCost"]};
+const SAMPLES={reservations:{locationId:"loc_marina",reservationId:"res_demo_101",scheduledAt:new Date(Date.now()+3600000).toISOString(),partySize:4,status:"confirmed"},pos:{locationId:"loc_marina",checkId:"chk_demo_101",openedAt:new Date().toISOString(),netSales:186.5},labor:{locationId:"loc_marina",employeeId:"emp_demo_22",clockIn:new Date().toISOString(),role:"server"},inventory:{locationId:"loc_marina",itemId:"itm_salmon",quantity:18,unitCost:8.4}};
+class BlueCurrentDataIntakeSandboxEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;}
+ sample(source){return JSON.stringify(SAMPLES[source]||SAMPLES.reservations,null,2);}
+ validate(source,text){let parsed,error=null;try{parsed=JSON.parse(text);}catch(ex){error=ex.message;}const records=error?[]:(Array.isArray(parsed)?parsed:[parsed]);const required=CONTRACTS[source]||[],checks=required.map(field=>({field,pass:records.length>0&&records.every(r=>r&&r[field]!==undefined&&r[field]!==null&&r[field]!=="")}));const valid=!error&&records.length>0&&checks.every(x=>x.pass);const result={id:`sample_${Date.now()}`,capturedAt:new Date().toISOString(),source,valid,error,records:records.length,required:required.length,passed:checks.filter(x=>x.pass).length,checks,payload:valid?parsed:null};this.appState.update({dataIntakeValidation:result,dataIntakeHistory:[...(this.appState.get("dataIntakeHistory")||[]),{...result,payload:undefined}].slice(-30)});this.eventBus.emit("data-intake:validated",structuredClone(result));return result;}
+}
+window.BlueCurrentDataIntakeSandboxEngine=BlueCurrentDataIntakeSandboxEngine;})();
