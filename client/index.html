@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.11.0-performance-control">
+  <meta name="blue-current-build" content="37.14.0-adaptive-runtime">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3891,6 +3891,9 @@
 <section class="v3711-center" id="idlePackWarmupCenter" aria-labelledby="ipwTitle"><header><div><small>V37.9 · Idle Pack Warmup</small><strong id="ipwTitle">Warm feature assets without executing the full platform.</strong><span id="ipwHeadline">Preparing idle asset controls…</span></div><button type="button" id="ipwClear">Clear warm cache</button></header><div class="v3711-kpis"><article><small>Status</small><strong id="ipwStatus">idle</strong></article><article><small>Warm packs</small><strong id="ipwWarmed">0</strong></article><article><small>Prefetched assets</small><strong id="ipwAssets">0</strong></article></div><div id="ipwPacks" class="v3711-list"></div></section>
 <section class="v3711-center" id="eventStormGuardCenter" aria-labelledby="esgTitle"><header><div><small>V37.10 · Event Storm Guard</small><strong id="esgTitle">Make runaway application event traffic visible before it freezes the browser.</strong><span id="esgHeadline">Sampling EventBus traffic…</span></div><div class="v3711-actions"><button type="button" id="esgRefresh">Refresh</button><button type="button" id="esgReset">Reset sample</button></div></header><div class="v3711-kpis v3711-four"><article><small>Health score</small><strong id="esgScore">0%</strong></article><article><small>Status</small><strong id="esgStatus">—</strong></article><article><small>Event rate</small><strong id="esgRate">0/s</strong></article><article><small>Duplicate bursts</small><strong id="esgDuplicates">0</strong></article></div><div id="esgEvents" class="v3711-list"></div></section>
 <section class="v3711-center" id="renderBudgetCenter" aria-labelledby="rbTitle"><header><div><small>V37.11 · Render Budget Monitor</small><strong id="rbTitle">Keep DOM work and long tasks inside a safe focused-mode budget.</strong><span id="rbHeadline">Measuring rendering cost…</span></div><button type="button" id="rbRefresh">Refresh budget</button></header><div class="v3711-kpis v3711-four"><article><small>Render score</small><strong id="rbScore">0%</strong></article><article><small>Status</small><strong id="rbStatus">—</strong></article><article><small>DOM nodes</small><strong id="rbNodes">0</strong></article><article><small>Mutation rate</small><strong id="rbMutations">0/s</strong></article></div><div id="rbChecks" class="v3711-checks"></div></section>
+<section class="v3714-center" id="adaptivePackCenter" aria-labelledby="apTitle"><header><div><small>V37.12 · Adaptive Pack Activation</small><strong id="apTitle">Load the smallest capability set that matches the current role and operating pressure.</strong><span id="apHeadline">Evaluating startup needs…</span></div><div class="v3714-actions"><button type="button" id="apRefresh">Refresh</button><button type="button" id="apApply">Apply recommendation</button></div></header><div class="v3714-kpis"><article><small>Alignment</small><strong id="apScore">0%</strong></article><article><small>Status</small><strong id="apStatus">—</strong></article><article><small>Active</small><strong id="apActive">focused</strong></article></div><div class="v3714-recommend"><span>Recommended packs</span><div id="apRecommended"></div></div></section>
+<section class="v3714-center" id="memoryPressureCenter" aria-labelledby="mpTitle"><header><div><small>V37.13 · Memory Pressure Guard</small><strong id="mpTitle">Keep browser memory, script count, and document size inside a safe operating budget.</strong><span id="mpHeadline">Sampling browser pressure…</span></div><div class="v3714-actions"><button type="button" id="mpRefresh">Refresh</button><button type="button" id="mpRelease">Release idle resources</button></div></header><div class="v3714-kpis"><article><small>Memory score</small><strong id="mpScore">0%</strong></article><article><small>Status</small><strong id="mpStatus">—</strong></article><article><small>Heap</small><strong id="mpHeap">—</strong></article></div><p class="v3714-note" id="mpAssets">—</p></section>
+<section class="v3714-center" id="centerSuspensionCenter" aria-labelledby="csuTitle"><header><div><small>V37.14 · Center Suspension</small><strong id="csuTitle">Suspend hidden platform centers until the operator deliberately opens them.</strong><span id="csuHeadline">Reviewing hidden centers…</span></div><div class="v3714-actions"><button type="button" id="csuRefresh">Refresh</button><button type="button" id="csuSuspend">Suspend hidden</button><button type="button" id="csuResume">Resume all</button></div></header><div class="v3714-kpis"><article><small>Status</small><strong id="csuStatus">—</strong></article><article><small>Hidden centers</small><strong id="csuHidden">0</strong></article><article><small>Suspended</small><strong id="csuSuspended">0</strong></article></div></section>
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -7682,6 +7685,12 @@
   <script src="js/modules/eventStormGuardCenter.js?v=37.11.0"></script>
   <script src="js/modules/renderBudgetEngine.js?v=37.11.0"></script>
   <script src="js/modules/renderBudgetCenter.js?v=37.11.0"></script>
-  <script src="js/startup-loader.js?v=37.11.0"></script>
+  <script src="js/modules/adaptivePackEngine.js?v=37.14.0"></script>
+  <script src="js/modules/adaptivePackCenter.js?v=37.14.0"></script>
+  <script src="js/modules/memoryPressureEngine.js?v=37.14.0"></script>
+  <script src="js/modules/memoryPressureCenter.js?v=37.14.0"></script>
+  <script src="js/modules/centerSuspensionEngine.js?v=37.14.0"></script>
+  <script src="js/modules/centerSuspensionCenter.js?v=37.14.0"></script>
+  <script src="js/startup-loader.js?v=37.14.0"></script>
 </body>
 </html>

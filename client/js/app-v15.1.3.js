@@ -1057,7 +1057,10 @@ const ESSENTIAL_STARTUP_CENTERS = new Set([
   "assetHealthCenter",
   "idlePackWarmupCenter",
   "eventStormGuardCenter",
-  "renderBudgetCenter"
+  "renderBudgetCenter",
+  "adaptivePackCenter",
+  "memoryPressureCenter",
+  "centerSuspensionCenter"
 ]);
 function shouldInitializeCenter(id) {
   return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id) || activatedCenters.has(id));
@@ -1065,7 +1068,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "37.11.0-performance-control", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "37.14.0-adaptive-runtime", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1531,6 +1534,21 @@ const renderBudgetCenterModule = startupRegistry.register(
   shouldInitializeCenter("renderBudgetCenter") ? window.createBlueCurrentRenderBudgetCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState"]
 );
+const adaptivePackCenterModule = startupRegistry.register(
+  "adaptivePackCenter",
+  shouldInitializeCenter("adaptivePackCenter") ? window.createBlueCurrentAdaptivePackCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "featurePackLoaderCenter"]
+);
+const memoryPressureCenterModule = startupRegistry.register(
+  "memoryPressureCenter",
+  shouldInitializeCenter("memoryPressureCenter") ? window.createBlueCurrentMemoryPressureCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "renderBudgetCenter"]
+);
+const centerSuspensionCenterModule = startupRegistry.register(
+  "centerSuspensionCenter",
+  shouldInitializeCenter("centerSuspensionCenter") ? window.createBlueCurrentCenterSuspensionCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
 const pilotLaunchCenterModule = startupRegistry.register(
   "pilotLaunchCenter",
   shouldInitializeCenter("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
@@ -1819,6 +1837,9 @@ window.blueCurrent = {
     idlePackWarmup: idlePackWarmupCenterModule,
     eventStormGuard: eventStormGuardCenterModule,
     renderBudget: renderBudgetCenterModule,
+    adaptivePack: adaptivePackCenterModule,
+    memoryPressure: memoryPressureCenterModule,
+    centerSuspension: centerSuspensionCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,
