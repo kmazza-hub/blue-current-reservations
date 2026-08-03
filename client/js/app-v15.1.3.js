@@ -1305,6 +1305,30 @@ const serviceQualityCenterModule = startupRegistry.register(
   ["eventBus", "appState", "guestRecoveryCenter", "laborDeploymentCenter"]
 );
 
+const reservationYieldCenterModule = startupRegistry.register(
+  "reservationYieldCenter",
+  document.getElementById("reservationYieldCenter")
+    ? window.createBlueCurrentReservationYieldCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "serviceQualityCenter"]
+);
+
+const kitchenThroughputCenterModule = startupRegistry.register(
+  "kitchenThroughputCenter",
+  document.getElementById("kitchenThroughputCenter")
+    ? window.createBlueCurrentKitchenThroughputCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "laborDeploymentCenter", "reservationYieldCenter"]
+);
+
+const shiftProfitPulseCenterModule = startupRegistry.register(
+  "shiftProfitPulseCenter",
+  document.getElementById("shiftProfitPulseCenter")
+    ? window.createBlueCurrentShiftProfitPulseCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "reservationYieldCenter", "kitchenThroughputCenter", "serviceQualityCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1526,6 +1550,9 @@ window.blueCurrent = {
     guestRecovery: guestRecoveryCenterModule,
     laborDeployment: laborDeploymentCenterModule,
     serviceQuality: serviceQualityCenterModule,
+    reservationYield: reservationYieldCenterModule,
+    kitchenThroughput: kitchenThroughputCenterModule,
+    shiftProfitPulse: shiftProfitPulseCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,

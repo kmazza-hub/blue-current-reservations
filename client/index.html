@@ -3998,6 +3998,18 @@
           <header><div><small>V36.17 · Service Quality Guardrails</small><strong id="sqTitle">Keep profit actions inside the quality standards guests expect.</strong><span id="sqUpdated">Checking quality guardrails…</span></div><button type="button" id="sqRefresh">Refresh quality</button></header>
           <p id="sqHeadline" class="v3617-headline">Monitoring service quality.</p><div class="v3617-kpis"><article><small>Quality score</small><strong id="sqScore">0</strong></article><article><small>Breaches</small><strong id="sqBreaches">0</strong></article><article><small>Critical</small><strong id="sqCritical">0</strong></article></div><div class="sq-guardrails" id="sqGuardrails"></div>
         </section>
+        <section class="reservation-yield-center v3620-center" id="reservationYieldCenter" aria-labelledby="ryTitle">
+          <header><div><small>V36.18 · Reservation Yield Optimizer</small><strong id="ryTitle">Fill the right seats without sacrificing service quality.</strong><span id="ryUpdated">Evaluating inventory…</span></div><button type="button" id="ryRefresh">Refresh yield</button></header>
+          <p id="ryHeadline" class="v3620-headline">Balancing demand, capacity, and guest experience.</p><div class="v3620-kpis"><article><small>Occupancy</small><strong id="ryOccupancy">0%</strong></article><article><small>Guest wait</small><strong id="ryWait">0 min</strong></article><article><small>Inventory to open</small><strong id="ryInventory">0</strong></article><article><small>Profit opportunity</small><strong id="ryProfit">$0</strong></article></div><div class="ry-actions" id="ryActions"></div>
+        </section>
+        <section class="kitchen-throughput-center v3620-center" id="kitchenThroughputCenter" aria-labelledby="ktTitle">
+          <header><div><small>V36.19 · Kitchen Throughput Coach</small><strong id="ktTitle">Protect ticket flow before the line becomes the constraint.</strong><span id="ktUpdated">Evaluating kitchen flow…</span></div><button type="button" id="ktRefresh">Refresh flow</button></header>
+          <p id="ktHeadline" class="v3620-headline">Identifying the current bottleneck.</p><div class="v3620-kpis"><article><small>Throughput score</small><strong id="ktScore">0</strong></article><article><small>Kitchen load</small><strong id="ktKitchen">0%</strong></article><article><small>Guest wait</small><strong id="ktWait">0 min</strong></article><article><small>Profit protected</small><strong id="ktProfit">$0</strong></article></div><div class="kt-grid"><section><h3>Station pressure</h3><div id="ktStations" class="kt-stations"></div></section><section><h3>Recommended moves</h3><div id="ktActions" class="kt-actions"></div></section></div>
+        </section>
+        <section class="shift-profit-pulse-center v3620-center" id="shiftProfitPulseCenter" aria-labelledby="sppTitle">
+          <header><div><small>V36.20 · Shift Profit Pulse</small><strong id="sppTitle">One live score for profit, service quality, and operating control.</strong><span id="sppUpdated">Building shift pulse…</span></div><button type="button" id="sppRefresh">Refresh pulse</button></header>
+          <p id="sppHeadline" class="v3620-headline">Connecting revenue, cost, quality, and execution.</p><div class="spp-hero"><div><small>Shift score</small><strong id="sppScore">0</strong><span id="sppTrend">0</span></div><dl><div><dt>Modeled profit</dt><dd id="sppModeled">$0</dd></div><div><dt>Profit at risk</dt><dd id="sppRisk">$0</dd></div><div><dt>Quality</dt><dd id="sppQuality">0</dd></div></dl></div><div><h3>Top profit priorities</h3><div id="sppPriorities" class="spp-priorities"></div></div>
+        </section>
         <section class="restaurant-performance-center" id="restaurantPerformanceCenter" aria-labelledby="restaurantPerformanceTitle">
           <div class="restaurant-performance-heading">
             <div><small>V35.0 · Restaurant Performance Engine</small><strong id="restaurantPerformanceTitle">Restaurant Performance Command Center</strong><span id="restaurantPerformanceUpdated">Building performance picture…</span></div>
@@ -7511,6 +7523,12 @@
   <script src="js/modules/laborDeploymentCenter.js?v=36.17.0"></script>
   <script src="js/modules/serviceQualityEngine.js?v=36.17.0"></script>
   <script src="js/modules/serviceQualityCenter.js?v=36.17.0"></script>
+  <script src="js/modules/reservationYieldEngine.js?v=36.20.0"></script>
+  <script src="js/modules/reservationYieldCenter.js?v=36.20.0"></script>
+  <script src="js/modules/kitchenThroughputEngine.js?v=36.20.0"></script>
+  <script src="js/modules/kitchenThroughputCenter.js?v=36.20.0"></script>
+  <script src="js/modules/shiftProfitPulseEngine.js?v=36.20.0"></script>
+  <script src="js/modules/shiftProfitPulseCenter.js?v=36.20.0"></script>
   <script src="js/modules/restaurantPerformanceEngine.js?v=35.0.1"></script>
   <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.1"></script>
   <script src="js/modules/outcomeIntelligenceEngine.js?v=35.1.0"></script>
@@ -7552,6 +7570,6 @@
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=36.8.0"></script>
+  <script src="js/app-v15.1.3.js?v=36.20.0"></script>
 </body>
 </html>
