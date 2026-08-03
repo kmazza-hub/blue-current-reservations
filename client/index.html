@@ -6931,6 +6931,32 @@
           <section class="deployment-readiness-actions"><div class="deployment-readiness-title"><small>Next actions</small><strong>Highest-priority work before go-live</strong></div><ol id="deploymentReadinessActions"></ol></section>
           <p id="deploymentReadinessMessage" class="deployment-readiness-message" role="status"></p>
         </section>
+
+        <section class="post-launch-value-center" id="postLaunchValueCenter" aria-labelledby="postLaunchValueTitle">
+          <header class="post-launch-value-header">
+            <div><small>V35.9 · Post-launch command and value realization</small><strong id="postLaunchValueTitle">Post-Launch Command & Value Center</strong><span>Keep the rollout healthy, drive adoption, resolve launch issues, and prove measurable restaurant value.</span></div>
+            <div class="post-launch-value-score"><small>Launch health</small><strong id="postLaunchHealthScore">0%</strong><span id="postLaunchGate" data-tone="early-adoption">early adoption</span></div>
+            <div class="post-launch-value-buttons"><button type="button" id="postLaunchRefresh">Refresh health</button><button type="button" id="postLaunchAddIssue">Add issue</button><button type="button" id="postLaunchExport">Export evidence</button></div>
+          </header>
+          <p class="post-launch-value-summary" id="postLaunchSummary">The rollout is building adoption, evidence, and repeatable operating value.</p>
+          <div class="post-launch-value-kpis">
+            <article><small>Adoption</small><strong id="postLaunchAdoptionScore">0%</strong></article>
+            <article><small>Realized revenue</small><strong id="postLaunchRealizedRevenue">$0</strong></article>
+            <article><small>Open issues</small><strong id="postLaunchOpenIssues">0</strong></article>
+            <article><small>Live locations</small><strong id="postLaunchLiveLocations">0/0</strong></article>
+            <article><small>Forecast accuracy</small><strong id="postLaunchForecastAccuracy">0%</strong></article>
+            <article><small>RPI recovered</small><strong id="postLaunchRpiRecovered">+0</strong></article>
+          </div>
+          <div class="post-launch-value-grid">
+            <section><div class="post-launch-value-title"><small>User adoption</small><strong>Who is using Blue Current and how often</strong></div><div id="postLaunchAdoption" class="post-launch-value-adoption"></div></section>
+            <section><div class="post-launch-value-title"><small>Location rollout</small><strong>Operational health by launch location</strong></div><div id="postLaunchLocations" class="post-launch-value-locations"></div></section>
+          </div>
+          <div class="post-launch-value-grid post-launch-value-grid-secondary">
+            <section><div class="post-launch-value-title"><small>Issue command</small><strong>Launch risks, ownership, and resolution</strong></div><div id="postLaunchIssues" class="post-launch-value-issues"></div></section>
+            <section><div class="post-launch-value-title"><small>Next actions</small><strong>Highest-value work after go-live</strong></div><ol id="postLaunchActions" class="post-launch-value-actions"></ol></section>
+          </div>
+          <p id="postLaunchMessage" class="post-launch-value-message" role="status"></p>
+        </section>
 </main>
 
   <footer class="site-footer">
@@ -7085,12 +7111,14 @@
   <script src="js/modules/pilotReviewCenter.js?v=35.7.0"></script>
   <script src="js/modules/deploymentReadinessEngine.js?v=35.8.0"></script>
   <script src="js/modules/deploymentReadinessCenter.js?v=35.8.0"></script>
+  <script src="js/modules/postLaunchValueEngine.js?v=35.9.0"></script>
+  <script src="js/modules/postLaunchValueCenter.js?v=35.9.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.7.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.9.0"></script>
 </body>
 </html>

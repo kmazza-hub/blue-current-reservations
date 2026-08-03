@@ -89,7 +89,12 @@ class AppState {
       deploymentTraining: [],
       deploymentLocations: [],
       deploymentLaunchWindow: null,
-      deploymentRollbackPlan: null
+      deploymentRollbackPlan: null,
+      postLaunchValue: null,
+      postLaunchValueHistory: [],
+      postLaunchAdoption: [],
+      postLaunchIssues: [],
+      postLaunchLocations: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });
