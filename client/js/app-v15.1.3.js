@@ -1401,6 +1401,24 @@ const weeklyProfitReviewCenterModule = startupRegistry.register(
   ["eventBus", "appState", "profitCloseoutCenter", "supplierVarianceCenter", "prepExecutionCenter"]
 );
 
+const teamCollaborationCenterModule = startupRegistry.register(
+  "teamCollaborationCenter",
+  document.getElementById("teamCollaborationCenter") ? window.createBlueCurrentTeamCollaborationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "commandActionInboxCenter", "guidedShiftCenter"]
+);
+
+const enterpriseOperationsCenterModule = startupRegistry.register(
+  "enterpriseOperationsCenter",
+  document.getElementById("enterpriseOperationsCenter") ? window.createBlueCurrentEnterpriseOperationsCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "portfolioPerformanceCenter"]
+);
+
+const operationalKnowledgeCenterModule = startupRegistry.register(
+  "operationalKnowledgeCenter",
+  document.getElementById("operationalKnowledgeCenter") ? window.createBlueCurrentOperationalKnowledgeCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "serviceQualityCenter", "kitchenThroughputCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1634,6 +1652,9 @@ window.blueCurrent = {
     supplierVariance: supplierVarianceCenterModule,
     prepExecution: prepExecutionCenterModule,
     weeklyProfitReview: weeklyProfitReviewCenterModule,
+    teamCollaboration: teamCollaborationCenterModule,
+    enterpriseOperations: enterpriseOperationsCenterModule,
+    operationalKnowledge: operationalKnowledgeCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,

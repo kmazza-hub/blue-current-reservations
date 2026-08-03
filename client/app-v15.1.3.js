@@ -1036,7 +1036,7 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 const motionEngine = new window.BlueCurrentMotionEngine();
 
 
-const platform = window.BlueCurrentPlatform.create({ build: "35.4.0", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "35.9.0", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1161,6 +1161,264 @@ const aiRestaurantBrainModule = startupRegistry.register(
   ["eventBus","appState","cloudFoundation","authOrganizations","serviceCoordination","kitchenCommandCenter"]
 );
 
+const unifiedCommandCenterModule = startupRegistry.register(
+  "unifiedCommandCenter",
+  document.getElementById("unifiedCommandCenter")
+    ? window.createBlueCurrentUnifiedCommandCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState"]
+);
+
+const guidedShiftCenterModule = startupRegistry.register(
+  "guidedShiftCenter",
+  document.getElementById("guidedShiftCenter")
+    ? window.createBlueCurrentGuidedShiftCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter"]
+);
+
+const operatorCopilotCenterModule = startupRegistry.register(
+  "operatorCopilotCenter",
+  document.getElementById("operatorCopilotCenter")
+    ? window.createBlueCurrentOperatorCopilotCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "guidedShiftCenter"]
+);
+
+const roleExperienceCenterModule = startupRegistry.register(
+  "roleExperienceCenter",
+  document.getElementById("roleExperienceCenter")
+    ? window.createBlueCurrentRoleExperienceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "guidedShiftCenter", "operatorCopilotCenter"]
+);
+
+const commandActionInboxCenterModule = startupRegistry.register(
+  "commandActionInboxCenter",
+  document.getElementById("commandActionInboxCenter")
+    ? window.createBlueCurrentCommandActionInboxCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "operatorCopilotCenter", "guidedShiftCenter"]
+);
+
+const shiftCloseoutCenterModule = startupRegistry.register(
+  "shiftCloseoutCenter",
+  document.getElementById("shiftCloseoutCenter")
+    ? window.createBlueCurrentShiftCloseoutCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "commandActionInboxCenter", "guidedShiftCenter"]
+);
+
+const digitalTwinVisualizationCenterModule = startupRegistry.register(
+  "digitalTwinVisualizationCenter",
+  document.getElementById("digitalTwinVisualizationCenter")
+    ? window.createBlueCurrentDigitalTwinVisualizationCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter"]
+);
+
+const executiveMorningBriefCenterModule = startupRegistry.register(
+  "executiveMorningBriefCenter",
+  document.getElementById("executiveMorningBriefCenter")
+    ? window.createBlueCurrentExecutiveMorningBriefCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter"]
+);
+
+const intelligenceGraphCenterModule = startupRegistry.register(
+  "intelligenceGraphCenter",
+  document.getElementById("intelligenceGraphCenter")
+    ? window.createBlueCurrentIntelligenceGraphCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "digitalTwinVisualizationCenter"]
+);
+
+const predictiveOverlayCenterModule = startupRegistry.register(
+  "predictiveOverlayCenter",
+  document.getElementById("predictiveOverlayCenter")
+    ? window.createBlueCurrentPredictiveOverlayCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "digitalTwinVisualizationCenter"]
+);
+
+const restaurantReplayCenterModule = startupRegistry.register(
+  "restaurantReplayCenter",
+  document.getElementById("restaurantReplayCenter")
+    ? window.createBlueCurrentRestaurantReplayCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter"]
+);
+
+const explainableDecisionCenterModule = startupRegistry.register(
+  "explainableDecisionCenter",
+  document.getElementById("explainableDecisionCenter")
+    ? window.createBlueCurrentExplainableDecisionCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "intelligenceGraphCenter"]
+);
+
+const crossLocationPulseCenterModule = startupRegistry.register(
+  "crossLocationPulseCenter",
+  document.getElementById("crossLocationPulseCenter")
+    ? window.createBlueCurrentCrossLocationPulseCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "portfolioPerformanceCenter"]
+);
+
+const profitScenarioCenterModule = startupRegistry.register(
+  "profitScenarioCenter",
+  document.getElementById("profitScenarioCenter")
+    ? window.createBlueCurrentProfitScenarioCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter", "costVarianceCenter"]
+);
+
+const smartAlertRouterCenterModule = startupRegistry.register(
+  "smartAlertRouterCenter",
+  document.getElementById("smartAlertRouterCenter")
+    ? window.createBlueCurrentSmartAlertRouterCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "predictiveOverlayCenter", "commandActionInboxCenter"]
+);
+
+const guestRecoveryCenterModule = startupRegistry.register(
+  "guestRecoveryCenter",
+  document.getElementById("guestRecoveryCenter")
+    ? window.createBlueCurrentGuestRecoveryCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "smartAlertRouterCenter"]
+);
+
+const laborDeploymentCenterModule = startupRegistry.register(
+  "laborDeploymentCenter",
+  document.getElementById("laborDeploymentCenter")
+    ? window.createBlueCurrentLaborDeploymentCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "predictiveOverlayCenter"]
+);
+
+const serviceQualityCenterModule = startupRegistry.register(
+  "serviceQualityCenter",
+  document.getElementById("serviceQualityCenter")
+    ? window.createBlueCurrentServiceQualityCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "guestRecoveryCenter", "laborDeploymentCenter"]
+);
+
+const reservationYieldCenterModule = startupRegistry.register(
+  "reservationYieldCenter",
+  document.getElementById("reservationYieldCenter")
+    ? window.createBlueCurrentReservationYieldCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "serviceQualityCenter"]
+);
+
+const kitchenThroughputCenterModule = startupRegistry.register(
+  "kitchenThroughputCenter",
+  document.getElementById("kitchenThroughputCenter")
+    ? window.createBlueCurrentKitchenThroughputCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "laborDeploymentCenter", "reservationYieldCenter"]
+);
+
+const shiftProfitPulseCenterModule = startupRegistry.register(
+  "shiftProfitPulseCenter",
+  document.getElementById("shiftProfitPulseCenter")
+    ? window.createBlueCurrentShiftProfitPulseCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "reservationYieldCenter", "kitchenThroughputCenter", "serviceQualityCenter"]
+);
+
+const inventoryWasteCenterModule = startupRegistry.register(
+  "inventoryWasteCenter",
+  document.getElementById("inventoryWasteCenter")
+    ? window.createBlueCurrentInventoryWasteCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "kitchenThroughputCenter"]
+);
+
+const menuMixCenterModule = startupRegistry.register(
+  "menuMixCenter",
+  document.getElementById("menuMixCenter")
+    ? window.createBlueCurrentMenuMixCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "inventoryWasteCenter", "serviceQualityCenter"]
+);
+
+const dailyProfitPlanCenterModule = startupRegistry.register(
+  "dailyProfitPlanCenter",
+  document.getElementById("dailyProfitPlanCenter")
+    ? window.createBlueCurrentDailyProfitPlanCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "menuMixCenter", "reservationYieldCenter", "kitchenThroughputCenter"]
+);
+
+const vendorPurchaseCenterModule = startupRegistry.register(
+  "vendorPurchaseCenter",
+  document.getElementById("vendorPurchaseCenter")
+    ? window.createBlueCurrentVendorPurchaseCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "inventoryWasteCenter", "menuMixCenter"]
+);
+
+const demandPrepForecastCenterModule = startupRegistry.register(
+  "demandPrepForecastCenter",
+  document.getElementById("demandPrepForecastCenter")
+    ? window.createBlueCurrentDemandPrepForecastCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "reservationYieldCenter", "kitchenThroughputCenter", "vendorPurchaseCenter"]
+);
+
+const profitCloseoutCenterModule = startupRegistry.register(
+  "profitCloseoutCenter",
+  document.getElementById("profitCloseoutCenter")
+    ? window.createBlueCurrentProfitCloseoutCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "dailyProfitPlanCenter", "vendorPurchaseCenter", "demandPrepForecastCenter"]
+);
+
+const supplierVarianceCenterModule = startupRegistry.register(
+  "supplierVarianceCenter",
+  document.getElementById("supplierVarianceCenter")
+    ? window.createBlueCurrentSupplierVarianceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "vendorPurchaseCenter", "inventoryWasteCenter"]
+);
+
+const prepExecutionCenterModule = startupRegistry.register(
+  "prepExecutionCenter",
+  document.getElementById("prepExecutionCenter")
+    ? window.createBlueCurrentPrepExecutionCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "demandPrepForecastCenter", "kitchenThroughputCenter"]
+);
+
+const weeklyProfitReviewCenterModule = startupRegistry.register(
+  "weeklyProfitReviewCenter",
+  document.getElementById("weeklyProfitReviewCenter")
+    ? window.createBlueCurrentWeeklyProfitReviewCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "profitCloseoutCenter", "supplierVarianceCenter", "prepExecutionCenter"]
+);
+
+const teamCollaborationCenterModule = startupRegistry.register(
+  "teamCollaborationCenter",
+  document.getElementById("teamCollaborationCenter") ? window.createBlueCurrentTeamCollaborationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "commandActionInboxCenter", "guidedShiftCenter"]
+);
+
+const enterpriseOperationsCenterModule = startupRegistry.register(
+  "enterpriseOperationsCenter",
+  document.getElementById("enterpriseOperationsCenter") ? window.createBlueCurrentEnterpriseOperationsCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "portfolioPerformanceCenter"]
+);
+
+const operationalKnowledgeCenterModule = startupRegistry.register(
+  "operationalKnowledgeCenter",
+  document.getElementById("operationalKnowledgeCenter") ? window.createBlueCurrentOperationalKnowledgeCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "serviceQualityCenter", "kitchenThroughputCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1233,14 +1491,6 @@ const pilotReleaseCenterModule = startupRegistry.register(
   ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "executiveBriefingCenter", "portfolioPerformanceCenter", "performanceLearningCenter"]
 );
 
-const pilotOperationsCenterModule = startupRegistry.register(
-  "pilotOperationsCenter",
-  document.getElementById("pilotOperationsCenter")
-    ? window.createBlueCurrentPilotOperationsCenterModule?.(eventBus, appState)
-    : null,
-  ["eventBus", "appState", "pilotReleaseCenter", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "executiveWorkflowCenter"]
-);
-
 const predictiveServiceCenterModule = startupRegistry.register(
   "predictiveServiceCenter",
   document.getElementById("predictiveServiceCenter")
@@ -1263,6 +1513,81 @@ const executiveWorkflowCenterModule = startupRegistry.register(
     ? window.createBlueCurrentExecutiveWorkflowCenterModule?.(eventBus, appState)
     : null,
   ["eventBus", "appState", "autonomousPolicyCenter", "predictiveServiceCenter"]
+);
+
+
+
+const pilotOperationsCenterModule = startupRegistry.register(
+  "pilotOperationsCenter",
+  document.getElementById("pilotOperationsCenter")
+    ? window.createBlueCurrentPilotOperationsCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "pilotReleaseCenter", "executiveWorkflowCenter"]
+);
+
+const pilotReviewCenterModule = startupRegistry.register(
+  "pilotReviewCenter",
+  document.getElementById("pilotReviewCenter")
+    ? window.createBlueCurrentPilotReviewCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "pilotOperationsCenter", "pilotReleaseCenter", "outcomeIntelligenceCenter", "executiveBriefingCenter"]
+);
+
+const deploymentReadinessCenterModule = startupRegistry.register(
+  "deploymentReadinessCenter",
+  document.getElementById("deploymentReadinessCenter")
+    ? window.createBlueCurrentDeploymentReadinessCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "pilotReviewCenter", "pilotReleaseCenter"]
+);
+
+const postLaunchValueCenterModule = startupRegistry.register(
+  "postLaunchValueCenter",
+  document.getElementById("postLaunchValueCenter")
+    ? window.createBlueCurrentPostLaunchValueCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "deploymentReadinessCenter", "outcomeIntelligenceCenter", "restaurantPerformanceCenter", "portfolioPerformanceCenter"]
+);
+
+const expansionBenchmarkCenterModule = startupRegistry.register(
+  "expansionBenchmarkCenter",
+  document.getElementById("expansionBenchmarkCenter")
+    ? window.createBlueCurrentExpansionBenchmarkCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "postLaunchValueCenter", "portfolioPerformanceCenter", "outcomeIntelligenceCenter", "performanceLearningCenter"]
+);
+
+const performanceGovernanceCenterModule = startupRegistry.register(
+  "performanceGovernanceCenter",
+  document.getElementById("performanceGovernanceCenter")
+    ? window.createBlueCurrentPerformanceGovernanceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "expansionBenchmarkCenter", "postLaunchValueCenter", "executiveBriefingCenter", "outcomeIntelligenceCenter", "performanceLearningCenter"]
+);
+
+
+const enterpriseValuePlanCenterModule = startupRegistry.register(
+  "enterpriseValuePlanCenter",
+  document.getElementById("enterpriseValuePlanCenter")
+    ? window.createBlueCurrentEnterpriseValuePlanCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "performanceGovernanceCenter", "expansionBenchmarkCenter", "postLaunchValueCenter", "outcomeIntelligenceCenter"]
+);
+
+const marginIntelligenceCenterModule = startupRegistry.register(
+  "marginIntelligenceCenter",
+  document.getElementById("marginIntelligenceCenter")
+    ? window.createBlueCurrentMarginIntelligenceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "enterpriseValuePlanCenter"]
+);
+
+const costVarianceCenterModule = startupRegistry.register(
+  "costVarianceCenter",
+  document.getElementById("costVarianceCenter")
+    ? window.createBlueCurrentCostVarianceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "marginIntelligenceCenter", "predictiveServiceCenter", "outcomeIntelligenceCenter"]
 );
 
 const executiveCommandCenterModule = startupRegistry.register("executiveCommandCenter", window.createBlueCurrentExecutiveCommandCenterModule?.(eventBus, appState, cloudFoundationModule), ["eventBus","appState","cloudFoundation","authOrganizations","aiRestaurantBrain"]);
@@ -1297,6 +1622,39 @@ window.blueCurrent = {
     blueCurrentLive: blueCurrentLiveModule,
     intelligenceNetwork: intelligenceNetworkModule,
     autonomousOperations: operationsDirectorModule,
+    unifiedCommand: unifiedCommandCenterModule,
+    guidedShift: guidedShiftCenterModule,
+    operatorCopilot: operatorCopilotCenterModule,
+    roleExperience: roleExperienceCenterModule,
+    commandActionInbox: commandActionInboxCenterModule,
+    shiftCloseout: shiftCloseoutCenterModule,
+    digitalTwinVisualization: digitalTwinVisualizationCenterModule,
+    executiveMorningBrief: executiveMorningBriefCenterModule,
+    intelligenceGraph: intelligenceGraphCenterModule,
+    predictiveOverlay: predictiveOverlayCenterModule,
+    restaurantReplay: restaurantReplayCenterModule,
+    explainableDecision: explainableDecisionCenterModule,
+    crossLocationPulse: crossLocationPulseCenterModule,
+    profitScenario: profitScenarioCenterModule,
+    smartAlertRouter: smartAlertRouterCenterModule,
+    guestRecovery: guestRecoveryCenterModule,
+    laborDeployment: laborDeploymentCenterModule,
+    serviceQuality: serviceQualityCenterModule,
+    reservationYield: reservationYieldCenterModule,
+    kitchenThroughput: kitchenThroughputCenterModule,
+    shiftProfitPulse: shiftProfitPulseCenterModule,
+    inventoryWaste: inventoryWasteCenterModule,
+    menuMix: menuMixCenterModule,
+    dailyProfitPlan: dailyProfitPlanCenterModule,
+    vendorPurchase: vendorPurchaseCenterModule,
+    demandPrepForecast: demandPrepForecastCenterModule,
+    profitCloseout: profitCloseoutCenterModule,
+    supplierVariance: supplierVarianceCenterModule,
+    prepExecution: prepExecutionCenterModule,
+    weeklyProfitReview: weeklyProfitReviewCenterModule,
+    teamCollaboration: teamCollaborationCenterModule,
+    enterpriseOperations: enterpriseOperationsCenterModule,
+    operationalKnowledge: operationalKnowledgeCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
@@ -1307,6 +1665,14 @@ window.blueCurrent = {
     performanceLearning: performanceLearningCenterModule,
     pilotRelease: pilotReleaseCenterModule,
     pilotOperations: pilotOperationsCenterModule,
+    pilotReview: pilotReviewCenterModule,
+    deploymentReadiness: deploymentReadinessCenterModule,
+    postLaunchValue: postLaunchValueCenterModule,
+    expansionBenchmark: expansionBenchmarkCenterModule,
+    performanceGovernance: performanceGovernanceCenterModule,
+    enterpriseValuePlan: enterpriseValuePlanCenterModule,
+    marginIntelligence: marginIntelligenceCenterModule,
+    costVariance: costVarianceCenterModule,
     predictiveService: predictiveServiceCenterModule,
     autonomousPolicyCenter: autonomousPolicyCenterModule,
     executiveWorkflowCenter: executiveWorkflowCenterModule
