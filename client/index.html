@@ -1912,6 +1912,34 @@
           <p id="governanceMessage" class="performance-governance-message" role="status"></p>
         </section>
 
+        <section class="enterprise-value-plan-center" id="enterpriseValuePlanCenter" aria-labelledby="enterpriseValuePlanTitle">
+          <header class="enterprise-value-plan-header">
+            <div><small>V35.12 · Enterprise value planning</small><strong id="enterpriseValuePlanTitle">Enterprise Value Plan & Annual Operating Plan</strong><span>Translate restaurant performance, measured outcomes, and governance commitments into annual targets, quarterly initiatives, and accountable financial execution.</span></div>
+            <div class="enterprise-value-plan-score"><small>Plan readiness</small><strong id="enterpriseValuePlanScore">0%</strong><span id="enterpriseValuePlanStatus" data-tone="forming">forming</span></div>
+            <div class="enterprise-value-plan-buttons"><button type="button" id="enterpriseValuePlanRefresh">Refresh plan</button><button type="button" id="enterpriseValuePlanAdd">Add initiative</button><button type="button" id="enterpriseValuePlanExport">Export annual plan</button></div>
+          </header>
+          <p class="enterprise-value-plan-summary" id="enterpriseValuePlanSummary">The annual value plan is forming. Complete target ownership, initiative sequencing, and milestone evidence before approval.</p>
+          <div class="enterprise-value-plan-kpis">
+            <article><small>Revenue target</small><strong id="enterpriseValueRevenueTarget">$0</strong><span id="enterpriseValueRevenueActual">$0</span></article>
+            <article><small>Portfolio RPI target</small><strong id="enterpriseValueRpiTarget">0</strong><span id="enterpriseValueRpiActual">0</span></article>
+            <article><small>Adoption target</small><strong id="enterpriseValueAdoptionTarget">0%</strong><span id="enterpriseValueAdoptionActual">0%</span></article>
+            <article><small>Open initiatives</small><strong id="enterpriseValueOpenInitiatives">0</strong><span>Annual work plan</span></article>
+          </div>
+          <div class="enterprise-value-plan-grid">
+            <section><div class="enterprise-value-plan-title"><small>Annual targets</small><strong>Financial and operating commitments</strong></div><div id="enterpriseValueTargets" class="enterprise-value-targets"></div></section>
+            <section><div class="enterprise-value-plan-title"><small>Target variance</small><strong>Distance from annual ambition</strong></div><div id="enterpriseValueVariance" class="enterprise-value-variance"></div></section>
+          </div>
+          <div class="enterprise-value-plan-grid enterprise-value-plan-grid-secondary">
+            <section><div class="enterprise-value-plan-title"><small>Value initiatives</small><strong>Owned work tied to measurable restaurant impact</strong></div><div id="enterpriseValueInitiatives" class="enterprise-value-initiatives"></div></section>
+            <section><div class="enterprise-value-plan-title"><small>Quarterly roadmap</small><strong>Sequenced milestones and projected value</strong></div><div id="enterpriseValueQuarters" class="enterprise-value-quarters"></div></section>
+          </div>
+          <div class="enterprise-value-plan-grid enterprise-value-plan-grid-tertiary">
+            <section><div class="enterprise-value-plan-title"><small>Plan controls</small><strong>Blockers to executive approval</strong></div><div id="enterpriseValueBlockers" class="enterprise-value-blockers"></div></section>
+            <section><div class="enterprise-value-plan-title"><small>Next actions</small><strong>Highest-value work before approval</strong></div><ol id="enterpriseValueActions" class="enterprise-value-actions"></ol></section>
+          </div>
+          <p id="enterpriseValuePlanMessage" class="enterprise-value-plan-message" role="status"></p>
+        </section>
+
 </main>
           </div>
         </div>
@@ -7173,12 +7201,14 @@
   <script src="js/modules/expansionBenchmarkCenter.js?v=35.10.0"></script>
   <script src="js/modules/performanceGovernanceEngine.js?v=35.11.0"></script>
   <script src="js/modules/performanceGovernanceCenter.js?v=35.11.0"></script>
+  <script src="js/modules/enterpriseValuePlanEngine.js?v=35.12.0"></script>
+  <script src="js/modules/enterpriseValuePlanCenter.js?v=35.12.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.11.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.12.0"></script>
 </body>
 </html>

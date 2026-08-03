@@ -102,7 +102,11 @@ class AppState {
       performanceGovernance: null,
       performanceGovernanceHistory: [],
       performanceGovernanceCadence: [],
-      performanceGovernanceCommitments: []
+      performanceGovernanceCommitments: [],
+      enterpriseValuePlan: null,
+      enterpriseValuePlanHistory: [],
+      enterpriseValueTargets: [],
+      enterpriseValueInitiatives: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

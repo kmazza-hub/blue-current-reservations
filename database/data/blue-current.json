@@ -474,6 +474,30 @@
       "category": "security",
       "createdAt": "2026-08-03T01:17:30.431Z",
       "id": "audit_1785719850431_6cfmrc"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Sarah Morgan",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-03T01:45:06.066Z",
+      "id": "audit_1785721506066_lp6zbf"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Sarah Morgan",
+      "action": "Invited undefined as host",
+      "category": "access",
+      "createdAt": "2026-08-03T01:45:22.661Z",
+      "id": "audit_1785721522661_4s9vd1"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Sarah Morgan",
+      "action": "Version 1 committed for /api/invitations",
+      "category": "synchronization",
+      "createdAt": "2026-08-03T01:45:22.681Z",
+      "id": "audit_1785721522681_8sfrka"
     }
   ],
   "reservations": [
@@ -834,18 +858,6 @@
       "expiresAt": "2026-08-03T04:25:36.670Z"
     },
     {
-      "id": "ses_1785719683155_7c734r",
-      "tokenHash": "135a49ef13e02b9b3b4505b56c7ba3a2d057648c74da8446a869c0eac4287452",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-03T01:14:43.155Z",
-      "expiresAt": "2026-08-03T13:14:43.155Z"
-    },
-    {
       "id": "ses_1785719850425_aoh97d",
       "tokenHash": "4742b099da9442a256812f2e1617af2f36e0655bfb0257cd69e239923e874749",
       "userId": "usr_keith",
@@ -856,6 +868,18 @@
       ],
       "createdAt": "2026-08-03T01:17:30.425Z",
       "expiresAt": "2026-08-03T13:17:30.425Z"
+    },
+    {
+      "id": "ses_1785721506058_rybqwv",
+      "tokenHash": "7ca0764ff6a2583d2eaec649426a9d3b99627fb0ca9b0fd46696cb78d3334b80",
+      "userId": "usr_sarah",
+      "organizationId": "org_chefs",
+      "role": "general_manager",
+      "locationIds": [
+        "loc_marina"
+      ],
+      "createdAt": "2026-08-03T01:45:06.058Z",
+      "expiresAt": "2026-08-03T13:45:06.058Z"
     }
   ],
   "invitations": [
@@ -882,6 +906,16 @@
       "status": "pending",
       "token": "BC23-R3AUGETY",
       "expiresAt": "2026-07-29T21:15:57.992Z"
+    },
+    {
+      "id": "inv_1785721522652_kqx2av",
+      "organizationId": "org_chefs",
+      "email": "undefined",
+      "role": "host",
+      "locationIds": [],
+      "status": "pending",
+      "token": "BC23-1AWR61WV",
+      "expiresAt": "2026-08-10T01:45:22.652Z"
     }
   ],
   "tables": [
@@ -2233,6 +2267,28 @@
       "status": "draft",
       "createdAt": "2026-07-23T01:17:26.711Z",
       "updatedAt": "2026-07-23T01:17:26.711Z"
+    }
+  ],
+  "resourceVersions": [
+    {
+      "id": "org_chefs:/api/invitations:invitations",
+      "organizationId": "org_chefs",
+      "path": "/api/invitations",
+      "entityId": "invitations",
+      "version": 1,
+      "createdAt": "2026-08-03T01:45:22.676Z",
+      "updatedAt": "2026-08-03T01:45:22.676Z",
+      "lastPayload": {
+        "id": "inv_1785721522652_kqx2av",
+        "organizationId": "org_chefs",
+        "email": "undefined",
+        "role": "host",
+        "locationIds": [],
+        "status": "pending",
+        "token": "BC23-1AWR61WV",
+        "expiresAt": "2026-08-10T01:45:22.652Z"
+      },
+      "lastActor": "Sarah Morgan"
     }
   ]
 }
