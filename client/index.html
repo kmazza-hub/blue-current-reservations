@@ -6957,6 +6957,34 @@
           </div>
           <p id="postLaunchMessage" class="post-launch-value-message" role="status"></p>
         </section>
+
+        <section class="expansion-benchmark-center" id="expansionBenchmarkCenter" aria-labelledby="expansionBenchmarkTitle">
+          <header class="expansion-benchmark-header">
+            <div><small>V35.10 · Expansion control and benchmarking</small><strong id="expansionBenchmarkTitle">Expansion Control & Benchmarking Center</strong><span>Compare locations, preserve repeatable wins, govern expansion, and scale only what the evidence supports.</span></div>
+            <div class="expansion-benchmark-score"><small>Expansion readiness</small><strong id="expansionBenchmarkScore">0%</strong><span id="expansionBenchmarkGate" data-tone="stabilize">stabilize</span></div>
+            <div class="expansion-benchmark-buttons"><button type="button" id="expansionBenchmarkRefresh">Refresh benchmark</button><button type="button" id="expansionBenchmarkExport">Export evidence</button></div>
+          </header>
+          <p class="expansion-benchmark-summary" id="expansionBenchmarkSummary">Continue stabilizing the current rollout and deepen repeatable evidence before adding locations.</p>
+          <div class="expansion-benchmark-kpis">
+            <article><small>Portfolio RPI</small><strong id="expansionAverageRpi">0</strong></article>
+            <article><small>Average adoption</small><strong id="expansionAverageAdoption">0%</strong></article>
+            <article><small>Realized revenue</small><strong id="expansionRealizedRevenue">$0</strong></article>
+            <article><small>Scaling ready</small><strong id="expansionScalingReady">0/0</strong></article>
+            <article><small>Repeatable wins</small><strong id="expansionRepeatableWins">0</strong></article>
+            <article><small>Remaining opportunity</small><strong id="expansionOpportunity">$0</strong></article>
+          </div>
+          <div class="expansion-benchmark-grid">
+            <section><div class="expansion-benchmark-title"><small>Location benchmark</small><strong>Performance, adoption, and measured value</strong></div><div id="expansionLocationBenchmarks" class="expansion-location-benchmarks"></div></section>
+            <section><div class="expansion-benchmark-title"><small>Repeatable playbooks</small><strong>Operating wins worth scaling</strong></div><div id="expansionPlaybooks" class="expansion-playbooks"></div></section>
+          </div>
+          <div class="expansion-benchmark-grid expansion-benchmark-grid-secondary">
+            <section><div class="expansion-benchmark-title"><small>Expansion plan</small><strong>Location waves, ownership, and approval</strong></div><div id="expansionPlan" class="expansion-plan"></div></section>
+            <section><div class="expansion-benchmark-title"><small>Expansion controls</small><strong>Blockers and watch conditions</strong></div><div id="expansionRisks" class="expansion-risks"></div></section>
+          </div>
+          <section class="expansion-actions-section"><div class="expansion-benchmark-title"><small>Next actions</small><strong>Highest-value work before scaling</strong></div><ol id="expansionActions" class="expansion-actions"></ol></section>
+          <p id="expansionBenchmarkMessage" class="expansion-benchmark-message" role="status"></p>
+        </section>
+
 </main>
 
   <footer class="site-footer">
@@ -7113,12 +7141,14 @@
   <script src="js/modules/deploymentReadinessCenter.js?v=35.8.0"></script>
   <script src="js/modules/postLaunchValueEngine.js?v=35.9.0"></script>
   <script src="js/modules/postLaunchValueCenter.js?v=35.9.0"></script>
+  <script src="js/modules/expansionBenchmarkEngine.js?v=35.10.0"></script>
+  <script src="js/modules/expansionBenchmarkCenter.js?v=35.10.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.9.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.10.0"></script>
 </body>
 </html>

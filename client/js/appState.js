@@ -94,7 +94,11 @@ class AppState {
       postLaunchValueHistory: [],
       postLaunchAdoption: [],
       postLaunchIssues: [],
-      postLaunchLocations: []
+      postLaunchLocations: [],
+      expansionBenchmark: null,
+      expansionBenchmarkHistory: [],
+      expansionPlan: [],
+      expansionPlaybooks: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });
