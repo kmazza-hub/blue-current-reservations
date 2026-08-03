@@ -1,0 +1,10 @@
+(function(){"use strict";
+class BlueCurrentEventStormGuardEngine{
+  constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.events=[];this.duplicates=0;this.wrap();this.timer=setInterval(()=>this.refresh("sample"),2000);this.refresh("initial");}
+  wrap(){if(this.eventBus.__stormGuardWrapped)return;const original=this.eventBus.emit.bind(this.eventBus);let lastName="",lastAt=0,lastFingerprint="";this.eventBus.emit=(name,payload={})=>{const now=performance.now();let fp="";try{fp=JSON.stringify(payload)?.slice(0,240)||"";}catch{fp="[unserializable]";}if(name===lastName&&fp===lastFingerprint&&now-lastAt<40)this.duplicates++;lastName=name;lastFingerprint=fp;lastAt=now;this.events.push({name,at:Date.now()});if(this.events.length>1200)this.events.splice(0,this.events.length-1200);return original(name,payload);};this.eventBus.__stormGuardWrapped=true;}
+  snapshot(reason="manual"){const cutoff=Date.now()-10000;this.events=this.events.filter(x=>x.at>=cutoff);const counts={};this.events.forEach(x=>counts[x.name]=(counts[x.name]||0)+1);const ranked=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([name,count])=>({name,count,ratePerSecond:Number((count/10).toFixed(1))}));const rate=Number((this.events.length/10).toFixed(1));const score=Math.max(0,100-Math.max(0,rate-12)*3-Math.min(25,this.duplicates));return{capturedAt:new Date().toISOString(),reason,score:Math.round(score),status:score>=90?"healthy":score>=70?"watch":"critical",eventsPerSecond:rate,duplicateBursts:this.duplicates,topEvents:ranked,listenerGroups:this.eventBus.listeners?.size||0};}
+  refresh(reason="manual"){const v=this.snapshot(reason);this.appState.update({eventStormGuard:v,eventStormGuardHistory:[...(this.appState.get("eventStormGuardHistory")||[]),v].slice(-30)});this.eventBus.emit("event-storm-guard:updated",structuredClone(v));return v;}
+  reset(){this.events=[];this.duplicates=0;return this.refresh("reset");}
+  destroy(){clearInterval(this.timer);}
+}
+window.BlueCurrentEventStormGuardEngine=BlueCurrentEventStormGuardEngine;})();

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.8.0-performance-control">
+  <meta name="blue-current-build" content="37.11.0-performance-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3888,6 +3888,9 @@
 <section class="v378-center" id="startupProfileCenter" aria-labelledby="sprTitle"><header><div><small>V37.6 · Startup Profiles</small><strong id="sprTitle">Save repeatable startup profiles for each role and workflow.</strong><span id="sprHeadline">Create a reusable startup profile.</span></div><button type="button" id="sprFocused">Focused mode</button></header><div class="v378-kpis"><article><small>Current profile</small><strong id="sprCurrent">focused</strong></article><article><small>Saved profiles</small><strong id="sprSaved">0</strong></article></div><div class="v378-form"><input id="sprName" type="text" placeholder="Profile name, e.g. Regional leader"><input id="sprPacks" type="text" placeholder="operations,intelligence"><button type="button" id="sprSave">Save profile</button></div><div id="sprProfiles" class="v378-list"></div><span id="sprStatus" role="status"></span></section>
 <section class="v378-center" id="backgroundActivityGovernorCenter" aria-labelledby="bagTitle"><header><div><small>V37.7 · Background Activity Governor</small><strong id="bagTitle">Pause recurring work when Blue Current is not visible.</strong><span id="bagHeadline">Measuring recurring activity…</span></div><button type="button" id="bagRefresh">Refresh activity</button></header><div class="v378-kpis v378-four"><article><small>State</small><strong id="bagState">active</strong></article><article><small>Intervals</small><strong id="bagIntervals">0</strong></article><article><small>Skipped callbacks</small><strong id="bagSkipped">0</strong></article><article><small>Visible rate</small><strong id="bagRate">0/min</strong></article></div><div id="bagChecks" class="v378-checks"></div></section>
 <section class="v378-center" id="assetHealthCenter" aria-labelledby="ahTitle"><header><div><small>V37.8 · Asset Health Audit</small><strong id="ahTitle">Prove every startup profile stays inside a safe asset budget.</strong><span id="ahHeadline">Auditing loaded assets…</span></div><div class="v378-actions"><button type="button" id="ahRefresh">Run audit</button><button type="button" id="ahExport">Export report</button></div></header><div class="v378-kpis v378-four"><article><small>Health score</small><strong id="ahScore">0%</strong></article><article><small>Status</small><strong id="ahStatus">—</strong></article><article><small>Loaded scripts</small><strong id="ahLoaded">0</strong></article><article><small>Deferred scripts</small><strong id="ahDeferred">0</strong></article></div><div id="ahChecks" class="v378-checks"></div></section>
+<section class="v3711-center" id="idlePackWarmupCenter" aria-labelledby="ipwTitle"><header><div><small>V37.9 · Idle Pack Warmup</small><strong id="ipwTitle">Warm feature assets without executing the full platform.</strong><span id="ipwHeadline">Preparing idle asset controls…</span></div><button type="button" id="ipwClear">Clear warm cache</button></header><div class="v3711-kpis"><article><small>Status</small><strong id="ipwStatus">idle</strong></article><article><small>Warm packs</small><strong id="ipwWarmed">0</strong></article><article><small>Prefetched assets</small><strong id="ipwAssets">0</strong></article></div><div id="ipwPacks" class="v3711-list"></div></section>
+<section class="v3711-center" id="eventStormGuardCenter" aria-labelledby="esgTitle"><header><div><small>V37.10 · Event Storm Guard</small><strong id="esgTitle">Make runaway application event traffic visible before it freezes the browser.</strong><span id="esgHeadline">Sampling EventBus traffic…</span></div><div class="v3711-actions"><button type="button" id="esgRefresh">Refresh</button><button type="button" id="esgReset">Reset sample</button></div></header><div class="v3711-kpis v3711-four"><article><small>Health score</small><strong id="esgScore">0%</strong></article><article><small>Status</small><strong id="esgStatus">—</strong></article><article><small>Event rate</small><strong id="esgRate">0/s</strong></article><article><small>Duplicate bursts</small><strong id="esgDuplicates">0</strong></article></div><div id="esgEvents" class="v3711-list"></div></section>
+<section class="v3711-center" id="renderBudgetCenter" aria-labelledby="rbTitle"><header><div><small>V37.11 · Render Budget Monitor</small><strong id="rbTitle">Keep DOM work and long tasks inside a safe focused-mode budget.</strong><span id="rbHeadline">Measuring rendering cost…</span></div><button type="button" id="rbRefresh">Refresh budget</button></header><div class="v3711-kpis v3711-four"><article><small>Render score</small><strong id="rbScore">0%</strong></article><article><small>Status</small><strong id="rbStatus">—</strong></article><article><small>DOM nodes</small><strong id="rbNodes">0</strong></article><article><small>Mutation rate</small><strong id="rbMutations">0/s</strong></article></div><div id="rbChecks" class="v3711-checks"></div></section>
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -7673,6 +7676,12 @@
   <script src="js/modules/startupProfileCenter.js?v=37.8.0"></script>
   <script src="js/modules/assetHealthEngine.js?v=37.8.0"></script>
   <script src="js/modules/assetHealthCenter.js?v=37.8.0"></script>
-  <script src="js/startup-loader.js?v=37.8.0"></script>
+  <script src="js/modules/idlePackWarmupEngine.js?v=37.11.0"></script>
+  <script src="js/modules/idlePackWarmupCenter.js?v=37.11.0"></script>
+  <script src="js/modules/eventStormGuardEngine.js?v=37.11.0"></script>
+  <script src="js/modules/eventStormGuardCenter.js?v=37.11.0"></script>
+  <script src="js/modules/renderBudgetEngine.js?v=37.11.0"></script>
+  <script src="js/modules/renderBudgetCenter.js?v=37.11.0"></script>
+  <script src="js/startup-loader.js?v=37.11.0"></script>
 </body>
 </html>
