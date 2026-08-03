@@ -72,7 +72,10 @@ class AppState {
       performanceLearning: null,
       performanceLearningHistory: [],
       recommendationConfidenceAdjustment: 0,
-      pilotReadiness: null
+      pilotReadiness: null,
+      pilotRelease: null,
+      pilotReleaseHistory: [],
+      pilotReleaseManifest: null
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });
