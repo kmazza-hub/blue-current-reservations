@@ -53,7 +53,12 @@ class AppState {
       autonomousPolicyHistory: [],
       executiveWorkflows: [],
       executiveWorkflowHistory: [],
-      executiveWorkflowSnapshot: null
+      executiveWorkflowSnapshot: null,
+      restaurantPerformance: null,
+      restaurantPerformanceHistory: [],
+      restaurantPerformanceIndex: 0,
+      restaurantPerformanceOpportunity: null,
+      restaurantPerformanceActions: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

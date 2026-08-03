@@ -3639,6 +3639,38 @@
           </aside>
         </div>
 
+        <section class="restaurant-performance-center" id="restaurantPerformanceCenter" aria-labelledby="restaurantPerformanceTitle">
+          <div class="restaurant-performance-heading">
+            <div><small>V35.0 · Restaurant Performance Engine</small><strong id="restaurantPerformanceTitle">Restaurant Performance Command Center</strong><span id="restaurantPerformanceUpdated">Building performance picture…</span></div>
+            <div class="restaurant-performance-rpi"><small>Restaurant Performance Index</small><strong id="restaurantPerformanceIndex">—</strong><span id="restaurantPerformanceBand" data-tone="strong">Calculating</span><b id="restaurantPerformanceTrend">+0.0 today</b></div>
+            <button type="button" id="restaurantPerformanceRefresh">Run performance pulse</button>
+          </div>
+          <p class="restaurant-performance-headline" id="restaurantPerformanceHeadline">Connecting revenue, guest experience, operations, and AI effectiveness.</p>
+          <div class="restaurant-performance-overview">
+            <section class="restaurant-performance-opportunity">
+              <div class="restaurant-performance-section-title"><small>Revenue opportunity</small><strong>What is available this shift</strong></div>
+              <div class="restaurant-performance-money"><article><small>Available</small><strong id="restaurantPerformanceAvailable">$0</strong></article><article><small>Captured</small><strong id="restaurantPerformanceCaptured">$0</strong></article><article class="is-opportunity"><small>Opportunity remaining</small><strong id="restaurantPerformanceRemaining">$0</strong></article></div>
+              <div class="restaurant-performance-confidence"><span>Model confidence</span><strong id="restaurantPerformanceConfidence">—</strong></div>
+            </section>
+            <section class="restaurant-performance-scores">
+              <div class="restaurant-performance-section-title"><small>Performance pillars</small><strong>Why the RPI is moving</strong></div>
+              <article><div><span>Financial performance</span><strong id="restaurantPerformanceFinancial">0</strong></div><i><b id="restaurantPerformanceFinancialBar"></b></i></article>
+              <article><div><span>Guest experience</span><strong id="restaurantPerformanceGuest">0</strong></div><i><b id="restaurantPerformanceGuestBar"></b></i></article>
+              <article><div><span>Operational excellence</span><strong id="restaurantPerformanceOperations">0</strong></div><i><b id="restaurantPerformanceOperationsBar"></b></i></article>
+              <article><div><span>AI effectiveness</span><strong id="restaurantPerformanceAi">0</strong></div><i><b id="restaurantPerformanceAiBar"></b></i></article>
+            </section>
+          </div>
+          <div class="restaurant-performance-layout">
+            <section><div class="restaurant-performance-section-title"><small>Performance drivers</small><strong>Where profit and control are being lost</strong></div><div id="restaurantPerformanceDrivers" class="restaurant-performance-drivers"></div></section>
+            <section><div class="restaurant-performance-section-title"><small>Highest-impact actions</small><strong>What to do next</strong></div><div id="restaurantPerformanceActions" class="restaurant-performance-actions"></div></section>
+          </div>
+          <aside class="restaurant-performance-inspector">
+            <div><small>Selected action</small><strong id="restaurantPerformanceActionTitle">Choose an action</strong><p id="restaurantPerformanceActionInstruction">—</p></div>
+            <dl><div><dt>Revenue impact</dt><dd id="restaurantPerformanceActionRevenue">—</dd></div><div><dt>Projected RPI</dt><dd id="restaurantPerformanceActionRpi">—</dd></div><div><dt>Confidence</dt><dd id="restaurantPerformanceActionConfidence">—</dd></div></dl>
+            <button type="button" id="restaurantPerformanceApprove">Approve action</button><span id="restaurantPerformanceDecisionStatus" role="status"></span>
+          </aside>
+        </section>
+
         <section class="ai-orchestration-center" id="aiOrchestrationCenter" aria-labelledby="aiOrchestrationCenterTitle">
           <div class="ai-orchestration-heading">
             <div>
@@ -6782,6 +6814,8 @@
   <script src="js/modules/contextEngine.js?v=34.6.2"></script>
   <script src="js/modules/recommendationEngine.js?v=34.6.2"></script>
   <script src="js/modules/orchestrationEngine.js?v=34.6.2"></script>
+  <script src="js/modules/restaurantPerformanceEngine.js?v=35.0.0"></script>
+  <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.0"></script>
   <script src="js/modules/aiOrchestrationCenter.js?v=34.6.2"></script>
   <script src="js/modules/operationalDigitalTwinEngine.js?v=34.6.3"></script>
   <script src="js/modules/operationalDigitalTwinCenter.js?v=34.6.3"></script>
@@ -6793,6 +6827,6 @@
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=34.7.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.0.0"></script>
 </body>
 </html>
