@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentStateChurnEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.events=[];this.signatures=[];this.unsubscribe=eventBus.on("state:updated",payload=>this.capture(payload));this.timer=setInterval(()=>this.publish("sample"),3000);setTimeout(()=>this.publish("initial"),0);}
+ capture(payload={}){const keys=Object.keys(payload.changes||{});if(keys.length===1&&keys[0]==="stateChurn")return;const now=Date.now(),signature=keys.sort().join("|")||"unknown";this.events.push({at:now,keys,signature});this.signatures.push({at:now,signature});this.events=this.events.filter(item=>now-item.at<15000);this.signatures=this.signatures.filter(item=>now-item.at<15000);}
+ snapshot(reason="manual"){const now=Date.now(),ten=this.events.filter(item=>now-item.at<10000),rate=Number((ten.length/10).toFixed(1));const counts={};this.signatures.filter(item=>now-item.at<10000).forEach(item=>counts[item.signature]=(counts[item.signature]||0)+1);const hottest=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([signature,count])=>({signature,count}));const duplicates=hottest.filter(item=>item.count>=8).length;const score=Math.max(0,100-Math.max(0,rate-5)*5-duplicates*15);return{capturedAt:new Date().toISOString(),reason,score:Math.round(score),status:score>=85?"healthy":score>=60?"watch":"critical",updatesPerSecond:rate,updates10s:ten.length,duplicatePatterns:duplicates,hottest};}
+ publish(reason="manual"){const value=this.snapshot(reason);this.appState.update({stateChurn:value});this.eventBus.emit("state-churn:updated",structuredClone(value));return value;}
+ destroy(){clearInterval(this.timer);this.unsubscribe?.();}
+}
+window.BlueCurrentStateChurnEngine=BlueCurrentStateChurnEngine;})();

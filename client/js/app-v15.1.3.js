@@ -1060,7 +1060,10 @@ const ESSENTIAL_STARTUP_CENTERS = new Set([
   "renderBudgetCenter",
   "adaptivePackCenter",
   "memoryPressureCenter",
-  "centerSuspensionCenter"
+  "centerSuspensionCenter",
+  "networkRequestCenter",
+  "stateChurnCenter",
+  "runtimeCircuitBreakerCenter"
 ]);
 function shouldInitializeCenter(id) {
   return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id) || activatedCenters.has(id));
@@ -1068,7 +1071,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "37.14.0-adaptive-runtime", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "37.17.0-runtime-guard", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1549,6 +1552,21 @@ const centerSuspensionCenterModule = startupRegistry.register(
   shouldInitializeCenter("centerSuspensionCenter") ? window.createBlueCurrentCenterSuspensionCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState"]
 );
+const networkRequestCenterModule = startupRegistry.register(
+  "networkRequestCenter",
+  shouldInitializeCenter("networkRequestCenter") ? window.createBlueCurrentNetworkRequestCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const stateChurnCenterModule = startupRegistry.register(
+  "stateChurnCenter",
+  shouldInitializeCenter("stateChurnCenter") ? window.createBlueCurrentStateChurnCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const runtimeCircuitBreakerCenterModule = startupRegistry.register(
+  "runtimeCircuitBreakerCenter",
+  shouldInitializeCenter("runtimeCircuitBreakerCenter") ? window.createBlueCurrentRuntimeCircuitBreakerCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "networkRequestCenter", "stateChurnCenter", "memoryPressureCenter", "renderBudgetCenter", "eventStormGuardCenter"]
+);
 const pilotLaunchCenterModule = startupRegistry.register(
   "pilotLaunchCenter",
   shouldInitializeCenter("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
@@ -1840,6 +1858,9 @@ window.blueCurrent = {
     adaptivePack: adaptivePackCenterModule,
     memoryPressure: memoryPressureCenterModule,
     centerSuspension: centerSuspensionCenterModule,
+    networkRequestBudget: networkRequestCenterModule,
+    stateChurn: stateChurnCenterModule,
+    runtimeCircuitBreaker: runtimeCircuitBreakerCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,

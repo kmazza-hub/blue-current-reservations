@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.14.0-adaptive-runtime">
+  <meta name="blue-current-build" content="37.17.0-runtime-guard">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3894,6 +3894,9 @@
 <section class="v3714-center" id="adaptivePackCenter" aria-labelledby="apTitle"><header><div><small>V37.12 · Adaptive Pack Activation</small><strong id="apTitle">Load the smallest capability set that matches the current role and operating pressure.</strong><span id="apHeadline">Evaluating startup needs…</span></div><div class="v3714-actions"><button type="button" id="apRefresh">Refresh</button><button type="button" id="apApply">Apply recommendation</button></div></header><div class="v3714-kpis"><article><small>Alignment</small><strong id="apScore">0%</strong></article><article><small>Status</small><strong id="apStatus">—</strong></article><article><small>Active</small><strong id="apActive">focused</strong></article></div><div class="v3714-recommend"><span>Recommended packs</span><div id="apRecommended"></div></div></section>
 <section class="v3714-center" id="memoryPressureCenter" aria-labelledby="mpTitle"><header><div><small>V37.13 · Memory Pressure Guard</small><strong id="mpTitle">Keep browser memory, script count, and document size inside a safe operating budget.</strong><span id="mpHeadline">Sampling browser pressure…</span></div><div class="v3714-actions"><button type="button" id="mpRefresh">Refresh</button><button type="button" id="mpRelease">Release idle resources</button></div></header><div class="v3714-kpis"><article><small>Memory score</small><strong id="mpScore">0%</strong></article><article><small>Status</small><strong id="mpStatus">—</strong></article><article><small>Heap</small><strong id="mpHeap">—</strong></article></div><p class="v3714-note" id="mpAssets">—</p></section>
 <section class="v3714-center" id="centerSuspensionCenter" aria-labelledby="csuTitle"><header><div><small>V37.14 · Center Suspension</small><strong id="csuTitle">Suspend hidden platform centers until the operator deliberately opens them.</strong><span id="csuHeadline">Reviewing hidden centers…</span></div><div class="v3714-actions"><button type="button" id="csuRefresh">Refresh</button><button type="button" id="csuSuspend">Suspend hidden</button><button type="button" id="csuResume">Resume all</button></div></header><div class="v3714-kpis"><article><small>Status</small><strong id="csuStatus">—</strong></article><article><small>Hidden centers</small><strong id="csuHidden">0</strong></article><article><small>Suspended</small><strong id="csuSuspended">0</strong></article></div></section>
+<section class="v3717-center" id="networkRequestCenter" aria-labelledby="nrbTitle"><header><div><small>V37.15 · Network Request Budget</small><strong id="nrbTitle">Find slow, failed, and hanging requests before they hold the browser open.</strong><span id="nrbHeadline">Sampling request activity…</span></div><button type="button" id="nrbRefresh">Refresh</button></header><div class="v3717-kpis"><article><small>Network score</small><strong id="nrbScore">0%</strong></article><article><small>Status</small><strong id="nrbStatus">—</strong></article><article><small>Pending</small><strong id="nrbPending">0</strong></article><article><small>Issues</small><strong id="nrbIssues">0</strong></article></div><div id="nrbRequests" class="v3717-list"></div></section>
+<section class="v3717-center" id="stateChurnCenter" aria-labelledby="scgTitle"><header><div><small>V37.16 · State Churn Guard</small><strong id="scgTitle">Expose repeated AppState updates before they cascade into unnecessary renders.</strong><span id="scgHeadline">Measuring shared-state activity…</span></div><button type="button" id="scgRefresh">Refresh</button></header><div class="v3717-kpis"><article><small>State score</small><strong id="scgScore">0%</strong></article><article><small>Status</small><strong id="scgStatus">—</strong></article><article><small>Update rate</small><strong id="scgRate">0/s</strong></article><article><small>Repeated patterns</small><strong id="scgDuplicates">0</strong></article></div><div id="scgPatterns" class="v3717-list"></div></section>
+<section class="v3717-center" id="runtimeCircuitBreakerCenter" aria-labelledby="rcbTitle"><header><div><small>V37.17 · Runtime Circuit Breaker</small><strong id="rcbTitle">Combine runtime pressure signals into one controlled protective mode.</strong><span id="rcbHeadline">Evaluating runtime envelope…</span></div><div class="v3717-actions"><button type="button" id="rcbRefresh">Refresh</button><button type="button" id="rcbProtect">Protect</button><button type="button" id="rcbRecover">Recover</button><button type="button" id="rcbFocused">Focused reload</button></div></header><div class="v3717-kpis"><article><small>Runtime score</small><strong id="rcbScore">0%</strong></article><article><small>Status</small><strong id="rcbStatus">—</strong></article><article><small>Critical controls</small><strong id="rcbCritical">0</strong></article><article><small>Mode</small><strong id="rcbMode">normal</strong></article></div><div id="rcbChecks" class="v3717-list"></div></section>
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -7691,6 +7694,12 @@
   <script src="js/modules/memoryPressureCenter.js?v=37.14.0"></script>
   <script src="js/modules/centerSuspensionEngine.js?v=37.14.0"></script>
   <script src="js/modules/centerSuspensionCenter.js?v=37.14.0"></script>
-  <script src="js/startup-loader.js?v=37.14.0"></script>
+  <script src="js/modules/networkRequestEngine.js?v=37.17.0"></script>
+  <script src="js/modules/networkRequestCenter.js?v=37.17.0"></script>
+  <script src="js/modules/stateChurnEngine.js?v=37.17.0"></script>
+  <script src="js/modules/stateChurnCenter.js?v=37.17.0"></script>
+  <script src="js/modules/runtimeCircuitBreakerEngine.js?v=37.17.0"></script>
+  <script src="js/modules/runtimeCircuitBreakerCenter.js?v=37.17.0"></script>
+  <script src="js/startup-loader.js?v=37.17.0"></script>
 </body>
 </html>
