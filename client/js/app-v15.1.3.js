@@ -1329,6 +1329,30 @@ const shiftProfitPulseCenterModule = startupRegistry.register(
   ["eventBus", "appState", "reservationYieldCenter", "kitchenThroughputCenter", "serviceQualityCenter"]
 );
 
+const inventoryWasteCenterModule = startupRegistry.register(
+  "inventoryWasteCenter",
+  document.getElementById("inventoryWasteCenter")
+    ? window.createBlueCurrentInventoryWasteCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "kitchenThroughputCenter"]
+);
+
+const menuMixCenterModule = startupRegistry.register(
+  "menuMixCenter",
+  document.getElementById("menuMixCenter")
+    ? window.createBlueCurrentMenuMixCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "inventoryWasteCenter", "serviceQualityCenter"]
+);
+
+const dailyProfitPlanCenterModule = startupRegistry.register(
+  "dailyProfitPlanCenter",
+  document.getElementById("dailyProfitPlanCenter")
+    ? window.createBlueCurrentDailyProfitPlanCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "menuMixCenter", "reservationYieldCenter", "kitchenThroughputCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1553,6 +1577,9 @@ window.blueCurrent = {
     reservationYield: reservationYieldCenterModule,
     kitchenThroughput: kitchenThroughputCenterModule,
     shiftProfitPulse: shiftProfitPulseCenterModule,
+    inventoryWaste: inventoryWasteCenterModule,
+    menuMix: menuMixCenterModule,
+    dailyProfitPlan: dailyProfitPlanCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
