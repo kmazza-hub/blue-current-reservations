@@ -1656,6 +1656,21 @@ const pilotSignalBridgeCenterModule = startupRegistry.register(
   shouldInitializeCenter("pilotSignalBridgeCenter") ? window.createBlueCurrentPilotSignalBridgeCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "dataIntakeSandboxCenter"]
 );
+const canonicalMappingCenterModule = startupRegistry.register(
+  "canonicalMappingCenter",
+  shouldInitializeCenter("canonicalMappingCenter") ? window.createBlueCurrentCanonicalMappingCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "dataIntakeSandboxCenter"]
+);
+const ingestionQueueCenterModule = startupRegistry.register(
+  "ingestionQueueCenter",
+  shouldInitializeCenter("ingestionQueueCenter") ? window.createBlueCurrentIngestionQueueCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "canonicalMappingCenter"]
+);
+const sourcePromotionCenterModule = startupRegistry.register(
+  "sourcePromotionCenter",
+  shouldInitializeCenter("sourcePromotionCenter") ? window.createBlueCurrentSourcePromotionCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "ingestionQueueCenter"]
+);
 const v37CertificationCenterModule = startupRegistry.register(
   "v37CertificationCenter",
   shouldInitializeCenter("v37CertificationCenter") ? window.createBlueCurrentV37CertificationCenterModule?.(eventBus, appState) : null,
@@ -1971,6 +1986,9 @@ window.blueCurrent = {
     connectorConfiguration: connectorConfigurationCenterModule,
     dataIntakeSandbox: dataIntakeSandboxCenterModule,
     pilotSignalBridge: pilotSignalBridgeCenterModule,
+    canonicalMapping: canonicalMappingCenterModule,
+    ingestionQueue: ingestionQueueCenterModule,
+    sourcePromotion: sourcePromotionCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,

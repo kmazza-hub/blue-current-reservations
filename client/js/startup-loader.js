@@ -14,7 +14,7 @@
     operations: /(reservationYield|kitchenThroughput|guestRecovery|laborDeployment|serviceQuality|inventoryWaste|menuMix|dailyProfitPlan|vendorPurchase|demandPrepForecast|profitCloseout|supplierVariance|prepExecution|teamCollaboration|operationalKnowledge|shiftCloseout)/i,
     intelligence: /(digitalTwinVisualization|executiveMorningBrief|intelligenceGraph|predictiveOverlay|restaurantReplay|explainableDecision|profitScenario|smartAlertRouter|restaurantPerformance|outcomeIntelligence|marginIntelligence|costVariance|predictiveService|aiOrchestration|operationalDigitalTwin|portfolioIntelligence|performanceLearning)/i,
     enterprise: /(crossLocationPulse|enterpriseOperations|weeklyProfitReview|executiveBriefing|portfolioPerformance|pilotRelease|pilotOperations|pilotReview|deploymentReadiness|postLaunchValue|expansionBenchmark|performanceGovernance|enterpriseValuePlan|pilotOnboarding|pilotLaunch|pilotEvidence|accessReadiness|releaseCertification)/i,
-    integrations: /(integrationControl|signalQuality|pilotTelemetry|dataContract|connectorSync|reconciliation|connectorConfiguration|dataIntakeSandbox|pilotSignalBridge)/i
+    integrations: /(integrationControl|signalQuality|pilotTelemetry|dataContract|connectorSync|reconciliation|connectorConfiguration|dataIntakeSandbox|pilotSignalBridge|canonicalMapping|ingestionQueue|sourcePromotion)/i
   };
 
   function inferPack(src) {

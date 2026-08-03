@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="38.0.0-live-data-bridge">
+  <meta name="blue-current-build" content="38.1.0-trusted-ingestion">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3926,6 +3926,9 @@
   <div class="v380-kpis"><article><small>Bridge status</small><strong id="psbStatus">Idle</strong></article><article><small>Staged sources</small><strong id="psbSources">0</strong></article><article><small>Staged records</small><strong id="psbRecords">0</strong></article><article><small>Confidence</small><strong id="psbConfidence">0%</strong></article></div>
   <div id="psbSourcesList" class="v380-list"></div>
 </section>
+<section class="v381-center" id="canonicalMappingCenter" aria-labelledby="cmTitle"><header><div><small>V38.1 · Canonical Mapping</small><strong id="cmTitle">Translate source payloads into one trusted Blue Current contract.</strong><span id="cmHeadline">Waiting for validated intake data…</span></div><button type="button" id="cmRefresh">Remap latest sample</button></header><div class="v381-kpis"><article><small>Status</small><strong id="cmStatus">idle</strong></article><article><small>Source</small><strong id="cmSource">—</strong></article><article><small>Accepted</small><strong id="cmAccepted">0</strong></article><article><small>Quarantine</small><strong id="cmQuarantine">0</strong></article></div><div id="cmRows" class="v381-list"></div></section>
+<section class="v381-center" id="ingestionQueueCenter" aria-labelledby="iqTitle"><header><div><small>V38.1 · Controlled Ingestion Queue</small><strong id="iqTitle">Process canonical batches without allowing unreviewed data into trusted operations.</strong><span id="iqHeadline">Waiting for canonical batches…</span></div><button type="button" id="iqRefresh">Refresh queue</button></header><div class="v381-kpis"><article><small>Status</small><strong id="iqStatus">idle</strong></article><article><small>Ready</small><strong id="iqReady">0</strong></article><article><small>Review</small><strong id="iqReview">0</strong></article><article><small>Processed</small><strong id="iqProcessed">0</strong></article></div><div id="iqRows" class="v381-list"></div></section>
+<section class="v381-center v381-promotion" id="sourcePromotionCenter" aria-labelledby="spTitle"><header><div><small>V38.1 · Source Promotion Control</small><strong id="spTitle">Require explicit ownership before staged evidence becomes trusted pilot data.</strong><span id="spHeadline">Waiting for processed batches…</span></div><div class="v381-actions"><input id="spOwner" type="text" placeholder="Approval owner" aria-label="Promotion approval owner"><button type="button" id="spRefresh">Refresh</button><button type="button" id="spExport">Export audit</button></div></header><div class="v381-kpis"><article><small>Status</small><strong id="spStatus">idle</strong></article><article><small>Awaiting approval</small><strong id="spStaged">0</strong></article><article><small>Promoted sources</small><strong id="spPromoted">0</strong></article><article><small>Audit events</small><strong id="spAudit">0</strong></article></div><div id="spRows" class="v381-list"></div></section>
 <section class="v3730-center v3730-cert" id="v37CertificationCenter" aria-labelledby="v37cTitle"><header><div><small>V37.30 · Final V37 Certification</small><strong id="v37cTitle">Close V37 with one production-readiness certificate.</strong><span id="v37cHeadline">Waiting for final certification…</span></div><div class="v3730-actions"><button type="button" id="v37cRun">Run certification</button><button type="button" id="v37cExport">Export certificate</button></div></header><div class="v3730-kpis"><article><small>Certification score</small><strong id="v37cScore">0%</strong></article><article><small>Status</small><strong id="v37cStatus">—</strong></article><article><small>Checks passed</small><strong id="v37cPassed">0/0</strong></article><article><small>Certificate</small><strong id="v37cId">Pending</strong></article></div><div id="v37cChecks" class="v3730-list"></div></section>
 
 
@@ -7764,6 +7767,12 @@
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/dataIntakeSandboxCenter.js?v=38.0.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSignalBridgeEngine.js?v=38.0.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSignalBridgeCenter.js?v=38.0.0"></script>
-  <script src="js/startup-loader.js?v=38.0.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/canonicalMappingEngine.js?v=38.1.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/canonicalMappingCenter.js?v=38.1.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/ingestionQueueEngine.js?v=38.1.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/ingestionQueueCenter.js?v=38.1.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/sourcePromotionEngine.js?v=38.1.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/sourcePromotionCenter.js?v=38.1.0"></script>
+  <script src="js/startup-loader.js?v=38.1.0"></script>
 </body>
 </html>
