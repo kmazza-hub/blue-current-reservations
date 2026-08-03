@@ -1209,6 +1209,30 @@ const shiftCloseoutCenterModule = startupRegistry.register(
   ["eventBus", "appState", "commandActionInboxCenter", "guidedShiftCenter"]
 );
 
+const digitalTwinVisualizationCenterModule = startupRegistry.register(
+  "digitalTwinVisualizationCenter",
+  document.getElementById("digitalTwinVisualizationCenter")
+    ? window.createBlueCurrentDigitalTwinVisualizationCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter"]
+);
+
+const executiveMorningBriefCenterModule = startupRegistry.register(
+  "executiveMorningBriefCenter",
+  document.getElementById("executiveMorningBriefCenter")
+    ? window.createBlueCurrentExecutiveMorningBriefCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter"]
+);
+
+const intelligenceGraphCenterModule = startupRegistry.register(
+  "intelligenceGraphCenter",
+  document.getElementById("intelligenceGraphCenter")
+    ? window.createBlueCurrentIntelligenceGraphCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "digitalTwinVisualizationCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1418,6 +1442,9 @@ window.blueCurrent = {
     roleExperience: roleExperienceCenterModule,
     commandActionInbox: commandActionInboxCenterModule,
     shiftCloseout: shiftCloseoutCenterModule,
+    digitalTwinVisualization: digitalTwinVisualizationCenterModule,
+    executiveMorningBrief: executiveMorningBriefCenterModule,
+    intelligenceGraph: intelligenceGraphCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
