@@ -98,7 +98,11 @@ class AppState {
       expansionBenchmark: null,
       expansionBenchmarkHistory: [],
       expansionPlan: [],
-      expansionPlaybooks: []
+      expansionPlaybooks: [],
+      performanceGovernance: null,
+      performanceGovernanceHistory: [],
+      performanceGovernanceCadence: [],
+      performanceGovernanceCommitments: []
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

@@ -1884,7 +1884,35 @@
                   <div><small>6:31 PM</small><strong>Table 8 seated</strong></div>
                 </div>
               </div>
-            </main>
+            
+        <section class="performance-governance-center" id="performanceGovernanceCenter" aria-labelledby="performanceGovernanceTitle">
+          <header class="performance-governance-header">
+            <div><small>V35.11 · Enterprise performance governance</small><strong id="performanceGovernanceTitle">Performance Governance & Operating Cadence</strong><span>Turn benchmark evidence into a repeatable daily, weekly, and monthly management system with clear ownership and measurable commitments.</span></div>
+            <div class="performance-governance-score"><small>Governance health</small><strong id="governanceScore">0%</strong><span id="governanceStatus" data-tone="forming">forming</span></div>
+            <div class="performance-governance-buttons"><button type="button" id="governanceRefresh">Refresh governance</button><button type="button" id="governanceAddCommitment">Add commitment</button><button type="button" id="governanceExport">Export review pack</button></div>
+          </header>
+          <p class="performance-governance-summary" id="governanceSummary">The management cadence is forming. Complete ownership, review schedules, and measurable commitments before scaling the rhythm.</p>
+          <div class="performance-governance-kpis">
+            <article><small>Portfolio RPI</small><strong id="governancePortfolioRpi">0</strong></article>
+            <article><small>Realized revenue</small><strong id="governanceRealizedRevenue">$0</strong></article>
+            <article><small>Average adoption</small><strong id="governanceAdoption">0%</strong></article>
+            <article><small>Forecast accuracy</small><strong id="governanceAccuracy">0%</strong></article>
+            <article><small>Calibration</small><strong id="governanceCalibration">0%</strong></article>
+            <article><small>Open commitments</small><strong id="governanceOpenCommitments">0</strong></article>
+          </div>
+          <div class="performance-governance-grid">
+            <section><div class="performance-governance-title"><small>Operating cadence</small><strong>Daily, weekly, and monthly management reviews</strong></div><div id="governanceCadence" class="governance-cadence"></div></section>
+            <section><div class="performance-governance-title"><small>Accountability map</small><strong>Ownership and open work by leader</strong></div><div id="governanceAccountability" class="governance-accountability"></div></section>
+          </div>
+          <div class="performance-governance-grid performance-governance-grid-secondary">
+            <section><div class="performance-governance-title"><small>Operating commitments</small><strong>Measurable promises for the next review cycle</strong></div><div id="governanceCommitments" class="governance-commitments"></div></section>
+            <section><div class="performance-governance-title"><small>Governance controls</small><strong>Blockers and watch conditions</strong></div><div id="governanceRisks" class="governance-risks"></div></section>
+          </div>
+          <section class="governance-actions-section"><div class="performance-governance-title"><small>Next actions</small><strong>Highest-value work before the next review</strong></div><ol id="governanceActions" class="governance-actions"></ol></section>
+          <p id="governanceMessage" class="performance-governance-message" role="status"></p>
+        </section>
+
+</main>
           </div>
         </div>
 
@@ -7143,12 +7171,14 @@
   <script src="js/modules/postLaunchValueCenter.js?v=35.9.0"></script>
   <script src="js/modules/expansionBenchmarkEngine.js?v=35.10.0"></script>
   <script src="js/modules/expansionBenchmarkCenter.js?v=35.10.0"></script>
+  <script src="js/modules/performanceGovernanceEngine.js?v=35.11.0"></script>
+  <script src="js/modules/performanceGovernanceCenter.js?v=35.11.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.10.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.11.0"></script>
 </body>
 </html>
