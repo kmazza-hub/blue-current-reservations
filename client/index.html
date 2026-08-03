@@ -3782,6 +3782,96 @@
           </aside>
         </div>
 
+        <section class="unified-command-center" id="unifiedCommandCenter" aria-labelledby="unifiedCommandTitle">
+          <header class="unified-command-header">
+            <div>
+              <small>V36.0 · Unified Restaurant Command</small>
+              <strong id="unifiedCommandTitle">Run the shift from one clear operating picture.</strong>
+              <span id="unifiedCommandUpdated">Building command view…</span>
+            </div>
+            <div class="unified-command-header-actions">
+              <span id="unifiedCommandViewState">Focused command view</span>
+              <button type="button" id="unifiedCommandRefresh">Refresh</button>
+              <button type="button" id="unifiedCommandViewToggle">Explore full platform</button>
+            </div>
+          </header>
+
+          <nav class="unified-command-roles" aria-label="Command view by role">
+            <button type="button" data-command-role="manager">Manager</button>
+            <button type="button" data-command-role="executive">Executive</button>
+            <button type="button" data-command-role="technical">Technical</button>
+          </nav>
+
+          <div class="unified-command-hero">
+            <section class="unified-command-rpi">
+              <small>Restaurant Performance Index</small>
+              <strong id="unifiedCommandRpi">—</strong>
+              <span id="unifiedCommandBand">Calculating</span>
+              <b id="unifiedCommandTrend">+0.0 today</b>
+              <p id="unifiedCommandHeadline">Connecting the operating picture.</p>
+            </section>
+            <section class="unified-command-opportunity">
+              <article><small>Revenue opportunity</small><strong id="unifiedCommandRevenueOpportunity">$0</strong></article>
+              <article class="is-profit"><small>Profit opportunity</small><strong id="unifiedCommandProfitOpportunity">$0</strong></article>
+              <article class="is-risk"><small>Profit at risk</small><strong id="unifiedCommandProfitRisk">$0</strong></article>
+              <article><small>Measured value</small><strong id="unifiedCommandMeasuredRevenue">$0</strong></article>
+            </section>
+          </div>
+
+          <section class="unified-command-concierge" aria-labelledby="unifiedCommandConciergeHeadline">
+            <div class="unified-command-concierge-mark">BC</div>
+            <div class="unified-command-concierge-copy">
+              <small>Blue Current AI Operator</small>
+              <strong id="unifiedCommandConciergeHeadline">Here is the operating picture.</strong>
+              <p id="unifiedCommandConciergeMessage">Connecting performance, profit, service, and workflow evidence.</p>
+              <output id="unifiedCommandConciergeAnswer" aria-live="polite"></output>
+              <div class="unified-command-prompts">
+                <button type="button" data-command-prompt="What changed?">What changed?</button>
+                <button type="button" data-command-prompt="What should I do next?">What should I do?</button>
+                <button type="button" data-command-prompt="Where are we losing profit?">Where is profit leaking?</button>
+                <button type="button" data-command-prompt="Why this recommendation?">Why this action?</button>
+              </div>
+              <div class="unified-command-question"><input id="unifiedCommandQuestion" type="text" placeholder="Ask Blue Current about this shift…"><button type="button" id="unifiedCommandAsk">Ask</button></div>
+            </div>
+          </section>
+
+          <div class="unified-command-pulse">
+            <article><small>Occupancy</small><strong id="unifiedCommandOccupancy">0%</strong></article>
+            <article><small>Kitchen load</small><strong id="unifiedCommandKitchen">0%</strong></article>
+            <article><small>Guest wait</small><strong id="unifiedCommandWait">0 min</strong></article>
+            <article><small>Approvals</small><strong id="unifiedCommandApprovals">0</strong></article>
+          </div>
+
+          <section class="unified-command-priority">
+            <div class="unified-command-priority-copy">
+              <small>Highest-impact action</small>
+              <strong id="unifiedCommandPriorityTitle">Building recommendation…</strong>
+              <p id="unifiedCommandPriorityInstruction">Blue Current is evaluating the operating picture.</p>
+              <span>Owner: <b id="unifiedCommandPriorityOwner">Manager</b></span>
+            </div>
+            <dl>
+              <div><dt>Profit impact</dt><dd id="unifiedCommandPriorityProfit">$0</dd></div>
+              <div><dt>RPI recovery</dt><dd id="unifiedCommandPriorityRpi">+0.0</dd></div>
+              <div><dt>Confidence</dt><dd id="unifiedCommandPriorityConfidence">0%</dd></div>
+            </dl>
+            <div class="unified-command-priority-actions"><button type="button" id="unifiedCommandApprove">Approve highest-impact action</button><button type="button" id="unifiedCommandOpenDetails">See evidence</button><span id="unifiedCommandStatus" role="status"></span></div>
+          </section>
+
+          <div class="unified-command-workspace">
+            <section class="unified-command-timeline-panel">
+              <header><div><small>Live shift timeline</small><strong>Watch the restaurant unfold.</strong></div><div class="unified-command-filters"><button type="button" class="is-active" data-timeline-filter="all">All</button><button type="button" data-timeline-filter="watch">Attention</button><button type="button" data-timeline-filter="success">Wins</button></div></header>
+              <div class="unified-command-timeline" id="unifiedCommandTimeline"></div>
+            </section>
+            <aside class="unified-command-actions-panel">
+              <small>Today's three actions</small>
+              <strong>Keep the team focused.</strong>
+              <div id="unifiedCommandActions"></div>
+            </aside>
+          </div>
+
+          <section class="unified-command-technical" id="unifiedCommandTechnical" hidden></section>
+        </section>
+
         <section class="restaurant-performance-center" id="restaurantPerformanceCenter" aria-labelledby="restaurantPerformanceTitle">
           <div class="restaurant-performance-heading">
             <div><small>V35.0 · Restaurant Performance Engine</small><strong id="restaurantPerformanceTitle">Restaurant Performance Command Center</strong><span id="restaurantPerformanceUpdated">Building performance picture…</span></div>
@@ -7259,6 +7349,8 @@
   <script src="js/modules/contextEngine.js?v=34.6.2"></script>
   <script src="js/modules/recommendationEngine.js?v=34.6.2"></script>
   <script src="js/modules/orchestrationEngine.js?v=34.6.2"></script>
+  <script src="js/modules/unifiedCommandEngine.js?v=36.0.0"></script>
+  <script src="js/modules/unifiedCommandCenter.js?v=36.0.0"></script>
   <script src="js/modules/restaurantPerformanceEngine.js?v=35.0.1"></script>
   <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.1"></script>
   <script src="js/modules/outcomeIntelligenceEngine.js?v=35.1.0"></script>
@@ -7300,6 +7392,6 @@
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.14.0"></script>
+  <script src="js/app-v15.1.3.js?v=36.0.0"></script>
 </body>
 </html>
