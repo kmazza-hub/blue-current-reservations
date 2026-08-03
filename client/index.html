@@ -3954,6 +3954,20 @@
           <header><div><small>V36.8 · Restaurant Intelligence Graph</small><strong id="igTitle">Understand how signals become measurable results.</strong><span id="igUpdated">Connecting evidence…</span></div><button type="button" id="igRefresh">Refresh graph</button></header>
           <div class="ig-graph" id="igGraph"></div><p id="igExplanation" class="ig-explanation"></p>
         </section>
+        <section class="predictive-overlay-center v3611-center" id="predictiveOverlayCenter" aria-labelledby="poTitle">
+          <header><div><small>V36.9 · Predictive Service Overlays</small><strong id="poTitle">See the next pressure window before it reaches the floor.</strong><span id="poUpdated">Building forecast overlays…</span></div><div><b id="poConfidence">—</b><button type="button" id="poRefresh">Refresh forecast</button></div></header>
+          <p id="poHeadline" class="v3611-headline">Evaluating the next 60 minutes.</p><div id="poHorizons" class="predictive-overlay-horizons"></div>
+        </section>
+        <section class="restaurant-replay-center v3611-center" id="restaurantReplayCenter" aria-labelledby="rrTitle">
+          <header><div><small>V36.10 · Restaurant Replay</small><strong id="rrTitle">Replay how the shift reached its current state.</strong><span id="rrUpdated">Capturing operating moments…</span></div><button type="button" id="rrCapture">Capture now</button></header>
+          <div class="restaurant-replay-focus"><div><small id="rrTime">—</small><strong id="rrEvent">Operating snapshot</strong></div><dl><div><dt>RPI</dt><dd id="rrRpi">—</dd></div><div><dt>Profit opportunity</dt><dd id="rrProfit">—</dd></div><div><dt>Kitchen</dt><dd id="rrKitchen">—</dd></div><div><dt>Guest wait</dt><dd id="rrWait">—</dd></div></dl></div>
+          <input id="rrRange" type="range" min="0" value="0" aria-label="Replay position"><div id="rrTimeline" class="restaurant-replay-timeline"></div>
+        </section>
+        <section class="explainable-decision-center v3611-center" id="explainableDecisionCenter" aria-labelledby="edTitle">
+          <header><div><small>V36.11 · Explainable AI Decisions</small><strong id="edTitle">Know exactly why Blue Current recommends the next move.</strong><span id="edUpdated">Building decision evidence…</span></div><button type="button" id="edRefresh">Refresh explanation</button></header>
+          <div class="explainable-decision-hero"><div><small>Recommended action</small><strong id="edAction">—</strong><p id="edInstruction">—</p><p id="edWhy">—</p></div><dl><div><dt>Confidence</dt><dd id="edConfidence">—</dd></div><div><dt>Profit impact</dt><dd id="edProfit">—</dd></div><div><dt>RPI recovery</dt><dd id="edRpi">—</dd></div></dl></div>
+          <div class="explainable-decision-grid"><section><h3>Evidence</h3><div id="edEvidence" class="explainable-evidence"></div></section><section><h3>Alternatives and tradeoffs</h3><div id="edAlternatives" class="explainable-alternatives"></div><p id="edCrossLocation" class="explainable-peer"></p></section></div><div class="explainable-decision-actions"><button type="button" id="edApprove">Approve through workflow</button><span id="edStatus" role="status"></span></div>
+        </section>
         <section class="restaurant-performance-center" id="restaurantPerformanceCenter" aria-labelledby="restaurantPerformanceTitle">
           <div class="restaurant-performance-heading">
             <div><small>V35.0 · Restaurant Performance Engine</small><strong id="restaurantPerformanceTitle">Restaurant Performance Command Center</strong><span id="restaurantPerformanceUpdated">Building performance picture…</span></div>
@@ -7449,6 +7463,12 @@
   <script src="js/modules/executiveMorningBriefCenter.js?v=36.8.0"></script>
   <script src="js/modules/intelligenceGraphEngine.js?v=36.8.0"></script>
   <script src="js/modules/intelligenceGraphCenter.js?v=36.8.0"></script>
+  <script src="js/modules/predictiveOverlayEngine.js?v=36.11.0"></script>
+  <script src="js/modules/predictiveOverlayCenter.js?v=36.11.0"></script>
+  <script src="js/modules/restaurantReplayEngine.js?v=36.11.0"></script>
+  <script src="js/modules/restaurantReplayCenter.js?v=36.11.0"></script>
+  <script src="js/modules/explainableDecisionEngine.js?v=36.11.0"></script>
+  <script src="js/modules/explainableDecisionCenter.js?v=36.11.0"></script>
   <script src="js/modules/restaurantPerformanceEngine.js?v=35.0.1"></script>
   <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.1"></script>
   <script src="js/modules/outcomeIntelligenceEngine.js?v=35.1.0"></script>

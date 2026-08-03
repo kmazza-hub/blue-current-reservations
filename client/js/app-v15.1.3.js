@@ -1233,6 +1233,30 @@ const intelligenceGraphCenterModule = startupRegistry.register(
   ["eventBus", "appState", "unifiedCommandCenter", "digitalTwinVisualizationCenter"]
 );
 
+const predictiveOverlayCenterModule = startupRegistry.register(
+  "predictiveOverlayCenter",
+  document.getElementById("predictiveOverlayCenter")
+    ? window.createBlueCurrentPredictiveOverlayCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "digitalTwinVisualizationCenter"]
+);
+
+const restaurantReplayCenterModule = startupRegistry.register(
+  "restaurantReplayCenter",
+  document.getElementById("restaurantReplayCenter")
+    ? window.createBlueCurrentRestaurantReplayCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter"]
+);
+
+const explainableDecisionCenterModule = startupRegistry.register(
+  "explainableDecisionCenter",
+  document.getElementById("explainableDecisionCenter")
+    ? window.createBlueCurrentExplainableDecisionCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "unifiedCommandCenter", "intelligenceGraphCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1445,6 +1469,9 @@ window.blueCurrent = {
     digitalTwinVisualization: digitalTwinVisualizationCenterModule,
     executiveMorningBrief: executiveMorningBriefCenterModule,
     intelligenceGraph: intelligenceGraphCenterModule,
+    predictiveOverlay: predictiveOverlayCenterModule,
+    restaurantReplay: restaurantReplayCenterModule,
+    explainableDecision: explainableDecisionCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
