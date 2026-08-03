@@ -1451,6 +1451,22 @@ const pilotLaunchCenterModule = startupRegistry.register(
   ["eventBus", "appState", "experienceQualityCenter", "pilotOnboardingCenter", "runtimeRecoveryCenter"]
 );
 
+const pilotEvidenceCenterModule = startupRegistry.register(
+  "pilotEvidenceCenter",
+  document.getElementById("pilotEvidenceCenter") ? window.createBlueCurrentPilotEvidenceCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "pilotLaunchCenter"]
+);
+const accessReadinessCenterModule = startupRegistry.register(
+  "accessReadinessCenter",
+  document.getElementById("accessReadinessCenter") ? window.createBlueCurrentAccessReadinessCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "pilotLaunchCenter"]
+);
+const releaseCertificationCenterModule = startupRegistry.register(
+  "releaseCertificationCenter",
+  document.getElementById("releaseCertificationCenter") ? window.createBlueCurrentReleaseCertificationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "pilotEvidenceCenter", "accessReadinessCenter", "runtimeRecoveryCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1693,6 +1709,9 @@ window.blueCurrent = {
     operatorWorkspace: operatorWorkspaceCenterModule,
     runtimeRecovery: runtimeRecoveryCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
+    pilotEvidence: pilotEvidenceCenterModule,
+    accessReadiness: accessReadinessCenterModule,
+    releaseCertification: releaseCertificationCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
