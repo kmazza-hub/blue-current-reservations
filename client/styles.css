@@ -12888,3 +12888,29 @@ html[data-startup-mode="safe"] #shiftProfitPulseCenter {
   opacity: 1 !important;
   visibility: visible !important;
 }
+
+/* V37.2 — focused asset startup */
+html[data-asset-mode="focused"] body [id$="Center"]:not(#unifiedCommandCenter):not(#guidedShiftCenter):not(#operatorCopilotCenter):not(#roleExperienceCenter):not(#commandActionInboxCenter):not(#shiftProfitPulseCenter):not(#runtimeRecoveryCenter):not(#restaurantPerformanceCenter):not(#outcomeIntelligenceCenter):not(#marginIntelligenceCenter) {
+  display: none !important;
+}
+.startup-failure-banner {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: #3b0d16;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.25);
+}
+.startup-failure-banner span { flex: 1; }
+.startup-failure-banner button {
+  border: 1px solid rgba(255,255,255,.4);
+  background: #fff;
+  color: #2a0910;
+  padding: .55rem .8rem;
+  border-radius: .55rem;
+  font-weight: 700;
+}
