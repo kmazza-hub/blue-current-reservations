@@ -1467,6 +1467,22 @@ const releaseCertificationCenterModule = startupRegistry.register(
   ["eventBus", "appState", "pilotEvidenceCenter", "accessReadinessCenter", "runtimeRecoveryCenter"]
 );
 
+const integrationControlCenterModule = startupRegistry.register(
+  "integrationControlCenter",
+  document.getElementById("integrationControlCenter") ? window.createBlueCurrentIntegrationControlCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "releaseCertificationCenter"]
+);
+const signalQualityCenterModule = startupRegistry.register(
+  "signalQualityCenter",
+  document.getElementById("signalQualityCenter") ? window.createBlueCurrentSignalQualityCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "integrationControlCenter"]
+);
+const pilotTelemetryCenterModule = startupRegistry.register(
+  "pilotTelemetryCenter",
+  document.getElementById("pilotTelemetryCenter") ? window.createBlueCurrentPilotTelemetryCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "integrationControlCenter", "signalQualityCenter", "runtimeRecoveryCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1712,6 +1728,9 @@ window.blueCurrent = {
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,
     releaseCertification: releaseCertificationCenterModule,
+    integrationControl: integrationControlCenterModule,
+    signalQuality: signalQualityCenterModule,
+    pilotTelemetry: pilotTelemetryCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,
