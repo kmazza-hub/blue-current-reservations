@@ -1281,6 +1281,30 @@ const smartAlertRouterCenterModule = startupRegistry.register(
   ["eventBus", "appState", "predictiveOverlayCenter", "commandActionInboxCenter"]
 );
 
+const guestRecoveryCenterModule = startupRegistry.register(
+  "guestRecoveryCenter",
+  document.getElementById("guestRecoveryCenter")
+    ? window.createBlueCurrentGuestRecoveryCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "smartAlertRouterCenter"]
+);
+
+const laborDeploymentCenterModule = startupRegistry.register(
+  "laborDeploymentCenter",
+  document.getElementById("laborDeploymentCenter")
+    ? window.createBlueCurrentLaborDeploymentCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "predictiveOverlayCenter"]
+);
+
+const serviceQualityCenterModule = startupRegistry.register(
+  "serviceQualityCenter",
+  document.getElementById("serviceQualityCenter")
+    ? window.createBlueCurrentServiceQualityCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "guestRecoveryCenter", "laborDeploymentCenter"]
+);
+
 const restaurantPerformanceCenterModule = startupRegistry.register(
   "restaurantPerformanceCenter",
   document.getElementById("restaurantPerformanceCenter")
@@ -1499,6 +1523,9 @@ window.blueCurrent = {
     crossLocationPulse: crossLocationPulseCenterModule,
     profitScenario: profitScenarioCenterModule,
     smartAlertRouter: smartAlertRouterCenterModule,
+    guestRecovery: guestRecoveryCenterModule,
+    laborDeployment: laborDeploymentCenterModule,
+    serviceQuality: serviceQualityCenterModule,
     restaurantPerformance: restaurantPerformanceCenterModule,
     outcomeIntelligence: outcomeIntelligenceCenterModule,
     executiveBriefing: executiveBriefingCenterModule,

@@ -3986,6 +3986,18 @@
           <div class="v3614-kpis"><article><small>Total alerts</small><strong id="sarTotal">0</strong></article><article><small>Critical</small><strong id="sarCritical">0</strong></article><article><small>Unacknowledged</small><strong id="sarOpen">0</strong></article><article><small>Named routes</small><strong id="sarRoutes">0</strong></article></div>
           <div class="sar-alerts" id="sarAlerts"></div>
         </section>
+        <section class="guest-recovery-center v3617-center" id="guestRecoveryCenter" aria-labelledby="grTitle">
+          <header><div><small>V36.15 · Guest Recovery Command</small><strong id="grTitle">Protect the guest before a service issue becomes a lost visit.</strong><span id="grUpdated">Evaluating guest risk…</span></div><button type="button" id="grRefresh">Refresh cases</button></header>
+          <p id="grHeadline" class="v3617-headline">Building recovery queue.</p><div class="v3617-kpis"><article><small>Open cases</small><strong id="grOpen">0</strong></article><article><small>In progress</small><strong id="grProgress">0</strong></article><article><small>Protected value</small><strong id="grProtected">$0</strong></article></div><div class="gr-cases" id="grCases"></div>
+        </section>
+        <section class="labor-deployment-center v3617-center" id="laborDeploymentCenter" aria-labelledby="ldTitle">
+          <header><div><small>V36.16 · Labor Deployment Coach</small><strong id="ldTitle">Put the right person in the right place before pressure peaks.</strong><span id="ldUpdated">Evaluating deployment…</span></div><button type="button" id="ldRefresh">Refresh labor plan</button></header>
+          <p id="ldHeadline" class="v3617-headline">Balancing service and labor efficiency.</p><div class="v3617-kpis"><article><small>Kitchen load</small><strong id="ldKitchen">0%</strong></article><article><small>Occupancy</small><strong id="ldOccupancy">0%</strong></article><article><small>Labor</small><strong id="ldLabor">0%</strong></article><article><small>Profit protected</small><strong id="ldProfit">$0</strong></article></div><div class="ld-moves" id="ldMoves"></div><span id="ldStatus" role="status"></span>
+        </section>
+        <section class="service-quality-center v3617-center" id="serviceQualityCenter" aria-labelledby="sqTitle">
+          <header><div><small>V36.17 · Service Quality Guardrails</small><strong id="sqTitle">Keep profit actions inside the quality standards guests expect.</strong><span id="sqUpdated">Checking quality guardrails…</span></div><button type="button" id="sqRefresh">Refresh quality</button></header>
+          <p id="sqHeadline" class="v3617-headline">Monitoring service quality.</p><div class="v3617-kpis"><article><small>Quality score</small><strong id="sqScore">0</strong></article><article><small>Breaches</small><strong id="sqBreaches">0</strong></article><article><small>Critical</small><strong id="sqCritical">0</strong></article></div><div class="sq-guardrails" id="sqGuardrails"></div>
+        </section>
         <section class="restaurant-performance-center" id="restaurantPerformanceCenter" aria-labelledby="restaurantPerformanceTitle">
           <div class="restaurant-performance-heading">
             <div><small>V35.0 · Restaurant Performance Engine</small><strong id="restaurantPerformanceTitle">Restaurant Performance Command Center</strong><span id="restaurantPerformanceUpdated">Building performance picture…</span></div>
@@ -7493,6 +7505,12 @@
   <script src="js/modules/profitScenarioCenter.js?v=36.14.0"></script>
   <script src="js/modules/smartAlertRouterEngine.js?v=36.14.0"></script>
   <script src="js/modules/smartAlertRouterCenter.js?v=36.14.0"></script>
+  <script src="js/modules/guestRecoveryEngine.js?v=36.17.0"></script>
+  <script src="js/modules/guestRecoveryCenter.js?v=36.17.0"></script>
+  <script src="js/modules/laborDeploymentEngine.js?v=36.17.0"></script>
+  <script src="js/modules/laborDeploymentCenter.js?v=36.17.0"></script>
+  <script src="js/modules/serviceQualityEngine.js?v=36.17.0"></script>
+  <script src="js/modules/serviceQualityCenter.js?v=36.17.0"></script>
   <script src="js/modules/restaurantPerformanceEngine.js?v=35.0.1"></script>
   <script src="js/modules/restaurantPerformanceCenter.js?v=35.0.1"></script>
   <script src="js/modules/outcomeIntelligenceEngine.js?v=35.1.0"></script>
