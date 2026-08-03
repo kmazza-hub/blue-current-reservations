@@ -3829,6 +3829,76 @@
           </aside>
         </section>
 
+
+        <section class="portfolio-performance-center" id="portfolioPerformanceCenter" aria-labelledby="portfolioPerformanceTitle">
+          <header class="portfolio-performance-header">
+            <div><small>V35.3 · Portfolio Performance</small><strong id="portfolioPerformanceTitle">Every location measured by profit, quality, and control</strong><span id="portfolioPerformanceUpdated">Building portfolio performance picture…</span></div>
+            <div class="portfolio-performance-rpi"><small>Portfolio RPI</small><strong id="portfolioPerformanceRpi">—</strong><span id="portfolioPerformanceBand" data-tone="strong">Calculating</span></div>
+            <button type="button" id="portfolioPerformanceRefresh">Run portfolio pulse</button>
+          </header>
+          <p class="portfolio-performance-headline" id="portfolioPerformanceHeadline">Connecting performance and outcomes across every location.</p>
+          <div class="portfolio-performance-kpis">
+            <article><small>Revenue opportunity</small><strong id="portfolioPerformanceOpportunity">$0</strong></article>
+            <article><small>Revenue captured</small><strong id="portfolioPerformanceCaptured">$0</strong></article>
+            <article><small>Measured realized value</small><strong id="portfolioPerformanceRealized">$0</strong></article>
+            <article><small>Locations requiring attention</small><strong id="portfolioPerformanceAtRisk">0</strong></article>
+            <article><small>Model confidence</small><strong id="portfolioPerformanceConfidence">—</strong></article>
+          </div>
+          <div class="portfolio-performance-layout">
+            <section><div class="portfolio-performance-title"><small>Location ranking</small><strong>Where leadership attention creates the most value</strong></div><div id="portfolioPerformanceLocations" class="portfolio-performance-locations"></div></section>
+            <aside class="portfolio-performance-inspector">
+              <div><small>Selected location</small><strong id="portfolioPerformanceLocationName">Choose a location</strong><p id="portfolioPerformanceLocationDriver">—</p></div>
+              <dl><div><dt>RPI</dt><dd id="portfolioPerformanceLocationRpi">—</dd></div><div><dt>Revenue opportunity</dt><dd id="portfolioPerformanceLocationRevenue">—</dd></div><div><dt>Projected recovery</dt><dd id="portfolioPerformanceLocationRecovery">—</dd></div><div><dt>Confidence</dt><dd id="portfolioPerformanceLocationConfidence">—</dd></div></dl>
+              <button type="button" id="portfolioPerformanceOpenLocation">Open location twin</button>
+            </aside>
+          </div>
+          <section class="portfolio-performance-actions-wrap"><div class="portfolio-performance-title"><small>Highest-value portfolio actions</small><strong>What regional leadership should do next</strong></div><div id="portfolioPerformanceOpportunities" class="portfolio-performance-opportunities"></div></section>
+          <footer class="portfolio-performance-action-bar">
+            <div><small>Selected action</small><strong id="portfolioPerformanceActionTitle">Choose an action</strong><p id="portfolioPerformanceActionInstruction">—</p></div>
+            <dl><div><dt>Revenue impact</dt><dd id="portfolioPerformanceActionRevenue">—</dd></div><div><dt>Projected RPI</dt><dd id="portfolioPerformanceActionRpi">—</dd></div><div><dt>Confidence</dt><dd id="portfolioPerformanceActionConfidence">—</dd></div></dl>
+            <button type="button" id="portfolioPerformanceApprove">Approve portfolio action</button><span id="portfolioPerformanceDecisionStatus" role="status"></span>
+          </footer>
+        </section>
+
+
+        <section class="performance-learning-center" id="performanceLearningCenter" aria-labelledby="performanceLearningTitle">
+          <header class="performance-learning-header">
+            <div>
+              <small>V35.4 · Learning & Pilot Hardening</small>
+              <strong id="performanceLearningTitle">Blue Current learns from every measured decision</strong>
+              <span id="performanceLearningUpdated">Building calibration profile…</span>
+            </div>
+            <div class="performance-learning-score">
+              <small>Calibration</small>
+              <strong id="performanceLearningScore">—</strong>
+              <span id="performanceLearningBand" data-tone="baseline">Baseline</span>
+            </div>
+            <button type="button" id="performanceLearningRefresh">Recalculate</button>
+          </header>
+          <p class="performance-learning-headline" id="performanceLearningHeadline">Connecting measured outcomes to model confidence and pilot readiness.</p>
+          <div class="performance-learning-kpis">
+            <article><small>Measured decisions</small><strong id="performanceLearningSamples">0</strong></article>
+            <article><small>Forecast accuracy</small><strong id="performanceLearningAccuracy">Baseline</strong></article>
+            <article><small>Success rate</small><strong id="performanceLearningSuccess">Baseline</strong></article>
+            <article><small>Confidence adjustment</small><strong id="performanceLearningAdjustment">+0</strong></article>
+            <article><small>Pilot readiness</small><strong id="performanceLearningReadiness">0%</strong></article>
+          </div>
+          <div class="performance-learning-grid">
+            <section>
+              <div class="performance-learning-title"><small>Domain calibration</small><strong>Where the model is learning fastest</strong></div>
+              <div class="performance-learning-domains" id="performanceLearningDomains"></div>
+            </section>
+            <section>
+              <div class="performance-learning-title"><small>Pilot safeguards</small><strong>Readiness checks before customer use</strong></div>
+              <ul class="performance-learning-checks" id="performanceLearningChecks"></ul>
+            </section>
+          </div>
+          <section class="performance-learning-guidance">
+            <div class="performance-learning-title"><small>Next calibration actions</small><strong>How to strengthen trust</strong></div>
+            <ul id="performanceLearningRecommendations"></ul>
+          </section>
+        </section>
+
         <section class="predictive-service-center" id="predictiveServiceCenter" aria-labelledby="predictiveServiceTitle">
           <div class="predictive-service-heading">
             <div><small>V34.6.7 · Forward operating intelligence</small><strong id="predictiveServiceTitle">Predictive Service Center</strong><span id="predictiveServiceUpdated">Building one-hour forecast…</span></div>
@@ -6866,12 +6936,16 @@
   <script src="js/modules/operationalDigitalTwinCenter.js?v=34.6.3"></script>
   <script src="js/modules/portfolioIntelligenceEngine.js?v=34.6.5"></script>
   <script src="js/modules/portfolioIntelligenceCenter.js?v=34.6.5"></script>
+  <script src="js/modules/portfolioPerformanceEngine.js?v=35.3.0"></script>
+  <script src="js/modules/portfolioPerformanceCenter.js?v=35.3.0"></script>
+  <script src="js/modules/performanceLearningEngine.js?v=35.4.0"></script>
+  <script src="js/modules/performanceLearningCenter.js?v=35.4.0"></script>
   <script src="js/modules/predictiveServiceEngine.js?v=34.6.7"></script>
   <script src="js/modules/predictiveServiceCenter.js?v=34.6.7"></script>
   <script src="js/modules/autonomousPolicyEngine.js?v=34.6.8"></script>
   <script src="js/modules/autonomousPolicyCenter.js?v=34.6.8"></script>
   <script src="js/modules/executiveWorkflowEngine.js?v=34.7.0"></script>
   <script src="js/modules/executiveWorkflowCenter.js?v=34.7.0"></script>
-  <script src="js/app-v15.1.3.js?v=35.1.0"></script>
+  <script src="js/app-v15.1.3.js?v=35.3.0"></script>
 </body>
 </html>

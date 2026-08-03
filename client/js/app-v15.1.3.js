@@ -1036,7 +1036,7 @@ const appState = new window.BlueCurrentAppState(eventBus, {
 const motionEngine = new window.BlueCurrentMotionEngine();
 
 
-const platform = window.BlueCurrentPlatform.create({ build: "32.4.0", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "35.4.0", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1209,6 +1209,22 @@ const portfolioIntelligenceCenterModule = startupRegistry.register(
   ["eventBus", "appState", "operationalDigitalTwinCenter"]
 );
 
+const portfolioPerformanceCenterModule = startupRegistry.register(
+  "portfolioPerformanceCenter",
+  document.getElementById("portfolioPerformanceCenter")
+    ? window.createBlueCurrentPortfolioPerformanceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "portfolioIntelligenceCenter"]
+);
+
+const performanceLearningCenterModule = startupRegistry.register(
+  "performanceLearningCenter",
+  document.getElementById("performanceLearningCenter")
+    ? window.createBlueCurrentPerformanceLearningCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "portfolioPerformanceCenter"]
+);
+
 const predictiveServiceCenterModule = startupRegistry.register(
   "predictiveServiceCenter",
   document.getElementById("predictiveServiceCenter")
@@ -1271,6 +1287,7 @@ window.blueCurrent = {
     aiOrchestrationCenter: aiOrchestrationCenterModule,
     operationalDigitalTwin: operationalDigitalTwinCenterModule,
     portfolioIntelligence: portfolioIntelligenceCenterModule,
+    portfolioPerformance: portfolioPerformanceCenterModule,
     predictiveService: predictiveServiceCenterModule,
     autonomousPolicyCenter: autonomousPolicyCenterModule,
     executiveWorkflowCenter: executiveWorkflowCenterModule

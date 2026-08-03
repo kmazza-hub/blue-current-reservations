@@ -63,7 +63,16 @@ class AppState {
       outcomeIntelligence: null,
       outcomeIntelligenceHistory: [],
       executiveBriefing: null,
-      executiveBriefingHistory: []
+      executiveBriefingHistory: [],
+      portfolioPerformance: null,
+      portfolioPerformanceHistory: [],
+      portfolioPerformanceLocations: [],
+      portfolioPerformanceOpportunities: [],
+      portfolioPerformanceSelectedLocationId: null,
+      performanceLearning: null,
+      performanceLearningHistory: [],
+      recommendationConfidenceAdjustment: 0,
+      pilotReadiness: null
     };
 
     this.state = this.#clone({ ...this.defaultState, ...initialState });

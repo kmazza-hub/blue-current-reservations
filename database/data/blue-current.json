@@ -458,6 +458,22 @@
       "category": "security",
       "createdAt": "2026-08-02T17:04:22.956Z",
       "id": "audit_1785690262956_4c1zra"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-03T01:14:43.162Z",
+      "id": "audit_1785719683162_bb6yw6"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-03T01:17:30.431Z",
+      "id": "audit_1785719850431_6cfmrc"
     }
   ],
   "reservations": [
@@ -806,18 +822,6 @@
       "expiresAt": "2026-08-02T16:26:08.915Z"
     },
     {
-      "id": "ses_1785687828203_nmkfbs",
-      "tokenHash": "100d3b50320a2422f48dfd9d13a293111439dfc693bbed57d00316bd765507a5",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-02T16:23:48.203Z",
-      "expiresAt": "2026-08-03T04:23:48.203Z"
-    },
-    {
       "id": "ses_1785687936670_se1msm",
       "tokenHash": "c771b4a75f5e355c25ca6a1db45555829eeef257357a1d04914e1a80b03c65a7",
       "userId": "usr_keith",
@@ -830,16 +834,28 @@
       "expiresAt": "2026-08-03T04:25:36.670Z"
     },
     {
-      "id": "ses_1785690262950_svcc9k",
-      "tokenHash": "f08078bc8678fa8f6a35a61800ac0e6b0b13469314028a92eb929017396a8fe7",
+      "id": "ses_1785719683155_7c734r",
+      "tokenHash": "135a49ef13e02b9b3b4505b56c7ba3a2d057648c74da8446a869c0eac4287452",
       "userId": "usr_keith",
       "organizationId": "org_chefs",
       "role": "owner",
       "locationIds": [
         "*"
       ],
-      "createdAt": "2026-08-02T17:04:22.950Z",
-      "expiresAt": "2026-08-03T05:04:22.950Z"
+      "createdAt": "2026-08-03T01:14:43.155Z",
+      "expiresAt": "2026-08-03T13:14:43.155Z"
+    },
+    {
+      "id": "ses_1785719850425_aoh97d",
+      "tokenHash": "4742b099da9442a256812f2e1617af2f36e0655bfb0257cd69e239923e874749",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-03T01:17:30.425Z",
+      "expiresAt": "2026-08-03T13:17:30.425Z"
     }
   ],
   "invitations": [

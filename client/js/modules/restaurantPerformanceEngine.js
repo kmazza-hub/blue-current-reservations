@@ -39,7 +39,9 @@
       const overall = this.weightedScore(scores);
       const opportunity = this.calculateOpportunity(inputs, scores);
       const drivers = this.buildDrivers(inputs, scores, opportunity);
-      const actions = this.buildActions(inputs, scores, opportunity, drivers);
+      const confidenceAdjustment = Number(state.recommendationConfidenceAdjustment || 0);
+      const actions = this.buildActions(inputs, scores, opportunity, drivers)
+        .map(action => ({ ...action, confidence: this.clamp(action.confidence + confidenceAdjustment, 45, 98) }));
       const prior = this.history[0];
       const trend = prior ? Number((overall - prior.overall).toFixed(1)) : 0;
       const confidence = this.calculateConfidence(state, inputs);
@@ -179,7 +181,8 @@
       if (state.predictiveService?.capturedAt) score += 8;
       if (state.portfolioIntelligence?.capturedAt) score += 6;
       if (inputs.reservationVolume > 0) score += 4;
-      return this.clamp(score, 55, 96);
+      score += Number(state.recommendationConfidenceAdjustment || 0);
+      return this.clamp(score, 55, 98);
     }
 
     headline(overall, trend, drivers, opportunity) {
