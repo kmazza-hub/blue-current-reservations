@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="37.20.0-runtime-readiness">
+  <meta name="blue-current-build" content="37.23.0-production-runtime">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3900,6 +3900,9 @@
 <section class="v3717-center" id="subscriptionLifecycleCenter" aria-labelledby="slcTitle"><header><div><small>V37.18 · Subscription Lifecycle</small><strong id="slcTitle">Keep listeners and recurring activity inside a controlled lifecycle budget.</strong><span id="slcHeadline">Auditing subscriptions…</span></div><button type="button" id="slcRefresh">Refresh</button></header><div class="v3717-kpis"><article><small>Lifecycle score</small><strong id="slcScore">0%</strong></article><article><small>Status</small><strong id="slcStatus">—</strong></article><article><small>Listeners</small><strong id="slcListeners">0</strong></article><article><small>Intervals</small><strong id="slcIntervals">0</strong></article></div><div id="slcChannels" class="v3717-list"></div></section>
 <section class="v3717-center" id="storageFootprintCenter" aria-labelledby="sfgTitle"><header><div><small>V37.19 · Storage Footprint Guard</small><strong id="sfgTitle">Prevent runtime history and browser storage from growing without control.</strong><span id="sfgHeadline">Measuring stored evidence…</span></div><div class="v3717-actions"><button type="button" id="sfgRefresh">Refresh</button><button type="button" id="sfgTrim">Trim histories</button></div></header><div class="v3717-kpis"><article><small>Storage score</small><strong id="sfgScore">0%</strong></article><article><small>Status</small><strong id="sfgStatus">—</strong></article><article><small>Total footprint</small><strong id="sfgTotal">0 MB</strong></article><article><small>AppState</small><strong id="sfgState">0 KB</strong></article></div><div id="sfgItems" class="v3717-list"></div></section>
 <section class="v3717-center" id="runtimeReadinessCenter" aria-labelledby="rrgTitle"><header><div><small>V37.20 · Runtime Readiness Gate</small><strong id="rrgTitle">Certify the focused operating experience against one complete runtime control set.</strong><span id="rrgHeadline">Running readiness gate…</span></div><div class="v3717-actions"><button type="button" id="rrgRefresh">Run gate</button><button type="button" id="rrgExport">Export evidence</button></div></header><div class="v3717-kpis"><article><small>Readiness score</small><strong id="rrgScore">0%</strong></article><article><small>Status</small><strong id="rrgStatus">—</strong></article><article><small>Blockers</small><strong id="rrgBlockers">0</strong></article><article><small>Watch controls</small><strong id="rrgWatch">0</strong></article></div><div id="rrgChecks" class="v3717-list"></div></section>
+<section class="v3723-center" id="performanceBaselineCenter" aria-labelledby="pbTitle"><header><div><small>V37.21 · Performance Baseline</small><strong id="pbTitle">Capture a trusted runtime baseline before every material release.</strong><span id="pbHeadline">Preparing baseline…</span></div><div class="v3723-actions"><button type="button" id="pbCapture">Capture baseline</button><button type="button" id="pbExport">Export baseline</button></div></header><div class="v3723-kpis"><article><small>Baseline score</small><strong id="pbScore">0%</strong></article><article><small>Mode</small><strong id="pbMode">—</strong></article><article><small>Scripts</small><strong id="pbScripts">0</strong></article><article><small>DOM nodes</small><strong id="pbNodes">0</strong></article></div><div id="pbChecks" class="v3723-list"></div></section>
+<section class="v3723-center" id="performanceRegressionCenter" aria-labelledby="prTitle"><header><div><small>V37.22 · Regression Control</small><strong id="prTitle">Compare each runtime baseline and catch performance loss immediately.</strong><span id="prHeadline">Waiting for baseline evidence…</span></div><button type="button" id="prRefresh">Run comparison</button></header><div class="v3723-kpis"><article><small>Regression score</small><strong id="prScore">0%</strong></article><article><small>Status</small><strong id="prStatus">—</strong></article><article><small>Score delta</small><strong id="prDelta">0</strong></article><article><small>Regressions</small><strong id="prIssues">0</strong></article></div><div id="prChecks" class="v3723-list"></div></section>
+<section class="v3723-center" id="productionRuntimeCenter" aria-labelledby="prodTitle"><header><div><small>V37.23 · Production Runtime Gate</small><strong id="prodTitle">Certify focused startup for controlled production validation.</strong><span id="prodHeadline">Evaluating production controls…</span></div><div class="v3723-actions"><button type="button" id="prodRefresh">Run gate</button><button type="button" id="prodExport">Export evidence</button></div></header><div class="v3723-kpis"><article><small>Production score</small><strong id="prodScore">0%</strong></article><article><small>Status</small><strong id="prodStatus">—</strong></article><article><small>Blockers</small><strong id="prodBlockers">0</strong></article><article><small>Watch controls</small><strong id="prodWatch">0</strong></article></div><div id="prodChecks" class="v3723-list"></div></section>
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -7709,6 +7712,12 @@
   <script src="js/modules/storageFootprintCenter.js?v=37.20.0"></script>
   <script src="js/modules/runtimeReadinessEngine.js?v=37.20.0"></script>
   <script src="js/modules/runtimeReadinessCenter.js?v=37.20.0"></script>
-  <script src="js/startup-loader.js?v=37.20.0"></script>
+  <script src="js/modules/performanceBaselineEngine.js?v=37.23.0"></script>
+  <script src="js/modules/performanceBaselineCenter.js?v=37.23.0"></script>
+  <script src="js/modules/performanceRegressionEngine.js?v=37.23.0"></script>
+  <script src="js/modules/performanceRegressionCenter.js?v=37.23.0"></script>
+  <script src="js/modules/productionRuntimeEngine.js?v=37.23.0"></script>
+  <script src="js/modules/productionRuntimeCenter.js?v=37.23.0"></script>
+  <script src="js/startup-loader.js?v=37.23.0"></script>
 </body>
 </html>

@@ -1066,7 +1066,10 @@ const ESSENTIAL_STARTUP_CENTERS = new Set([
   "runtimeCircuitBreakerCenter",
   "subscriptionLifecycleCenter",
   "storageFootprintCenter",
-  "runtimeReadinessCenter"
+  "runtimeReadinessCenter",
+  "performanceBaselineCenter",
+  "performanceRegressionCenter",
+  "productionRuntimeCenter"
 ]);
 function shouldInitializeCenter(id) {
   return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id) || activatedCenters.has(id));
@@ -1074,7 +1077,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "37.20.0-runtime-readiness", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "37.23.0-production-runtime", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1585,6 +1588,21 @@ const runtimeReadinessCenterModule = startupRegistry.register(
   shouldInitializeCenter("runtimeReadinessCenter") ? window.createBlueCurrentRuntimeReadinessCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "startupPerformanceCenter", "assetHealthCenter", "networkRequestCenter", "stateChurnCenter", "eventStormGuardCenter", "renderBudgetCenter", "memoryPressureCenter", "subscriptionLifecycleCenter", "storageFootprintCenter"]
 );
+const performanceBaselineCenterModule = startupRegistry.register(
+  "performanceBaselineCenter",
+  shouldInitializeCenter("performanceBaselineCenter") ? window.createBlueCurrentPerformanceBaselineCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "runtimeReadinessCenter"]
+);
+const performanceRegressionCenterModule = startupRegistry.register(
+  "performanceRegressionCenter",
+  shouldInitializeCenter("performanceRegressionCenter") ? window.createBlueCurrentPerformanceRegressionCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "performanceBaselineCenter"]
+);
+const productionRuntimeCenterModule = startupRegistry.register(
+  "productionRuntimeCenter",
+  shouldInitializeCenter("productionRuntimeCenter") ? window.createBlueCurrentProductionRuntimeCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "runtimeReadinessCenter", "performanceBaselineCenter", "performanceRegressionCenter"]
+);
 const pilotLaunchCenterModule = startupRegistry.register(
   "pilotLaunchCenter",
   shouldInitializeCenter("pilotLaunchCenter") ? window.createBlueCurrentPilotLaunchCenterModule?.(eventBus, appState) : null,
@@ -1882,6 +1900,9 @@ window.blueCurrent = {
     subscriptionLifecycle: subscriptionLifecycleCenterModule,
     storageFootprint: storageFootprintCenterModule,
     runtimeReadiness: runtimeReadinessCenterModule,
+    performanceBaseline: performanceBaselineCenterModule,
+    performanceRegression: performanceRegressionCenterModule,
+    productionRuntime: productionRuntimeCenterModule,
     pilotLaunch: pilotLaunchCenterModule,
     pilotEvidence: pilotEvidenceCenterModule,
     accessReadiness: accessReadinessCenterModule,
