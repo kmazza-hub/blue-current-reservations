@@ -4,6 +4,9 @@
 
   function createCloudFoundationModule(eventBus, appState) {
     const api = new window.BlueCurrentCloudApi("");
+    const pipeline = window.BlueCurrentRequestPipeline || null;
+    const offlineSync = window.BlueCurrentOfflineSync || null;
+    const auditLedger = window.BlueCurrentAuditLedger || null;
     const $ = id => document.getElementById(id);
     let connected = false;
     let bootstrap = null;
