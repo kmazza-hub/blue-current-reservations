@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "38.5.1-startup-hotfix", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "39.6.0-operator-control", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1645,6 +1645,22 @@ const sourcePromotionCenterModule = startupRegistry.register(
   ["eventBus", "appState", "ingestionQueueCenter"]
 );
 
+const priorityFocusCenterModule = startupRegistry.register(
+  "priorityFocusCenter",
+  shouldInitializeCenter("priorityFocusCenter") ? window.createBlueCurrentPriorityFocusCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const actionOwnershipCenterModule = startupRegistry.register(
+  "actionOwnershipCenter",
+  shouldInitializeCenter("actionOwnershipCenter") ? window.createBlueCurrentActionOwnershipCenterModule?.(eventBus, appState) : null,
+  ["eventBus"]
+);
+const shiftHandoffSnapshotCenterModule = startupRegistry.register(
+  "shiftHandoffSnapshotCenter",
+  shouldInitializeCenter("shiftHandoffSnapshotCenter") ? window.createBlueCurrentShiftHandoffSnapshotCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "priorityFocusCenter", "actionOwnershipCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
@@ -1998,6 +2014,9 @@ window.blueCurrent = {
     canonicalMapping: canonicalMappingCenterModule,
     ingestionQueue: ingestionQueueCenterModule,
     sourcePromotion: sourcePromotionCenterModule,
+    priorityFocus: priorityFocusCenterModule,
+    actionOwnership: actionOwnershipCenterModule,
+    shiftHandoffSnapshot: shiftHandoffSnapshotCenterModule,
     operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,

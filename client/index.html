@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.3.0-operations-workspace">
+  <meta name="blue-current-build" content="39.6.0-operator-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3952,6 +3952,20 @@
     <button type="button" data-target="operationsCopilotCenter">Operations copilot</button>
   </nav>
 </section>
+<section class="v396-center" id="priorityFocusCenter" aria-labelledby="pfcTitle">
+  <header><div><small>V39.4 · Priority Focus Board</small><strong id="pfcTitle">Keep the manager focused on the three decisions that matter now.</strong><span id="pfcHeadline">Building the live priority board…</span></div><button type="button" id="pfcRefresh">Refresh priorities</button></header>
+  <div class="v396-kpis"><article><small>Open priorities</small><strong id="pfcOpen">0</strong></article><article><small>Owned</small><strong id="pfcOwned">0</strong></article><article><small>In progress</small><strong id="pfcProgress">0</strong></article><article><small>Completed</small><strong id="pfcDone">0</strong></article></div>
+  <div id="pfcRows" class="v396-list"></div>
+</section>
+<section class="v396-center" id="actionOwnershipCenter" aria-labelledby="aocTitle">
+  <header><div><small>V39.5 · Action Ownership</small><strong id="aocTitle">Give every priority a named owner and visible completion state.</strong><span id="aocHeadline">No action ownership recorded yet.</span></div><div class="v396-actions"><input id="aocOwner" type="text" value="Manager" aria-label="Default action owner"><button type="button" id="aocClearCompleted">Clear completed</button></div></header>
+  <div id="aocRows" class="v396-list"></div>
+</section>
+<section class="v396-center v396-handoff" id="shiftHandoffSnapshotCenter" aria-labelledby="shsTitle">
+  <header><div><small>V39.6 · Shift Handoff Snapshot</small><strong id="shsTitle">Turn the live priority board into a concise manager handoff.</strong><span id="shsHeadline">Preparing the current shift handoff…</span></div><div class="v396-actions"><button type="button" id="shsRefresh">Refresh handoff</button><button type="button" id="shsCopy">Copy summary</button><button type="button" id="shsExport">Export JSON</button></div></header>
+  <div class="v396-kpis"><article><small>Shift score</small><strong id="shsScore">—</strong></article><article><small>Open</small><strong id="shsOpen">0</strong></article><article><small>Completed</small><strong id="shsDone">0</strong></article><article><small>Next owner</small><strong id="shsOwner">—</strong></article></div>
+  <div id="shsSummary" class="v396-summary"></div>
+</section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
 <section class="v385-center v385-copilot" id="operationsCopilotCenter" aria-labelledby="ocTitle"><header><div><small>V38.5 · AI Operations Copilot</small><strong id="ocTitle">Ask what changed, what to do, and why it matters.</strong><span>Recommendations remain human-approved.</span></div></header><div class="v385-questions"><button type="button" data-question="What should I do now?">What should I do now?</button><button type="button" data-question="Why this recommendation?">Why?</button><button type="button" data-question="What is at risk?">What is at risk?</button><button type="button" data-question="Summarize the shift">Summarize shift</button></div><div class="v385-prompt"><input id="operationsCopilotPrompt" type="text" placeholder="Ask Blue Current about this shift" aria-label="Ask the operations copilot"><button type="button" id="operationsCopilotAsk">Ask</button></div><article class="v385-answer"><strong id="ocAnswer">Preparing guidance…</strong><ul id="ocEvidence"></ul><div id="ocActions" class="v385-actions"></div></article></section>
@@ -7808,14 +7822,20 @@
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/dataLineageCenter.js?v=38.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSyncRehearsalEngine.js?v=38.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSyncRehearsalCenter.js?v=38.2.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsWorkspaceEngine.js?v=39.3.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsWorkspaceCenter.js?v=39.3.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceEngine.js?v=39.3.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceCenter.js?v=39.3.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedEngine.js?v=39.3.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedCenter.js?v=39.3.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotEngine.js?v=39.3.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotCenter.js?v=39.3.0"></script>
-  <script src="js/startup-loader.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/priorityFocusEngine.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/priorityFocusCenter.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/actionOwnershipEngine.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/actionOwnershipCenter.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftHandoffSnapshotEngine.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftHandoffSnapshotCenter.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsWorkspaceEngine.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsWorkspaceCenter.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceEngine.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceCenter.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedEngine.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedCenter.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotEngine.js?v=39.6.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotCenter.js?v=39.6.0"></script>
+  <script src="js/startup-loader.js?v=39.6.0"></script>
 </body>
 </html>
