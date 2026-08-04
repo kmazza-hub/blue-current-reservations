@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const fullStartup = params.get("full") === "1";
   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
-  const appSource = `js/app-v15.1.3.js?v=38.5.4`;
+  const appSource = `js/app-v15.1.3.js?v=38.5.6`;
   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
   const startedAt = performance.now();
   const storageKey = "bluecurrent:last-good-startup";
@@ -96,9 +96,20 @@
   function selectedPlaceholders() {
     if (fullStartup) return deferred;
     if (!requestedPacks.size) return [];
-    // Feature packs now load only scripts explicitly assigned to that pack.
-    // Legacy inferred scripts remain available through full mode and future on-demand loading.
-    return deferred.filter(item => item.dataset.packExplicit === "true" && requestedPacks.has(item.dataset.pack));
+
+    let selected = deferred.filter(
+      item => item.dataset.packExplicit === "true" && requestedPacks.has(item.dataset.pack)
+    );
+
+    // V38.5.6: protect against stale/incomplete dataset metadata. The Operations
+    // pack must always activate its six current vertical-slice modules.
+    if (requestedPacks.has("operations")) {
+      const requiredOperations = /(shiftIntelligence|executiveDecisionFeed|operationsCopilot)(Engine|Center)\.js/i;
+      const fallback = deferred.filter(item => requiredOperations.test(item.dataset.src || ""));
+      selected = [...new Map([...selected, ...fallback].map(item => [item.dataset.src, item])).values()];
+    }
+
+    return selected;
   }
 
   function applyCenterVisibility(selected) {
@@ -142,6 +153,9 @@
   async function boot() {
     try {
       const selected = selectedPlaceholders();
+      window.BlueCurrentActivatedCenters = new Set(
+        selected.map(item => item.dataset.center).filter(Boolean)
+      );
       applyCenterVisibility(selected);
       for (let index = 0; index < selected.length; index += 1) {
         await loadScriptWithTimeout(selected[index].dataset.src);
@@ -197,7 +211,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V38.5.4 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V38.5.6 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.
