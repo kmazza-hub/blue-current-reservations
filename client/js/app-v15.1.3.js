@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "39.21.0-prevention-control", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "39.27.0-assurance-governance", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1760,6 +1760,23 @@ const preventionVerificationCenterModule = startupRegistry.register(
   "preventionVerificationCenter",
   shouldInitializeCenter("preventionVerificationCenter") ? window.createBlueCurrentPreventionVerificationCenterModule?.(eventBus) : null,
   ["eventBus", "correctiveActionPlanCenter", "trainingAssignmentCenter"]
+);
+
+
+const operationalAssuranceCenterModule = startupRegistry.register(
+  "operationalAssuranceCenter",
+  shouldInitializeCenter("operationalAssuranceCenter") ? window.createBlueCurrentOperationalAssuranceCenterModule?.(eventBus) : null,
+  ["eventBus", "preventionVerificationCenter", "standardWorkLinkageCenter"]
+);
+const complianceReviewCenterModule = startupRegistry.register(
+  "complianceReviewCenter",
+  shouldInitializeCenter("complianceReviewCenter") ? window.createBlueCurrentComplianceReviewCenterModule?.(eventBus) : null,
+  ["eventBus", "operationalAssuranceCenter"]
+);
+const leadershipPreventionBriefCenterModule = startupRegistry.register(
+  "leadershipPreventionBriefCenter",
+  shouldInitializeCenter("leadershipPreventionBriefCenter") ? window.createBlueCurrentLeadershipPreventionBriefCenterModule?.(eventBus) : null,
+  ["eventBus", "operationalAssuranceCenter", "complianceReviewCenter"]
 );
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
