@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.18.0-exception-response">
+  <meta name="blue-current-build" content="39.21.0-prevention-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -4021,6 +4021,21 @@
   <div class="v3918-kpis"><article><small>Verification score</small><strong id="rvScore">0%</strong></article><article><small>Verified</small><strong id="rvVerified">0</strong></article><article><small>Pending</small><strong id="rvPending">0</strong></article><article><small>Failed</small><strong id="rvFailed">0</strong></article></div>
   <div class="v3918-form"><select id="rvException"><option value="">Select resolved exception</option></select><input id="rvOwner" value="Manager"><select id="rvResult"><option value="verified">Verified</option><option value="failed">Recovery failed</option></select><input id="rvNote" placeholder="Verification note"><button type="button" id="rvVerify">Record verification</button></div><div id="rvRows" class="v3918-list"></div>
 </section>
+
+<section class="v3921-center" id="incidentRootCauseCenter" aria-labelledby="ircTitle">
+  <header><div><small>V39.19 · Incident Root Cause</small><strong id="ircTitle">Turn resolved exceptions into clear, reusable operating knowledge.</strong><span id="ircHeadline">Review the cause behind each recovered exception.</span></div><button type="button" id="ircRefresh">Refresh</button></header>
+  <div class="v3921-kpis"><article><small>Reviews</small><strong id="ircTotal">0</strong></article><article><small>Top category</small><strong id="ircTop">—</strong></article><article><small>Repeat signals</small><strong id="ircRepeats">0</strong></article><article><small>Status</small><strong id="ircStatus">awaiting evidence</strong></article></div>
+  <div class="v3921-form"><select id="ircException"><option value="">Select resolved exception</option></select><select id="ircCategory"><option value="process">Process</option><option value="staffing">Staffing</option><option value="training">Training</option><option value="equipment">Equipment</option><option value="forecast">Forecast</option><option value="vendor">Vendor</option></select><input id="ircCause" placeholder="Confirmed root cause"><input id="ircContributor" placeholder="Contributing factor"><input id="ircOwner" value="Manager"><button type="button" id="ircSave">Save review</button></div><div id="ircRows" class="v3921-list"></div>
+</section>
+<section class="v3921-center" id="correctiveActionPlanCenter" aria-labelledby="capTitle">
+  <header><div><small>V39.20 · Corrective Action Plan</small><strong id="capTitle">Convert every root cause into owned, dated prevention work.</strong><span id="capHeadline">Create corrective actions with explicit verification evidence.</span></div><button type="button" id="capRefresh">Refresh</button></header>
+  <div class="v3921-kpis"><article><small>Open</small><strong id="capOpen">0</strong></article><article><small>Completed</small><strong id="capDone">0</strong></article><article><small>Overdue</small><strong id="capOverdue">0</strong></article><article><small>Status</small><strong id="capStatus">clear</strong></article></div>
+  <div class="v3921-form"><select id="capRoot"><option value="">Select root cause</option></select><input id="capAction" placeholder="Corrective action"><input id="capOwner" value="Manager"><input id="capDue" type="datetime-local"><input id="capVerification" placeholder="How success will be verified"><button type="button" id="capCreate">Create action</button></div><div id="capRows" class="v3921-list"></div>
+</section>
+<section class="v3921-center v3921-review" id="exceptionTrendReviewCenter" aria-labelledby="etrTitle">
+  <header><div><small>V39.21 · Exception Trend Review</small><strong id="etrTitle">See which operating failures repeat and whether prevention work is closing them.</strong><span id="etrStatus">insufficient evidence</span></div><div class="v3921-actions"><button type="button" id="etrRefresh">Refresh</button><button type="button" id="etrCopy">Copy review</button><button type="button" id="etrExport">Export JSON</button></div></header>
+  <div class="v3921-kpis"><article><small>Exceptions</small><strong id="etrExceptions">0</strong></article><article><small>Open</small><strong id="etrOpen">0</strong></article><article><small>Root causes</small><strong id="etrRoots">0</strong></article><article><small>Action closure</small><strong id="etrClosure">0%</strong></article></div><pre id="etrSummary" class="v3921-summary"></pre><div id="etrRows" class="v3921-list"></div>
+</section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
 <section class="v385-center v385-copilot" id="operationsCopilotCenter" aria-labelledby="ocTitle"><header><div><small>V38.5 · AI Operations Copilot</small><strong id="ocTitle">Ask what changed, what to do, and why it matters.</strong><span>Recommendations remain human-approved.</span></div></header><div class="v385-questions"><button type="button" data-question="What should I do now?">What should I do now?</button><button type="button" data-question="Why this recommendation?">Why?</button><button type="button" data-question="What is at risk?">What is at risk?</button><button type="button" data-question="Summarize the shift">Summarize shift</button></div><div class="v385-prompt"><input id="operationsCopilotPrompt" type="text" placeholder="Ask Blue Current about this shift" aria-label="Ask the operations copilot"><button type="button" id="operationsCopilotAsk">Ask</button></div><article class="v385-answer"><strong id="ocAnswer">Preparing guidance…</strong><ul id="ocEvidence"></ul><div id="ocActions" class="v385-actions"></div></article></section>
@@ -7915,6 +7930,12 @@
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/escalationControlCenter.js?v=39.18.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/recoveryVerificationEngine.js?v=39.18.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/recoveryVerificationCenter.js?v=39.18.0"></script>
-  <script src="js/startup-loader.js?v=39.18.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/incidentRootCauseEngine.js?v=39.21.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/incidentRootCauseCenter.js?v=39.21.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/correctiveActionPlanEngine.js?v=39.21.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/correctiveActionPlanCenter.js?v=39.21.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/exceptionTrendReviewEngine.js?v=39.21.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/exceptionTrendReviewCenter.js?v=39.21.0"></script>
+  <script src="js/startup-loader.js?v=39.21.0"></script>
 </body>
 </html>

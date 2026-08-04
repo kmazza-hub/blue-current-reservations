@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "39.15.0-manager-rhythm", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "39.21.0-prevention-control", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1729,6 +1729,22 @@ const recoveryVerificationCenterModule = startupRegistry.register(
   ["eventBus", "serviceExceptionQueueCenter", "escalationControlCenter"]
 );
 
+const incidentRootCauseCenterModule = startupRegistry.register(
+  "incidentRootCauseCenter",
+  shouldInitializeCenter("incidentRootCauseCenter") ? window.createBlueCurrentIncidentRootCauseCenterModule?.(eventBus) : null,
+  ["eventBus", "recoveryVerificationCenter"]
+);
+const correctiveActionPlanCenterModule = startupRegistry.register(
+  "correctiveActionPlanCenter",
+  shouldInitializeCenter("correctiveActionPlanCenter") ? window.createBlueCurrentCorrectiveActionPlanCenterModule?.(eventBus) : null,
+  ["eventBus", "incidentRootCauseCenter"]
+);
+const exceptionTrendReviewCenterModule = startupRegistry.register(
+  "exceptionTrendReviewCenter",
+  shouldInitializeCenter("exceptionTrendReviewCenter") ? window.createBlueCurrentExceptionTrendReviewCenterModule?.(eventBus) : null,
+  ["eventBus", "incidentRootCauseCenter", "correctiveActionPlanCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
@@ -2097,6 +2113,9 @@ window.blueCurrent = {
     serviceExceptionQueue: serviceExceptionQueueCenterModule,
     escalationControl: escalationControlCenterModule,
     recoveryVerification: recoveryVerificationCenterModule,
+    incidentRootCause: incidentRootCauseCenterModule,
+    correctiveActionPlan: correctiveActionPlanCenterModule,
+    exceptionTrendReview: exceptionTrendReviewCenterModule,
     operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,
