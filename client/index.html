@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.9.0-outcome-control">
+  <meta name="blue-current-build" content="39.12.0-continuous-improvement">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3980,6 +3980,19 @@
   <header><div><small>V39.9 · Shift Close Brief</small><strong id="scbTitle">Close the shift with measured value, accountability, and a clean handoff.</strong><span id="scbHeadline">Preparing the shift close brief…</span></div><div class="v399-actions"><button type="button" id="scbRefresh">Refresh</button><button type="button" id="scbCopy">Copy brief</button><button type="button" id="scbExport">Export JSON</button></div></header>
   <div class="v399-kpis"><article><small>Shift score</small><strong id="scbScore">—</strong></article><article><small>Completed</small><strong id="scbDone">0</strong></article><article><small>Measured value</small><strong id="scbMeasured">$0</strong></article><article><small>Variance</small><strong id="scbVariance">$0</strong></article></div><pre id="scbSummary" class="v399-summary"></pre>
 </section>
+
+<section class="v3912-center" id="recommendationCalibrationCenter" aria-labelledby="rcalTitle">
+  <header><div><small>V39.10 · Recommendation Calibration</small><strong id="rcalTitle">Tune modeled impact against what managers actually achieved.</strong><span id="rcalHeadline">Building the calibration baseline…</span></div><button type="button" id="rcalRefresh">Refresh calibration</button></header>
+  <div class="v3912-kpis"><article><small>Outcomes</small><strong id="rcalCount">0</strong></article><article><small>Accuracy</small><strong id="rcalAccuracy">0%</strong></article><article><small>Bias</small><strong id="rcalBias">0%</strong></article><article><small>Variance</small><strong id="rcalVariance">$0</strong></article></div><div class="v3912-status">Status: <strong id="rcalStatus">learning</strong></div><div id="rcalRows" class="v3912-list"></div>
+</section>
+<section class="v3912-center" id="operationsLearningReviewCenter" aria-labelledby="olrTitle">
+  <header><div><small>V39.11 · Operations Learning Review</small><strong id="olrTitle">Turn completed actions and outcomes into repeatable operating lessons.</strong><span id="olrHeadline">Preparing the learning review…</span></div><div class="v3912-actions"><button type="button" id="olrRefresh">Refresh</button><button type="button" id="olrCopy">Copy review</button><button type="button" id="olrExport">Export JSON</button></div></header>
+  <div class="v3912-kpis"><article><small>Outcomes</small><strong id="olrOutcomes">0</strong></article><article><small>Completed</small><strong id="olrDone">0</strong></article><article><small>Open</small><strong id="olrOpen">0</strong></article><article><small>Measured value</small><strong id="olrMeasured">$0</strong></article></div><div class="v3912-grid"><div><h3>Operating lessons</h3><div id="olrLessons" class="v3912-list"></div></div><div><h3>Owner performance</h3><div id="olrOwners" class="v3912-list"></div></div></div>
+</section>
+<section class="v3912-center v3912-plan" id="nextShiftPlanCenter" aria-labelledby="nspTitle">
+  <header><div><small>V39.12 · Next Shift Plan</small><strong id="nspTitle">Open the next shift with three clear priorities, owners, and reasons.</strong><span id="nspHeadline">Preparing the next shift plan…</span></div><div class="v3912-actions"><input id="nspOwner" value="Opening Manager" aria-label="Default next-shift owner"><button type="button" id="nspRefresh">Refresh</button><button type="button" id="nspCopy">Copy plan</button><button type="button" id="nspExport">Export JSON</button></div></header>
+  <div class="v3912-kpis"><article><small>Priorities</small><strong id="nspCount">0</strong></article><article><small>Carryover</small><strong id="nspCarry">0</strong></article><article><small>Recent measured value</small><strong id="nspValue">$0</strong></article></div><div id="nspRows" class="v3912-plan-list"></div>
+</section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
 <section class="v385-center v385-copilot" id="operationsCopilotCenter" aria-labelledby="ocTitle"><header><div><small>V38.5 · AI Operations Copilot</small><strong id="ocTitle">Ask what changed, what to do, and why it matters.</strong><span>Recommendations remain human-approved.</span></div></header><div class="v385-questions"><button type="button" data-question="What should I do now?">What should I do now?</button><button type="button" data-question="Why this recommendation?">Why?</button><button type="button" data-question="What is at risk?">What is at risk?</button><button type="button" data-question="Summarize the shift">Summarize shift</button></div><div class="v385-prompt"><input id="operationsCopilotPrompt" type="text" placeholder="Ask Blue Current about this shift" aria-label="Ask the operations copilot"><button type="button" id="operationsCopilotAsk">Ask</button></div><article class="v385-answer"><strong id="ocAnswer">Preparing guidance…</strong><ul id="ocEvidence"></ul><div id="ocActions" class="v385-actions"></div></article></section>
@@ -7856,6 +7869,12 @@
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/outcomeCaptureCenter.js?v=39.9.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftCloseBriefEngine.js?v=39.9.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftCloseBriefCenter.js?v=39.9.0"></script>
-  <script src="js/startup-loader.js?v=39.9.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/recommendationCalibrationEngine.js?v=39.12.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/recommendationCalibrationCenter.js?v=39.12.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsLearningReviewEngine.js?v=39.12.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsLearningReviewCenter.js?v=39.12.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/nextShiftPlanEngine.js?v=39.12.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/nextShiftPlanCenter.js?v=39.12.0"></script>
+  <script src="js/startup-loader.js?v=39.12.0"></script>
 </body>
 </html>
