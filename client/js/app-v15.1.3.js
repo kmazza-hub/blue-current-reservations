@@ -1084,7 +1084,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "38.0.0-live-data-bridge", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "38.5.0-live-operations-intelligence", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1671,6 +1671,22 @@ const sourcePromotionCenterModule = startupRegistry.register(
   shouldInitializeCenter("sourcePromotionCenter") ? window.createBlueCurrentSourcePromotionCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "ingestionQueueCenter"]
 );
+
+const shiftIntelligenceCenterModule = startupRegistry.register(
+  "shiftIntelligenceCenter",
+  shouldInitializeCenter("shiftIntelligenceCenter") ? window.createBlueCurrentShiftIntelligenceCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
+const executiveDecisionFeedCenterModule = startupRegistry.register(
+  "executiveDecisionFeedCenter",
+  shouldInitializeCenter("executiveDecisionFeedCenter") ? window.createBlueCurrentExecutiveDecisionFeedCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "shiftIntelligenceCenter"]
+);
+const operationsCopilotCenterModule = startupRegistry.register(
+  "operationsCopilotCenter",
+  shouldInitializeCenter("operationsCopilotCenter") ? window.createBlueCurrentOperationsCopilotCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "shiftIntelligenceCenter", "executiveDecisionFeedCenter"]
+);
 const trustedDatasetCenterModule = startupRegistry.register(
   "trustedDatasetCenter",
   shouldInitializeCenter("trustedDatasetCenter") ? window.createBlueCurrentTrustedDatasetCenterModule?.(eventBus, appState) : null,
@@ -2004,6 +2020,9 @@ window.blueCurrent = {
     canonicalMapping: canonicalMappingCenterModule,
     ingestionQueue: ingestionQueueCenterModule,
     sourcePromotion: sourcePromotionCenterModule,
+    shiftIntelligence: shiftIntelligenceCenterModule,
+    executiveDecisionFeed: executiveDecisionFeedCenterModule,
+    operationsCopilot: operationsCopilotCenterModule,
     trustedDataset: trustedDatasetCenterModule,
     dataLineage: dataLineageCenterModule,
     pilotSyncRehearsal: pilotSyncRehearsalCenterModule,
