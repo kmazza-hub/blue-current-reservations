@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.12.0-continuous-improvement">
+  <meta name="blue-current-build" content="39.15.0-manager-rhythm">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -3993,6 +3993,19 @@
   <header><div><small>V39.12 · Next Shift Plan</small><strong id="nspTitle">Open the next shift with three clear priorities, owners, and reasons.</strong><span id="nspHeadline">Preparing the next shift plan…</span></div><div class="v3912-actions"><input id="nspOwner" value="Opening Manager" aria-label="Default next-shift owner"><button type="button" id="nspRefresh">Refresh</button><button type="button" id="nspCopy">Copy plan</button><button type="button" id="nspExport">Export JSON</button></div></header>
   <div class="v3912-kpis"><article><small>Priorities</small><strong id="nspCount">0</strong></article><article><small>Carryover</small><strong id="nspCarry">0</strong></article><article><small>Recent measured value</small><strong id="nspValue">$0</strong></article></div><div id="nspRows" class="v3912-plan-list"></div>
 </section>
+
+<section class="v3915-center" id="openingReadinessCenter" aria-labelledby="ordTitle">
+  <header><div><small>V39.13 · Opening Readiness</small><strong id="ordTitle">Start service with every critical operating check visible.</strong><span id="ordHeadline">Reviewing opening readiness…</span></div><div class="v3915-actions"><button type="button" id="ordRefresh">Refresh</button><button type="button" id="ordReset">Reset manual checks</button></div></header>
+  <div class="v3915-kpis"><article><small>Readiness</small><strong id="ordScore">0%</strong></article><article><small>Status</small><strong id="ordStatus">—</strong></article><article><small>Checks complete</small><strong id="ordDone">0/5</strong></article></div><div id="ordRows" class="v3915-list"></div>
+</section>
+<section class="v3915-center" id="shiftCheckpointCenter" aria-labelledby="scpTitle">
+  <header><div><small>V39.14 · Shift Checkpoint</small><strong id="scpTitle">Capture the operating picture at meaningful points during service.</strong><span id="scpHeadline">Evaluating the current checkpoint…</span></div><div class="v3915-actions"><input id="scpOwner" value="Manager" aria-label="Checkpoint owner"><input id="scpNote" placeholder="Checkpoint note" aria-label="Checkpoint note"><button type="button" id="scpCapture">Capture checkpoint</button><button type="button" id="scpRefresh">Refresh</button></div></header>
+  <div class="v3915-kpis"><article><small>Shift score</small><strong id="scpScore">—</strong></article><article><small>Status</small><strong id="scpStatus">—</strong></article><article><small>Current risks</small><strong id="scpRisks">0</strong></article><article><small>Checkpoints</small><strong id="scpCount">0</strong></article></div><div id="scpRows" class="v3915-list"></div>
+</section>
+<section class="v3915-center v3915-report" id="dailyValueReportCenter" aria-labelledby="dvrTitle">
+  <header><div><small>V39.15 · Daily Value Report</small><strong id="dvrTitle">Show leadership what Blue Current protected, improved, and measured today.</strong><span id="dvrHeadline">Preparing the daily value report…</span></div><div class="v3915-actions"><button type="button" id="dvrRefresh">Refresh</button><button type="button" id="dvrCopy">Copy report</button><button type="button" id="dvrExport">Export JSON</button></div></header>
+  <div class="v3915-kpis"><article><small>Measured value</small><strong id="dvrMeasured">$0</strong></article><article><small>Modeled value</small><strong id="dvrModeled">$0</strong></article><article><small>Variance</small><strong id="dvrVariance">$0</strong></article><article><small>Completed actions</small><strong id="dvrCompleted">0</strong></article></div><pre id="dvrSummary" class="v3915-summary"></pre>
+</section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
 <section class="v385-center v385-copilot" id="operationsCopilotCenter" aria-labelledby="ocTitle"><header><div><small>V38.5 · AI Operations Copilot</small><strong id="ocTitle">Ask what changed, what to do, and why it matters.</strong><span>Recommendations remain human-approved.</span></div></header><div class="v385-questions"><button type="button" data-question="What should I do now?">What should I do now?</button><button type="button" data-question="Why this recommendation?">Why?</button><button type="button" data-question="What is at risk?">What is at risk?</button><button type="button" data-question="Summarize the shift">Summarize shift</button></div><div class="v385-prompt"><input id="operationsCopilotPrompt" type="text" placeholder="Ask Blue Current about this shift" aria-label="Ask the operations copilot"><button type="button" id="operationsCopilotAsk">Ask</button></div><article class="v385-answer"><strong id="ocAnswer">Preparing guidance…</strong><ul id="ocEvidence"></ul><div id="ocActions" class="v385-actions"></div></article></section>
@@ -7875,6 +7888,12 @@
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsLearningReviewCenter.js?v=39.12.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/nextShiftPlanEngine.js?v=39.12.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/nextShiftPlanCenter.js?v=39.12.0"></script>
-  <script src="js/startup-loader.js?v=39.12.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/openingReadinessEngine.js?v=39.15.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/openingReadinessCenter.js?v=39.15.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftCheckpointEngine.js?v=39.15.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftCheckpointCenter.js?v=39.15.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/dailyValueReportEngine.js?v=39.15.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/dailyValueReportCenter.js?v=39.15.0"></script>
+  <script src="js/startup-loader.js?v=39.15.0"></script>
 </body>
 </html>

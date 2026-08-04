@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "39.6.0-operator-control", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "39.15.0-manager-rhythm", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1695,6 +1695,23 @@ const nextShiftPlanCenterModule = startupRegistry.register(
   ["eventBus", "appState", "actionOwnershipCenter", "outcomeCaptureCenter"]
 );
 
+
+const openingReadinessCenterModule = startupRegistry.register(
+  "openingReadinessCenter",
+  shouldInitializeCenter("openingReadinessCenter") ? window.createBlueCurrentOpeningReadinessCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "nextShiftPlanCenter"]
+);
+const shiftCheckpointCenterModule = startupRegistry.register(
+  "shiftCheckpointCenter",
+  shouldInitializeCenter("shiftCheckpointCenter") ? window.createBlueCurrentShiftCheckpointCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "shiftIntelligenceCenter"]
+);
+const dailyValueReportCenterModule = startupRegistry.register(
+  "dailyValueReportCenter",
+  shouldInitializeCenter("dailyValueReportCenter") ? window.createBlueCurrentDailyValueReportCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "outcomeCaptureCenter", "actionOwnershipCenter", "shiftCheckpointCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
@@ -2057,6 +2074,9 @@ window.blueCurrent = {
     recommendationCalibration: recommendationCalibrationCenterModule,
     operationsLearningReview: operationsLearningReviewCenterModule,
     nextShiftPlan: nextShiftPlanCenterModule,
+    openingReadiness: openingReadinessCenterModule,
+    shiftCheckpoint: shiftCheckpointCenterModule,
+    dailyValueReport: dailyValueReportCenterModule,
     operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,
