@@ -101,7 +101,7 @@
     const selected = deferred.filter(item => item.dataset.packExplicit === "true" && requestedPacks.has(item.dataset.pack));
     // V39.6 — preserve the minimal Operations slice even when older HTML metadata is cached.
     if (requestedPacks.has("operations")) {
-      const required = /(?:priorityFocus|actionOwnership|shiftHandoffSnapshot|operationsWorkspace|shiftIntelligence|executiveDecisionFeed|operationsCopilot)(?:Engine|Center)\.js/i;
+      const required = /(?:decisionExecutionLedger|outcomeCapture|shiftCloseBrief|priorityFocus|actionOwnership|shiftHandoffSnapshot|operationsWorkspace|shiftIntelligence|executiveDecisionFeed|operationsCopilot)(?:Engine|Center)\.js/i;
       deferred.forEach(item => { if (required.test(item.dataset.src) && !selected.includes(item)) selected.push(item); });
     }
     return selected;

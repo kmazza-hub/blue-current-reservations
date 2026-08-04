@@ -1661,6 +1661,23 @@ const shiftHandoffSnapshotCenterModule = startupRegistry.register(
   ["eventBus", "appState", "priorityFocusCenter", "actionOwnershipCenter"]
 );
 
+
+const decisionExecutionLedgerCenterModule = startupRegistry.register(
+  "decisionExecutionLedgerCenter",
+  shouldInitializeCenter("decisionExecutionLedgerCenter") ? window.createBlueCurrentDecisionExecutionLedgerCenterModule?.(eventBus) : null,
+  ["eventBus"]
+);
+const outcomeCaptureCenterModule = startupRegistry.register(
+  "outcomeCaptureCenter",
+  shouldInitializeCenter("outcomeCaptureCenter") ? window.createBlueCurrentOutcomeCaptureCenterModule?.(eventBus) : null,
+  ["eventBus"]
+);
+const shiftCloseBriefCenterModule = startupRegistry.register(
+  "shiftCloseBriefCenter",
+  shouldInitializeCenter("shiftCloseBriefCenter") ? window.createBlueCurrentShiftCloseBriefCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "outcomeCaptureCenter", "actionOwnershipCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
@@ -2017,6 +2034,9 @@ window.blueCurrent = {
     priorityFocus: priorityFocusCenterModule,
     actionOwnership: actionOwnershipCenterModule,
     shiftHandoffSnapshot: shiftHandoffSnapshotCenterModule,
+    decisionExecutionLedger: decisionExecutionLedgerCenterModule,
+    outcomeCapture: outcomeCaptureCenterModule,
+    shiftCloseBrief: shiftCloseBriefCenterModule,
     operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,
