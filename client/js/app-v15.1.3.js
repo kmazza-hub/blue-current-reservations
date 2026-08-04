@@ -1645,6 +1645,11 @@ const sourcePromotionCenterModule = startupRegistry.register(
   ["eventBus", "appState", "ingestionQueueCenter"]
 );
 
+const operationsWorkspaceCenterModule = startupRegistry.register(
+  "operationsWorkspaceCenter",
+  shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
+);
 const shiftIntelligenceCenterModule = startupRegistry.register(
   "shiftIntelligenceCenter",
   shouldInitializeCenter("shiftIntelligenceCenter") ? window.createBlueCurrentShiftIntelligenceCenterModule?.(eventBus, appState) : null,
@@ -1993,6 +1998,7 @@ window.blueCurrent = {
     canonicalMapping: canonicalMappingCenterModule,
     ingestionQueue: ingestionQueueCenterModule,
     sourcePromotion: sourcePromotionCenterModule,
+    operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,
     operationsCopilot: operationsCopilotCenterModule,

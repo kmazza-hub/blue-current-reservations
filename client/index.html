@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.0.0-stabilization">
+  <meta name="blue-current-build" content="39.3.0-operations-workspace">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -1225,7 +1225,7 @@
                   <i></i>
                   <div>
                     <small>Now</small>
-                    <strong id="aiTimelineNowTitle">Confirm the recommended move</strong>
+                    <strong id="aiTimelineNopwTitle">Confirm the recommended move</strong>
                     <p id="aiTimelineNowDetail">Review the current recommendation and assign the action.</p>
                   </div>
                 </article>
@@ -2937,7 +2937,7 @@
 
         <aside class="retraining-plan-summary">
           <small>Recommended maintenance window</small>
-          <strong id="retrainingWindowTitle">Continue monitoring</strong>
+          <strong id="retrainingWindopwTitle">Continue monitoring</strong>
           <p id="retrainingWindowDetail">No intervention is currently required.</p>
 
           <dl class="retraining-plan-meta">
@@ -3930,6 +3930,28 @@
 <section class="v381-center" id="ingestionQueueCenter" aria-labelledby="iqTitle"><header><div><small>V38.1 · Controlled Ingestion Queue</small><strong id="iqTitle">Process canonical batches without allowing unreviewed data into trusted operations.</strong><span id="iqHeadline">Waiting for canonical batches…</span></div><button type="button" id="iqRefresh">Refresh queue</button></header><div class="v381-kpis"><article><small>Status</small><strong id="iqStatus">idle</strong></article><article><small>Ready</small><strong id="iqReady">0</strong></article><article><small>Review</small><strong id="iqReview">0</strong></article><article><small>Processed</small><strong id="iqProcessed">0</strong></article></div><div id="iqRows" class="v381-list"></div></section>
 <section class="v381-center v381-promotion" id="sourcePromotionCenter" aria-labelledby="spTitle"><header><div><small>V38.1 · Source Promotion Control</small><strong id="spTitle">Require explicit ownership before staged evidence becomes trusted pilot data.</strong><span id="spHeadline">Waiting for processed batches…</span></div><div class="v381-actions"><input id="spOwner" type="text" placeholder="Approval owner" aria-label="Promotion approval owner"><button type="button" id="spRefresh">Refresh</button><button type="button" id="spExport">Export audit</button></div></header><div class="v381-kpis"><article><small>Status</small><strong id="spStatus">idle</strong></article><article><small>Awaiting approval</small><strong id="spStaged">0</strong></article><article><small>Promoted sources</small><strong id="spPromoted">0</strong></article><article><small>Audit events</small><strong id="spAudit">0</strong></article></div><div id="spRows" class="v381-list"></div></section>
 
+
+<section class="v393-center" id="operationsWorkspaceCenter" aria-labelledby="opwTitle">
+  <header>
+    <div><small>V39.1 · Operations Workspace</small><strong id="opwTitle">One focused operating surface for the live shift.</strong><span id="opwHeadline">Confirming module readiness…</span></div>
+    <div class="v393-actions"><button type="button" id="opwRefresh">Refresh workspace</button><button type="button" id="opwTopAction">Open top action</button></div>
+  </header>
+  <div class="v393-kpis">
+    <article><small>Workspace</small><strong id="opwStatus">Starting</strong></article>
+    <article><small>Modules ready</small><strong id="opwModules">0/6</strong></article>
+    <article><small>Boot time</small><strong id="opwBoot">—</strong></article>
+    <article><small>State rate</small><strong id="opwStateRate">0/s</strong></article>
+  </div>
+  <div class="v393-grid">
+    <section><small>V39.2 · Module Readiness</small><div id="opwReadiness" class="v393-list"></div></section>
+    <section><small>V39.3 · Live Runtime Pulse</small><div id="opwPulse" class="v393-pulse"></div></section>
+  </div>
+  <nav class="v393-nav" aria-label="Operations intelligence navigation">
+    <button type="button" data-target="shiftIntelligenceCenter">Shift intelligence</button>
+    <button type="button" data-target="executiveDecisionFeedCenter">Decision feed</button>
+    <button type="button" data-target="operationsCopilotCenter">Operations copilot</button>
+  </nav>
+</section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
 <section class="v385-center v385-copilot" id="operationsCopilotCenter" aria-labelledby="ocTitle"><header><div><small>V38.5 · AI Operations Copilot</small><strong id="ocTitle">Ask what changed, what to do, and why it matters.</strong><span>Recommendations remain human-approved.</span></div></header><div class="v385-questions"><button type="button" data-question="What should I do now?">What should I do now?</button><button type="button" data-question="Why this recommendation?">Why?</button><button type="button" data-question="What is at risk?">What is at risk?</button><button type="button" data-question="Summarize the shift">Summarize shift</button></div><div class="v385-prompt"><input id="operationsCopilotPrompt" type="text" placeholder="Ask Blue Current about this shift" aria-label="Ask the operations copilot"><button type="button" id="operationsCopilotAsk">Ask</button></div><article class="v385-answer"><strong id="ocAnswer">Preparing guidance…</strong><ul id="ocEvidence"></ul><div id="ocActions" class="v385-actions"></div></article></section>
@@ -3951,7 +3973,7 @@
               <article><small>Operator focus</small><strong id="guidedShiftFocusScore">100</strong><span>Higher means less operational noise</span></article>
             </div>
             <div class="guided-shift-flow">
-              <article data-guided-horizon="now"><small>Now</small><strong id="guidedShiftNowTitle">Hold the current posture</strong><p id="guidedShiftNowDetail">No urgent intervention is required.</p><span id="guidedShiftNowImpact">0 min response window</span></article>
+              <article data-guided-horizon="now"><small>Now</small><strong id="guidedShiftNopwTitle">Hold the current posture</strong><p id="guidedShiftNowDetail">No urgent intervention is required.</p><span id="guidedShiftNowImpact">0 min response window</span></article>
               <article data-guided-horizon="next"><small>Next</small><strong id="guidedShiftNextTitle">Watch the next operating change</strong><p id="guidedShiftNextDetail">Blue Current will surface the next material signal.</p><span id="guidedShiftNextImpact">Next 15 minutes</span></article>
               <article data-guided-horizon="later"><small>Later</small><strong id="guidedShiftLaterTitle">Prepare the handoff</strong><p id="guidedShiftLaterDetail">Keep evidence ready for the next manager.</p><span id="guidedShiftLaterImpact">Before shift change</span></article>
             </div>
@@ -4461,10 +4483,10 @@
         </section>
 
 
-        <section class="executive-workflow-center" id="executiveWorkflowCenter" aria-labelledby="executiveWorkflowTitle">
+        <section class="executive-workflow-center" id="executiveWorkflowCenter" aria-labelledby="executiveWorkflopwTitle">
           <div class="executive-workflow-heading">
-            <div><small>V34.7.0 · Governed workflow execution</small><strong id="executiveWorkflowTitle">Executive Workflow Center</strong><span id="executiveWorkflowUpdated">Loading active workflows…</span></div>
-            <div class="executive-workflow-summary"><small>Operating posture</small><strong id="executiveWorkflowHeadline">Preparing workflow queue.</strong><span>Ownership, approvals, SLA timers, and evidence</span></div>
+            <div><small>V34.7.0 · Governed workflow execution</small><strong id="executiveWorkflopwTitle">Executive Workflow Center</strong><span id="executiveWorkflowUpdated">Loading active workflows…</span></div>
+            <div class="executive-workflow-summary"><small>Operating posture</small><strong id="executiveWorkflopwHeadline">Preparing workflow queue.</strong><span>Ownership, approvals, SLA timers, and evidence</span></div>
             <button type="button" id="executiveWorkflowCreate">Create recovery workflow</button>
           </div>
           <div class="executive-workflow-kpis">
@@ -7786,12 +7808,14 @@
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/dataLineageCenter.js?v=38.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSyncRehearsalEngine.js?v=38.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="integrations" data-src="js/modules/pilotSyncRehearsalCenter.js?v=38.2.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceEngine.js?v=39.0.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceCenter.js?v=39.0.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedEngine.js?v=39.0.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedCenter.js?v=39.0.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotEngine.js?v=39.0.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotCenter.js?v=39.0.0"></script>
-  <script src="js/startup-loader.js?v=39.0.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsWorkspaceEngine.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsWorkspaceCenter.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceEngine.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftIntelligenceCenter.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedEngine.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/executiveDecisionFeedCenter.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotEngine.js?v=39.3.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationsCopilotCenter.js?v=39.3.0"></script>
+  <script src="js/startup-loader.js?v=39.3.0"></script>
 </body>
 </html>
