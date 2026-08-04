@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const fullStartup = params.get("full") === "1";
   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
-  const appSource = `js/app-v15.1.3.js?v=38.5.0`;
+  const appSource = `js/app-v15.1.3.js?v=38.5.1`;
   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
   const startedAt = performance.now();
   const storageKey = "bluecurrent:last-good-startup";
@@ -30,8 +30,10 @@
   const manifest = {};
   deferred.forEach((placeholder) => {
     const src = placeholder.dataset.src;
+    const explicitPack = placeholder.hasAttribute("data-pack");
     const pack = placeholder.dataset.pack || inferPack(src);
     placeholder.dataset.pack = pack;
+    placeholder.dataset.packExplicit = explicitPack ? "true" : "false";
     const centerId = placeholder.dataset.center || centerIdFromSource(src);
     if (centerId) placeholder.dataset.center = centerId;
     manifest[pack] ||= { pack, scripts: [], centers: [] };
@@ -91,6 +93,43 @@
     document.body.prepend(banner);
   }
 
+  function selectedPlaceholders() {
+    if (fullStartup) return deferred;
+    if (!requestedPacks.size) return [];
+    // Feature packs now load only scripts explicitly assigned to that pack.
+    // Legacy inferred scripts remain available through full mode and future on-demand loading.
+    return deferred.filter(item => item.dataset.packExplicit === "true" && requestedPacks.has(item.dataset.pack));
+  }
+
+  function applyCenterVisibility(selected) {
+    const active = new Set(selected.map(item => item.dataset.center).filter(Boolean));
+    document.querySelectorAll("[id$='Center'], [id$='center']").forEach((center) => {
+      if (!center.id) return;
+      const isEssential = [
+        "unifiedCommandCenter", "guidedShiftCenter", "operatorCopilotCenter",
+        "roleExperienceCenter", "commandActionInboxCenter", "shiftProfitPulseCenter",
+        "featurePackLoaderCenter", "bootRecoveryCenter"
+      ].includes(center.id);
+      const shouldShow = fullStartup || isEssential || active.has(center.id);
+      if (!shouldShow) {
+        center.hidden = true;
+        center.setAttribute("aria-hidden", "true");
+        center.setAttribute("inert", "");
+      } else {
+        center.hidden = false;
+        center.removeAttribute("aria-hidden");
+        center.removeAttribute("inert");
+      }
+    });
+  }
+
+  function loadScriptWithTimeout(src, timeoutMs = 5000) {
+    return Promise.race([
+      loadScript(src),
+      new Promise((_, reject) => window.setTimeout(() => reject(new Error(`Timed out loading ${src}`)), timeoutMs))
+    ]);
+  }
+
   const watchdog = window.setTimeout(() => {
     if (guard.status === "complete") return;
     guard.status = "timeout";
@@ -102,11 +141,13 @@
 
   async function boot() {
     try {
-      const selected = fullStartup
-        ? deferred
-        : deferred.filter(item => requestedPacks.has(item.dataset.pack));
-      for (const placeholder of selected) await loadScript(placeholder.dataset.src);
-      await loadScript(appSource);
+      const selected = selectedPlaceholders();
+      applyCenterVisibility(selected);
+      for (let index = 0; index < selected.length; index += 1) {
+        await loadScriptWithTimeout(selected[index].dataset.src);
+        if ((index + 1) % 2 === 0) await new Promise(resolve => window.setTimeout(resolve, 0));
+      }
+      await loadScriptWithTimeout(appSource, 8000);
 
       window.clearTimeout(watchdog);
       const duration = Math.round(performance.now() - startedAt);
@@ -118,6 +159,12 @@
       localStorage.setItem(storageKey, profile);
       sessionStorage.setItem(failureKey, "0");
       document.documentElement.dataset.bootComplete = "true";
+      window.BlueCurrentBootReport = {
+        status: "complete", mode, profile, durationMs: duration,
+        requestedPacks: [...requestedPacks],
+        loadedScripts: selected.map(item => item.dataset.src),
+        deferredScripts: deferred.length - selected.length
+      };
       window.dispatchEvent(new CustomEvent("bluecurrent:boot-complete", {
         detail: { mode, profile, durationMs: duration, loadedDeferredScripts: selected.length, deferredScripts: deferred.length, requestedPacks: [...requestedPacks] }
       }));

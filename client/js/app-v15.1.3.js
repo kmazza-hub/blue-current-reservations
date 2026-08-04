@@ -1048,35 +1048,8 @@ const ESSENTIAL_STARTUP_CENTERS = new Set([
   "roleExperienceCenter",
   "commandActionInboxCenter",
   "shiftProfitPulseCenter",
-  "runtimeRecoveryCenter",
   "featurePackLoaderCenter",
-  "startupPerformanceCenter",
-  "bootRecoveryCenter",
-  "backgroundActivityGovernorCenter",
-  "startupProfileCenter",
-  "assetHealthCenter",
-  "idlePackWarmupCenter",
-  "eventStormGuardCenter",
-  "renderBudgetCenter",
-  "adaptivePackCenter",
-  "memoryPressureCenter",
-  "centerSuspensionCenter",
-  "networkRequestCenter",
-  "stateChurnCenter",
-  "runtimeCircuitBreakerCenter",
-  "subscriptionLifecycleCenter",
-  "storageFootprintCenter",
-  "runtimeReadinessCenter",
-  "performanceBaselineCenter",
-  "performanceRegressionCenter",
-  "productionRuntimeCenter",
-  "releaseCandidateCenter",
-  "rollbackCheckpointCenter",
-  "productionSmokeTestCenter",
-  "deploymentRehearsalCenter",
-  "environmentGateCenter",
-  "acceptanceSignoffCenter",
-  "v37CertificationCenter"
+  "bootRecoveryCenter"
 ]);
 function shouldInitializeCenter(id) {
   return Boolean(document.getElementById(id)) && (fullPlatformStartup || ESSENTIAL_STARTUP_CENTERS.has(id) || activatedCenters.has(id));
@@ -1084,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "38.5.0-live-operations-intelligence", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "38.5.1-startup-hotfix", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
