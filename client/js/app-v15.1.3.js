@@ -1712,6 +1712,23 @@ const dailyValueReportCenterModule = startupRegistry.register(
   ["eventBus", "appState", "outcomeCaptureCenter", "actionOwnershipCenter", "shiftCheckpointCenter"]
 );
 
+
+const serviceExceptionQueueCenterModule = startupRegistry.register(
+  "serviceExceptionQueueCenter",
+  shouldInitializeCenter("serviceExceptionQueueCenter") ? window.createBlueCurrentServiceExceptionQueueCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "shiftIntelligenceCenter"]
+);
+const escalationControlCenterModule = startupRegistry.register(
+  "escalationControlCenter",
+  shouldInitializeCenter("escalationControlCenter") ? window.createBlueCurrentEscalationControlCenterModule?.(eventBus) : null,
+  ["eventBus", "serviceExceptionQueueCenter"]
+);
+const recoveryVerificationCenterModule = startupRegistry.register(
+  "recoveryVerificationCenter",
+  shouldInitializeCenter("recoveryVerificationCenter") ? window.createBlueCurrentRecoveryVerificationCenterModule?.(eventBus) : null,
+  ["eventBus", "serviceExceptionQueueCenter", "escalationControlCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
@@ -2077,6 +2094,9 @@ window.blueCurrent = {
     openingReadiness: openingReadinessCenterModule,
     shiftCheckpoint: shiftCheckpointCenterModule,
     dailyValueReport: dailyValueReportCenterModule,
+    serviceExceptionQueue: serviceExceptionQueueCenterModule,
+    escalationControl: escalationControlCenterModule,
+    recoveryVerification: recoveryVerificationCenterModule,
     operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,

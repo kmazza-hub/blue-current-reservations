@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.15.0-manager-rhythm">
+  <meta name="blue-current-build" content="39.18.0-exception-response">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -4006,6 +4006,21 @@
   <header><div><small>V39.15 · Daily Value Report</small><strong id="dvrTitle">Show leadership what Blue Current protected, improved, and measured today.</strong><span id="dvrHeadline">Preparing the daily value report…</span></div><div class="v3915-actions"><button type="button" id="dvrRefresh">Refresh</button><button type="button" id="dvrCopy">Copy report</button><button type="button" id="dvrExport">Export JSON</button></div></header>
   <div class="v3915-kpis"><article><small>Measured value</small><strong id="dvrMeasured">$0</strong></article><article><small>Modeled value</small><strong id="dvrModeled">$0</strong></article><article><small>Variance</small><strong id="dvrVariance">$0</strong></article><article><small>Completed actions</small><strong id="dvrCompleted">0</strong></article></div><pre id="dvrSummary" class="v3915-summary"></pre>
 </section>
+
+<section class="v3918-center" id="serviceExceptionQueueCenter" aria-labelledby="seqTitle">
+  <header><div><small>V39.16 · Service Exception Queue</small><strong id="seqTitle">Put every material operating exception into one accountable queue.</strong><span id="seqHeadline">Reviewing live operating exceptions…</span></div><button type="button" id="seqRefresh">Refresh queue</button></header>
+  <div class="v3918-kpis"><article><small>Open</small><strong id="seqOpen">0</strong></article><article><small>Critical</small><strong id="seqCritical">0</strong></article><article><small>Resolved</small><strong id="seqResolved">0</strong></article><article><small>Status</small><strong id="seqStatus">clear</strong></article></div><div id="seqRows" class="v3918-list"></div>
+</section>
+<section class="v3918-center" id="escalationControlCenter" aria-labelledby="escTitle">
+  <header><div><small>V39.17 · Escalation Control</small><strong id="escTitle">Escalate the right issue to the right leader with clear ownership.</strong><span>Create deliberate escalation without losing the operating context.</span></div><button type="button" id="escRefresh">Refresh</button></header>
+  <div class="v3918-kpis"><article><small>Active</small><strong id="escActive">0</strong></article><article><small>Urgent</small><strong id="escUrgent">0</strong></article><article><small>Closed</small><strong id="escClosed">0</strong></article><article><small>Status</small><strong id="escStatus">clear</strong></article></div>
+  <div class="v3918-form"><input id="escException" placeholder="Exception ID"><input id="escOwner" value="General manager"><select id="escLevel"><option value="standard">Standard</option><option value="urgent">Urgent</option></select><input id="escNote" placeholder="Escalation note"><button type="button" id="escCreate">Create escalation</button></div><div id="escRows" class="v3918-list"></div>
+</section>
+<section class="v3918-center" id="recoveryVerificationCenter" aria-labelledby="rvTitle">
+  <header><div><small>V39.18 · Recovery Verification</small><strong id="rvTitle">Prove the exception was actually recovered before it disappears.</strong><span>Verify the operating result and preserve the evidence.</span></div><button type="button" id="rvRefresh">Refresh</button></header>
+  <div class="v3918-kpis"><article><small>Verification score</small><strong id="rvScore">0%</strong></article><article><small>Verified</small><strong id="rvVerified">0</strong></article><article><small>Pending</small><strong id="rvPending">0</strong></article><article><small>Failed</small><strong id="rvFailed">0</strong></article></div>
+  <div class="v3918-form"><select id="rvException"><option value="">Select resolved exception</option></select><input id="rvOwner" value="Manager"><select id="rvResult"><option value="verified">Verified</option><option value="failed">Recovery failed</option></select><input id="rvNote" placeholder="Verification note"><button type="button" id="rvVerify">Record verification</button></div><div id="rvRows" class="v3918-list"></div>
+</section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
 <section class="v385-center v385-copilot" id="operationsCopilotCenter" aria-labelledby="ocTitle"><header><div><small>V38.5 · AI Operations Copilot</small><strong id="ocTitle">Ask what changed, what to do, and why it matters.</strong><span>Recommendations remain human-approved.</span></div></header><div class="v385-questions"><button type="button" data-question="What should I do now?">What should I do now?</button><button type="button" data-question="Why this recommendation?">Why?</button><button type="button" data-question="What is at risk?">What is at risk?</button><button type="button" data-question="Summarize the shift">Summarize shift</button></div><div class="v385-prompt"><input id="operationsCopilotPrompt" type="text" placeholder="Ask Blue Current about this shift" aria-label="Ask the operations copilot"><button type="button" id="operationsCopilotAsk">Ask</button></div><article class="v385-answer"><strong id="ocAnswer">Preparing guidance…</strong><ul id="ocEvidence"></ul><div id="ocActions" class="v385-actions"></div></article></section>
@@ -7894,6 +7909,12 @@
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/shiftCheckpointCenter.js?v=39.15.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/dailyValueReportEngine.js?v=39.15.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/dailyValueReportCenter.js?v=39.15.0"></script>
-  <script src="js/startup-loader.js?v=39.15.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/serviceExceptionQueueEngine.js?v=39.18.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/serviceExceptionQueueCenter.js?v=39.18.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/escalationControlEngine.js?v=39.18.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/escalationControlCenter.js?v=39.18.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/recoveryVerificationEngine.js?v=39.18.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/recoveryVerificationCenter.js?v=39.18.0"></script>
+  <script src="js/startup-loader.js?v=39.18.0"></script>
 </body>
 </html>
