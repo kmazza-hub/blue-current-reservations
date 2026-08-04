@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const fullStartup = params.get("full") === "1";
   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
-  const appSource = `js/app-v15.1.3.js?v=38.5.1`;
+  const appSource = `js/app-v15.1.3.js?v=38.5.2`;
   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
   const startedAt = performance.now();
   const storageKey = "bluecurrent:last-good-startup";
@@ -148,6 +148,20 @@
         if ((index + 1) % 2 === 0) await new Promise(resolve => window.setTimeout(resolve, 0));
       }
       await loadScriptWithTimeout(appSource, 8000);
+
+      // V38.5.2 — anonymous-session handoff.
+      // Focused and feature-pack startup must present the sign-in overlay instead of
+      // leaving the user on the underlying Authentication & Organizations section.
+      window.setTimeout(() => {
+        const auth = window.BlueCurrentAuthSession?.snapshot?.();
+        if (auth?.authenticated) return;
+        const overlay = document.getElementById("authOverlay");
+        if (!overlay) return;
+        overlay.classList.add("open");
+        overlay.removeAttribute("aria-hidden");
+        document.body.classList.add("auth-locked");
+        document.getElementById("authEmail")?.focus?.();
+      }, 100);
 
       window.clearTimeout(watchdog);
       const duration = Math.round(performance.now() - startedAt);
