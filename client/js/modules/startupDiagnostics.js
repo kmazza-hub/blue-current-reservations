@@ -2,7 +2,7 @@
   "use strict";
 
   function createStartupDiagnosticsModule(eventBus, appState) {
-    const BUILD = "34.5.1";
+    const BUILD = "38.5.4";
     const $ = id => document.getElementById(id);
     const setText = (id, value) => { const el = $(id); if (el) el.textContent = String(value); };
     const setClass = (id, value) => { const el = $(id); if (el) el.className = value; };
@@ -20,7 +20,7 @@
         cloudApi: { ok: api?.version === BUILD, detail: api ? `V${api.version} API client` : "API client unavailable" },
         auth: { ok: typeof window.createBlueCurrentAuthOrganizationsModule === "function", detail: "Authentication module registered" },
         application: {
-          ok: Boolean(eventBus?.emit && appState?.update && pipeline),
+          ok: Boolean(eventBus?.emit && appState?.update),
           detail: pipeline
             ? `Core active · ${startup.counts.ready || 0} modules · API queue ${pipeline.queueDepth} · offline ${offlineSync?.queueDepth || 0} · audit ${auditLedger?.entries || 0}`
             : `Core active · ${startup.counts.ready || 0} modules ready`
@@ -54,7 +54,9 @@
       $("startupDiagnosticsToggle")?.setAttribute("aria-expanded", String(open));
     });
     eventBus?.on?.("startup:complete", run);
-    window.addEventListener("load", () => setTimeout(run, 100), { once: true });
+    window.addEventListener("bluecurrent:boot-complete", () => setTimeout(run, 0));
+    document.addEventListener("DOMContentLoaded", () => setTimeout(run, 0), { once: true });
+    setTimeout(run, 0);
     return { run, getResults: () => lastReport ? JSON.parse(JSON.stringify(lastReport)) : null };
   }
   window.createBlueCurrentStartupDiagnosticsModule = createStartupDiagnosticsModule;

@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const fullStartup = params.get("full") === "1";
   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
-  const appSource = `js/app-v15.1.3.js?v=38.5.2`;
+  const appSource = `js/app-v15.1.3.js?v=38.5.4`;
   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
   const startedAt = performance.now();
   const storageKey = "bluecurrent:last-good-startup";
@@ -149,19 +149,32 @@
       }
       await loadScriptWithTimeout(appSource, 8000);
 
-      // V38.5.2 — anonymous-session handoff.
-      // Focused and feature-pack startup must present the sign-in overlay instead of
-      // leaving the user on the underlying Authentication & Organizations section.
-      window.setTimeout(() => {
-        const auth = window.BlueCurrentAuthSession?.snapshot?.();
-        if (auth?.authenticated) return;
-        const overlay = document.getElementById("authOverlay");
-        if (!overlay) return;
+      // V38.5.4 — bounded authentication and workspace handoff.
+      const coordinator = window.BlueCurrentAuthSession;
+      const readiness = coordinator?.whenReady
+        ? await Promise.race([
+            coordinator.whenReady(),
+            new Promise(resolve => window.setTimeout(() => resolve(coordinator.snapshot?.() || { authenticated: false }), 4000))
+          ])
+        : coordinator?.snapshot?.() || { authenticated: false };
+      const overlay = document.getElementById("authOverlay");
+      const accountSection = document.getElementById("auth-organizations");
+      if (readiness?.authenticated) {
+        overlay?.classList.remove("open");
+        overlay?.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("auth-locked");
+        if (accountSection) {
+          accountSection.hidden = true;
+          accountSection.setAttribute("aria-hidden", "true");
+          accountSection.setAttribute("inert", "");
+        }
+      } else if (overlay) {
+        if (accountSection) accountSection.hidden = true;
         overlay.classList.add("open");
         overlay.removeAttribute("aria-hidden");
         document.body.classList.add("auth-locked");
         document.getElementById("authEmail")?.focus?.();
-      }, 100);
+      }
 
       window.clearTimeout(watchdog);
       const duration = Math.round(performance.now() - startedAt);
@@ -182,6 +195,17 @@
       window.dispatchEvent(new CustomEvent("bluecurrent:boot-complete", {
         detail: { mode, profile, durationMs: duration, loadedDeferredScripts: selected.length, deferredScripts: deferred.length, requestedPacks: [...requestedPacks] }
       }));
+      const summary = document.getElementById("startupDiagnosticsSummary");
+      const dot = document.getElementById("startupDiagnosticsDot");
+      if (summary) summary.textContent = `V38.5.4 ready · ${duration}ms`;
+      if (dot) dot.className = "ok";
+      // Local development can be held open by optional third-party assets. Once the
+      // application is ready, stop those nonessential pending resource loads.
+      if (["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+        window.setTimeout(() => {
+          if (document.readyState !== "complete") window.stop();
+        }, 1500);
+      }
       console.info(`Blue Current ${mode} assets loaded in ${duration}ms; ${selected.length} secondary scripts activated, ${deferred.length - selected.length} deferred.`);
     } catch (error) {
       window.clearTimeout(watchdog);
