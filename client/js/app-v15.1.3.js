@@ -2188,9 +2188,33 @@ eventBus.on("reservation:confirmed", ({
 // State subscriptions
 // --------------------------------------------------
 
+// V39.0 — coalesce high-frequency state synchronization into one render per frame.
+// This keeps the UI current without flooding the console or repeatedly rendering
+// intermediate states produced by one logical operating update.
+let pendingSharedState = null;
+let pendingSharedChanges = {};
+let sharedStateFrame = 0;
+let lastStateDebugAt = 0;
+const stateDebugEnabled = new URLSearchParams(window.location.search).get("debugState") === "1";
+
 eventBus.on("state:updated", ({ state, changes }) => {
-  renderSharedState(state, changes);
-  console.log("Blue Current state synchronized:", changes);
+  pendingSharedState = state;
+  pendingSharedChanges = { ...pendingSharedChanges, ...(changes || {}) };
+  if (sharedStateFrame) return;
+
+  sharedStateFrame = window.requestAnimationFrame(() => {
+    sharedStateFrame = 0;
+    const nextState = pendingSharedState;
+    const nextChanges = pendingSharedChanges;
+    pendingSharedState = null;
+    pendingSharedChanges = {};
+    if (nextState) renderSharedState(nextState, nextChanges);
+
+    if (stateDebugEnabled && performance.now() - lastStateDebugAt >= 2000) {
+      lastStateDebugAt = performance.now();
+      console.debug("Blue Current state synchronized:", Object.keys(nextChanges));
+    }
+  });
 });
 
 eventBus.on("state:reset", ({ state }) => {
