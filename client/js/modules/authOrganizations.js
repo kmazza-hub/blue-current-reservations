@@ -36,25 +36,8 @@
       el.classList.toggle("error", error);
     }
 
-    function revealAuthenticatedWorkspace(session) {
-      const overlay = $("authOverlay");
-      const accountSection = $("auth-organizations");
-      overlay?.classList.remove("open");
-      overlay?.setAttribute("aria-hidden", "true");
-      document.body.classList.remove("auth-locked");
-      if (accountSection) {
-        accountSection.hidden = true;
-        accountSection.setAttribute("aria-hidden", "true");
-        accountSection.setAttribute("inert", "");
-      }
-      document.documentElement.dataset.authenticated = "true";
-      window.dispatchEvent(new CustomEvent("bluecurrent:authenticated-workspace-ready", { detail: { session } }));
-    }
-
     function renderSession(session) {
-      if (!session?.user) return;
       current = session;
-      sessionCoordinator?.updateSession?.(session);
       if ($("authUserName")) $("authUserName").textContent = session.user.name;
       if ($("authUserRole")) $("authUserRole").textContent = String(session.role).replaceAll("_", " ");
       if ($("authUserEmail")) $("authUserEmail").textContent = session.user.email;
@@ -72,7 +55,6 @@
         activeRole: session.role,
         authorizedLocationIds: session.locationIds
       });
-      revealAuthenticatedWorkspace(session);
     }
 
     async function restore() {
@@ -153,7 +135,11 @@
       try {
         const switched = await api.switchOrganization(event.target.value);
         const refreshed = await api.me();
-        renderSession(refreshed);
+        if (sessionCoordinator?.updateSession) {
+          sessionCoordinator.updateSession(refreshed);
+        } else {
+          renderSession(refreshed);
+        }
         eventBus.emit("auth:organization-switched", switched);
         cloudFoundationModule?.reconnect?.();
       } catch (error) {
@@ -177,18 +163,6 @@
         eventBus.emit("auth:invitation-created", invitation);
       } catch (error) {
         result.textContent = error.message;
-      }
-    });
-
-    window.addEventListener("bluecurrent:auth-session-state", event => {
-      const snapshot = event.detail?.snapshot;
-      if (event.detail?.status === "authenticated" && snapshot?.session) {
-        renderSession(snapshot.session);
-      }
-      if (event.detail?.status === "anonymous") {
-        document.documentElement.dataset.authenticated = "false";
-        $("auth-organizations")?.setAttribute("hidden", "");
-        openAuth();
       }
     });
 
