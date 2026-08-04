@@ -1745,6 +1745,23 @@ const exceptionTrendReviewCenterModule = startupRegistry.register(
   ["eventBus", "incidentRootCauseCenter", "correctiveActionPlanCenter"]
 );
 
+
+const standardWorkLinkageCenterModule = startupRegistry.register(
+  "standardWorkLinkageCenter",
+  shouldInitializeCenter("standardWorkLinkageCenter") ? window.createBlueCurrentStandardWorkLinkageCenterModule?.(eventBus) : null,
+  ["eventBus", "incidentRootCauseCenter", "correctiveActionPlanCenter"]
+);
+const trainingAssignmentCenterModule = startupRegistry.register(
+  "trainingAssignmentCenter",
+  shouldInitializeCenter("trainingAssignmentCenter") ? window.createBlueCurrentTrainingAssignmentCenterModule?.(eventBus) : null,
+  ["eventBus", "standardWorkLinkageCenter"]
+);
+const preventionVerificationCenterModule = startupRegistry.register(
+  "preventionVerificationCenter",
+  shouldInitializeCenter("preventionVerificationCenter") ? window.createBlueCurrentPreventionVerificationCenterModule?.(eventBus) : null,
+  ["eventBus", "correctiveActionPlanCenter", "trainingAssignmentCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

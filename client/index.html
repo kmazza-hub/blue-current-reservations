@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.21.0-prevention-control">
+  <meta name="blue-current-build" content="39.24.0-prevention-assurance">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -4036,6 +4036,22 @@
   <header><div><small>V39.21 · Exception Trend Review</small><strong id="etrTitle">See which operating failures repeat and whether prevention work is closing them.</strong><span id="etrStatus">insufficient evidence</span></div><div class="v3921-actions"><button type="button" id="etrRefresh">Refresh</button><button type="button" id="etrCopy">Copy review</button><button type="button" id="etrExport">Export JSON</button></div></header>
   <div class="v3921-kpis"><article><small>Exceptions</small><strong id="etrExceptions">0</strong></article><article><small>Open</small><strong id="etrOpen">0</strong></article><article><small>Root causes</small><strong id="etrRoots">0</strong></article><article><small>Action closure</small><strong id="etrClosure">0%</strong></article></div><pre id="etrSummary" class="v3921-summary"></pre><div id="etrRows" class="v3921-list"></div>
 </section>
+
+<section class="v3924-center" id="standardWorkLinkageCenter" aria-labelledby="swlTitle">
+  <header><div><small>V39.22 · Standard Work Linkage</small><strong id="swlTitle">Convert root-cause learning into repeatable standard work.</strong><span id="swlHeadline">Link each confirmed cause to the procedure that prevents recurrence.</span></div><button type="button" id="swlRefresh">Refresh</button></header>
+  <div class="v3924-kpis"><article><small>Links</small><strong id="swlTotal">0</strong></article><article><small>Covered causes</small><strong id="swlCovered">0</strong></article><article><small>Coverage gaps</small><strong id="swlGaps">0</strong></article><article><small>Status</small><strong id="swlStatus">awaiting evidence</strong></article></div>
+  <div class="v3924-form"><select id="swlRoot"><option value="">Select root cause</option></select><select id="swlAction"><option value="">Optional corrective action</option></select><input id="swlName" placeholder="Standard work title"><input id="swlReference" placeholder="SOP link or reference"><input id="swlOwner" value="Manager"><button type="button" id="swlCreate">Link standard work</button></div><div id="swlRows" class="v3924-list"></div>
+</section>
+<section class="v3924-center" id="trainingAssignmentCenter" aria-labelledby="taTitle">
+  <header><div><small>V39.23 · Training Assignment</small><strong id="taTitle">Make prevention real through named coaching and completion.</strong><span id="taHeadline">Assign standard work to the people who need it.</span></div><button type="button" id="taRefresh">Refresh</button></header>
+  <div class="v3924-kpis"><article><small>Open</small><strong id="taOpen">0</strong></article><article><small>Completed</small><strong id="taDone">0</strong></article><article><small>Overdue</small><strong id="taOverdue">0</strong></article><article><small>Completion</small><strong id="taCompletion">0%</strong></article></div>
+  <div class="v3924-form"><select id="taStandard"><option value="">Select standard work</option></select><input id="taMember" placeholder="Team member"><input id="taCoach" value="Manager"><input id="taDue" type="datetime-local"><button type="button" id="taCreate">Assign training</button></div><div id="taRows" class="v3924-list"></div>
+</section>
+<section class="v3924-center v3924-verify" id="preventionVerificationCenter" aria-labelledby="pvTitle">
+  <header><div><small>V39.24 · Prevention Verification</small><strong id="pvTitle">Prove the corrective action prevented recurrence.</strong><span id="pvHeadline">Close the loop with operating evidence.</span></div><button type="button" id="pvRefresh">Refresh</button></header>
+  <div class="v3924-kpis"><article><small>Verification score</small><strong id="pvScore">0%</strong></article><article><small>Effective</small><strong id="pvEffective">0</strong></article><article><small>Pending</small><strong id="pvPending">0</strong></article><article><small>Failed</small><strong id="pvFailed">0</strong></article></div><div class="v3924-status" id="pvStatus">awaiting evidence</div>
+  <div class="v3924-form"><select id="pvAction"><option value="">Select completed corrective action</option></select><select id="pvResult"><option value="effective">Effective</option><option value="failed">Follow-up required</option></select><input id="pvOwner" value="Manager"><input id="pvNote" placeholder="Verification evidence"><button type="button" id="pvRecord">Record verification</button></div><div id="pvRows" class="v3924-list"></div>
+</section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
 <section class="v385-center v385-copilot" id="operationsCopilotCenter" aria-labelledby="ocTitle"><header><div><small>V38.5 · AI Operations Copilot</small><strong id="ocTitle">Ask what changed, what to do, and why it matters.</strong><span>Recommendations remain human-approved.</span></div></header><div class="v385-questions"><button type="button" data-question="What should I do now?">What should I do now?</button><button type="button" data-question="Why this recommendation?">Why?</button><button type="button" data-question="What is at risk?">What is at risk?</button><button type="button" data-question="Summarize the shift">Summarize shift</button></div><div class="v385-prompt"><input id="operationsCopilotPrompt" type="text" placeholder="Ask Blue Current about this shift" aria-label="Ask the operations copilot"><button type="button" id="operationsCopilotAsk">Ask</button></div><article class="v385-answer"><strong id="ocAnswer">Preparing guidance…</strong><ul id="ocEvidence"></ul><div id="ocActions" class="v385-actions"></div></article></section>
@@ -7936,6 +7952,12 @@
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/correctiveActionPlanCenter.js?v=39.21.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/exceptionTrendReviewEngine.js?v=39.21.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/exceptionTrendReviewCenter.js?v=39.21.0"></script>
-  <script src="js/startup-loader.js?v=39.21.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/standardWorkLinkageEngine.js?v=39.24.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/standardWorkLinkageCenter.js?v=39.24.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/trainingAssignmentEngine.js?v=39.24.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/trainingAssignmentCenter.js?v=39.24.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/preventionVerificationEngine.js?v=39.24.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/preventionVerificationCenter.js?v=39.24.0"></script>
+  <script src="js/startup-loader.js?v=39.24.0"></script>
 </body>
 </html>
