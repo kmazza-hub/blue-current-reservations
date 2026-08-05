@@ -2151,6 +2151,22 @@ const executiveWorkspaceCenterModule = startupRegistry.register(
   ["eventBus", "adaptiveStrategyCenter", "decisionTradeoffCenter", "executiveReasoningBriefCenter", "planVerificationCenter", "reasoningImprovementGateCenter"]
 );
 
+const predictiveOptimizationCenterModule = startupRegistry.register(
+  "predictiveOptimizationCenter",
+  shouldInitializeCenter("predictiveOptimizationCenter") ? window.createBlueCurrentPredictiveOptimizationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "adaptiveStrategyCenter", "decisionTradeoffCenter", "decisionHorizonForecastCenter"]
+);
+const agentNegotiationCenterModule = startupRegistry.register(
+  "agentNegotiationCenter",
+  shouldInitializeCenter("agentNegotiationCenter") ? window.createBlueCurrentAgentNegotiationCenterModule?.(eventBus) : null,
+  ["eventBus", "predictiveOptimizationCenter", "operationalReasoningCenter"]
+);
+const v41ProductionReadinessCenterModule = startupRegistry.register(
+  "v41ProductionReadinessCenter",
+  shouldInitializeCenter("v41ProductionReadinessCenter") ? window.createBlueCurrentV41ProductionReadinessCenterModule?.(eventBus) : null,
+  ["eventBus", "v41CertificationCenter", "reasoningBenchmarkCenter", "reasoningDriftCenter", "predictiveOptimizationCenter", "agentNegotiationCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
