@@ -1923,6 +1923,22 @@ const aipLearningLoopCenterModule = startupRegistry.register(
   ["eventBus", "aipPilotObservationCenter", "aipHumanFeedbackCenter", "aipEvaluationCenter"]
 );
 
+const aipImprovementBacklogCenterModule = startupRegistry.register(
+  "aipImprovementBacklogCenter",
+  shouldInitializeCenter("aipImprovementBacklogCenter") ? window.createBlueCurrentAIPImprovementBacklogCenterModule?.(eventBus) : null,
+  ["eventBus", "aipLearningLoopCenter", "aipHumanFeedbackCenter", "aipEvaluationCenter"]
+);
+const aipPromptExperimentCenterModule = startupRegistry.register(
+  "aipPromptExperimentCenter",
+  shouldInitializeCenter("aipPromptExperimentCenter") ? window.createBlueCurrentAIPPromptExperimentCenterModule?.(eventBus) : null,
+  ["eventBus", "aipPromptLibraryCenter", "aipEvaluationCenter"]
+);
+const aipLearningReleaseGateCenterModule = startupRegistry.register(
+  "aipLearningReleaseGateCenter",
+  shouldInitializeCenter("aipLearningReleaseGateCenter") ? window.createBlueCurrentAIPLearningReleaseGateCenterModule?.(eventBus) : null,
+  ["eventBus", "aipImprovementBacklogCenter", "aipPromptExperimentCenter", "aipSafetyTestCenter", "aipLearningLoopCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
