@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="40.14.0-aip-deployment-observability">
+  <meta name="blue-current-build" content="40.17.0-aip-trust-routing">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -2097,6 +2097,21 @@
 <header><div><small>V40.14 · Agent Observability</small><strong id="aipObservabilityTitle">See which agents are running, what tools they use, and where approval is required.</strong><span>Runtime evidence stays passive and never triggers additional agent execution.</span></div><button type="button" id="aipObservabilityRefresh">Refresh telemetry</button></header>
 <div class="v4014-kpis"><article><small>Agent runs</small><strong id="aipObservabilityRuns">0</strong></article><article><small>Tool calls</small><strong id="aipObservabilityTools">0</strong></article><article><small>Approval holds</small><strong id="aipObservabilityHolds">0</strong></article><article><small>Health</small><strong id="aipObservabilityHealth">—</strong></article></div>
 <div id="aipObservabilityRows" class="v4014-list"></div>
+</section>
+
+<section class="v4017-center" id="aipKnowledgeSourceCenter" aria-labelledby="aipKnowledgeSourceTitle">
+<header><div><small>V40.15 · Knowledge Source Registry</small><strong id="aipKnowledgeSourceTitle">Control what operational knowledge agents are allowed to trust.</strong><span id="aipKnowledgeSourceStatus">Register sources with ownership, trust level, and lifecycle status.</span></div><button type="button" id="aipKnowledgeSourceSave">Save source</button></header>
+<div class="v4017-kpis"><article><small>Sources</small><strong id="aipKnowledgeSourceCount">0</strong></article><article><small>Active</small><strong id="aipKnowledgeSourceActive">0</strong></article><article><small>Trusted</small><strong id="aipKnowledgeSourceTrusted">0</strong></article></div>
+<div class="v4017-grid"><div class="v4017-form"><input id="aipKnowledgeSourceName" placeholder="Knowledge source name"><input id="aipKnowledgeSourceOwner" value="Operations" placeholder="Owner"><select id="aipKnowledgeSourceType"><option value="knowledge">Knowledge</option><option value="dataset">Dataset</option><option value="operational">Operational signal</option><option value="policy">Policy</option></select><select id="aipKnowledgeSourceTrust"><option value="reviewed">Reviewed</option><option value="controlled">Controlled</option><option value="trusted">Trusted</option><option value="untrusted">Untrusted</option></select><textarea id="aipKnowledgeSourceDescription" placeholder="What this source contains and how agents may use it"></textarea></div><div id="aipKnowledgeSourceRows" class="v4017-list"></div></div>
+</section>
+<section class="v4017-center" id="aipModelRoutingCenter" aria-labelledby="aipModelRoutingTitle">
+<header><div><small>V40.16 · Model Routing Control</small><strong id="aipModelRoutingTitle">Route each request to the right reasoning profile and approval boundary.</strong><span>Routing is policy-driven and does not expose provider credentials in the browser.</span></div><button type="button" id="aipModelRoutingRun">Preview routing</button></header>
+<div class="v4017-kpis"><article><small>Routes</small><strong id="aipModelRoutingCount">0</strong></article><article><small>Deep profile</small><strong id="aipModelRoutingDeep">0</strong></article><article><small>Approval holds</small><strong id="aipModelRoutingApproval">0</strong></article></div>
+<div class="v4017-grid"><div class="v4017-form"><textarea id="aipModelRoutingTask" placeholder="Example: change the seating plan for the next demand wave"></textarea><select id="aipModelRoutingRisk"><option value="low">Low risk</option><option value="medium">Medium risk</option><option value="high">High risk</option></select><select id="aipModelRoutingComplexity"><option value="simple">Simple</option><option value="standard" selected>Standard</option><option value="deep">Deep</option></select><select id="aipModelRoutingLatency"><option value="fast">Fast</option><option value="balanced" selected>Balanced</option></select><div id="aipModelRoutingResult" class="v4017-result"></div></div><div id="aipModelRoutingRows" class="v4017-list"></div></div>
+</section>
+<section class="v4017-center" id="aipSafetyTestCenter" aria-labelledby="aipSafetyTestTitle">
+<header><div><small>V40.17 · Agent Safety Test Suite</small><strong id="aipSafetyTestTitle">Prove approval, grounding, and routing controls before agent deployment.</strong><span>Tests are deterministic governance checks, not claims about model correctness.</span></div><button type="button" id="aipSafetyTestRun">Run safety suite</button></header>
+<div class="v4017-kpis"><article><small>Safety score</small><strong id="aipSafetyTestScore">—</strong></article><article><small>Status</small><strong id="aipSafetyTestStatus">Not run</strong></article><article><small>Passed</small><strong id="aipSafetyTestPassed">0/0</strong></article></div><div id="aipSafetyTestRows" class="v4017-tests"></div>
 </section>
 
 </main>
@@ -8061,6 +8076,12 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipDeploymentControlCenter.js?v=40.14.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipObservabilityEngine.js?v=40.14.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipObservabilityCenter.js?v=40.14.0"></script>
-  <script src="js/startup-loader.js?v=40.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipKnowledgeSourceEngine.js?v=40.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipKnowledgeSourceCenter.js?v=40.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipModelRoutingEngine.js?v=40.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipModelRoutingCenter.js?v=40.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipSafetyTestEngine.js?v=40.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipSafetyTestCenter.js?v=40.17.0"></script>
+  <script src="js/startup-loader.js?v=40.17.0"></script>
 </body>
 </html>

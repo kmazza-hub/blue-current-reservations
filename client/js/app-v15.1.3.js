@@ -1841,6 +1841,22 @@ const aipObservabilityCenterModule = startupRegistry.register(
   ["eventBus", "aipAgentRuntimeCenter", "aipDeploymentControlCenter"]
 );
 
+const aipKnowledgeSourceCenterModule = startupRegistry.register(
+  "aipKnowledgeSourceCenter",
+  shouldInitializeCenter("aipKnowledgeSourceCenter") ? window.createBlueCurrentAIPKnowledgeSourceCenterModule?.(eventBus) : null,
+  ["eventBus", "aipPromptLibraryCenter"]
+);
+const aipModelRoutingCenterModule = startupRegistry.register(
+  "aipModelRoutingCenter",
+  shouldInitializeCenter("aipModelRoutingCenter") ? window.createBlueCurrentAIPModelRoutingCenterModule?.(eventBus) : null,
+  ["eventBus", "aipGovernanceCenter"]
+);
+const aipSafetyTestCenterModule = startupRegistry.register(
+  "aipSafetyTestCenter",
+  shouldInitializeCenter("aipSafetyTestCenter") ? window.createBlueCurrentAIPSafetyTestCenterModule?.(eventBus) : null,
+  ["eventBus", "aipKnowledgeSourceCenter", "aipModelRoutingCenter", "aipGovernanceCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

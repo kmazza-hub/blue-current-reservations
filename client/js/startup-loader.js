@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const fullStartup = params.get("full") === "1";
   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
-  const appSource = `js/app-v15.1.3.js?v=40.11.0`;
+  const appSource = `js/app-v15.1.3.js?v=40.17.0`;
   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
   const startedAt = performance.now();
   const storageKey = "bluecurrent:last-good-startup";
@@ -14,7 +14,7 @@
     operations: /(reservationYield|kitchenThroughput|guestRecovery|laborDeployment|serviceQuality|inventoryWaste|menuMix|dailyProfitPlan|vendorPurchase|demandPrepForecast|profitCloseout|supplierVariance|prepExecution|teamCollaboration|operationalKnowledge|shiftCloseout|shiftIntelligence|executiveDecisionFeed|operationsCopilot)/i,
     intelligence: /(digitalTwinVisualization|executiveMorningBrief|intelligenceGraph|predictiveOverlay|restaurantReplay|explainableDecision|profitScenario|smartAlertRouter|restaurantPerformance|outcomeIntelligence|marginIntelligence|costVariance|predictiveService|aiOrchestration|operationalDigitalTwin|portfolioIntelligence|performanceLearning)/i,
     enterprise: /(crossLocationPulse|enterpriseOperations|weeklyProfitReview|executiveBriefing|portfolioPerformance|pilotRelease|pilotOperations|pilotReview|deploymentReadiness|postLaunchValue|expansionBenchmark|performanceGovernance|enterpriseValuePlan|pilotOnboarding|pilotLaunch|pilotEvidence|accessReadiness|releaseCertification)/i,
-    aip: /(aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator|aipGovernance|aipMissionControl|aipApprovalQueue|aipContextGraph|aipMemoryVault|aipScenarioLab|aipAgentBuilder|aipEvaluation|aipRunbookCompiler)/i,
+    aip: /(aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator|aipGovernance|aipMissionControl|aipApprovalQueue|aipContextGraph|aipMemoryVault|aipScenarioLab|aipAgentBuilder|aipEvaluation|aipRunbookCompiler|aipPromptLibrary|aipDeploymentControl|aipObservability|aipKnowledgeSource|aipModelRouting|aipSafetyTest)/i,
     integrations: /(integrationControl|signalQuality|pilotTelemetry|dataContract|connectorSync|reconciliation|connectorConfiguration|dataIntakeSandbox|pilotSignalBridge|canonicalMapping|ingestionQueue|sourcePromotion|trustedDataset|dataLineage|pilotSyncRehearsal)/i
   };
 
@@ -208,7 +208,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V40.14.0 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V40.17.0 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.
