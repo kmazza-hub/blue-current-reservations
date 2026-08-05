@@ -13094,3 +13094,34 @@ html[data-boot-complete="true"] .startup-loading, html[data-boot-complete="true"
 
 /* V40.39–V40.41 · AIP enforcement, queue, and autonomy boundaries */
 .v4041-center{margin:24px 0;padding:24px;border:1px solid rgba(43,88,105,.22);border-radius:22px;background:#fff;box-shadow:0 18px 48px rgba(15,44,58,.08);color:#173745}.v4041-center>header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:18px}.v4041-center header div:first-child{display:grid;gap:5px}.v4041-center header small{font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:#34728b}.v4041-center header strong{font-size:1.18rem}.v4041-center header span,.v4041-list span,.v4041-list small{color:#5c727e}.v4041-form{display:grid;grid-template-columns:minmax(240px,2fr) minmax(150px,.8fr) auto;gap:10px;margin-bottom:16px}.v4041-queue-form{grid-template-columns:.8fr 1.5fr .7fr .7fr auto}.v4041-form input,.v4041-form select{width:100%;padding:11px 12px;border:1px solid #bdcbd1;border-radius:11px;background:#fff;color:#173745}.v4041-center button{border:0;border-radius:11px;padding:10px 13px;background:#17475a;color:#fff;font-weight:750;cursor:pointer}.v4041-center button:hover,.v4041-center button:focus-visible{background:#c99432;color:#102b38;outline:2px solid #efd293;outline-offset:2px}.v4041-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.v4041-kpis article{padding:14px;border-radius:15px;background:#eef4f6;display:grid;gap:5px}.v4041-kpis strong{font-size:1.08rem}.v4041-list,.v4041-checks{display:grid;gap:10px}.v4041-list article,.v4041-checks article{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px;border:1px solid #d6e1e5;border-radius:15px;background:#fbfcfd}.v4041-list article>div:first-child,.v4041-checks article>div:first-child{display:grid;gap:5px}.v4041-list article[data-status="allowed"],.v4041-list article[data-status="ready"],.v4041-list article[data-status="approved"],.v4041-list article[data-status="completed"]{border-left:5px solid #21845f}.v4041-list article[data-status="review-required"],.v4041-list article[data-status="approval-pending"]{border-left:5px solid #d28a1b}.v4041-list article[data-status="blocked"],.v4041-list article[data-status="cancelled"]{border-left:5px solid #b42318}.v4041-row-actions,.v4041-actions{display:flex;gap:8px;flex-wrap:wrap}.v4041-boundary{background:linear-gradient(145deg,#0c2a38,#174b5d);color:#f3fbfd}.v4041-boundary header span,.v4041-boundary header small{color:#bcd3dc}.v4041-boundary .v4041-kpis article,.v4041-boundary .v4041-checks article{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}.v4041-checks article.pass{border-left:5px solid #44bd86}.v4041-checks article.fail{border-left:5px solid #ef7a72}@media(max-width:950px){.v4041-center>header,.v4041-form,.v4041-queue-form,.v4041-list article,.v4041-checks article{display:grid;grid-template-columns:1fr}.v4041-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.v4041-row-actions{justify-content:flex-start}}
+
+
+/* V41.2 — Hospitality ontology and causal decision intelligence */
+.v412-center{margin:24px 0;padding:24px;border:1px solid rgba(100,116,139,.28);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,250,252,.98));box-shadow:0 18px 45px rgba(15,23,42,.08)}
+.v412-center header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:18px}
+.v412-center header>div:first-child{display:grid;gap:5px}
+.v412-center header small{font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#475569}
+.v412-center header strong{font-size:1.2rem;color:#0f172a}
+.v412-center header span{color:#334155}
+.v412-form{display:grid;grid-template-columns:1.1fr .8fr .8fr 1.5fr auto;gap:10px;margin-bottom:18px}
+.v412-decision-form{grid-template-columns:1.5fr .75fr .8fr 1fr 1.2fr auto auto}
+.v412-form input,.v412-form select,.v412-actions select{min-height:42px;border:1px solid #cbd5e1;border-radius:12px;padding:0 12px;background:#fff;color:#0f172a}
+.v412-form label{display:flex;align-items:center;gap:8px;font-weight:700;color:#334155}
+.v412-form button,.v412-actions button,.v412-list button{border:0;border-radius:12px;padding:10px 14px;background:#0f766e;color:#fff;font-weight:800;cursor:pointer}
+.v412-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.v412-kpis article{padding:14px;border:1px solid #dbeafe;border-radius:16px;background:#f8fafc}
+.v412-kpis small{display:block;color:#64748b;font-weight:700;margin-bottom:4px}
+.v412-kpis strong{font-size:1.35rem;color:#0f172a}
+.v412-list{display:grid;gap:10px}
+.v412-list>article{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#fff}
+.v412-list article>div:first-child{display:grid;gap:4px}
+.v412-list article span,.v412-list article small{color:#475569}
+.v412-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.v412-diagram{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:center;min-height:150px}
+.v412-column{display:grid;gap:8px}
+.v412-column>small{font-weight:800;color:#475569;text-transform:uppercase;letter-spacing:.06em}
+.v412-column article{padding:12px;border-radius:14px;background:#fff;border:1px solid #dbeafe;color:#1e293b}
+.v412-column article.decision{background:#ecfeff;border-color:#5eead4;display:grid;gap:4px}
+.v412-arrow{font-size:1.8rem;font-weight:900;color:#0f766e}
+@media(max-width:1000px){.v412-form,.v412-decision-form{grid-template-columns:1fr 1fr}.v412-kpis{grid-template-columns:1fr 1fr}.v412-diagram{grid-template-columns:1fr}.v412-arrow{transform:rotate(90deg);justify-self:center}}
+@media(max-width:640px){.v412-center{padding:18px}.v412-center header{display:grid}.v412-form,.v412-decision-form,.v412-kpis{grid-template-columns:1fr}}

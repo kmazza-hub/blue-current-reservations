@@ -1988,6 +1988,23 @@ const aipAutonomyBoundaryCenterModule = startupRegistry.register(
   ["eventBus", "aipPolicyEnforcementCenter", "aipExecutionQueueCenter", "aipToolGatewayCenter", "aipRunSchedulerCenter"]
 );
 
+
+const hospitalityOntologyCenterModule = startupRegistry.register(
+  "hospitalityOntologyCenter",
+  shouldInitializeCenter("hospitalityOntologyCenter") ? window.createBlueCurrentHospitalityOntologyCenterModule?.(eventBus) : null,
+  ["eventBus"]
+);
+const decisionObjectCenterModule = startupRegistry.register(
+  "decisionObjectCenter",
+  shouldInitializeCenter("decisionObjectCenter") ? window.createBlueCurrentDecisionObjectCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "hospitalityOntologyCenter"]
+);
+const causalDecisionTraceCenterModule = startupRegistry.register(
+  "causalDecisionTraceCenter",
+  shouldInitializeCenter("causalDecisionTraceCenter") ? window.createBlueCurrentCausalDecisionTraceCenterModule?.(eventBus) : null,
+  ["eventBus", "decisionObjectCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
