@@ -14,7 +14,7 @@
     operations: /(reservationYield|kitchenThroughput|guestRecovery|laborDeployment|serviceQuality|inventoryWaste|menuMix|dailyProfitPlan|vendorPurchase|demandPrepForecast|profitCloseout|supplierVariance|prepExecution|teamCollaboration|operationalKnowledge|shiftCloseout|shiftIntelligence|executiveDecisionFeed|operationsCopilot)/i,
     intelligence: /(digitalTwinVisualization|executiveMorningBrief|intelligenceGraph|predictiveOverlay|restaurantReplay|explainableDecision|profitScenario|smartAlertRouter|restaurantPerformance|outcomeIntelligence|marginIntelligence|costVariance|predictiveService|aiOrchestration|operationalDigitalTwin|portfolioIntelligence|performanceLearning)/i,
     enterprise: /(crossLocationPulse|enterpriseOperations|weeklyProfitReview|executiveBriefing|portfolioPerformance|pilotRelease|pilotOperations|pilotReview|deploymentReadiness|postLaunchValue|expansionBenchmark|performanceGovernance|enterpriseValuePlan|pilotOnboarding|pilotLaunch|pilotEvidence|accessReadiness|releaseCertification)/i,
-    aip: /(aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator|aipGovernance|aipMissionControl|aipApprovalQueue|aipContextGraph|aipMemoryVault|aipScenarioLab|aipAgentBuilder|aipEvaluation|aipRunbookCompiler|aipPromptLibrary|aipDeploymentControl|aipObservability|aipKnowledgeSource|aipModelRouting|aipSafetyTest|aipImprovementBacklog|aipPromptExperiment|aipLearningReleaseGate|aipCommandConsole|aipExecutionPlan|aipOutcomeReview|aipPolicyComposer|aipToolGateway|aipRunScheduler|aipPolicyEnforcement|aipExecutionQueue|aipAutonomyBoundary|hospitalityOntology|decisionObject|causalDecisionTrace)/i,
+    aip: /(aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator|aipGovernance|aipMissionControl|aipApprovalQueue|aipContextGraph|aipMemoryVault|aipScenarioLab|aipAgentBuilder|aipEvaluation|aipRunbookCompiler|aipPromptLibrary|aipDeploymentControl|aipObservability|aipKnowledgeSource|aipModelRouting|aipSafetyTest|aipImprovementBacklog|aipPromptExperiment|aipLearningReleaseGate|aipCommandConsole|aipExecutionPlan|aipOutcomeReview|aipPolicyComposer|aipToolGateway|aipRunScheduler|aipPolicyEnforcement|aipExecutionQueue|aipAutonomyBoundary|hospitalityOntology|decisionObject|causalDecisionTrace|operationalMemory|decisionHorizonForecast|executiveReasoningBrief)/i,
     integrations: /(integrationControl|signalQuality|pilotTelemetry|dataContract|connectorSync|reconciliation|connectorConfiguration|dataIntakeSandbox|pilotSignalBridge|canonicalMapping|ingestionQueue|sourcePromotion|trustedDataset|dataLineage|pilotSyncRehearsal)/i
   };
 
@@ -102,7 +102,7 @@
     const selected = deferred.filter(item => item.dataset.packExplicit === "true" && requestedPacks.has(item.dataset.pack));
     // V39.6 — preserve the minimal Operations slice even when older HTML metadata is cached.
     if (requestedPacks.has("aip")) {
-      const requiredAip = /(?:aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator|aipGovernance|aipMissionControl|aipApprovalQueue|aipContextGraph|aipMemoryVault|aipScenarioLab|aipImprovementBacklog|aipPromptExperiment|aipLearningReleaseGate|aipCommandConsole|aipExecutionPlan|aipOutcomeReview|aipPolicyComposer|aipToolGateway|aipRunScheduler|aipPolicyEnforcement|aipExecutionQueue|aipAutonomyBoundary|hospitalityOntology|decisionObject|causalDecisionTrace)(?:Engine|Center)\.js/i;
+      const requiredAip = /(?:aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator|aipGovernance|aipMissionControl|aipApprovalQueue|aipContextGraph|aipMemoryVault|aipScenarioLab|aipImprovementBacklog|aipPromptExperiment|aipLearningReleaseGate|aipCommandConsole|aipExecutionPlan|aipOutcomeReview|aipPolicyComposer|aipToolGateway|aipRunScheduler|aipPolicyEnforcement|aipExecutionQueue|aipAutonomyBoundary|hospitalityOntology|decisionObject|causalDecisionTrace|operationalMemory|decisionHorizonForecast|executiveReasoningBrief)(?:Engine|Center)\.js/i;
       deferred.forEach(item => { if (requiredAip.test(item.dataset.src) && !selected.includes(item)) selected.push(item); });
     }
     if (requestedPacks.has("operations")) {
@@ -208,7 +208,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V41.11.0 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V41.14.0 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.

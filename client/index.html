@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="41.11.0-digital-twin-reasoning">
+  <meta name="blue-current-build" content="41.14.0-temporal-executive-reasoning">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8219,6 +8219,18 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="planVerificationCenter" data-src="js/modules/planVerificationEngine.js?v=41.11.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="planVerificationCenter" data-src="js/modules/planVerificationCenter.js?v=41.11.0"></script>
 
-  <script src="js/startup-loader.js?v=41.11.0"></script>
+
+<section class="v4114-center" id="operationalMemoryCenter" aria-labelledby="memoryTitle"><header><div><small>V41.12 · Operational Context Memory</small><strong id="memoryTitle">Preserve the restaurant's changing operating context across decision cycles.</strong><span>Capture governed checkpoints so agents can distinguish a momentary signal from a developing trend.</span></div><div class="v4114-actions"><input id="memoryLabel" value="Operating checkpoint" placeholder="Checkpoint label"><input id="memoryOwner" value="Manager" placeholder="Owner"><button type="button" id="memoryCapture">Capture</button></div></header><div class="v4114-kpis"><article><small>Checkpoints</small><strong id="memoryCount">0</strong></article><article><small>Trend</small><strong id="memoryTrend">—</strong></article><article><small>Trend score</small><strong id="memoryScore">—</strong></article><article><small>Latest</small><strong id="memoryLatest">—</strong></article></div><div id="memoryList" class="v4114-list"></div></section>
+<section class="v4114-center" id="decisionHorizonForecastCenter" aria-labelledby="horizonTitle"><header><div><small>V41.13 · Decision Horizon Forecast</small><strong id="horizonTitle">Project how current operating conditions may evolve before the next decision point.</strong><span id="horizonMessage">Capture at least two checkpoints for stronger trend evidence.</span></div><div class="v4114-actions"><input id="horizonMinutes" type="number" min="15" max="240" value="60"><button type="button" id="horizonRun">Forecast</button></div></header><div class="v4114-kpis"><article><small>Confidence</small><strong id="horizonConfidence">—</strong></article><article><small>Status</small><strong id="horizonStatus">—</strong></article><article><small>Risks</small><strong id="horizonRisks">0</strong></article><article><small>Horizon</small><strong id="horizonWindow">—</strong></article></div><div id="horizonList" class="v4114-list v4114-grid"></div></section>
+<section class="v4114-center v4114-exec" id="executiveReasoningBriefCenter" aria-labelledby="execReasonTitle"><header><div><small>V41.14 · Executive Reasoning Brief</small><strong id="execReasonTitle">Unify evidence, forecast, plan, and verification into one governed leadership decision.</strong><span id="execReasonHeadline">Build the brief after reasoning, forecasting, and plan verification are complete.</span></div><div class="v4114-actions"><input id="execReasonOwner" value="Executive sponsor" placeholder="Executive owner"><button type="button" id="execReasonBuild">Build brief</button><button type="button" id="execReasonExport">Export</button></div></header><div class="v4114-kpis"><article><small>Status</small><strong id="execReasonStatus">—</strong></article><article><small>Confidence</small><strong id="execReasonConfidence">—</strong></article><article><small>Blockers</small><strong id="execReasonBlockers">—</strong></article><article><small>Brief ID</small><strong id="execReasonId">—</strong></article></div><p id="execReasonRecommendation" class="v4114-recommendation">No executive recommendation generated yet.</p><div id="execReasonList" class="v4114-list"></div></section>
+
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="operationalMemoryCenter" data-src="js/modules/operationalMemoryEngine.js?v=41.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="operationalMemoryCenter" data-src="js/modules/operationalMemoryCenter.js?v=41.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="decisionHorizonForecastCenter" data-src="js/modules/decisionHorizonForecastEngine.js?v=41.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="decisionHorizonForecastCenter" data-src="js/modules/decisionHorizonForecastCenter.js?v=41.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executiveReasoningBriefCenter" data-src="js/modules/executiveReasoningBriefEngine.js?v=41.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executiveReasoningBriefCenter" data-src="js/modules/executiveReasoningBriefCenter.js?v=41.14.0"></script>
+
+  <script src="js/startup-loader.js?v=41.14.0"></script>
 </body>
 </html>

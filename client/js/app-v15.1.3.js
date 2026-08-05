@@ -2053,6 +2053,23 @@ const planVerificationCenterModule = startupRegistry.register(
   ["eventBus", "multiStepPlanCenter", "operationalTwinCenter", "constraintPropagationCenter"]
 );
 
+
+const operationalMemoryCenterModule = startupRegistry.register(
+  "operationalMemoryCenter",
+  shouldInitializeCenter("operationalMemoryCenter") ? window.createBlueCurrentOperationalMemoryCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "operationalTwinCenter"]
+);
+const decisionHorizonForecastCenterModule = startupRegistry.register(
+  "decisionHorizonForecastCenter",
+  shouldInitializeCenter("decisionHorizonForecastCenter") ? window.createBlueCurrentDecisionHorizonForecastCenterModule?.(eventBus) : null,
+  ["eventBus", "operationalMemoryCenter", "constraintPropagationCenter"]
+);
+const executiveReasoningBriefCenterModule = startupRegistry.register(
+  "executiveReasoningBriefCenter",
+  shouldInitializeCenter("executiveReasoningBriefCenter") ? window.createBlueCurrentExecutiveReasoningBriefCenterModule?.(eventBus) : null,
+  ["eventBus", "operationalReasoningCenter", "multiStepPlanCenter", "planVerificationCenter", "decisionHorizonForecastCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
