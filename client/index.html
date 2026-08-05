@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="40.11.0-aip-agent-studio">
+  <meta name="blue-current-build" content="40.14.0-aip-deployment-observability">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -2080,6 +2080,23 @@
 <section class="v4011-center" id="aipRunbookCompilerCenter" aria-labelledby="aipRunbookTitle">
 <header><div><small>V40.11 · Natural-Language Runbook Compiler</small><strong id="aipRunbookTitle">Turn an operating instruction into a governed runbook.</strong><span>Triggers, ordered actions, ownership, and approvals are extracted automatically.</span></div><button type="button" id="aipRunbookCompile">Compile runbook</button></header>
 <div class="v4011-kpis"><article><small>Runbooks</small><strong id="aipRunbookCount">0</strong></article></div><div class="v4011-form"><input id="aipRunbookOwner" value="Manager" placeholder="Owner"><textarea id="aipRunbookPrompt" placeholder="When wait exceeds 20 minutes, notify the GM. Review patio capacity. Recommend opening additional seating."></textarea></div><div id="aipRunbookOutput" class="v4011-result"></div>
+</section>
+
+
+<section class="v4014-center" id="aipPromptLibraryCenter" aria-labelledby="aipPromptLibraryTitle">
+<header><div><small>V40.12 · Prompt & Policy Library</small><strong id="aipPromptLibraryTitle">Version the instructions that shape every governed agent.</strong><span id="aipPromptLibraryStatus">Create reusable prompts with ownership, scope, and approval policy.</span></div><button type="button" id="aipPromptLibrarySave">Save prompt</button></header>
+<div class="v4014-kpis"><article><small>Prompt versions</small><strong id="aipPromptLibraryCount">0</strong></article><article><small>Active prompts</small><strong id="aipPromptLibraryActive">0</strong></article></div>
+<div class="v4014-grid"><div class="v4014-form"><input id="aipPromptLibraryName" placeholder="Prompt name"><input id="aipPromptLibraryOwner" value="Operations" placeholder="Owner"><select id="aipPromptLibraryScope"><option value="operations">Operations</option><option value="executive">Executive</option><option value="kitchen">Kitchen</option><option value="concierge">Concierge</option></select><textarea id="aipPromptLibraryText" placeholder="Standing prompt or policy instruction"></textarea><label><input id="aipPromptLibraryApproval" type="checkbox" checked> Changes require approval</label></div><div id="aipPromptLibraryRows" class="v4014-list"></div></div>
+</section>
+<section class="v4014-center" id="aipDeploymentControlCenter" aria-labelledby="aipDeploymentTitle">
+<header><div><small>V40.13 · Agent Deployment Control</small><strong id="aipDeploymentTitle">Promote tested agents through draft, pilot, and active stages.</strong><span>Deployment remains deliberate, reversible, and fully attributable.</span></div><button type="button" id="aipDeploymentRefresh">Refresh agents</button></header>
+<div class="v4014-kpis"><article><small>Draft</small><strong id="aipDeploymentDraft">0</strong></article><article><small>Pilot</small><strong id="aipDeploymentPilot">0</strong></article><article><small>Active</small><strong id="aipDeploymentActive">0</strong></article></div>
+<div class="v4014-form v4014-inline"><input id="aipDeploymentOwner" value="Keith" placeholder="Deployment owner"><input id="aipDeploymentNote" placeholder="Release note or operating boundary"></div><div id="aipDeploymentRows" class="v4014-list"></div>
+</section>
+<section class="v4014-center" id="aipObservabilityCenter" aria-labelledby="aipObservabilityTitle">
+<header><div><small>V40.14 · Agent Observability</small><strong id="aipObservabilityTitle">See which agents are running, what tools they use, and where approval is required.</strong><span>Runtime evidence stays passive and never triggers additional agent execution.</span></div><button type="button" id="aipObservabilityRefresh">Refresh telemetry</button></header>
+<div class="v4014-kpis"><article><small>Agent runs</small><strong id="aipObservabilityRuns">0</strong></article><article><small>Tool calls</small><strong id="aipObservabilityTools">0</strong></article><article><small>Approval holds</small><strong id="aipObservabilityHolds">0</strong></article><article><small>Health</small><strong id="aipObservabilityHealth">—</strong></article></div>
+<div id="aipObservabilityRows" class="v4014-list"></div>
 </section>
 
 </main>
@@ -8038,6 +8055,12 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipEvaluationCenter.js?v=40.11.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipRunbookCompilerEngine.js?v=40.11.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipRunbookCompilerCenter.js?v=40.11.0"></script>
-  <script src="js/startup-loader.js?v=40.11.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPromptLibraryEngine.js?v=40.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPromptLibraryCenter.js?v=40.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipDeploymentControlEngine.js?v=40.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipDeploymentControlCenter.js?v=40.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipObservabilityEngine.js?v=40.14.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipObservabilityCenter.js?v=40.14.0"></script>
+  <script src="js/startup-loader.js?v=40.14.0"></script>
 </body>
 </html>

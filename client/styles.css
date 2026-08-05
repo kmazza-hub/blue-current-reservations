@@ -13047,3 +13047,12 @@ html[data-boot-complete="true"] .startup-loading, html[data-boot-complete="true"
 .v4011-list{display:grid;gap:10px;margin-top:12px}.v4011-list article,.v4011-result{display:grid;gap:6px;padding:14px;border:1px solid #d8e0e7;border-radius:12px;background:#f7fafc}
 .v4011-list article div{display:flex;gap:8px}.v4011-kpis{display:flex;gap:12px;margin-bottom:16px}.v4011-kpis article{min-width:130px;padding:14px;border-radius:12px;background:#edf3f7}.v4011-kpis strong{display:block;font-size:1.3rem}
 @media(max-width:800px){.v4011-grid{grid-template-columns:1fr}.v4011-center header{flex-direction:column}.v4011-tools{grid-template-columns:1fr}}
+
+/* V40.14 AIP deployment and observability */
+.v4014-center{margin:24px 0;padding:24px;border:1px solid rgba(20,45,68,.16);border-radius:20px;background:#fff;box-shadow:0 16px 40px rgba(15,35,55,.08);color:#142d44}
+.v4014-center header{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:18px}.v4014-center header div{display:grid;gap:5px}.v4014-center header strong{font-size:1.2rem}.v4014-center header span,.v4014-center small{color:#536779}
+.v4014-grid{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(320px,1.2fr);gap:22px}.v4014-form{display:grid;gap:12px}.v4014-inline{grid-template-columns:1fr 2fr;margin-bottom:16px}
+.v4014-form input,.v4014-form textarea,.v4014-form select{width:100%;padding:12px;border:1px solid #b7c3ce;border-radius:10px;background:#fff;color:#142d44}.v4014-form textarea{min-height:100px;resize:vertical}
+.v4014-list{display:grid;gap:10px}.v4014-list article{display:grid;gap:7px;padding:14px;border:1px solid #d8e0e7;border-radius:12px;background:#f7fafc}.v4014-list article div{display:flex;gap:8px;flex-wrap:wrap}.v4014-list button.secondary{background:#eef3f7;color:#25445f}
+.v4014-kpis{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}.v4014-kpis article{min-width:130px;padding:14px;border-radius:12px;background:#edf3f7}.v4014-kpis strong{display:block;font-size:1.3rem}
+@media(max-width:800px){.v4014-grid,.v4014-inline{grid-template-columns:1fr}.v4014-center header{flex-direction:column}}
