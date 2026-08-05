@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="39.27.0-assurance-governance">
+  <meta name="blue-current-build" content="40.2.0-aip-foundation">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -2027,6 +2027,20 @@
         </section>
 
 
+
+<section class="v402-center" id="aipToolRegistryCenter" aria-labelledby="aipToolsTitle">
+  <header><div><small>V40.0 · AIP Tool Registry</small><strong id="aipToolsTitle">Turn Blue Current capabilities into governed AI-callable tools.</strong><span>Agents can inspect operations directly without scraping dashboards.</span></div><button type="button" id="aipToolRefresh">Refresh registry</button></header>
+  <div class="v402-kpis"><article><small>Registered tools</small><strong id="aipToolCount">0</strong></article><article><small>Read tools</small><strong id="aipToolRead">0</strong></article><article><small>Governed writes</small><strong id="aipToolGoverned">0</strong></article></div><div id="aipToolRows" class="v402-list"></div>
+</section>
+<section class="v402-center v402-agent" id="aipAgentRuntimeCenter" aria-labelledby="aipAgentTitle">
+  <header><div><small>V40.1 · Agent Runtime</small><strong id="aipAgentTitle">Ask specialized hospitality agents to reason across live operating tools.</strong><span id="aipAgentStatus">Ready for an operating question.</span></div><div class="v402-actions"><select id="aipAgentSelect"><option value="operations">Operations Agent</option><option value="executive">Executive Agent</option><option value="kitchen">Kitchen Agent</option><option value="concierge">Concierge Agent</option></select><button type="button" id="aipAgentRun">Run agent</button></div></header>
+  <div class="v402-prompt"><textarea id="aipAgentPrompt" rows="3" placeholder="What should I do before the next demand wave?"></textarea></div><div class="v402-kpis"><article><small>Confidence</small><strong id="aipAgentConfidence">—</strong></article><article><small>Memory items</small><strong id="aipAgentMemory">0</strong></article></div><div class="v402-answer"><strong>Agent response</strong><p id="aipAgentAnswer">Ask a question to begin.</p><details><summary>Operational evidence</summary><pre id="aipAgentEvidence"></pre></details></div>
+</section>
+<section class="v402-center" id="aipPromptOrchestratorCenter" aria-labelledby="aipWorkflowTitle">
+  <header><div><small>V40.2 · Natural-Language Workflow Builder</small><strong id="aipWorkflowTitle">Describe the operating logic; Blue Current drafts the governed workflow.</strong><span id="aipWorkflowStatus">Every workflow remains a draft until a manager approves it.</span></div><button type="button" id="aipWorkflowRefresh">Refresh</button></header>
+  <div class="v402-workflow-form"><textarea id="aipWorkflowPrompt" rows="3" placeholder="If wait time exceeds 20 minutes and occupancy is above 90%, notify the GM and recommend opening the patio."></textarea><input id="aipWorkflowOwner" value="General Manager" aria-label="Workflow owner"><button type="button" id="aipWorkflowCompile">Build workflow</button></div><div class="v402-kpis"><article><small>Drafted workflows</small><strong id="aipWorkflowCount">0</strong></article><article><small>Approved</small><strong id="aipWorkflowApproved">0</strong></article></div><div id="aipWorkflowRows" class="v402-list"></div>
+</section>
+
 </main>
           </div>
         </div>
@@ -4051,22 +4065,6 @@
   <header><div><small>V39.24 · Prevention Verification</small><strong id="pvTitle">Prove the corrective action prevented recurrence.</strong><span id="pvHeadline">Close the loop with operating evidence.</span></div><button type="button" id="pvRefresh">Refresh</button></header>
   <div class="v3924-kpis"><article><small>Verification score</small><strong id="pvScore">0%</strong></article><article><small>Effective</small><strong id="pvEffective">0</strong></article><article><small>Pending</small><strong id="pvPending">0</strong></article><article><small>Failed</small><strong id="pvFailed">0</strong></article></div><div class="v3924-status" id="pvStatus">awaiting evidence</div>
   <div class="v3924-form"><select id="pvAction"><option value="">Select completed corrective action</option></select><select id="pvResult"><option value="effective">Effective</option><option value="failed">Follow-up required</option></select><input id="pvOwner" value="Manager"><input id="pvNote" placeholder="Verification evidence"><button type="button" id="pvRecord">Record verification</button></div><div id="pvRows" class="v3924-list"></div>
-</section>
-
-<section class="v3927-center" id="operationalAssuranceCenter" aria-labelledby="oaTitle">
-  <header><div><small>V39.25 · Operational Assurance</small><strong id="oaTitle">See whether prevention work is complete, trained, and proven effective.</strong><span>One evidence score across root cause, corrective action, standard work, training, and verification.</span></div><button type="button" id="oaRefresh">Refresh assurance</button></header>
-  <div class="v3927-kpis"><article><small>Assurance score</small><strong id="oaScore">0%</strong></article><article><small>Standard-work coverage</small><strong id="oaCoverage">0%</strong></article><article><small>Action closure</small><strong id="oaClosure">0%</strong></article><article><small>Training completion</small><strong id="oaTraining">0%</strong></article></div>
-  <div class="v3927-status" id="oaStatus">insufficient evidence</div><div id="oaRows" class="v3927-list"></div><ul id="oaBlockers" class="v3927-blockers"></ul>
-</section>
-<section class="v3927-center" id="complianceReviewCenter" aria-labelledby="crTitle">
-  <header><div><small>V39.26 · Prevention Compliance Review</small><strong id="crTitle">Confirm that every prevention control has accountable evidence.</strong><span>Complete the five operating controls before leadership assurance.</span></div><button type="button" id="crRefresh">Refresh review</button></header>
-  <div class="v3927-kpis"><article><small>Review score</small><strong id="crScore">0%</strong></article><article><small>Controls passed</small><strong id="crPassed">0/5</strong></article><article><small>Status</small><strong id="crStatus">incomplete</strong></article><article><small>Review type</small><strong>Manager</strong></article></div>
-  <div id="crRows" class="v3927-review"></div>
-</section>
-<section class="v3927-center v3927-brief" id="leadershipPreventionBriefCenter" aria-labelledby="lpbTitle">
-  <header><div><small>V39.27 · Leadership Prevention Brief</small><strong id="lpbTitle">Give leadership one clear view of prevention assurance and remaining exposure.</strong><span>Translate operating evidence into a concise executive brief.</span></div><div class="v3927-actions"><button type="button" id="lpbRefresh">Refresh</button><button type="button" id="lpbCopy">Copy brief</button><button type="button" id="lpbExport">Export JSON</button></div></header>
-  <div class="v3927-kpis"><article><small>Combined assurance</small><strong id="lpbScore">0%</strong></article><article><small>Status</small><strong id="lpbStatus">insufficient evidence</strong></article><article><small>Blockers</small><strong id="lpbBlockers">0</strong></article><article><small>Compliance</small><strong id="lpbCompliance">0%</strong></article></div>
-  <pre id="lpbSummary" class="v3927-summary"></pre><div id="lpbRows" class="v3927-priorities"></div>
 </section>
 <section class="v385-center" id="shiftIntelligenceCenter" aria-labelledby="siTitle"><header><div><small>V38.3 · Shift Intelligence</small><strong id="siTitle">Turn live operating pressure into the next best manager action.</strong><span id="siHeadline">Evaluating the shift…</span></div><button type="button" id="siRefresh">Refresh intelligence</button></header><div class="v385-kpis"><article><small>Shift score</small><strong id="siScore">0</strong></article><article><small>Status</small><strong id="siStatus">—</strong></article><article><small>Kitchen load</small><strong id="siKitchen">0%</strong></article><article><small>Guest wait</small><strong id="siWait">0 min</strong></article><article><small>Next peak</small><strong id="siPeak">—</strong></article></div><div id="siRows" class="v385-list"></div></section>
 <section class="v385-center" id="executiveDecisionFeedCenter" aria-labelledby="edfTitle"><header><div><small>V38.4 · Executive Decision Feed</small><strong id="edfTitle">Rank every operating decision by impact, urgency, and confidence.</strong><span id="edfHeadline">Building the leadership queue…</span></div><button type="button" id="edfRefresh">Refresh feed</button></header><div class="v385-kpis"><article><small>Decisions</small><strong id="edfCount">0</strong></article><article><small>Modeled impact</small><strong id="edfImpact">$0</strong></article><article><small>Status</small><strong id="edfStatus">—</strong></article></div><div id="edfRows" class="v385-feed"></div></section>
@@ -7974,12 +7972,13 @@
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/trainingAssignmentCenter.js?v=39.24.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/preventionVerificationEngine.js?v=39.24.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/preventionVerificationCenter.js?v=39.24.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationalAssuranceEngine.js?v=39.27.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/operationalAssuranceCenter.js?v=39.27.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/complianceReviewEngine.js?v=39.27.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/complianceReviewCenter.js?v=39.27.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/leadershipPreventionBriefEngine.js?v=39.27.0"></script>
-  <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/leadershipPreventionBriefCenter.js?v=39.27.0"></script>
-  <script src="js/startup-loader.js?v=39.27.0"></script>
+
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipToolRegistryEngine.js?v=40.2.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipToolRegistryCenter.js?v=40.2.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipAgentRuntimeEngine.js?v=40.2.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipAgentRuntimeCenter.js?v=40.2.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPromptOrchestratorEngine.js?v=40.2.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPromptOrchestratorCenter.js?v=40.2.0"></script>
+  <script src="js/startup-loader.js?v=40.2.0"></script>
 </body>
 </html>

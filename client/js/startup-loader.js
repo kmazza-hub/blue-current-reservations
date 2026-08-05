@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const fullStartup = params.get("full") === "1";
   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
-  const appSource = `js/app-v15.1.3.js?v=39.27.0`;
+  const appSource = `js/app-v15.1.3.js?v=40.2.0`;
   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
   const startedAt = performance.now();
   const storageKey = "bluecurrent:last-good-startup";
@@ -14,6 +14,7 @@
     operations: /(reservationYield|kitchenThroughput|guestRecovery|laborDeployment|serviceQuality|inventoryWaste|menuMix|dailyProfitPlan|vendorPurchase|demandPrepForecast|profitCloseout|supplierVariance|prepExecution|teamCollaboration|operationalKnowledge|shiftCloseout|shiftIntelligence|executiveDecisionFeed|operationsCopilot)/i,
     intelligence: /(digitalTwinVisualization|executiveMorningBrief|intelligenceGraph|predictiveOverlay|restaurantReplay|explainableDecision|profitScenario|smartAlertRouter|restaurantPerformance|outcomeIntelligence|marginIntelligence|costVariance|predictiveService|aiOrchestration|operationalDigitalTwin|portfolioIntelligence|performanceLearning)/i,
     enterprise: /(crossLocationPulse|enterpriseOperations|weeklyProfitReview|executiveBriefing|portfolioPerformance|pilotRelease|pilotOperations|pilotReview|deploymentReadiness|postLaunchValue|expansionBenchmark|performanceGovernance|enterpriseValuePlan|pilotOnboarding|pilotLaunch|pilotEvidence|accessReadiness|releaseCertification)/i,
+    aip: /(aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator)/i,
     integrations: /(integrationControl|signalQuality|pilotTelemetry|dataContract|connectorSync|reconciliation|connectorConfiguration|dataIntakeSandbox|pilotSignalBridge|canonicalMapping|ingestionQueue|sourcePromotion|trustedDataset|dataLineage|pilotSyncRehearsal)/i
   };
 
@@ -100,8 +101,12 @@
     // Legacy inferred scripts remain available through full mode and future on-demand loading.
     const selected = deferred.filter(item => item.dataset.packExplicit === "true" && requestedPacks.has(item.dataset.pack));
     // V39.6 — preserve the minimal Operations slice even when older HTML metadata is cached.
+    if (requestedPacks.has("aip")) {
+      const requiredAip = /(?:aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator)(?:Engine|Center)\.js/i;
+      deferred.forEach(item => { if (requiredAip.test(item.dataset.src) && !selected.includes(item)) selected.push(item); });
+    }
     if (requestedPacks.has("operations")) {
-      const required = /(?:serviceExceptionQueue|escalationControl|recoveryVerification|incidentRootCause|correctiveActionPlan|exceptionTrendReview|standardWorkLinkage|trainingAssignment|preventionVerification|operationalAssurance|complianceReview|leadershipPreventionBrief|openingReadiness|shiftCheckpoint|dailyValueReport|recommendationCalibration|operationsLearningReview|nextShiftPlan|decisionExecutionLedger|outcomeCapture|shiftCloseBrief|priorityFocus|actionOwnership|shiftHandoffSnapshot|operationsWorkspace|shiftIntelligence|executiveDecisionFeed|operationsCopilot)(?:Engine|Center)\.js/i;
+      const required = /(?:serviceExceptionQueue|escalationControl|recoveryVerification|openingReadiness|shiftCheckpoint|dailyValueReport|recommendationCalibration|operationsLearningReview|nextShiftPlan|decisionExecutionLedger|outcomeCapture|shiftCloseBrief|priorityFocus|actionOwnership|shiftHandoffSnapshot|operationsWorkspace|shiftIntelligence|executiveDecisionFeed|operationsCopilot)(?:Engine|Center)\.js/i;
       deferred.forEach(item => { if (required.test(item.dataset.src) && !selected.includes(item)) selected.push(item); });
     }
     return selected;
@@ -203,7 +208,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V39.27.0 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V40.2.0 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.

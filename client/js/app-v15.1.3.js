@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "39.27.0-assurance-governance", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "39.21.0-prevention-control", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -1763,20 +1763,20 @@ const preventionVerificationCenterModule = startupRegistry.register(
 );
 
 
-const operationalAssuranceCenterModule = startupRegistry.register(
-  "operationalAssuranceCenter",
-  shouldInitializeCenter("operationalAssuranceCenter") ? window.createBlueCurrentOperationalAssuranceCenterModule?.(eventBus) : null,
-  ["eventBus", "preventionVerificationCenter", "standardWorkLinkageCenter"]
+const aipToolRegistryCenterModule = startupRegistry.register(
+  "aipToolRegistryCenter",
+  shouldInitializeCenter("aipToolRegistryCenter") ? window.createBlueCurrentAIPToolRegistryCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState"]
 );
-const complianceReviewCenterModule = startupRegistry.register(
-  "complianceReviewCenter",
-  shouldInitializeCenter("complianceReviewCenter") ? window.createBlueCurrentComplianceReviewCenterModule?.(eventBus) : null,
-  ["eventBus", "operationalAssuranceCenter"]
+const aipAgentRuntimeCenterModule = startupRegistry.register(
+  "aipAgentRuntimeCenter",
+  shouldInitializeCenter("aipAgentRuntimeCenter") ? window.createBlueCurrentAIPAgentRuntimeCenterModule?.(eventBus) : null,
+  ["eventBus", "aipToolRegistryCenter"]
 );
-const leadershipPreventionBriefCenterModule = startupRegistry.register(
-  "leadershipPreventionBriefCenter",
-  shouldInitializeCenter("leadershipPreventionBriefCenter") ? window.createBlueCurrentLeadershipPreventionBriefCenterModule?.(eventBus) : null,
-  ["eventBus", "operationalAssuranceCenter", "complianceReviewCenter"]
+const aipPromptOrchestratorCenterModule = startupRegistry.register(
+  "aipPromptOrchestratorCenter",
+  shouldInitializeCenter("aipPromptOrchestratorCenter") ? window.createBlueCurrentAIPPromptOrchestratorCenterModule?.(eventBus) : null,
+  ["eventBus", "aipToolRegistryCenter", "aipAgentRuntimeCenter"]
 );
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
@@ -2150,6 +2150,9 @@ window.blueCurrent = {
     incidentRootCause: incidentRootCauseCenterModule,
     correctiveActionPlan: correctiveActionPlanCenterModule,
     exceptionTrendReview: exceptionTrendReviewCenterModule,
+    aipToolRegistry: aipToolRegistryCenterModule,
+    aipAgentRuntime: aipAgentRuntimeCenterModule,
+    aipPromptOrchestrator: aipPromptOrchestratorCenterModule,
     operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,
