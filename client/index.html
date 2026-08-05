@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="41.8.0-operational-reasoning">
+  <meta name="blue-current-build" content="41.11.0-digital-twin-reasoning">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8208,6 +8208,17 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="multiStepPlanCenter" data-src="js/modules/multiStepPlanEngine.js?v=41.8.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="multiStepPlanCenter" data-src="js/modules/multiStepPlanCenter.js?v=41.8.0"></script>
 
-  <script src="js/startup-loader.js?v=41.8.0"></script>
+<section class="v4111-center" id="operationalTwinCenter" aria-labelledby="twinTitle"><header><div><small>V41.9 · Operational Twin State</small><strong id="twinTitle">Assemble a living restaurant model from current signals and relationships.</strong><span id="twinMessage">Build the operational twin to unify floor, kitchen, guest flow, labor, and governed relationships.</span></div><button type="button" id="twinBuild">Build twin</button></header><div class="v4111-kpis"><article><small>Twin health</small><strong id="twinHealth">—</strong></article><article><small>Status</small><strong id="twinStatus">—</strong></article><article><small>Entities</small><strong id="twinEntities">0</strong></article><article><small>Relationships</small><strong id="twinRelations">0</strong></article></div><div id="twinList" class="v4111-list"></div></section>
+<section class="v4111-center" id="constraintPropagationCenter" aria-labelledby="propTitle"><header><div><small>V41.10 · Constraint Propagation</small><strong id="propTitle">Trace how a proposed change affects the rest of the restaurant.</strong><span id="propMessage">Run a change through the twin and decision dependencies before approving it.</span></div><div class="v4111-actions"><input id="propChange" value="Open patio capacity" placeholder="Proposed change"><input id="propMagnitude" type="number" min="1" max="30" value="10"><button type="button" id="propRun">Propagate</button></div></header><div class="v4111-kpis"><article><small>Confidence</small><strong id="propConfidence">—</strong></article><article><small>Status</small><strong id="propStatus">—</strong></article><article><small>Effects</small><strong id="propEffects">0</strong></article><article><small>High risk</small><strong id="propRisk">0</strong></article></div><div id="propList" class="v4111-list"></div></section>
+<section class="v4111-center v4111-verify" id="planVerificationCenter" aria-labelledby="verifyTitle"><header><div><small>V41.11 · Plan Verification</small><strong id="verifyTitle">Verify an AI plan against the current twin, constraints, and approvals.</strong><span id="verifyMessage">A plan must pass all controls before governed execution.</span></div><div class="v4111-actions"><input id="verifyOwner" value="Manager" placeholder="Verification owner"><button type="button" id="verifyRun">Verify plan</button></div></header><div class="v4111-kpis"><article><small>Verification score</small><strong id="verifyScore">—</strong></article><article><small>Status</small><strong id="verifyStatus">—</strong></article><article><small>Blockers</small><strong id="verifyBlockers">—</strong></article><article><small>Verification ID</small><strong id="verifyId">—</strong></article></div><div id="verifyChecks" class="v4111-checks"></div></section>
+
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="operationalTwinCenter" data-src="js/modules/operationalTwinEngine.js?v=41.11.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="operationalTwinCenter" data-src="js/modules/operationalTwinCenter.js?v=41.11.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="constraintPropagationCenter" data-src="js/modules/constraintPropagationEngine.js?v=41.11.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="constraintPropagationCenter" data-src="js/modules/constraintPropagationCenter.js?v=41.11.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="planVerificationCenter" data-src="js/modules/planVerificationEngine.js?v=41.11.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="planVerificationCenter" data-src="js/modules/planVerificationCenter.js?v=41.11.0"></script>
+
+  <script src="js/startup-loader.js?v=41.11.0"></script>
 </body>
 </html>

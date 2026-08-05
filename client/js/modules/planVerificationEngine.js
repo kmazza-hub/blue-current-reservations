@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentPlanVerificationEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.planKey="bluecurrent:v418:multi-step-plans";this.twinKey="bluecurrent:v419:operational-twin";this.propKey="bluecurrent:v4110:constraint-propagation";this.verifyKey="bluecurrent:v4111:plan-verifications";}
+ read(key,fallback=[]){try{const value=JSON.parse(localStorage.getItem(key)||"null");return value??fallback;}catch{return fallback;}}
+ verify(owner="Manager"){const plan=this.read(this.planKey,[])[0],twin=this.read(this.twinKey,null),prop=this.read(this.propKey,[])[0];const checks=[{name:"Plan exists",pass:!!plan,detail:plan?.id||"Build a multi-step plan first."},{name:"Operational twin current",pass:!!twin&&Date.now()-Date.parse(twin.createdAt)<3600000,detail:twin?.id||"Build the operational twin."},{name:"Constraints reviewed",pass:!!prop,detail:prop?.id||"Run constraint propagation."},{name:"High-risk effects controlled",pass:!prop||prop.highRisk===0,detail:prop?.highRisk?`${prop.highRisk} high-risk effect(s) require review.`:"No uncontrolled high-risk effects."},{name:"Human approvals present",pass:!!plan&&plan.steps.some(x=>x.approval),detail:"Plan preserves human approval for consequential steps."}];
+  const passed=checks.filter(x=>x.pass).length,score=Math.round(passed/checks.length*100),blockers=checks.filter(x=>!x.pass).length;const result={id:`VERIFY-${Date.now()}`,planId:plan?.id||null,owner,score,blockers,status:blockers===0?"verified":score>=60?"conditional":"blocked",checks,createdAt:new Date().toISOString()};const history=this.read(this.verifyKey,[]);history.unshift(result);localStorage.setItem(this.verifyKey,JSON.stringify(history.slice(0,30)));this.eventBus?.emit?.("aip:plan-verified",result);return result;}
+ history(){return this.read(this.verifyKey,[]);}
+}
+window.BlueCurrentPlanVerificationEngine=BlueCurrentPlanVerificationEngine;})();

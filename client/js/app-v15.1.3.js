@@ -2036,6 +2036,23 @@ const multiStepPlanCenterModule = startupRegistry.register(
   ["eventBus", "operationalReasoningCenter", "counterfactualAnalysisCenter", "decisionDependencyCenter"]
 );
 
+
+const operationalTwinCenterModule = startupRegistry.register(
+  "operationalTwinCenter",
+  shouldInitializeCenter("operationalTwinCenter") ? window.createBlueCurrentOperationalTwinCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "relationshipGraphCenter", "contextResolutionCenter"]
+);
+const constraintPropagationCenterModule = startupRegistry.register(
+  "constraintPropagationCenter",
+  shouldInitializeCenter("constraintPropagationCenter") ? window.createBlueCurrentConstraintPropagationCenterModule?.(eventBus) : null,
+  ["eventBus", "operationalTwinCenter", "counterfactualAnalysisCenter", "decisionDependencyCenter"]
+);
+const planVerificationCenterModule = startupRegistry.register(
+  "planVerificationCenter",
+  shouldInitializeCenter("planVerificationCenter") ? window.createBlueCurrentPlanVerificationCenterModule?.(eventBus) : null,
+  ["eventBus", "multiStepPlanCenter", "operationalTwinCenter", "constraintPropagationCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
