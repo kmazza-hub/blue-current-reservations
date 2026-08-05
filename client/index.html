@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="41.23.0-enterprise-outcome-certification">
+  <meta name="blue-current-build" content="41.26.0-reasoning-assurance">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8264,6 +8264,17 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v41CertificationCenter" data-src="js/modules/v41CertificationEngine.js?v=41.23.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v41CertificationCenter" data-src="js/modules/v41CertificationCenter.js?v=41.23.0"></script>
 
-  <script src="js/startup-loader.js?v=41.23.0"></script>
+
+<section class="v4126-center" id="reasoningBenchmarkCenter" aria-labelledby="reasoningBenchmarkTitle"><header><div><small>V41.24 · Reasoning Benchmark</small><strong id="reasoningBenchmarkTitle">Measure whether the certified reasoning chain is producing controlled, repeatable evidence.</strong><span>Certification, reasoning, forecasting, verification, and outcomes are scored together.</span></div><div class="v4126-actions"><input id="reasoningBenchmarkOwner" value="AIP quality owner" placeholder="Benchmark owner"><button type="button" id="reasoningBenchmarkRun">Run benchmark</button><button type="button" id="reasoningBenchmarkExport">Export</button></div></header><div class="v4126-kpis"><article><small>Benchmark score</small><strong id="reasoningBenchmarkScore">—</strong></article><article><small>Status</small><strong id="reasoningBenchmarkStatus">—</strong></article><article><small>Benchmark ID</small><strong id="reasoningBenchmarkId">—</strong></article></div><div id="reasoningBenchmarkTests" class="v4126-checks"></div></section>
+<section class="v4126-center" id="reasoningDriftCenter" aria-labelledby="reasoningDriftTitle"><header><div><small>V41.25 · Reasoning Drift Monitor</small><strong id="reasoningDriftTitle">Detect when reasoning quality, evidence coverage, or human feedback begins to deteriorate.</strong><span>Benchmark movement, feedback, and operational-memory coverage are monitored without changing live state.</span></div><div class="v4126-actions"><input id="reasoningDriftOwner" value="AIP quality owner" placeholder="Drift owner"><button type="button" id="reasoningDriftRun">Evaluate drift</button></div></header><div class="v4126-kpis"><article><small>Stability score</small><strong id="reasoningDriftScore">—</strong></article><article><small>Status</small><strong id="reasoningDriftStatus">—</strong></article><article><small>Violations</small><strong id="reasoningDriftViolations">—</strong></article><article><small>Benchmark delta</small><strong id="reasoningDriftDelta">—</strong></article></div><div id="reasoningDriftSignals" class="v4126-checks"></div></section>
+<section class="v4126-center v4126-gate" id="reasoningImprovementGateCenter" aria-labelledby="reasoningImprovementTitle"><header><div><small>V41.26 · Reasoning Improvement Gate</small><strong id="reasoningImprovementTitle">Approve reasoning improvements only when certification, benchmarks, drift controls, and human ownership align.</strong><span>No prompt, policy, model, or agent changes are applied automatically.</span></div><div class="v4126-actions"><input id="reasoningImprovementOwner" value="AIP quality owner" placeholder="Improvement owner"><button type="button" id="reasoningImprovementRun">Run gate</button><button type="button" id="reasoningImprovementExport">Export</button></div></header><div class="v4126-kpis"><article><small>Gate score</small><strong id="reasoningImprovementScore">—</strong></article><article><small>Status</small><strong id="reasoningImprovementStatus">—</strong></article><article><small>Blockers</small><strong id="reasoningImprovementBlockers">—</strong></article><article><small>Gate ID</small><strong id="reasoningImprovementId">—</strong></article></div><div id="reasoningImprovementChecks" class="v4126-checks"></div></section>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="reasoningBenchmarkCenter" data-src="js/modules/reasoningBenchmarkEngine.js?v=41.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="reasoningBenchmarkCenter" data-src="js/modules/reasoningBenchmarkCenter.js?v=41.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="reasoningDriftCenter" data-src="js/modules/reasoningDriftEngine.js?v=41.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="reasoningDriftCenter" data-src="js/modules/reasoningDriftCenter.js?v=41.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="reasoningImprovementGateCenter" data-src="js/modules/reasoningImprovementGateEngine.js?v=41.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="reasoningImprovementGateCenter" data-src="js/modules/reasoningImprovementGateCenter.js?v=41.26.0"></script>
+
+  <script src="js/startup-loader.js?v=41.26.0"></script>
 </body>
 </html>
