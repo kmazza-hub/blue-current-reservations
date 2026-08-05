@@ -1795,6 +1795,21 @@ const aipApprovalQueueCenterModule = startupRegistry.register(
   shouldInitializeCenter("aipApprovalQueueCenter") ? window.createBlueCurrentAIPApprovalQueueCenterModule?.(eventBus) : null,
   ["eventBus", "aipPromptOrchestratorCenter", "aipGovernanceCenter"]
 );
+const aipContextGraphCenterModule = startupRegistry.register(
+  "aipContextGraphCenter",
+  shouldInitializeCenter("aipContextGraphCenter") ? window.createBlueCurrentAIPContextGraphCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "aipAgentRuntimeCenter"]
+);
+const aipMemoryVaultCenterModule = startupRegistry.register(
+  "aipMemoryVaultCenter",
+  shouldInitializeCenter("aipMemoryVaultCenter") ? window.createBlueCurrentAIPMemoryVaultCenterModule?.(eventBus) : null,
+  ["eventBus", "aipAgentRuntimeCenter"]
+);
+const aipScenarioLabCenterModule = startupRegistry.register(
+  "aipScenarioLabCenter",
+  shouldInitializeCenter("aipScenarioLabCenter") ? window.createBlueCurrentAIPScenarioLabCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "aipContextGraphCenter"]
+);
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
@@ -2170,6 +2185,12 @@ window.blueCurrent = {
     aipToolRegistry: aipToolRegistryCenterModule,
     aipAgentRuntime: aipAgentRuntimeCenterModule,
     aipPromptOrchestrator: aipPromptOrchestratorCenterModule,
+    aipGovernance: aipGovernanceCenterModule,
+    aipMissionControl: aipMissionControlCenterModule,
+    aipApprovalQueue: aipApprovalQueueCenterModule,
+    aipContextGraph: aipContextGraphCenterModule,
+    aipMemoryVault: aipMemoryVaultCenterModule,
+    aipScenarioLab: aipScenarioLabCenterModule,
     operationsWorkspace: operationsWorkspaceCenterModule,
     shiftIntelligence: shiftIntelligenceCenterModule,
     executiveDecisionFeed: executiveDecisionFeedCenterModule,

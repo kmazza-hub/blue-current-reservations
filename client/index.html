@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="40.5.0-aip-governance">
+  <meta name="blue-current-build" content="40.8.0-aip-context-simulation">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -2054,6 +2054,19 @@
 <section class="v405-center" id="aipApprovalQueueCenter" aria-labelledby="aipApprovalTitle">
   <header><div><small>V40.5 · AI Approval Queue</small><strong id="aipApprovalTitle">Keep every write-capable AI action under deliberate human control.</strong><span>Approve or reject workflows and tool requests with a durable audit trail.</span></div><button type="button" id="aipApprovalRefresh">Refresh queue</button></header>
   <div class="v405-kpis"><article><small>Pending</small><strong id="aipApprovalPending">0</strong></article><article><small>Approved</small><strong id="aipApprovalApproved">0</strong></article><article><small>Rejected</small><strong id="aipApprovalRejected">0</strong></article></div><div id="aipApprovalRows" class="v405-list"></div>
+</section>
+<section class="v408-center" id="aipContextGraphCenter" aria-labelledby="aipContextTitle">
+  <header><div><small>V40.6 · Operational Context Graph</small><strong id="aipContextTitle">Ground every agent in the same connected operating picture.</strong><span>Signals, priorities, exceptions, owners, and memories become traceable context nodes.</span></div><button type="button" id="aipContextRefresh">Rebuild graph</button></header>
+  <div class="v408-kpis"><article><small>Context nodes</small><strong id="aipContextNodes">0</strong></article><article><small>Relationships</small><strong id="aipContextEdges">0</strong></article><article><small>Live signals</small><strong id="aipContextSignals">0</strong></article></div><div id="aipContextRows" class="v408-list"></div>
+</section>
+<section class="v408-center" id="aipMemoryVaultCenter" aria-labelledby="aipMemoryTitle">
+  <header><div><small>V40.7 · Governed Memory Vault</small><strong id="aipMemoryTitle">Let agents remember what matters—and forget what does not.</strong><span>Pin durable lessons, review agent memories, and remove stale context deliberately.</span></div><div class="v408-actions"><button type="button" id="aipMemoryRefresh">Sync memories</button><button type="button" id="aipMemoryExpire" class="secondary">Clear expired</button></div></header>
+  <div class="v408-kpis"><article><small>Memories</small><strong id="aipMemoryTotal">0</strong></article><article><small>Pinned</small><strong id="aipMemoryPinned">0</strong></article><article><small>Agents represented</small><strong id="aipMemoryAgents">0</strong></article></div><div id="aipMemoryRows" class="v408-list"></div>
+</section>
+<section class="v408-center v408-scenario" id="aipScenarioLabCenter" aria-labelledby="aipScenarioTitle">
+  <header><div><small>V40.8 · Scenario Lab</small><strong id="aipScenarioTitle">Test an operating decision before the restaurant feels it.</strong><span>Model the directional effect of staffing, seating pace, and capacity changes without touching live state.</span></div><button type="button" id="aipScenarioRun">Run scenario</button></header>
+  <div class="v408-form"><input id="aipScenarioName" value="Next demand wave" aria-label="Scenario name"><label><input id="aipScenarioPatio" type="checkbox"> Open patio</label><label>Add hosts <input id="aipScenarioHost" type="number" min="0" max="3" value="0"></label><label>Slow seating <input id="aipScenarioPace" type="number" min="0" max="20" value="0"></label><label>Add kitchen <input id="aipScenarioKitchen" type="number" min="0" max="3" value="0"></label></div>
+  <div class="v408-kpis"><article><small>Confidence</small><strong id="aipScenarioConfidence">—</strong></article><article><small>Projected risk</small><strong id="aipScenarioRisk">—</strong></article><article><small>Projected revenue</small><strong id="aipScenarioRevenue">—</strong></article></div><div id="aipScenarioResult" class="v408-result"><strong>Configure and run a scenario.</strong></div>
 </section>
 
 </main>
@@ -8000,6 +8013,12 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipMissionControlCenter.js?v=40.5.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipApprovalQueueEngine.js?v=40.5.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipApprovalQueueCenter.js?v=40.5.0"></script>
-  <script src="js/startup-loader.js?v=40.5.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipContextGraphEngine.js?v=40.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipContextGraphCenter.js?v=40.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipMemoryVaultEngine.js?v=40.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipMemoryVaultCenter.js?v=40.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipScenarioLabEngine.js?v=40.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipScenarioLabCenter.js?v=40.8.0"></script>
+  <script src="js/startup-loader.js?v=40.8.0"></script>
 </body>
 </html>
