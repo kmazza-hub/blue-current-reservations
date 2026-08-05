@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentAIPMissionControlEngine{
+ constructor(runtime,governance,eventBus){this.runtime=runtime;this.governance=governance;this.eventBus=eventBus;this.key="bluecurrent:v404:aip-missions";}
+ list(){try{return JSON.parse(localStorage.getItem(this.key)||"[]");}catch{return[];}}
+ save(rows){localStorage.setItem(this.key,JSON.stringify(rows.slice(0,40)));}
+ async run(prompt,agentIds=["operations","executive","kitchen"]){const text=String(prompt||"").trim();if(!text)throw new Error("Describe the mission for the agent team.");const selected=[...new Set(agentIds)].filter(id=>this.runtime?.agents?.[id]);if(!selected.length)throw new Error("Select at least one available agent.");const responses=[];for(const id of selected){try{responses.push(await this.runtime.ask(id,text));}catch(error){responses.push({agent:id,agentLabel:id,answer:error.message,confidence:0,evidence:{error:true}});}}
+ const ranked=[...responses].sort((a,b)=>(b.confidence||0)-(a.confidence||0));const themes=[];responses.forEach(r=>{const sentence=String(r.answer||"").split(/[.!?]/)[0].trim();if(sentence&&!themes.includes(sentence))themes.push(sentence);});const disagreements=new Set(responses.map(r=>r.answer)).size>1;const mission={id:`MIS-${Date.now()}`,prompt:text,agents:selected,responses,consensus:ranked[0]?.answer||"No recommendation available.",confidence:Math.round(responses.reduce((n,r)=>n+(r.confidence||0),0)/responses.length),disagreements,alternatives:themes.slice(1,4),status:"complete",createdAt:new Date().toISOString()};const rows=this.list();rows.unshift(mission);this.save(rows);this.eventBus?.emit?.("aip:mission-complete",mission);return mission;}
+}
+window.BlueCurrentAIPMissionControlEngine=BlueCurrentAIPMissionControlEngine;})();

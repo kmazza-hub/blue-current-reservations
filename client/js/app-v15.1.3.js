@@ -1779,6 +1779,23 @@ const aipPromptOrchestratorCenterModule = startupRegistry.register(
   ["eventBus", "aipToolRegistryCenter", "aipAgentRuntimeCenter"]
 );
 
+
+const aipGovernanceCenterModule = startupRegistry.register(
+  "aipGovernanceCenter",
+  shouldInitializeCenter("aipGovernanceCenter") ? window.createBlueCurrentAIPGovernanceCenterModule?.(eventBus) : null,
+  ["eventBus", "aipToolRegistryCenter"]
+);
+const aipMissionControlCenterModule = startupRegistry.register(
+  "aipMissionControlCenter",
+  shouldInitializeCenter("aipMissionControlCenter") ? window.createBlueCurrentAIPMissionControlCenterModule?.(eventBus) : null,
+  ["eventBus", "aipAgentRuntimeCenter", "aipGovernanceCenter"]
+);
+const aipApprovalQueueCenterModule = startupRegistry.register(
+  "aipApprovalQueueCenter",
+  shouldInitializeCenter("aipApprovalQueueCenter") ? window.createBlueCurrentAIPApprovalQueueCenterModule?.(eventBus) : null,
+  ["eventBus", "aipPromptOrchestratorCenter", "aipGovernanceCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

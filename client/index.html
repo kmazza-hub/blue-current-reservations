@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="40.2.0-aip-foundation">
+  <meta name="blue-current-build" content="40.5.0-aip-governance">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -2039,6 +2039,21 @@
 <section class="v402-center" id="aipPromptOrchestratorCenter" aria-labelledby="aipWorkflowTitle">
   <header><div><small>V40.2 · Natural-Language Workflow Builder</small><strong id="aipWorkflowTitle">Describe the operating logic; Blue Current drafts the governed workflow.</strong><span id="aipWorkflowStatus">Every workflow remains a draft until a manager approves it.</span></div><button type="button" id="aipWorkflowRefresh">Refresh</button></header>
   <div class="v402-workflow-form"><textarea id="aipWorkflowPrompt" rows="3" placeholder="If wait time exceeds 20 minutes and occupancy is above 90%, notify the GM and recommend opening the patio."></textarea><input id="aipWorkflowOwner" value="General Manager" aria-label="Workflow owner"><button type="button" id="aipWorkflowCompile">Build workflow</button></div><div class="v402-kpis"><article><small>Drafted workflows</small><strong id="aipWorkflowCount">0</strong></article><article><small>Approved</small><strong id="aipWorkflowApproved">0</strong></article></div><div id="aipWorkflowRows" class="v402-list"></div>
+</section>
+
+<section class="v405-center" id="aipGovernanceCenter" aria-labelledby="aipPolicyTitle">
+  <header><div><small>V40.3 · Agent Governance</small><strong id="aipPolicyTitle">Define what every agent may see, recommend, and request.</strong><span>Tool permissions, risk ceilings, and human-approval boundaries remain explicit.</span></div><button type="button" id="aipPolicyRefresh">Refresh policies</button></header>
+  <div class="v405-kpis"><article><small>Governed agents</small><strong id="aipPolicyAgents">0</strong></article><article><small>Tool assignments</small><strong id="aipPolicyAssignments">0</strong></article><article><small>Approval-bound agents</small><strong id="aipPolicyGoverned">0</strong></article></div><div id="aipPolicyRows" class="v405-list"></div>
+</section>
+<section class="v405-center v405-mission" id="aipMissionControlCenter" aria-labelledby="aipMissionTitle">
+  <header><div><small>V40.4 · Multi-Agent Mission Control</small><strong id="aipMissionTitle">Coordinate specialized agents around one operating mission.</strong><span id="aipMissionStatus">Select the agent team and describe the mission.</span></div><button type="button" id="aipMissionRun">Run mission</button></header>
+  <textarea id="aipMissionPrompt" rows="3" placeholder="Prepare the restaurant for the next demand wave and identify the highest-risk constraint."></textarea>
+  <div class="v405-agent-picker"><label><input type="checkbox" data-aip-agent value="operations" checked> Operations</label><label><input type="checkbox" data-aip-agent value="executive" checked> Executive</label><label><input type="checkbox" data-aip-agent value="kitchen" checked> Kitchen</label><label><input type="checkbox" data-aip-agent value="concierge"> Concierge</label></div>
+  <div class="v405-kpis"><article><small>Agents</small><strong id="aipMissionAgents">0</strong></article><article><small>Confidence</small><strong id="aipMissionConfidence">—</strong></article><article><small>Alignment</small><strong id="aipMissionDisagreement">—</strong></article></div><div class="v405-consensus"><small>Team consensus</small><strong id="aipMissionConsensus">Run a mission to begin.</strong></div><div id="aipMissionResponses" class="v405-list"></div>
+</section>
+<section class="v405-center" id="aipApprovalQueueCenter" aria-labelledby="aipApprovalTitle">
+  <header><div><small>V40.5 · AI Approval Queue</small><strong id="aipApprovalTitle">Keep every write-capable AI action under deliberate human control.</strong><span>Approve or reject workflows and tool requests with a durable audit trail.</span></div><button type="button" id="aipApprovalRefresh">Refresh queue</button></header>
+  <div class="v405-kpis"><article><small>Pending</small><strong id="aipApprovalPending">0</strong></article><article><small>Approved</small><strong id="aipApprovalApproved">0</strong></article><article><small>Rejected</small><strong id="aipApprovalRejected">0</strong></article></div><div id="aipApprovalRows" class="v405-list"></div>
 </section>
 
 </main>
@@ -7979,6 +7994,12 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipAgentRuntimeCenter.js?v=40.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPromptOrchestratorEngine.js?v=40.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPromptOrchestratorCenter.js?v=40.2.0"></script>
-  <script src="js/startup-loader.js?v=40.2.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipGovernanceEngine.js?v=40.5.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipGovernanceCenter.js?v=40.5.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipMissionControlEngine.js?v=40.5.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipMissionControlCenter.js?v=40.5.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipApprovalQueueEngine.js?v=40.5.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipApprovalQueueCenter.js?v=40.5.0"></script>
+  <script src="js/startup-loader.js?v=40.5.0"></script>
 </body>
 </html>
