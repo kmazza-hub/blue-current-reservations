@@ -2004,6 +2004,21 @@ const causalDecisionTraceCenterModule = startupRegistry.register(
   shouldInitializeCenter("causalDecisionTraceCenter") ? window.createBlueCurrentCausalDecisionTraceCenterModule?.(eventBus) : null,
   ["eventBus", "decisionObjectCenter"]
 );
+const relationshipGraphCenterModule = startupRegistry.register(
+  "relationshipGraphCenter",
+  shouldInitializeCenter("relationshipGraphCenter") ? window.createBlueCurrentRelationshipGraphCenterModule?.(eventBus) : null,
+  ["eventBus", "hospitalityOntologyCenter"]
+);
+const contextResolutionCenterModule = startupRegistry.register(
+  "contextResolutionCenter",
+  shouldInitializeCenter("contextResolutionCenter") ? window.createBlueCurrentContextResolutionCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "relationshipGraphCenter", "decisionObjectCenter"]
+);
+const decisionDependencyCenterModule = startupRegistry.register(
+  "decisionDependencyCenter",
+  shouldInitializeCenter("decisionDependencyCenter") ? window.createBlueCurrentDecisionDependencyCenterModule?.(eventBus) : null,
+  ["eventBus", "decisionObjectCenter", "relationshipGraphCenter", "contextResolutionCenter"]
+);
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
