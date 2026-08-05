@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="41.5.0-hospitality-knowledge-graph">
+  <meta name="blue-current-build" content="41.8.0-operational-reasoning">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8196,6 +8196,18 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="contextResolutionCenter" data-src="js/modules/contextResolutionCenter.js?v=41.5.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="decisionDependencyCenter" data-src="js/modules/decisionDependencyEngine.js?v=41.5.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="decisionDependencyCenter" data-src="js/modules/decisionDependencyCenter.js?v=41.5.0"></script>
-  <script src="js/startup-loader.js?v=41.5.0"></script>
+
+<section class="v418-center" id="operationalReasoningCenter" aria-labelledby="reasonTitle"><header><div><small>V41.6 · Operational Reasoning Engine</small><strong id="reasonTitle">Identify the highest-leverage operating issue and explain why it matters.</strong><span id="reasonSummary">Run reasoning against the current restaurant context.</span></div><div class="v418-actions"><input id="reasonQuestion" value="What requires attention right now?" placeholder="Reasoning question"><button type="button" id="reasonRun">Run reasoning</button></div></header><div class="v418-kpis"><article><small>Confidence</small><strong id="reasonConfidence">—</strong></article><article><small>Status</small><strong id="reasonStatus">—</strong></article><article><small>Findings</small><strong id="reasonFindings">0</strong></article><article><small>Dependencies</small><strong id="reasonDependencies">0</strong></article></div><div id="reasonList" class="v418-list"></div></section>
+<section class="v418-center" id="counterfactualAnalysisCenter" aria-labelledby="cfTitle"><header><div><small>V41.7 · Counterfactual Analysis</small><strong id="cfTitle">Test what is likely to happen before changing the live restaurant.</strong><span id="cfMessage">Scenario results are directional and remain isolated from live state.</span></div><div class="v418-actions"><input id="cfScenario" value="Open patio capacity" placeholder="What-if scenario"><input id="cfMagnitude" type="number" min="1" max="30" value="10"><button type="button" id="cfRun">Simulate</button></div></header><div class="v418-kpis"><article><small>Guest wait</small><strong id="cfWait">—</strong></article><article><small>Kitchen</small><strong id="cfKitchen">—</strong></article><article><small>Labor</small><strong id="cfLabor">—</strong></article><article><small>Revenue index</small><strong id="cfRevenue">—</strong></article></div><div id="cfResults" class="v418-list v418-results"></div></section>
+<section class="v418-center v418-plan" id="multiStepPlanCenter" aria-labelledby="planTitle"><header><div><small>V41.8 · Multi-Step Plan Composer</small><strong id="planTitle">Turn reasoning into a governed sequence of accountable actions.</strong><span id="planMessage">Plans remain drafts until a human owner approves each required step.</span></div><div class="v418-actions"><input id="planGoal" value="Stabilize the next demand wave" placeholder="Plan goal"><input id="planOwner" value="Manager" placeholder="Owner"><button type="button" id="planBuild">Build plan</button></div></header><div class="v418-kpis"><article><small>Plan ID</small><strong id="planId">—</strong></article><article><small>Confidence</small><strong id="planConfidence">—</strong></article><article><small>Steps</small><strong id="planSteps">0</strong></article><article><small>Approvals</small><strong id="planApprovals">0</strong></article></div><div id="planList" class="v418-list"></div></section>
+
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="operationalReasoningCenter" data-src="js/modules/operationalReasoningEngine.js?v=41.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="operationalReasoningCenter" data-src="js/modules/operationalReasoningCenter.js?v=41.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="counterfactualAnalysisCenter" data-src="js/modules/counterfactualAnalysisEngine.js?v=41.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="counterfactualAnalysisCenter" data-src="js/modules/counterfactualAnalysisCenter.js?v=41.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="multiStepPlanCenter" data-src="js/modules/multiStepPlanEngine.js?v=41.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="multiStepPlanCenter" data-src="js/modules/multiStepPlanCenter.js?v=41.8.0"></script>
+
+  <script src="js/startup-loader.js?v=41.8.0"></script>
 </body>
 </html>

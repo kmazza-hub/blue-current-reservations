@@ -2020,6 +2020,22 @@ const decisionDependencyCenterModule = startupRegistry.register(
   ["eventBus", "decisionObjectCenter", "relationshipGraphCenter", "contextResolutionCenter"]
 );
 
+const operationalReasoningCenterModule = startupRegistry.register(
+  "operationalReasoningCenter",
+  shouldInitializeCenter("operationalReasoningCenter") ? window.createBlueCurrentOperationalReasoningCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "contextResolutionCenter", "decisionDependencyCenter"]
+);
+const counterfactualAnalysisCenterModule = startupRegistry.register(
+  "counterfactualAnalysisCenter",
+  shouldInitializeCenter("counterfactualAnalysisCenter") ? window.createBlueCurrentCounterfactualAnalysisCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "operationalReasoningCenter"]
+);
+const multiStepPlanCenterModule = startupRegistry.register(
+  "multiStepPlanCenter",
+  shouldInitializeCenter("multiStepPlanCenter") ? window.createBlueCurrentMultiStepPlanCenterModule?.(eventBus) : null,
+  ["eventBus", "operationalReasoningCenter", "counterfactualAnalysisCenter", "decisionDependencyCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
