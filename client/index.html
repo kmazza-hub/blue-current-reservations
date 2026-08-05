@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="41.14.0-temporal-executive-reasoning">
+  <meta name="blue-current-build" content="41.17.0-portfolio-reasoning">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8231,6 +8231,17 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executiveReasoningBriefCenter" data-src="js/modules/executiveReasoningBriefEngine.js?v=41.14.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executiveReasoningBriefCenter" data-src="js/modules/executiveReasoningBriefCenter.js?v=41.14.0"></script>
 
-  <script src="js/startup-loader.js?v=41.14.0"></script>
+<section class="v4117-center" id="portfolioReasoningCenter" aria-labelledby="portfolioReasonTitle"><header><div><small>V41.15 · Portfolio Reasoning</small><strong id="portfolioReasonTitle">Compare operating risk across locations using one reasoning model.</strong><span>Rank locations from current operating evidence and executive context.</span></div><button type="button" id="portfolioReasonRun">Run portfolio reasoning</button></header><div class="v4117-kpis"><article><small>Portfolio score</small><strong id="portfolioReasonScore">—</strong></article><article><small>Status</small><strong id="portfolioReasonStatus">—</strong></article><article><small>Locations</small><strong id="portfolioReasonLocations">0</strong></article><article><small>Highest risk</small><strong id="portfolioReasonHighest">—</strong></article></div><div id="portfolioReasonList" class="v4117-list"></div></section>
+<section class="v4117-center" id="decisionLeverageCenter" aria-labelledby="decisionLeverageTitle"><header><div><small>V41.16 · Decision Leverage</small><strong id="decisionLeverageTitle">Identify which decision creates the greatest downstream operating value.</strong><span>Rank decisions by connected dependencies, ownership, and governed impact.</span></div><button type="button" id="decisionLeverageRun">Rank leverage</button></header><div class="v4117-kpis"><article><small>Top decision</small><strong id="decisionLeverageTop">—</strong></article><article><small>Leverage</small><strong id="decisionLeverageScore">—</strong></article><article><small>Decisions</small><strong id="decisionLeverageCount">0</strong></article></div><div id="decisionLeverageList" class="v4117-list"></div></section>
+<section class="v4117-center v4117-exec" id="portfolioCoordinationPlanCenter" aria-labelledby="portfolioPlanTitle"><header><div><small>V41.17 · Portfolio Coordination Plan</small><strong id="portfolioPlanTitle">Coordinate the highest-leverage response across locations and owners.</strong><span>Build an approval-ready sequence from portfolio risk and decision leverage.</span></div><div class="v4117-actions"><input id="portfolioPlanOwner" value="Portfolio leader" placeholder="Owner"><button type="button" id="portfolioPlanBuild">Build plan</button><button type="button" id="portfolioPlanExport">Export</button></div></header><div class="v4117-kpis"><article><small>Status</small><strong id="portfolioPlanStatus">—</strong></article><article><small>Focus location</small><strong id="portfolioPlanLocation">—</strong></article><article><small>Blockers</small><strong id="portfolioPlanBlockers">—</strong></article><article><small>Plan ID</small><strong id="portfolioPlanId">—</strong></article></div><div id="portfolioPlanList" class="v4117-list"></div></section>
+
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="portfolioReasoningCenter" data-src="js/modules/portfolioReasoningEngine.js?v=41.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="portfolioReasoningCenter" data-src="js/modules/portfolioReasoningCenter.js?v=41.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="decisionLeverageCenter" data-src="js/modules/decisionLeverageEngine.js?v=41.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="decisionLeverageCenter" data-src="js/modules/decisionLeverageCenter.js?v=41.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="portfolioCoordinationPlanCenter" data-src="js/modules/portfolioCoordinationPlanEngine.js?v=41.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="portfolioCoordinationPlanCenter" data-src="js/modules/portfolioCoordinationPlanCenter.js?v=41.17.0"></script>
+
+  <script src="js/startup-loader.js?v=41.17.0"></script>
 </body>
 </html>

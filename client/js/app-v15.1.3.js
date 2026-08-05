@@ -2070,6 +2070,22 @@ const executiveReasoningBriefCenterModule = startupRegistry.register(
   ["eventBus", "operationalReasoningCenter", "multiStepPlanCenter", "planVerificationCenter", "decisionHorizonForecastCenter"]
 );
 
+const portfolioReasoningCenterModule = startupRegistry.register(
+  "portfolioReasoningCenter",
+  shouldInitializeCenter("portfolioReasoningCenter") ? window.createBlueCurrentPortfolioReasoningCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "executiveReasoningBriefCenter"]
+);
+const decisionLeverageCenterModule = startupRegistry.register(
+  "decisionLeverageCenter",
+  shouldInitializeCenter("decisionLeverageCenter") ? window.createBlueCurrentDecisionLeverageCenterModule?.(eventBus) : null,
+  ["eventBus", "decisionDependencyCenter", "portfolioReasoningCenter"]
+);
+const portfolioCoordinationPlanCenterModule = startupRegistry.register(
+  "portfolioCoordinationPlanCenter",
+  shouldInitializeCenter("portfolioCoordinationPlanCenter") ? window.createBlueCurrentPortfolioCoordinationPlanCenterModule?.(eventBus) : null,
+  ["eventBus", "portfolioReasoningCenter", "decisionLeverageCenter", "executiveReasoningBriefCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
