@@ -1,0 +1,8 @@
+(function(){"use strict";
+class BlueCurrentCoordinationGateEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4120:coordination-gates";}
+ read(k,f=[]){try{return JSON.parse(localStorage.getItem(k)||"null")??f;}catch{return f;}}
+ evaluate(owner){const matrix=this.read("bluecurrent:v4118:enterprise-constraints",[])[0]||null;const scenario=this.read("bluecurrent:v4119:coordinated-scenarios",[])[0]||null;const plan=this.read("bluecurrent:v4117:portfolio-coordination-plan",[])[0]||null;const verification=this.read("bluecurrent:v4111:plan-verification",[])[0]||null;const checks=[{name:"Constraint matrix current",pass:!!matrix},{name:"Coordinated scenario tested",pass:!!scenario},{name:"Portfolio plan available",pass:!!plan},{name:"Plan verification controlled",pass:!!verification&&verification.status!=="blocked"},{name:"Human owner assigned",pass:!!String(owner||"").trim()}];const blockers=checks.filter(x=>!x.pass).length;const score=Math.round(checks.filter(x=>x.pass).length/checks.length*100);const result={id:`GATE-${Date.now()}`,owner:owner||"Portfolio leader",score,blockers,status:blockers===0&&score===100?"approved":score>=60?"conditional":"blocked",checks,scenarioId:scenario?.id||null,planId:plan?.id||null,createdAt:new Date().toISOString()};const h=this.read(this.key,[]);h.unshift(result);localStorage.setItem(this.key,JSON.stringify(h.slice(0,20)));this.eventBus?.emit?.("aip:coordination-gate-evaluated",result);return result;}
+ history(){return this.read(this.key,[]);}
+}
+window.BlueCurrentCoordinationGateEngine=BlueCurrentCoordinationGateEngine;})();

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="41.17.0-portfolio-reasoning">
+  <meta name="blue-current-build" content="41.20.0-enterprise-coordination">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8242,6 +8242,17 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="portfolioCoordinationPlanCenter" data-src="js/modules/portfolioCoordinationPlanEngine.js?v=41.17.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="portfolioCoordinationPlanCenter" data-src="js/modules/portfolioCoordinationPlanCenter.js?v=41.17.0"></script>
 
-  <script src="js/startup-loader.js?v=41.17.0"></script>
+<section class="v4120-center" id="enterpriseConstraintCenter" aria-labelledby="enterpriseConstraintTitle"><header><div><small>V41.18 · Enterprise Constraint Matrix</small><strong id="enterpriseConstraintTitle">Expose cross-location constraints before leadership coordinates action.</strong><span>Labor, kitchen, guest, and decision dependencies are evaluated together.</span></div><button type="button" id="enterpriseConstraintRun">Evaluate constraints</button></header><div class="v4120-kpis"><article><small>Containment score</small><strong id="enterpriseConstraintScore">—</strong></article><article><small>Status</small><strong id="enterpriseConstraintStatus">—</strong></article><article><small>Constraints</small><strong id="enterpriseConstraintCount">0</strong></article><article><small>Locations</small><strong id="enterpriseConstraintLocations">0</strong></article></div><div id="enterpriseConstraintList" class="v4120-list"></div></section>
+<section class="v4120-center" id="coordinatedScenarioCenter" aria-labelledby="coordinatedScenarioTitle"><header><div><small>V41.19 · Coordinated Scenario Board</small><strong id="coordinatedScenarioTitle">Compare portfolio interventions before committing teams and capacity.</strong><span>Scenario estimates remain isolated from live restaurant state.</span></div><div class="v4120-actions"><select id="coordinatedScenarioAction"><option>Deploy floating manager</option><option>Shift demand to lower-risk location</option><option>Add temporary kitchen support</option><option>Hold seating across constrained locations</option></select><input id="coordinatedScenarioOwner" value="Portfolio leader" placeholder="Owner"><button type="button" id="coordinatedScenarioRun">Run scenario</button></div></header><div class="v4120-kpis"><article><small>Status</small><strong id="coordinatedScenarioStatus">—</strong></article><article><small>Risk movement</small><strong id="coordinatedScenarioRisk">—</strong></article><article><small>Confidence</small><strong id="coordinatedScenarioConfidence">—</strong></article><article><small>Scenario ID</small><strong id="coordinatedScenarioId">—</strong></article></div><div id="coordinatedScenarioList" class="v4120-list"></div></section>
+<section class="v4120-center v4120-gate" id="coordinationGateCenter" aria-labelledby="coordinationGateTitle"><header><div><small>V41.20 · Governed Coordination Gate</small><strong id="coordinationGateTitle">Approve coordinated portfolio action only after evidence, simulation, and verification align.</strong><span>Human ownership remains mandatory before any governed execution handoff.</span></div><div class="v4120-actions"><input id="coordinationGateOwner" value="Portfolio leader" placeholder="Owner"><button type="button" id="coordinationGateRun">Run gate</button><button type="button" id="coordinationGateExport">Export evidence</button></div></header><div class="v4120-kpis"><article><small>Gate score</small><strong id="coordinationGateScore">—</strong></article><article><small>Status</small><strong id="coordinationGateStatus">—</strong></article><article><small>Blockers</small><strong id="coordinationGateBlockers">—</strong></article><article><small>Gate ID</small><strong id="coordinationGateId">—</strong></article></div><div id="coordinationGateChecks" class="v4120-checks"></div></section>
+
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="enterpriseConstraintCenter" data-src="js/modules/enterpriseConstraintEngine.js?v=41.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="enterpriseConstraintCenter" data-src="js/modules/enterpriseConstraintCenter.js?v=41.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinatedScenarioCenter" data-src="js/modules/coordinatedScenarioEngine.js?v=41.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinatedScenarioCenter" data-src="js/modules/coordinatedScenarioCenter.js?v=41.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinationGateCenter" data-src="js/modules/coordinationGateEngine.js?v=41.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinationGateCenter" data-src="js/modules/coordinationGateCenter.js?v=41.20.0"></script>
+
+  <script src="js/startup-loader.js?v=41.20.0"></script>
 </body>
 </html>

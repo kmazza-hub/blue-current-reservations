@@ -2086,6 +2086,22 @@ const portfolioCoordinationPlanCenterModule = startupRegistry.register(
   ["eventBus", "portfolioReasoningCenter", "decisionLeverageCenter", "executiveReasoningBriefCenter"]
 );
 
+const enterpriseConstraintCenterModule = startupRegistry.register(
+  "enterpriseConstraintCenter",
+  shouldInitializeCenter("enterpriseConstraintCenter") ? window.createBlueCurrentEnterpriseConstraintCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "portfolioReasoningCenter", "decisionDependencyCenter"]
+);
+const coordinatedScenarioCenterModule = startupRegistry.register(
+  "coordinatedScenarioCenter",
+  shouldInitializeCenter("coordinatedScenarioCenter") ? window.createBlueCurrentCoordinatedScenarioCenterModule?.(eventBus) : null,
+  ["eventBus", "enterpriseConstraintCenter", "portfolioReasoningCenter"]
+);
+const coordinationGateCenterModule = startupRegistry.register(
+  "coordinationGateCenter",
+  shouldInitializeCenter("coordinationGateCenter") ? window.createBlueCurrentCoordinationGateCenterModule?.(eventBus) : null,
+  ["eventBus", "enterpriseConstraintCenter", "coordinatedScenarioCenter", "portfolioCoordinationPlanCenter", "planVerificationCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
