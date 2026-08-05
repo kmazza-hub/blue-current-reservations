@@ -2102,6 +2102,22 @@ const coordinationGateCenterModule = startupRegistry.register(
   ["eventBus", "enterpriseConstraintCenter", "coordinatedScenarioCenter", "portfolioCoordinationPlanCenter", "planVerificationCenter"]
 );
 
+const coordinationExecutionCenterModule = startupRegistry.register(
+  "coordinationExecutionCenter",
+  shouldInitializeCenter("coordinationExecutionCenter") ? window.createBlueCurrentCoordinationExecutionCenterModule?.(eventBus) : null,
+  ["eventBus", "coordinationGateCenter", "portfolioCoordinationPlanCenter"]
+);
+const enterpriseOutcomeCenterModule = startupRegistry.register(
+  "enterpriseOutcomeCenter",
+  shouldInitializeCenter("enterpriseOutcomeCenter") ? window.createBlueCurrentEnterpriseOutcomeCenterModule?.(eventBus) : null,
+  ["eventBus", "coordinationExecutionCenter", "portfolioReasoningCenter", "enterpriseConstraintCenter"]
+);
+const v41CertificationCenterModule = startupRegistry.register(
+  "v41CertificationCenter",
+  shouldInitializeCenter("v41CertificationCenter") ? window.createBlueCurrentV41CertificationCenterModule?.(eventBus) : null,
+  ["eventBus", "hospitalityOntologyCenter", "coordinationGateCenter", "enterpriseOutcomeCenter", "executiveReasoningBriefCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

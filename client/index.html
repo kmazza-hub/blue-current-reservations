@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="41.20.0-enterprise-coordination">
+  <meta name="blue-current-build" content="41.23.0-enterprise-outcome-certification">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8253,6 +8253,17 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinationGateCenter" data-src="js/modules/coordinationGateEngine.js?v=41.20.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinationGateCenter" data-src="js/modules/coordinationGateCenter.js?v=41.20.0"></script>
 
-  <script src="js/startup-loader.js?v=41.20.0"></script>
+
+<section class="v4123-center" id="coordinationExecutionCenter" aria-labelledby="coordExecTitle"><header><div><small>V41.21 · Coordination Execution Ledger</small><strong id="coordExecTitle">Turn approved portfolio coordination into accountable, human-owned execution.</strong><span>Execution records preserve owner, mode, gate evidence, and lifecycle status.</span></div><div class="v4123-actions"><input id="coordExecOwnerInput" value="Portfolio leader" placeholder="Owner"><select id="coordExecMode"><option value="simulation">Simulation</option><option value="governed-live">Governed live</option></select><button type="button" id="coordExecCreate">Create execution</button></div></header><div class="v4123-kpis"><article><small>Executions</small><strong id="coordExecCount">0</strong></article><article><small>Status</small><strong id="coordExecStatus">—</strong></article><article><small>Owner</small><strong id="coordExecOwner">—</strong></article><article><small>Execution ID</small><strong id="coordExecId">—</strong></article></div><div id="coordExecList" class="v4123-list"></div></section>
+<section class="v4123-center" id="enterpriseOutcomeCenter" aria-labelledby="entOutcomeTitle"><header><div><small>V41.22 · Enterprise Outcome Verification</small><strong id="entOutcomeTitle">Verify whether coordinated decisions produced the intended portfolio outcome.</strong><span>Execution, portfolio, constraint, ownership, and outcome evidence are checked together.</span></div><div class="v4123-actions"><input id="entOutcomeOwner" value="Portfolio leader" placeholder="Verification owner"><input id="entOutcomeNote" placeholder="Measured outcome evidence"><button type="button" id="entOutcomeRun">Verify outcome</button><button type="button" id="entOutcomeExport">Export</button></div></header><div class="v4123-kpis"><article><small>Outcome score</small><strong id="entOutcomeScore">—</strong></article><article><small>Status</small><strong id="entOutcomeStatus">—</strong></article><article><small>Blockers</small><strong id="entOutcomeBlockers">—</strong></article><article><small>Outcome ID</small><strong id="entOutcomeId">—</strong></article></div><div id="entOutcomeChecks" class="v4123-checks"></div></section>
+<section class="v4123-center v4123-cert" id="v41CertificationCenter" aria-labelledby="v41CertTitle"><header><div><small>V41.23 · V41 Reasoning Certification</small><strong id="v41CertTitle">Certify the complete hospitality reasoning chain from ontology through enterprise outcomes.</strong><span>Certification requires governed evidence and a named human owner.</span></div><div class="v4123-actions"><input id="v41CertOwner" value="Executive sponsor" placeholder="Certification owner"><button type="button" id="v41CertRun">Run certification</button><button type="button" id="v41CertExport">Export certificate</button></div></header><div class="v4123-kpis"><article><small>Certification score</small><strong id="v41CertScore">—</strong></article><article><small>Status</small><strong id="v41CertStatus">—</strong></article><article><small>Blockers</small><strong id="v41CertBlockers">—</strong></article><article><small>Certificate ID</small><strong id="v41CertId">—</strong></article></div><div id="v41CertChecks" class="v4123-checks"></div></section>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinationExecutionCenter" data-src="js/modules/coordinationExecutionEngine.js?v=41.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="coordinationExecutionCenter" data-src="js/modules/coordinationExecutionCenter.js?v=41.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="enterpriseOutcomeCenter" data-src="js/modules/enterpriseOutcomeEngine.js?v=41.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="enterpriseOutcomeCenter" data-src="js/modules/enterpriseOutcomeCenter.js?v=41.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v41CertificationCenter" data-src="js/modules/v41CertificationEngine.js?v=41.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v41CertificationCenter" data-src="js/modules/v41CertificationCenter.js?v=41.23.0"></script>
+
+  <script src="js/startup-loader.js?v=41.23.0"></script>
 </body>
 </html>
