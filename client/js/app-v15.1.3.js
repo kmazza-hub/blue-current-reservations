@@ -1939,6 +1939,40 @@ const aipLearningReleaseGateCenterModule = startupRegistry.register(
   ["eventBus", "aipImprovementBacklogCenter", "aipPromptExperimentCenter", "aipSafetyTestCenter", "aipLearningLoopCenter"]
 );
 
+
+const aipCommandConsoleCenterModule = startupRegistry.register(
+  "aipCommandConsoleCenter",
+  shouldInitializeCenter("aipCommandConsoleCenter") ? window.createBlueCurrentAIPCommandConsoleCenterModule?.(eventBus) : null,
+  ["eventBus", "aipAgentRuntimeCenter", "aipModelRoutingCenter"]
+);
+const aipExecutionPlanCenterModule = startupRegistry.register(
+  "aipExecutionPlanCenter",
+  shouldInitializeCenter("aipExecutionPlanCenter") ? window.createBlueCurrentAIPExecutionPlanCenterModule?.(eventBus) : null,
+  ["eventBus", "aipCommandConsoleCenter", "aipApprovalQueueCenter"]
+);
+const aipOutcomeReviewCenterModule = startupRegistry.register(
+  "aipOutcomeReviewCenter",
+  shouldInitializeCenter("aipOutcomeReviewCenter") ? window.createBlueCurrentAIPOutcomeReviewCenterModule?.(eventBus) : null,
+  ["eventBus", "aipExecutionPlanCenter", "aipHumanFeedbackCenter"]
+);
+
+
+const aipPolicyComposerCenterModule = startupRegistry.register(
+  "aipPolicyComposerCenter",
+  shouldInitializeCenter("aipPolicyComposerCenter") ? window.createBlueCurrentAIPPolicyComposerCenterModule?.(eventBus) : null,
+  ["eventBus", "aipGovernanceCenter", "aipPromptLibraryCenter"]
+);
+const aipToolGatewayCenterModule = startupRegistry.register(
+  "aipToolGatewayCenter",
+  shouldInitializeCenter("aipToolGatewayCenter") ? window.createBlueCurrentAIPToolGatewayCenterModule?.(eventBus) : null,
+  ["eventBus", "aipToolRegistryCenter", "aipKnowledgeSourceCenter"]
+);
+const aipRunSchedulerCenterModule = startupRegistry.register(
+  "aipRunSchedulerCenter",
+  shouldInitializeCenter("aipRunSchedulerCenter") ? window.createBlueCurrentAIPRunSchedulerCenterModule?.(eventBus) : null,
+  ["eventBus", "aipExecutionPlanCenter", "aipApprovalQueueCenter", "aipPolicyComposerCenter", "aipToolGatewayCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
