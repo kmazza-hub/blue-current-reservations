@@ -1891,6 +1891,22 @@ const aipReleaseCertificationCenterModule = startupRegistry.register(
   ["eventBus", "aipControlRoomCenter", "aipQualityScorecardCenter", "aipActionSandboxCenter", "aipSafetyTestCenter"]
 );
 
+const aipTaskDelegationCenterModule = startupRegistry.register(
+  "aipTaskDelegationCenter",
+  shouldInitializeCenter("aipTaskDelegationCenter") ? window.createBlueCurrentAIPTaskDelegationCenterModule?.(eventBus) : null,
+  ["eventBus", "aipApprovalQueueCenter"]
+);
+const aipCollaborationTranscriptCenterModule = startupRegistry.register(
+  "aipCollaborationTranscriptCenter",
+  shouldInitializeCenter("aipCollaborationTranscriptCenter") ? window.createBlueCurrentAIPCollaborationTranscriptCenterModule?.(eventBus) : null,
+  ["eventBus", "aipAgentRuntimeCenter", "aipMissionControlCenter", "aipTaskDelegationCenter"]
+);
+const aipPilotLaunchCenterModule = startupRegistry.register(
+  "aipPilotLaunchCenter",
+  shouldInitializeCenter("aipPilotLaunchCenter") ? window.createBlueCurrentAIPPilotLaunchCenterModule?.(eventBus) : null,
+  ["eventBus", "aipReleaseCertificationCenter", "aipSafetyTestCenter", "aipDeploymentControlCenter", "aipTaskDelegationCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

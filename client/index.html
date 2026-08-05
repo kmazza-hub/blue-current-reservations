@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="40.23.0-aip-certification">
+  <meta name="blue-current-build" content="40.26.0-aip-pilot-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8107,12 +8107,22 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipUsageBudgetCenter.js?v=40.20.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipControlRoomEngine.js?v=40.20.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipControlRoomCenter.js?v=40.20.0"></script>
+  
+<section class="v4026-center" id="aipTaskDelegationCenter" aria-labelledby="aipTaskTitleHeading"><header><div><small>V40.24 · Agent Task Delegation</small><strong id="aipTaskTitleHeading">Turn governed AI decisions into accountable human work.</strong><span>Every delegated task has a named owner, priority, due window, and execution status.</span></div><button type="button" id="aipTaskCreate">Delegate task</button></header><div class="v4026-kpis"><article><small>Total</small><strong id="aipTaskTotal">0</strong></article><article><small>Open</small><strong id="aipTaskOpen">0</strong></article><article><small>In progress</small><strong id="aipTaskProgress">0</strong></article><article><small>Complete</small><strong id="aipTaskComplete">0</strong></article></div><div class="v4026-form"><input id="aipTaskTitle" placeholder="Describe the delegated operating task"><input id="aipTaskOwner" placeholder="Named owner"><select id="aipTaskPriority"><option>normal</option><option>high</option><option>critical</option></select><input id="aipTaskDue" type="datetime-local"></div><span id="aipTaskStatus"></span><div id="aipTaskList" class="v4026-list"></div></section>
+<section class="v4026-center" id="aipCollaborationTranscriptCenter" aria-labelledby="aipTranscriptTitle"><header><div><small>V40.25 · Multi-Agent Collaboration Transcript</small><strong id="aipTranscriptTitle">See how agents, tools, approvals, and human tasks reached a decision.</strong><span>Session activity is captured as a readable, exportable operating transcript.</span></div><div class="v4026-actions"><select id="aipTranscriptFilter"><option value="all">All activity</option><option value="agent">Agent activity</option><option value="tool">Tool activity</option><option value="approval">Approval activity</option><option value="task">Task activity</option></select><button type="button" id="aipTranscriptExport">Export</button><button type="button" id="aipTranscriptClear">Clear</button></div></header><div class="v4026-kpis"><article><small>Records</small><strong id="aipTranscriptCount">0</strong></article><article><small>Agents</small><strong id="aipTranscriptAgents">0</strong></article><article><small>Approval holds</small><strong id="aipTranscriptApprovals">0</strong></article></div><div id="aipTranscriptList" class="v4026-list"></div></section>
+<section class="v4026-center v4026-gate" id="aipPilotLaunchCenter" aria-labelledby="aipPilotTitle"><header><div><small>V40.26 · AIP Pilot Launch Gate</small><strong id="aipPilotTitle">Make one governed go/no-go decision for a controlled restaurant pilot.</strong><span>Certification, safety, deployment, approvals, and human ownership are evaluated together.</span></div><div class="v4026-actions"><button type="button" id="aipPilotRun">Run launch gate</button><button type="button" id="aipPilotExport">Export evidence</button></div></header><div class="v4026-form"><input id="aipPilotOwner" value="AIP Pilot Owner" placeholder="Pilot owner"><input id="aipPilotWindow" value="Controlled pilot" placeholder="Pilot window"></div><div class="v4026-kpis"><article><small>Readiness</small><strong id="aipPilotScore">—</strong></article><article><small>Status</small><strong id="aipPilotStatus">—</strong></article><article><small>Blockers</small><strong id="aipPilotBlockers">—</strong></article><article><small>Gate ID</small><strong id="aipPilotId">—</strong></article></div><div id="aipPilotChecks" class="v4026-tests"></div></section>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipActionSandboxEngine.js?v=40.23.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipActionSandboxCenter.js?v=40.23.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipQualityScorecardEngine.js?v=40.23.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipQualityScorecardCenter.js?v=40.23.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipReleaseCertificationEngine.js?v=40.23.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipReleaseCertificationCenter.js?v=40.23.0"></script>
-  <script src="js/startup-loader.js?v=40.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipTaskDelegationEngine.js?v=40.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipTaskDelegationCenter.js?v=40.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipCollaborationTranscriptEngine.js?v=40.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipCollaborationTranscriptCenter.js?v=40.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPilotLaunchEngine.js?v=40.26.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipPilotLaunchCenter.js?v=40.26.0"></script>
+  <script src="js/startup-loader.js?v=40.26.0"></script>
 </body>
 </html>
