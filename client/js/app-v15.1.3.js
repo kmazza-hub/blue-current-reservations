@@ -1972,6 +1972,21 @@ const aipRunSchedulerCenterModule = startupRegistry.register(
   shouldInitializeCenter("aipRunSchedulerCenter") ? window.createBlueCurrentAIPRunSchedulerCenterModule?.(eventBus) : null,
   ["eventBus", "aipExecutionPlanCenter", "aipApprovalQueueCenter", "aipPolicyComposerCenter", "aipToolGatewayCenter"]
 );
+const aipPolicyEnforcementCenterModule = startupRegistry.register(
+  "aipPolicyEnforcementCenter",
+  shouldInitializeCenter("aipPolicyEnforcementCenter") ? window.createBlueCurrentAIPPolicyEnforcementCenterModule?.(eventBus) : null,
+  ["eventBus", "aipPolicyComposerCenter"]
+);
+const aipExecutionQueueCenterModule = startupRegistry.register(
+  "aipExecutionQueueCenter",
+  shouldInitializeCenter("aipExecutionQueueCenter") ? window.createBlueCurrentAIPExecutionQueueCenterModule?.(eventBus) : null,
+  ["eventBus", "aipExecutionPlanCenter", "aipApprovalQueueCenter", "aipPolicyEnforcementCenter"]
+);
+const aipAutonomyBoundaryCenterModule = startupRegistry.register(
+  "aipAutonomyBoundaryCenter",
+  shouldInitializeCenter("aipAutonomyBoundaryCenter") ? window.createBlueCurrentAIPAutonomyBoundaryCenterModule?.(eventBus) : null,
+  ["eventBus", "aipPolicyEnforcementCenter", "aipExecutionQueueCenter", "aipToolGatewayCenter", "aipRunSchedulerCenter"]
+);
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
