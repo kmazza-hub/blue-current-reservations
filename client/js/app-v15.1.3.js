@@ -1810,6 +1810,21 @@ const aipScenarioLabCenterModule = startupRegistry.register(
   shouldInitializeCenter("aipScenarioLabCenter") ? window.createBlueCurrentAIPScenarioLabCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "aipContextGraphCenter"]
 );
+const aipAgentBuilderCenterModule = startupRegistry.register(
+  "aipAgentBuilderCenter",
+  shouldInitializeCenter("aipAgentBuilderCenter") ? window.createBlueCurrentAIPAgentBuilderCenterModule?.(eventBus) : null,
+  ["eventBus", "aipToolRegistryCenter"]
+);
+const aipEvaluationCenterModule = startupRegistry.register(
+  "aipEvaluationCenter",
+  shouldInitializeCenter("aipEvaluationCenter") ? window.createBlueCurrentAIPEvaluationCenterModule?.(eventBus) : null,
+  ["eventBus", "aipAgentRuntimeCenter"]
+);
+const aipRunbookCompilerCenterModule = startupRegistry.register(
+  "aipRunbookCompilerCenter",
+  shouldInitializeCenter("aipRunbookCompilerCenter") ? window.createBlueCurrentAIPRunbookCompilerCenterModule?.(eventBus) : null,
+  ["eventBus", "aipPromptOrchestratorCenter"]
+);
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
