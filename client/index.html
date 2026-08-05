@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="40.17.0-aip-trust-routing">
+  <meta name="blue-current-build" content="40.23.0-aip-certification">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -2113,6 +2113,20 @@
 <header><div><small>V40.17 · Agent Safety Test Suite</small><strong id="aipSafetyTestTitle">Prove approval, grounding, and routing controls before agent deployment.</strong><span>Tests are deterministic governance checks, not claims about model correctness.</span></div><button type="button" id="aipSafetyTestRun">Run safety suite</button></header>
 <div class="v4017-kpis"><article><small>Safety score</small><strong id="aipSafetyTestScore">—</strong></article><article><small>Status</small><strong id="aipSafetyTestStatus">Not run</strong></article><article><small>Passed</small><strong id="aipSafetyTestPassed">0/0</strong></article></div><div id="aipSafetyTestRows" class="v4017-tests"></div>
 </section>
+
+<section class="v4020-center" id="aipEvidenceLedgerCenter" aria-labelledby="aipEvidenceTitle">
+<header><div><small>V40.18 · Evidence & Citation Ledger</small><strong id="aipEvidenceTitle">Trace every agent answer, tool call, and workflow back to operating evidence.</strong><span>Evidence remains attributable, inspectable, and exportable.</span></div><div class="v4020-actions"><button type="button" id="aipEvidenceRefresh">Refresh</button><button type="button" id="aipEvidenceExport">Export evidence</button></div></header>
+<div class="v4020-kpis"><article><small>Evidence records</small><strong id="aipEvidenceCount">0</strong></article><article><small>Grounded</small><strong id="aipEvidenceGrounded">0</strong></article><article><small>Approval-bound</small><strong id="aipEvidenceApproval">0</strong></article></div><div class="v4020-grid"><div id="aipEvidenceRows" class="v4020-list"></div><pre id="aipEvidenceDetail" class="v4020-detail">Select a record to inspect provenance.</pre></div>
+</section>
+<section class="v4020-center" id="aipUsageBudgetCenter" aria-labelledby="aipBudgetTitle">
+<header><div><small>V40.19 · Agent Usage & Budget Control</small><strong id="aipBudgetTitle">Keep AI capacity, deep reasoning, and tool usage inside deliberate limits.</strong><span>Budgets are local operating controls and do not expose provider credentials.</span></div><button type="button" id="aipBudgetSave">Save limits</button></header>
+<div class="v4020-kpis"><article><small>Utilization</small><strong id="aipBudgetUtilization">0%</strong></article><article><small>Status</small><strong id="aipBudgetStatus">Healthy</strong></article><article><small>Agent runs</small><strong id="aipBudgetRuns">0/150</strong></article><article><small>Tool calls</small><strong id="aipBudgetTools">0/500</strong></article><article><small>Deep routes</small><strong id="aipBudgetDeep">0/40</strong></article></div><div class="v4020-budget-form"><label>Daily agent runs<input id="aipBudgetRunsLimit" type="number" min="1"></label><label>Daily tool calls<input id="aipBudgetToolsLimit" type="number" min="1"></label><label>Daily deep routes<input id="aipBudgetDeepLimit" type="number" min="1"></label></div>
+</section>
+<section class="v4020-center v4020-control" id="aipControlRoomCenter" aria-labelledby="aipControlTitle">
+<header><div><small>V40.20 · AIP Control Room</small><strong id="aipControlTitle">One governed readiness gate for Blue Current agents.</strong><span>Safety, sources, deployment, evidence, and usage controls in one operating picture.</span></div><div class="v4020-actions"><button type="button" id="aipControlRun">Run control room</button><button type="button" id="aipControlExport">Export report</button></div></header>
+<div class="v4020-kpis"><article><small>Readiness</small><strong id="aipControlScore">—</strong></article><article><small>Status</small><strong id="aipControlStatus">Not evaluated</strong></article><article><small>Blockers</small><strong id="aipControlBlockers">0</strong></article><article><small>Certificate</small><strong id="aipControlCertificate">—</strong></article></div><div id="aipControlRows" class="v4020-tests"></div>
+</section>
+
 
 </main>
           </div>
@@ -8046,6 +8060,11 @@
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/preventionVerificationEngine.js?v=39.24.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="operations" data-src="js/modules/preventionVerificationCenter.js?v=39.24.0"></script>
 
+
+<section class="v4023-center" id="aipActionSandboxCenter" aria-labelledby="aipSandboxTitle"><header><div><small>V40.21 · Governed Action Sandbox</small><strong id="aipSandboxTitle">Simulate AI actions before they touch a live workflow.</strong><span>Risk, ownership, write capability, and approval requirements are evaluated first.</span></div><button type="button" id="aipSandboxRun">Simulate action</button></header><div class="v4023-kpis"><article><small>Simulations</small><strong id="aipSandboxCount">0</strong></article><article><small>Status</small><strong id="aipSandboxStatus">—</strong></article><article><small>Safety score</small><strong id="aipSandboxScore">—</strong></article></div><div class="v4023-form"><input id="aipSandboxAction" placeholder="Describe the proposed action"><input id="aipSandboxOwner" value="Manager" placeholder="Owner"><select id="aipSandboxRisk"><option value="low">Low risk</option><option value="medium" selected>Medium risk</option><option value="high">High risk</option><option value="critical">Critical risk</option></select><label><input id="aipSandboxWrite" type="checkbox"> Changes live operations</label></div><div id="aipSandboxResult" class="v4023-list"></div></section>
+<section class="v4023-center" id="aipQualityScorecardCenter" aria-labelledby="aipQualityTitle"><header><div><small>V40.22 · Agent Quality Scorecard</small><strong id="aipQualityTitle">Measure agent quality across evidence, safety, deployment, and observability.</strong><span>Quality is evaluated from governed platform evidence rather than self-reported confidence.</span></div><button type="button" id="aipQualityRun">Run scorecard</button></header><div class="v4023-kpis"><article><small>Quality score</small><strong id="aipQualityScore">—</strong></article><article><small>Status</small><strong id="aipQualityStatus">—</strong></article><article><small>Controls</small><strong id="aipQualityChecks">0</strong></article></div><div id="aipQualityRows" class="v4023-metrics"></div></section>
+<section class="v4023-center v4023-cert" id="aipReleaseCertificationCenter" aria-labelledby="aipCertTitle"><header><div><small>V40.23 · Final AIP Release Certification</small><strong id="aipCertTitle">Certify the complete V40 AIP foundation for governed pilot use.</strong><span>Control-room, quality, safety, sandbox, and approval evidence are evaluated together.</span></div><div class="v4023-actions"><button type="button" id="aipCertRun">Run certification</button><button type="button" id="aipCertExport">Export certificate</button></div></header><div class="v4023-kpis"><article><small>Certification</small><strong id="aipCertScore">—</strong></article><article><small>Status</small><strong id="aipCertStatus">—</strong></article><article><small>Blockers</small><strong id="aipCertBlockers">0</strong></article><article><small>Certificate</small><strong id="aipCertId">—</strong></article></div><div id="aipCertRows" class="v4023-tests"></div></section>
+
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipToolRegistryEngine.js?v=40.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipToolRegistryCenter.js?v=40.2.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipAgentRuntimeEngine.js?v=40.2.0"></script>
@@ -8082,6 +8101,18 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipModelRoutingCenter.js?v=40.17.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipSafetyTestEngine.js?v=40.17.0"></script>
   <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipSafetyTestCenter.js?v=40.17.0"></script>
-  <script src="js/startup-loader.js?v=40.17.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipEvidenceLedgerEngine.js?v=40.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipEvidenceLedgerCenter.js?v=40.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipUsageBudgetEngine.js?v=40.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipUsageBudgetCenter.js?v=40.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipControlRoomEngine.js?v=40.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipControlRoomCenter.js?v=40.20.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipActionSandboxEngine.js?v=40.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipActionSandboxCenter.js?v=40.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipQualityScorecardEngine.js?v=40.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipQualityScorecardCenter.js?v=40.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipReleaseCertificationEngine.js?v=40.23.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="aip" data-src="js/modules/aipReleaseCertificationCenter.js?v=40.23.0"></script>
+  <script src="js/startup-loader.js?v=40.23.0"></script>
 </body>
 </html>

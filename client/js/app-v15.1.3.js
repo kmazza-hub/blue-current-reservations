@@ -1857,6 +1857,40 @@ const aipSafetyTestCenterModule = startupRegistry.register(
   ["eventBus", "aipKnowledgeSourceCenter", "aipModelRoutingCenter", "aipGovernanceCenter"]
 );
 
+
+const aipEvidenceLedgerCenterModule = startupRegistry.register(
+  "aipEvidenceLedgerCenter",
+  shouldInitializeCenter("aipEvidenceLedgerCenter") ? window.createBlueCurrentAIPEvidenceLedgerCenterModule?.(eventBus) : null,
+  ["eventBus", "aipAgentRuntimeCenter", "aipObservabilityCenter"]
+);
+const aipUsageBudgetCenterModule = startupRegistry.register(
+  "aipUsageBudgetCenter",
+  shouldInitializeCenter("aipUsageBudgetCenter") ? window.createBlueCurrentAIPUsageBudgetCenterModule?.(eventBus) : null,
+  ["eventBus", "aipModelRoutingCenter", "aipObservabilityCenter"]
+);
+const aipControlRoomCenterModule = startupRegistry.register(
+  "aipControlRoomCenter",
+  shouldInitializeCenter("aipControlRoomCenter") ? window.createBlueCurrentAIPControlRoomCenterModule?.(eventBus) : null,
+  ["eventBus", "aipSafetyTestCenter", "aipKnowledgeSourceCenter", "aipEvidenceLedgerCenter", "aipUsageBudgetCenter", "aipDeploymentControlCenter"]
+);
+
+
+const aipActionSandboxCenterModule = startupRegistry.register(
+  "aipActionSandboxCenter",
+  shouldInitializeCenter("aipActionSandboxCenter") ? window.createBlueCurrentAIPActionSandboxCenterModule?.(eventBus) : null,
+  ["eventBus", "aipApprovalQueueCenter", "aipGovernanceCenter"]
+);
+const aipQualityScorecardCenterModule = startupRegistry.register(
+  "aipQualityScorecardCenter",
+  shouldInitializeCenter("aipQualityScorecardCenter") ? window.createBlueCurrentAIPQualityScorecardCenterModule?.(eventBus) : null,
+  ["eventBus", "aipEvaluationCenter", "aipSafetyTestCenter", "aipEvidenceLedgerCenter", "aipObservabilityCenter"]
+);
+const aipReleaseCertificationCenterModule = startupRegistry.register(
+  "aipReleaseCertificationCenter",
+  shouldInitializeCenter("aipReleaseCertificationCenter") ? window.createBlueCurrentAIPReleaseCertificationCenterModule?.(eventBus) : null,
+  ["eventBus", "aipControlRoomCenter", "aipQualityScorecardCenter", "aipActionSandboxCenter", "aipSafetyTestCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
