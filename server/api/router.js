@@ -57,7 +57,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "34.5.1",
+        version: "42.2.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -141,6 +141,42 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const allowedLocations = auth.membership.locationIds || [];
     const canAccessLocation = locationId =>
       allowedLocations.includes("*") || allowedLocations.includes(locationId);
+
+    if (url.pathname === "/api/live/connectors" && request.method === "GET") {
+      return sendJson(response, 200, { connectors: await liveIntegrationService.listConnectors(organizationId) });
+    }
+
+    if (url.pathname === "/api/live/connectors" && request.method === "POST") {
+      try {
+        const connector = await liveIntegrationService.saveConnector(organizationId, auth.user.name, await readJson(request));
+        return sendJson(response, 200, connector);
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+
+    if (url.pathname.startsWith("/api/live/connectors/") && url.pathname.endsWith("/test") && request.method === "POST") {
+      const id = decodeURIComponent(url.pathname.split("/")[4] || "");
+      const connector = await liveIntegrationService.testConnector(organizationId, id, auth.user.name);
+      return connector ? sendJson(response, 200, connector) : sendJson(response, 404, { error: "Connector not found." });
+    }
+
+    if (url.pathname === "/api/live/events" && request.method === "GET") {
+      return sendJson(response, 200, { events: await liveIntegrationService.events(organizationId, url.searchParams.get("limit") || 50) });
+    }
+
+    if (url.pathname === "/api/live/events" && request.method === "POST") {
+      try {
+        const event = await liveIntegrationService.ingestEvent(organizationId, auth.user.name, await readJson(request));
+        return sendJson(response, 201, event);
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+
+    if (url.pathname === "/api/live/status" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.status(organizationId));
+    }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
       return sendJson(response, 200, await telemetryService.snapshot());

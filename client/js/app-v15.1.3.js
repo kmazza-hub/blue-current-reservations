@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "41.38.0-pilot-learning-release", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "41.41.0-v41-closure", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2181,6 +2181,54 @@ const v41PilotCertificationCenterModule = startupRegistry.register(
   "v41PilotCertificationCenter",
   shouldInitializeCenter("v41PilotCertificationCenter") ? window.createBlueCurrentV41PilotCertificationCenterModule?.(eventBus) : null,
   ["eventBus", "v41ProductionReadinessCenter", "decisionRuntimeCenter", "interventionRehearsalCenter", "reasoningBenchmarkCenter"]
+);
+
+const pilotDecisionTelemetryCenterModule = startupRegistry.register(
+  "pilotDecisionTelemetryCenter",
+  shouldInitializeCenter("pilotDecisionTelemetryCenter") ? window.createBlueCurrentPilotDecisionTelemetryCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "v41PilotCertificationCenter", "decisionRuntimeCenter", "interventionRehearsalCenter"]
+);
+const reasoningOutcomeLearningCenterModule = startupRegistry.register(
+  "reasoningOutcomeLearningCenter",
+  shouldInitializeCenter("reasoningOutcomeLearningCenter") ? window.createBlueCurrentReasoningOutcomeLearningCenterModule?.(eventBus) : null,
+  ["eventBus", "pilotDecisionTelemetryCenter", "predictiveOptimizationCenter", "reasoningBenchmarkCenter"]
+);
+const v41EnterpriseReleaseCenterModule = startupRegistry.register(
+  "v41EnterpriseReleaseCenter",
+  shouldInitializeCenter("v41EnterpriseReleaseCenter") ? window.createBlueCurrentV41EnterpriseReleaseCenterModule?.(eventBus) : null,
+  ["eventBus", "v41PilotCertificationCenter", "pilotDecisionTelemetryCenter", "reasoningOutcomeLearningCenter", "v41ProductionReadinessCenter", "reasoningDriftCenter"]
+);
+const enterpriseDecisionConsoleCenterModule = startupRegistry.register(
+  "enterpriseDecisionConsoleCenter",
+  shouldInitializeCenter("enterpriseDecisionConsoleCenter") ? window.createBlueCurrentEnterpriseDecisionConsoleCenterModule?.(eventBus) : null,
+  ["eventBus", "v41EnterpriseReleaseCenter", "pilotDecisionTelemetryCenter", "reasoningOutcomeLearningCenter", "decisionRuntimeCenter", "predictiveOptimizationCenter"]
+);
+const evidenceReconciliationCenterModule = startupRegistry.register(
+  "evidenceReconciliationCenter",
+  shouldInitializeCenter("evidenceReconciliationCenter") ? window.createBlueCurrentEvidenceReconciliationCenterModule?.(eventBus) : null,
+  ["eventBus", "v41EnterpriseReleaseCenter", "enterpriseDecisionConsoleCenter", "pilotDecisionTelemetryCenter", "reasoningOutcomeLearningCenter"]
+);
+const v41ClosureCertificationCenterModule = startupRegistry.register(
+  "v41ClosureCertificationCenter",
+  shouldInitializeCenter("v41ClosureCertificationCenter") ? window.createBlueCurrentV41ClosureCertificationCenterModule?.(eventBus) : null,
+  ["eventBus", "v41EnterpriseReleaseCenter", "enterpriseDecisionConsoleCenter", "evidenceReconciliationCenter", "reasoningBenchmarkCenter", "reasoningDriftCenter"]
+);
+
+
+const liveConnectorRuntimeCenterModule = startupRegistry.register(
+  "liveConnectorRuntimeCenter",
+  shouldInitializeCenter("liveConnectorRuntimeCenter") ? window.createBlueCurrentLiveConnectorRuntimeCenterModule?.(eventBus) : null,
+  ["eventBus"]
+);
+const canonicalEventGatewayCenterModule = startupRegistry.register(
+  "canonicalEventGatewayCenter",
+  shouldInitializeCenter("canonicalEventGatewayCenter") ? window.createBlueCurrentCanonicalEventGatewayCenterModule?.(eventBus) : null,
+  ["eventBus", "liveConnectorRuntimeCenter"]
+);
+const liveSourceHealthCenterModule = startupRegistry.register(
+  "liveSourceHealthCenter",
+  shouldInitializeCenter("liveSourceHealthCenter") ? window.createBlueCurrentLiveSourceHealthCenterModule?.(eventBus) : null,
+  ["eventBus", "liveConnectorRuntimeCenter", "canonicalEventGatewayCenter"]
 );
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
