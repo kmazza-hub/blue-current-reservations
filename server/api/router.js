@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.2.0",
+        version: "42.5.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -170,12 +170,34 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         const event = await liveIntegrationService.ingestEvent(organizationId, auth.user.name, await readJson(request));
         return sendJson(response, 201, event);
       } catch (error) {
-        return sendJson(response, 400, { error: error.message });
+        return sendJson(response, 400, { error: error.message, deadLetterId: error.deadLetterId || null });
       }
     }
 
     if (url.pathname === "/api/live/status" && request.method === "GET") {
       return sendJson(response, 200, await liveIntegrationService.status(organizationId));
+    }
+
+    if (url.pathname === "/api/live/contracts" && request.method === "GET") {
+      return sendJson(response, 200, { contracts: liveIntegrationService.contracts() });
+    }
+
+    if (url.pathname === "/api/live/dead-letters" && request.method === "GET") {
+      return sendJson(response, 200, { deadLetters: await liveIntegrationService.deadLetters(organizationId, url.searchParams.get("limit") || 50) });
+    }
+
+    if (url.pathname.startsWith("/api/live/dead-letters/") && url.pathname.endsWith("/replay") && request.method === "POST") {
+      const id = decodeURIComponent(url.pathname.split("/")[4] || "");
+      try {
+        const result = await liveIntegrationService.replayDeadLetter(organizationId, id, auth.user.name);
+        return result ? sendJson(response, 200, result) : sendJson(response, 404, { error: "Dead letter not found." });
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+
+    if (url.pathname === "/api/live/operating-snapshot" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.operatingSnapshot(organizationId));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

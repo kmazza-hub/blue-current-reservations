@@ -2230,6 +2230,21 @@ const liveSourceHealthCenterModule = startupRegistry.register(
   shouldInitializeCenter("liveSourceHealthCenter") ? window.createBlueCurrentLiveSourceHealthCenterModule?.(eventBus) : null,
   ["eventBus", "liveConnectorRuntimeCenter", "canonicalEventGatewayCenter"]
 );
+const eventContractRegistryCenterModule = startupRegistry.register(
+  "eventContractRegistryCenter",
+  shouldInitializeCenter("eventContractRegistryCenter") ? window.createBlueCurrentEventContractRegistryCenterModule?.(eventBus) : null,
+  ["eventBus", "liveConnectorRuntimeCenter"]
+);
+const eventRecoveryCenterModule = startupRegistry.register(
+  "eventRecoveryCenter",
+  shouldInitializeCenter("eventRecoveryCenter") ? window.createBlueCurrentEventRecoveryCenterModule?.(eventBus) : null,
+  ["eventBus", "eventContractRegistryCenter"]
+);
+const liveOperationsBridgeCenterModule = startupRegistry.register(
+  "liveOperationsBridgeCenter",
+  shouldInitializeCenter("liveOperationsBridgeCenter") ? window.createBlueCurrentLiveOperationsBridgeCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "canonicalEventGatewayCenter", "eventContractRegistryCenter"]
+);
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",

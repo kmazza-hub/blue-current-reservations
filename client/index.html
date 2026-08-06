@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.2.0-live-operations-runtime">
+  <meta name="blue-current-build" content="42.5.0-live-ingestion-resilience">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8340,6 +8340,16 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveSourceHealthCenter" data-src="js/modules/liveSourceHealthEngine.js?v=42.2.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveSourceHealthCenter" data-src="js/modules/liveSourceHealthCenter.js?v=42.2.0"></script>
 
-  <script src="js/startup-loader.js?v=42.2.0"></script>
+<section class="v425-center" id="eventContractRegistryCenter" aria-labelledby="eventContractRegistryTitle"><header><div><small>V42.3 · Event Contract Registry</small><strong id="eventContractRegistryTitle">Normalize every restaurant source into explicit canonical contracts.</strong><span>Required fields and source domains are enforced before events enter the trusted stream.</span></div><button type="button" id="eventContractRefresh">Refresh contracts</button></header><div class="v425-kpis"><article><small>Contracts</small><strong id="eventContractCount">0</strong></article><article><small>Source domains</small><strong id="eventContractTypes">0</strong></article><article><small>Status</small><strong id="eventContractStatus">—</strong></article></div><div id="eventContractList" class="v425-list"></div></section>
+<section class="v425-center" id="eventRecoveryCenter" aria-labelledby="eventRecoveryTitle"><header><div><small>V42.4 · Event Recovery & Dead Letter Queue</small><strong id="eventRecoveryTitle">Keep malformed or incompatible events visible until they are corrected and replayed.</strong><span>Rejected events are preserved with their failure reason instead of disappearing.</span></div><button type="button" id="eventRecoveryRefresh">Refresh queue</button></header><div class="v425-kpis"><article><small>Open</small><strong id="eventRecoveryOpen">0</strong></article><article><small>Replayed</small><strong id="eventRecoveryReplayed">0</strong></article><article><small>Status</small><strong id="eventRecoveryStatus">—</strong></article></div><div id="eventRecoveryList" class="v425-list"></div></section>
+<section class="v425-center v425-bridge" id="liveOperationsBridgeCenter" aria-labelledby="liveOperationsBridgeTitle"><header><div><small>V42.5 · Live Operations Bridge</small><strong id="liveOperationsBridgeTitle">Convert canonical events into a live operating snapshot for Blue Current intelligence.</strong><span>Revenue, covers, kitchen load, and labor state now flow from the canonical event stream into shared application state.</span></div><button type="button" id="liveBridgeRefresh">Refresh snapshot</button></header><div class="v425-kpis v425-kpis-six"><article><small>Revenue · 4h</small><strong id="liveBridgeRevenue">$0</strong></article><article><small>Seated covers</small><strong id="liveBridgeCovers">0</strong></article><article><small>Open tickets</small><strong id="liveBridgeTickets">0</strong></article><article><small>On clock</small><strong id="liveBridgeLabor">0</strong></article><article><small>Status</small><strong id="liveBridgeStatus">—</strong></article><article><small>Last event</small><strong id="liveBridgeLast">—</strong></article></div><div id="liveBridgeDetails" class="v425-list"></div></section>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="eventContractRegistryCenter" data-src="js/modules/eventContractRegistryEngine.js?v=42.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="eventContractRegistryCenter" data-src="js/modules/eventContractRegistryCenter.js?v=42.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="eventRecoveryCenter" data-src="js/modules/eventRecoveryEngine.js?v=42.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="eventRecoveryCenter" data-src="js/modules/eventRecoveryCenter.js?v=42.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveOperationsBridgeCenter" data-src="js/modules/liveOperationsBridgeEngine.js?v=42.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveOperationsBridgeCenter" data-src="js/modules/liveOperationsBridgeCenter.js?v=42.5.0"></script>
+
+  <script src="js/startup-loader.js?v=42.5.0"></script>
 </body>
 </html>
