@@ -2327,6 +2327,21 @@ const connectionReadinessCenterModule = startupRegistry.register(
   shouldInitializeCenter("connectionReadinessCenter") ? window.createBlueCurrentConnectionReadinessCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "connectorAuthCenter", "webhookIngressCenter", "liveEvidenceCertificationCenter"]
 );
+const webhookReceiptLedgerCenterModule = startupRegistry.register(
+  "webhookReceiptLedgerCenter",
+  shouldInitializeCenter("webhookReceiptLedgerCenter") ? window.createBlueCurrentWebhookReceiptLedgerCenterModule?.(eventBus) : null,
+  ["eventBus", "webhookIngressCenter"]
+);
+const credentialRotationCenterModule = startupRegistry.register(
+  "credentialRotationCenter",
+  shouldInitializeCenter("credentialRotationCenter") ? window.createBlueCurrentCredentialRotationCenterModule?.(eventBus) : null,
+  ["eventBus", "connectorAuthCenter"]
+);
+const providerLaunchCertificationCenterModule = startupRegistry.register(
+  "providerLaunchCertificationCenter",
+  shouldInitializeCenter("providerLaunchCertificationCenter") ? window.createBlueCurrentProviderLaunchCertificationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "connectionReadinessCenter", "webhookReceiptLedgerCenter", "credentialRotationCenter"]
+);
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",

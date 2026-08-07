@@ -766,6 +766,9 @@ class LiveIntegrationService {
           authType, adapterId: stored.adapterId || null,
           secretEnv, secretAvailable: secretEnv ? !!process.env[secretEnv] : authType === "none",
           signatureHeader: stored.signatureHeader || "x-blue-current-signature",
+          previousSecretEnv: stored.previousSecretEnv || null,
+          previousSecretAvailable: stored.previousSecretEnv ? !!process.env[stored.previousSecretEnv] : false,
+          rotationExpiresAt: stored.rotationExpiresAt || null,
           updatedAt: stored.updatedAt || null, updatedBy: stored.updatedBy || null,
           webhookPath: `/api/live/webhooks/${encodeURIComponent(organizationId)}/${encodeURIComponent(connector.id)}`
         };
@@ -807,8 +810,15 @@ class LiveIntegrationService {
     if (!binding) { const error = new Error("Webhook source is not configured."); error.statusCode = 404; throw error; }
     if (binding.authType !== "hmac-sha256") { const error = new Error("Signed webhook authentication is not enabled for this source."); error.statusCode = 409; throw error; }
     if (!binding.secretEnv || !process.env[binding.secretEnv]) { const error = new Error(`Webhook secret environment variable is unavailable: ${binding.secretEnv || "(not configured)"}`); error.statusCode = 503; throw error; }
-    const expected = crypto.createHmac("sha256", process.env[binding.secretEnv]).update(String(rawBody || "")).digest("hex");
-    if (!this.secureCompareSignature(expected, signature)) { const error = new Error("Webhook signature verification failed."); error.statusCode = 401; throw error; }
+    const bodyText = String(rawBody || "");
+    const expected = crypto.createHmac("sha256", process.env[binding.secretEnv]).update(bodyText).digest("hex");
+    let verificationKey = this.secureCompareSignature(expected, signature) ? "current" : null;
+    const previousAllowed = binding.previousSecretEnv && binding.previousSecretAvailable && (!binding.rotationExpiresAt || Date.now() <= new Date(binding.rotationExpiresAt).getTime());
+    if (!verificationKey && previousAllowed) {
+      const previousExpected = crypto.createHmac("sha256", process.env[binding.previousSecretEnv]).update(bodyText).digest("hex");
+      if (this.secureCompareSignature(previousExpected, signature)) verificationKey = "previous";
+    }
+    if (!verificationKey) { const error = new Error("Webhook signature verification failed."); error.statusCode = 401; throw error; }
     const actor = `webhook:${source}`;
     let event;
     if (binding.adapterId) {
@@ -816,7 +826,7 @@ class LiveIntegrationService {
     } else {
       event = await this.ingestEvent(organizationId, actor, { ...body, source: body.source || source });
     }
-    const receipt = { organizationId, source, eventId: event.id, duplicate: !!event.duplicate, receivedAt: new Date().toISOString(), adapterId: binding.adapterId || null };
+    const receipt = { organizationId, source, eventId: event.id, duplicate: !!event.duplicate, verified: true, verificationKey, receivedAt: new Date().toISOString(), adapterId: binding.adapterId || null };
     await this.database.mutate(db => { db.liveWebhookIngress ||= []; db.liveWebhookIngress.unshift(receipt); db.liveWebhookIngress = db.liveWebhookIngress.slice(0, 1000); return receipt; });
     this.realtimeHub.publish("live-webhook-ingress", receipt);
     return { ok: true, ...receipt };
@@ -848,6 +858,59 @@ class LiveIntegrationService {
     });
     const score = sources.length ? Math.round(sources.reduce((sum,item)=>sum+item.score,0)/sources.length) : 0;
     return { organizationId, score, status: score === 100 && evidence.trusted ? "launch-ready" : score >= 70 ? "controlled" : "blocked", evidenceCertified: !!evidence.trusted, sources, generatedAt: new Date().toISOString() };
+  }
+
+  async recordWebhookFailure(organizationId, source, error) {
+    const receipt = { organizationId, source, eventId: null, duplicate: false, verified: false, verificationKey: null, receivedAt: new Date().toISOString(), error: String(error?.message || error || "Webhook rejected") };
+    await this.database.mutate(db => { db.liveWebhookIngress ||= []; db.liveWebhookIngress.unshift(receipt); db.liveWebhookIngress = db.liveWebhookIngress.slice(0, 1000); return receipt; });
+    this.realtimeHub.publish("live-webhook-ingress", receipt);
+    return receipt;
+  }
+
+  async webhookReceiptLedger(organizationId, limit = 200) {
+    const db = await this.database.read();
+    const receipts = (db.liveWebhookIngress || []).filter(item => item.organizationId === organizationId).slice(0, Math.max(1, Math.min(1000, Number(limit) || 200)));
+    const verified = receipts.filter(item => item.verified !== false).length;
+    const rejected = receipts.filter(item => item.verified === false).length;
+    const previousKey = receipts.filter(item => item.verificationKey === "previous").length;
+    return { organizationId, receiptCount: receipts.length, verified, rejected, previousKey, status: rejected ? "watch" : receipts.length ? "controlled" : "awaiting-data", receipts, generatedAt: new Date().toISOString() };
+  }
+
+  async rotateConnectorSecret(organizationId, actor, input = {}) {
+    const source = String(input.source || "").trim();
+    const currentSecretEnv = String(input.currentSecretEnv || "").trim();
+    const previousSecretEnv = String(input.previousSecretEnv || "").trim() || null;
+    const graceMinutes = Math.max(0, Math.min(10080, Number(input.graceMinutes) || 0));
+    if (!source || !currentSecretEnv) throw new Error("source and currentSecretEnv are required.");
+    if (!/^[A-Z][A-Z0-9_]{2,127}$/.test(currentSecretEnv) || (previousSecretEnv && !/^[A-Z][A-Z0-9_]{2,127}$/.test(previousSecretEnv))) throw new Error("Secret environment names must be uppercase environment-variable names.");
+    const db = await this.database.read();
+    const key = `${organizationId}:${source}`;
+    const existing = db.liveConnectorAuthBindings?.[key];
+    if (!existing) throw new Error("Create the connector authentication binding before rotating its secret.");
+    const rotationExpiresAt = previousSecretEnv && graceMinutes ? new Date(Date.now() + graceMinutes * 60000).toISOString() : null;
+    const record = { ...existing, secretEnv: currentSecretEnv, previousSecretEnv, rotationExpiresAt, updatedAt: new Date().toISOString(), updatedBy: actor };
+    await this.database.mutate(next => { next.liveConnectorAuthBindings ||= {}; next.liveConnectorAuthBindings[key] = record; return record; });
+    await this.auditService.record({ organizationId, actor, action: `Webhook credential rotation updated: ${source}`, category: "live-integration" });
+    return { ...record, secretAvailable: !!process.env[currentSecretEnv], previousSecretAvailable: previousSecretEnv ? !!process.env[previousSecretEnv] : false };
+  }
+
+  async providerLaunchCertification(organizationId, actor = null, persist = false) {
+    const [readiness, ledger, evidence, reconciliation, pressure] = await Promise.all([this.connectionReadiness(organizationId), this.webhookReceiptLedger(organizationId, 250), this.liveEvidenceCertification(organizationId), this.streamReconciliation(organizationId), this.backpressureStatus(organizationId)]);
+    const bindings = await this.connectorAuthBindings(organizationId);
+    const expiredRotations = bindings.bindings.filter(item => item.previousSecretEnv && item.rotationExpiresAt && Date.now() > new Date(item.rotationExpiresAt).getTime());
+    const controls = [
+      { id:"provider-readiness", label:"Provider connection readiness", pass: readiness.score >= 80, detail:`${readiness.score}%` },
+      { id:"verified-delivery", label:"Verified webhook delivery", pass: ledger.verified > 0 && ledger.rejected === 0, detail:`${ledger.verified} verified · ${ledger.rejected} rejected` },
+      { id:"evidence", label:"Trusted live evidence", pass: !!evidence.trusted, detail:`${evidence.score}%` },
+      { id:"reconciliation", label:"Stream reconciliation", pass: reconciliation.status !== "mismatch", detail:`${reconciliation.score}%` },
+      { id:"backpressure", label:"Backpressure containment", pass: pressure.status !== "critical", detail:pressure.status },
+      { id:"rotation", label:"Credential rotation hygiene", pass: expiredRotations.length === 0, detail:expiredRotations.length ? `${expiredRotations.length} expired grace window(s)` : "controlled" }
+    ];
+    const score = Math.round(controls.reduce((n,c)=>n+(c.pass?100:0),0)/controls.length);
+    const blockers = controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const certificate = { id:`PLC-${Date.now().toString(36).toUpperCase()}`, organizationId, score, status:score===100?"certified":score>=67?"conditional":"blocked", blockers, controls, issuedAt:new Date().toISOString(), issuedBy:actor, build:"42.23.0-provider-launch-control" };
+    if (persist) await this.database.mutate(db2 => { db2.providerLaunchCertification ||= {}; db2.providerLaunchCertification[organizationId]=certificate; return certificate; });
+    return certificate;
   }
 
   async operatingSnapshot(organizationId) {

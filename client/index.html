@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.20.0-provider-connection-runtime">
+  <meta name="blue-current-build" content="42.23.0-provider-launch-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8399,6 +8399,16 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="webhookIngressCenter" data-src="js/modules/webhookIngressCenter.js?v=42.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="connectionReadinessCenter" data-src="js/modules/connectionReadinessEngine.js?v=42.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="connectionReadinessCenter" data-src="js/modules/connectionReadinessCenter.js?v=42.20.0"></script>
-  <script src="js/startup-loader.js?v=42.20.0"></script>
+  
+<section class="v4223-center" id="webhookReceiptLedgerCenter" aria-labelledby="wrlTitle"><header><div><small>V42.21 · Webhook Receipt Ledger</small><strong id="wrlTitle">Prove every provider delivery attempt, verification result, and accepted canonical event.</strong><span>Signed delivery evidence stays traceable even when a provider request is rejected.</span></div><button type="button" id="wrlRefresh">Refresh receipts</button></header><div class="v4223-kpis"><article><small>Receipts</small><strong id="wrlCount">0</strong></article><article><small>Verified</small><strong id="wrlVerified">0</strong></article><article><small>Rejected</small><strong id="wrlRejected">0</strong></article><article><small>Status</small><strong id="wrlStatus">—</strong></article></div><div id="wrlList" class="v4223-list"></div></section>
+<section class="v4223-center" id="credentialRotationCenter" aria-labelledby="crcTitle"><header><div><small>V42.22 · Credential Rotation Control</small><strong id="crcTitle">Rotate webhook secrets without dropping provider traffic during the cutover window.</strong><span>Blue Current can temporarily accept current and previous HMAC secrets while preserving an audited deadline.</span></div><button type="button" id="crcRefresh">Refresh rotation</button></header><div class="v4223-kpis"><article><small>Bindings</small><strong id="crcBindings">0</strong></article><article><small>Rotating</small><strong id="crcRotating">0</strong></article><article><small>Status</small><strong id="crcStatus">—</strong></article></div><div class="v4223-actions"><input id="crcSource" value="toast-pos" placeholder="Connector ID"><input id="crcCurrentEnv" value="BLUE_CURRENT_TOAST_WEBHOOK_SECRET" placeholder="Current secret env"><input id="crcPreviousEnv" placeholder="Previous secret env (optional)"><input id="crcGraceMinutes" type="number" min="0" max="10080" value="60"><button type="button" id="crcSave">Apply rotation</button></div><div id="crcList" class="v4223-list"></div></section>
+<section class="v4223-center v4223-cert" id="providerLaunchCertificationCenter" aria-labelledby="plcTitle"><header><div><small>V42.23 · Provider Launch Certification</small><strong id="plcTitle">Certify provider authentication, delivery evidence, source health, and live reasoning trust before launch.</strong><span>The provider cannot be considered launch-ready until the complete live evidence chain is controlled.</span></div><button type="button" id="plcRefresh">Run certification</button></header><div class="v4223-kpis"><article><small>Certification</small><strong id="plcScore">0%</strong></article><article><small>Status</small><strong id="plcStatus">—</strong></article><article><small>Blockers</small><strong id="plcBlockers">0</strong></article><article><small>Certificate</small><strong id="plcId">—</strong></article></div><div id="plcChecks" class="v4223-list"></div></section>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="webhookReceiptLedgerCenter" data-src="js/modules/webhookReceiptLedgerEngine.js?v=42.23.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="webhookReceiptLedgerCenter" data-src="js/modules/webhookReceiptLedgerCenter.js?v=42.23.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="credentialRotationCenter" data-src="js/modules/credentialRotationEngine.js?v=42.23.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="credentialRotationCenter" data-src="js/modules/credentialRotationCenter.js?v=42.23.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="providerLaunchCertificationCenter" data-src="js/modules/providerLaunchCertificationEngine.js?v=42.23.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="providerLaunchCertificationCenter" data-src="js/modules/providerLaunchCertificationCenter.js?v=42.23.0"></script>
+  <script src="js/startup-loader.js?v=42.23.0"></script>
 </body>
 </html>

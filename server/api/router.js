@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.20.0",
+        version: "42.23.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -112,6 +112,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         const signature = request.headers[headerName] || request.headers["x-blue-current-signature"] || "";
         return sendJson(response, 202, await liveIntegrationService.ingestSignedWebhook(organizationId, source, signature, request._rawBody || "", body));
       } catch (error) {
+        try { await liveIntegrationService.recordWebhookFailure(organizationId, source, error); } catch {}
         return sendJson(response, error.statusCode || 400, { error: error.message });
       }
     }
@@ -332,6 +333,23 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/connection-readiness" && request.method === "GET") {
       return sendJson(response, 200, await liveIntegrationService.connectionReadiness(organizationId));
+    }
+
+    if (url.pathname === "/api/live/webhook-receipts" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.webhookReceiptLedger(organizationId, url.searchParams.get("limit") || 200));
+    }
+
+    if (url.pathname === "/api/live/credential-rotation" && request.method === "POST") {
+      try { return sendJson(response, 200, await liveIntegrationService.rotateConnectorSecret(organizationId, auth.user.name, await readJson(request))); }
+      catch (error) { return sendJson(response, 400, { error: error.message }); }
+    }
+
+    if (url.pathname === "/api/live/provider-launch-certification" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerLaunchCertification(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-launch-certification" && request.method === "POST") {
+      return sendJson(response, 200, await liveIntegrationService.providerLaunchCertification(organizationId, auth.user.name, true));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
