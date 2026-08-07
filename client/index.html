@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.35.0-enterprise-live-readiness">
+  <meta name="blue-current-build" content="42.38.0-enterprise-pilot-cutover">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8450,6 +8450,17 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterpriseLiveReadinessCenter" data-src="js/modules/enterpriseLiveReadinessEngine.js?v=42.35.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterpriseLiveReadinessCenter" data-src="js/modules/enterpriseLiveReadinessCenter.js?v=42.35.0"></script>
 
-  <script src="js/startup-loader.js?v=42.35.0"></script>
+
+<section class="v4238-center" id="locationCutoverCenter" aria-labelledby="lcoTitle"><header><div><small>V42.36 · Location Live Cutover</small><strong id="lcoTitle">Promote each restaurant from sandbox to pilot to live only when its source coverage is ready.</strong><span>Cutover is explicit, location-aware, and human-controlled.</span></div><button type="button" id="lcoRefresh">Refresh cutover</button></header><div class="v4238-kpis"><article><small>Locations</small><strong id="lcoLocations">0</strong></article><article><small>Pilot</small><strong id="lcoPilot">0</strong></article><article><small>Live</small><strong id="lcoLive">0</strong></article><article><small>Evidence trusted</small><strong id="lcoTrusted">NO</strong></article></div><div class="v4238-actions"><input id="lcoLocation" placeholder="Location ID"><select id="lcoStage"><option value="sandbox">Sandbox</option><option value="pilot">Pilot</option><option value="live">Live</option></select><input id="lcoNote" value="Controlled location cutover" placeholder="Cutover note"><button type="button" id="lcoPromote">Apply stage</button></div><div id="lcoList" class="v4238-list"></div></section>
+<section class="v4238-center" id="portfolioLiveTelemetryCenter" aria-labelledby="pltTitle"><header><div><small>V42.37 · Portfolio Live Telemetry</small><strong id="pltTitle">See live-data readiness across the restaurant portfolio as one operating picture.</strong><span>Coverage, location cutover stage, readiness, connector volume, and enterprise trust are combined into one portfolio signal.</span></div><button type="button" id="pltRefresh">Refresh telemetry</button></header><div class="v4238-kpis"><article><small>Portfolio health</small><strong id="pltScore">0%</strong></article><article><small>Status</small><strong id="pltStatus">—</strong></article><article><small>Locations</small><strong id="pltLocations">0</strong></article><article><small>Events · 15m</small><strong id="pltEvents">0</strong></article></div><div id="pltList" class="v4238-list"></div></section>
+<section class="v4238-center v4238-cert" id="enterprisePilotCutoverCenter" aria-labelledby="epcTitle"><header><div><small>V42.38 · Enterprise Pilot Cutover Certification</small><strong id="epcTitle">Certify that the live-data platform is ready to support a controlled multi-location restaurant pilot.</strong><span>V42 release trust, enterprise readiness, portfolio telemetry, and location cutover are evaluated together.</span></div><div class="v4238-actions"><button type="button" id="epcRefresh">Evaluate pilot</button><button type="button" id="epcCertify">Persist certificate</button></div></header><div class="v4238-kpis"><article><small>Pilot score</small><strong id="epcScore">0%</strong></article><article><small>Status</small><strong id="epcStatus">—</strong></article><article><small>Trusted</small><strong id="epcTrusted">NO</strong></article><article><small>Blockers</small><strong id="epcBlockers">0</strong></article><article><small>Certificate</small><strong id="epcId">—</strong></article></div><div id="epcChecks" class="v4238-list"></div></section>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="locationCutoverCenter" data-src="js/modules/locationCutoverEngine.js?v=42.38.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="locationCutoverCenter" data-src="js/modules/locationCutoverCenter.js?v=42.38.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="portfolioLiveTelemetryCenter" data-src="js/modules/portfolioLiveTelemetryEngine.js?v=42.38.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="portfolioLiveTelemetryCenter" data-src="js/modules/portfolioLiveTelemetryCenter.js?v=42.38.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterprisePilotCutoverCenter" data-src="js/modules/enterprisePilotCutoverEngine.js?v=42.38.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterprisePilotCutoverCenter" data-src="js/modules/enterprisePilotCutoverCenter.js?v=42.38.0"></script>
+
+  <script src="js/startup-loader.js?v=42.38.0"></script>
 </body>
 </html>

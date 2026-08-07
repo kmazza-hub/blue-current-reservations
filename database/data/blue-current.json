@@ -2622,7 +2622,7 @@
   ],
   "providerLaunchCertification": {
     "org_chefs": {
-      "id": "PLC-MSJGIML7",
+      "id": "PLC-MSJGWXXB",
       "organizationId": "org_chefs",
       "score": 50,
       "status": "blocked",
@@ -2669,7 +2669,7 @@
           "detail": "controlled"
         }
       ],
-      "issuedAt": "2026-08-07T21:28:35.803Z",
+      "issuedAt": "2026-08-07T21:39:43.679Z",
       "issuedBy": "Keith Mazza",
       "build": "42.23.0-provider-launch-control"
     }

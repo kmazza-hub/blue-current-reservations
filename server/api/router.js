@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.35.0",
+        version: "42.38.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -433,6 +433,11 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/live/coverage-matrix" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.liveCoverageMatrix(organizationId));
     if (url.pathname === "/api/live/enterprise-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.enterpriseLiveReadiness(organizationId));
     if (url.pathname === "/api/live/enterprise-readiness" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.enterpriseLiveReadiness(organizationId, auth.user.name, true));
+    if (url.pathname === "/api/live/location-cutover" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.locationCutoverControl(organizationId));
+    if (url.pathname === "/api/live/location-cutover" && request.method === "POST") { try { return sendJson(response, 200, await liveIntegrationService.locationCutoverControl(organizationId, auth.user.name, await readJson(request))); } catch (error) { return sendJson(response, 400, { error:error.message }); } }
+    if (url.pathname === "/api/live/portfolio-telemetry" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.portfolioLiveTelemetry(organizationId));
+    if (url.pathname === "/api/live/enterprise-pilot-certification" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.enterprisePilotCutoverCertification(organizationId));
+    if (url.pathname === "/api/live/enterprise-pilot-certification" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.enterprisePilotCutoverCertification(organizationId, auth.user.name, true));
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
       return sendJson(response, 200, await telemetryService.snapshot());

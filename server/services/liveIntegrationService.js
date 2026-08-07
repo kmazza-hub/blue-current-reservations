@@ -1079,7 +1079,7 @@ class LiveIntegrationService {
       {id:"evidence",label:"Live evidence certification",pass:evidence.trusted===true,detail:`${evidence.score}% · ${evidence.status}`}
     ];
     const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length); const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
-    const cert={id:`PCC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"continuity-certified":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor,build:"42.35.0-enterprise-live-readiness"};
+    const cert={id:`PCC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"continuity-certified":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor,build:"42.38.0-enterprise-pilot-cutover"};
     if(persist) await this.database.mutate(db=>{db.providerContinuityCertification||={};db.providerContinuityCertification[organizationId]=cert;return cert;});
     return cert;
   }
@@ -1111,7 +1111,7 @@ class LiveIntegrationService {
       score, status:score===100?"rehearsed":score>=67?"conditional":"blocked",
       blockers, controls, simulated:true, executed:false,
       note:String(input?.note||"").trim().slice(0,500),
-      runAt:new Date().toISOString(), runBy:actor||null, build:"42.35.0-enterprise-live-readiness"
+      runAt:new Date().toISOString(), runBy:actor||null, build:"42.38.0-enterprise-pilot-cutover"
     };
     if (input?.persist) {
       await this.database.mutate(db=>{db.providerRecoveryDrills ||= []; db.providerRecoveryDrills.unshift(drill); db.providerRecoveryDrills=db.providerRecoveryDrills.slice(0,500); return drill;});
@@ -1172,7 +1172,7 @@ class LiveIntegrationService {
     ];
     const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
     const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
-    const cert={id:`V42C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v42-complete":score>=67?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.35.0-enterprise-live-readiness"};
+    const cert={id:`V42C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v42-complete":score>=67?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.38.0-enterprise-pilot-cutover"};
     if(persist) await this.database.mutate(db=>{db.v42ReleaseCertification||={};db.v42ReleaseCertification[organizationId]=cert;return cert;});
     return cert;
   }
@@ -1201,7 +1201,88 @@ class LiveIntegrationService {
   async enterpriseLiveReadiness(organizationId, actor = null, persist = false) {
     const [release, coverage, continuity, twin] = await Promise.all([this.v42ReleaseCertification(organizationId),this.liveCoverageMatrix(organizationId),this.providerContinuityCertification(organizationId),this.twinSyncStatus(organizationId)]);
     const controls=[{id:"v42-release",label:"V42 live operations release",pass:release.trusted===true,detail:`${release.score}% · ${release.status}`},{id:"coverage",label:"Location source coverage",pass:coverage.score===100,detail:`${coverage.score}% · ${coverage.status}`},{id:"continuity",label:"Provider continuity",pass:continuity.trusted===true,detail:`${continuity.score}% · ${continuity.status}`},{id:"live-twin",label:"Trusted operational twin",pass:twin.trusted===true,detail:`${twin.score||0}% · ${twin.status||"unknown"}`}];
-    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length); const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`); const cert={id:`ELR-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"enterprise-live-ready":score>=50?"conditional":"blocked",trusted:score===100,blockers,controls,locationCount:(coverage.locations||[]).length,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.35.0-enterprise-live-readiness"}; if(persist) await this.database.mutate(db=>{db.enterpriseLiveReadiness||={};db.enterpriseLiveReadiness[organizationId]=cert;return cert;}); return cert;
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length); const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`); const cert={id:`ELR-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"enterprise-live-ready":score>=50?"conditional":"blocked",trusted:score===100,blockers,controls,locationCount:(coverage.locations||[]).length,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.38.0-enterprise-pilot-cutover"}; if(persist) await this.database.mutate(db=>{db.enterpriseLiveReadiness||={};db.enterpriseLiveReadiness[organizationId]=cert;return cert;}); return cert;
+  }
+
+
+  async locationCutoverControl(organizationId, actor = null, input = null) {
+    const coverage = await this.liveCoverageMatrix(organizationId);
+    const connectors = await this.listConnectors(organizationId);
+    const evidence = await this.liveEvidenceCertification(organizationId);
+    const db = await this.database.read();
+    const stored = (db.liveLocationCutovers || []).filter(item => item.organizationId === organizationId);
+    const connectorMap = new Map(connectors.map(item => [item.id, item]));
+
+    const evaluateLocation = (location) => {
+      const cutover = stored.find(item => item.locationId === location.locationId) || null;
+      const primarySources = (location.domains || []).map(item => item.primary).filter(Boolean);
+      const healthySources = primarySources.filter(id => {
+        const connector = connectorMap.get(id);
+        return connector && !["not-configured", "error", "quarantined"].includes(connector.status);
+      });
+      const controls = [
+        { id:"coverage", label:"Required live-domain coverage", pass:location.score === 100, detail:`${location.score}% · ${location.covered}/${location.required}` },
+        { id:"sources", label:"Primary source health", pass:primarySources.length >= location.required && healthySources.length === primarySources.length, detail:`${healthySources.length}/${primarySources.length || location.required} healthy` },
+        { id:"evidence", label:"Trusted live evidence", pass:evidence.trusted === true, detail:`${evidence.score || 0}% · ${evidence.status || "unknown"}` }
+      ];
+      const score = Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+      return { locationId:location.locationId, locationName:location.locationName, stage:cutover?.stage || "sandbox", owner:cutover?.owner || null, note:cutover?.note || null, updatedAt:cutover?.updatedAt || null, score, readyForPilot:location.score >= 75 && primarySources.length >= 3, readyForLive:controls.every(c=>c.pass), controls };
+    };
+
+    if (input && input.action === "promote") {
+      const locationId = String(input.locationId || "").trim();
+      const requestedStage = ["sandbox","pilot","live"].includes(input.stage) ? input.stage : "sandbox";
+      const location = (coverage.locations || []).find(item => item.locationId === locationId);
+      if (!location) throw new Error("Unknown location.");
+      const evaluation = evaluateLocation(location);
+      if (requestedStage === "pilot" && !evaluation.readyForPilot) throw new Error("Location is not ready for pilot cutover.");
+      if (requestedStage === "live" && !evaluation.readyForLive) throw new Error("Location is not ready for live cutover.");
+      const record = { organizationId, locationId, stage:requestedStage, owner:actor || "system", note:String(input.note || "").trim(), updatedAt:new Date().toISOString() };
+      await this.database.mutate(db2 => { db2.liveLocationCutovers ||= []; const idx=db2.liveLocationCutovers.findIndex(item=>item.organizationId===organizationId&&item.locationId===locationId); if(idx>=0) db2.liveLocationCutovers[idx]=record; else db2.liveLocationCutovers.push(record); return record; });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Live location cutover: ${locationId} -> ${requestedStage}`,category:"live-integration"});
+      return this.locationCutoverControl(organizationId);
+    }
+
+    return { organizationId, evidenceTrusted:!!evidence.trusted, locations:(coverage.locations || []).map(evaluateLocation), generatedAt:new Date().toISOString() };
+  }
+
+  async portfolioLiveTelemetry(organizationId) {
+    const [coverage, cutover, readiness, status] = await Promise.all([
+      this.liveCoverageMatrix(organizationId),
+      this.locationCutoverControl(organizationId),
+      this.enterpriseLiveReadiness(organizationId),
+      this.status(organizationId)
+    ]);
+    const rows = (coverage.locations || []).map(location => {
+      const state = (cutover.locations || []).find(item => item.locationId === location.locationId) || {};
+      const stageWeight = state.stage === "live" ? 100 : state.stage === "pilot" ? 70 : 30;
+      const score = Math.round((location.score * 0.6) + (stageWeight * 0.25) + ((state.readyForLive ? 100 : state.readyForPilot ? 70 : 30) * 0.15));
+      return { locationId:location.locationId, locationName:location.locationName, coverageScore:location.score, cutoverStage:state.stage || "sandbox", readinessScore:state.score || 0, score, status:score>=90?"operational":score>=65?"pilot-ready":"building" };
+    });
+    const score = rows.length ? Math.round(rows.reduce((sum,row)=>sum+row.score,0)/rows.length) : 0;
+    return { organizationId, score, status:score>=90&&readiness.trusted?"healthy":score>=65?"controlled":"building", enterpriseTrusted:!!readiness.trusted, connectorCount:status.connectorCount||0, events15m:status.events15m||0, locations:rows, generatedAt:new Date().toISOString() };
+  }
+
+  async enterprisePilotCutoverCertification(organizationId, actor = null, persist = false) {
+    const [release, readiness, telemetry, cutover] = await Promise.all([
+      this.v42ReleaseCertification(organizationId),
+      this.enterpriseLiveReadiness(organizationId),
+      this.portfolioLiveTelemetry(organizationId),
+      this.locationCutoverControl(organizationId)
+    ]);
+    const locations = cutover.locations || [];
+    const pilotOrLive = locations.filter(item => ["pilot","live"].includes(item.stage)).length;
+    const controls = [
+      { id:"v42-release", label:"V42 live-operations release", pass:release.trusted===true, detail:`${release.score||0}% · ${release.status||"unknown"}` },
+      { id:"enterprise-readiness", label:"Enterprise live readiness", pass:readiness.trusted===true, detail:`${readiness.score||0}% · ${readiness.status||"unknown"}` },
+      { id:"portfolio-telemetry", label:"Portfolio live telemetry", pass:telemetry.score>=80, detail:`${telemetry.score||0}% · ${telemetry.status||"unknown"}` },
+      { id:"location-cutover", label:"Location pilot cutover", pass:locations.length>0 && pilotOrLive===locations.length, detail:`${pilotOrLive}/${locations.length} locations at pilot/live` }
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`EPC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"pilot-certified":score>=50?"conditional":"blocked",trusted:score===100,blockers,controls,locationCount:locations.length,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.38.0-enterprise-pilot-cutover"};
+    if(persist) await this.database.mutate(db=>{db.enterprisePilotCutoverCertification||={};db.enterprisePilotCutoverCertification[organizationId]=cert;return cert;});
+    return cert;
   }
 
   async operatingSnapshot(organizationId) {
