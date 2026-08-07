@@ -2311,6 +2311,23 @@ const liveEvidenceCertificationCenterModule = startupRegistry.register(
   ["eventBus", "appState", "liveProvenanceCenter", "sourceCutoverCenter", "liveTwinSyncCenter", "reasoningFeedGateCenter"]
 );
 
+
+const connectorAuthCenterModule = startupRegistry.register(
+  "connectorAuthCenter",
+  shouldInitializeCenter("connectorAuthCenter") ? window.createBlueCurrentConnectorAuthCenterModule?.(eventBus) : null,
+  ["eventBus", "liveEvidenceCertificationCenter"]
+);
+const webhookIngressCenterModule = startupRegistry.register(
+  "webhookIngressCenter",
+  shouldInitializeCenter("webhookIngressCenter") ? window.createBlueCurrentWebhookIngressCenterModule?.(eventBus) : null,
+  ["eventBus", "connectorAuthCenter"]
+);
+const connectionReadinessCenterModule = startupRegistry.register(
+  "connectionReadinessCenter",
+  shouldInitializeCenter("connectionReadinessCenter") ? window.createBlueCurrentConnectionReadinessCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "connectorAuthCenter", "webhookIngressCenter", "liveEvidenceCertificationCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

@@ -8,7 +8,7 @@ function sendJson(response, status, payload) {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match, X-Blue-Current-Signature",
     "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version",
     "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
   };
@@ -48,6 +48,7 @@ async function readJson(request) {
     body += chunk;
     if (body.length > 1_000_000) throw new Error("Payload too large");
   }
+  request._rawBody = body;
   request._jsonBody = body ? JSON.parse(body) : {};
   return request._jsonBody;
 }
@@ -64,7 +65,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (request.method === "OPTIONS") {
       response.writeHead(204, {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match, X-Blue-Current-Signature",
         "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
       });
       return response.end();
@@ -73,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.17.0",
+        version: "42.20.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -96,6 +97,23 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       if (url.pathname.startsWith("/api/employee-portal/open-shifts/") && request.method === "POST") return sendJson(response, 200, await employeePortalService.claimShift(portalAuth.employee, decodeURIComponent(url.pathname.split("/").pop())));
       if (url.pathname === "/api/employee-portal/swaps" && request.method === "POST") return sendJson(response, 201, await employeePortalService.requestSwap(portalAuth.employee, await readJson(request)));
       if (url.pathname.startsWith("/api/employee-portal/notifications/") && request.method === "PATCH") { const result=await employeePortalService.markRead(portalAuth.employee,decodeURIComponent(url.pathname.split("/").pop())); return result?sendJson(response,200,result):sendJson(response,404,{error:"Notification not found."}); }
+    }
+
+    if (url.pathname.startsWith("/api/live/webhooks/") && request.method === "POST") {
+      const parts = url.pathname.split("/").filter(Boolean);
+      const organizationId = decodeURIComponent(parts[3] || "");
+      const source = decodeURIComponent(parts[4] || "");
+      if (!organizationId || !source) return sendJson(response, 400, { error: "Webhook organization and source are required." });
+      try {
+        const body = await readJson(request);
+        const bindings = await liveIntegrationService.connectorAuthBindings(organizationId);
+        const binding = bindings.bindings.find(item => item.source === source);
+        const headerName = binding?.signatureHeader || "x-blue-current-signature";
+        const signature = request.headers[headerName] || request.headers["x-blue-current-signature"] || "";
+        return sendJson(response, 202, await liveIntegrationService.ingestSignedWebhook(organizationId, source, signature, request._rawBody || "", body));
+      } catch (error) {
+        return sendJson(response, error.statusCode || 400, { error: error.message });
+      }
     }
 
     if (url.pathname === "/api/auth/login" && request.method === "POST") {
@@ -301,6 +319,19 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/evidence-certification" && request.method === "POST") {
       return sendJson(response, 200, await liveIntegrationService.liveEvidenceCertification(organizationId, auth.user.name, true));
+    }
+
+    if (url.pathname === "/api/live/auth-bindings" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.connectorAuthBindings(organizationId));
+    }
+
+    if (url.pathname === "/api/live/auth-bindings" && request.method === "PUT") {
+      try { return sendJson(response, 200, await liveIntegrationService.saveConnectorAuthBinding(organizationId, auth.user.name, await readJson(request))); }
+      catch (error) { return sendJson(response, 400, { error: error.message }); }
+    }
+
+    if (url.pathname === "/api/live/connection-readiness" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.connectionReadiness(organizationId));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

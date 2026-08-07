@@ -750,6 +750,106 @@ class LiveIntegrationService {
     return certificate;
   }
 
+
+  async connectorAuthBindings(organizationId) {
+    const connectors = await this.listConnectors(organizationId);
+    const db = await this.database.read();
+    const bindings = db.liveConnectorAuthBindings || {};
+    return {
+      organizationId,
+      bindings: connectors.map(connector => {
+        const stored = bindings[`${organizationId}:${connector.id}`] || {};
+        const secretEnv = stored.secretEnv || null;
+        const authType = stored.authType || "none";
+        return {
+          source: connector.id, name: connector.name, type: connector.type,
+          authType, adapterId: stored.adapterId || null,
+          secretEnv, secretAvailable: secretEnv ? !!process.env[secretEnv] : authType === "none",
+          signatureHeader: stored.signatureHeader || "x-blue-current-signature",
+          updatedAt: stored.updatedAt || null, updatedBy: stored.updatedBy || null,
+          webhookPath: `/api/live/webhooks/${encodeURIComponent(organizationId)}/${encodeURIComponent(connector.id)}`
+        };
+      }),
+      generatedAt: new Date().toISOString()
+    };
+  }
+
+  async saveConnectorAuthBinding(organizationId, actor, input = {}) {
+    const source = String(input.source || "").trim();
+    if (!source) throw new Error("source is required.");
+    const connectors = await this.listConnectors(organizationId);
+    if (!connectors.some(item => item.id === source)) throw new Error(`Unknown connector: ${source}`);
+    const authType = ["none", "hmac-sha256"].includes(input.authType) ? input.authType : "hmac-sha256";
+    const secretEnv = authType === "none" ? null : String(input.secretEnv || "").trim();
+    if (secretEnv && !/^[A-Z][A-Z0-9_]{2,127}$/.test(secretEnv)) throw new Error("secretEnv must be an uppercase environment-variable name.");
+    if (authType !== "none" && !secretEnv) throw new Error("secretEnv is required for signed webhook authentication.");
+    const adapterId = String(input.adapterId || "").trim() || null;
+    if (adapterId && !this.adapterProfile(adapterId)) throw new Error(`Unknown adapter profile: ${adapterId}`);
+    const signatureHeader = String(input.signatureHeader || "x-blue-current-signature").trim().toLowerCase();
+    if (!/^[a-z0-9-]{3,80}$/.test(signatureHeader)) throw new Error("signatureHeader is invalid.");
+    const record = { organizationId, source, authType, secretEnv, adapterId, signatureHeader, updatedAt: new Date().toISOString(), updatedBy: actor };
+    await this.database.mutate(db => { db.liveConnectorAuthBindings ||= {}; db.liveConnectorAuthBindings[`${organizationId}:${source}`] = record; return record; });
+    await this.auditService.record({ organizationId, actor, action: `Live connector auth binding saved: ${source} (${authType})`, category: "live-integration" });
+    this.realtimeHub.publish("live-connector-auth-binding", { ...record, secretAvailable: secretEnv ? !!process.env[secretEnv] : true });
+    return { ...record, secretAvailable: secretEnv ? !!process.env[secretEnv] : true };
+  }
+
+  secureCompareSignature(expected, supplied) {
+    const normalize = value => String(value || "").trim().replace(/^sha256=/i, "").toLowerCase();
+    const a = normalize(expected), b = normalize(supplied);
+    if (!a || !b || a.length !== b.length || !/^[a-f0-9]+$/.test(a) || !/^[a-f0-9]+$/.test(b)) return false;
+    try { return crypto.timingSafeEqual(Buffer.from(a, "hex"), Buffer.from(b, "hex")); } catch { return false; }
+  }
+
+  async ingestSignedWebhook(organizationId, source, signature, rawBody, body = {}) {
+    const bindings = await this.connectorAuthBindings(organizationId);
+    const binding = bindings.bindings.find(item => item.source === source);
+    if (!binding) { const error = new Error("Webhook source is not configured."); error.statusCode = 404; throw error; }
+    if (binding.authType !== "hmac-sha256") { const error = new Error("Signed webhook authentication is not enabled for this source."); error.statusCode = 409; throw error; }
+    if (!binding.secretEnv || !process.env[binding.secretEnv]) { const error = new Error(`Webhook secret environment variable is unavailable: ${binding.secretEnv || "(not configured)"}`); error.statusCode = 503; throw error; }
+    const expected = crypto.createHmac("sha256", process.env[binding.secretEnv]).update(String(rawBody || "")).digest("hex");
+    if (!this.secureCompareSignature(expected, signature)) { const error = new Error("Webhook signature verification failed."); error.statusCode = 401; throw error; }
+    const actor = `webhook:${source}`;
+    let event;
+    if (binding.adapterId) {
+      event = await this.ingestAdapterEvent(organizationId, actor, binding.adapterId, { connectorId: source, event: body });
+    } else {
+      event = await this.ingestEvent(organizationId, actor, { ...body, source: body.source || source });
+    }
+    const receipt = { organizationId, source, eventId: event.id, duplicate: !!event.duplicate, receivedAt: new Date().toISOString(), adapterId: binding.adapterId || null };
+    await this.database.mutate(db => { db.liveWebhookIngress ||= []; db.liveWebhookIngress.unshift(receipt); db.liveWebhookIngress = db.liveWebhookIngress.slice(0, 1000); return receipt; });
+    this.realtimeHub.publish("live-webhook-ingress", receipt);
+    return { ok: true, ...receipt };
+  }
+
+  async connectionReadiness(organizationId) {
+    const [bindings, promotion, checkpoints, evidence] = await Promise.all([
+      this.connectorAuthBindings(organizationId), this.sourcePromotionStatus(organizationId), this.sourceCheckpoints(organizationId), this.liveEvidenceCertification(organizationId)
+    ]);
+    const checkpointMap = new Map((checkpoints.checkpoints || []).map(item => [item.source, item]));
+    const promotionMap = new Map((promotion.sources || []).map(item => [item.source, item]));
+    const db = await this.database.read();
+    const receipts = (db.liveWebhookIngress || []).filter(item => item.organizationId === organizationId);
+    const sources = bindings.bindings.map(binding => {
+      const cp = checkpointMap.get(binding.source);
+      const promo = promotionMap.get(binding.source);
+      const receipt = receipts.find(item => item.source === binding.source) || null;
+      const blockers = [];
+      if (binding.authType !== "hmac-sha256") blockers.push("Signed webhook authentication is not configured.");
+      if (binding.authType === "hmac-sha256" && !binding.secretAvailable) blockers.push("Server-side webhook secret is unavailable.");
+      if (!binding.adapterId) blockers.push("No provider adapter is assigned.");
+      if (!cp?.sequence) blockers.push("No accepted event checkpoint exists.");
+      if (promo?.stage === "live" && promo.blockers?.length) blockers.push("Live source promotion still has blockers.");
+      const age = receipt?.receivedAt ? Math.round((Date.now() - new Date(receipt.receivedAt).getTime()) / 1000) : null;
+      if (!receipt) blockers.push("No verified webhook receipt exists.");
+      else if (age > 900) blockers.push("Last verified webhook receipt is older than 15 minutes.");
+      const score = Math.max(0, 100 - blockers.length * 20);
+      return { source: binding.source, name: binding.name, score, status: score === 100 ? "ready" : score >= 60 ? "conditional" : "blocked", blockers, authType: binding.authType, secretAvailable: binding.secretAvailable, adapterId: binding.adapterId, lastVerifiedWebhookAt: receipt?.receivedAt || null, promotionStage: promo?.stage || "sandbox", checkpointSequence: cp?.sequence || 0 };
+    });
+    const score = sources.length ? Math.round(sources.reduce((sum,item)=>sum+item.score,0)/sources.length) : 0;
+    return { organizationId, score, status: score === 100 && evidence.trusted ? "launch-ready" : score >= 70 ? "controlled" : "blocked", evidenceCertified: !!evidence.trusted, sources, generatedAt: new Date().toISOString() };
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;
