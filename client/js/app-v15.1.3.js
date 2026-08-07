@@ -2359,6 +2359,23 @@ const providerOperationsGateCenterModule = startupRegistry.register(
   ["eventBus", "appState", "providerLaunchCertificationCenter", "providerSlaCenter", "providerQuarantineCenter"]
 );
 
+
+const providerIncidentCenterModule = startupRegistry.register(
+  "providerIncidentCenter",
+  shouldInitializeCenter("providerIncidentCenter") ? window.createBlueCurrentProviderIncidentCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "providerSlaCenter", "providerQuarantineCenter"]
+);
+const providerFailoverCenterModule = startupRegistry.register(
+  "providerFailoverCenter",
+  shouldInitializeCenter("providerFailoverCenter") ? window.createBlueCurrentProviderFailoverCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "connectionReadinessCenter", "providerSlaCenter"]
+);
+const providerContinuityCertificationCenterModule = startupRegistry.register(
+  "providerContinuityCertificationCenter",
+  shouldInitializeCenter("providerContinuityCertificationCenter") ? window.createBlueCurrentProviderContinuityCertificationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "providerOperationsGateCenter", "providerIncidentCenter", "providerFailoverCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

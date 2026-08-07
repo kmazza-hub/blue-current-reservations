@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.26.0",
+        version: "42.29.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -376,6 +376,32 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/provider-operations-gate" && request.method === "POST") {
       return sendJson(response, 200, await liveIntegrationService.providerOperationsGate(organizationId, auth.user.name, true));
+    }
+
+    if (url.pathname === "/api/live/provider-incidents" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerIncidentLedger(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-incidents" && request.method === "POST") {
+      try { return sendJson(response, 200, await liveIntegrationService.providerIncidentLedger(organizationId, auth.user.name, await readJson(request))); }
+      catch (error) { return sendJson(response, 400, { error: error.message }); }
+    }
+
+    if (url.pathname === "/api/live/provider-failover" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerFailoverPlan(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-failover" && request.method === "POST") {
+      try { return sendJson(response, 200, await liveIntegrationService.providerFailoverPlan(organizationId, auth.user.name, await readJson(request))); }
+      catch (error) { return sendJson(response, 400, { error: error.message }); }
+    }
+
+    if (url.pathname === "/api/live/provider-continuity-certification" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerContinuityCertification(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-continuity-certification" && request.method === "POST") {
+      return sendJson(response, 200, await liveIntegrationService.providerContinuityCertification(organizationId, auth.user.name, true));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

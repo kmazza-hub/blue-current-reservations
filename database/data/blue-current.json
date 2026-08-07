@@ -2562,7 +2562,7 @@
   ],
   "providerLaunchCertification": {
     "org_chefs": {
-      "id": "PLC-MSIR1EJR",
+      "id": "PLC-MSIR8ZU3",
       "organizationId": "org_chefs",
       "score": 50,
       "status": "blocked",
@@ -2609,7 +2609,7 @@
           "detail": "controlled"
         }
       ],
-      "issuedAt": "2026-08-07T09:35:21.831Z",
+      "issuedAt": "2026-08-07T09:41:16.011Z",
       "issuedBy": "Keith Mazza",
       "build": "42.23.0-provider-launch-control"
     }

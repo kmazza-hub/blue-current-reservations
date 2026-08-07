@@ -1006,6 +1006,84 @@ class LiveIntegrationService {
     return gate;
   }
 
+
+  async providerIncidentLedger(organizationId, actor = null, input = null) {
+    if (input && input.action === "record") {
+      const source = String(input.source || "").trim();
+      const summary = String(input.summary || "Provider continuity incident").trim().slice(0, 240);
+      const severity = ["watch","major","critical"].includes(input.severity) ? input.severity : "watch";
+      if (!source) throw new Error("source is required.");
+      const connectors = await this.listConnectors(organizationId);
+      if (!connectors.some(item => item.id === source)) throw new Error(`Unknown connector: ${source}`);
+      const record = { id:`PINC-${Date.now().toString(36).toUpperCase()}`, organizationId, source, summary, severity, status:"open", openedAt:new Date().toISOString(), openedBy:actor || "system", resolvedAt:null, resolvedBy:null };
+      await this.database.mutate(db => { db.liveProviderIncidents ||= []; db.liveProviderIncidents.unshift(record); db.liveProviderIncidents = db.liveProviderIncidents.slice(0,1000); return record; });
+      await this.auditService.record({ organizationId, actor:actor||"system", action:`Provider incident opened: ${source} · ${severity} · ${summary}`, category:"live-integration" });
+      this.realtimeHub.publish("live-provider-incident", record);
+    }
+    if (input && input.action === "resolve") {
+      const id=String(input.id||"").trim();
+      if (!id) throw new Error("incident id is required.");
+      await this.database.mutate(db => { db.liveProviderIncidents ||= []; const record=db.liveProviderIncidents.find(item=>item.organizationId===organizationId&&item.id===id); if(!record) return null; record.status="resolved"; record.resolvedAt=new Date().toISOString(); record.resolvedBy=actor||"system"; return record; });
+      await this.auditService.record({ organizationId, actor:actor||"system", action:`Provider incident resolved: ${id}`, category:"live-integration" });
+    }
+    const [sla, quarantine] = await Promise.all([this.providerSlaStatus(organizationId), this.providerQuarantineStatus(organizationId)]);
+    const db=await this.database.read();
+    let incidents=(db.liveProviderIncidents||[]).filter(item=>item.organizationId===organizationId);
+    const openKeys=new Set(incidents.filter(i=>i.status==="open").map(i=>`${i.source}:${i.summary}`));
+    const generated=[];
+    for (const source of (sla.sources||[])) {
+      if (source.status === "breach") {
+        const summary="Provider delivery SLA breach"; const key=`${source.source}:${summary}`;
+        if (!openKeys.has(key)) generated.push({source:source.source, summary, severity:"major"});
+      }
+    }
+    for (const source of (quarantine.sources||[])) {
+      if (source.quarantined) { const summary="Provider quarantined"; const key=`${source.source}:${summary}`; if(!openKeys.has(key)) generated.push({source:source.source, summary, severity:"critical"}); }
+    }
+    if (generated.length) {
+      await this.database.mutate(db2 => { db2.liveProviderIncidents ||= []; for(const g of generated){db2.liveProviderIncidents.unshift({id:`PINC-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,5)}`,organizationId,...g,status:"open",openedAt:new Date().toISOString(),openedBy:"system",resolvedAt:null,resolvedBy:null});} db2.liveProviderIncidents=db2.liveProviderIncidents.slice(0,1000); });
+      const db3=await this.database.read(); incidents=(db3.liveProviderIncidents||[]).filter(item=>item.organizationId===organizationId);
+    }
+    const open=incidents.filter(i=>i.status==="open");
+    const critical=open.filter(i=>i.severity==="critical").length;
+    return { organizationId, count:incidents.length, open:open.length, critical, status:critical?"critical":open.length?"watch":"clear", incidents:incidents.slice(0,200), generatedAt:new Date().toISOString() };
+  }
+
+  async providerFailoverPlan(organizationId, actor = null, input = null) {
+    if (input && input.action === "save") {
+      const primary=String(input.primary||"").trim(), standby=String(input.standby||"").trim();
+      if (!primary || !standby || primary===standby) throw new Error("Distinct primary and standby connector IDs are required.");
+      const connectors=await this.listConnectors(organizationId);
+      if(!connectors.some(i=>i.id===primary) || !connectors.some(i=>i.id===standby)) throw new Error("Both failover connectors must exist.");
+      const record={organizationId,primary,standby,mode:input.mode==="manual"?"manual":"approval-required",updatedAt:new Date().toISOString(),updatedBy:actor||"system"};
+      await this.database.mutate(db=>{db.liveProviderFailoverPlans||={};db.liveProviderFailoverPlans[`${organizationId}:${primary}`]=record;return record;});
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Provider failover plan saved: ${primary} -> ${standby}`,category:"live-integration"});
+    }
+    const [connectors, readiness, sla, quarantine] = await Promise.all([this.listConnectors(organizationId),this.connectionReadiness(organizationId),this.providerSlaStatus(organizationId),this.providerQuarantineStatus(organizationId)]);
+    const db=await this.database.read(); const plans=Object.values(db.liveProviderFailoverPlans||{}).filter(i=>i.organizationId===organizationId);
+    const readyMap=new Map((readiness.sources||[]).map(i=>[i.source,i])); const slaMap=new Map((sla.sources||[]).map(i=>[i.source,i])); const qMap=new Map((quarantine.sources||[]).map(i=>[i.source,i]));
+    const rows=plans.map(plan=>{const p=connectors.find(i=>i.id===plan.primary),s=connectors.find(i=>i.id===plan.standby);const blockers=[];if(!p)blockers.push("Primary connector missing.");if(!s)blockers.push("Standby connector missing.");if((readyMap.get(plan.standby)?.score||0)<60)blockers.push("Standby connection readiness is below 60%.");if(["breach","awaiting-data"].includes(slaMap.get(plan.standby)?.status))blockers.push("Standby delivery SLA is not healthy enough.");if(qMap.get(plan.standby)?.quarantined)blockers.push("Standby provider is quarantined.");return {...plan,primaryName:p?.name||plan.primary,standbyName:s?.name||plan.standby,score:Math.max(0,100-blockers.length*25),status:blockers.length?"conditional":"ready",blockers};});
+    const score=rows.length?Math.round(rows.reduce((a,b)=>a+b.score,0)/rows.length):0;
+    return {organizationId,score,status:rows.length?(rows.every(i=>i.status==="ready")?"ready":"conditional"):"not-configured",plans:rows,generatedAt:new Date().toISOString()};
+  }
+
+  async providerContinuityCertification(organizationId, actor = null, persist = false) {
+    const [operations, incidents, failover, reconciliation, evidence] = await Promise.all([
+      this.providerOperationsGate(organizationId), this.providerIncidentLedger(organizationId), this.providerFailoverPlan(organizationId), this.streamReconciliation(organizationId), this.liveEvidenceCertification(organizationId)
+    ]);
+    const controls=[
+      {id:"operations-gate",label:"Provider operations gate",pass:operations.trusted===true,detail:`${operations.score}% · ${operations.status}`},
+      {id:"incidents",label:"Open provider incidents",pass:incidents.open===0,detail:incidents.open?`${incidents.open} open · ${incidents.critical} critical`:"clear"},
+      {id:"failover",label:"Failover readiness",pass:failover.status==="ready"&&failover.score>=80,detail:`${failover.score}% · ${failover.status}`},
+      {id:"reconciliation",label:"Stream reconciliation",pass:reconciliation.score>=80,detail:`${reconciliation.score}% · ${reconciliation.status}`},
+      {id:"evidence",label:"Live evidence certification",pass:evidence.trusted===true,detail:`${evidence.score}% · ${evidence.status}`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length); const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`PCC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"continuity-certified":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor,build:"42.29.0-provider-continuity-recovery"};
+    if(persist) await this.database.mutate(db=>{db.providerContinuityCertification||={};db.providerContinuityCertification[organizationId]=cert;return cert;});
+    return cert;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;
