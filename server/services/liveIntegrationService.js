@@ -1,5 +1,7 @@
 "use strict";
 
+const crypto = require("crypto");
+
 class LiveIntegrationService {
   constructor(database, auditService, realtimeHub) {
     this.database = database;
@@ -135,9 +137,19 @@ class LiveIntegrationService {
       this.validatePayload(contract, payload);
       const occurredAt = input.occurredAt ? new Date(input.occurredAt) : new Date();
       if (Number.isNaN(occurredAt.getTime())) throw new Error("occurredAt must be a valid date-time.");
+      const sourceEventId = String(input.sourceEventId || input.externalId || "").trim() || null;
+      const fingerprint = this.deliveryFingerprint(source, type, sourceEventId, occurredAt.toISOString(), payload);
+      const current = await this.database.read();
+      const duplicate = (current.liveEvents || []).find(item => item.organizationId === organizationId && item.fingerprint === fingerprint);
+      if (duplicate) {
+        await this.recordDeliveryMetric(organizationId, source, "duplicate");
+        this.realtimeHub.publish("live-event-duplicate", { source, type, sourceEventId, fingerprint, originalEventId: duplicate.id });
+        return { ...duplicate, duplicate: true };
+      }
       const event = {
         id: `evt_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`, organizationId, source, type,
         schemaVersion: contract.schemaVersion, occurredAt: occurredAt.toISOString(), receivedAt: new Date().toISOString(),
+        sourceEventId, fingerprint, adapterId: options.adapterId || null,
         payload, actor, replayedFrom: options.replayedFrom || null, validation: { status: "accepted", contract: type }
       };
       await this.database.mutate(db => {
@@ -152,6 +164,8 @@ class LiveIntegrationService {
         }
         return event;
       });
+      await this.recordDeliveryMetric(organizationId, source, "accepted");
+      if (options.replayedFrom) await this.recordDeliveryMetric(organizationId, source, "replayed");
       this.realtimeHub.publish("live-event", event);
       const snapshot = await this.operatingSnapshot(organizationId);
       this.realtimeHub.publish("live-operating-snapshot", snapshot);
@@ -191,6 +205,222 @@ class LiveIntegrationService {
       });
       throw error;
     }
+  }
+
+
+  adapterProfiles() {
+    return [
+      {
+        id: "toast",
+        name: "Toast POS mapping profile",
+        sourceType: "pos",
+        status: "mapping-ready",
+        events: ["check.closed"],
+        note: "Provider normalization profile. Live provider authentication remains server-side connector configuration."
+      },
+      {
+        id: "opentable",
+        name: "OpenTable reservation mapping profile",
+        sourceType: "reservations",
+        status: "mapping-ready",
+        events: ["reservation.created", "reservation.seated"],
+        note: "Provider normalization profile. Live provider authentication remains server-side connector configuration."
+      },
+      {
+        id: "generic-kitchen",
+        name: "Generic kitchen event profile",
+        sourceType: "kitchen",
+        status: "mapping-ready",
+        events: ["ticket.fired", "ticket.completed"],
+        note: "Canonical mapping for KDS or kitchen middleware."
+      },
+      {
+        id: "generic-labor",
+        name: "Generic labor event profile",
+        sourceType: "labor",
+        status: "mapping-ready",
+        events: ["employee.clocked-in", "employee.clocked-out"],
+        note: "Canonical mapping for labor, scheduling, or time-clock middleware."
+      },
+      {
+        id: "generic-inventory",
+        name: "Generic inventory event profile",
+        sourceType: "inventory",
+        status: "mapping-ready",
+        events: ["inventory.received"],
+        note: "Canonical mapping for inventory or purchasing middleware."
+      }
+    ];
+  }
+
+  adapterProfile(id) {
+    return this.adapterProfiles().find(item => item.id === id) || null;
+  }
+
+  normalizeAdapterEvent(adapterId, raw = {}) {
+    const profile = this.adapterProfile(adapterId);
+    if (!profile) throw new Error(`Unknown adapter profile: ${adapterId}`);
+    const rawType = String(raw.eventType || raw.type || raw.event_type || "").trim();
+    let type = rawType;
+    if (adapterId === "toast") {
+      type = rawType === "check.closed" || rawType === "CHECK_CLOSED" || rawType === "closed" ? "check.closed" : rawType;
+    } else if (adapterId === "opentable") {
+      if (["reservation.created", "CREATED", "created"].includes(rawType)) type = "reservation.created";
+      if (["reservation.seated", "SEATED", "seated"].includes(rawType)) type = "reservation.seated";
+    } else if (adapterId === "generic-kitchen") {
+      if (["ticket.fired", "FIRED", "fired"].includes(rawType)) type = "ticket.fired";
+      if (["ticket.completed", "COMPLETED", "completed"].includes(rawType)) type = "ticket.completed";
+    } else if (adapterId === "generic-labor") {
+      if (["employee.clocked-in", "CLOCKED_IN", "clocked-in"].includes(rawType)) type = "employee.clocked-in";
+      if (["employee.clocked-out", "CLOCKED_OUT", "clocked-out"].includes(rawType)) type = "employee.clocked-out";
+    } else if (adapterId === "generic-inventory") {
+      if (["inventory.received", "RECEIVED", "received"].includes(rawType)) type = "inventory.received";
+    }
+    if (!profile.events.includes(type)) throw new Error(`${profile.name} does not map event type: ${rawType || "(missing)"}`);
+
+    const p = raw.payload && typeof raw.payload === "object" && !Array.isArray(raw.payload) ? raw.payload : raw;
+    const payload = {};
+    if (type === "check.closed") {
+      payload.locationId = p.locationId || p.location_id || p.restaurantId || p.restaurant_id || p.locationGuid;
+      payload.checkTotal = p.checkTotal ?? p.total ?? p.amount ?? p.totalAmount;
+      payload.checkId = p.checkId || p.check_id || p.guid || p.id;
+      payload.table = p.table || p.tableName || p.table_name;
+      payload.covers = p.covers ?? p.guestCount ?? p.partySize;
+      payload.tax = p.tax ?? p.taxAmount;
+      payload.tip = p.tip ?? p.tipAmount;
+    } else if (type.startsWith("reservation.")) {
+      payload.locationId = p.locationId || p.location_id || p.restaurantId || p.restaurant_id;
+      payload.reservationId = p.reservationId || p.reservation_id || p.id;
+      payload.covers = p.covers ?? p.partySize ?? p.party_size;
+      payload.guestId = p.guestId || p.guest_id || p.dinerId;
+      payload.time = p.time || p.reservationTime || p.reservation_time;
+      payload.table = p.table || p.tableName || p.table_name;
+      payload.channel = p.channel || p.source;
+    } else if (type.startsWith("ticket.")) {
+      payload.locationId = p.locationId || p.location_id || p.restaurantId || p.restaurant_id;
+      payload.ticketId = p.ticketId || p.ticket_id || p.id;
+      payload.table = p.table || p.tableName || p.table_name;
+      payload.station = p.station || p.stationName || p.station_name;
+      payload.items = p.items;
+      payload.durationSeconds = p.durationSeconds ?? p.duration_seconds;
+    } else if (type.startsWith("employee.")) {
+      payload.locationId = p.locationId || p.location_id || p.restaurantId || p.restaurant_id;
+      payload.employeeId = p.employeeId || p.employee_id || p.id;
+      payload.role = p.role || p.job || p.jobTitle;
+      payload.hourlyRate = p.hourlyRate ?? p.hourly_rate;
+    } else if (type === "inventory.received") {
+      payload.locationId = p.locationId || p.location_id || p.restaurantId || p.restaurant_id;
+      payload.itemId = p.itemId || p.item_id || p.sku || p.id;
+      payload.quantity = p.quantity ?? p.qty;
+      payload.unit = p.unit || p.uom;
+      payload.cost = p.cost ?? p.unitCost ?? p.unit_cost;
+    }
+
+    Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
+    return {
+      adapterId,
+      type,
+      sourceEventId: String(raw.sourceEventId || raw.eventId || raw.event_id || raw.id || p.eventId || "").trim() || null,
+      occurredAt: raw.occurredAt || raw.timestamp || raw.createdAt || raw.created_at || null,
+      payload
+    };
+  }
+
+  async previewAdapterEvent(adapterId, raw = {}) {
+    const normalized = this.normalizeAdapterEvent(adapterId, raw);
+    const contract = this.contractFor(normalized.type);
+    const payload = this.normalizePayload(normalized.type, normalized.payload);
+    this.validatePayload(contract, payload);
+    return { ...normalized, payload, contract: { type: contract.type, schemaVersion: contract.schemaVersion, sourceType: contract.sourceType } };
+  }
+
+  deliveryFingerprint(source, type, sourceEventId, occurredAt, payload) {
+    const basis = sourceEventId
+      ? `${source}|${type}|external:${sourceEventId}`
+      : `${source}|${type}|${occurredAt || ""}|${JSON.stringify(payload || {})}`;
+    return crypto.createHash("sha256").update(basis).digest("hex").slice(0, 32);
+  }
+
+  async recordDeliveryMetric(organizationId, source, kind) {
+    return this.database.mutate(db => {
+      db.liveDeliveryStats ||= {};
+      const key = `${organizationId}:${source}`;
+      const stat = db.liveDeliveryStats[key] ||= { organizationId, source, accepted: 0, duplicate: 0, rejected: 0, replayed: 0, lastUpdatedAt: null };
+      if (Object.prototype.hasOwnProperty.call(stat, kind)) stat[kind] += 1;
+      stat.lastUpdatedAt = new Date().toISOString();
+      return { ...stat };
+    });
+  }
+
+  async ingestAdapterEvent(organizationId, actor, adapterId, input = {}) {
+    const connectorId = String(input.connectorId || input.source || "").trim();
+    if (!connectorId) throw new Error("connectorId is required.");
+    const connectors = await this.listConnectors(organizationId);
+    const connector = connectors.find(item => item.id === connectorId);
+    if (!connector) throw new Error(`Unknown connector: ${connectorId}`);
+    const profile = this.adapterProfile(adapterId);
+    if (!profile) throw new Error(`Unknown adapter profile: ${adapterId}`);
+    if (connector.type !== profile.sourceType && connector.type !== "other") {
+      throw new Error(`${connector.name} is a ${connector.type} connector but ${profile.name} expects ${profile.sourceType}.`);
+    }
+    let mapped;
+    try {
+      mapped = await this.previewAdapterEvent(adapterId, input.event || input.raw || input);
+    } catch (error) {
+      await this.recordDeliveryMetric(organizationId, connectorId, "rejected");
+      const dead = await this.deadLetter(organizationId, actor, {
+        source: connectorId,
+        type: String(input?.event?.eventType || input?.event?.type || input?.type || "adapter.unmapped"),
+        payload: input.event || input.raw || input,
+        occurredAt: input?.event?.occurredAt || input?.occurredAt || null
+      }, `Adapter ${adapterId}: ${error.message}`);
+      error.deadLetterId = dead.id;
+      throw error;
+    }
+    return this.ingestEvent(organizationId, actor, {
+      source: connectorId,
+      type: mapped.type,
+      sourceEventId: mapped.sourceEventId,
+      occurredAt: mapped.occurredAt,
+      payload: mapped.payload
+    }, { adapterId });
+  }
+
+  async deliveryMetrics(organizationId) {
+    const connectors = await this.listConnectors(organizationId);
+    const events = await this.events(organizationId, 1000);
+    const dead = await this.deadLetters(organizationId, 1000);
+    const db = await this.database.read();
+    const stats = db.liveDeliveryStats || {};
+    const now = Date.now();
+    const sources = connectors.map(connector => {
+      const sourceEvents = events.filter(event => event.source === connector.id);
+      const sourceDead = dead.filter(item => item.source === connector.id && item.status === "open");
+      const persisted = stats[`${organizationId}:${connector.id}`] || {};
+      const last = sourceEvents[0] || null;
+      const lagSeconds = last ? Math.max(0, Math.round((now - new Date(last.receivedAt).getTime()) / 1000)) : null;
+      return {
+        id: connector.id,
+        name: connector.name,
+        type: connector.type,
+        accepted: Number(persisted.accepted || sourceEvents.length),
+        duplicate: Number(persisted.duplicate || 0),
+        rejected: Number(persisted.rejected || sourceDead.length),
+        replayed: Number(persisted.replayed || 0),
+        openDeadLetters: sourceDead.length,
+        lastEventAt: last?.receivedAt || connector.lastEventAt || null,
+        lagSeconds,
+        status: connector.status === "healthy" && (lagSeconds == null || lagSeconds <= 300) ? "healthy" : connector.status
+      };
+    });
+    const totals = sources.reduce((a, x) => ({
+      accepted: a.accepted + x.accepted,
+      duplicate: a.duplicate + x.duplicate,
+      rejected: a.rejected + x.rejected,
+      replayed: a.replayed + x.replayed,
+      openDeadLetters: a.openDeadLetters + x.openDeadLetters
+    }), { accepted: 0, duplicate: 0, rejected: 0, replayed: 0, openDeadLetters: 0 });
+    return { organizationId, totals, sources, generatedAt: new Date().toISOString() };
   }
 
   async operatingSnapshot(organizationId) {

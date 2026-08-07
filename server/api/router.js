@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.5.0",
+        version: "42.8.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -180,6 +180,33 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/contracts" && request.method === "GET") {
       return sendJson(response, 200, { contracts: liveIntegrationService.contracts() });
+    }
+
+    if (url.pathname === "/api/live/adapters" && request.method === "GET") {
+      return sendJson(response, 200, { adapters: liveIntegrationService.adapterProfiles() });
+    }
+
+    if (url.pathname.startsWith("/api/live/adapters/") && url.pathname.endsWith("/preview") && request.method === "POST") {
+      const adapterId = decodeURIComponent(url.pathname.split("/")[4] || "");
+      try {
+        return sendJson(response, 200, await liveIntegrationService.previewAdapterEvent(adapterId, await readJson(request)));
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+
+    if (url.pathname.startsWith("/api/live/adapters/") && url.pathname.endsWith("/ingest") && request.method === "POST") {
+      const adapterId = decodeURIComponent(url.pathname.split("/")[4] || "");
+      try {
+        const event = await liveIntegrationService.ingestAdapterEvent(organizationId, auth.user.name, adapterId, await readJson(request));
+        return sendJson(response, event.duplicate ? 200 : 201, event);
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message, deadLetterId: error.deadLetterId || null });
+      }
+    }
+
+    if (url.pathname === "/api/live/delivery-metrics" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.deliveryMetrics(organizationId));
     }
 
     if (url.pathname === "/api/live/dead-letters" && request.method === "GET") {
