@@ -1079,8 +1079,101 @@ class LiveIntegrationService {
       {id:"evidence",label:"Live evidence certification",pass:evidence.trusted===true,detail:`${evidence.score}% · ${evidence.status}`}
     ];
     const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length); const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
-    const cert={id:`PCC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"continuity-certified":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor,build:"42.29.0-provider-continuity-recovery"};
+    const cert={id:`PCC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"continuity-certified":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor,build:"42.32.0-provider-resilience-certification"};
     if(persist) await this.database.mutate(db=>{db.providerContinuityCertification||={};db.providerContinuityCertification[organizationId]=cert;return cert;});
+    return cert;
+  }
+
+
+  async providerRecoveryDrill(organizationId, actor = null, input = null) {
+    const [failover, incidents, sla, quarantine, evidence] = await Promise.all([
+      this.providerFailoverPlan(organizationId),
+      this.providerIncidentLedger(organizationId),
+      this.providerSlaStatus(organizationId),
+      this.providerQuarantineStatus(organizationId),
+      this.liveEvidenceCertification(organizationId)
+    ]);
+    const requestedPrimary = String(input?.primary || "").trim();
+    const plan = (failover.plans || []).find(item => !requestedPrimary || item.primary === requestedPrimary) || (failover.plans || [])[0] || null;
+    const controls = [
+      { id:"plan", label:"Failover plan available", pass:!!plan, detail:plan ? `${plan.primaryName} -> ${plan.standbyName}` : "no configured plan" },
+      { id:"standby", label:"Standby provider readiness", pass:!!plan && plan.status==="ready" && plan.score>=80, detail:plan ? `${plan.score}% · ${plan.status}` : "not available" },
+      { id:"incidents", label:"Critical incident containment", pass:incidents.critical===0, detail:incidents.critical ? `${incidents.critical} critical incident(s)` : "controlled" },
+      { id:"sla", label:"Delivery SLA condition", pass:sla.status!=="breach", detail:`${sla.score}% · ${sla.status}` },
+      { id:"quarantine", label:"Quarantine state", pass:quarantine.quarantined===0 || (plan && !(quarantine.sources||[]).find(x=>x.source===plan.standby)?.quarantined), detail:quarantine.quarantined ? `${quarantine.quarantined} source(s) quarantined` : "clear" },
+      { id:"evidence", label:"Trusted live evidence", pass:evidence.trusted===true, detail:`${evidence.score}% · ${evidence.status}` }
+    ];
+    const score = Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers = controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const drill = {
+      id:`PRD-${Date.now().toString(36).toUpperCase()}`, organizationId,
+      primary:plan?.primary||requestedPrimary||null, standby:plan?.standby||null,
+      score, status:score===100?"rehearsed":score>=67?"conditional":"blocked",
+      blockers, controls, simulated:true, executed:false,
+      note:String(input?.note||"").trim().slice(0,500),
+      runAt:new Date().toISOString(), runBy:actor||null, build:"42.32.0-provider-resilience-certification"
+    };
+    if (input?.persist) {
+      await this.database.mutate(db=>{db.providerRecoveryDrills ||= []; db.providerRecoveryDrills.unshift(drill); db.providerRecoveryDrills=db.providerRecoveryDrills.slice(0,500); return drill;});
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Provider recovery drill: ${drill.status} · ${drill.primary||"unassigned"} -> ${drill.standby||"unassigned"}`,category:"live-integration"});
+    }
+    return drill;
+  }
+
+  async providerContinuityTelemetry(organizationId) {
+    const [incidents, sla, quarantine, continuity, receipts, failover] = await Promise.all([
+      this.providerIncidentLedger(organizationId),
+      this.providerSlaStatus(organizationId),
+      this.providerQuarantineStatus(organizationId),
+      this.providerContinuityCertification(organizationId),
+      this.webhookReceiptLedger(organizationId, 500),
+      this.providerFailoverPlan(organizationId)
+    ]);
+    const db = await this.database.read();
+    const drills = (db.providerRecoveryDrills || []).filter(item=>item.organizationId===organizationId);
+    const cutoff = Date.now() - 24*60*60*1000;
+    const recentIncidents = (incidents.incidents||[]).filter(i=>new Date(i.openedAt).getTime()>=cutoff);
+    const recentDrills = drills.filter(i=>new Date(i.runAt).getTime()>=cutoff);
+    const verifiedRatio = receipts.receiptCount ? Math.round((receipts.verified/receipts.receiptCount)*100) : 0;
+    const scoreParts = [
+      Math.max(0,100-(incidents.open*15)-(incidents.critical*25)),
+      sla.score||0,
+      continuity.score||0,
+      failover.score||0,
+      verifiedRatio
+    ];
+    const score = Math.round(scoreParts.reduce((a,b)=>a+b,0)/scoreParts.length);
+    return {
+      organizationId, score,
+      status:score>=90?"stable":score>=70?"watch":"degraded",
+      incidents24h:recentIncidents.length, openIncidents:incidents.open, criticalIncidents:incidents.critical,
+      quarantinedSources:quarantine.quarantined, slaScore:sla.score, continuityScore:continuity.score,
+      verifiedWebhookRatio:verifiedRatio, recoveryDrills24h:recentDrills.length,
+      latestDrill:drills[0]||null, generatedAt:new Date().toISOString()
+    };
+  }
+
+  async v42ReleaseCertification(organizationId, actor = null, persist = false) {
+    const [continuity, operations, evidence, reconciliation, telemetry, drill] = await Promise.all([
+      this.providerContinuityCertification(organizationId),
+      this.providerOperationsGate(organizationId),
+      this.liveEvidenceCertification(organizationId),
+      this.streamReconciliation(organizationId),
+      this.providerContinuityTelemetry(organizationId),
+      this.providerRecoveryDrill(organizationId, actor, {})
+    ]);
+    const controls = [
+      {id:"continuity",label:"Provider continuity certification",pass:continuity.trusted===true,detail:`${continuity.score}% · ${continuity.status}`},
+      {id:"operations",label:"Provider operations gate",pass:operations.trusted===true,detail:`${operations.score}% · ${operations.status}`},
+      {id:"evidence",label:"Live evidence certification",pass:evidence.trusted===true,detail:`${evidence.score}% · ${evidence.status}`},
+      {id:"reconciliation",label:"Stream reconciliation",pass:reconciliation.score>=80 && reconciliation.status!=="mismatch",detail:`${reconciliation.score}% · ${reconciliation.status}`},
+      {id:"telemetry",label:"Continuity telemetry",pass:telemetry.score>=80 && telemetry.status!=="degraded",detail:`${telemetry.score}% · ${telemetry.status}`},
+      {id:"recovery-drill",label:"Provider recovery rehearsal",pass:drill.score>=80 && drill.status!=="blocked",detail:`${drill.score}% · ${drill.status}`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`V42C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v42-complete":score>=67?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.32.0-provider-resilience-certification"};
+    if(persist) await this.database.mutate(db=>{db.v42ReleaseCertification||={};db.v42ReleaseCertification[organizationId]=cert;return cert;});
     return cert;
   }
 

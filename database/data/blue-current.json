@@ -594,6 +594,14 @@
       "category": "security",
       "createdAt": "2026-08-07T08:54:40.189Z",
       "id": "audit_1786092880189_bkvwax"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-07T10:41:54.629Z",
+      "id": "audit_1786099314629_a2to7r"
     }
   ],
   "reservations": [
@@ -1084,6 +1092,18 @@
       ],
       "createdAt": "2026-08-07T08:54:40.181Z",
       "expiresAt": "2026-08-07T20:54:40.181Z"
+    },
+    {
+      "id": "ses_1786099314616_3fob1j",
+      "tokenHash": "137171b4e350c4f7634e6f174b0a38d0dcbe2cde32374c857af38b3f116564e9",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-07T10:41:54.616Z",
+      "expiresAt": "2026-08-07T22:41:54.616Z"
     }
   ],
   "invitations": [
@@ -2562,7 +2582,7 @@
   ],
   "providerLaunchCertification": {
     "org_chefs": {
-      "id": "PLC-MSIR8ZU3",
+      "id": "PLC-MSIRTE62",
       "organizationId": "org_chefs",
       "score": 50,
       "status": "blocked",
@@ -2609,7 +2629,7 @@
           "detail": "controlled"
         }
       ],
-      "issuedAt": "2026-08-07T09:41:16.011Z",
+      "issuedAt": "2026-08-07T09:57:07.706Z",
       "issuedBy": "Keith Mazza",
       "build": "42.23.0-provider-launch-control"
     }

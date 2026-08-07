@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.29.0",
+        version: "42.32.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -402,6 +402,30 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/provider-continuity-certification" && request.method === "POST") {
       return sendJson(response, 200, await liveIntegrationService.providerContinuityCertification(organizationId, auth.user.name, true));
+    }
+
+
+    if (url.pathname === "/api/live/provider-recovery-drill" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerRecoveryDrill(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-recovery-drill" && request.method === "POST") {
+      try {
+        const body = await readJson(request);
+        return sendJson(response, 200, await liveIntegrationService.providerRecoveryDrill(organizationId, auth.user.name, { ...body, persist:true }));
+      } catch (error) { return sendJson(response, 400, { error:error.message }); }
+    }
+
+    if (url.pathname === "/api/live/provider-continuity-telemetry" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerContinuityTelemetry(organizationId));
+    }
+
+    if (url.pathname === "/api/live/v42-release-certification" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.v42ReleaseCertification(organizationId));
+    }
+
+    if (url.pathname === "/api/live/v42-release-certification" && request.method === "POST") {
+      return sendJson(response, 200, await liveIntegrationService.v42ReleaseCertification(organizationId, auth.user.name, true));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
