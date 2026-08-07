@@ -1285,6 +1285,91 @@ class LiveIntegrationService {
     return cert;
   }
 
+  async pilotSessions(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const sessions = (db.livePilotSessions || []).filter(item => item.organizationId === organizationId);
+    const cutover = await this.locationCutoverControl(organizationId);
+    const eligible = (cutover.locations || []).filter(item => ["pilot","live"].includes(item.stage));
+
+    if (input && input.action === "start") {
+      const locationId = String(input.locationId || "").trim();
+      const location = eligible.find(item => item.locationId === locationId);
+      if (!location) throw new Error("Location must be at pilot or live cutover stage before a pilot session can start.");
+      const active = sessions.find(item => item.locationId === locationId && item.status === "active");
+      if (active) throw new Error("An active pilot session already exists for this location.");
+      const status = await this.status(organizationId);
+      const session = {
+        id:`LPS-${Date.now().toString(36).toUpperCase()}`, organizationId, locationId,
+        locationName:location.locationName, status:"active", cutoverStage:location.stage,
+        owner:actor || "system", note:String(input.note || "").trim().slice(0,500),
+        startedAt:new Date().toISOString(), endedAt:null,
+        baseline:{ events15m:status.events15m || 0, lastEventAt:status.lastEventAt || null, evidenceTrusted:!!cutover.evidenceTrusted },
+        build:"42.41.0-pilot-runtime-mvp-readiness"
+      };
+      await this.database.mutate(db2 => { db2.livePilotSessions ||= []; db2.livePilotSessions.unshift(session); db2.livePilotSessions=db2.livePilotSessions.slice(0,1000); return session; });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Live pilot session started: ${locationId}`,category:"live-integration"});
+      return this.pilotSessions(organizationId);
+    }
+
+    if (input && ["complete","abort"].includes(input.action)) {
+      const sessionId = String(input.sessionId || "").trim();
+      const target = sessions.find(item => item.id === sessionId && item.status === "active");
+      if (!target) throw new Error("Active pilot session not found.");
+      const nextStatus = input.action === "complete" ? "completed" : "aborted";
+      await this.database.mutate(db2 => { const item=(db2.livePilotSessions||[]).find(x=>x.id===sessionId&&x.organizationId===organizationId); if(!item) throw new Error("Pilot session not found."); item.status=nextStatus; item.endedAt=new Date().toISOString(); item.completedBy=actor||"system"; item.completionNote=String(input.note||"").trim().slice(0,500); return item; });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Live pilot session ${nextStatus}: ${sessionId}`,category:"live-integration"});
+      return this.pilotSessions(organizationId);
+    }
+
+    const fresh = await this.database.read();
+    const rows = (fresh.livePilotSessions || []).filter(item => item.organizationId === organizationId).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
+    return { organizationId, sessions:rows, active:rows.filter(x=>x.status==="active").length, completed:rows.filter(x=>x.status==="completed").length, eligibleLocations:eligible.map(x=>({locationId:x.locationId,locationName:x.locationName,stage:x.stage})), generatedAt:new Date().toISOString() };
+  }
+
+  async pilotSignalValidation(organizationId) {
+    const [sessions, cutover, coverage, telemetry, evidence, status] = await Promise.all([
+      this.pilotSessions(organizationId), this.locationCutoverControl(organizationId), this.liveCoverageMatrix(organizationId),
+      this.portfolioLiveTelemetry(organizationId), this.liveEvidenceCertification(organizationId), this.status(organizationId)
+    ]);
+    const active = (sessions.sessions || []).filter(item => item.status === "active");
+    const rows = active.map(session => {
+      const locationCutover=(cutover.locations||[]).find(x=>x.locationId===session.locationId)||{};
+      const locationCoverage=(coverage.locations||[]).find(x=>x.locationId===session.locationId)||{};
+      const locationTelemetry=(telemetry.locations||[]).find(x=>x.locationId===session.locationId)||{};
+      const controls=[
+        {id:"stage",label:"Pilot/live cutover stage",pass:["pilot","live"].includes(locationCutover.stage),detail:locationCutover.stage||"sandbox"},
+        {id:"coverage",label:"Required source coverage",pass:(locationCoverage.score||0)===100,detail:`${locationCoverage.score||0}%`},
+        {id:"telemetry",label:"Location telemetry readiness",pass:(locationTelemetry.score||0)>=65,detail:`${locationTelemetry.score||0}% · ${locationTelemetry.status||"unknown"}`},
+        {id:"evidence",label:"Trusted live evidence",pass:evidence.trusted===true,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`},
+        {id:"activity",label:"Recent live event activity",pass:(status.events15m||0)>0,detail:`${status.events15m||0} events · 15m`}
+      ];
+      const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+      return {sessionId:session.id,locationId:session.locationId,locationName:session.locationName,score,status:score===100?"validated":score>=60?"watch":"blocked",controls};
+    });
+    const score=rows.length?Math.round(rows.reduce((sum,row)=>sum+row.score,0)/rows.length):0;
+    return {organizationId,score,status:rows.length===0?"awaiting-session":score===100?"validated":score>=60?"watch":"blocked",activeSessions:active.length,validatedSessions:rows.filter(x=>x.status==="validated").length,locations:rows,generatedAt:new Date().toISOString()};
+  }
+
+  async mvpReadinessCertification(organizationId, actor = null, persist = false) {
+    const [release, pilot, signals, twin, sessions] = await Promise.all([
+      this.v42ReleaseCertification(organizationId), this.enterprisePilotCutoverCertification(organizationId),
+      this.pilotSignalValidation(organizationId), this.twinSyncStatus(organizationId), this.pilotSessions(organizationId)
+    ]);
+    const hasPilotEvidence=(sessions.active||0)+(sessions.completed||0)>0;
+    const controls=[
+      {id:"v42-release",label:"V42 live-operations release",pass:release.trusted===true,detail:`${release.score||0}% · ${release.status||"unknown"}`},
+      {id:"enterprise-pilot",label:"Enterprise pilot cutover",pass:pilot.trusted===true,detail:`${pilot.score||0}% · ${pilot.status||"unknown"}`},
+      {id:"pilot-session",label:"Pilot session evidence",pass:hasPilotEvidence,detail:`${sessions.active||0} active · ${sessions.completed||0} completed`},
+      {id:"signal-validation",label:"Pilot signal validation",pass:signals.score>=80 && signals.status!=="blocked" && signals.status!=="awaiting-session",detail:`${signals.score||0}% · ${signals.status||"unknown"}`},
+      {id:"live-twin",label:"Trusted Operational Twin",pass:twin.trusted===true,detail:`${twin.score||0}% · ${twin.status||"unknown"}`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`MVP-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"first-mvp-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.41.0-pilot-runtime-mvp-readiness"};
+    if(persist) await this.database.mutate(db=>{db.mvpReadinessCertification||={};db.mvpReadinessCertification[organizationId]=cert;return cert;});
+    return cert;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;

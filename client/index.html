@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.38.0-enterprise-pilot-cutover">
+  <meta name="blue-current-build" content="42.41.0-pilot-runtime-mvp-readiness">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8461,6 +8461,17 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterprisePilotCutoverCenter" data-src="js/modules/enterprisePilotCutoverEngine.js?v=42.38.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterprisePilotCutoverCenter" data-src="js/modules/enterprisePilotCutoverCenter.js?v=42.38.0"></script>
 
-  <script src="js/startup-loader.js?v=42.38.0"></script>
+
+<section class="v4241-center" id="pilotSessionCenter" aria-labelledby="lpsTitle"><header><div><small>V42.39 · Live Pilot Session Control</small><strong id="lpsTitle">Run each restaurant pilot as a bounded, accountable live-data session.</strong><span>Sessions preserve location, owner, cutover stage, start evidence, and completion status without changing provider traffic automatically.</span></div><button type="button" id="lpsRefresh">Refresh sessions</button></header><div class="v4241-kpis"><article><small>Sessions</small><strong id="lpsSessions">0</strong></article><article><small>Active</small><strong id="lpsActive">0</strong></article><article><small>Completed</small><strong id="lpsCompleted">0</strong></article><article><small>Locations eligible</small><strong id="lpsEligible">0</strong></article></div><div class="v4241-actions"><input id="lpsLocation" placeholder="Location ID"><input id="lpsNote" value="Controlled live-data pilot" placeholder="Pilot note"><button type="button" id="lpsStart">Start pilot session</button></div><div id="lpsList" class="v4241-list"></div></section>
+<section class="v4241-center" id="pilotSignalValidationCenter" aria-labelledby="psvTitle"><header><div><small>V42.40 · Pilot Signal Validation</small><strong id="psvTitle">Verify that live pilot sessions are receiving trustworthy, current operating evidence.</strong><span>Cutover stage, source coverage, portfolio telemetry, evidence trust, and recent event activity are evaluated together.</span></div><button type="button" id="psvRefresh">Validate pilot signals</button></header><div class="v4241-kpis"><article><small>Signal score</small><strong id="psvScore">0%</strong></article><article><small>Status</small><strong id="psvStatus">—</strong></article><article><small>Validated sessions</small><strong id="psvValidated">0</strong></article><article><small>Active sessions</small><strong id="psvActive">0</strong></article></div><div id="psvList" class="v4241-list"></div></section>
+<section class="v4241-center v4241-cert" id="mvpReadinessCenter" aria-labelledby="mvpTitle"><header><div><small>V42.41 · First MVP Readiness Certification</small><strong id="mvpTitle">Certify the first Blue Current MVP for a controlled live restaurant pilot.</strong><span>V42 release trust, enterprise pilot cutover, active pilot evidence, signal validation, and the trusted Operational Twin are checked together.</span></div><div class="v4241-actions"><button type="button" id="mvpRefresh">Evaluate MVP</button><button type="button" id="mvpCertify">Persist certificate</button></div></header><div class="v4241-kpis"><article><small>MVP readiness</small><strong id="mvpScore">0%</strong></article><article><small>Status</small><strong id="mvpStatus">—</strong></article><article><small>Trusted</small><strong id="mvpTrusted">NO</strong></article><article><small>Blockers</small><strong id="mvpBlockers">0</strong></article><article><small>Certificate</small><strong id="mvpId">—</strong></article></div><div id="mvpChecks" class="v4241-list"></div></section>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSessionCenter" data-src="js/modules/pilotSessionEngine.js?v=42.41.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSessionCenter" data-src="js/modules/pilotSessionCenter.js?v=42.41.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSignalValidationCenter" data-src="js/modules/pilotSignalValidationEngine.js?v=42.41.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSignalValidationCenter" data-src="js/modules/pilotSignalValidationCenter.js?v=42.41.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpReadinessCenter" data-src="js/modules/mvpReadinessEngine.js?v=42.41.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpReadinessCenter" data-src="js/modules/mvpReadinessCenter.js?v=42.41.0"></script>
+
+  <script src="js/startup-loader.js?v=42.41.0"></script>
 </body>
 </html>
