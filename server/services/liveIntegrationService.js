@@ -1079,7 +1079,7 @@ class LiveIntegrationService {
       {id:"evidence",label:"Live evidence certification",pass:evidence.trusted===true,detail:`${evidence.score}% · ${evidence.status}`}
     ];
     const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length); const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
-    const cert={id:`PCC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"continuity-certified":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor,build:"42.32.0-provider-resilience-certification"};
+    const cert={id:`PCC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"continuity-certified":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor,build:"42.35.0-enterprise-live-readiness"};
     if(persist) await this.database.mutate(db=>{db.providerContinuityCertification||={};db.providerContinuityCertification[organizationId]=cert;return cert;});
     return cert;
   }
@@ -1111,7 +1111,7 @@ class LiveIntegrationService {
       score, status:score===100?"rehearsed":score>=67?"conditional":"blocked",
       blockers, controls, simulated:true, executed:false,
       note:String(input?.note||"").trim().slice(0,500),
-      runAt:new Date().toISOString(), runBy:actor||null, build:"42.32.0-provider-resilience-certification"
+      runAt:new Date().toISOString(), runBy:actor||null, build:"42.35.0-enterprise-live-readiness"
     };
     if (input?.persist) {
       await this.database.mutate(db=>{db.providerRecoveryDrills ||= []; db.providerRecoveryDrills.unshift(drill); db.providerRecoveryDrills=db.providerRecoveryDrills.slice(0,500); return drill;});
@@ -1172,9 +1172,36 @@ class LiveIntegrationService {
     ];
     const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
     const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
-    const cert={id:`V42C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v42-complete":score>=67?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.32.0-provider-resilience-certification"};
+    const cert={id:`V42C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v42-complete":score>=67?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.35.0-enterprise-live-readiness"};
     if(persist) await this.database.mutate(db=>{db.v42ReleaseCertification||={};db.v42ReleaseCertification[organizationId]=cert;return cert;});
     return cert;
+  }
+
+  async locationSourceBindings(organizationId, actor = null, input = null) {
+    if (input && input.action === "save") {
+      const locationId = String(input.locationId || "").trim(); const domain = String(input.domain || "").trim().toLowerCase(); const source = String(input.source || "").trim(); const role = input.role === "standby" ? "standby" : "primary";
+      const requiredDomains = new Set(["pos","reservations","kitchen","labor","inventory"]);
+      if (!locationId || !source || !requiredDomains.has(domain)) throw new Error("locationId, source, and a supported domain are required.");
+      const connectors = await this.listConnectors(organizationId); if (!connectors.some(item => item.id === source)) throw new Error(`Unknown connector: ${source}`);
+      const record = { organizationId, locationId, domain, source, role, enabled: input.enabled !== false, updatedAt:new Date().toISOString(), updatedBy:actor||"system" };
+      await this.database.mutate(db => { db.liveLocationSourceBindings ||= []; const idx = db.liveLocationSourceBindings.findIndex(item => item.organizationId===organizationId && item.locationId===locationId && item.domain===domain && item.role===role); if (idx >= 0) db.liveLocationSourceBindings[idx] = record; else db.liveLocationSourceBindings.push(record); return record; });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Live source binding saved: ${locationId} · ${domain} · ${role} -> ${source}`,category:"live-integration"});
+    }
+    const db = await this.database.read(); const locations = (db.locations || []).filter(item => !item.organizationId || item.organizationId===organizationId); const fallbackLocations = locations.length ? locations : [{id:"primary-location",name:"Primary Location"}]; const bindings = (db.liveLocationSourceBindings || []).filter(item => item.organizationId===organizationId);
+    return { organizationId, locations:fallbackLocations.map(item=>({id:item.id,name:item.name||item.id})), bindings, domains:["pos","reservations","kitchen","labor","inventory"], generatedAt:new Date().toISOString() };
+  }
+
+  async liveCoverageMatrix(organizationId) {
+    const [bindingState, connectors, operations, evidence] = await Promise.all([this.locationSourceBindings(organizationId),this.listConnectors(organizationId),this.providerOperationsGate(organizationId),this.liveEvidenceCertification(organizationId)]);
+    const required = ["pos","reservations","kitchen","labor"]; const connectorMap = new Map(connectors.map(item=>[item.id,item]));
+    const rows = (bindingState.locations||[]).map(location => { const domains = required.map(domain => { const candidates=(bindingState.bindings||[]).filter(b=>b.locationId===location.id&&b.domain===domain&&b.enabled); const primary=candidates.find(b=>b.role==="primary")||candidates[0]||null; const standby=candidates.find(b=>b.role==="standby")||null; const provider=primary?connectorMap.get(primary.source):null; const pass=!!primary && !!provider && !["not-configured","error"].includes(provider.status); return {domain,pass,primary:primary?.source||null,standby:standby?.source||null,status:pass?"covered":"missing"}; }); const covered=domains.filter(d=>d.pass).length; const score=Math.round(covered/required.length*100); return {locationId:location.id,locationName:location.name,score,status:score===100?"covered":score>=50?"partial":"uncovered",covered,required:required.length,domains}; });
+    const score=rows.length?Math.round(rows.reduce((a,b)=>a+b.score,0)/rows.length):0; return {organizationId,score,status:score===100&&operations.trusted&&evidence.trusted?"ready":score>=60?"conditional":"blocked",operationsTrusted:!!operations.trusted,evidenceTrusted:!!evidence.trusted,locations:rows,generatedAt:new Date().toISOString()};
+  }
+
+  async enterpriseLiveReadiness(organizationId, actor = null, persist = false) {
+    const [release, coverage, continuity, twin] = await Promise.all([this.v42ReleaseCertification(organizationId),this.liveCoverageMatrix(organizationId),this.providerContinuityCertification(organizationId),this.twinSyncStatus(organizationId)]);
+    const controls=[{id:"v42-release",label:"V42 live operations release",pass:release.trusted===true,detail:`${release.score}% · ${release.status}`},{id:"coverage",label:"Location source coverage",pass:coverage.score===100,detail:`${coverage.score}% · ${coverage.status}`},{id:"continuity",label:"Provider continuity",pass:continuity.trusted===true,detail:`${continuity.score}% · ${continuity.status}`},{id:"live-twin",label:"Trusted operational twin",pass:twin.trusted===true,detail:`${twin.score||0}% · ${twin.status||"unknown"}`}];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length); const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`); const cert={id:`ELR-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"enterprise-live-ready":score>=50?"conditional":"blocked",trusted:score===100,blockers,controls,locationCount:(coverage.locations||[]).length,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.35.0-enterprise-live-readiness"}; if(persist) await this.database.mutate(db=>{db.enterpriseLiveReadiness||={};db.enterpriseLiveReadiness[organizationId]=cert;return cert;}); return cert;
   }
 
   async operatingSnapshot(organizationId) {

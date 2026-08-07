@@ -602,6 +602,22 @@
       "category": "security",
       "createdAt": "2026-08-07T10:41:54.629Z",
       "id": "audit_1786099314629_a2to7r"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-07T21:26:21.481Z",
+      "id": "audit_1786137981481_km9ed6"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-07T21:28:16.412Z",
+      "id": "audit_1786138096412_uvmpu6"
     }
   ],
   "reservations": [
@@ -1104,6 +1120,30 @@
       ],
       "createdAt": "2026-08-07T10:41:54.616Z",
       "expiresAt": "2026-08-07T22:41:54.616Z"
+    },
+    {
+      "id": "ses_1786137981466_9gz6ao",
+      "tokenHash": "fdcde36fd9e0757f0fbde24622c05efc5138de4097beb33ef3dc916ea7b12797",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-07T21:26:21.466Z",
+      "expiresAt": "2026-08-08T09:26:21.466Z"
+    },
+    {
+      "id": "ses_1786138096400_e064dr",
+      "tokenHash": "2d6171136d71aefdb14862c1c2db91c4bcce5475c3ee17ee5ba76a6318eabeba",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-07T21:28:16.400Z",
+      "expiresAt": "2026-08-08T09:28:16.400Z"
     }
   ],
   "invitations": [
@@ -2582,7 +2622,7 @@
   ],
   "providerLaunchCertification": {
     "org_chefs": {
-      "id": "PLC-MSIRTE62",
+      "id": "PLC-MSJGIML7",
       "organizationId": "org_chefs",
       "score": 50,
       "status": "blocked",
@@ -2629,7 +2669,7 @@
           "detail": "controlled"
         }
       ],
-      "issuedAt": "2026-08-07T09:57:07.706Z",
+      "issuedAt": "2026-08-07T21:28:35.803Z",
       "issuedBy": "Keith Mazza",
       "build": "42.23.0-provider-launch-control"
     }

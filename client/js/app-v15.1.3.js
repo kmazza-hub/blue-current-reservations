@@ -2392,6 +2392,10 @@ const v42ReleaseCertificationCenterModule = startupRegistry.register(
   ["eventBus", "appState", "providerRecoveryDrillCenter", "providerContinuityTelemetryCenter", "providerContinuityCertificationCenter"]
 );
 
+const locationSourceBindingCenterModule = startupRegistry.register("locationSourceBindingCenter",shouldInitializeCenter("locationSourceBindingCenter") ? window.createBlueCurrentLocationSourceBindingCenterModule?.(eventBus, appState) : null,["eventBus","appState","v42ReleaseCertificationCenter"]);
+const liveCoverageMatrixCenterModule = startupRegistry.register("liveCoverageMatrixCenter",shouldInitializeCenter("liveCoverageMatrixCenter") ? window.createBlueCurrentLiveCoverageMatrixCenterModule?.(eventBus, appState) : null,["eventBus","appState","locationSourceBindingCenter"]);
+const enterpriseLiveReadinessCenterModule = startupRegistry.register("enterpriseLiveReadinessCenter",shouldInitializeCenter("enterpriseLiveReadinessCenter") ? window.createBlueCurrentEnterpriseLiveReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","liveCoverageMatrixCenter","v42ReleaseCertificationCenter"]);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

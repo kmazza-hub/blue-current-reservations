@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.32.0-provider-resilience-certification">
+  <meta name="blue-current-build" content="42.35.0-enterprise-live-readiness">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8439,6 +8439,17 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="v42ReleaseCertificationCenter" data-src="js/modules/v42ReleaseCertificationEngine.js?v=42.32.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="v42ReleaseCertificationCenter" data-src="js/modules/v42ReleaseCertificationCenter.js?v=42.32.0"></script>
 
-  <script src="js/startup-loader.js?v=42.32.0"></script>
+
+<section class="v4235-center" id="locationSourceBindingCenter" aria-labelledby="lsbTitle"><header><div><small>V42.33 · Location Source Binding</small><strong id="lsbTitle">Bind each restaurant location to the providers that supply its operating truth.</strong><span>Assign primary and standby sources by domain so Blue Current knows which provider owns POS, reservations, kitchen, labor, and inventory evidence.</span></div><button type="button" id="lsbRefresh">Refresh bindings</button></header><div class="v4235-kpis"><article><small>Locations</small><strong id="lsbLocations">0</strong></article><article><small>Bindings</small><strong id="lsbBindings">0</strong></article><article><small>Status</small><strong id="lsbStatus">—</strong></article></div><div class="v4235-actions"><input id="lsbLocation" value="primary-location" placeholder="Location ID"><select id="lsbDomain"><option>pos</option><option>reservations</option><option>kitchen</option><option>labor</option><option>inventory</option></select><input id="lsbSource" value="toast-pos" placeholder="Connector ID"><select id="lsbRole"><option value="primary">Primary</option><option value="standby">Standby</option></select><button type="button" id="lsbSave">Save binding</button></div><div id="lsbList" class="v4235-list"></div></section>
+<section class="v4235-center" id="liveCoverageMatrixCenter" aria-labelledby="lcmTitle"><header><div><small>V42.34 · Live Coverage Matrix</small><strong id="lcmTitle">Prove that every location has the minimum source coverage required for trusted live operations.</strong><span>POS, reservations, kitchen, and labor coverage are evaluated location by location before enterprise reasoning can rely on the portfolio.</span></div><button type="button" id="lcmRefresh">Refresh coverage</button></header><div class="v4235-kpis"><article><small>Coverage</small><strong id="lcmScore">0%</strong></article><article><small>Status</small><strong id="lcmStatus">—</strong></article><article><small>Locations</small><strong id="lcmLocations">0</strong></article></div><div id="lcmList" class="v4235-list"></div></section>
+<section class="v4235-center v4235-cert" id="enterpriseLiveReadinessCenter" aria-labelledby="elrTitle"><header><div><small>V42.35 · Enterprise Live Readiness</small><strong id="elrTitle">Certify the live-data platform across locations before Blue Current treats the portfolio as production-ready.</strong><span>V42 release certification, location coverage, provider continuity, and trusted Operational Twin state are checked together.</span></div><div class="v4235-actions"><button type="button" id="elrRefresh">Evaluate readiness</button><button type="button" id="elrCertify">Persist certificate</button></div></header><div class="v4235-kpis"><article><small>Readiness</small><strong id="elrScore">0%</strong></article><article><small>Status</small><strong id="elrStatus">—</strong></article><article><small>Trusted</small><strong id="elrTrusted">NO</strong></article><article><small>Blockers</small><strong id="elrBlockers">0</strong></article><article><small>Certificate</small><strong id="elrId">—</strong></article></div><div id="elrChecks" class="v4235-list"></div></section>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="locationSourceBindingCenter" data-src="js/modules/locationSourceBindingEngine.js?v=42.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="locationSourceBindingCenter" data-src="js/modules/locationSourceBindingCenter.js?v=42.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveCoverageMatrixCenter" data-src="js/modules/liveCoverageMatrixEngine.js?v=42.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveCoverageMatrixCenter" data-src="js/modules/liveCoverageMatrixCenter.js?v=42.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterpriseLiveReadinessCenter" data-src="js/modules/enterpriseLiveReadinessEngine.js?v=42.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="enterpriseLiveReadinessCenter" data-src="js/modules/enterpriseLiveReadinessCenter.js?v=42.35.0"></script>
+
+  <script src="js/startup-loader.js?v=42.35.0"></script>
 </body>
 </html>
