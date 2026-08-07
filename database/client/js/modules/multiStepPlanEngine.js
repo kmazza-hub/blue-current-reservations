@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentMultiStepPlanEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.reasonKey="bluecurrent:v416:reasoning-history";this.depKey="bluecurrent:v415:decision-dependencies";this.planKey="bluecurrent:v418:multi-step-plans";}
+ read(key){try{const v=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(v)?v:[];}catch{return[];}}
+ write(v){localStorage.setItem(this.planKey,JSON.stringify(v.slice(0,20)));}
+ build(goal="Stabilize the next demand wave",owner="Manager"){const reason=this.read(this.reasonKey)[0],deps=this.read(this.depKey);const action=reason?.primary?.action||"Review the operating picture and confirm the highest-leverage intervention.";const steps=[{order:1,title:"Confirm evidence",owner,status:"ready",approval:false,detail:reason?.primary?`${reason.primary.signal}: ${reason.primary.value}`:"Resolve current context before action."},{order:2,title:"Approve operating action",owner,status:"pending",approval:true,detail:action},{order:3,title:"Coordinate dependencies",owner,status:"pending",approval:false,detail:deps.length?`Review ${Math.min(5,deps.length)} linked decision dependencies.`:"No explicit dependency is currently recorded."},{order:4,title:"Execute and observe",owner,status:"pending",approval:true,detail:"Carry out the approved change and monitor guest, kitchen, labor, and revenue signals."},{order:5,title:"Verify outcome",owner,status:"pending",approval:false,detail:"Capture measured outcome and compare it with the expected effect."}];const plan={id:`PLAN-${Date.now()}`,goal:String(goal||"").trim(),owner,confidence:reason?.confidence||65,status:"draft",steps,createdAt:new Date().toISOString()};const plans=this.read(this.planKey);plans.unshift(plan);this.write(plans);this.eventBus?.emit?.("aip:multi-step-plan-created",plan);return plan;}
+ plans(){return this.read(this.planKey);}
+}
+window.BlueCurrentMultiStepPlanEngine=BlueCurrentMultiStepPlanEngine;})();

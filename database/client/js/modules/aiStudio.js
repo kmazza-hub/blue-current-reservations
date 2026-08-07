@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Blue Current AI Studio v35.3.6'));

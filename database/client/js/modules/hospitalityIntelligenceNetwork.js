@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Hospitality Intelligence Network v35.2.2'));

@@ -2492,8 +2492,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:11:47.416Z",
-      "updatedAt": "2026-08-07T08:11:47.416Z"
+      "createdAt": "2026-08-07T08:21:31.671Z",
+      "updatedAt": "2026-08-07T08:21:31.672Z"
     },
     {
       "id": "opentable-reservations",
@@ -2503,8 +2503,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:11:47.416Z",
-      "updatedAt": "2026-08-07T08:11:47.416Z"
+      "createdAt": "2026-08-07T08:21:31.672Z",
+      "updatedAt": "2026-08-07T08:21:31.672Z"
     },
     {
       "id": "labor-schedule",
@@ -2514,8 +2514,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:11:47.416Z",
-      "updatedAt": "2026-08-07T08:11:47.416Z"
+      "createdAt": "2026-08-07T08:21:31.672Z",
+      "updatedAt": "2026-08-07T08:21:31.672Z"
     },
     {
       "id": "inventory-purchasing",
@@ -2525,8 +2525,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:11:47.416Z",
-      "updatedAt": "2026-08-07T08:11:47.416Z"
+      "createdAt": "2026-08-07T08:21:31.672Z",
+      "updatedAt": "2026-08-07T08:21:31.672Z"
     },
     {
       "id": "kitchen-display",
@@ -2536,8 +2536,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:11:47.416Z",
-      "updatedAt": "2026-08-07T08:11:47.416Z"
+      "createdAt": "2026-08-07T08:21:31.672Z",
+      "updatedAt": "2026-08-07T08:21:31.672Z"
     }
   ]
 }

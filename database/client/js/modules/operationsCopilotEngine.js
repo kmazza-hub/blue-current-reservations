@@ -1,0 +1,16 @@
+(function(){"use strict";
+class BlueCurrentOperationsCopilotEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.context=null;this.off=eventBus.on("operations-copilot:context",x=>{this.context=x;this.eventBus.emit("operations-copilot:updated",this.answer("Why this recommendation?"));});}
+ contextData(){const s=this.appState.getState(),shift=s.shiftIntelligence||{},feed=s.executiveDecisionFeed||{};return this.context||feed.top||shift.topAction||null;}
+ answer(prompt="What should I do now?"){const q=String(prompt||"").toLowerCase(),s=this.appState.getState(),shift=s.shiftIntelligence||{},item=this.contextData();let response,why=[],actions=[];
+  if(!item){response="Operations are stable. Continue monitoring the next demand wave.";why=[`Occupancy ${Math.round(shift.occupancy||s.occupancyPercent||0)}%`,`No critical decision is queued`];}
+  else if(q.includes("risk")||q.includes("lose")||q.includes("profit")){response=`The largest modeled risk is ${item.title.toLowerCase()}. Acting now protects approximately $${Math.round(item.impact||0).toLocaleString()}.`;why=[item.detail,`${item.confidence||0}% confidence`,`Response window ${item.timeRemaining||15} minutes`];}
+  else if(q.includes("why")||q.includes("explain")){response=`Blue Current recommends: ${item.action||item.title}.`;why=[item.detail,`Kitchen ${Math.round(shift.kitchenLoad||0)}%`,`Guest wait ${Math.round(shift.guestWait||0)} minutes`,`Service quality ${Math.round(shift.serviceQuality||0)}`];}
+  else if(q.includes("summary")||q.includes("shift")){response=`Shift score is ${shift.score||0}/100. Kitchen load is ${Math.round(shift.kitchenLoad||0)}%, guest wait is ${Math.round(shift.guestWait||0)} minutes, and ${feed.count||0} decisions are ranked.`;why=[`Top action: ${item?.title||"Monitor service"}`,`Modeled opportunity $${Math.round(feed.totalImpact||0).toLocaleString()}`];}
+  else{response=item?`Do this next: ${item.action||item.title}. ${item.detail}`:"Continue the current service plan.";why=item?[`${item.confidence||0}% confidence`,`$${Math.round(item.impact||0).toLocaleString()} modeled impact`]:[];}
+  if(item)actions=[{id:"approve",label:"Approve recommendation"},{id:"snooze",label:"Snooze 5 minutes"},{id:"dismiss",label:"Dismiss"}];
+  const value={askedAt:new Date().toISOString(),prompt,response,why,actions,item};this.appState.update({operationsCopilot:value});this.eventBus.emit("operations-copilot:updated",structuredClone(value));return value;}
+ act(action){const item=this.contextData();if(!item)return null;if(action==="approve")this.eventBus.emit("executive-workflow:requested",{source:"operations-copilot",title:item.title,detail:item.detail,modeledProfitImpact:item.impact,confidence:item.confidence,requiresApproval:true});if(action==="snooze")this.appState.update({operationsCopilotSnoozedUntil:Date.now()+300000});if(action==="dismiss")this.appState.update({operationsCopilotDismissed:item.id});this.eventBus.emit("operations-copilot:action",{action,item});return{action,item};}
+ destroy(){this.off?.();}
+}
+window.BlueCurrentOperationsCopilotEngine=BlueCurrentOperationsCopilotEngine;})();

@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentAIPPromptOrchestrator{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v402:aip-workflows";}
+ list(){try{return JSON.parse(localStorage.getItem(this.key)||"[]");}catch{return[];}}
+ save(rows){localStorage.setItem(this.key,JSON.stringify(rows.slice(0,50)));}
+ compile(prompt,owner="General Manager"){const text=String(prompt||"").trim();if(!text)throw new Error("Describe the workflow in natural language.");const lower=text.toLowerCase();const steps=[];if(/wait|occupancy|demand|reservation/.test(lower))steps.push({tool:"operations.snapshot",action:"Evaluate live demand and guest flow"});if(/kitchen|ticket|expo|food/.test(lower))steps.push({tool:"operations.exceptions",action:"Review kitchen and service exceptions"});if(/notify|manager|gm|leader/.test(lower))steps.push({tool:"workflow.draft",action:"Prepare a governed manager notification",approval:true});if(/open|reassign|add|move|delay|hold/.test(lower))steps.push({tool:"workflow.draft",action:"Draft the requested operating intervention",approval:true});if(!steps.length)steps.push({tool:"operations.snapshot",action:"Evaluate current operating conditions"},{tool:"workflow.draft",action:"Draft a recommended response",approval:true});const workflow={id:`NLW-${Date.now()}`,prompt:text,owner,status:"draft",approvalRequired:true,steps,createdAt:new Date().toISOString()};const rows=this.list();rows.unshift(workflow);this.save(rows);this.eventBus?.emit?.("aip:workflow-drafted",workflow);return workflow;}
+ approve(id,approver){const rows=this.list();const item=rows.find(x=>x.id===id);if(!item)return null;item.status="approved";item.approvedBy=approver||"Manager";item.approvedAt=new Date().toISOString();this.save(rows);this.eventBus?.emit?.("aip:workflow-approved",item);return item;}
+}
+window.BlueCurrentAIPPromptOrchestrator=BlueCurrentAIPPromptOrchestrator;})();

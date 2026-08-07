@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Blue Current Innovation Lab v35.5.3'));

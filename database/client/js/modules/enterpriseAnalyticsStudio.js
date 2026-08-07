@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Blue Current Enterprise Analytics Studio v35.3.5'));

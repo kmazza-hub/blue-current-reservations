@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Blue Current Developer Platform & SDK v35.3.2'));

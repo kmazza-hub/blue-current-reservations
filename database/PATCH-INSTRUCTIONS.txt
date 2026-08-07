@@ -1,0 +1,33 @@
+FILES TO MODIFY
+
+client/index.html
+-----------------
+Add a new section:
+
+<section class="ai-recommendation-timeline">
+  <h3>Recommendation Timeline</h3>
+  <div id="aiTimeline"></div>
+</section>
+
+client/styles.css
+-----------------
+Add styles for:
+- .ai-recommendation-timeline
+- .ai-timeline-step
+- .ai-timeline-marker
+- .ai-timeline-connector
+
+client/js/modules/managerShiftBrief.js
+--------------------------------------
+Create:
+
+function buildRecommendationTimeline() { ... }
+
+Timeline stages:
+• Now
+• Next 30 Minutes
+• Dinner Rush
+• Shift Close
+
+Populate the timeline using the current recommendation, labor forecast,
+reservation pace, and weather conditions.

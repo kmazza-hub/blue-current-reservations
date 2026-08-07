@@ -1,0 +1,15 @@
+{
+  "version": "23.0.1",
+  "build": "Stabilization",
+  "javascriptValidation": "Validated 33 JavaScript files and all client script references.",
+  "cloudApiMethodsPresent": true,
+  "loginSmokeTestPassed": true,
+  "sessionRestoreSmokeTestPassed": true,
+  "healthVersion": "23.0",
+  "cssCacheControl": "no-store, max-age=0",
+  "javascriptCacheControl": "no-store, max-age=0",
+  "stylesheetVersion": "23.0.1",
+  "cloudApiVersion": "23.0.1",
+  "startupDiagnosticsIncluded": true,
+  "zipIntegrity": true
+}

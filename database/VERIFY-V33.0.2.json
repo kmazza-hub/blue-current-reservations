@@ -1,0 +1,24 @@
+{
+  "version": "33.0.2",
+  "release": "Scheduling Engine",
+  "validatedAt": "2026-07-22T19:38:00Z",
+  "checks": {
+    "javascriptSyntax": "passed",
+    "clientScriptReferences": "passed",
+    "uniqueHtmlIds": "passed",
+    "databaseJson": "passed",
+    "serverStartup": "passed",
+    "healthEndpoint": "passed",
+    "authenticatedSchedulingSnapshot": "passed",
+    "shiftCreatePatchDelete": "passed",
+    "schedulePublish": "passed"
+  },
+  "counts": {
+    "javascriptFiles": 63,
+    "clientScripts": 35,
+    "uniqueHtmlIds": 493
+  },
+  "notes": [
+    "API CRUD test was run against a temporary database state and the packaged demo database was restored afterward."
+  ]
+}

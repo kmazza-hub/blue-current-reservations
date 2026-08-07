@@ -1,0 +1,32 @@
+"use strict";
+class WorkforceIntelligenceService{
+ constructor(database,auditService,realtimeHub,autonomousOperationsService){Object.assign(this,{database,auditService,realtimeHub,autonomousOperationsService});}
+ async snapshot(organizationId,locationId="loc_marina"){
+  const db=await this.database.read();
+  const staff=(db.staff||[]).filter(x=>x.locationId===locationId);
+  const sections=(db.sections||[]).filter(x=>x.locationId===locationId);
+  const reservations=(db.reservations||[]).filter(x=>x.locationId===locationId&&!['cancelled','completed'].includes(x.status));
+  const waitlist=(db.waitlist||[]).filter(x=>x.locationId===locationId&&!['cancelled','seated'].includes(x.status));
+  const tickets=(db.kitchenTickets||[]).filter(x=>x.locationId===locationId&&!['served','cancelled'].includes(x.status));
+  const plan=(db.laborPlans||[]).find(x=>x.organizationId===organizationId&&x.locationId===locationId)||{};
+  const roles=['server','bartender','host','cook','expo','manager'];
+  const active=staff.filter(x=>x.status!=='off');
+  const scheduled=active.map((person,i)=>({id:person.id,name:person.name,role:person.role||roles[i%roles.length],status:person.status||'scheduled',start:i%3===0?'15:00':'16:00',end:i%4===0?'22:00':'23:00',hourlyRate:Number(person.hourlyRate||[18,19,17,22,20,30][i%6]),skillScore:78+(i*7)%21,reliability:84+(i*5)%15,section:sections[i%Math.max(1,sections.length)]?.name||`Section ${String.fromCharCode(65+i%4)}`}));
+  if(scheduled.length<10) for(let i=scheduled.length;i<12;i++)scheduled.push({id:`wf_${i}`,name:['Ava Reed','Noah Cole','Mia Lane','Liam Price','Ella Stone','Owen Hart'][i%6],role:roles[i%6],status:i===10?'callout-risk':'scheduled',start:i%2?'16:00':'15:00',end:'23:00',hourlyRate:[18,19,17,22,20,30][i%6],skillScore:79+(i*3)%18,reliability:82+(i*4)%17,section:`Section ${String.fromCharCode(65+i%4)}`});
+  const projectedHours=scheduled.reduce((s,x)=>s+(Number(x.end.slice(0,2))-Number(x.start.slice(0,2))),0);
+  const projectedLabor=Math.round(scheduled.reduce((s,x)=>s+(Number(x.end.slice(0,2))-Number(x.start.slice(0,2)))*x.hourlyRate,0));
+  const salesForecast=Number(plan.salesForecast||22400); const laborPercent=Math.round(projectedLabor/salesForecast*1000)/10;
+  const demand=Math.max(1,Math.round((reservations.length*2+waitlist.length*3+tickets.length*2)/5));
+  const recommendations=[];
+  const servers=scheduled.filter(x=>x.role==='server').length, cooks=scheduled.filter(x=>x.role==='cook').length;
+  if(demand>servers*2)recommendations.push({id:'wf_add_server',severity:'high',title:'Add one service shift',action:'Offer a 5:00–9:00 PM server shift',reason:`Demand index ${demand} exceeds current server coverage.`,impact:'Reduce table wait 6–9 min',status:'active'});
+  if(tickets.length>cooks*3)recommendations.push({id:'wf_add_cook',severity:'high',title:'Increase line coverage',action:'Extend one cook through close',reason:`${tickets.length} active tickets are loading ${cooks} scheduled cooks.`,impact:'Protect ticket target',status:'active'});
+  if(laborPercent>Number(plan.targetLaborPercent||18)+1)recommendations.push({id:'wf_trim_labor',severity:'medium',title:'Trim late labor',action:'Release one low-demand closer at 9:30 PM',reason:`Projected labor is ${laborPercent}% against an ${plan.targetLaborPercent||18}% target.`,impact:`Save $${Math.round(projectedLabor*.06)}`,status:'active'});
+  if(!recommendations.length)recommendations.push({id:'wf_hold_plan',severity:'low',title:'Maintain staffing plan',action:'Keep the current deployment',reason:'Coverage and labor cost are within target thresholds.',impact:'Stable service',status:'active'});
+  const roleCoverage=roles.map(role=>{const people=scheduled.filter(x=>x.role===role);return{role,scheduled:people.length,required:Math.max(1,Math.round(demand/[3,5,6,4,7,12][roles.indexOf(role)])),averageSkill:people.length?Math.round(people.reduce((s,x)=>s+x.skillScore,0)/people.length):0};});
+  return{generatedAt:new Date().toISOString(),locationId,summary:{scheduledPeople:scheduled.length,projectedHours,projectedLabor,salesForecast,laborPercent,targetLaborPercent:Number(plan.targetLaborPercent||18),demandIndex:demand,calloutRisk:scheduled.filter(x=>x.status==='callout-risk'||x.reliability<85).length,overtimeRisk:scheduled.filter(x=>Number(x.end.slice(0,2))-Number(x.start.slice(0,2))>8).length},scheduled,roleCoverage,recommendations,actions:(db.laborActions||[]).filter(x=>x.locationId===locationId).slice(-20).reverse(),shiftOffers:(db.shiftOffers||[]).filter(x=>x.locationId===locationId&&x.status==='open')};
+ }
+ async act(recommendationId,input,actor,organizationId){const record={id:`labor_${Date.now()}`,recommendationId,organizationId,locationId:input.locationId||'loc_marina',decision:input.decision||'approved',note:String(input.note||''),actor,createdAt:new Date().toISOString()};await this.database.mutate(db=>{db.laborActions||=[];db.shiftOffers||=[];db.laborActions.push(record);if(record.decision==='approved'&&recommendationId.includes('add_'))db.shiftOffers.push({id:`offer_${Date.now()}`,organizationId,locationId:record.locationId,recommendationId,role:recommendationId.includes('cook')?'cook':'server',shift:'5:00 PM–9:00 PM',status:'open',createdAt:record.createdAt});return record;});await this.auditService.record({organizationId,actor,action:`Labor recommendation ${record.decision}: ${recommendationId}`,category:'workforce'});this.realtimeHub.publish('workforce:action-recorded',record);return record;}
+ async updatePlan(locationId,input,actor,organizationId){let result;await this.database.mutate(db=>{db.laborPlans||=[];let plan=db.laborPlans.find(x=>x.organizationId===organizationId&&x.locationId===locationId);if(!plan){plan={id:`plan_${locationId}`,organizationId,locationId};db.laborPlans.push(plan);}Object.assign(plan,{salesForecast:Number(input.salesForecast||plan.salesForecast||0),targetLaborPercent:Number(input.targetLaborPercent||plan.targetLaborPercent||18),updatedAt:new Date().toISOString()});result=plan;return plan;});await this.auditService.record({organizationId,actor,action:'Labor plan updated',category:'workforce'});this.realtimeHub.publish('workforce:plan-updated',result);return result;}
+}
+module.exports=WorkforceIntelligenceService;

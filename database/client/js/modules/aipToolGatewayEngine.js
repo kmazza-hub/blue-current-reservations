@@ -1,0 +1,10 @@
+(function(){"use strict";
+class BlueCurrentAIPToolGatewayEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4037:tool-gateways";this.gateways=this.read();if(!this.gateways.length){this.gateways=[{id:"GW-OPS",name:"Blue Current Operations",endpoint:"/api/bootstrap",mode:"read-only",status:"untested",owner:"Platform"},{id:"GW-APPROVAL",name:"Approval Queue",endpoint:"internal:aip-approval",mode:"governed-write",status:"available",owner:"AIP Governance"}];this.save();}}
+ read(){try{const value=JSON.parse(localStorage.getItem(this.key)||"[]");return Array.isArray(value)?value:[];}catch{return[];}}
+ save(){localStorage.setItem(this.key,JSON.stringify(this.gateways));}
+ add(input){const endpoint=String(input.endpoint||"").trim();if(!endpoint)throw new Error("Enter a gateway endpoint or internal tool identifier.");if(/token=|apikey=|api_key=|password=/i.test(endpoint))throw new Error("Do not place credentials in the browser endpoint.");const item={id:`GW-${Date.now()}`,name:String(input.name||"AIP Tool Gateway").trim(),endpoint,mode:input.mode||"read-only",owner:String(input.owner||"Platform").trim(),status:"untested",lastTestedAt:null};this.gateways.unshift(item);this.save();this.eventBus?.emit?.("aip:tool-gateway-added",item);return item;}
+ async test(id){const item=this.gateways.find(g=>g.id===id);if(!item)return null;if(item.endpoint.startsWith("internal:")){item.status="available";}else{const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),3000);try{const response=await fetch(item.endpoint,{method:"GET",credentials:"same-origin",signal:controller.signal,headers:{Accept:"application/json"}});item.status=response.ok||response.status===401?"reachable":"error";item.httpStatus=response.status;}catch(error){item.status=error.name==="AbortError"?"timeout":"offline";}finally{clearTimeout(timer);}}
+  item.lastTestedAt=new Date().toISOString();this.save();this.eventBus?.emit?.("aip:tool-gateway-tested",{...item});return item;}
+}
+window.BlueCurrentAIPToolGatewayEngine=BlueCurrentAIPToolGatewayEngine;})();

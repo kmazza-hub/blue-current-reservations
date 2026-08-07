@@ -1,0 +1,14 @@
+{
+  "version": "25.1",
+  "javascriptValidation": "Validated 43 JavaScript files and all client script references.",
+  "healthEndpointVersion": "25.1",
+  "loginSmokeTestPassed": true,
+  "serviceSnapshotPassed": true,
+  "alertsPassed": true,
+  "flowUpdatePassed": true,
+  "navigationCounts": {
+    "Kitchen": 2,
+    "Service": 2
+  },
+  "zipIntegrity": true
+}

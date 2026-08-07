@@ -1,0 +1,346 @@
+/**
+ * Blue Current Application State
+ *
+ * The single source of truth for shared hospitality-service data.
+ * Every committed change is announced through the Event Bus.
+ */
+class AppState {
+  constructor(eventBus, initialState = {}) {
+    if (!eventBus) throw new Error("AppState requires an Event Bus instance.");
+
+    this.eventBus = eventBus;
+    this.defaultState = {
+      serviceStatus: "closed",
+      occupancyPercent: 0,
+      reservations: [],
+      activeGuest: null,
+      activeTable: null,
+      activeCall: null,
+      tables: null,
+
+      guestsExpected: 1026,
+      reservationsToday: 220,
+      callsAnswered: 176,
+      estimatedRevenue: 31800,
+      guestSatisfaction: 4.8,
+
+      organization: { id: "blue-current-demo", name: "Blue Current Hospitality Group" },
+      selectedLocationId: "marina",
+      intelligenceNetwork: { status: "online", learnedOutcomes: 42, confidence: 93 },
+
+      executiveBrief: "Waiting for dinner service…",
+      lastOperationalEvent: null,
+      orchestrationQueue: [],
+      orchestrationHistory: [],
+      activeOrchestrationWorkflows: [],
+      orchestrationTimeline: [],
+      operationalContext: null,
+      operationalContextHistory: [],
+      orchestrationUpdatedAt: null,
+      operationalDigitalTwin: null,
+      operationalDigitalTwinHistory: [],
+      portfolioIntelligence: null,
+      portfolioIntelligenceHistory: [],
+      portfolioExceptions: [],
+      portfolioRecommendations: [],
+      predictiveService: null,
+      predictiveServiceHistory: [],
+      predictiveServiceRiskWindows: [],
+      predictiveServiceInterventions: [],
+      autonomousPolicies: [],
+      autonomousPolicySnapshot: null,
+      autonomousPolicyCandidates: [],
+      autonomousPolicyHistory: [],
+      executiveWorkflows: [],
+      executiveWorkflowHistory: [],
+      executiveWorkflowSnapshot: null,
+      unifiedCommand: null,
+      unifiedCommandRole: "manager",
+      unifiedCommandTimeline: [],
+      guidedShift: null,
+      guidedShiftHistory: [],
+      guidedShiftAcknowledgements: {},
+      guidedShiftHandoffs: [],
+      guidedShiftSnoozes: {},
+      operatorCopilot: null,
+      operatorCopilotHistory: [],
+      operatorCopilotApprovals: [],
+      operatorCopilotDismissed: [],
+      operatorCopilotSnoozedUntil: null,
+      roleExperience: null,
+      roleExperienceRole: "manager",
+      roleExperienceDensity: "comfortable",
+      roleExperienceHistory: [],
+      commandActionInbox: null,
+      commandActionInboxHistory: [],
+      commandActionInboxResolved: [],
+      shiftCloseout: null,
+      shiftCloseoutHistory: [],
+      shiftCloseoutCompleted: [],
+      digitalTwinVisualization: null,
+      digitalTwinVisualizationHistory: [],
+      executiveMorningBrief: null,
+      executiveMorningBriefHistory: [],
+      intelligenceGraph: null,
+      intelligenceGraphHistory: [],
+      predictiveOverlay: null,
+      predictiveOverlayHistory: [],
+      restaurantReplay: null,
+      restaurantReplayHistory: [],
+      explainableDecision: null,
+      explainableDecisionHistory: [],
+      crossLocationPulse: null,
+      crossLocationPulseHistory: [],
+      profitScenario: null,
+      profitScenarioHistory: [],
+      profitScenarioSelection: "balanced",
+      smartAlertRouter: null,
+      smartAlertRouterHistory: [],
+      smartAlertAcknowledgements: {},
+      smartAlertMuted: {},
+      guestRecovery: null,
+      guestRecoveryCases: [],
+      guestRecoveryHistory: [],
+      laborDeployment: null,
+      laborDeploymentHistory: [],
+      laborDeploymentApprovals: [],
+      serviceQuality: null,
+      serviceQualityHistory: [],
+      reservationYield: null,
+      reservationYieldHistory: [],
+      reservationYieldApprovals: [],
+      kitchenThroughput: null,
+      kitchenThroughputHistory: [],
+      kitchenThroughputApprovals: [],
+      shiftProfitPulse: null,
+      shiftProfitPulseHistory: [],
+      inventoryWaste: null,
+      inventoryWasteHistory: [],
+      menuMix: null,
+      menuMixHistory: [],
+      dailyProfitPlan: null,
+      dailyProfitPlanHistory: [],
+      vendorPurchase: null,
+      vendorPurchaseHistory: [],
+      demandPrepForecast: null,
+      demandPrepForecastHistory: [],
+      profitCloseout: null,
+      profitCloseoutHistory: [],
+      profitCloseoutFinal: null,
+      supplierVariance: null,
+      supplierVarianceHistory: [],
+      prepExecution: null,
+      prepExecutionHistory: [],
+      weeklyProfitReview: null,
+      weeklyProfitReviewHistory: [],
+      teamCollaboration: null,
+      teamCollaborationHistory: [],
+      enterpriseOperations: null,
+      enterpriseOperationsHistory: [],
+      operationalKnowledge: null,
+      operationalKnowledgeHistory: [],
+      experienceQuality: null,
+      experienceQualityHistory: [],
+      demoMode: { active: false, scenario: null, lastApplied: null },
+      pilotOnboarding: null,
+      pilotOnboardingHistory: [],
+      operatorWorkspace: { mode: "focus", density: "comfortable" },
+      runtimeRecovery: null,
+      runtimeRecoveryHistory: [],
+      featurePackLoader: null,
+      featurePackLoaderHistory: [],
+      startupPerformance: null,
+      startupPerformanceHistory: [],
+      bootRecoveryGuard: null,
+      bootRecoveryHistory: [],
+      backgroundActivityGovernor: null,
+      backgroundActivityGovernorHistory: [],
+      startupProfiles: null,
+      startupProfileHistory: [],
+      assetHealth: null,
+      assetHealthHistory: [],
+      pilotLaunch: { owner: "", window: "" },
+      pilotLaunchHistory: [],
+      pilotEvidence: null,
+      pilotEvidenceHistory: [],
+      accessReadinessConfig: { roles: null, rbacReviewed: false, leastPrivilegeReviewed: false, backupAdmin: false, supportContact: false, locationBoundaries: false },
+      accessReadiness: null,
+      accessReadinessHistory: [],
+      releaseCertification: null,
+      releaseCertificationHistory: [],
+      integrationControl: null,
+      integrationControlHistory: [],
+      signalQuality: null,
+      signalQualityHistory: [],
+      pilotTelemetry: null,
+      pilotTelemetryHistory: [],
+      restaurantPerformance: null,
+      restaurantPerformanceHistory: [],
+      restaurantPerformanceIndex: 0,
+      restaurantPerformanceOpportunity: null,
+      restaurantPerformanceActions: [],
+      outcomeMeasurements: [],
+      outcomeIntelligence: null,
+      outcomeIntelligenceHistory: [],
+      executiveBriefing: null,
+      executiveBriefingHistory: [],
+      portfolioPerformance: null,
+      portfolioPerformanceHistory: [],
+      portfolioPerformanceLocations: [],
+      portfolioPerformanceOpportunities: [],
+      portfolioPerformanceSelectedLocationId: null,
+      performanceLearning: null,
+      performanceLearningHistory: [],
+      recommendationConfidenceAdjustment: 0,
+      pilotReadiness: null,
+      pilotRelease: null,
+      pilotReleaseHistory: [],
+      pilotReleaseManifest: null,
+      pilotOperationsSession: null,
+      pilotOperationsHistory: [],
+      pilotOperationsReadiness: null,
+      pilotReview: null,
+      pilotReviewHistory: [],
+      pilotRolloutRecommendation: null,
+      pilotRolloutDecision: null,
+      deploymentReadiness: null,
+      deploymentReadinessHistory: [],
+      deploymentRoleAssignments: [],
+      deploymentTraining: [],
+      deploymentLocations: [],
+      deploymentLaunchWindow: null,
+      deploymentRollbackPlan: null,
+      postLaunchValue: null,
+      postLaunchValueHistory: [],
+      postLaunchAdoption: [],
+      postLaunchIssues: [],
+      postLaunchLocations: [],
+      expansionBenchmark: null,
+      expansionBenchmarkHistory: [],
+      expansionPlan: [],
+      expansionPlaybooks: [],
+      performanceGovernance: null,
+      performanceGovernanceHistory: [],
+      performanceGovernanceCadence: [],
+      performanceGovernanceCommitments: [],
+      enterpriseValuePlan: null,
+      enterpriseValuePlanHistory: [],
+      enterpriseValueTargets: [],
+      enterpriseValueInitiatives: [],
+      marginIntelligence: null,
+      marginIntelligenceHistory: [],
+      marginAssumptions: null,
+      costVariance: null,
+      costVarianceHistory: [],
+      projectedCostVariance: {},
+      profitProtectionActions: []
+    };
+
+    this.state = this.#clone({ ...this.defaultState, ...initialState });
+  }
+
+  getState() {
+    return this.#clone(this.state);
+  }
+
+  get(key) {
+    return this.#clone(this.state[key]);
+  }
+
+  set(key, value) {
+    return this.update({ [key]: value });
+  }
+
+  update(changes = {}) {
+    if (!changes || typeof changes !== "object" || Array.isArray(changes)) {
+      throw new TypeError("AppState.update expects an object.");
+    }
+
+    const changedEntries = Object.entries(changes).filter(
+      ([key, value]) => !this.#isEqual(this.state[key], value)
+    );
+
+    if (changedEntries.length === 0) return false;
+
+    const previousState = this.getState();
+    const committedChanges = Object.fromEntries(changedEntries);
+
+    this.state = {
+      ...this.state,
+      ...this.#clone(committedChanges)
+    };
+
+    changedEntries.forEach(([key]) => {
+      this.eventBus.emit("state:changed", {
+        key,
+        value: this.get(key),
+        previousValue: previousState[key],
+        state: this.getState()
+      });
+    });
+
+    this.eventBus.emit("state:updated", {
+      changes: this.#clone(committedChanges),
+      previousState,
+      state: this.getState()
+    });
+
+    return true;
+  }
+
+  increment(key, amount = 1) {
+    const currentValue = this.state[key];
+    if (typeof currentValue !== "number") {
+      throw new TypeError(`AppState.increment cannot update "${key}" because it is not numeric.`);
+    }
+    if (typeof amount !== "number" || Number.isNaN(amount)) {
+      throw new TypeError("AppState.increment amount must be a number.");
+    }
+
+    return this.set(key, currentValue + amount);
+  }
+
+  appendReservation(reservation) {
+    if (!reservation || typeof reservation !== "object" || Array.isArray(reservation)) {
+      throw new TypeError("AppState.appendReservation expects a reservation object.");
+    }
+
+    const alreadyExists = reservation.id &&
+      this.state.reservations.some((item) => item.id === reservation.id);
+
+    if (alreadyExists) return false;
+    return this.set("reservations", [...this.state.reservations, reservation]);
+  }
+
+  reset(overrides = {}) {
+    const previousState = this.getState();
+    this.state = this.#clone({ ...this.defaultState, ...overrides });
+
+    const state = this.getState();
+    this.eventBus.emit("state:reset", { previousState, state });
+    this.eventBus.emit("state:updated", {
+      changes: state,
+      previousState,
+      state
+    });
+  }
+
+  #clone(value) {
+    if (value === undefined || value === null || typeof value !== "object") return value;
+    return structuredClone(value);
+  }
+
+  #isEqual(left, right) {
+    if (Object.is(left, right)) return true;
+    if (left && right && typeof left === "object" && typeof right === "object") {
+      try {
+        return JSON.stringify(left) === JSON.stringify(right);
+      } catch {
+        return false;
+      }
+    }
+    return false;
+  }
+}
+
+window.BlueCurrentAppState = AppState;
