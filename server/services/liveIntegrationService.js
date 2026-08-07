@@ -130,6 +130,17 @@ class LiveIntegrationService {
       const connectors = await this.listConnectors(organizationId);
       const connector = connectors.find(item => item.id === source);
       if (!connector) throw new Error(`Unknown connector: ${source}`);
+      const admissionDb = await this.database.read();
+      const admissionPolicy = admissionDb.liveBackpressurePolicies?.[`${organizationId}:${source}`] || null;
+      if (admissionPolicy?.mode === "protect") {
+        const cutoff = Date.now() - 60000;
+        const eventsPerMinute = (admissionDb.liveEvents || []).filter(item => item.organizationId === organizationId && item.source === source && new Date(item.receivedAt).getTime() >= cutoff).length;
+        if (eventsPerMinute >= Number(admissionPolicy.hardLimitPerMinute || 300)) {
+          const pressureError = new Error(`Connector ${source} is above its protected hard limit (${eventsPerMinute}/${admissionPolicy.hardLimitPerMinute} events/min). Event preserved for recovery.`);
+          pressureError.statusCode = 429;
+          throw pressureError;
+        }
+      }
       const contract = this.contractFor(type);
       if (!contract) throw new Error(`Unsupported canonical event type: ${type}`);
       if (connector.type !== contract.sourceType && connector.type !== "other") throw new Error(`${source} is a ${connector.type} connector but ${type} requires ${contract.sourceType}.`);
@@ -502,6 +513,121 @@ class LiveIntegrationService {
     };
     this.realtimeHub.publish("live-reasoning-feed", feed);
     return feed;
+  }
+
+  async streamReconciliation(organizationId) {
+    const [connectors, checkpoints] = await Promise.all([
+      this.listConnectors(organizationId),
+      this.sourceCheckpoints(organizationId)
+    ]);
+    const db = await this.database.read();
+    const events = (db.liveEvents || []).filter(item => item.organizationId === organizationId);
+    const sources = connectors.map(connector => {
+      const sourceEvents = events.filter(event => event.source === connector.id);
+      const checkpoint = checkpoints.checkpoints.find(item => item.source === connector.id) || null;
+      const newest = sourceEvents[0] || null;
+      const checkpointEventExists = !checkpoint?.lastEventId || sourceEvents.some(event => event.id === checkpoint.lastEventId);
+      const lastEventMatches = !checkpoint?.lastEventId || checkpoint.lastEventId === newest?.id;
+      let orderViolations = 0;
+      for (let i = 1; i < sourceEvents.length; i += 1) {
+        const previous = new Date(sourceEvents[i - 1].receivedAt).getTime();
+        const current = new Date(sourceEvents[i].receivedAt).getTime();
+        if (Number.isFinite(previous) && Number.isFinite(current) && previous < current) orderViolations += 1;
+      }
+      const issues = [];
+      if (checkpoint?.sequence > 0 && !checkpointEventExists) issues.push("Checkpoint event is not present in the retained event window.");
+      if (checkpoint?.sequence > 0 && !lastEventMatches) issues.push("Checkpoint does not match the newest retained source event.");
+      if (orderViolations) issues.push(`${orderViolations} retained event ordering violation(s).`);
+      if (connector.mode === "live" && connector.endpoint && !checkpoint?.sequence) issues.push("Configured live source has no accepted checkpoint.");
+      const score = Math.max(0, 100 - issues.length * 25);
+      return {
+        source: connector.id, name: connector.name, type: connector.type, retainedEvents: sourceEvents.length,
+        checkpointSequence: Number(checkpoint?.sequence || 0), lastEventId: newest?.id || null, checkpointEventId: checkpoint?.lastEventId || null,
+        orderViolations, score, status: issues.length === 0 ? "reconciled" : score >= 75 ? "watch" : "mismatch", issues
+      };
+    });
+    const mismatches = sources.filter(item => item.status !== "reconciled");
+    const score = sources.length ? Math.round(sources.reduce((sum, item) => sum + item.score, 0) / sources.length) : 100;
+    const result = {
+      organizationId, score, status: mismatches.length === 0 ? "reconciled" : score >= 80 ? "watch" : "mismatch",
+      mismatchCount: mismatches.length, sources, generatedAt: new Date().toISOString()
+    };
+    this.realtimeHub.publish("live-stream-reconciliation", result);
+    return result;
+  }
+
+  async backpressureStatus(organizationId) {
+    const connectors = await this.listConnectors(organizationId);
+    const db = await this.database.read();
+    db.liveBackpressurePolicies ||= {};
+    const events = (db.liveEvents || []).filter(item => item.organizationId === organizationId);
+    const now = Date.now();
+    const sources = connectors.map(connector => {
+      const policy = db.liveBackpressurePolicies[`${organizationId}:${connector.id}`] || { mode: "observe", softLimitPerMinute: 120, hardLimitPerMinute: 300 };
+      const lastMinute = events.filter(event => event.source === connector.id && now - new Date(event.receivedAt).getTime() <= 60000).length;
+      const pressure = lastMinute >= Number(policy.hardLimitPerMinute || 300) ? "critical" : lastMinute >= Number(policy.softLimitPerMinute || 120) ? "high" : "normal";
+      return { source: connector.id, name: connector.name, mode: policy.mode || "observe", softLimitPerMinute: Number(policy.softLimitPerMinute || 120), hardLimitPerMinute: Number(policy.hardLimitPerMinute || 300), eventsPerMinute: lastMinute, pressure };
+    });
+    const critical = sources.filter(item => item.pressure === "critical").length;
+    const high = sources.filter(item => item.pressure === "high").length;
+    return { organizationId, status: critical ? "critical" : high ? "watch" : "normal", criticalSources: critical, highSources: high, sources, generatedAt: new Date().toISOString() };
+  }
+
+  async saveBackpressurePolicy(organizationId, actor, input = {}) {
+    const source = String(input.source || "").trim();
+    if (!source) throw new Error("source is required.");
+    const connectors = await this.listConnectors(organizationId);
+    if (!connectors.some(item => item.id === source)) throw new Error(`Unknown connector: ${source}`);
+    const mode = input.mode === "protect" ? "protect" : "observe";
+    const soft = Math.max(10, Math.min(Number(input.softLimitPerMinute) || 120, 5000));
+    const hard = Math.max(soft + 1, Math.min(Number(input.hardLimitPerMinute) || 300, 10000));
+    const policy = { organizationId, source, mode, softLimitPerMinute: soft, hardLimitPerMinute: hard, updatedAt: new Date().toISOString(), updatedBy: actor };
+    await this.database.mutate(db => { db.liveBackpressurePolicies ||= {}; db.liveBackpressurePolicies[`${organizationId}:${source}`] = policy; return policy; });
+    await this.auditService.record({ organizationId, actor, action: `Live backpressure policy saved: ${source} (${mode})`, category: "live-integration" });
+    this.realtimeHub.publish("live-backpressure-policy", policy);
+    return policy;
+  }
+
+  async twinSyncStatus(organizationId) {
+    const db = await this.database.read();
+    const current = db.liveTwinSynchronization?.[organizationId] || null;
+    return current || { organizationId, version: 0, status: "not-synchronized", trusted: false, blockers: ["Live twin has not been synchronized yet."], generatedAt: new Date().toISOString() };
+  }
+
+  async synchronizeTwin(organizationId, actor) {
+    const [feed, reconciliation, pressure, snapshot] = await Promise.all([
+      this.reasoningFeed(organizationId),
+      this.streamReconciliation(organizationId),
+      this.backpressureStatus(organizationId),
+      this.operatingSnapshot(organizationId)
+    ]);
+    const blockers = [];
+    if (!feed.safeToReason) blockers.push(...(feed.blockers || []));
+    if (reconciliation.status === "mismatch") blockers.push(`${reconciliation.mismatchCount} source reconciliation mismatch(es).`);
+    if (pressure.status === "critical") blockers.push(`${pressure.criticalSources} source(s) are above the hard backpressure limit.`);
+    const trusted = blockers.length === 0;
+    const twin = {
+      organizationId,
+      operationalState: {
+        revenue: snapshot.revenue, closedChecks: snapshot.closedChecks, seatedCovers: snapshot.seatedCovers,
+        reservationsCreated: snapshot.reservationsCreated, openKitchenTickets: snapshot.openKitchenTickets,
+        employeesOnClock: snapshot.employeesOnClock, lastEventAt: snapshot.lastEventAt, freshnessSeconds: snapshot.freshnessSeconds
+      },
+      evidence: { reasoningFeedScore: feed.score, reconciliationScore: reconciliation.score, backpressureStatus: pressure.status },
+      trusted, blockers, synchronizedAt: new Date().toISOString(), synchronizedBy: actor
+    };
+    const hash = crypto.createHash("sha256").update(JSON.stringify({ operationalState: twin.operationalState, trusted, blockers })).digest("hex").slice(0, 16);
+    const saved = await this.database.mutate(db => {
+      db.liveTwinSynchronization ||= {};
+      const previous = db.liveTwinSynchronization[organizationId] || { version: 0, hash: null };
+      const version = previous.hash === hash ? Number(previous.version || 0) : Number(previous.version || 0) + 1;
+      const next = { ...twin, version, hash, status: trusted ? "synchronized" : "blocked", generatedAt: new Date().toISOString() };
+      db.liveTwinSynchronization[organizationId] = next;
+      return next;
+    });
+    await this.auditService.record({ organizationId, actor, action: `Live operational twin synchronized: v${saved.version} (${saved.status})`, category: "live-integration" });
+    this.realtimeHub.publish("live-twin-synchronized", saved);
+    return saved;
   }
 
   async operatingSnapshot(organizationId) {

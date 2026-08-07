@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.11.0",
+        version: "42.14.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -170,7 +170,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         const event = await liveIntegrationService.ingestEvent(organizationId, auth.user.name, await readJson(request));
         return sendJson(response, 201, event);
       } catch (error) {
-        return sendJson(response, 400, { error: error.message, deadLetterId: error.deadLetterId || null });
+        return sendJson(response, error.statusCode || 400, { error: error.message, deadLetterId: error.deadLetterId || null });
       }
     }
 
@@ -201,7 +201,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         const event = await liveIntegrationService.ingestAdapterEvent(organizationId, auth.user.name, adapterId, await readJson(request));
         return sendJson(response, event.duplicate ? 200 : 201, event);
       } catch (error) {
-        return sendJson(response, 400, { error: error.message, deadLetterId: error.deadLetterId || null });
+        return sendJson(response, error.statusCode || 400, { error: error.message, deadLetterId: error.deadLetterId || null });
       }
     }
 
@@ -249,6 +249,34 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/reasoning-feed" && request.method === "GET") {
       return sendJson(response, 200, await liveIntegrationService.reasoningFeed(organizationId));
+    }
+
+    if (url.pathname === "/api/live/reconciliation" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.streamReconciliation(organizationId));
+    }
+
+    if (url.pathname === "/api/live/backpressure" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.backpressureStatus(organizationId));
+    }
+
+    if (url.pathname === "/api/live/backpressure" && request.method === "PUT") {
+      try {
+        return sendJson(response, 200, await liveIntegrationService.saveBackpressurePolicy(organizationId, auth.user.name, await readJson(request)));
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+
+    if (url.pathname === "/api/live/twin-sync" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.twinSyncStatus(organizationId));
+    }
+
+    if (url.pathname === "/api/live/twin-sync" && request.method === "POST") {
+      try {
+        return sendJson(response, 200, await liveIntegrationService.synchronizeTwin(organizationId, auth.user.name));
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
