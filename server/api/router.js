@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.14.0",
+        version: "42.14.2",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),

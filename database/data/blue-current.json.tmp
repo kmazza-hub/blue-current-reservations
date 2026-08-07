@@ -586,6 +586,14 @@
       "category": "security",
       "createdAt": "2026-08-06T22:38:40.895Z",
       "id": "audit_1786055920895_en26mk"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-07T08:54:40.189Z",
+      "id": "audit_1786092880189_bkvwax"
     }
   ],
   "reservations": [
@@ -1064,6 +1072,18 @@
       ],
       "createdAt": "2026-08-06T22:38:40.885Z",
       "expiresAt": "2026-08-07T10:38:40.885Z"
+    },
+    {
+      "id": "ses_1786092880180_d94t8m",
+      "tokenHash": "07fe39bd3525f9d52e49e555527b16f2300e2b63ab694e3ac096ff3748a9b7c4",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-07T08:54:40.181Z",
+      "expiresAt": "2026-08-07T20:54:40.181Z"
     }
   ],
   "invitations": [
@@ -2492,8 +2512,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:21:31.671Z",
-      "updatedAt": "2026-08-07T08:21:31.672Z"
+      "createdAt": "2026-08-07T08:34:36.793Z",
+      "updatedAt": "2026-08-07T08:34:36.793Z"
     },
     {
       "id": "opentable-reservations",
@@ -2503,8 +2523,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:21:31.672Z",
-      "updatedAt": "2026-08-07T08:21:31.672Z"
+      "createdAt": "2026-08-07T08:34:36.793Z",
+      "updatedAt": "2026-08-07T08:34:36.793Z"
     },
     {
       "id": "labor-schedule",
@@ -2514,8 +2534,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:21:31.672Z",
-      "updatedAt": "2026-08-07T08:21:31.672Z"
+      "createdAt": "2026-08-07T08:34:36.793Z",
+      "updatedAt": "2026-08-07T08:34:36.793Z"
     },
     {
       "id": "inventory-purchasing",
@@ -2525,8 +2545,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:21:31.672Z",
-      "updatedAt": "2026-08-07T08:21:31.672Z"
+      "createdAt": "2026-08-07T08:34:36.793Z",
+      "updatedAt": "2026-08-07T08:34:36.793Z"
     },
     {
       "id": "kitchen-display",
@@ -2536,8 +2556,8 @@
       "endpoint": "",
       "status": "not-configured",
       "organizationId": "org_chefs",
-      "createdAt": "2026-08-07T08:21:31.672Z",
-      "updatedAt": "2026-08-07T08:21:31.672Z"
+      "createdAt": "2026-08-07T08:34:36.793Z",
+      "updatedAt": "2026-08-07T08:34:36.793Z"
     }
   ]
 }

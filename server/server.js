@@ -143,13 +143,16 @@ const server = http.createServer(async (request, response) => {
       });
     });
   } catch (error) {
-    response.writeHead(500, { "Content-Type": "application/json" });
+    console.error(`[server] ${request.method} ${request.url} failed:`, error && (error.stack || error));
+    if (!response.headersSent) {
+      response.writeHead(500, { "Content-Type": "application/json" });
+    }
     response.end(JSON.stringify({ error: error.message }));
   }
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V42.14.0 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V42.14.2 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);
