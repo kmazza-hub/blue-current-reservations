@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.14.2",
+        version: "42.17.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -277,6 +277,30 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       } catch (error) {
         return sendJson(response, 400, { error: error.message });
       }
+    }
+
+    if (url.pathname === "/api/live/provenance" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.provenanceLedger(organizationId, url.searchParams.get("limit") || 100));
+    }
+
+    if (url.pathname === "/api/live/source-promotion" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.sourcePromotionStatus(organizationId));
+    }
+
+    if (url.pathname === "/api/live/source-promotion" && request.method === "POST") {
+      try {
+        return sendJson(response, 200, await liveIntegrationService.promoteSource(organizationId, auth.user.name, await readJson(request)));
+      } catch (error) {
+        return sendJson(response, error.statusCode || 400, { error: error.message });
+      }
+    }
+
+    if (url.pathname === "/api/live/evidence-certification" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.liveEvidenceCertification(organizationId));
+    }
+
+    if (url.pathname === "/api/live/evidence-certification" && request.method === "POST") {
+      return sendJson(response, 200, await liveIntegrationService.liveEvidenceCertification(organizationId, auth.user.name, true));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

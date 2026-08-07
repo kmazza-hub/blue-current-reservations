@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "41.41.0-v41-closure", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "42.17.0-live-evidence-certification", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2292,6 +2292,23 @@ const liveTwinSyncCenterModule = startupRegistry.register(
   "liveTwinSyncCenter",
   shouldInitializeCenter("liveTwinSyncCenter") ? window.createBlueCurrentLiveTwinSyncCenterModule?.(eventBus, appState) : null,
   ["eventBus", "appState", "reasoningFeedGateCenter", "streamReconciliationCenter", "connectorBackpressureCenter"]
+);
+
+
+const liveProvenanceCenterModule = startupRegistry.register(
+  "liveProvenanceCenter",
+  shouldInitializeCenter("liveProvenanceCenter") ? window.createBlueCurrentLiveProvenanceCenterModule?.(eventBus) : null,
+  ["eventBus", "liveTwinSyncCenter"]
+);
+const sourceCutoverCenterModule = startupRegistry.register(
+  "sourceCutoverCenter",
+  shouldInitializeCenter("sourceCutoverCenter") ? window.createBlueCurrentSourceCutoverCenterModule?.(eventBus) : null,
+  ["eventBus", "streamReconciliationCenter", "connectorBackpressureCenter", "sourceCheckpointCenter"]
+);
+const liveEvidenceCertificationCenterModule = startupRegistry.register(
+  "liveEvidenceCertificationCenter",
+  shouldInitializeCenter("liveEvidenceCertificationCenter") ? window.createBlueCurrentLiveEvidenceCertificationCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "liveProvenanceCenter", "sourceCutoverCenter", "liveTwinSyncCenter", "reasoningFeedGateCenter"]
 );
 
 const operationsWorkspaceCenterModule = startupRegistry.register(

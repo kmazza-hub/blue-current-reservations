@@ -630,6 +630,126 @@ class LiveIntegrationService {
     return saved;
   }
 
+  async provenanceLedger(organizationId, limit = 100) {
+    const db = await this.database.read();
+    const connectors = (db.liveConnectors || []).filter(item => item.organizationId === organizationId);
+    const connectorMap = new Map(connectors.map(item => [item.id, item]));
+    const events = (db.liveEvents || []).filter(item => item.organizationId === organizationId).slice(0, Math.max(1, Math.min(Number(limit) || 100, 500)));
+    const records = events.map(event => {
+      const connector = connectorMap.get(event.source) || null;
+      const lineage = [
+        `source:${event.source}`,
+        event.adapterId ? `adapter:${event.adapterId}` : `adapter:canonical`,
+        `contract:${event.type}@${event.schemaVersion || "1.0"}`,
+        `event:${event.id}`
+      ];
+      return {
+        eventId: event.id, source: event.source, sourceName: connector?.name || event.source, sourceType: connector?.type || null,
+        connectorMode: connector?.mode || null, eventType: event.type, schemaVersion: event.schemaVersion || null,
+        adapterId: event.adapterId || null, sourceEventId: event.sourceEventId || null, fingerprint: event.fingerprint || null,
+        occurredAt: event.occurredAt || null, receivedAt: event.receivedAt || null, replayedFrom: event.replayedFrom || null,
+        validationStatus: event.validation?.status || "unknown", lineage
+      };
+    });
+    const withAdapter = records.filter(item => item.adapterId).length;
+    const withSourceId = records.filter(item => item.sourceEventId).length;
+    const accepted = records.filter(item => item.validationStatus === "accepted").length;
+    const score = records.length ? Math.round(((accepted / records.length) * 50) + ((withSourceId / records.length) * 30) + ((withAdapter / records.length) * 20)) : 0;
+    return {
+      organizationId, score, status: records.length === 0 ? "awaiting-data" : score >= 90 ? "traceable" : score >= 70 ? "controlled" : "incomplete",
+      eventCount: records.length, withAdapter, withSourceId, accepted, records, generatedAt: new Date().toISOString()
+    };
+  }
+
+  async sourcePromotionStatus(organizationId) {
+    const connectors = await this.listConnectors(organizationId);
+    const db = await this.database.read();
+    const stored = db.liveSourcePromotion || {};
+    const checkpoints = await this.sourceCheckpoints(organizationId);
+    const reconciliation = await this.streamReconciliation(organizationId);
+    const pressure = await this.backpressureStatus(organizationId);
+    const checkpointMap = new Map((checkpoints.checkpoints || []).map(item => [item.source, item]));
+    const reconciliationMap = new Map((reconciliation.sources || []).map(item => [item.source, item]));
+    const pressureMap = new Map((pressure.sources || []).map(item => [item.source, item]));
+    const sources = connectors.map(connector => {
+      const key = `${organizationId}:${connector.id}`;
+      const promotion = stored[key] || { stage: connector.mode === "live" ? "live" : "sandbox" };
+      const cp = checkpointMap.get(connector.id);
+      const rec = reconciliationMap.get(connector.id);
+      const bp = pressureMap.get(connector.id);
+      const blockers = [];
+      if (!connector.endpoint) blockers.push("Connector endpoint is not configured.");
+      if (!cp?.sequence) blockers.push("No accepted source checkpoint exists.");
+      if (cp && !["fresh", "watch"].includes(cp.freshness)) blockers.push(`Checkpoint freshness is ${cp.freshness}.`);
+      if (rec && rec.status === "mismatch") blockers.push("Source reconciliation is mismatched.");
+      if (bp && bp.pressure === "critical") blockers.push("Connector is above its hard backpressure threshold.");
+      const readinessScore = Math.max(0, 100 - blockers.length * 25);
+      return {
+        source: connector.id, name: connector.name, type: connector.type, endpointConfigured: !!connector.endpoint,
+        stage: promotion.stage || "sandbox", readinessScore, blockers, updatedAt: promotion.updatedAt || connector.updatedAt || null,
+        updatedBy: promotion.updatedBy || null
+      };
+    });
+    return { organizationId, sources, generatedAt: new Date().toISOString() };
+  }
+
+  async promoteSource(organizationId, actor, input = {}) {
+    const source = String(input.source || "").trim();
+    const stage = ["sandbox", "pilot", "live"].includes(input.stage) ? input.stage : "sandbox";
+    if (!source) throw new Error("source is required.");
+    const current = await this.sourcePromotionStatus(organizationId);
+    const item = current.sources.find(entry => entry.source === source);
+    if (!item) throw new Error(`Unknown connector: ${source}`);
+    if (["pilot", "live"].includes(stage) && item.readinessScore < 75) {
+      const error = new Error(`Source ${source} is not ready for ${stage}. Resolve blockers first.`);
+      error.statusCode = 409; throw error;
+    }
+    if (stage === "live" && item.blockers.length) {
+      const error = new Error(`Source ${source} cannot move live while blockers remain.`);
+      error.statusCode = 409; throw error;
+    }
+    const record = { organizationId, source, stage, note: String(input.note || "").trim(), updatedAt: new Date().toISOString(), updatedBy: actor };
+    await this.database.mutate(db => {
+      db.liveSourcePromotion ||= {}; db.liveSourcePromotion[`${organizationId}:${source}`] = record;
+      db.liveConnectors ||= [];
+      const connector = db.liveConnectors.find(entry => entry.organizationId === organizationId && entry.id === source);
+      if (connector) { connector.mode = stage === "live" ? "live" : "sandbox"; connector.updatedAt = record.updatedAt; }
+      return record;
+    });
+    await this.auditService.record({ organizationId, actor, action: `Live source promotion: ${source} -> ${stage}`, category: "live-integration" });
+    this.realtimeHub.publish("live-source-promotion", record);
+    return { ...item, ...record };
+  }
+
+  async liveEvidenceCertification(organizationId, actor = null, persist = false) {
+    const [status, provenance, reconciliation, pressure, feed, twin, promotion] = await Promise.all([
+      this.status(organizationId), this.provenanceLedger(organizationId, 200), this.streamReconciliation(organizationId),
+      this.backpressureStatus(organizationId), this.reasoningFeed(organizationId), this.twinSyncStatus(organizationId), this.sourcePromotionStatus(organizationId)
+    ]);
+    const controls = [
+      { id: "source-health", label: "Live source health", pass: status.configuredConnectors > 0 && status.healthyConnectors > 0 && status.staleConnectors === 0, detail: `${status.healthyConnectors}/${status.connectorCount} healthy · ${status.configuredConnectors} configured` },
+      { id: "provenance", label: "Event provenance", pass: provenance.eventCount > 0 && provenance.score >= 70, detail: `${provenance.score}% traceability` },
+      { id: "reconciliation", label: "Stream reconciliation", pass: reconciliation.status !== "mismatch", detail: `${reconciliation.score}% reconciled` },
+      { id: "backpressure", label: "Backpressure containment", pass: pressure.status !== "critical", detail: pressure.status },
+      { id: "reasoning-feed", label: "Reasoning evidence gate", pass: !!feed.safeToReason, detail: `${feed.score}% evidence` },
+      { id: "live-twin", label: "Trusted live twin", pass: !!twin.trusted, detail: twin.status || "not-synchronized" },
+      { id: "source-promotion", label: "Controlled source promotion", pass: promotion.sources.every(item => item.stage !== "live" || item.blockers.length === 0), detail: `${promotion.sources.filter(item => item.stage === "live").length} live source(s)` }
+    ];
+    const score = Math.round(controls.reduce((sum, item) => sum + (item.pass ? 100 : 0), 0) / controls.length);
+    const blockers = controls.filter(item => !item.pass).map(item => `${item.label}: ${item.detail}`);
+    const certificate = {
+      id: `LEC-${Date.now().toString(36).toUpperCase()}`, organizationId, score,
+      status: score === 100 ? "certified" : score >= 70 ? "conditional" : "blocked", trusted: score === 100, blockers, controls,
+      issuedAt: new Date().toISOString(), issuedBy: actor || null, build: "42.17.0-live-evidence-certification"
+    };
+    if (persist) {
+      await this.database.mutate(db => { db.liveEvidenceCertification ||= {}; db.liveEvidenceCertification[organizationId] = certificate; return certificate; });
+      await this.auditService.record({ organizationId, actor, action: `Live evidence certification: ${certificate.status} (${certificate.score}%)`, category: "live-integration" });
+      this.realtimeHub.publish("live-evidence-certification", certificate);
+    }
+    return certificate;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;
