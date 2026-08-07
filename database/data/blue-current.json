@@ -2559,5 +2559,59 @@
       "createdAt": "2026-08-07T08:34:36.793Z",
       "updatedAt": "2026-08-07T08:34:36.793Z"
     }
-  ]
+  ],
+  "providerLaunchCertification": {
+    "org_chefs": {
+      "id": "PLC-MSIR1EJR",
+      "organizationId": "org_chefs",
+      "score": 50,
+      "status": "blocked",
+      "blockers": [
+        "Provider connection readiness: 20%",
+        "Verified webhook delivery: 0 verified · 0 rejected",
+        "Trusted live evidence: 43%"
+      ],
+      "controls": [
+        {
+          "id": "provider-readiness",
+          "label": "Provider connection readiness",
+          "pass": false,
+          "detail": "20%"
+        },
+        {
+          "id": "verified-delivery",
+          "label": "Verified webhook delivery",
+          "pass": false,
+          "detail": "0 verified · 0 rejected"
+        },
+        {
+          "id": "evidence",
+          "label": "Trusted live evidence",
+          "pass": false,
+          "detail": "43%"
+        },
+        {
+          "id": "reconciliation",
+          "label": "Stream reconciliation",
+          "pass": true,
+          "detail": "100%"
+        },
+        {
+          "id": "backpressure",
+          "label": "Backpressure containment",
+          "pass": true,
+          "detail": "normal"
+        },
+        {
+          "id": "rotation",
+          "label": "Credential rotation hygiene",
+          "pass": true,
+          "detail": "controlled"
+        }
+      ],
+      "issuedAt": "2026-08-07T09:35:21.831Z",
+      "issuedBy": "Keith Mazza",
+      "build": "42.23.0-provider-launch-control"
+    }
+  }
 }

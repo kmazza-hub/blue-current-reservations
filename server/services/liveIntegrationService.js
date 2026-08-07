@@ -819,6 +819,13 @@ class LiveIntegrationService {
       if (this.secureCompareSignature(previousExpected, signature)) verificationKey = "previous";
     }
     if (!verificationKey) { const error = new Error("Webhook signature verification failed."); error.statusCode = 401; throw error; }
+    const quarantine = await this.providerQuarantineStatus(organizationId);
+    const quarantineRecord = quarantine.sources.find(item => item.source === source);
+    if (quarantineRecord?.quarantined) {
+      const error = new Error(`Provider source is quarantined: ${quarantineRecord.reason || "operator hold"}`);
+      error.statusCode = 423;
+      throw error;
+    }
     const actor = `webhook:${source}`;
     let event;
     if (binding.adapterId) {
@@ -911,6 +918,92 @@ class LiveIntegrationService {
     const certificate = { id:`PLC-${Date.now().toString(36).toUpperCase()}`, organizationId, score, status:score===100?"certified":score>=67?"conditional":"blocked", blockers, controls, issuedAt:new Date().toISOString(), issuedBy:actor, build:"42.23.0-provider-launch-control" };
     if (persist) await this.database.mutate(db2 => { db2.providerLaunchCertification ||= {}; db2.providerLaunchCertification[organizationId]=certificate; return certificate; });
     return certificate;
+  }
+
+
+  async providerSlaStatus(organizationId) {
+    const [connectors, ledger] = await Promise.all([this.listConnectors(organizationId), this.webhookReceiptLedger(organizationId, 1000)]);
+    const db = await this.database.read();
+    const policies = db.liveProviderSlaPolicies || {};
+    const receipts = (ledger.receipts || []).filter(item => item.verified !== false);
+    const rejected = (ledger.receipts || []).filter(item => item.verified === false);
+    const now = Date.now();
+    const sources = connectors.map(connector => {
+      const key = `${organizationId}:${connector.id}`;
+      const stored = policies[key] || {};
+      const expectedIntervalSeconds = Math.max(30, Math.min(86400, Number(stored.expectedIntervalSeconds) || (connector.mode === "live" ? 300 : 900)));
+      const warningMultiplier = Math.max(1.25, Math.min(10, Number(stored.warningMultiplier) || 2));
+      const criticalMultiplier = Math.max(warningMultiplier, Math.min(20, Number(stored.criticalMultiplier) || 4));
+      const latest = receipts.find(item => item.source === connector.id) || null;
+      const recentRejects = rejected.filter(item => item.source === connector.id && now - new Date(item.receivedAt).getTime() <= expectedIntervalSeconds * criticalMultiplier * 1000).length;
+      const ageSeconds = latest?.receivedAt ? Math.max(0, Math.round((now - new Date(latest.receivedAt).getTime()) / 1000)) : null;
+      let status = "awaiting-data";
+      if (ageSeconds != null) status = ageSeconds > expectedIntervalSeconds * criticalMultiplier ? "breach" : ageSeconds > expectedIntervalSeconds * warningMultiplier ? "watch" : "healthy";
+      if (recentRejects >= 3 && status === "healthy") status = "watch";
+      const score = status === "healthy" ? 100 : status === "watch" ? 70 : status === "awaiting-data" ? 40 : 20;
+      return { source: connector.id, name: connector.name, mode: connector.mode, expectedIntervalSeconds, warningMultiplier, criticalMultiplier, ageSeconds, recentRejects, lastVerifiedAt: latest?.receivedAt || null, status, score, updatedAt: stored.updatedAt || null, updatedBy: stored.updatedBy || null };
+    });
+    const score = sources.length ? Math.round(sources.reduce((sum,item)=>sum+item.score,0)/sources.length) : 0;
+    const breaches = sources.filter(item => item.status === "breach").length;
+    return { organizationId, score, status: breaches ? "breach" : sources.some(item=>item.status==="watch") ? "watch" : sources.every(item=>item.status==="healthy") && sources.length ? "healthy" : "awaiting-data", breaches, sources, generatedAt: new Date().toISOString() };
+  }
+
+  async saveProviderSlaPolicy(organizationId, actor, input = {}) {
+    const source = String(input.source || "").trim();
+    if (!source) throw new Error("source is required.");
+    const connectors = await this.listConnectors(organizationId);
+    if (!connectors.some(item => item.id === source)) throw new Error(`Unknown connector: ${source}`);
+    const expectedIntervalSeconds = Math.max(30, Math.min(86400, Number(input.expectedIntervalSeconds) || 300));
+    const warningMultiplier = Math.max(1.25, Math.min(10, Number(input.warningMultiplier) || 2));
+    const criticalMultiplier = Math.max(warningMultiplier, Math.min(20, Number(input.criticalMultiplier) || 4));
+    const record = { organizationId, source, expectedIntervalSeconds, warningMultiplier, criticalMultiplier, updatedAt: new Date().toISOString(), updatedBy: actor };
+    await this.database.mutate(db => { db.liveProviderSlaPolicies ||= {}; db.liveProviderSlaPolicies[`${organizationId}:${source}`] = record; return record; });
+    await this.auditService.record({ organizationId, actor, action: `Provider SLA policy updated: ${source}`, category: "live-integration" });
+    this.realtimeHub.publish("live-provider-sla-policy", record);
+    return record;
+  }
+
+  async providerQuarantineStatus(organizationId) {
+    const connectors = await this.listConnectors(organizationId);
+    const db = await this.database.read();
+    const records = db.liveProviderQuarantine || {};
+    const sources = connectors.map(connector => {
+      const record = records[`${organizationId}:${connector.id}`] || {};
+      return { source: connector.id, name: connector.name, quarantined: !!record.quarantined, reason: record.reason || null, since: record.since || null, updatedAt: record.updatedAt || null, updatedBy: record.updatedBy || null };
+    });
+    return { organizationId, quarantined: sources.filter(item=>item.quarantined).length, status: sources.some(item=>item.quarantined) ? "contained" : "clear", sources, generatedAt: new Date().toISOString() };
+  }
+
+  async setProviderQuarantine(organizationId, actor, input = {}) {
+    const source = String(input.source || "").trim();
+    if (!source) throw new Error("source is required.");
+    const connectors = await this.listConnectors(organizationId);
+    if (!connectors.some(item => item.id === source)) throw new Error(`Unknown connector: ${source}`);
+    const quarantined = input.quarantined !== false;
+    const reason = quarantined ? String(input.reason || "Operator hold").trim().slice(0, 240) : null;
+    const record = { organizationId, source, quarantined, reason, since: quarantined ? new Date().toISOString() : null, updatedAt: new Date().toISOString(), updatedBy: actor };
+    await this.database.mutate(db => { db.liveProviderQuarantine ||= {}; db.liveProviderQuarantine[`${organizationId}:${source}`] = record; return record; });
+    await this.auditService.record({ organizationId, actor, action: `${quarantined ? "Provider quarantined" : "Provider resumed"}: ${source}${reason ? ` · ${reason}` : ""}`, category: "live-integration" });
+    this.realtimeHub.publish("live-provider-quarantine", record);
+    return record;
+  }
+
+  async providerOperationsGate(organizationId, actor = null, persist = false) {
+    const [launch, sla, quarantine, evidence, readiness] = await Promise.all([
+      this.providerLaunchCertification(organizationId), this.providerSlaStatus(organizationId), this.providerQuarantineStatus(organizationId), this.liveEvidenceCertification(organizationId), this.connectionReadiness(organizationId)
+    ]);
+    const controls = [
+      { id:"launch-certification", label:"Provider launch certification", pass: launch.status === "certified", detail:`${launch.score}% · ${launch.status}` },
+      { id:"delivery-sla", label:"Provider delivery SLA", pass: sla.status !== "breach" && sla.score >= 70, detail:`${sla.score}% · ${sla.status}` },
+      { id:"quarantine", label:"Provider quarantine", pass: quarantine.quarantined === 0, detail:quarantine.quarantined ? `${quarantine.quarantined} source(s) quarantined` : "clear" },
+      { id:"live-evidence", label:"Trusted live evidence", pass: !!evidence.trusted, detail:`${evidence.score}% · ${evidence.status}` },
+      { id:"connection-readiness", label:"Connection readiness", pass: readiness.score >= 80, detail:`${readiness.score}% · ${readiness.status}` }
+    ];
+    const score = Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers = controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const gate = { id:`POG-${Date.now().toString(36).toUpperCase()}`, organizationId, score, status: score===100 ? "operational" : score>=60 ? "conditional" : "blocked", trusted: score===100, blockers, controls, issuedAt:new Date().toISOString(), issuedBy:actor, build:"42.26.0-provider-continuity" };
+    if (persist) await this.database.mutate(db => { db.providerOperationsGate ||= {}; db.providerOperationsGate[organizationId] = gate; return gate; });
+    return gate;
   }
 
   async operatingSnapshot(organizationId) {

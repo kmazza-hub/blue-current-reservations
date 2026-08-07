@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.23.0",
+        version: "42.26.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -350,6 +350,32 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/provider-launch-certification" && request.method === "POST") {
       return sendJson(response, 200, await liveIntegrationService.providerLaunchCertification(organizationId, auth.user.name, true));
+    }
+
+    if (url.pathname === "/api/live/provider-sla" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerSlaStatus(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-sla" && request.method === "PUT") {
+      try { return sendJson(response, 200, await liveIntegrationService.saveProviderSlaPolicy(organizationId, auth.user.name, await readJson(request))); }
+      catch (error) { return sendJson(response, 400, { error: error.message }); }
+    }
+
+    if (url.pathname === "/api/live/provider-quarantine" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerQuarantineStatus(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-quarantine" && request.method === "POST") {
+      try { return sendJson(response, 200, await liveIntegrationService.setProviderQuarantine(organizationId, auth.user.name, await readJson(request))); }
+      catch (error) { return sendJson(response, 400, { error: error.message }); }
+    }
+
+    if (url.pathname === "/api/live/provider-operations-gate" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.providerOperationsGate(organizationId));
+    }
+
+    if (url.pathname === "/api/live/provider-operations-gate" && request.method === "POST") {
+      return sendJson(response, 200, await liveIntegrationService.providerOperationsGate(organizationId, auth.user.name, true));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

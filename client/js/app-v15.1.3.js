@@ -2343,6 +2343,22 @@ const providerLaunchCertificationCenterModule = startupRegistry.register(
   ["eventBus", "appState", "connectionReadinessCenter", "webhookReceiptLedgerCenter", "credentialRotationCenter"]
 );
 
+const providerSlaCenterModule = startupRegistry.register(
+  "providerSlaCenter",
+  shouldInitializeCenter("providerSlaCenter") ? window.createBlueCurrentProviderSlaCenterModule?.(eventBus) : null,
+  ["eventBus", "providerLaunchCertificationCenter"]
+);
+const providerQuarantineCenterModule = startupRegistry.register(
+  "providerQuarantineCenter",
+  shouldInitializeCenter("providerQuarantineCenter") ? window.createBlueCurrentProviderQuarantineCenterModule?.(eventBus) : null,
+  ["eventBus", "webhookReceiptLedgerCenter"]
+);
+const providerOperationsGateCenterModule = startupRegistry.register(
+  "providerOperationsGateCenter",
+  shouldInitializeCenter("providerOperationsGateCenter") ? window.createBlueCurrentProviderOperationsGateCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "providerLaunchCertificationCenter", "providerSlaCenter", "providerQuarantineCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,
