@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.8.0-live-delivery-control">
+  <meta name="blue-current-build" content="42.11.0-live-evidence-control">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8353,6 +8353,9 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="eventRecoveryCenter" data-src="js/modules/eventRecoveryCenter.js?v=42.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveOperationsBridgeCenter" data-src="js/modules/liveOperationsBridgeEngine.js?v=42.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="liveOperationsBridgeCenter" data-src="js/modules/liveOperationsBridgeCenter.js?v=42.5.0"></script>
+<section class="v4211-center" id="sourceCheckpointCenter" aria-labelledby="sourceCheckpointTitle"><header><div><small>V42.9 · Source Checkpoints</small><strong id="sourceCheckpointTitle">Know exactly where every live source last advanced.</strong><span>Per-source sequence and freshness checkpoints make interrupted feeds visible and restartable.</span></div><button type="button" id="checkpointRefresh">Refresh checkpoints</button></header><div class="v4211-kpis"><article><small>Active</small><strong id="checkpointActive">0</strong></article><article><small>Fresh</small><strong id="checkpointFresh">0</strong></article><article><small>Watch / stale</small><strong id="checkpointStale">0</strong></article><article><small>Status</small><strong id="checkpointStatus">—</strong></article></div><div id="checkpointList" class="v4211-list"></div></section>
+<section class="v4211-center" id="replayWindowCenter" aria-labelledby="replayWindowTitle"><header><div><small>V42.10 · Replay Window Control</small><strong id="replayWindowTitle">Reconstruct a bounded live-event window without duplicating source records.</strong><span>Preview stored canonical events, then publish an isolated realtime replay for diagnostics and recovery.</span></div><div class="v4211-actions"><input id="replaySource" type="text" placeholder="Connector ID or blank for all"/><input id="replayMinutes" type="number" min="1" max="240" value="15"/><button type="button" id="replayPreview">Preview</button><button type="button" id="replayPublish">Publish replay</button></div></header><div class="v4211-kpis"><article><small>Events</small><strong id="replayCount">0</strong></article><article><small>Status</small><strong id="replayStatus">—</strong></article></div><div id="replayList" class="v4211-list"></div></section>
+<section class="v4211-center" id="reasoningFeedGateCenter" aria-labelledby="reasoningFeedTitle"><header><div><small>V42.11 · Reasoning Feed Gate</small><strong id="reasoningFeedTitle">Block AI reasoning when live evidence is stale, incomplete, or unreconciled.</strong><span>The V41 reasoning layer now receives an explicit trusted-live signal instead of assuming incoming data is current.</span></div><button type="button" id="reasoningFeedRefresh">Re-evaluate feed</button></header><div class="v4211-kpis"><article><small>Evidence score</small><strong id="reasoningFeedScore">0%</strong></article><article><small>Status</small><strong id="reasoningFeedStatus">—</strong></article><article><small>Safe to reason</small><strong id="reasoningFeedSafe">NO</strong></article><article><small>Blockers</small><strong id="reasoningFeedBlockers">0</strong></article></div><div id="reasoningFeedList" class="v4211-list"></div></section>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="sourceAdapterRegistryCenter" data-src="js/modules/sourceAdapterRegistryEngine.js?v=42.8.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="sourceAdapterRegistryCenter" data-src="js/modules/sourceAdapterRegistryCenter.js?v=42.8.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="deliveryAssuranceCenter" data-src="js/modules/deliveryAssuranceEngine.js?v=42.8.0"></script>
@@ -8360,6 +8363,12 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="ingestionObservabilityCenter" data-src="js/modules/ingestionObservabilityEngine.js?v=42.8.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="ingestionObservabilityCenter" data-src="js/modules/ingestionObservabilityCenter.js?v=42.8.0"></script>
 
-  <script src="js/startup-loader.js?v=42.8.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="sourceCheckpointCenter" data-src="js/modules/sourceCheckpointEngine.js?v=42.11.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="sourceCheckpointCenter" data-src="js/modules/sourceCheckpointCenter.js?v=42.11.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="replayWindowCenter" data-src="js/modules/replayWindowEngine.js?v=42.11.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="replayWindowCenter" data-src="js/modules/replayWindowCenter.js?v=42.11.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="reasoningFeedGateCenter" data-src="js/modules/reasoningFeedGateEngine.js?v=42.11.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="reasoningFeedGateCenter" data-src="js/modules/reasoningFeedGateCenter.js?v=42.11.0"></script>
+  <script src="js/startup-loader.js?v=42.11.0"></script>
 </body>
 </html>

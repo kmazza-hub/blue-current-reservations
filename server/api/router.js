@@ -73,7 +73,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.8.0",
+        version: "42.11.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -225,6 +225,30 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/live/operating-snapshot" && request.method === "GET") {
       return sendJson(response, 200, await liveIntegrationService.operatingSnapshot(organizationId));
+    }
+
+    if (url.pathname === "/api/live/checkpoints" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.sourceCheckpoints(organizationId));
+    }
+
+    if (url.pathname === "/api/live/replay-window" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.replayWindow(organizationId, {
+        source: url.searchParams.get("source") || "",
+        minutes: url.searchParams.get("minutes") || 15,
+        limit: url.searchParams.get("limit") || 100
+      }));
+    }
+
+    if (url.pathname === "/api/live/replay-window/replay" && request.method === "POST") {
+      try {
+        return sendJson(response, 200, await liveIntegrationService.publishReplayWindow(organizationId, auth.user.name, await readJson(request)));
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+
+    if (url.pathname === "/api/live/reasoning-feed" && request.method === "GET") {
+      return sendJson(response, 200, await liveIntegrationService.reasoningFeed(organizationId));
     }
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

@@ -2262,6 +2262,22 @@ const ingestionObservabilityCenterModule = startupRegistry.register(
   ["eventBus", "deliveryAssuranceCenter", "liveSourceHealthCenter"]
 );
 
+const sourceCheckpointCenterModule = startupRegistry.register(
+  "sourceCheckpointCenter",
+  shouldInitializeCenter("sourceCheckpointCenter") ? window.createBlueCurrentSourceCheckpointCenterModule?.(eventBus) : null,
+  ["eventBus", "ingestionObservabilityCenter"]
+);
+const replayWindowCenterModule = startupRegistry.register(
+  "replayWindowCenter",
+  shouldInitializeCenter("replayWindowCenter") ? window.createBlueCurrentReplayWindowCenterModule?.(eventBus) : null,
+  ["eventBus", "sourceCheckpointCenter"]
+);
+const reasoningFeedGateCenterModule = startupRegistry.register(
+  "reasoningFeedGateCenter",
+  shouldInitializeCenter("reasoningFeedGateCenter") ? window.createBlueCurrentReasoningFeedGateCenterModule?.(eventBus, appState) : null,
+  ["eventBus", "appState", "sourceCheckpointCenter", "ingestionObservabilityCenter"]
+);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

@@ -157,6 +157,15 @@ class LiveIntegrationService {
         db.liveConnectors ||= [];
         const item = db.liveConnectors.find(entry => entry.organizationId === organizationId && entry.id === source);
         if (item) { item.lastEventAt = event.receivedAt; item.status = "healthy"; item.lastError = null; item.updatedAt = event.receivedAt; }
+        db.liveSourceCheckpoints ||= {};
+        const checkpointKey = `${organizationId}:${source}`;
+        const previousCheckpoint = db.liveSourceCheckpoints[checkpointKey] || { organizationId, source, sequence: 0 };
+        db.liveSourceCheckpoints[checkpointKey] = {
+          ...previousCheckpoint, organizationId, source, connectorType: connector.type,
+          sequence: Number(previousCheckpoint.sequence || 0) + 1, lastEventId: event.id,
+          lastSourceEventId: sourceEventId, lastOccurredAt: event.occurredAt, lastReceivedAt: event.receivedAt,
+          schemaVersion: event.schemaVersion, adapterId: event.adapterId || null, updatedAt: event.receivedAt
+        };
         if (options.replayedFrom) {
           db.liveDeadLetters ||= [];
           const dlq = db.liveDeadLetters.find(entry => entry.organizationId === organizationId && entry.id === options.replayedFrom);
@@ -421,6 +430,78 @@ class LiveIntegrationService {
       openDeadLetters: a.openDeadLetters + x.openDeadLetters
     }), { accepted: 0, duplicate: 0, rejected: 0, replayed: 0, openDeadLetters: 0 });
     return { organizationId, totals, sources, generatedAt: new Date().toISOString() };
+  }
+
+  async sourceCheckpoints(organizationId) {
+    const connectors = await this.listConnectors(organizationId);
+    const db = await this.database.read();
+    const stored = db.liveSourceCheckpoints || {};
+    const now = Date.now();
+    const checkpoints = connectors.map(connector => {
+      const checkpoint = stored[`${organizationId}:${connector.id}`] || null;
+      const last = checkpoint?.lastReceivedAt || connector.lastEventAt || null;
+      const ageSeconds = last ? Math.max(0, Math.round((now - new Date(last).getTime()) / 1000)) : null;
+      const freshness = ageSeconds == null ? "awaiting-data" : ageSeconds <= 300 ? "fresh" : ageSeconds <= 900 ? "watch" : "stale";
+      return {
+        organizationId, source: connector.id, name: connector.name, type: connector.type, mode: connector.mode,
+        sequence: Number(checkpoint?.sequence || 0), lastEventId: checkpoint?.lastEventId || null,
+        lastSourceEventId: checkpoint?.lastSourceEventId || null, lastOccurredAt: checkpoint?.lastOccurredAt || null,
+        lastReceivedAt: last, schemaVersion: checkpoint?.schemaVersion || null, adapterId: checkpoint?.adapterId || null,
+        ageSeconds, freshness, updatedAt: checkpoint?.updatedAt || connector.updatedAt || null
+      };
+    });
+    const active = checkpoints.filter(item => item.sequence > 0);
+    return {
+      organizationId, checkpointCount: checkpoints.length, activeCheckpoints: active.length,
+      fresh: checkpoints.filter(item => item.freshness === "fresh").length,
+      watch: checkpoints.filter(item => item.freshness === "watch").length,
+      stale: checkpoints.filter(item => item.freshness === "stale").length,
+      checkpoints, generatedAt: new Date().toISOString()
+    };
+  }
+
+  async replayWindow(organizationId, options = {}) {
+    const source = String(options.source || "").trim();
+    const minutes = Math.max(1, Math.min(Number(options.minutes) || 15, 240));
+    const limit = Math.max(1, Math.min(Number(options.limit) || 100, 500));
+    const cutoff = Date.now() - minutes * 60 * 1000;
+    const db = await this.database.read();
+    let events = (db.liveEvents || []).filter(item => item.organizationId === organizationId && new Date(item.receivedAt).getTime() >= cutoff);
+    if (source) events = events.filter(item => item.source === source);
+    events = events.slice(0, limit);
+    return { organizationId, source: source || "all", minutes, limit, count: events.length, events, generatedAt: new Date().toISOString() };
+  }
+
+  async publishReplayWindow(organizationId, actor, options = {}) {
+    const window = await this.replayWindow(organizationId, options);
+    const replayId = `replay_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const ordered = [...window.events].reverse();
+    ordered.forEach((event, index) => this.realtimeHub.publish("live-event-replay", { ...event, replay: true, replayId, replaySequence: index + 1 }));
+    await this.auditService.record({ organizationId, actor, action: `Live replay published: ${replayId} (${ordered.length} events)`, category: "live-integration" });
+    return { replayId, source: window.source, minutes: window.minutes, count: ordered.length, publishedAt: new Date().toISOString() };
+  }
+
+  async reasoningFeed(organizationId) {
+    const [snapshot, status, delivery, checkpoints] = await Promise.all([
+      this.operatingSnapshot(organizationId), this.status(organizationId), this.deliveryMetrics(organizationId), this.sourceCheckpoints(organizationId)
+    ]);
+    const configured = status.sources.filter(item => item.endpoint);
+    const required = configured.length ? configured : status.sources.filter(item => item.mode === "live");
+    const staleRequired = required.filter(item => {
+      const checkpoint = checkpoints.checkpoints.find(cp => cp.source === item.id);
+      return !checkpoint || ["watch", "stale", "awaiting-data"].includes(checkpoint.freshness);
+    });
+    const blockers = [];
+    if (snapshot.status !== "live") blockers.push("Operating snapshot is not fresh.");
+    if ((delivery.totals?.openDeadLetters || 0) > 0) blockers.push(`${delivery.totals.openDeadLetters} open dead-letter event(s).`);
+    if (staleRequired.length) blockers.push(`${staleRequired.length} configured/live source(s) are not fresh.`);
+    const score = Math.max(0, 100 - blockers.length * 20 - Math.min(20, (delivery.totals?.rejected || 0) * 2));
+    const feed = {
+      organizationId, score, status: blockers.length === 0 ? "trusted-live" : score >= 70 ? "conditional" : "blocked",
+      safeToReason: blockers.length === 0, blockers, snapshot, checkpoints, delivery, generatedAt: new Date().toISOString()
+    };
+    this.realtimeHub.publish("live-reasoning-feed", feed);
+    return feed;
   }
 
   async operatingSnapshot(organizationId) {
