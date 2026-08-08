@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "45.30.0",
+  "version": "46.5.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 V45 failure recovery certification and architecture closure",
+  "description": "Blue Current Hospitality OS \u2014 operator fine-comb service flow and surface simplification",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

@@ -118,7 +118,7 @@
     document.querySelectorAll("[id$='Center'], [id$='center']").forEach((center) => {
       if (!center.id) return;
       const isEssential = [
-        "unifiedCommandCenter", "guidedShiftCenter", "operatorCopilotCenter",
+        "unifiedCommandCenter", "guidedShiftCenter", "operatorServiceFlowCenter", "operatorCopilotCenter",
         "roleExperienceCenter", "commandActionInboxCenter", "shiftProfitPulseCenter",
         "featurePackLoaderCenter", "bootRecoveryCenter"
       ].includes(center.id);
@@ -209,7 +209,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V45.30.0 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V46.5.0 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.

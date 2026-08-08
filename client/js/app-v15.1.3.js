@@ -1209,6 +1209,8 @@ const guidedShiftCenterModule = startupRegistry.register(
   ["eventBus", "appState", "unifiedCommandCenter"]
 );
 
+const operatorServiceFlowCenterModule = startupRegistry.register("operatorServiceFlowCenter", shouldInitializeCenter("operatorServiceFlowCenter") ? window.createBlueCurrentOperatorServiceFlowCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "guidedShiftCenter"]);
+
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
   shouldInitializeCenter("operatorCopilotCenter")
@@ -2734,6 +2736,7 @@ window.blueCurrent = {
     autonomousOperations: operationsDirectorModule,
     unifiedCommand: unifiedCommandCenterModule,
     guidedShift: guidedShiftCenterModule,
+    operatorServiceFlow: operatorServiceFlowCenterModule,
     operatorCopilot: operatorCopilotCenterModule,
     roleExperience: roleExperienceCenterModule,
     commandActionInbox: commandActionInboxCenterModule,

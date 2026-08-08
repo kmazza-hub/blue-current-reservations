@@ -1,0 +1,7 @@
+"use strict";
+const assert=require("assert");
+global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
+const Engine=require("../../client/js/modules/operatorServiceFlowEngine");
+const state={guidedShift:{phase:{label:"Live service"},focusScore:72,unacknowledged:2},reservationYield:{headline:"Arrivals paced",waitlist:3,covers:86},operationalDigitalTwin:{occupancy:84,guestWait:9},occupancyPercent:84,kitchenThroughput:{headline:"Expo pressure",throughput:48,wait:14},laborDeployment:{headline:"One flexible role available",laborPercent:30},guestRecovery:{headline:"2 recovery moments require ownership",open:2},shiftProfitPulse:{headline:"Margin protected",margin:18.4,profitAtRisk:0}};
+const appState={getState:()=>state,update:()=>{},get:k=>state[k]};const eventBus={on:()=>()=>{},emit:()=>{}};
+const e=new Engine({eventBus,appState});const snap=e.snapshot();assert.equal(snap.stages.length,6);assert.equal(snap.stages.map(x=>x.id).join(","),"reservations,floor,kitchen,staffing,guest,profit");assert.equal(snap.attentionStages,2);assert.ok(snap.flowScore>=80);assert.equal(snap.operator.phase,"Live service");assert.equal(e.primaryCenters.has("operatorServiceFlowCenter"),true);assert.equal(e.primaryCenters.has("v45ClosureCenter"),false);console.log(JSON.stringify({ok:true,version:"46.5.0",stages:snap.stages.map(x=>({id:x.id,status:x.status})),flowScore:snap.flowScore,attentionStages:snap.attentionStages,operatorPhase:snap.operator.phase,operatorPrimarySurfaces:e.primaryCenters.size},null,2));
