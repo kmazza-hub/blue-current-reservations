@@ -56,7 +56,7 @@ class RepositoryImpactService {
   }
   dependencyGraph(surfaceId){
     const refs=this.references(surfaceId),owned=this.ownership(surfaceId,refs),ownedSet=new Set(owned);
-    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":x.file.endsWith(".md")?"documentation":"reference"}));
+    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":x.file.endsWith(".md")||x.file.startsWith("config/retirements/")||x.file.endsWith("-APPLY-MANIFEST.json")?"documentation":"reference"}));
     return {surfaceId,ownedFiles:owned,inboundReferences:inbound,referenceCount:refs.exact.reduce((s,x)=>s+x.count,0),startupDependencies:refs.startup,apiUsage:refs.api,testCoverage:refs.tests,htmlOwnership:refs.htmlOwnership,scriptOwnership:refs.scriptOwnership};
   }
   rollbackPlan(surfaceId,graph){

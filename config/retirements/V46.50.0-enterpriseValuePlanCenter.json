@@ -1,0 +1,48 @@
+{
+  "version": "46.50.0",
+  "retirementId": "RET-V46.50.0-enterpriseValuePlanCenter",
+  "surfaceId": "enterpriseValuePlanCenter",
+  "status": "authoritatively-retired",
+  "retiredFiles": [
+    "client/js/modules/enterpriseValuePlanCenter.js",
+    "client/js/modules/enterpriseValuePlanEngine.js"
+  ],
+  "modifiedRuntimeFiles": [
+    "client/index.html",
+    "client/js/app-v15.1.3.js",
+    "client/app-v15.1.3.js",
+    "app-v15.1.3.js",
+    "client/js/modules/operatorConsolidationEngine.js"
+  ],
+  "baselineHashes": {
+    "client/index.html": "bf9df0ec2dd20379420b2927a4278ed89bd955797f73950ad2d91c5c17aca013",
+    "client/js/app-v15.1.3.js": "6f0a25d8420d13526dfa69365a9492360a79f7eb3025e84b5aa72b0a8486c65b",
+    "client/app-v15.1.3.js": "48a6687b5df8d872950ddbcc77e619f60022351d6298855e8d3a0ef2bec437d3",
+    "app-v15.1.3.js": "d144b89ac626d3a4dd12ca54c7406c186979702edce69d88755ec7b032bbee00",
+    "client/js/modules/operatorConsolidationEngine.js": "f86881705f884e596eb783b995116cfec0e6b938962c7bae39d8c7d9064d27fc",
+    "client/js/modules/enterpriseValuePlanCenter.js": "b24e4d0f7d0a7913747f7888b745bc04f6ee4f932d20758a8aeeb65920f5f1b5",
+    "client/js/modules/enterpriseValuePlanEngine.js": "07d2c1a5fa904181a85d94efbbc4d8a9921bdeb03dba581fe878533547cb90e7"
+  },
+  "postRetirementHashes": {
+    "client/index.html": "07225f3eff389ab388225fee3770d14c90dadf6dd4dcd20c9f41c86dd675974f",
+    "client/js/app-v15.1.3.js": "73ec7d1acd9c294f31f7722dc442d3fedd409da92f88956181e7e58b0f689e21",
+    "client/app-v15.1.3.js": "a22d07986c96a805e991da79bb186b3ee0271d53dd2af65b8aa73758f18b2508",
+    "app-v15.1.3.js": "9e86d5a911545a55620459ff2ad496a96b976e9f8292998eb893e99f2c15acea",
+    "client/js/modules/operatorConsolidationEngine.js": "22b052469f7442dd6043e992fafc9bdbbb31d379509d179a46042449920a72d5",
+    "package.json": "fb6049526f932aec538f088801e174e28d9e2640ce1aa65ad79377f0dc5c897e",
+    "server/server.js": "439efd9a384133852eec2136c9325c171235be9061f91398b94459bda9368129",
+    "server/api/router.js": "36035fd1776d21aa5e374ebda49001d1968d1684839d807730ed19ecd3f7a554",
+    "client/js/startup-loader.js": "85905fa76c866ce43de1936b97555cb446e9986aba00582e701f2a8f6616add2",
+    "scripts/maintenance/test-retirement-rehearsal.js": "fc9a7a9b789fdba1c17940fc8fb68093fe951bb044c65a63d1a18c0a7e355c3e",
+    "scripts/maintenance/test-final-retirement-authorization.js": "b2867c21f384efb80c92c86a4831cbec9a6f7d7df88443a853fe07a1164e4783"
+  },
+  "rollbackRequired": true,
+  "rollbackAvailable": true,
+  "validationRequired": [
+    "npm run check",
+    "node scripts/maintenance/test-authoritative-retirement-v46.50.js",
+    "server /api/health"
+  ],
+  "policy": "exact-rehearsed-retirement-with-automatic-rollback-on-apply-failure",
+  "retiredAt": "2026-08-08T16:55:00Z"
+}

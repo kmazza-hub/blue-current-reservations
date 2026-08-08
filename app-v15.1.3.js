@@ -2519,22 +2519,6 @@ const performanceGovernanceCenterModule = startupRegistry.register(
 );
 
 
-const enterpriseValuePlanCenterModule = startupRegistry.register(
-  "enterpriseValuePlanCenter",
-  shouldInitializeCenter("enterpriseValuePlanCenter")
-    ? window.createBlueCurrentEnterpriseValuePlanCenterModule?.(eventBus, appState)
-    : null,
-  ["eventBus", "appState", "performanceGovernanceCenter", "expansionBenchmarkCenter", "postLaunchValueCenter", "outcomeIntelligenceCenter"]
-);
-
-const marginIntelligenceCenterModule = startupRegistry.register(
-  "marginIntelligenceCenter",
-  shouldInitializeCenter("marginIntelligenceCenter")
-    ? window.createBlueCurrentMarginIntelligenceCenterModule?.(eventBus, appState)
-    : null,
-  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "enterpriseValuePlanCenter"]
-);
-
 const costVarianceCenterModule = startupRegistry.register(
   "costVarianceCenter",
   shouldInitializeCenter("costVarianceCenter")
@@ -2703,7 +2687,6 @@ window.blueCurrent = {
     postLaunchValue: postLaunchValueCenterModule,
     expansionBenchmark: expansionBenchmarkCenterModule,
     performanceGovernance: performanceGovernanceCenterModule,
-    enterpriseValuePlan: enterpriseValuePlanCenterModule,
     marginIntelligence: marginIntelligenceCenterModule,
     costVariance: costVarianceCenterModule,
     predictiveService: predictiveServiceCenterModule,

@@ -2,7 +2,7 @@
 class BlueCurrentOperatorConsolidationEngine{
   constructor({eventBus,appState,rationalizationEngine}={}){this.eventBus=eventBus;this.appState=appState;this.rationalizationEngine=rationalizationEngine||null;this.roleDefaults={
     manager:["unifiedCommandCenter","guidedShiftCenter","operatorServiceFlowCenter","operatorCopilotCenter","commandActionInboxCenter","shiftProfitPulseCenter","operationsWorkspaceCenter","reservationOperationsCenter","liveFloorOperationsCenter","kitchenThroughputCenter","laborDeploymentCenter","guestRecoveryCenter"],
-    executive:["unifiedCommandCenter","shiftProfitPulseCenter","executiveBriefingCenter","portfolioPerformanceCenter","marginIntelligenceCenter","enterpriseValuePlanCenter"],
+    executive:["unifiedCommandCenter","shiftProfitPulseCenter","executiveBriefingCenter","portfolioPerformanceCenter","marginIntelligenceCenter"],
     technical:["unifiedCommandCenter","operatorSurfaceRationalizationCenter","platformIntegrationAudit","runtimeReadinessCenter","aipRuntimeReadinessCenter","observabilityDashboard","releaseCertificationCenter"]
   };this.mergeMap=this.rationalizationEngine?.mergeTargets||{};}
   state(){try{return this.appState?.getState?.()||{};}catch{return {};}}

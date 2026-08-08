@@ -7,6 +7,8 @@ const FinalAuth=require("../../client/js/modules/finalRetirementAuthorizationEng
 
 (async()=>{
   const root=path.resolve(__dirname,"../..");
+const retiredModule=path.join(root,"client/js/modules/enterpriseValuePlanCenter.js");
+if(!require("fs").existsSync(retiredModule)){console.log(JSON.stringify({ok:true,skipped:true,reason:"enterpriseValuePlanCenter retired in V46.50.0"},null,2));process.exit(0);}
   const impact=new Impact(root),rehearsalService=new Rehearsal(root,impact);
   const rehearsal=rehearsalService.rehearse("enterpriseValuePlanCenter");
   assert.equal(rehearsal.validation.passed,true);

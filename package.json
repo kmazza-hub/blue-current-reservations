@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "46.45.0",
+  "version": "46.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 final retirement authorization packet and Git checkpoint gate",
+  "description": "Blue Current Hospitality OS \u2014 first authoritative module retirement with rollback certification",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

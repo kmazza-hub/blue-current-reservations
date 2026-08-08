@@ -5,6 +5,8 @@ const Impact=require("../../server/services/repositoryImpactService");
 const Rehearsal=require("../../server/services/repositoryRetirementRehearsalService");
 
 const root=path.resolve(__dirname,"../..");
+const retiredModule=path.join(root,"client/js/modules/enterpriseValuePlanCenter.js");
+if(!require("fs").existsSync(retiredModule)){console.log(JSON.stringify({ok:true,skipped:true,reason:"enterpriseValuePlanCenter retired in V46.50.0"},null,2));process.exit(0);}
 const impact=new Impact(root),service=new Rehearsal(root,impact);
 const before=service.repositoryDigest();
 const result=service.rehearse("enterpriseValuePlanCenter");

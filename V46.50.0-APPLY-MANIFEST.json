@@ -1,0 +1,168 @@
+{
+  "version": "46.50.0",
+  "baselineVersion": "46.45.0",
+  "surfaceId": "enterpriseValuePlanCenter",
+  "preconditions": {
+    "package.json": {
+      "exists": true,
+      "sha256": "baa7dae685fb17e5cd6d64a54cc3611e61449830e1251bf19f345f26e1ca0ccc"
+    },
+    "server/server.js": {
+      "exists": true,
+      "sha256": "935201266616753ae7adb7153919e58adf7b41248d0f06a3e9cac137928753b3"
+    },
+    "server/api/router.js": {
+      "exists": true,
+      "sha256": "00a7331356b671fd3667453d36dd64db33f9766b9359855b572605a0a8047909"
+    },
+    "server/services/repositoryImpactService.js": {
+      "exists": true,
+      "sha256": "e88d0a4b45547029d90f5caee66223329a5d5ce73e2ad7c4e8b286f64fd2f64d"
+    },
+    "client/index.html": {
+      "exists": true,
+      "sha256": "bf9df0ec2dd20379420b2927a4278ed89bd955797f73950ad2d91c5c17aca013"
+    },
+    "client/js/app-v15.1.3.js": {
+      "exists": true,
+      "sha256": "6f0a25d8420d13526dfa69365a9492360a79f7eb3025e84b5aa72b0a8486c65b"
+    },
+    "client/app-v15.1.3.js": {
+      "exists": true,
+      "sha256": "48a6687b5df8d872950ddbcc77e619f60022351d6298855e8d3a0ef2bec437d3"
+    },
+    "app-v15.1.3.js": {
+      "exists": true,
+      "sha256": "d144b89ac626d3a4dd12ca54c7406c186979702edce69d88755ec7b032bbee00"
+    },
+    "client/js/startup-loader.js": {
+      "exists": true,
+      "sha256": "447f04a6a606bb169fe010371ea80883b2778e3760a3df64428e9a0adef4322d"
+    },
+    "client/js/modules/operatorConsolidationEngine.js": {
+      "exists": true,
+      "sha256": "f86881705f884e596eb783b995116cfec0e6b938962c7bae39d8c7d9064d27fc"
+    },
+    "scripts/maintenance/test-retirement-rehearsal.js": {
+      "exists": true,
+      "sha256": "ce35f90f92fcfbf0f0106d7d7e975c742742558b95464383846bf186d4f824ff"
+    },
+    "scripts/maintenance/test-final-retirement-authorization.js": {
+      "exists": true,
+      "sha256": "832c465137c471f5cab8c6ddeb1f7300a751762aec6196ebb48d438fa4bad5cf"
+    },
+    "scripts/maintenance/test-authoritative-retirement-v46.50.js": {
+      "exists": false
+    },
+    "config/retirements/V46.50.0-enterpriseValuePlanCenter.json": {
+      "exists": false
+    },
+    "README-APPLY-V46.50.0.md": {
+      "exists": false
+    },
+    "V46.50.0-RELEASE.md": {
+      "exists": false
+    },
+    "client/js/modules/enterpriseValuePlanCenter.js": {
+      "exists": true,
+      "sha256": "b24e4d0f7d0a7913747f7888b745bc04f6ee4f932d20758a8aeeb65920f5f1b5"
+    },
+    "client/js/modules/enterpriseValuePlanEngine.js": {
+      "exists": true,
+      "sha256": "07d2c1a5fa904181a85d94efbbc4d8a9921bdeb03dba581fe878533547cb90e7"
+    }
+  },
+  "postconditions": {
+    "package.json": {
+      "exists": true,
+      "sha256": "fb6049526f932aec538f088801e174e28d9e2640ce1aa65ad79377f0dc5c897e"
+    },
+    "server/server.js": {
+      "exists": true,
+      "sha256": "439efd9a384133852eec2136c9325c171235be9061f91398b94459bda9368129"
+    },
+    "server/api/router.js": {
+      "exists": true,
+      "sha256": "36035fd1776d21aa5e374ebda49001d1968d1684839d807730ed19ecd3f7a554"
+    },
+    "server/services/repositoryImpactService.js": {
+      "exists": true,
+      "sha256": "eb9264f34118c3b9f8ec4319e76b8aded1ce48be08069a23b576d522ac77ce1f"
+    },
+    "client/index.html": {
+      "exists": true,
+      "sha256": "07225f3eff389ab388225fee3770d14c90dadf6dd4dcd20c9f41c86dd675974f"
+    },
+    "client/js/app-v15.1.3.js": {
+      "exists": true,
+      "sha256": "73ec7d1acd9c294f31f7722dc442d3fedd409da92f88956181e7e58b0f689e21"
+    },
+    "client/app-v15.1.3.js": {
+      "exists": true,
+      "sha256": "a22d07986c96a805e991da79bb186b3ee0271d53dd2af65b8aa73758f18b2508"
+    },
+    "app-v15.1.3.js": {
+      "exists": true,
+      "sha256": "9e86d5a911545a55620459ff2ad496a96b976e9f8292998eb893e99f2c15acea"
+    },
+    "client/js/startup-loader.js": {
+      "exists": true,
+      "sha256": "85905fa76c866ce43de1936b97555cb446e9986aba00582e701f2a8f6616add2"
+    },
+    "client/js/modules/operatorConsolidationEngine.js": {
+      "exists": true,
+      "sha256": "22b052469f7442dd6043e992fafc9bdbbb31d379509d179a46042449920a72d5"
+    },
+    "scripts/maintenance/test-retirement-rehearsal.js": {
+      "exists": true,
+      "sha256": "fc9a7a9b789fdba1c17940fc8fb68093fe951bb044c65a63d1a18c0a7e355c3e"
+    },
+    "scripts/maintenance/test-final-retirement-authorization.js": {
+      "exists": true,
+      "sha256": "b2867c21f384efb80c92c86a4831cbec9a6f7d7df88443a853fe07a1164e4783"
+    },
+    "scripts/maintenance/test-authoritative-retirement-v46.50.js": {
+      "exists": true,
+      "sha256": "9b65e17bd03b82d3a32ff6f632965a6673bd4a03ca3e15b628ebc0dd02d3f464"
+    },
+    "config/retirements/V46.50.0-enterpriseValuePlanCenter.json": {
+      "exists": true,
+      "sha256": "22756ebb17788f595d5f221674b1218e7d3198077f82b8be44a40088e723173e"
+    },
+    "README-APPLY-V46.50.0.md": {
+      "exists": true,
+      "sha256": "3f5e914c2cb0445d53843bf46d831fcc705e6cfe3d3f5eb054ba969149e8e617"
+    },
+    "V46.50.0-RELEASE.md": {
+      "exists": true,
+      "sha256": "0f8de35ddda3c07f38f9bf3e9d12be1fb088ac1ab8942b9ac9203c406851e04d"
+    },
+    "client/js/modules/enterpriseValuePlanCenter.js": {
+      "exists": false
+    },
+    "client/js/modules/enterpriseValuePlanEngine.js": {
+      "exists": false
+    }
+  },
+  "deletedFiles": [
+    "client/js/modules/enterpriseValuePlanCenter.js",
+    "client/js/modules/enterpriseValuePlanEngine.js"
+  ],
+  "newFiles": [
+    "scripts/maintenance/test-authoritative-retirement-v46.50.js",
+    "config/retirements/V46.50.0-enterpriseValuePlanCenter.json",
+    "README-APPLY-V46.50.0.md",
+    "V46.50.0-RELEASE.md"
+  ],
+  "validation": [
+    [
+      "npm",
+      "run",
+      "check"
+    ],
+    [
+      "node",
+      "scripts/maintenance/test-authoritative-retirement-v46.50.js"
+    ]
+  ]
+}
