@@ -1,0 +1,507 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "45.15.0",
++  "version": "45.20.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V45 governed intervention authorization and command drafting",
++  "description": "Blue Current Hospitality OS \u2014 V45 shadow execution boundary and safety certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V45.15.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V45.20.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "45.15.0",
++        version: "45.20.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -985,6 +985,17 @@
+       return sendJson(response,200,await autonomousOperationsService.v45CommandDrafts(organizationId,auth.user.name,await readJson(request)));
+     }
+     if (url.pathname === "/api/autonomous-assistance/authorization-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45AuthorizationReadiness(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/execution-boundary" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionBoundary(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/execution-boundary" && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Execution boundary permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45ExecutionBoundary(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/shadow-executions" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ShadowExecutions(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/shadow-executions" && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Shadow execution permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45ShadowExecutions(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionReadiness(organizationId));
+     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
+       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
+--- a/server/services/autonomousOperationsService.js
++++ b/server/services/autonomousOperationsService.js
+@@ -420,6 +420,146 @@
+     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+     return {organizationId:org,version:"45.15.0",score,status:score===100?"v45-authorization-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestPacketId:latestPacket?.id||null,latestDraftId:latestDraft?.id||null,safety:{stage:"approval-and-command-draft",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.15.0-intervention-authorization"};
+   }
++  v45ExecutionAdapterRegistry(){
++    return {
++      version:"45.20.0",
++      mode:"shadow-only",
++      liveExecutionEnabled:false,
++      emergencyStopDefault:true,
++      adapters:{
++        "temporary-runner-support":{
++          adapterId:"V45-ADP-RUNNER",domain:"kitchen-throughput",allowedFields:["locationId","durationMinutes","additionalRunners"],
++          limits:{durationMinutes:{min:5,max:30},additionalRunners:{min:0,max:1}},
++          compensation:{type:"restore-role-assignment",supported:true},
++          shadowHandler:"simulate-runner-support",liveHandler:null
++        },
++        "fire-pacing-plan":{
++          adapterId:"V45-ADP-FIRE",domain:"kitchen-throughput",allowedFields:["locationId","durationMinutes","pacingMinutes"],
++          limits:{durationMinutes:{min:5,max:30},pacingMinutes:{min:0,max:8}},
++          compensation:{type:"restore-pacing-baseline",supported:true},
++          shadowHandler:"simulate-fire-pacing",liveHandler:null
++        },
++        "temporary-seating-buffer":{
++          adapterId:"V45-ADP-SEATING",domain:"reservation-pacing",allowedFields:["locationId","durationMinutes","bufferMinutes"],
++          limits:{durationMinutes:{min:5,max:45},bufferMinutes:{min:0,max:10}},
++          compensation:{type:"restore-seating-buffer",supported:true},
++          shadowHandler:"simulate-seating-buffer",liveHandler:null
++        },
++        "contingency-coverage-plan":{
++          adapterId:"V45-ADP-STAFF",domain:"staffing",allowedFields:["locationId","durationMinutes","additionalStaff"],
++          limits:{durationMinutes:{min:15,max:120},additionalStaff:{min:0,max:3}},
++          compensation:{type:"release-contingency-coverage",supported:true},
++          shadowHandler:"simulate-staffing-coverage",liveHandler:null
++        },
++        "manager-touch-plan":{
++          adapterId:"V45-ADP-GUEST",domain:"guest-recovery",allowedFields:["locationId","caseLimit"],
++          limits:{caseLimit:{min:0,max:8}},
++          compensation:{type:"close-unstarted-recovery-draft",supported:true},
++          shadowHandler:"simulate-manager-touch",liveHandler:null
++        },
++        "revenue-recovery-plan":{
++          adapterId:"V45-ADP-REVENUE",domain:"revenue-opportunity",allowedFields:["locationId","durationMinutes","modeledDiscountPercent"],
++          limits:{durationMinutes:{min:15,max:180},modeledDiscountPercent:{min:0,max:10}},
++          compensation:{type:"discard-unpublished-offer-draft",supported:true},
++          shadowHandler:"simulate-revenue-recovery",liveHandler:null
++        }
++      }
++    };
++  }
++  v45ExecutionEmergencyState(db,org){
++    const current=db.v45ExecutionEmergencyStop?.[org];
++    return current||{organizationId:org,engaged:true,reason:"Live execution boundary not certified",updatedBy:"System",updatedAt:this.now()};
++  }
++  v45CommandToAdapterPayload(command){
++    const base={locationId:command.locationId};
++    if(command.commandType==="fire-pacing-plan")return {...base,durationMinutes:20,pacingMinutes:4};
++    if(command.commandType==="temporary-seating-buffer")return {...base,durationMinutes:30,bufferMinutes:4};
++    if(command.commandType==="contingency-coverage-plan")return {...base,durationMinutes:60,additionalStaff:1};
++    if(command.commandType==="manager-touch-plan")return {...base,caseLimit:4};
++    if(command.commandType==="revenue-recovery-plan")return {...base,durationMinutes:60,modeledDiscountPercent:5};
++    if(command.commandType==="temporary-runner-support")return {...base,durationMinutes:20,additionalRunners:1};
++    return base;
++  }
++  v45ExecutionPreflight(draft,emergencyState){
++    const registry=this.v45ExecutionAdapterRegistry(),checks=[];
++    checks.push({id:"draft-status",pass:Boolean(draft)&&draft.status==="drafted"&&draft.executionCertified===false,detail:draft?`${draft.status} · certified=${draft.executionCertified}`:"Command draft missing"});
++    checks.push({id:"emergency-stop",pass:Boolean(emergencyState?.engaged),detail:emergencyState?.engaged?"Emergency stop engaged":"Emergency stop not engaged"});
++    const commandChecks=(draft?.commands||[]).map(command=>{
++      const adapter=registry.adapters[command.commandType];
++      const payload=this.v45CommandToAdapterPayload(command);
++      let payloadValid=Boolean(adapter),reason=adapter?"":"No adapter registered";
++      if(adapter){
++        for(const [field,bounds] of Object.entries(adapter.limits||{})){
++          const value=Number(payload[field]);
++          if(!Number.isFinite(value)||value<bounds.min||value>bounds.max){payloadValid=false;reason=`${field} outside ${bounds.min}-${bounds.max}`;break;}
++        }
++      }
++      return {commandId:command.id,commandType:command.commandType,adapterId:adapter?.adapterId||null,adapterPresent:Boolean(adapter),shadowHandler:Boolean(adapter?.shadowHandler),liveHandlerPresent:Boolean(adapter?.liveHandler),payloadValid,reason,payload,compensationSupported:Boolean(adapter?.compensation?.supported)};
++    });
++    checks.push({id:"adapter-allowlist",pass:commandChecks.every(x=>x.adapterPresent),detail:`${commandChecks.filter(x=>x.adapterPresent).length}/${commandChecks.length} command(s) allowlisted`});
++    checks.push({id:"payload-limits",pass:commandChecks.every(x=>x.payloadValid),detail:`${commandChecks.filter(x=>x.payloadValid).length}/${commandChecks.length} payload(s) within limits`});
++    checks.push({id:"shadow-handlers",pass:commandChecks.every(x=>x.shadowHandler),detail:"Every command has a shadow adapter"});
++    checks.push({id:"no-live-handler",pass:commandChecks.every(x=>x.liveHandlerPresent===false),detail:"No allowlisted adapter exposes a live mutation handler"});
++    checks.push({id:"compensation",pass:commandChecks.every(x=>x.compensationSupported),detail:"Every adapter declares a compensation contract"});
++    const pass=checks.every(x=>x.pass);
++    return {pass,checks,commands:commandChecks,mode:"shadow-only",liveExecutionEnabled:false,preflightAt:this.now()};
++  }
++  async v45ExecutionBoundary(org,actor=null,input=null){
++    const db=await this.database.read(),state=this.v45ExecutionEmergencyState(db,org),registry=this.v45ExecutionAdapterRegistry();
++    if(!input)return {organizationId:org,registry,emergencyStop:state,build:"45.20.0-shadow-execution-boundary"};
++    const action=String(input.action||"").toLowerCase();
++    if(action!=="engage-stop")throw new Error("Only engage-stop is supported while live execution is disabled.");
++    const updated=await this.database.mutate(data=>{
++      data.v45ExecutionEmergencyStop||={};const next={organizationId:org,engaged:true,reason:String(input.reason||"Operator emergency stop").slice(0,500),updatedBy:actor||"Operator",updatedAt:this.now()};
++      data.v45ExecutionEmergencyStop[org]=next;return next;
++    });
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 execution emergency stop engaged: ${updated.reason}`,category:"v45-execution-boundary"});
++    this.realtimeHub.publish("v45-execution-stop-engaged",{organizationId:org,engaged:true,liveExecutionEnabled:false});
++    return {organizationId:org,registry,emergencyStop:updated,build:"45.20.0-shadow-execution-boundary"};
++  }
++  async v45ShadowExecutions(org,actor=null,input=null){
++    const db=await this.database.read(),stored=db.v45ShadowExecutions?.[org]||[];
++    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,build:"45.20.0-shadow-execution-boundary"};
++    const draftId=String(input.draftId||"").trim(),idempotencyKey=String(input.idempotencyKey||"").trim();
++    if(!draftId)throw new Error("draftId is required.");
++    if(!idempotencyKey)throw new Error("idempotencyKey is required for shadow execution.");
++    const draft=(db.v45CommandDrafts?.[org]||[]).find(x=>x.id===draftId);
++    if(!draft)throw new Error("V45 command draft not found.");
++    const existing=stored.find(x=>x.draftId===draftId&&x.idempotencyKey===idempotencyKey);
++    if(existing)return {organizationId:org,shadowExecution:existing,replayed:true,build:"45.20.0-shadow-execution-boundary"};
++    const emergencyState=this.v45ExecutionEmergencyState(db,org),preflight=this.v45ExecutionPreflight(draft,emergencyState);
++    if(!preflight.pass)throw new Error(`Shadow execution preflight failed: ${preflight.checks.filter(x=>!x.pass).map(x=>x.id).join(", ")}`);
++    const results=preflight.commands.map((item,index)=>({
++      id:`V45-SHD-CMD-${Date.now().toString(36).toUpperCase()}-${index+1}`,commandId:item.commandId,adapterId:item.adapterId,
++      payload:item.payload,status:"shadow-simulated",wouldInvoke:item.shadowHandler?"shadow-adapter":null,liveHandlerPresent:false,
++      compensation:{supported:item.compensationSupported,status:"not-needed-shadow-only"},
++      liveExecutionAllowed:false,liveStateChanged:false
++    }));
++    const shadowExecution={id:`V45-SHD-${Date.now().toString(36).toUpperCase()}`,organizationId:org,draftId,idempotencyKey,mode:"shadow-only",status:"completed",preflight,results,canary:{enabled:true,percentage:0,liveTraffic:false,description:"Canary architecture present; live percentage locked to zero."},emergencyStopEngaged:true,liveExecutionAllowed:false,liveStateChanged:false,createdBy:actor||"Operator",createdAt:this.now()};
++    await this.database.mutate(data=>{data.v45ShadowExecutions||={};const list=data.v45ShadowExecutions[org]||[];list.unshift(shadowExecution);data.v45ShadowExecutions[org]=list.slice(0,300);return shadowExecution;});
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 shadow execution completed: ${shadowExecution.id}`,category:"v45-shadow-execution"});
++    this.realtimeHub.publish("v45-shadow-execution-completed",{organizationId:org,id:shadowExecution.id,commands:results.length,liveExecutionAllowed:false});
++    return {organizationId:org,shadowExecution,replayed:false,build:"45.20.0-shadow-execution-boundary"};
++  }
++  async v45ExecutionReadiness(org){
++    const db=await this.database.read(),registry=this.v45ExecutionAdapterRegistry(),state=this.v45ExecutionEmergencyState(db,org),shadows=db.v45ShadowExecutions?.[org]||[],drafts=db.v45CommandDrafts?.[org]||[];
++    const latestShadow=shadows[0]||null;
++    const adapters=Object.values(registry.adapters);
++    const checks=[
++      {id:"adapter-registry",label:"Strict action adapter allowlist",pass:adapters.length>=5&&adapters.every(x=>x.adapterId&&x.shadowHandler),detail:`${adapters.length} allowlisted shadow adapter(s)`},
++      {id:"no-live-handlers",label:"Live mutation handlers absent",pass:adapters.every(x=>x.liveHandler===null),detail:"Every adapter live handler is null"},
++      {id:"preflight",label:"Command preflight validation",pass:Boolean(latestShadow?.preflight?.pass),detail:latestShadow?`${latestShadow.preflight.checks.filter(x=>x.pass).length}/${latestShadow.preflight.checks.length} preflight checks pass`:"No shadow execution yet"},
++      {id:"idempotency",label:"Shadow idempotency key",pass:Boolean(latestShadow?.idempotencyKey),detail:latestShadow?.idempotencyKey||"No idempotency record"},
++      {id:"compensation",label:"Rollback / compensation contracts",pass:adapters.every(x=>x.compensation?.supported===true),detail:"Every allowlisted adapter declares compensation"},
++      {id:"emergency-stop",label:"Emergency stop defaults engaged",pass:state.engaged===true,detail:state.reason||"Emergency stop engaged"},
++      {id:"shadow",label:"Shadow execution available",pass:Boolean(latestShadow)&&latestShadow.mode==="shadow-only"&&latestShadow.liveStateChanged===false,detail:latestShadow?.id||"No shadow execution"},
++      {id:"canary-zero",label:"Canary controls locked to zero live traffic",pass:Boolean(latestShadow?.canary?.enabled)&&latestShadow.canary.percentage===0&&latestShadow.canary.liveTraffic===false,detail:"Canary architecture is present with 0% live traffic"},
++      {id:"draft-separation",label:"Command drafts remain non-executable",pass:drafts.every(x=>x.executionCertified===false&&x.liveExecutionAllowed===false),detail:`${drafts.length} draft(s) remain uncertified`},
++      {id:"live-safety",label:"Execution boundary cannot mutate live restaurant state",pass:registry.liveExecutionEnabled===false&&shadows.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false),detail:"Execution boundary is shadow-only"}
++    ];
++    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {organizationId:org,version:"45.20.0",score,status:score===100?"v45-shadow-execution-boundary-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestShadowExecutionId:latestShadow?.id||null,safety:{executionMode:"shadow-only",liveExecutionEnabled:false,emergencyStopEngaged:state.engaged,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.20.0-shadow-execution-boundary"};
++  }
+   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
+ }
+ module.exports=AutonomousOperationsService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="45.15.0">
++  <meta name="blue-current-build" content="45.20.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8581,6 +8581,7 @@
+ <section class="v432-center v438-center v4316-center" id="autonomousAssistanceCenter"><header><div><small>V45.1–V45.5 · Autonomous Operations Foundation</small><strong>Turn live operating evidence into anomalies, agent-scoped recommendations, and intervention simulations.</strong><span>V45 begins with governed assistance: observe → detect → recommend → simulate. No live restaurant mutation is authorized.</span></div><div class="v4316-actions"><button id="vaaRefresh" type="button">Refresh</button><button id="vaaRun" type="button">Run governed cycle</button></div></header><div class="v432-kpis"><article><small>Cycles</small><strong id="vaaCycles">0</strong></article><article><small>Locations</small><strong id="vaaLocations">0</strong></article><article><small>Anomalies</small><strong id="vaaAnomalies">0</strong></article><article><small>Critical</small><strong id="vaaCritical">0</strong></article><article><small>Recommendations</small><strong id="vaaRecommendations">0</strong></article><article><small>Simulations</small><strong id="vaaSimulations">0</strong></article><article><small>Readiness</small><strong id="vaaScore">0%</strong></article><article><small>Status</small><strong id="vaaStatus">—</strong></article><article><small>Trusted</small><strong id="vaaTrusted">NO</strong></article></div><div class="v4316-answer" id="vaaMessage">Run a governed observation cycle to establish the V45 operating picture.</div><div id="vaaList" class="v432-list"></div><div id="vaaChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="interventionPlanningCenter"><header><div><small>V45.6–V45.10 · Governed Intervention Planning</small><strong>Convert autonomous recommendations into policy-bounded proposals, detect conflicts, and rehearse coordinated interventions.</strong><span>Plans stop at approval review. No intervention proposal, rehearsal, or conflict resolution mutates live restaurant state.</span></div><div class="v4316-actions"><button id="vipRefresh" type="button">Refresh</button><button id="vipPrepare" type="button">Prepare proposals</button><button id="vipRehearse" type="button">Rehearse plan</button></div></header><div class="v432-kpis"><article><small>Proposals</small><strong id="vipProposals">0</strong></article><article><small>Rehearsals</small><strong id="vipRehearsals">0</strong></article><article><small>Conflicts</small><strong id="vipConflicts">0</strong></article><article><small>Blocking</small><strong id="vipBlocking">0</strong></article><article><small>Readiness</small><strong id="vipScore">0%</strong></article><article><small>Status</small><strong id="vipStatus">—</strong></article><article><small>Trusted</small><strong id="vipTrusted">NO</strong></article></div><div class="v4316-answer" id="vipMessage">Prepare intervention proposals from the latest V45 assistance cycle.</div><div id="vipList" class="v432-list"></div><div id="vipChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="interventionAuthorizationCenter"><header><div><small>V45.11–V45.15 · Governed Intervention Authorization</small><strong>Package evidence for approval, revalidate state, enforce scoped expiry/revocation, and draft non-executable commands.</strong><span>Approval authorizes command drafting only. No command in this release has an execution endpoint.</span></div><div class="v4316-actions"><button id="viaRefresh" type="button">Refresh</button><button id="viaPrepare" type="button">Prepare approval packet</button></div></header><div class="v4316-actions"><select id="viaRole"><option value="manager">Manager</option><option value="general-manager">General manager</option><option value="regional-operator">Regional operator</option><option value="executive">Executive</option></select><input id="viaNote" class="v4312-input" placeholder="Approval / rejection note"><button type="button" data-auth-action="approve">Approve</button><button type="button" data-auth-action="reject">Reject</button><button type="button" data-auth-action="revoke">Revoke</button><button type="button" data-auth-action="draft">Draft commands</button></div><div class="v432-kpis"><article><small>Packets</small><strong id="viaPackets">0</strong></article><article><small>Pending</small><strong id="viaPending">0</strong></article><article><small>Approved</small><strong id="viaApproved">0</strong></article><article><small>Drafts</small><strong id="viaDrafts">0</strong></article><article><small>Readiness</small><strong id="viaScore">0%</strong></article><article><small>Status</small><strong id="viaStatus">—</strong></article><article><small>Trusted</small><strong id="viaTrusted">NO</strong></article></div><div class="v4316-answer" id="viaMessage">Prepare an approval packet from a conflict-free rehearsal.</div><div id="viaList" class="v432-list"></div><div id="viaChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="shadowExecutionBoundaryCenter"><header><div><small>V45.16–V45.20 · Shadow Execution Boundary</small><strong>Preflight allowlisted commands, enforce compensation contracts and emergency stop, and shadow-run adapters with canary traffic locked to zero.</strong><span>Live handlers are intentionally absent. This release certifies the boundary architecture without enabling restaurant mutations.</span></div><div class="v4316-actions"><button id="vseRefresh" type="button">Refresh</button><button id="vseShadow" type="button">Run shadow execution</button></div></header><div class="v4316-actions"><input id="vseReason" class="v4312-input" placeholder="Emergency-stop reason"><button id="vseStopBtn" type="button">Engage emergency stop</button></div><div class="v432-kpis"><article><small>Adapters</small><strong id="vseAdapters">0</strong></article><article><small>Emergency stop</small><strong id="vseStop">ENGAGED</strong></article><article><small>Shadow runs</small><strong id="vseShadows">0</strong></article><article><small>Canary live</small><strong id="vseCanary">0%</strong></article><article><small>Readiness</small><strong id="vseScore">0%</strong></article><article><small>Status</small><strong id="vseStatus">—</strong></article><article><small>Trusted</small><strong id="vseTrusted">NO</strong></article></div><div class="v4316-answer" id="vseMessage">Shadow-run the latest approved command draft to certify the boundary.</div><div id="vseList" class="v432-list"></div><div id="vseChecks" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · Persistent Runtime Readiness</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryEngineV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryCenterV44.js?v=44.3.0"></script>
+@@ -8608,6 +8609,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionPlanningCenter" data-src="js/modules/interventionPlanningCenter.js?v=45.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionAuthorizationCenter" data-src="js/modules/interventionAuthorizationEngine.js?v=45.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionAuthorizationCenter" data-src="js/modules/interventionAuthorizationCenter.js?v=45.15.0"></script>
+-<script src="js/startup-loader.js?v=45.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="shadowExecutionBoundaryCenter" data-src="js/modules/shadowExecutionBoundaryEngine.js?v=45.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="shadowExecutionBoundaryCenter" data-src="js/modules/shadowExecutionBoundaryCenter.js?v=45.20.0"></script>
++<script src="js/startup-loader.js?v=45.20.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -2446,6 +2446,7 @@
+ const autonomousAssistanceCenterModule = startupRegistry.register("autonomousAssistanceCenter",shouldInitializeCenter("autonomousAssistanceCenter") ? window.createBlueCurrentAutonomousAssistanceCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipWorkflowSupervisorCenter","autonomousPolicyCenter","predictiveOptimizationCenter"]);
+ const interventionPlanningCenterModule = startupRegistry.register("interventionPlanningCenter",shouldInitializeCenter("interventionPlanningCenter") ? window.createBlueCurrentInterventionPlanningCenterModule?.(eventBus, appState) : null,["eventBus","appState","autonomousAssistanceCenter"]);
+ const interventionAuthorizationCenterModule = startupRegistry.register("interventionAuthorizationCenter",shouldInitializeCenter("interventionAuthorizationCenter") ? window.createBlueCurrentInterventionAuthorizationCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionPlanningCenter"]);
++const shadowExecutionBoundaryCenterModule = startupRegistry.register("shadowExecutionBoundaryCenter",shouldInitializeCenter("shadowExecutionBoundaryCenter") ? window.createBlueCurrentShadowExecutionBoundaryCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionAuthorizationCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V45.15.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V45.20.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/shadowExecutionBoundaryEngine.js
++++ b/client/js/modules/shadowExecutionBoundaryEngine.js
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentShadowExecutionBoundaryEngine{constructor(){this.r=api();}boundary(){return this.r('/api/autonomous-assistance/execution-boundary');}engage(reason){return this.r('/api/autonomous-assistance/execution-boundary',{method:'POST',body:JSON.stringify({action:'engage-stop',reason})});}shadows(){return this.r('/api/autonomous-assistance/shadow-executions');}shadow(draftId,idempotencyKey){return this.r('/api/autonomous-assistance/shadow-executions',{method:'POST',body:JSON.stringify({draftId,idempotencyKey})});}readiness(){return this.r('/api/autonomous-assistance/execution-readiness');}}
++window.BlueCurrentShadowExecutionBoundaryEngine=BlueCurrentShadowExecutionBoundaryEngine;})();--- a/client/js/modules/shadowExecutionBoundaryCenter.js
++++ b/client/js/modules/shadowExecutionBoundaryCenter.js
+@@ -0,0 +1,8 @@
++(function(){"use strict";
++function createBlueCurrentShadowExecutionBoundaryCenterModule(){const root=document.getElementById('shadowExecutionBoundaryCenter');if(!root||!window.BlueCurrentShadowExecutionBoundaryEngine)return null;const e=new window.BlueCurrentShadowExecutionBoundaryEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
++async function load(){try{const [b,s,r]=await Promise.all([e.boundary(),e.shadows(),e.readiness()]);$('vseAdapters').textContent=Object.keys(b.registry?.adapters||{}).length;$('vseStop').textContent=b.emergencyStop?.engaged?'ENGAGED':'OFF';$('vseShadows').textContent=s.count||0;$('vseCanary').textContent='0%';$('vseScore').textContent=`${r.score||0}%`;$('vseStatus').textContent=r.status||'—';$('vseTrusted').textContent=r.trusted?'YES':'NO';$('vseMessage').textContent=s.latest?`${s.latest.id} · shadow-only · ${s.latest.results?.length||0} command simulation(s) · live state unchanged`:'Shadow-run the latest approved command draft to certify the boundary.';$('vseList').innerHTML=(s.items||[]).slice(0,10).map(x=>`<article><div><strong>${esc(x.status)} · ${esc(x.id)}</strong><span>${x.results?.length||0} command(s) · idempotency ${esc(x.idempotencyKey)} · canary 0% live</span></div></article>`).join('')||'<p>No shadow executions yet.</p>';$('vseChecks').innerHTML=(r.checks||[]).map(x=>`<article><div><strong>${x.pass?'PASS':'BLOCK'} · ${esc(x.label)}</strong><span>${esc(x.detail)}</span></div></article>`).join('');}catch(err){$('vseMessage').textContent=err.message;}}
++async function latestDraft(){const t=localStorage.getItem("blueCurrentV3230Token")||"",r=await fetch('/api/autonomous-assistance/command-drafts',{headers:{Authorization:`Bearer ${t}`}}),d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to load command drafts');return d.latest||d.items?.[0]||null;}
++$('vseShadow')?.addEventListener('click',async()=>{try{const d=await latestDraft();if(!d)throw new Error('Create an approved command draft first.');await e.shadow(d.id,`${d.id}-shadow-${Date.now()}`);await load();}catch(err){$('vseMessage').textContent=err.message;}});
++$('vseStopBtn')?.addEventListener('click',async()=>{try{await e.engage($('vseReason').value||'Operator emergency stop');await load();}catch(err){$('vseMessage').textContent=err.message;}});
++$('vseRefresh')?.addEventListener('click',load);load();return{engine:e,load};}
++window.createBlueCurrentShadowExecutionBoundaryCenterModule=createBlueCurrentShadowExecutionBoundaryCenterModule;})();--- a/scripts/maintenance/test-v45-shadow-execution-boundary.js
++++ b/scripts/maintenance/test-v45-shadow-execution-boundary.js
+@@ -0,0 +1,45 @@
++"use strict";
++const assert=require("assert"),AutonomousOperationsService=require("../../server/services/autonomousOperationsService");
++class MemoryDatabase{constructor(seed){this.data=structuredClone(seed);}async read(){return structuredClone(this.data);}async mutate(fn){return structuredClone(fn(this.data));}}
++(async()=>{
++ const org="org-test";
++ const draft={id:"D1",organizationId:org,packetId:"A1",status:"drafted",executionCertified:false,liveExecutionAllowed:false,liveStateChanged:false,commands:[
++  {id:"C1",proposalId:"P1",locationId:"L1",domain:"kitchen-throughput",commandType:"fire-pacing-plan",description:"Model pacing",policyId:"V45-POL-KITCHEN",limits:{},status:"draft-only",executionEndpoint:null,liveExecutionAllowed:false,liveStateChanged:false},
++  {id:"C2",proposalId:"P2",locationId:"L1",domain:"reservation-pacing",commandType:"temporary-seating-buffer",description:"Model buffer",policyId:"V45-POL-PACING",limits:{},status:"draft-only",executionEndpoint:null,liveExecutionAllowed:false,liveStateChanged:false},
++  {id:"C3",proposalId:"P3",locationId:"L2",domain:"staffing",commandType:"contingency-coverage-plan",description:"Model staffing",policyId:"V45-POL-STAFFING",limits:{},status:"draft-only",executionEndpoint:null,liveExecutionAllowed:false,liveStateChanged:false}
++ ]};
++ const db=new MemoryDatabase({v45CommandDrafts:{[org]:[draft]}}),audits=[],events=[];
++ const svc=new AutonomousOperationsService(db,{record:async x=>audits.push(x)},{publish:(t,p)=>events.push({t,p})},{snapshot:async()=>({})});
++ const boundary=await svc.v45ExecutionBoundary(org);
++ assert.equal(boundary.registry.mode,"shadow-only");
++ assert.equal(boundary.registry.liveExecutionEnabled,false);
++ assert.equal(boundary.emergencyStop.engaged,true);
++ const adapters=Object.values(boundary.registry.adapters);
++ assert.ok(adapters.length>=6);
++ assert.ok(adapters.every(a=>a.shadowHandler&&a.liveHandler===null&&a.compensation.supported));
++ const first=await svc.v45ShadowExecutions(org,"Tester",{draftId:"D1",idempotencyKey:"shadow-key-1"});
++ assert.equal(first.replayed,false);
++ assert.equal(first.shadowExecution.status,"completed");
++ assert.equal(first.shadowExecution.liveExecutionAllowed,false);
++ assert.equal(first.shadowExecution.liveStateChanged,false);
++ assert.equal(first.shadowExecution.canary.percentage,0);
++ assert.equal(first.shadowExecution.canary.liveTraffic,false);
++ assert.equal(first.shadowExecution.results.length,3);
++ assert.ok(first.shadowExecution.results.every(x=>x.status==="shadow-simulated"&&x.liveHandlerPresent===false&&x.liveStateChanged===false));
++ assert.equal(first.shadowExecution.preflight.pass,true);
++ const replay=await svc.v45ShadowExecutions(org,"Tester",{draftId:"D1",idempotencyKey:"shadow-key-1"});
++ assert.equal(replay.replayed,true);
++ assert.equal(replay.shadowExecution.id,first.shadowExecution.id);
++ const ready=await svc.v45ExecutionReadiness(org);
++ assert.equal(ready.score,100);
++ assert.equal(ready.trusted,true);
++ assert.equal(ready.status,"v45-shadow-execution-boundary-ready");
++ assert.equal(ready.safety.liveExecutionEnabled,false);
++ assert.equal(ready.safety.canaryLivePercentage,0);
++ const stop=await svc.v45ExecutionBoundary(org,"Tester",{action:"engage-stop",reason:"Test stop"});
++ assert.equal(stop.emergencyStop.engaged,true);
++ let unsupported=false;
++ try{await svc.v45ExecutionBoundary(org,"Tester",{action:"release-stop"});}catch(e){unsupported=/Only engage-stop/.test(e.message);}
++ assert.equal(unsupported,true);
++ console.log(JSON.stringify({ok:true,version:ready.version,adapters:adapters.length,commands:first.shadowExecution.results.length,idempotentReplay:replay.replayed,preflight:first.shadowExecution.preflight.pass,canaryLivePercentage:ready.safety.canaryLivePercentage,emergencyStop:stop.emergencyStop.engaged,releaseBlocked:unsupported,readiness:ready.score,liveExecutionEnabled:false,liveExecutionAllowed:false,audits:audits.length,events:events.length},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V45.20.0.md
++++ b/README-APPLY-V45.20.0.md
+@@ -0,0 +1,69 @@
++# APPLY BLUE CURRENT V45.20.0
++
++## Baseline
++Apply over the authoritative repository containing V45.15.0.
++
++## Important
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++Extract `BLUE-CURRENT-V45.20.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v45-shadow-execution-boundary.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "45.20.0"
++```
++
++## Recommended Git staging
++Do not use `git add .` while runtime database artifacts may exist.
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/autonomousOperationsService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/shadowExecutionBoundaryEngine.js
++git add client/js/modules/shadowExecutionBoundaryCenter.js
++git add scripts/maintenance/test-v45-shadow-execution-boundary.js
++git add README-APPLY-V45.20.0.md
++git add V45.20.0-RELEASE.md
++git add V45.20.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V45.20.0 shadow execution boundary"
++git push origin live-service-timeline
++```
++
++## Safety
++V45.20.0 is shadow-only. It does not expose live action handlers or an emergency-stop release operation.
+--- a/V45.20.0-RELEASE.md
++++ b/V45.20.0-RELEASE.md
+@@ -0,0 +1,116 @@
++# BLUE CURRENT V45.20.0 — SHADOW EXECUTION BOUNDARY
++
++## Release scope
++
++V45.16–V45.20 introduces the separately certified execution-boundary architecture while deliberately keeping live restaurant mutation disabled.
++
++### V45.16 — Strict Action Adapter Registry
++Adds an explicit allowlist of command adapters for:
++- kitchen fire pacing
++- temporary seating buffers
++- staffing contingency coverage
++- guest manager-touch planning
++- revenue recovery planning
++- temporary runner support
++
++Each adapter declares:
++- domain
++- allowed payload fields
++- hard limits
++- shadow handler
++- compensation contract
++- live handler
++
++Every live handler is currently `null`.
++
++### V45.17 — Execution Preflight
++Before a command draft can enter shadow execution, Blue Current verifies:
++- command draft status
++- emergency-stop state
++- adapter allowlisting
++- payload limits
++- shadow handler presence
++- absence of live handlers
++- compensation support
++
++### V45.18 — Shadow Idempotency + Compensation Contracts
++Shadow execution requires an idempotency key.
++
++Reusing the same draft/idempotency-key pair returns the existing shadow result rather than reprocessing it.
++
++Every allowlisted adapter declares a rollback/compensation contract even though shadow execution does not change live state.
++
++### V45.19 — Emergency Stop + Canary Architecture
++Emergency stop defaults to engaged.
++
++This release only supports `engage-stop`; it deliberately does not expose a release action while live execution remains uncertified.
++
++Canary controls exist structurally but are locked to:
++- 0% live traffic
++- `liveTraffic: false`
++
++### V45.20 — Shadow Execution Boundary Readiness
++Adds readiness certification across:
++- strict adapter allowlisting
++- absence of live handlers
++- preflight
++- idempotency
++- compensation contracts
++- emergency stop
++- shadow execution
++- zero-percent live canary
++- command-draft separation
++- live-state isolation
++
++## New APIs
++- `GET/POST /api/autonomous-assistance/execution-boundary`
++- `GET/POST /api/autonomous-assistance/shadow-executions`
++- `GET /api/autonomous-assistance/execution-readiness`
++
++## UI
++Adds the Shadow Execution Boundary center:
++- adapter count
++- emergency-stop status
++- shadow-run count
++- canary-live percentage
++- readiness certification
++- shadow-run command simulation history
++
++## Safety boundary
++V45.20.0 still has no live execution implementation.
++
++The adapter registry explicitly reports:
++- `liveExecutionEnabled: false`
++- all `liveHandler: null`
++- emergency stop engaged
++- canary live percentage 0
++
++Shadow execution produces simulation records only:
++- `status: shadow-simulated`
++- `liveExecutionAllowed: false`
++- `liveStateChanged: false`
++
++## Validation
++- `node scripts/maintenance/test-v45-shadow-execution-boundary.js` passed.
++- 6 adapters validated.
++- All adapters had shadow handlers.
++- All live handlers were null.
++- All adapters declared compensation support.
++- Shadow preflight passed.
++- Shadow idempotency replay passed.
++- Canary live percentage remained 0.
++- Emergency stop remained engaged.
++- Emergency-stop release attempt was rejected.
++- Execution-boundary readiness scored 100%.
++- `npm run check` passed:
++  - 812 JavaScript files
++  - 694 client scripts
++  - 5,185 unique HTML IDs
++- Server startup passed as V45.20.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged during validation.
++
++## Operation V position
++The next logical milestone is controlled execution certification itself: immutable execution policies, dual authorization for live release, per-domain production adapters, real compensation implementation, circuit breakers, observation windows, canary promotion criteria, and automatic rollback.
++
++Live mutation should remain disabled until that separate milestone proves the boundary under production-like tests.

@@ -420,6 +420,146 @@ class AutonomousOperationsService {
     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
     return {organizationId:org,version:"45.15.0",score,status:score===100?"v45-authorization-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestPacketId:latestPacket?.id||null,latestDraftId:latestDraft?.id||null,safety:{stage:"approval-and-command-draft",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.15.0-intervention-authorization"};
   }
+  v45ExecutionAdapterRegistry(){
+    return {
+      version:"45.20.0",
+      mode:"shadow-only",
+      liveExecutionEnabled:false,
+      emergencyStopDefault:true,
+      adapters:{
+        "temporary-runner-support":{
+          adapterId:"V45-ADP-RUNNER",domain:"kitchen-throughput",allowedFields:["locationId","durationMinutes","additionalRunners"],
+          limits:{durationMinutes:{min:5,max:30},additionalRunners:{min:0,max:1}},
+          compensation:{type:"restore-role-assignment",supported:true},
+          shadowHandler:"simulate-runner-support",liveHandler:null
+        },
+        "fire-pacing-plan":{
+          adapterId:"V45-ADP-FIRE",domain:"kitchen-throughput",allowedFields:["locationId","durationMinutes","pacingMinutes"],
+          limits:{durationMinutes:{min:5,max:30},pacingMinutes:{min:0,max:8}},
+          compensation:{type:"restore-pacing-baseline",supported:true},
+          shadowHandler:"simulate-fire-pacing",liveHandler:null
+        },
+        "temporary-seating-buffer":{
+          adapterId:"V45-ADP-SEATING",domain:"reservation-pacing",allowedFields:["locationId","durationMinutes","bufferMinutes"],
+          limits:{durationMinutes:{min:5,max:45},bufferMinutes:{min:0,max:10}},
+          compensation:{type:"restore-seating-buffer",supported:true},
+          shadowHandler:"simulate-seating-buffer",liveHandler:null
+        },
+        "contingency-coverage-plan":{
+          adapterId:"V45-ADP-STAFF",domain:"staffing",allowedFields:["locationId","durationMinutes","additionalStaff"],
+          limits:{durationMinutes:{min:15,max:120},additionalStaff:{min:0,max:3}},
+          compensation:{type:"release-contingency-coverage",supported:true},
+          shadowHandler:"simulate-staffing-coverage",liveHandler:null
+        },
+        "manager-touch-plan":{
+          adapterId:"V45-ADP-GUEST",domain:"guest-recovery",allowedFields:["locationId","caseLimit"],
+          limits:{caseLimit:{min:0,max:8}},
+          compensation:{type:"close-unstarted-recovery-draft",supported:true},
+          shadowHandler:"simulate-manager-touch",liveHandler:null
+        },
+        "revenue-recovery-plan":{
+          adapterId:"V45-ADP-REVENUE",domain:"revenue-opportunity",allowedFields:["locationId","durationMinutes","modeledDiscountPercent"],
+          limits:{durationMinutes:{min:15,max:180},modeledDiscountPercent:{min:0,max:10}},
+          compensation:{type:"discard-unpublished-offer-draft",supported:true},
+          shadowHandler:"simulate-revenue-recovery",liveHandler:null
+        }
+      }
+    };
+  }
+  v45ExecutionEmergencyState(db,org){
+    const current=db.v45ExecutionEmergencyStop?.[org];
+    return current||{organizationId:org,engaged:true,reason:"Live execution boundary not certified",updatedBy:"System",updatedAt:this.now()};
+  }
+  v45CommandToAdapterPayload(command){
+    const base={locationId:command.locationId};
+    if(command.commandType==="fire-pacing-plan")return {...base,durationMinutes:20,pacingMinutes:4};
+    if(command.commandType==="temporary-seating-buffer")return {...base,durationMinutes:30,bufferMinutes:4};
+    if(command.commandType==="contingency-coverage-plan")return {...base,durationMinutes:60,additionalStaff:1};
+    if(command.commandType==="manager-touch-plan")return {...base,caseLimit:4};
+    if(command.commandType==="revenue-recovery-plan")return {...base,durationMinutes:60,modeledDiscountPercent:5};
+    if(command.commandType==="temporary-runner-support")return {...base,durationMinutes:20,additionalRunners:1};
+    return base;
+  }
+  v45ExecutionPreflight(draft,emergencyState){
+    const registry=this.v45ExecutionAdapterRegistry(),checks=[];
+    checks.push({id:"draft-status",pass:Boolean(draft)&&draft.status==="drafted"&&draft.executionCertified===false,detail:draft?`${draft.status} · certified=${draft.executionCertified}`:"Command draft missing"});
+    checks.push({id:"emergency-stop",pass:Boolean(emergencyState?.engaged),detail:emergencyState?.engaged?"Emergency stop engaged":"Emergency stop not engaged"});
+    const commandChecks=(draft?.commands||[]).map(command=>{
+      const adapter=registry.adapters[command.commandType];
+      const payload=this.v45CommandToAdapterPayload(command);
+      let payloadValid=Boolean(adapter),reason=adapter?"":"No adapter registered";
+      if(adapter){
+        for(const [field,bounds] of Object.entries(adapter.limits||{})){
+          const value=Number(payload[field]);
+          if(!Number.isFinite(value)||value<bounds.min||value>bounds.max){payloadValid=false;reason=`${field} outside ${bounds.min}-${bounds.max}`;break;}
+        }
+      }
+      return {commandId:command.id,commandType:command.commandType,adapterId:adapter?.adapterId||null,adapterPresent:Boolean(adapter),shadowHandler:Boolean(adapter?.shadowHandler),liveHandlerPresent:Boolean(adapter?.liveHandler),payloadValid,reason,payload,compensationSupported:Boolean(adapter?.compensation?.supported)};
+    });
+    checks.push({id:"adapter-allowlist",pass:commandChecks.every(x=>x.adapterPresent),detail:`${commandChecks.filter(x=>x.adapterPresent).length}/${commandChecks.length} command(s) allowlisted`});
+    checks.push({id:"payload-limits",pass:commandChecks.every(x=>x.payloadValid),detail:`${commandChecks.filter(x=>x.payloadValid).length}/${commandChecks.length} payload(s) within limits`});
+    checks.push({id:"shadow-handlers",pass:commandChecks.every(x=>x.shadowHandler),detail:"Every command has a shadow adapter"});
+    checks.push({id:"no-live-handler",pass:commandChecks.every(x=>x.liveHandlerPresent===false),detail:"No allowlisted adapter exposes a live mutation handler"});
+    checks.push({id:"compensation",pass:commandChecks.every(x=>x.compensationSupported),detail:"Every adapter declares a compensation contract"});
+    const pass=checks.every(x=>x.pass);
+    return {pass,checks,commands:commandChecks,mode:"shadow-only",liveExecutionEnabled:false,preflightAt:this.now()};
+  }
+  async v45ExecutionBoundary(org,actor=null,input=null){
+    const db=await this.database.read(),state=this.v45ExecutionEmergencyState(db,org),registry=this.v45ExecutionAdapterRegistry();
+    if(!input)return {organizationId:org,registry,emergencyStop:state,build:"45.20.0-shadow-execution-boundary"};
+    const action=String(input.action||"").toLowerCase();
+    if(action!=="engage-stop")throw new Error("Only engage-stop is supported while live execution is disabled.");
+    const updated=await this.database.mutate(data=>{
+      data.v45ExecutionEmergencyStop||={};const next={organizationId:org,engaged:true,reason:String(input.reason||"Operator emergency stop").slice(0,500),updatedBy:actor||"Operator",updatedAt:this.now()};
+      data.v45ExecutionEmergencyStop[org]=next;return next;
+    });
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 execution emergency stop engaged: ${updated.reason}`,category:"v45-execution-boundary"});
+    this.realtimeHub.publish("v45-execution-stop-engaged",{organizationId:org,engaged:true,liveExecutionEnabled:false});
+    return {organizationId:org,registry,emergencyStop:updated,build:"45.20.0-shadow-execution-boundary"};
+  }
+  async v45ShadowExecutions(org,actor=null,input=null){
+    const db=await this.database.read(),stored=db.v45ShadowExecutions?.[org]||[];
+    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,build:"45.20.0-shadow-execution-boundary"};
+    const draftId=String(input.draftId||"").trim(),idempotencyKey=String(input.idempotencyKey||"").trim();
+    if(!draftId)throw new Error("draftId is required.");
+    if(!idempotencyKey)throw new Error("idempotencyKey is required for shadow execution.");
+    const draft=(db.v45CommandDrafts?.[org]||[]).find(x=>x.id===draftId);
+    if(!draft)throw new Error("V45 command draft not found.");
+    const existing=stored.find(x=>x.draftId===draftId&&x.idempotencyKey===idempotencyKey);
+    if(existing)return {organizationId:org,shadowExecution:existing,replayed:true,build:"45.20.0-shadow-execution-boundary"};
+    const emergencyState=this.v45ExecutionEmergencyState(db,org),preflight=this.v45ExecutionPreflight(draft,emergencyState);
+    if(!preflight.pass)throw new Error(`Shadow execution preflight failed: ${preflight.checks.filter(x=>!x.pass).map(x=>x.id).join(", ")}`);
+    const results=preflight.commands.map((item,index)=>({
+      id:`V45-SHD-CMD-${Date.now().toString(36).toUpperCase()}-${index+1}`,commandId:item.commandId,adapterId:item.adapterId,
+      payload:item.payload,status:"shadow-simulated",wouldInvoke:item.shadowHandler?"shadow-adapter":null,liveHandlerPresent:false,
+      compensation:{supported:item.compensationSupported,status:"not-needed-shadow-only"},
+      liveExecutionAllowed:false,liveStateChanged:false
+    }));
+    const shadowExecution={id:`V45-SHD-${Date.now().toString(36).toUpperCase()}`,organizationId:org,draftId,idempotencyKey,mode:"shadow-only",status:"completed",preflight,results,canary:{enabled:true,percentage:0,liveTraffic:false,description:"Canary architecture present; live percentage locked to zero."},emergencyStopEngaged:true,liveExecutionAllowed:false,liveStateChanged:false,createdBy:actor||"Operator",createdAt:this.now()};
+    await this.database.mutate(data=>{data.v45ShadowExecutions||={};const list=data.v45ShadowExecutions[org]||[];list.unshift(shadowExecution);data.v45ShadowExecutions[org]=list.slice(0,300);return shadowExecution;});
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 shadow execution completed: ${shadowExecution.id}`,category:"v45-shadow-execution"});
+    this.realtimeHub.publish("v45-shadow-execution-completed",{organizationId:org,id:shadowExecution.id,commands:results.length,liveExecutionAllowed:false});
+    return {organizationId:org,shadowExecution,replayed:false,build:"45.20.0-shadow-execution-boundary"};
+  }
+  async v45ExecutionReadiness(org){
+    const db=await this.database.read(),registry=this.v45ExecutionAdapterRegistry(),state=this.v45ExecutionEmergencyState(db,org),shadows=db.v45ShadowExecutions?.[org]||[],drafts=db.v45CommandDrafts?.[org]||[];
+    const latestShadow=shadows[0]||null;
+    const adapters=Object.values(registry.adapters);
+    const checks=[
+      {id:"adapter-registry",label:"Strict action adapter allowlist",pass:adapters.length>=5&&adapters.every(x=>x.adapterId&&x.shadowHandler),detail:`${adapters.length} allowlisted shadow adapter(s)`},
+      {id:"no-live-handlers",label:"Live mutation handlers absent",pass:adapters.every(x=>x.liveHandler===null),detail:"Every adapter live handler is null"},
+      {id:"preflight",label:"Command preflight validation",pass:Boolean(latestShadow?.preflight?.pass),detail:latestShadow?`${latestShadow.preflight.checks.filter(x=>x.pass).length}/${latestShadow.preflight.checks.length} preflight checks pass`:"No shadow execution yet"},
+      {id:"idempotency",label:"Shadow idempotency key",pass:Boolean(latestShadow?.idempotencyKey),detail:latestShadow?.idempotencyKey||"No idempotency record"},
+      {id:"compensation",label:"Rollback / compensation contracts",pass:adapters.every(x=>x.compensation?.supported===true),detail:"Every allowlisted adapter declares compensation"},
+      {id:"emergency-stop",label:"Emergency stop defaults engaged",pass:state.engaged===true,detail:state.reason||"Emergency stop engaged"},
+      {id:"shadow",label:"Shadow execution available",pass:Boolean(latestShadow)&&latestShadow.mode==="shadow-only"&&latestShadow.liveStateChanged===false,detail:latestShadow?.id||"No shadow execution"},
+      {id:"canary-zero",label:"Canary controls locked to zero live traffic",pass:Boolean(latestShadow?.canary?.enabled)&&latestShadow.canary.percentage===0&&latestShadow.canary.liveTraffic===false,detail:"Canary architecture is present with 0% live traffic"},
+      {id:"draft-separation",label:"Command drafts remain non-executable",pass:drafts.every(x=>x.executionCertified===false&&x.liveExecutionAllowed===false),detail:`${drafts.length} draft(s) remain uncertified`},
+      {id:"live-safety",label:"Execution boundary cannot mutate live restaurant state",pass:registry.liveExecutionEnabled===false&&shadows.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false),detail:"Execution boundary is shadow-only"}
+    ];
+    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+    return {organizationId:org,version:"45.20.0",score,status:score===100?"v45-shadow-execution-boundary-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestShadowExecutionId:latestShadow?.id||null,safety:{executionMode:"shadow-only",liveExecutionEnabled:false,emergencyStopEngaged:state.engaged,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.20.0-shadow-execution-boundary"};
+  }
   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
 }
 module.exports=AutonomousOperationsService;

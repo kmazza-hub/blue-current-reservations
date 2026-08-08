@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "45.15.0",
+        version: "45.20.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -985,6 +985,17 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response,200,await autonomousOperationsService.v45CommandDrafts(organizationId,auth.user.name,await readJson(request)));
     }
     if (url.pathname === "/api/autonomous-assistance/authorization-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45AuthorizationReadiness(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/execution-boundary" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionBoundary(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/execution-boundary" && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Execution boundary permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45ExecutionBoundary(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/shadow-executions" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ShadowExecutions(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/shadow-executions" && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Shadow execution permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45ShadowExecutions(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionReadiness(organizationId));
     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
