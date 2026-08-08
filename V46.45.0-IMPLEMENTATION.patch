@@ -1,0 +1,479 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.40.0",
++  "version": "46.45.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 disposable retirement rehearsal and rollback archive certification",
++  "description": "Blue Current Hospitality OS \u2014 final retirement authorization packet and Git checkpoint gate",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -156,7 +156,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.40.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.45.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.40.0",
++        version: "46.45.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+--- a/server/services/repositoryRetirementRehearsalService.js
++++ b/server/services/repositoryRetirementRehearsalService.js
+@@ -79,6 +79,7 @@
+     const rollback=this.makeRollbackArchive(surfaceId,applied.backupFiles,artifactDir);
+     const simImpactService=new (this.impactService.constructor)(simRoot),after=simImpactService.analyze(surfaceId),validation=this.validate(simRoot);
+     const changeSet={surfaceId,mode:"simulated-only",changes:applied.changes.map(x=>({file:x.file,action:x.action})),patchText:applied.changes.filter(x=>x.diff).map(x=>x.diff).join("\n\n"),authoritativeMutation:false,generatedAt:new Date().toISOString()};
++    changeSet.digest=crypto.createHash("sha256").update(JSON.stringify({surfaceId:changeSet.surfaceId,changes:changeSet.changes,patchText:changeSet.patchText})).digest("hex");
+     const changeSetPath=path.join(artifactDir,`${surfaceId}-simulated-change-set.json`);fs.writeFileSync(changeSetPath,JSON.stringify(changeSet,null,2));
+     const authoritativeAfter=this.repositoryDigest(),authoritativeSafe=authoritativeBefore.sha256===authoritativeAfter.sha256&&authoritativeBefore.fileCount===authoritativeAfter.fileCount;
+     const blockers=[];
+@@ -86,7 +87,7 @@
+     if((after.graph.startupDependencies||[]).length)blockers.push("Startup registry dependency remains after simulated removal.");
+     if((after.graph.apiUsage||[]).length)blockers.push("API usage remains after simulated removal.");
+     if((after.graph.inboundReferences||[]).some(x=>["reference","html-registration"].includes(x.type)))blockers.push("Operational inbound references remain after simulated removal.");
+-    return {surfaceId,version:"46.40.0",mode:"disposable-copy-rehearsal",before,after,validation,rollback:{...rollback,path:undefined,archiveGenerated:true},changeSet:{file:path.basename(changeSetPath),changeCount:changeSet.changes.length,patchCharacters:changeSet.patchText.length,generated:true},readiness:{status:blockers.length?"rehearsal-blocked":"final-change-set-ready-for-human-review",blockers},safety:{authoritativeMutation:false,authoritativeSafe,authoritativeBefore,authoritativeAfter,codeDeletionAllowed:false,deletionExecuted:false,deleteEndpointPresent:false,tempCopyUsed:true},generatedAt:new Date().toISOString()};
++    return {surfaceId,version:"46.40.0",mode:"disposable-copy-rehearsal",before,after,validation,rollback:{...rollback,path:undefined,archiveGenerated:true},changeSet:{file:path.basename(changeSetPath),changeCount:changeSet.changes.length,patchCharacters:changeSet.patchText.length,digest:changeSet.digest,generated:true},readiness:{status:blockers.length?"rehearsal-blocked":"final-change-set-ready-for-human-review",blockers},safety:{authoritativeMutation:false,authoritativeSafe,authoritativeBefore,authoritativeAfter,codeDeletionAllowed:false,deletionExecuted:false,deleteEndpointPresent:false,tempCopyUsed:true},generatedAt:new Date().toISOString()};
+   }
+ }
+ module.exports=RepositoryRetirementRehearsalService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.40.0">
++  <meta name="blue-current-build" content="46.45.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -4165,6 +4165,7 @@
+ <section class="v432-center v438-center v4316-center" id="retirementCertificationCenter"><header><div><small>V46.26–V46.30 · Retirement Certification</small><strong>Require multi-day preview evidence, task-quality thresholds, manifest revalidation, and owner sign-off before a surface can become a retirement candidate.</strong><span>Certification does not delete code. A certified candidate remains reversible and requires a later explicit deletion decision.</span></div><button id="orcRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="orcSurface"></select><input id="orcOwner" class="v4312-input" placeholder="Surface owner / certifier"><input id="orcNote" class="v4312-input" placeholder="Observation or sign-off note"><button id="orcObserve" type="button">Record preview observation</button><button id="orcSignoff" type="button">Owner sign-off</button><button id="orcRevalidate" type="button">Revalidate manifest</button><button id="orcCertify" type="button">Certify candidate</button></div><div class="v432-kpis"><article><small>Eligible candidates</small><strong id="orcEligible">0</strong></article><article><small>Certified</small><strong id="orcCertified">0</strong></article><article><small>Task success</small><strong id="orcTaskSuccess">100%</strong></article><article><small>Avg resolution</small><strong id="orcResolution">—</strong></article></div><div class="v4316-answer" id="orcHeadline">Retirement certification requires an approved, revalidated hide preview.</div><div id="orcList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="repositoryImpactCertificationCenter"><header><div><small>V46.31–V46.35 · Repository Impact Certification</small><strong>Trace dependencies, ownership, API/test impact, and rollback scope before a retirement candidate can receive human deletion-plan authorization.</strong><span>This wave generates and authorizes plans only. There is no delete endpoint and code deletion remains disabled.</span></div><button id="oricRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="oricSurface"></select><button id="oricAnalyze" type="button">Analyze repository impact</button><button id="oricPlan" type="button">Build deletion plan</button><input id="oricAuthorizer" class="v4312-input" placeholder="Deletion-plan authorizer"><input id="oricNote" class="v4312-input" placeholder="Authorization note"><button id="oricAuthorize" type="button">Authorize plan</button></div><div class="v432-kpis"><article><small>Plans</small><strong id="oricPlans">0</strong></article><article><small>Owned files</small><strong id="oricOwned">0</strong></article><article><small>Inbound refs</small><strong id="oricInbound">0</strong></article><article><small>Startup deps</small><strong id="oricStartup">0</strong></article><article><small>API refs</small><strong id="oricApi">0</strong></article><article><small>Test refs</small><strong id="oricTests">0</strong></article><article><small>Readiness</small><strong id="oricScore">0%</strong></article><article><small>Status</small><strong id="oricStatus">—</strong></article></div><div class="v4316-answer" id="oricHeadline">Select a certified retirement candidate and analyze repository impact.</div><div id="oricImpact" class="v432-list"></div><div id="oricChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="retirementRehearsalCenter"><header><div><small>V46.36–V46.40 · Disposable Retirement Rehearsal</small><strong>Apply the proposed retirement only to an isolated repository copy, validate the result, and generate rollback/change-set artifacts for human review.</strong><span>The authoritative repository is read-only to this workflow. No delete endpoint is introduced.</span></div><button id="orrRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="orrSurface"></select><button id="orrRun" type="button">Run disposable-copy rehearsal</button></div><div class="v432-kpis"><article><small>Rehearsals</small><strong id="orrRuns">0</strong></article><article><small>Simulated changes</small><strong id="orrChanges">0</strong></article><article><small>Rollback files</small><strong id="orrRollback">0</strong></article><article><small>Validation</small><strong id="orrValidation">—</strong></article><article><small>Readiness</small><strong id="orrScore">0%</strong></article><article><small>Status</small><strong id="orrStatus">—</strong></article></div><div class="v4316-answer" id="orrHeadline">Select a human-authorized deletion plan and run the disposable-copy rehearsal.</div><div id="orrArtifacts" class="v432-list"></div><div id="orrChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="finalRetirementAuthorizationCenter"><header><div><small>V46.41–V46.45 · Final Retirement Authorization Gate</small><strong>Cryptographically bind the deletion plan, successful rehearsal, rollback archive, exact change set, and source-tree digest before a second human can authorize the final gate.</strong><span>This gate expires after 15 minutes and still does not permit code deletion. A verified Git checkpoint is required before any later authoritative retirement decision.</span></div><button id="fraRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="fraSurface"></select><button id="fraCreate" type="button">Create final packet</button><input id="fraApprover" class="v4312-input" placeholder="Distinct second authorizer"><input id="fraNote" class="v4312-input" placeholder="Authorization note"><button id="fraAuthorize" type="button">Second-human authorize</button><button id="fraCheckpointBtn" type="button">Mark Git checkpoint verified</button></div><div class="v432-kpis"><article><small>Packets</small><strong id="fraPackets">0</strong></article><article><small>Expires</small><strong id="fraExpiry">—</strong></article><article><small>Second approver</small><strong id="fraSecond">—</strong></article><article><small>Git checkpoint</small><strong id="fraCheckpoint">PENDING</strong></article><article><small>Readiness</small><strong id="fraScore">0%</strong></article><article><small>Status</small><strong id="fraStatus">—</strong></article></div><div class="v4316-answer" id="fraHeadline">Create the final retirement authorization packet from a human-authorized plan and successful rehearsal.</div><div id="fraBinding" class="v432-list"></div><pre id="fraCommands" class="v4316-answer"></pre><div id="fraChecks" class="v432-list"></div></section>
+ <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+             <header class="guided-shift-header">
+               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
+@@ -8636,6 +8637,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="repositoryImpactCertificationCenter" data-src="js/modules/repositoryImpactCertificationCenter.js?v=46.35.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementRehearsalCenter" data-src="js/modules/retirementRehearsalEngine.js?v=46.40.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementRehearsalCenter" data-src="js/modules/retirementRehearsalCenter.js?v=46.40.0"></script>
+-<script src="js/startup-loader.js?v=46.40.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalRetirementAuthorizationCenter" data-src="js/modules/finalRetirementAuthorizationEngine.js?v=46.45.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalRetirementAuthorizationCenter" data-src="js/modules/finalRetirementAuthorizationCenter.js?v=46.45.0"></script>
++<script src="js/startup-loader.js?v=46.45.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1217,6 +1217,7 @@
+ const retirementCertificationCenterModule = startupRegistry.register("retirementCertificationCenter", shouldInitializeCenter("retirementCertificationCenter") ? window.createBlueCurrentRetirementCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "deprecationManifestCenter"]);
+ const repositoryImpactCertificationCenterModule = startupRegistry.register("repositoryImpactCertificationCenter", shouldInitializeCenter("repositoryImpactCertificationCenter") ? window.createBlueCurrentRepositoryImpactCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementCertificationCenter"]);
+ const retirementRehearsalCenterModule = startupRegistry.register("retirementRehearsalCenter", shouldInitializeCenter("retirementRehearsalCenter") ? window.createBlueCurrentRetirementRehearsalCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "repositoryImpactCertificationCenter"]);
++const finalRetirementAuthorizationCenterModule = startupRegistry.register("finalRetirementAuthorizationCenter", shouldInitializeCenter("finalRetirementAuthorizationCenter") ? window.createBlueCurrentFinalRetirementAuthorizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementRehearsalCenter"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.40.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.45.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/finalRetirementAuthorizationEngine.js
++++ b/client/js/modules/finalRetirementAuthorizationEngine.js
+@@ -0,0 +1,47 @@
++(function(global){"use strict";
++class BlueCurrentFinalRetirementAuthorizationEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  state(){try{return this.appState?.getState?.()||{};}catch{return {};}}
++  plans(){return Array.isArray(this.state().operatorDeletionPlans)?this.state().operatorDeletionPlans:[];}
++  rehearsals(){return Array.isArray(this.state().operatorRetirementRehearsals)?this.state().operatorRetirementRehearsals:[];}
++  packets(){return Array.isArray(this.state().operatorFinalRetirementPackets)?this.state().operatorFinalRetirementPackets:[];}
++  findPlan(surfaceId){return this.plans().find(x=>x.surfaceId===surfaceId&&x.status==="human-authorized-plan")||null;}
++  findRehearsal(surfaceId){return this.rehearsals().find(x=>x.surfaceId===surfaceId&&x.readiness?.status==="final-change-set-ready-for-human-review"&&x.validation?.passed===true&&x.safety?.authoritativeSafe===true)||null;}
++  async hash(value){const str=JSON.stringify(value);if(typeof require==="function"){return require("crypto").createHash("sha256").update(str).digest("hex");}const bytes=new TextEncoder().encode(str),digest=await crypto.subtle.digest("SHA-256",bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");}
++  checkpointInstructions(surfaceId,packetId){return {
++    required:true,
++    commands:[
++      "git status",
++      "npm run check",
++      `git tag -a pre-retirement-${surfaceId}-${packetId.toLowerCase()} -m "Pre-retirement checkpoint for ${surfaceId}"`,
++      `git push origin pre-retirement-${surfaceId}-${packetId.toLowerCase()}`,
++      "git status"
++    ],
++    rule:"Do not apply an authoritative retirement unless the pre-retirement tag exists remotely and the working tree is clean.",
++    checkpointVerified:false
++  };}
++  async create(surfaceId,createdBy="Operator"){const plan=this.findPlan(surfaceId),rehearsal=this.findRehearsal(surfaceId);if(!plan)throw new Error("A human-authorized deletion plan is required.");if(!rehearsal)throw new Error("A successful disposable-copy rehearsal is required.");if(!rehearsal.rollback?.digest||!rehearsal.changeSet?.digest)throw new Error("Rollback and exact change-set digests are required.");const now=Date.now(),id=`FRAP-${now.toString(36).toUpperCase()}`,binding={surfaceId,planId:plan.id,retirementCertificationId:plan.retirementCertificationId,planAuthorizedBy:plan.humanDeletionAuthorization?.authorizedBy||null,rollbackDigest:rehearsal.rollback.digest,changeSetDigest:rehearsal.changeSet.digest,rehearsalGeneratedAt:rehearsal.generatedAt,authoritativeSourceDigest:rehearsal.safety?.authoritativeAfter?.sha256||null};const packet={id,version:"46.45.0",surfaceId,status:"awaiting-second-human-authorization",scope:"final-retirement-authorization-only",binding,bindingDigest:await this.hash(binding),createdBy,createdAt:new Date(now).toISOString(),expiresAt:new Date(now+15*60*1000).toISOString(),secondAuthorization:null,checkpoint:this.checkpointInstructions(surfaceId,id),codeDeletionAllowed:false,deletionExecuted:false,authoritativeMutation:false};const next=[packet,...this.packets().filter(x=>x.surfaceId!==surfaceId)].slice(0,100);this.appState?.update?.({operatorFinalRetirementPackets:next});this.eventBus?.emit?.("operator-final-retirement-packet:created",structuredClone(packet));return packet;}
++  async revalidate(packet){if(!packet)throw new Error("Final retirement authorization packet is required.");const plan=this.findPlan(packet.surfaceId),rehearsal=this.findRehearsal(packet.surfaceId),binding=packet.binding||{},checks=[
++    {id:"not-expired",pass:new Date(packet.expiresAt).getTime()>Date.now(),detail:packet.expiresAt},
++    {id:"authorized-plan",pass:Boolean(plan)&&plan.id===binding.planId,detail:plan?.id||"missing"},
++    {id:"retirement-certification",pass:Boolean(plan?.retirementCertificationId)&&plan.retirementCertificationId===binding.retirementCertificationId,detail:plan?.retirementCertificationId||"missing"},
++    {id:"rehearsal",pass:Boolean(rehearsal)&&rehearsal.validation?.passed===true&&rehearsal.safety?.authoritativeSafe===true,detail:rehearsal?.readiness?.status||"missing"},
++    {id:"rollback-digest",pass:Boolean(rehearsal?.rollback?.digest)&&rehearsal.rollback.digest===binding.rollbackDigest,detail:binding.rollbackDigest?.slice(0,12)||"missing"},
++    {id:"change-set-digest",pass:Boolean(rehearsal?.changeSet?.digest)&&rehearsal.changeSet.digest===binding.changeSetDigest,detail:binding.changeSetDigest?.slice(0,12)||"missing"},
++    {id:"source-digest",pass:Boolean(rehearsal?.safety?.authoritativeAfter?.sha256)&&rehearsal.safety.authoritativeAfter.sha256===binding.authoritativeSourceDigest,detail:binding.authoritativeSourceDigest?.slice(0,12)||"missing"},
++    {id:"binding-digest",pass:(await this.hash(binding))===packet.bindingDigest,detail:packet.bindingDigest},
++    {id:"no-delete-capability",pass:packet.codeDeletionAllowed===false&&packet.deletionExecuted===false&&packet.authoritativeMutation===false,detail:"Authorization gate only"}
++  ];return {pass:checks.every(x=>x.pass),checks,version:"46.45.0"};}
++  async authorize(packetId,approver,note=""){const packets=this.packets(),packet=packets.find(x=>x.id===packetId);if(!packet)throw new Error("Final retirement packet not found.");const validation=await this.revalidate(packet);if(!validation.pass)throw new Error(`Packet revalidation failed: ${validation.checks.filter(x=>!x.pass).map(x=>x.id).join(", ")}`);const name=String(approver||"").trim();if(!name)throw new Error("Second authorizer is required.");const first=String(packet.binding?.planAuthorizedBy||"").trim().toLowerCase();if(first&&name.toLowerCase()===first)throw new Error("Second authorization must come from a distinct human approver.");const authorization={authorizedBy:name,authorizedAt:new Date().toISOString(),note:String(note||"").slice(0,500),scope:"final-retirement-authorization-only",bindingDigest:packet.bindingDigest};const next=packets.map(x=>x.id===packetId?{...x,status:"final-authorization-granted-checkpoint-required",secondAuthorization:authorization,codeDeletionAllowed:false,deletionExecuted:false}:x);this.appState?.update?.({operatorFinalRetirementPackets:next});this.eventBus?.emit?.("operator-final-retirement-packet:authorized",{packetId,authorization});return next.find(x=>x.id===packetId);}
++  async markCheckpoint(packetId,verifiedBy){const packets=this.packets(),packet=packets.find(x=>x.id===packetId);if(!packet)throw new Error("Final retirement packet not found.");if(!packet.secondAuthorization)throw new Error("Second human authorization is required before checkpoint verification.");const validation=await this.revalidate(packet);if(!validation.pass)throw new Error("Packet expired or evidence changed before checkpoint verification.");const checkpoint={...packet.checkpoint,checkpointVerified:true,verifiedBy:String(verifiedBy||"Operator"),verifiedAt:new Date().toISOString()};const next=packets.map(x=>x.id===packetId?{...x,status:"ready-for-separate-authoritative-retirement-decision",checkpoint,codeDeletionAllowed:false,deletionExecuted:false}:x);this.appState?.update?.({operatorFinalRetirementPackets:next});return next.find(x=>x.id===packetId);}
++  async readiness(packet){const validation=await this.revalidate(packet),checks=[...validation.checks,
++    {id:"second-human-authorization",pass:Boolean(packet?.secondAuthorization),detail:packet?.secondAuthorization?.authorizedBy||"missing"},
++    {id:"checkpoint-instructions",pass:Array.isArray(packet?.checkpoint?.commands)&&packet.checkpoint.commands.length>=4,detail:`${packet?.checkpoint?.commands?.length||0} command(s)`},
++    {id:"checkpoint-verified",pass:packet?.checkpoint?.checkpointVerified===true,detail:packet?.checkpoint?.verifiedBy||"not verified"},
++    {id:"still-no-delete",pass:packet?.codeDeletionAllowed===false&&packet?.deletionExecuted===false,detail:"Separate authoritative retirement decision still required"}
++  ];const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length);return {score,status:score===100?"final-retirement-gate-ready":score>=60?"conditional":"blocked",checks,codeDeletionAllowed:false,deletionExecuted:false,version:"46.45.0"};}
++  snapshot(){const packets=this.packets(),latest=packets[0]||null;return {count:packets.length,latest,policy:"second-human-auth-plus-git-checkpoint-before-separate-retirement-decision",authorizationExpiryMinutes:15,codeDeletionAllowed:false,deletionExecuted:false,version:"46.45.0"};}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentFinalRetirementAuthorizationEngine;
++if(global)global.BlueCurrentFinalRetirementAuthorizationEngine=BlueCurrentFinalRetirementAuthorizationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/finalRetirementAuthorizationCenter.js
++++ b/client/js/modules/finalRetirementAuthorizationCenter.js
+@@ -0,0 +1,10 @@
++(function(){"use strict";
++function createBlueCurrentFinalRetirementAuthorizationCenterModule(eventBus,appState){const root=document.getElementById("finalRetirementAuthorizationCenter");if(!root||!window.BlueCurrentFinalRetirementAuthorizationEngine)return null;const e=new window.BlueCurrentFinalRetirementAuthorizationEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));let packet=null;
++function surfaces(){const rehearsals=appState.getState?.().operatorRetirementRehearsals||[];return rehearsals.filter(x=>x.readiness?.status==="final-change-set-ready-for-human-review").map(x=>x.surfaceId);}
++function options(){const ids=surfaces(),cur=$("fraSurface").value;$("fraSurface").innerHTML=ids.map(id=>`<option value="${esc(id)}">${esc(id)}</option>`).join("");if(ids.includes(cur))$("fraSurface").value=cur;}
++async function render(){const snap=e.snapshot();packet=packet||snap.latest;options();let ready=null;try{ready=packet?await e.readiness(packet):null;}catch{}$("fraPackets").textContent=snap.count;$("fraExpiry").textContent=packet?new Date(packet.expiresAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}):"—";$("fraSecond").textContent=packet?.secondAuthorization?.authorizedBy||"—";$("fraCheckpoint").textContent=packet?.checkpoint?.checkpointVerified?"VERIFIED":"PENDING";$("fraScore").textContent=`${ready?.score||0}%`;$("fraStatus").textContent=ready?.status||"—";$("fraHeadline").textContent=packet?`${packet.surfaceId} · ${packet.status} · deletion still disabled`:"Create the final retirement authorization packet from a human-authorized plan and successful rehearsal.";$("fraBinding").innerHTML=packet?`<article><strong>Plan binding</strong><span>${esc(packet.binding.planId)} · ${esc(packet.bindingDigest)}</span></article><article><strong>Rollback digest</strong><span>${esc(packet.binding.rollbackDigest)}</span></article><article><strong>Change-set digest</strong><span>${esc(packet.binding.changeSetDigest)}</span></article><article><strong>Source digest</strong><span>${esc(packet.binding.authoritativeSourceDigest||"—")}</span></article>`:"";$("fraCommands").textContent=packet?(packet.checkpoint?.commands||[]).join("\n"):"";$("fraChecks").innerHTML=(ready?.checks||[]).map(c=>`<article><strong>${c.pass?"PASS":"BLOCK"} · ${esc(c.id)}</strong><span>${esc(c.detail)}</span></article>`).join("");}
++$("fraCreate")?.addEventListener("click",async()=>{try{packet=await e.create($("fraSurface").value,"Operator");await render();}catch(err){$("fraHeadline").textContent=err.message;}});
++$("fraAuthorize")?.addEventListener("click",async()=>{try{if(!packet)throw new Error("Create a packet first.");packet=await e.authorize(packet.id,$("fraApprover").value,$("fraNote").value||"");await render();}catch(err){$("fraHeadline").textContent=err.message;}});
++$("fraCheckpointBtn")?.addEventListener("click",async()=>{try{if(!packet)throw new Error("Create a packet first.");packet=await e.markCheckpoint(packet.id,$("fraApprover").value||"Operator");await render();}catch(err){$("fraHeadline").textContent=err.message;}});
++$("fraRefresh")?.addEventListener("click",async()=>{packet=null;await render();});render();return{engine:e,render};}
++window.createBlueCurrentFinalRetirementAuthorizationCenterModule=createBlueCurrentFinalRetirementAuthorizationCenterModule;})();--- a/scripts/maintenance/test-final-retirement-authorization.js
++++ b/scripts/maintenance/test-final-retirement-authorization.js
+@@ -0,0 +1,84 @@
++"use strict";
++const assert=require("assert"),path=require("path");
++global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
++const Impact=require("../../server/services/repositoryImpactService");
++const Rehearsal=require("../../server/services/repositoryRetirementRehearsalService");
++const FinalAuth=require("../../client/js/modules/finalRetirementAuthorizationEngine");
++
++(async()=>{
++  const root=path.resolve(__dirname,"../..");
++  const impact=new Impact(root),rehearsalService=new Rehearsal(root,impact);
++  const rehearsal=rehearsalService.rehearse("enterpriseValuePlanCenter");
++  assert.equal(rehearsal.validation.passed,true);
++  assert.ok(rehearsal.rollback.digest);
++  assert.ok(rehearsal.changeSet.digest);
++  assert.equal(rehearsal.safety.authoritativeSafe,true);
++
++  const state={
++    operatorDeletionPlans:[{
++      id:"ODP-1",surfaceId:"enterpriseValuePlanCenter",status:"human-authorized-plan",
++      retirementCertificationId:"RC-1",
++      humanDeletionAuthorization:{authorizedBy:"GM One",authorizedAt:new Date().toISOString(),scope:"deletion-plan-only"},
++      codeDeletionAllowed:false,deletionExecuted:false
++    }],
++    operatorRetirementRehearsals:[rehearsal],
++    operatorFinalRetirementPackets:[]
++  };
++  const appState={getState:()=>state,update:o=>Object.assign(state,o)},eventBus={emit:()=>{}};
++  const engine=new FinalAuth({eventBus,appState});
++
++  let packet=await engine.create("enterpriseValuePlanCenter","Operator");
++  assert.equal(packet.status,"awaiting-second-human-authorization");
++  assert.equal(packet.binding.rollbackDigest,rehearsal.rollback.digest);
++  assert.equal(packet.binding.changeSetDigest,rehearsal.changeSet.digest);
++  assert.equal(packet.binding.authoritativeSourceDigest,rehearsal.safety.authoritativeAfter.sha256);
++  assert.equal(packet.bindingDigest.length,64);
++  assert.equal(packet.codeDeletionAllowed,false);
++
++  let sameApproverBlocked=false;
++  try{await engine.authorize(packet.id,"GM One","same approver");}catch(e){sameApproverBlocked=/distinct human/.test(e.message);}
++  assert.equal(sameApproverBlocked,true);
++
++  packet=await engine.authorize(packet.id,"GM Two","Independent final review");
++  assert.equal(packet.status,"final-authorization-granted-checkpoint-required");
++  assert.equal(packet.secondAuthorization.authorizedBy,"GM Two");
++  assert.equal(packet.secondAuthorization.bindingDigest,packet.bindingDigest);
++
++  let preCheckpoint=await engine.readiness(packet);
++  assert.ok(preCheckpoint.score<100);
++  assert.equal(preCheckpoint.checks.find(x=>x.id==="checkpoint-verified").pass,false);
++
++  packet=await engine.markCheckpoint(packet.id,"GM Two");
++  assert.equal(packet.status,"ready-for-separate-authoritative-retirement-decision");
++  assert.equal(packet.checkpoint.checkpointVerified,true);
++  const ready=await engine.readiness(packet);
++  assert.equal(ready.score,100);
++  assert.equal(ready.status,"final-retirement-gate-ready");
++  assert.equal(ready.codeDeletionAllowed,false);
++  assert.equal(ready.deletionExecuted,false);
++
++  const drifted=structuredClone(packet);
++  drifted.binding.changeSetDigest="0".repeat(64);
++  const drift=await engine.revalidate(drifted);
++  assert.equal(drift.pass,false);
++  assert.equal(drift.checks.find(x=>x.id==="change-set-digest").pass,false);
++
++  const expired=structuredClone(packet);
++  expired.expiresAt=new Date(Date.now()-1000).toISOString();
++  const exp=await engine.revalidate(expired);
++  assert.equal(exp.pass,false);
++  assert.equal(exp.checks.find(x=>x.id==="not-expired").pass,false);
++
++  assert.ok(packet.checkpoint.commands.some(x=>x.includes("git tag -a pre-retirement-enterpriseValuePlanCenter")));
++  assert.ok(packet.checkpoint.commands.some(x=>x.includes("git push origin pre-retirement-enterpriseValuePlanCenter")));
++
++  console.log(JSON.stringify({
++    ok:true,version:"46.45.0",candidate:packet.surfaceId,
++    rollbackDigest:packet.binding.rollbackDigest.slice(0,12),
++    changeSetDigest:packet.binding.changeSetDigest.slice(0,12),
++    bindingDigest:packet.bindingDigest.slice(0,12),
++    sameApproverBlocked,expiryMinutes:15,digestDriftBlocked:!drift.pass,expiredPacketBlocked:!exp.pass,
++    checkpointCommands:packet.checkpoint.commands.length,checkpointVerified:packet.checkpoint.checkpointVerified,
++    readiness:ready.score,status:ready.status,codeDeletionAllowed:false,deletionExecuted:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V46.45.0.md
++++ b/README-APPLY-V46.45.0.md
+@@ -0,0 +1,74 @@
++# APPLY BLUE CURRENT V46.45.0
++
++## Baseline
++
++Apply over the authoritative repository containing V46.40.0.
++
++## Important
++
++This patch does NOT:
++- delete any existing module
++- modify the authoritative runtime database
++- add an authoritative code-deletion endpoint
++- permit retirement automatically
++
++## Apply
++
++Extract `BLUE-CURRENT-V46.45.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-final-retirement-authorization.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.45.0"
++```
++
++## Recommended Git staging
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/repositoryRetirementRehearsalService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/finalRetirementAuthorizationEngine.js
++git add client/js/modules/finalRetirementAuthorizationCenter.js
++git add scripts/maintenance/test-final-retirement-authorization.js
++git add README-APPLY-V46.45.0.md
++git add V46.45.0-RELEASE.md
++git add V46.45.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V46.45.0 final retirement authorization gate"
++git push origin live-service-timeline
++```
++
++## Safety
++
++Even a fully verified V46.45 packet does not authorize Blue Current to delete code automatically. It prepares the exact evidence and checkpoint required for a later explicit authoritative-retirement decision.
+--- a/V46.45.0-RELEASE.md
++++ b/V46.45.0-RELEASE.md
+@@ -0,0 +1,147 @@
++# BLUE CURRENT V46.45.0 — FINAL RETIREMENT AUTHORIZATION GATE
++
++## Release scope
++
++V46.41–V46.45 creates the final authorization packet that must exist before any future authoritative code retirement decision.
++
++This release still does not delete code.
++
++### V46.41 — Exact Change-Set Digest
++
++The disposable retirement rehearsal now computes an SHA-256 digest over the exact proposed simulated change set:
++- surface ID
++- file/action list
++- patch text
++
++The rehearsal result now binds:
++- rollback digest
++- change-set digest
++- authoritative source-tree digest
++
++### V46.42 — Final Retirement Authorization Packet
++
++A final packet can only be created when Blue Current has:
++- a human-authorized deletion plan
++- an existing retirement-candidate certification
++- a successful disposable-copy rehearsal
++- a rollback archive digest
++- an exact change-set digest
++- an authoritative source-tree digest
++
++The packet cryptographically binds those values with SHA-256.
++
++Packet scope:
++
++`final-retirement-authorization-only`
++
++### V46.43 — Distinct Second-Human Authorization
++
++The final packet requires a second human authorization.
++
++The second approver must be distinct from the person who authorized the deletion plan.
++
++The focused validation proved that reusing the first approver is blocked.
++
++### V46.44 — Short Expiry + Evidence Revalidation
++
++Final retirement packets expire after 15 minutes.
++
++Before second authorization and before checkpoint verification, Blue Current revalidates:
++- packet expiry
++- authorized deletion-plan identity
++- retirement-certification identity
++- successful rehearsal status
++- rollback digest
++- exact change-set digest
++- authoritative source digest
++- SHA-256 packet binding
++- no-delete safety state
++
++Digest drift or expiration invalidates the packet.
++
++### V46.45 — Git Checkpoint Gate
++
++The final packet generates required pre-retirement Git checkpoint instructions:
++
++- `git status`
++- `npm run check`
++- annotated `pre-retirement-...` tag
++- push the tag to origin
++- final `git status`
++
++The rule is explicit:
++
++Do not apply an authoritative retirement unless the pre-retirement tag exists remotely and the working tree is clean.
++
++Once the checkpoint is marked verified, the packet can reach:
++
++`ready-for-separate-authoritative-retirement-decision`
++
++The overall gate can reach:
++
++`final-retirement-gate-ready`
++
++Even at 100% readiness:
++- `codeDeletionAllowed: false`
++- `deletionExecuted: false`
++
++A separate later decision is still required before any authoritative deletion.
++
++## UI
++
++Adds the Final Retirement Authorization Gate center with:
++- successful-rehearsal candidate selector
++- packet creation
++- second-human authorization
++- 15-minute expiry
++- rollback/change-set/source digests
++- packet binding digest
++- Git checkpoint commands
++- checkpoint verification
++- final readiness checks
++
++## Validation
++
++- `node scripts/maintenance/test-final-retirement-authorization.js` passed.
++- Real disposable rehearsal evidence for `enterpriseValuePlanCenter` was used.
++- Rollback digest binding passed.
++- Exact change-set SHA-256 binding passed.
++- Authoritative source-tree digest binding passed.
++- Packet SHA-256 binding passed.
++- Same-person second authorization was blocked.
++- Distinct second authorization passed.
++- Expired packet was blocked.
++- Change-set digest drift was blocked.
++- Git checkpoint commands were generated.
++- Checkpoint verification passed.
++- Final retirement gate readiness scored 100%.
++- `codeDeletionAllowed` remained false.
++- `deletionExecuted` remained false.
++- `npm run check` passed:
++  - 836 JavaScript files
++  - 716 client scripts
++  - 5,344 unique HTML IDs
++- Server startup passed as V46.45.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Fine-comb policy
++
++`second-human-auth + cryptographic evidence binding + Git checkpoint`
++
++V46.45 stops immediately before authoritative retirement.
++
++## Next milestone
++
++The next step is a product decision, not an automatic engineering continuation.
++
++If the first permanent retirement is approved, the next wave should:
++- require the verified V46.45 packet
++- require the pre-retirement Git tag to exist
++- apply only the exact previously rehearsed change set
++- verify its digest before application
++- run full validation immediately afterward
++- retain the rollback archive
++- support one-command restoration if validation fails
++
++That would be the first wave allowed to perform an authoritative code retirement, and it should only happen with explicit human approval.

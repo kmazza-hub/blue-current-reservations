@@ -79,6 +79,7 @@ class RepositoryRetirementRehearsalService{
     const rollback=this.makeRollbackArchive(surfaceId,applied.backupFiles,artifactDir);
     const simImpactService=new (this.impactService.constructor)(simRoot),after=simImpactService.analyze(surfaceId),validation=this.validate(simRoot);
     const changeSet={surfaceId,mode:"simulated-only",changes:applied.changes.map(x=>({file:x.file,action:x.action})),patchText:applied.changes.filter(x=>x.diff).map(x=>x.diff).join("\n\n"),authoritativeMutation:false,generatedAt:new Date().toISOString()};
+    changeSet.digest=crypto.createHash("sha256").update(JSON.stringify({surfaceId:changeSet.surfaceId,changes:changeSet.changes,patchText:changeSet.patchText})).digest("hex");
     const changeSetPath=path.join(artifactDir,`${surfaceId}-simulated-change-set.json`);fs.writeFileSync(changeSetPath,JSON.stringify(changeSet,null,2));
     const authoritativeAfter=this.repositoryDigest(),authoritativeSafe=authoritativeBefore.sha256===authoritativeAfter.sha256&&authoritativeBefore.fileCount===authoritativeAfter.fileCount;
     const blockers=[];
@@ -86,7 +87,7 @@ class RepositoryRetirementRehearsalService{
     if((after.graph.startupDependencies||[]).length)blockers.push("Startup registry dependency remains after simulated removal.");
     if((after.graph.apiUsage||[]).length)blockers.push("API usage remains after simulated removal.");
     if((after.graph.inboundReferences||[]).some(x=>["reference","html-registration"].includes(x.type)))blockers.push("Operational inbound references remain after simulated removal.");
-    return {surfaceId,version:"46.40.0",mode:"disposable-copy-rehearsal",before,after,validation,rollback:{...rollback,path:undefined,archiveGenerated:true},changeSet:{file:path.basename(changeSetPath),changeCount:changeSet.changes.length,patchCharacters:changeSet.patchText.length,generated:true},readiness:{status:blockers.length?"rehearsal-blocked":"final-change-set-ready-for-human-review",blockers},safety:{authoritativeMutation:false,authoritativeSafe,authoritativeBefore,authoritativeAfter,codeDeletionAllowed:false,deletionExecuted:false,deleteEndpointPresent:false,tempCopyUsed:true},generatedAt:new Date().toISOString()};
+    return {surfaceId,version:"46.40.0",mode:"disposable-copy-rehearsal",before,after,validation,rollback:{...rollback,path:undefined,archiveGenerated:true},changeSet:{file:path.basename(changeSetPath),changeCount:changeSet.changes.length,patchCharacters:changeSet.patchText.length,digest:changeSet.digest,generated:true},readiness:{status:blockers.length?"rehearsal-blocked":"final-change-set-ready-for-human-review",blockers},safety:{authoritativeMutation:false,authoritativeSafe,authoritativeBefore,authoritativeAfter,codeDeletionAllowed:false,deletionExecuted:false,deleteEndpointPresent:false,tempCopyUsed:true},generatedAt:new Date().toISOString()};
   }
 }
 module.exports=RepositoryRetirementRehearsalService;
