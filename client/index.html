@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="48.10.0">
+  <meta name="blue-current-build" content="48.15.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -222,6 +222,14 @@
       <div id="pppLocations" class="v432-list"></div>
       <div id="pppTrend" class="v432-list"></div>
       <div id="pppExceptionList" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="executivePilotReview">
+      <header><div><small>V48.11–V48.15 · Executive Pilot Review Packet</small><strong>A decision-ready pilot review for ownership and executive leadership.</strong><span>Baseline, progress, verified value, success gates, location exceptions, and the evidence behind the commercial recommendation—without automatic attribution or automatic commitment.</span></div><button id="eprRefresh" type="button">Refresh review</button></header>
+      <div class="v432-kpis"><article><small>Recommendation</small><strong id="eprDecision">—</strong></article><article><small>Confidence</small><strong id="eprConfidence">—</strong></article><article><small>Verified value</small><strong id="eprVerified">$0</strong></article><article><small>Exceptions</small><strong id="eprExceptions">0</strong></article></div>
+      <div class="v4316-answer" id="eprHeadline">Building executive pilot review…</div><p id="eprSummary"></p>
+      <div id="eprMovement" class="v432-kpis"></div><div id="eprGates" class="v432-list"></div><div id="eprLocations" class="v432-list"></div>
+      <p><strong>Recommended next action:</strong> <span id="eprNext"></span></p>
+      <div class="v4316-actions"><input id="eprNote" class="v4312-input" placeholder="Executive review note"><button id="eprCopy" type="button">Copy review packet</button><button id="eprArchive" type="button">Archive review packet</button></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8734,6 +8742,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardCenter.js?v=48.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramEngine.js?v=48.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramCenter.js?v=48.10.0"></script>
-<script src="js/startup-loader.js?v=48.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewEngine.js?v=48.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewCenter.js?v=48.15.0"></script>
+<script src="js/startup-loader.js?v=48.15.0"></script>
 </body>
 </html>

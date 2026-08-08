@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "48.10.0",
+  "version": "48.15.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 structured pilot proof program and executive commercial decision layer",
+  "description": "Blue Current Hospitality OS \u2014 executive pilot review packet and decision evidence",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

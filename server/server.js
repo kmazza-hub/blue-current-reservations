@@ -44,6 +44,7 @@ const ManagerOperatingRhythmService = require("./services/managerOperatingRhythm
 const MultiLocationPerformanceService = require("./services/multiLocationPerformanceService");
 const PilotValueScorecardService = require("./services/pilotValueScorecardService");
 const PilotProofProgramService = require("./services/pilotProofProgramService");
+const ExecutivePilotReviewService = require("./services/executivePilotReviewService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -91,7 +92,8 @@ const managerOperatingRhythmService = new ManagerOperatingRhythmService(database
 const multiLocationPerformanceService = new MultiLocationPerformanceService(database, auditService, realtimeHub, managerOperatingRhythmService);
 const pilotValueScorecardService = new PilotValueScorecardService(database, auditService, realtimeHub, multiLocationPerformanceService);
 const pilotProofProgramService = new PilotProofProgramService(database, auditService, realtimeHub, pilotValueScorecardService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService });
+const executivePilotReviewService = new ExecutivePilotReviewService(database, auditService, realtimeHub, pilotProofProgramService);
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -178,7 +180,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V48.10.0 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V48.15.0 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);

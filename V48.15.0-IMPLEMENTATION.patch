@@ -1,0 +1,334 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "48.10.0",
++  "version": "48.15.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 structured pilot proof program and executive commercial decision layer",
++  "description": "Blue Current Hospitality OS \u2014 executive pilot review packet and decision evidence",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -44,6 +44,7 @@
+ const MultiLocationPerformanceService = require("./services/multiLocationPerformanceService");
+ const PilotValueScorecardService = require("./services/pilotValueScorecardService");
+ const PilotProofProgramService = require("./services/pilotProofProgramService");
++const ExecutivePilotReviewService = require("./services/executivePilotReviewService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -91,7 +92,8 @@
+ const multiLocationPerformanceService = new MultiLocationPerformanceService(database, auditService, realtimeHub, managerOperatingRhythmService);
+ const pilotValueScorecardService = new PilotValueScorecardService(database, auditService, realtimeHub, multiLocationPerformanceService);
+ const pilotProofProgramService = new PilotProofProgramService(database, auditService, realtimeHub, pilotValueScorecardService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService });
++const executivePilotReviewService = new ExecutivePilotReviewService(database, auditService, realtimeHub, pilotProofProgramService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -178,7 +180,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V48.10.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V48.15.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "48.10.0",
++        version: "48.15.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,22 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/executive-pilot-review" && request.method === "GET") {
++      return sendJson(response,200,await executivePilotReviewService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname === "/api/executive-pilot-review/text" && request.method === "GET") {
++      const snapshot=await executivePilotReviewService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]);
++      return sendJson(response,200,{version:"48.15.0",text:executivePilotReviewService.text(snapshot)});
++    }
++
++    if (url.pathname === "/api/executive-pilot-review/archive" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive pilot review archive permission required."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await executivePilotReviewService.archive(auth.membership.organizationId,auth.membership.locationIds||[],body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/pilot-proof-program" && request.method === "GET") {
+       return sendJson(response,200,await pilotProofProgramService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/executivePilotReviewService.js
++++ b/server/services/executivePilotReviewService.js
+@@ -0,0 +1,84 @@
++"use strict";
++
++class ExecutivePilotReviewService {
++  constructor(database,auditService,realtimeHub,pilotProofProgramService){Object.assign(this,{database,auditService,realtimeHub,pilotProofProgramService});}
++  now(){return new Date().toISOString();}
++  money(n){return `$${Math.round(Number(n)||0).toLocaleString("en-US")}`;}
++  sentence(proof){
++    const r=proof.recommendation||{};
++    if(r.decision==="EXPAND")return "The committed pilot gates are satisfied; leadership can evaluate a controlled expansion while preserving human approval.";
++    if(r.decision==="CONTINUE")return "The pilot is producing meaningful evidence, but additional checkpoints are required before an expansion decision.";
++    if(r.decision==="INTERVENE")return "The pilot has unresolved success-gate or location exceptions that should be addressed before expansion.";
++    return "Executive success criteria must be committed before the pilot can support a commercial decision.";
++  }
++  packet(proof){
++    const trend=proof.trend||[],base=trend[0]||{},cur=trend[trend.length-1]||{};
++    const gates=proof.recommendation?.gates||{};
++    return {
++      title:`${proof.program?.name||"Blue Current Pilot"} — Executive Pilot Review`,
++      decision:proof.recommendation?.decision||"CONFIGURE",
++      confidence:proof.recommendation?.confidence||"moderate",
++      executiveSummary:this.sentence(proof),
++      baselineVsCurrent:{
++        readiness:{baseline:base.readiness??0,current:cur.readiness??0,delta:(cur.readiness??0)-(base.readiness??0)},
++        operatingRhythm:{baseline:base.rhythm??0,current:cur.rhythm??0,delta:(cur.rhythm??0)-(base.rhythm??0)},
++        modeledLeakage:{baseline:base.leakage??0,current:cur.leakage??0,delta:(cur.leakage??0)-(base.leakage??0)},
++        verifiedRealizedValue:{baseline:0,current:proof.valueLedger?.verifiedRealizedImpactDollars||0}
++      },
++      successGates:Object.entries(gates).map(([name,passed])=>({name,passed:!!passed})),
++      exceptions:(proof.exceptions||[]).map(x=>({...x})),
++      locationReview:(proof.locationObjectives||[]).map(x=>({
++        locationId:x.locationId,locationName:x.locationName,owner:x.owner,objective:x.objective,
++        targetsMet:x.targetsMet,targetsMeasured:x.targetsMeasured,attentionLevel:x.attentionLevel,
++        readinessLift:x.readiness.lift,rhythmLift:x.rhythm.lift,leakageReductionPercent:x.leakage.reductionPercent
++      })),
++      evidence:{
++        verifiedRealizedImpactDollars:proof.valueLedger?.verifiedRealizedImpactDollars||0,
++        verifiedDefinition:proof.valueLedger?.definition||"",
++        checkpointCount:proof.valueLedger?.checkpointCount||0,
++        observedNotAutomaticallyAttributed:["readiness movement","operating-rhythm movement","modeled leakage movement"]
++      },
++      recommendation:{
++        decision:proof.recommendation?.decision||"CONFIGURE",
++        reason:proof.recommendation?.reason||"",
++        nextAction:proof.recommendation?.nextAction||"",
++        humanApprovalRequired:true
++      }
++    };
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const proof=await this.pilotProofProgramService.snapshot(organizationId,allowedLocationIds);
++    if(!proof.program)return {version:"48.15.0",status:"baseline-required",generatedAt:this.now(),headline:"Pilot baseline required before an executive review packet can be generated.",packet:null};
++    const packet=this.packet(proof);
++    return {version:"48.15.0",status:proof.status==="proof-program-active"?"review-ready":"criteria-required",generatedAt:this.now(),headline:packet.executiveSummary,packet,proofProgram:proof,policy:{decisionSupportOnly:true,humanApprovalRequired:true,automaticCommercialCommitment:false}};
++  }
++  text(snapshot){
++    if(!snapshot.packet)return "BLUE CURRENT EXECUTIVE PILOT REVIEW\n\nPilot baseline required.";
++    const p=snapshot.packet,b=p.baselineVsCurrent;
++    const lines=[
++      "BLUE CURRENT EXECUTIVE PILOT REVIEW",p.title,"",
++      `RECOMMENDATION: ${p.decision} (${p.confidence} confidence)`,p.executiveSummary,"",
++      "BASELINE VS CURRENT",
++      `Readiness: ${b.readiness.baseline} -> ${b.readiness.current} (${b.readiness.delta>=0?"+":""}${b.readiness.delta})`,
++      `Operating rhythm: ${b.operatingRhythm.baseline}% -> ${b.operatingRhythm.current}% (${b.operatingRhythm.delta>=0?"+":""}${b.operatingRhythm.delta})`,
++      `Modeled leakage: ${this.money(b.modeledLeakage.baseline)} -> ${this.money(b.modeledLeakage.current)}`,
++      `Verified realized value: ${this.money(b.verifiedRealizedValue.current)}`,"",
++      "SUCCESS GATES",...p.successGates.map(x=>`${x.passed?"PASS":"OPEN"} — ${x.name}`),"",
++      "LOCATION REVIEW",...p.locationReview.map(x=>`${x.locationName} — owner ${x.owner}; targets ${x.targetsMet}/${x.targetsMeasured}; readiness ${x.readinessLift>=0?"+":""}${x.readinessLift}; rhythm ${x.rhythmLift>=0?"+":""}${x.rhythmLift}; leakage reduction ${x.leakageReductionPercent}%`),"",
++      "EXCEPTIONS",...(p.exceptions.length?p.exceptions.map(x=>`${x.locationName} — ${x.reason}`):["None"]),"",
++      "NEXT ACTION",p.recommendation.nextAction,"",
++      "EVIDENCE BOUNDARY",p.evidence.verifiedDefinition,"Observed readiness, operating-rhythm, and modeled leakage movement are not automatically attributed to Blue Current.","Commercial decisions require human approval."
++    ];
++    return lines.join("\n");
++  }
++  async archive(organizationId,allowedLocationIds,input,actor){
++    const snapshot=await this.snapshot(organizationId,allowedLocationIds);
++    if(!snapshot.packet)throw new Error("Pilot baseline is required before archiving a review packet.");
++    const record={id:`epr_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,createdAt:this.now(),createdBy:actor,note:String(input.note||"").slice(0,700),packet:snapshot.packet,text:this.text(snapshot)};
++    await this.database.mutate(db=>{db.executivePilotReviews||=[];db.executivePilotReviews.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Executive pilot review archived: ${record.id}`,category:"pilot_value"});
++    this.realtimeHub.publish("pilot-review:archived",{id:record.id,organizationId,decision:record.packet.decision});
++    return record;
++  }
++}
++module.exports=ExecutivePilotReviewService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="48.10.0">
++  <meta name="blue-current-build" content="48.15.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -222,6 +222,14 @@
+       <div id="pppLocations" class="v432-list"></div>
+       <div id="pppTrend" class="v432-list"></div>
+       <div id="pppExceptionList" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="executivePilotReview">
++      <header><div><small>V48.11–V48.15 · Executive Pilot Review Packet</small><strong>A decision-ready pilot review for ownership and executive leadership.</strong><span>Baseline, progress, verified value, success gates, location exceptions, and the evidence behind the commercial recommendation—without automatic attribution or automatic commitment.</span></div><button id="eprRefresh" type="button">Refresh review</button></header>
++      <div class="v432-kpis"><article><small>Recommendation</small><strong id="eprDecision">—</strong></article><article><small>Confidence</small><strong id="eprConfidence">—</strong></article><article><small>Verified value</small><strong id="eprVerified">$0</strong></article><article><small>Exceptions</small><strong id="eprExceptions">0</strong></article></div>
++      <div class="v4316-answer" id="eprHeadline">Building executive pilot review…</div><p id="eprSummary"></p>
++      <div id="eprMovement" class="v432-kpis"></div><div id="eprGates" class="v432-list"></div><div id="eprLocations" class="v432-list"></div>
++      <p><strong>Recommended next action:</strong> <span id="eprNext"></span></p>
++      <div class="v4316-actions"><input id="eprNote" class="v4312-input" placeholder="Executive review note"><button id="eprCopy" type="button">Copy review packet</button><button id="eprArchive" type="button">Archive review packet</button></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8734,6 +8742,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardCenter.js?v=48.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramEngine.js?v=48.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramCenter.js?v=48.10.0"></script>
+-<script src="js/startup-loader.js?v=48.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewEngine.js?v=48.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewCenter.js?v=48.15.0"></script>
++<script src="js/startup-loader.js?v=48.15.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1231,6 +1231,7 @@
+ const multiLocationPerformanceModule = startupRegistry.register("multiLocationPerformance", shouldInitializeCenter("multiLocationPerformance") ? window.createBlueCurrentMultiLocationPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managerOperatingRhythm"]);
+ const pilotValueScorecardModule = startupRegistry.register("pilotValueScorecard", shouldInitializeCenter("pilotValueScorecard") ? window.createBlueCurrentPilotValueScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "multiLocationPerformance"]);
+ const pilotProofProgramModule = startupRegistry.register("pilotProofProgram", shouldInitializeCenter("pilotProofProgram") ? window.createBlueCurrentPilotProofProgramCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotValueScorecard"]);
++const executivePilotReviewModule = startupRegistry.register("executivePilotReview", shouldInitializeCenter("executivePilotReview") ? window.createBlueCurrentExecutivePilotReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotProofProgram"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V48.10.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V48.15.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/executivePilotReviewEngine.js
++++ b/client/js/modules/executivePilotReviewEngine.js
+@@ -0,0 +1 @@
++(function(global){"use strict";class BlueCurrentExecutivePilotReviewEngine{constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}token(){return localStorage.getItem("blueCurrentV3230Token")||"";}headers(){return {Authorization:`Bearer ${this.token()}`};}async snapshot(){const r=await fetch("/api/executive-pilot-review",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Executive pilot review failed (${r.status})`);this.appState?.update?.({executivePilotReview:d});return d;}async text(){const r=await fetch("/api/executive-pilot-review/text",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Executive review text failed (${r.status})`);return d.text||"";}async archive(note=""){const r=await fetch("/api/executive-pilot-review/archive",{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify({note})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Executive review archive failed (${r.status})`);this.eventBus?.emit?.("pilot-review:archived",structuredClone(d));return d;}}if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentExecutivePilotReviewEngine;if(global)global.BlueCurrentExecutivePilotReviewEngine=BlueCurrentExecutivePilotReviewEngine;})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/executivePilotReviewCenter.js
++++ b/client/js/modules/executivePilotReviewCenter.js
+@@ -0,0 +1,10 @@
++(function(){"use strict";function createBlueCurrentExecutivePilotReviewCenterModule(eventBus,appState){const root=document.getElementById("executivePilotReview");if(!root||!window.BlueCurrentExecutivePilotReviewEngine)return null;const e=new window.BlueCurrentExecutivePilotReviewEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c])),money=n=>`$${Number(n||0).toLocaleString()}`;
++function render(s){const p=s.packet||{},b=p.baselineVsCurrent||{},r=p.recommendation||{};$("eprDecision").textContent=p.decision||"—";$("eprConfidence").textContent=p.confidence||"—";$("eprVerified").textContent=money(p.evidence?.verifiedRealizedImpactDollars||0);$("eprExceptions").textContent=(p.exceptions||[]).length;$("eprHeadline").textContent=s.headline||"Executive review unavailable.";$("eprSummary").textContent=p.executiveSummary||"";
++$("eprMovement").innerHTML=p.baselineVsCurrent?`<article><small>Readiness</small><strong>${b.readiness.baseline} → ${b.readiness.current}</strong></article><article><small>Operating rhythm</small><strong>${b.operatingRhythm.baseline}% → ${b.operatingRhythm.current}%</strong></article><article><small>Modeled leakage</small><strong>${money(b.modeledLeakage.baseline)} → ${money(b.modeledLeakage.current)}</strong></article><article><small>Verified realized value</small><strong>${money(b.verifiedRealizedValue.current)}</strong></article>`:"";
++$("eprGates").innerHTML=(p.successGates||[]).map(x=>`<article><strong>${x.passed?"PASS":"OPEN"} · ${esc(x.name)}</strong></article>`).join("");
++$("eprLocations").innerHTML=(p.locationReview||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.owner||"Unassigned")}</strong><span>Targets ${x.targetsMet}/${x.targetsMeasured} · Readiness ${x.readinessLift>=0?"+":""}${x.readinessLift} · Rhythm ${x.rhythmLift>=0?"+":""}${x.rhythmLift} · Leakage reduction ${x.leakageReductionPercent}%</span></article>`).join("");
++$("eprNext").textContent=r.nextAction||"";}
++async function load(){try{render(await e.snapshot());}catch(err){$("eprHeadline").textContent=err.message;}}
++$("eprRefresh")?.addEventListener("click",load);$("eprArchive")?.addEventListener("click",async()=>{try{const x=await e.archive($("eprNote").value||"");$("eprHeadline").textContent=`Archived ${x.id} · ${x.packet.decision}`;}catch(err){$("eprHeadline").textContent=err.message;}});
++$("eprCopy")?.addEventListener("click",async()=>{try{const t=await e.text();await navigator.clipboard.writeText(t);$("eprHeadline").textContent="Executive review packet copied to clipboard.";}catch(err){$("eprHeadline").textContent=err.message;}});
++["pilot-proof:configured","pilot-value:checkpoint","pilot-review:archived","auth:restored"].forEach(x=>eventBus?.on?.(x,load));load();return{engine:e,load};}window.createBlueCurrentExecutivePilotReviewCenterModule=createBlueCurrentExecutivePilotReviewCenterModule;})();--- a/scripts/maintenance/test-v48.15-executive-pilot-review.js
++++ b/scripts/maintenance/test-v48.15-executive-pilot-review.js
+@@ -0,0 +1,4 @@
++"use strict";const assert=require("assert"),Service=require("../../server/services/executivePilotReviewService");
++(async()=>{const state={},audit=[],events=[],proof={status:"proof-program-active",program:{id:"p1",name:"Pilot",sponsor:"Owner"},trend:[{label:"Baseline",readiness:80,rhythm:50,leakage:4000,verifiedValue:0},{label:"Current",readiness:87,rhythm:75,leakage:3000,verifiedValue:1200,overall:78}],valueLedger:{verifiedRealizedImpactDollars:1200,definition:"Only measured completed-action outcomes.",checkpointCount:2},scorecard:{overall:78},recommendation:{decision:"EXPAND",confidence:"high",reason:"All gates satisfied.",nextAction:"Prepare expansion.",gates:{overall:true,adoption:true,operating:true,value:true,attention:true}},exceptions:[],locationObjectives:[{locationId:"a",locationName:"A",owner:"GM",objective:"Improve",targetsMet:3,targetsMeasured:3,attentionLevel:"healthy",readiness:{lift:7},rhythm:{lift:25},leakage:{reductionPercent:25}}]};
++const svc=new Service({mutate:async fn=>fn(state)},{record:async x=>audit.push(x)},{publish:(n,p)=>events.push([n,p])},{snapshot:async()=>proof});
++const snap=await svc.snapshot("org",["*"]);assert.equal(snap.status,"review-ready");assert.equal(snap.packet.decision,"EXPAND");assert.equal(snap.packet.baselineVsCurrent.readiness.delta,7);assert.equal(snap.packet.evidence.verifiedRealizedImpactDollars,1200);assert.equal(snap.policy.automaticCommercialCommitment,false);const text=svc.text(snap);assert.ok(text.includes("RECOMMENDATION: EXPAND"));assert.ok(text.includes("$1,200"));const archived=await svc.archive("org",["*"],{note:"Board review"},"Tester");assert.equal(state.executivePilotReviews.length,1);assert.equal(archived.packet.decision,"EXPAND");assert.equal(audit.length,1);assert.equal(events[0][0],"pilot-review:archived");console.log(JSON.stringify({ok:true,version:"48.15.0",decisionPacket:true,textPacket:true,archive:true,verifiedValue:1200,humanApprovalRequired:true,automaticCommercialCommitment:false},null,2));})().catch(e=>{console.error(e);process.exit(1);});--- a/V48.15.0-RELEASE.md
++++ b/V48.15.0-RELEASE.md
+@@ -0,0 +1,53 @@
++# BLUE CURRENT V48.15.0 — EXECUTIVE PILOT REVIEW PACKET
++
++V48.11–V48.15 turns the structured proof program into a decision-ready executive artifact.
++
++## Added
++- Executive review packet generated directly from V48 proof evidence
++- Baseline vs current readiness, operating rhythm, modeled leakage, and verified realized value
++- Success-gate PASS/OPEN presentation
++- Per-location objective and target review
++- Pilot exception summary
++- Recommendation, confidence, rationale, and next action
++- Human-readable text packet for copying into executive communications
++- Immutable-style archived review snapshots in `executivePilotReviews`
++- Audit event and realtime publication when a packet is archived
++
++## Evidence boundaries
++The packet preserves the V48 evidence discipline:
++- verified realized value comes only from measured completed-action outcomes
++- readiness, operating rhythm, and modeled leakage are observed movement
++- observed movement is not automatically attributed to Blue Current
++- recommendation is decision support only
++- commercial commitment requires a human
++- automatic commercial commitment is disabled
++
++## Authenticated Chefs integration result
++Using an isolated copy of the current runtime:
++- review status: READY
++- locations reviewed: 5
++- current recommendation: INTERVENE
++- verified realized value: $0
++- text packet generated: 1,640 characters
++- archived review created successfully
++
++This remains intentionally conservative at the beginning of the pilot.
++
++## API
++GET `/api/executive-pilot-review`
++GET `/api/executive-pilot-review/text`
++POST `/api/executive-pilot-review/archive`
++
++## Validation
++- 872 JavaScript files
++- 740 client scripts
++- 5,519 unique HTML IDs
++- focused executive review test PASS
++- authenticated review GET PASS
++- authenticated text packet GET PASS
++- authenticated archive POST PASS
++- authoritative runtime database unchanged
++- npm run check PASS
++
++## Next
++V48.16–V48.20 should add the pilot decision ledger and executive sign-off workflow so leadership can record the actual human decision, conditions, approver, rollout scope, and follow-up obligations without allowing Blue Current to auto-approve expansion.
+--- a/README-APPLY-V48.15.0.md
++++ b/README-APPLY-V48.15.0.md
+@@ -0,0 +1,25 @@
++# APPLY BLUE CURRENT V48.15.0
++
++Baseline: exact V48.10.0 repository.
++
++Extract `BLUE-CURRENT-V48.15.0-PATCH.zip` into the repository root.
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v48.15-executive-pilot-review.js
++npm run start
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected version: `48.15.0`.
++
++Then `Ctrl+F5`.
++
++Use **Executive Pilot Review Packet** after the pilot baseline and proof-program success criteria exist.
++
++```powershell
++git add -A
++git commit -m "V48.15.0 add executive pilot review packet"
++git push origin live-service-timeline
++```
