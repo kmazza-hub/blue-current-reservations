@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "46.20.0",
+  "version": "46.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 operator consolidation scorecard and evidence-backed deprecation review",
+  "description": "Blue Current Hospitality OS \u2014 reversible deprecation manifest, task evidence, and navigation cleanup",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

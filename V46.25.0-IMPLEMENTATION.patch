@@ -1,0 +1,399 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.20.0",
++  "version": "46.25.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 operator consolidation scorecard and evidence-backed deprecation review",
++  "description": "Blue Current Hospitality OS \u2014 reversible deprecation manifest, task evidence, and navigation cleanup",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.20.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.25.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.20.0",
++        version: "46.25.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.20.0">
++  <meta name="blue-current-build" content="46.25.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -148,7 +148,7 @@
+ 
+       <nav class="desktop-nav" aria-label="Primary navigation">
+         <a href="#command-center" aria-current="page">Command Center</a>
+-      <a href="#blue-current-live">Live</a>
++        <a href="#blue-current-live">Live</a>
+         <a href="#digital-twin">Digital Twin</a>
+         <a href="#mission-control">Mission Control</a>
+         <a href="#time-machine">Time Machine</a>
+@@ -168,11 +168,6 @@
+         <a href="#service-coordination">Service</a>
+         <a href="#ai-restaurant-brain">AI Brain</a>
+         <a href="#executive-command-center">Executive</a>
+-        <a href="#autonomous-operations">Autonomous</a>
+-        <a href="#guest-intelligence">Guests</a>
+-        <a href="#autonomous-operations">Autonomous</a>
+-        <a href="#executive-command-center">Executive</a>
+-        <a href="#ai-restaurant-brain">AI Brain</a>
+         <a href="#cloud-foundation">Cloud</a>
+         <a href="#auth-organizations">Access</a>
+         <a href="#ai-concierge">Concierge</a>
+@@ -4166,6 +4161,7 @@
+ <section class="v432-center v438-center v4316-center" id="operatorSurfaceRationalizationCenter"><header><div><small>V46.6–V46.10 · Operator Surface Rationalization</small><strong>Classify the platform into primary, merge, diagnostics, and evidence-gated deprecation candidates.</strong><span>No modules are deleted in this wave. The classification creates an evidence-based cut/merge map and makes cross-stage handoffs explicit.</span></div><button id="osrRefresh" type="button">Refresh rationalization</button></header><div class="v4316-actions"><button type="button" data-osr-view="all">All surfaces</button><button type="button" data-osr-view="merge">Merge review</button><button type="button" data-osr-view="diagnostics-admin">Diagnostics/admin</button><button type="button" data-osr-view="deprecation-candidate">Deprecation review</button></div><div class="v432-kpis"><article><small>Total surfaces</small><strong id="osrTotal">0</strong></article><article><small>Keep primary</small><strong id="osrPrimary">0</strong></article><article><small>Merge</small><strong id="osrMerge">0</strong></article><article><small>Diagnostics</small><strong id="osrDiagnostics">0</strong></article><article><small>Deprecation candidates</small><strong id="osrCandidates">0</strong></article><article><small>Attention handoffs</small><strong id="osrHandoffs">0</strong></article></div><div class="v4316-answer" id="osrHeadline">Classifying operator surfaces…</div><div id="osrGroups" class="v432-list"></div><div id="osrHandoffList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="operatorConsolidationCenter"><header><div><small>V46.11–V46.15 · Operator Consolidation + Usage Evidence</small><strong>Merge duplicate operator entry points into primary surfaces, apply role defaults, and collect evidence before deprecation.</strong><span>This wave changes navigation and presentation only. It records non-destructive operator-use evidence in AppState; no working module is deleted.</span></div><div class="v4316-actions"><button id="ocRefresh" type="button">Refresh</button><button id="ocApplyRole" type="button">Apply role defaults</button><button id="ocFullPlatform" type="button">Full platform</button></div></header><div class="v432-kpis"><article><small>Role</small><strong id="ocRole">MANAGER</strong></article><article><small>Default surfaces</small><strong id="ocDefaults">0</strong></article><article><small>Merged primary</small><strong id="ocMerged">0</strong></article><article><small>Use evidence</small><strong id="ocUseEvidence">0</strong></article><article><small>Deprecation evidence</small><strong id="ocDepReady">0</strong></article></div><div class="v4316-answer" id="ocHeadline">Preparing consolidated operator navigation…</div><div id="ocPrimary" class="v432-list"></div><div id="ocDeprecation" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="operatorConsolidationScorecardCenter"><header><div><small>V46.16–V46.20 · Consolidation Scorecard</small><strong>Measure navigation duplication, workflow coverage, handoff pressure, role usage, and evidence-backed deprecation readiness.</strong><span>The scorecard produces a review shortlist only. It cannot remove modules automatically.</span></div><button id="ocsRefresh" type="button">Refresh scorecard</button></header><div class="v432-kpis"><article><small>Score</small><strong id="ocsScore">0%</strong></article><article><small>Grade</small><strong id="ocsGrade">—</strong></article><article><small>Duplicate nav</small><strong id="ocsDupNav">0</strong></article><article><small>Workflow coverage</small><strong id="ocsCoverage">0%</strong></article><article><small>Attention handoffs</small><strong id="ocsHandoffs">0</strong></article><article><small>Use evidence</small><strong id="ocsEvidence">0</strong></article><article><small>Review shortlist</small><strong id="ocsShortlist">0</strong></article></div><div class="v4316-answer" id="ocsHeadline">Calculating operator consolidation score…</div><div id="ocsNav" class="v432-list"></div><div id="ocsRoles" class="v432-list"></div><div id="ocsDeprecation" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="deprecationManifestCenter"><header><div><small>V46.21–V46.25 · Human-Approved Deprecation Preview</small><strong>Use evidence thresholds to create a review manifest, require human approval, then hide candidates reversibly behind a feature flag.</strong><span>Approved preview hiding is not code deletion. Full capability remains present and can be restored immediately.</span></div><button id="odmRefresh" type="button">Refresh</button></header><div class="v4316-actions"><button id="odmDraft" type="button">Build draft manifest</button><input id="odmApprover" class="v4312-input" placeholder="Approver name"><button id="odmApprove" type="button">Approve manifest</button><button id="odmEnable" type="button">Enable hide preview</button><button id="odmDisable" type="button">Disable preview</button></div><div class="v432-kpis"><article><small>Status</small><strong id="odmStatus">draft</strong></article><article><small>Items</small><strong id="odmItems">0</strong></article><article><small>Approved</small><strong id="odmApproved">0</strong></article><article><small>Hidden preview</small><strong id="odmHidden">0</strong></article><article><small>Feature flag</small><strong id="odmFlag">OFF</strong></article></div><div class="v4316-answer" id="odmHeadline">Build a draft manifest from evidence-backed candidates.</div><p id="odmThresholds"></p><div id="odmList" class="v432-list"></div></section>
+ <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+             <header class="guided-shift-header">
+               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
+@@ -8629,6 +8625,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationCenter" data-src="js/modules/operatorConsolidationCenter.js?v=46.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationScorecardCenter" data-src="js/modules/operatorConsolidationScorecardEngine.js?v=46.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationScorecardCenter" data-src="js/modules/operatorConsolidationScorecardCenter.js?v=46.20.0"></script>
+-<script src="js/startup-loader.js?v=46.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="deprecationManifestCenter" data-src="js/modules/deprecationManifestEngine.js?v=46.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="deprecationManifestCenter" data-src="js/modules/deprecationManifestCenter.js?v=46.25.0"></script>
++<script src="js/startup-loader.js?v=46.25.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1213,6 +1213,7 @@
+ const operatorSurfaceRationalizationCenterModule = startupRegistry.register("operatorSurfaceRationalizationCenter", shouldInitializeCenter("operatorSurfaceRationalizationCenter") ? window.createBlueCurrentOperatorSurfaceRationalizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorServiceFlowCenter"]);
+ const operatorConsolidationCenterModule = startupRegistry.register("operatorConsolidationCenter", shouldInitializeCenter("operatorConsolidationCenter") ? window.createBlueCurrentOperatorConsolidationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorSurfaceRationalizationCenter", "roleExperienceCenter"]);
+ const operatorConsolidationScorecardCenterModule = startupRegistry.register("operatorConsolidationScorecardCenter", shouldInitializeCenter("operatorConsolidationScorecardCenter") ? window.createBlueCurrentOperatorConsolidationScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorConsolidationCenter"]);
++const deprecationManifestCenterModule = startupRegistry.register("deprecationManifestCenter", shouldInitializeCenter("deprecationManifestCenter") ? window.createBlueCurrentDeprecationManifestCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorConsolidationScorecardCenter"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.20.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.25.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/operatorConsolidationEngine.js
++++ b/client/js/modules/operatorConsolidationEngine.js
+@@ -19,10 +19,13 @@
+   consolidatedPrimary(){const state=this.state();const role=this.role();return this.defaultSurfaces(role).map(id=>({id,role,summary:this.mergedSummary(id,state)}));}
+   evidence(){const s=this.state(),items=Array.isArray(s.operatorUseEvidence)?s.operatorUseEvidence:[];return items.slice(0,500);}
+   recordUse(surfaceId,action="open",metadata={}){if(!surfaceId)return null;const s=this.state(),items=Array.isArray(s.operatorUseEvidence)?s.operatorUseEvidence:[],entry={id:`OUE-${Date.now().toString(36).toUpperCase()}`,surfaceId,action,role:this.role(),at:new Date().toISOString(),metadata};const next=[entry,...items].slice(0,500);this.appState?.update?.({operatorUseEvidence:next});this.eventBus?.emit?.("operator-use-evidence:recorded",structuredClone(entry));return entry;}
++  resolvePrimarySurface(surfaceId){return this.mergeMap[surfaceId]||surfaceId;}
++  recordTaskCompletion(surfaceId,taskId,outcome="completed",metadata={}){const primary=this.resolvePrimarySurface(surfaceId),entry=this.recordUse(primary,"task-completed",{taskId:String(taskId||"task"),outcome,sourceSurface:surfaceId,...metadata});this.eventBus?.emit?.("operator-task-completion:recorded",{surfaceId:primary,sourceSurface:surfaceId,taskId,outcome});return entry;}
++  evidenceThresholds(){return {minimumObservedDays:3,minimumOpenEvents:3,minimumTaskCompletions:1,minimumDistinctRoles:1,minimumPrimaryWorkflowCoverage:100,automaticDeletion:false,version:"46.25.0"};}
+   evidenceSummary(ids=null){const evidence=this.evidence(),scope=Array.isArray(ids)?ids:[...new Set(evidence.map(x=>x.surfaceId))];return scope.map(id=>{const hits=evidence.filter(x=>x.surfaceId===id),roles=[...new Set(hits.map(x=>x.role))];return {surfaceId:id,uses:hits.length,lastUsedAt:hits[0]?.at||null,roles,hasEvidence:hits.length>0};}).sort((a,b)=>b.uses-a.uses);}
+   deprecationEvidence(ids=[]){const audit=this.rationalizationEngine?.snapshot?.(ids)||{items:ids.map(id=>({id,disposition:"supporting"}))};const usage=new Map(this.evidenceSummary(ids).map(x=>[x.surfaceId,x]));return audit.items.filter(x=>x.disposition==="deprecation-candidate").map(item=>{const u=usage.get(item.id)||{uses:0,lastUsedAt:null,roles:[]};return {...item,usage:u,recommendation:u.uses===0?"evidence-needed":u.uses<=1?"retain-until-more-evidence":"retain-active-use"};});}
+-  navigationModel(role=this.role()){const defaults=this.defaultSurfaces(role);return {role,defaultSurfaces:defaults,count:defaults.length,duplicateEntryPolicy:"merge-entry-points-into-primary-targets",fallback:"full-platform",version:"46.15.0"};}
+-  snapshot(){const rational=this.rationalizationEngine?.snapshot?.()||null,role=this.role(),defaults=this.defaultSurfaces(role),primary=this.consolidatedPrimary(),evidence=this.evidence(),deprecation=rational?this.deprecationEvidence(rational.items.map(x=>x.id)):[];return {capturedAt:new Date().toISOString(),role,navigation:this.navigationModel(role),primary,mergedPrimaryCount:primary.filter(x=>x.summary.sources.length>0).length,evidenceCount:evidence.length,evidenceSummary:this.evidenceSummary(),deprecationCandidates:deprecation,deprecationReady:deprecation.filter(x=>x.recommendation!=="evidence-needed").length,policy:"merge-before-delete-and-require-use-evidence",version:"46.15.0"};}
++  navigationModel(role=this.role()){const defaults=this.defaultSurfaces(role);return {role,defaultSurfaces:defaults,count:defaults.length,duplicateEntryPolicy:"merge-entry-points-into-primary-targets",fallback:"full-platform",version:"46.25.0"};}
++  snapshot(){const rational=this.rationalizationEngine?.snapshot?.()||null,role=this.role(),defaults=this.defaultSurfaces(role),primary=this.consolidatedPrimary(),evidence=this.evidence(),deprecation=rational?this.deprecationEvidence(rational.items.map(x=>x.id)):[];return {capturedAt:new Date().toISOString(),role,navigation:this.navigationModel(role),primary,mergedPrimaryCount:primary.filter(x=>x.summary.sources.length>0).length,evidenceCount:evidence.length,evidenceSummary:this.evidenceSummary(),deprecationCandidates:deprecation,deprecationReady:deprecation.filter(x=>x.recommendation!=="evidence-needed").length,policy:"merge-before-delete-and-require-use-evidence",thresholds:this.evidenceThresholds(),version:"46.25.0"};}
+ }
+ if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentOperatorConsolidationEngine;
+ if(global)global.BlueCurrentOperatorConsolidationEngine=BlueCurrentOperatorConsolidationEngine;
+--- a/client/js/modules/operatorConsolidationScorecardEngine.js
++++ b/client/js/modules/operatorConsolidationScorecardEngine.js
+@@ -7,9 +7,9 @@
+   workflowCoverage(role=null){const consolidation=this.consolidationEngine?.navigationModel?.(role)||{defaultSurfaces:[]},defaults=new Set(consolidation.defaultSurfaces||[]);const covered=this.stageCenters.filter(x=>defaults.has(x));return {required:this.stageCenters.length,covered:covered.length,percent:Math.round(100*covered.length/this.stageCenters.length),coveredCenters:covered,missingCenters:this.stageCenters.filter(x=>!defaults.has(x))};}
+   handoffHealth(){const flow=this.flowEngine?.snapshot?.()||this.state().operatorServiceFlow||{handoffs:[]};const handoffs=flow.handoffs||[],attention=handoffs.filter(x=>x.status==="attention");return {total:handoffs.length,attention:attention.length,clear:handoffs.length-attention.length,percent:handoffs.length?Math.round(100*(handoffs.length-attention.length)/handoffs.length):100,attentionIds:attention.map(x=>x.id)};}
+   usageByRole(){const evidence=this.consolidationEngine?.evidence?.()||this.state().operatorUseEvidence||[],roles={};for(const e of evidence){const role=e.role||"unknown";roles[role] ||= {role,events:0,surfaces:new Set(),actions:{}};roles[role].events++;roles[role].surfaces.add(e.surfaceId);roles[role].actions[e.action]=(roles[role].actions[e.action]||0)+1;}return Object.values(roles).map(x=>({role:x.role,events:x.events,uniqueSurfaces:x.surfaces.size,actions:x.actions})).sort((a,b)=>b.events-a.events);}
+-  clicksToAction(){const evidence=this.consolidationEngine?.evidence?.()||this.state().operatorUseEvidence||[];const actions=new Set(["action","execute","acknowledge","resolve","approve","create-action","open-action"]);let opens=0,completed=0;for(const e of evidence){if(e.action==="open")opens++;if(actions.has(e.action))completed++;}const proxy=completed?Math.max(1,Math.round(opens/completed)):opens?opens:null;return {openEvents:opens,actionEvents:completed,clicksPerActionProxy:proxy,measurement:"instrumented-use-event-proxy"};}
++  clicksToAction(){const evidence=this.consolidationEngine?.evidence?.()||this.state().operatorUseEvidence||[];const actions=new Set(["action","execute","acknowledge","resolve","approve","create-action","open-action","task-completed"]);let opens=0,completed=0;for(const e of evidence){if(e.action==="open")opens++;if(actions.has(e.action))completed++;}const proxy=completed?Math.max(1,Math.round(opens/completed)):opens?opens:null;return {openEvents:opens,actionEvents:completed,clicksPerActionProxy:proxy,measurement:"instrumented-use-event-proxy"};}
+   shortlist(ids=null){const rational=this.rationalizationEngine?.snapshot?.(ids)||{items:[]},usage=new Map((this.consolidationEngine?.evidenceSummary?.(rational.items.map(x=>x.id))||[]).map(x=>[x.surfaceId,x]));const coverage=this.workflowCoverage("manager");return rational.items.filter(x=>x.disposition==="deprecation-candidate").map(item=>{const u=usage.get(item.id)||{uses:0,roles:[],lastUsedAt:null};const eligible=u.uses===0&&coverage.percent===100;return {...item,usage:u,shortlistStatus:eligible?"eligible-for-deprecation-review":u.uses>0?"retain-observed-use":"blocked-until-primary-coverage",automaticDeletion:false};}).sort((a,b)=>a.usage.uses-b.usage.uses);}
+-  score(entries=null,ids=null){const nav=this.duplicateNavigation(entries),coverage=this.workflowCoverage("manager"),handoffs=this.handoffHealth(),clicks=this.clicksToAction(),usage=this.usageByRole(),shortlist=this.shortlist(ids);const navScore=Math.max(0,100-nav.duplicateEntries*8),coverageScore=coverage.percent,handoffScore=handoffs.percent,evidenceScore=Math.min(100,(this.consolidationEngine?.evidence?.()||[]).length*10),score=Math.round(navScore*.25+coverageScore*.35+handoffScore*.20+evidenceScore*.20);return {score,grade:score>=90?"A":score>=80?"B":score>=70?"C":score>=60?"D":"F",navigation:{...nav,score:navScore},workflowCoverage:coverage,handoffs,clicksToAction:clicks,usageByRole:usage,evidenceEvents:(this.consolidationEngine?.evidence?.()||[]).length,deprecationShortlist:shortlist,shortlistEligible:shortlist.filter(x=>x.shortlistStatus==="eligible-for-deprecation-review").length,policy:"evidence-backed-review-no-automatic-deletion",version:"46.20.0",capturedAt:new Date().toISOString()};}
++  score(entries=null,ids=null){const nav=this.duplicateNavigation(entries),coverage=this.workflowCoverage("manager"),handoffs=this.handoffHealth(),clicks=this.clicksToAction(),usage=this.usageByRole(),shortlist=this.shortlist(ids);const navScore=Math.max(0,100-nav.duplicateEntries*8),coverageScore=coverage.percent,handoffScore=handoffs.percent,evidenceScore=Math.min(100,(this.consolidationEngine?.evidence?.()||[]).length*10),score=Math.round(navScore*.25+coverageScore*.35+handoffScore*.20+evidenceScore*.20);return {score,grade:score>=90?"A":score>=80?"B":score>=70?"C":score>=60?"D":"F",navigation:{...nav,score:navScore},workflowCoverage:coverage,handoffs,clicksToAction:clicks,usageByRole:usage,evidenceEvents:(this.consolidationEngine?.evidence?.()||[]).length,deprecationShortlist:shortlist,shortlistEligible:shortlist.filter(x=>x.shortlistStatus==="eligible-for-deprecation-review").length,policy:"evidence-backed-review-no-automatic-deletion",version:"46.25.0",capturedAt:new Date().toISOString()};}
+ }
+ if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentOperatorConsolidationScorecardEngine;
+ if(global)global.BlueCurrentOperatorConsolidationScorecardEngine=BlueCurrentOperatorConsolidationScorecardEngine;
+--- a/client/js/modules/deprecationManifestEngine.js
++++ b/client/js/modules/deprecationManifestEngine.js
+@@ -0,0 +1,16 @@
++(function(global){"use strict";
++class BlueCurrentDeprecationManifestEngine{
++  constructor({eventBus,appState,consolidationEngine,rationalizationEngine,scorecardEngine}={}){this.eventBus=eventBus;this.appState=appState;this.consolidationEngine=consolidationEngine;this.rationalizationEngine=rationalizationEngine;this.scorecardEngine=scorecardEngine;}
++  state(){try{return this.appState?.getState?.()||{};}catch{return {};}}
++  thresholds(){return this.consolidationEngine?.evidenceThresholds?.()||{minimumObservedDays:3,minimumOpenEvents:3,minimumTaskCompletions:1,minimumDistinctRoles:1,minimumPrimaryWorkflowCoverage:100,automaticDeletion:false};}
++  manifest(){const s=this.state();return s.operatorDeprecationManifest||{version:"46.25.0",status:"draft",approvedBy:null,approvedAt:null,featureFlagEnabled:false,items:[]};}
++  evidenceFor(surfaceId){const events=(this.consolidationEngine?.evidence?.()||[]).filter(x=>x.surfaceId===surfaceId),days=[...new Set(events.map(x=>String(x.at||"").slice(0,10)).filter(Boolean))],roles=[...new Set(events.map(x=>x.role).filter(Boolean))];return {surfaceId,events:events.length,opens:events.filter(x=>x.action==="open").length,taskCompletions:events.filter(x=>x.action==="task-completed").length,days:days.length,roles:roles.length,lastUsedAt:events[0]?.at||null};}
++  candidate(surfaceId){const rational=this.rationalizationEngine?.classify?.(surfaceId)||{disposition:"supporting"},t=this.thresholds(),ev=this.evidenceFor(surfaceId),coverage=this.scorecardEngine?.workflowCoverage?.("manager")||{percent:0};const zeroUse=ev.events===0,coveragePass=coverage.percent>=t.minimumPrimaryWorkflowCoverage;return {surfaceId,disposition:rational.disposition,evidence:ev,coverage:coverage.percent,eligibleForManifest:rational.disposition==="deprecation-candidate"&&zeroUse&&coveragePass,reason:rational.disposition!=="deprecation-candidate"?"Not a deprecation candidate":!zeroUse?"Observed use exists":!coveragePass?"Primary workflow coverage insufficient":"Zero observed use with full primary workflow coverage",automaticDeletion:false};}
++  createDraft(surfaceIds=[]){const candidates=surfaceIds.map(id=>this.candidate(id)),items=candidates.filter(x=>x.eligibleForManifest).map(x=>({surfaceId:x.surfaceId,status:"proposed-hide",reason:x.reason,featureFlag:false,approved:false,automaticDeletion:false}));const manifest={version:"46.25.0",status:"draft",createdAt:new Date().toISOString(),approvedBy:null,approvedAt:null,featureFlagEnabled:false,items,candidates,policy:"human-approved-reversible-hide-before-delete",automaticDeletion:false};this.appState?.update?.({operatorDeprecationManifest:manifest});this.eventBus?.emit?.("operator-deprecation-manifest:updated",structuredClone(manifest));return manifest;}
++  approve(approver){const current=this.manifest();if(!current.items?.length)throw new Error("Manifest has no eligible items.");const next={...current,status:"approved",approvedBy:String(approver||"Operator"),approvedAt:new Date().toISOString(),items:current.items.map(x=>({...x,approved:true}))};this.appState?.update?.({operatorDeprecationManifest:next});this.eventBus?.emit?.("operator-deprecation-manifest:updated",structuredClone(next));return next;}
++  setFeatureFlag(enabled){const current=this.manifest();if(enabled&&current.status!=="approved")throw new Error("Human approval is required before enabling deprecation hiding.");const next={...current,featureFlagEnabled:Boolean(enabled),items:(current.items||[]).map(x=>({...x,featureFlag:Boolean(enabled)&&x.approved===true}))};this.appState?.update?.({operatorDeprecationManifest:next});if(typeof document!=="undefined"){for(const item of next.items){const el=document.getElementById(item.surfaceId);if(!el)continue;const hide=next.featureFlagEnabled&&item.featureFlag;if(hide){el.hidden=true;el.setAttribute("aria-hidden","true");el.setAttribute("inert","");}else{el.hidden=false;el.removeAttribute("aria-hidden");el.removeAttribute("inert");}}document.documentElement.dataset.deprecationPreview=next.featureFlagEnabled?"true":"false";}this.eventBus?.emit?.("operator-deprecation-manifest:flag-changed",{enabled:next.featureFlagEnabled});return next;}
++  snapshot(){const manifest=this.manifest(),t=this.thresholds();return {manifest,thresholds:t,approvedItems:(manifest.items||[]).filter(x=>x.approved).length,hiddenPreviewItems:(manifest.items||[]).filter(x=>x.featureFlag).length,policy:"human-approved-reversible-hide-before-delete",automaticDeletion:false,version:"46.25.0"};}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentDeprecationManifestEngine;
++if(global)global.BlueCurrentDeprecationManifestEngine=BlueCurrentDeprecationManifestEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/deprecationManifestCenter.js
++++ b/client/js/modules/deprecationManifestCenter.js
+@@ -0,0 +1,7 @@
++(function(){"use strict";
++function createBlueCurrentDeprecationManifestCenterModule(eventBus,appState){const root=document.getElementById("deprecationManifestCenter");if(!root||!window.BlueCurrentDeprecationManifestEngine)return null;const rational=window.BlueCurrentOperatorSurfaceRationalizationEngine?new window.BlueCurrentOperatorSurfaceRationalizationEngine({eventBus,appState}):null,consolidation=window.BlueCurrentOperatorConsolidationEngine?new window.BlueCurrentOperatorConsolidationEngine({eventBus,appState,rationalizationEngine:rational}):null,flow=window.BlueCurrentOperatorServiceFlowEngine?new window.BlueCurrentOperatorServiceFlowEngine({eventBus,appState}):null,score=window.BlueCurrentOperatorConsolidationScorecardEngine?new window.BlueCurrentOperatorConsolidationScorecardEngine({eventBus,appState,consolidationEngine:consolidation,rationalizationEngine:rational,flowEngine:flow}):null,e=new window.BlueCurrentDeprecationManifestEngine({eventBus,appState,consolidationEngine:consolidation,rationalizationEngine:rational,scorecardEngine:score}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++function candidates(){const snap=rational?.snapshot?.()||{items:[]};return snap.items.filter(x=>x.disposition==="deprecation-candidate").map(x=>x.id);}
++function render(s){$("odmStatus").textContent=s.manifest.status||"draft";$("odmItems").textContent=s.manifest.items?.length||0;$("odmApproved").textContent=s.approvedItems;$("odmHidden").textContent=s.hiddenPreviewItems;$("odmFlag").textContent=s.manifest.featureFlagEnabled?"ON":"OFF";$("odmHeadline").textContent=`${s.manifest.items?.length||0} eligible item(s) · ${s.approvedItems} approved · reversible hide ${s.manifest.featureFlagEnabled?"enabled":"disabled"}.`;$("odmList").innerHTML=(s.manifest.items||[]).map(x=>`<article><strong>${esc(x.surfaceId)} · ${esc(x.status)}</strong><span>${esc(x.reason)} · approved ${x.approved?"yes":"no"} · hidden ${x.featureFlag?"yes":"no"}</span></article>`).join("")||"<p>No manifest items yet.</p>";$("odmThresholds").textContent=`Thresholds: ${s.thresholds.minimumObservedDays} observed days · ${s.thresholds.minimumOpenEvents} opens · ${s.thresholds.minimumTaskCompletions} task completion · ${s.thresholds.minimumPrimaryWorkflowCoverage}% workflow coverage.`;}
++function load(){render(e.snapshot());}
++$("odmDraft")?.addEventListener("click",()=>{e.createDraft(candidates());load();});$("odmApprove")?.addEventListener("click",()=>{try{e.approve($("odmApprover").value||"Operator");load();}catch(err){$("odmHeadline").textContent=err.message;}});$("odmEnable")?.addEventListener("click",()=>{try{e.setFeatureFlag(true);load();}catch(err){$("odmHeadline").textContent=err.message;}});$("odmDisable")?.addEventListener("click",()=>{e.setFeatureFlag(false);load();});$("odmRefresh")?.addEventListener("click",load);load();return{engine:e,load};}
++window.createBlueCurrentDeprecationManifestCenterModule=createBlueCurrentDeprecationManifestCenterModule;})();--- a/scripts/maintenance/test-operator-deprecation-manifest.js
++++ b/scripts/maintenance/test-operator-deprecation-manifest.js
+@@ -0,0 +1,24 @@
++"use strict";
++const assert=require("assert");
++global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
++const Rational=require("../../client/js/modules/operatorSurfaceRationalizationEngine");
++const Consolidation=require("../../client/js/modules/operatorConsolidationEngine");
++const Scorecard=require("../../client/js/modules/operatorConsolidationScorecardEngine");
++const Manifest=require("../../client/js/modules/deprecationManifestEngine");
++const state={roleExperienceRole:"manager",operatorUseEvidence:[]};
++const appState={getState:()=>state,get:k=>state[k],update:o=>Object.assign(state,o)},eventBus={emit:()=>{},on:()=>()=>{}};
++const rational=new Rational({eventBus,appState}),consolidation=new Consolidation({eventBus,appState,rationalizationEngine:rational});
++const fakeFlow={snapshot:()=>({handoffs:[{status:"clear"},{status:"clear"},{status:"clear"},{status:"clear"},{status:"clear"}]})};
++const score=new Scorecard({eventBus,appState,consolidationEngine:consolidation,rationalizationEngine:rational,flowEngine:fakeFlow});
++const manifest=new Manifest({eventBus,appState,consolidationEngine:consolidation,rationalizationEngine:rational,scorecardEngine:score});
++assert.equal(consolidation.resolvePrimarySurface("reservationYieldCenter"),"reservationOperationsCenter");
++consolidation.recordTaskCompletion("reservationYieldCenter","seat-party","completed");
++assert.equal(state.operatorUseEvidence[0].surfaceId,"reservationOperationsCenter");assert.equal(state.operatorUseEvidence[0].action,"task-completed");
++const thresholds=consolidation.evidenceThresholds();assert.equal(thresholds.minimumObservedDays,3);assert.equal(thresholds.minimumTaskCompletions,1);assert.equal(thresholds.automaticDeletion,false);
++const draft=manifest.createDraft(["innovationCenter","executiveBriefingCenter"]);
++assert.equal(draft.status,"draft");assert.equal(draft.automaticDeletion,false);assert.equal(draft.items.length,2);
++let blocked=false;try{manifest.setFeatureFlag(true);}catch(e){blocked=/Human approval/.test(e.message);}assert.equal(blocked,true);
++const approved=manifest.approve("GM Tester");assert.equal(approved.status,"approved");assert.equal(approved.approvedBy,"GM Tester");
++const enabled=manifest.setFeatureFlag(true);assert.equal(enabled.featureFlagEnabled,true);assert.ok(enabled.items.every(x=>x.featureFlag===true));
++const disabled=manifest.setFeatureFlag(false);assert.equal(disabled.featureFlagEnabled,false);assert.ok(disabled.items.every(x=>x.featureFlag===false));
++console.log(JSON.stringify({ok:true,version:"46.25.0",resolvedPrimary:consolidation.resolvePrimarySurface("reservationYieldCenter"),taskEvidence:state.operatorUseEvidence[0].action,thresholds,manifestItems:draft.items.length,approvalRequiredBlocked:blocked,approvedBy:approved.approvedBy,previewEnabled:enabled.featureFlagEnabled,previewRestored:!disabled.featureFlagEnabled,automaticDeletion:false},null,2));
+--- a/README-APPLY-V46.25.0.md
++++ b/README-APPLY-V46.25.0.md
+@@ -0,0 +1,70 @@
++# APPLY BLUE CURRENT V46.25.0
++
++## Baseline
++
++Apply over the authoritative repository containing V46.20.0.
++
++## Important
++
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++
++Extract `BLUE-CURRENT-V46.25.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-operator-deprecation-manifest.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.25.0"
++```
++
++## Recommended Git staging
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/operatorConsolidationEngine.js
++git add client/js/modules/operatorConsolidationScorecardEngine.js
++git add client/js/modules/deprecationManifestEngine.js
++git add client/js/modules/deprecationManifestCenter.js
++git add scripts/maintenance/test-operator-deprecation-manifest.js
++git add README-APPLY-V46.25.0.md
++git add V46.25.0-RELEASE.md
++git add V46.25.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V46.25.0 reversible deprecation manifest"
++git push origin live-service-timeline
++```
+--- a/V46.25.0-RELEASE.md
++++ b/V46.25.0-RELEASE.md
+@@ -0,0 +1,131 @@
++# BLUE CURRENT V46.25.0 — REVERSIBLE DEPRECATION MANIFEST
++
++## Release scope
++
++V46.21–V46.25 acts on the operator consolidation scorecard while keeping every removal decision reversible.
++
++### V46.21 — Verified Navigation Cleanup
++
++The desktop navigation had 29 entries with 5 true excess duplicates.
++
++This release removes only those verified duplicate links:
++- Autonomous duplicate entries
++- Guests duplicate entry
++- Executive duplicate entry
++- AI Brain duplicate entry
++
++Result:
++- 24 desktop navigation entries
++- 24 unique desktop destinations
++- 0 internal desktop-navigation duplicates
++
++Mobile navigation was already internally unique and was not altered.
++
++### V46.22 — Merge-Candidate Primary Routing
++
++The consolidation engine now resolves mapped merge candidates to their primary surface.
++
++Example:
++
++`reservationYieldCenter → reservationOperationsCenter`
++
++Task/use evidence generated from a merge candidate can therefore be attributed to the primary operator surface instead of creating fragmented analytics.
++
++### V46.23 — Task-Completion Instrumentation
++
++Adds `recordTaskCompletion()` to operator consolidation evidence.
++
++A task completion records:
++- primary surface
++- source surface
++- task ID
++- outcome
++- active role
++- timestamp
++- metadata
++
++This extends the prior open-event evidence into actual task-completion evidence.
++
++### V46.24 — Minimum Evidence Thresholds
++
++Adds explicit review thresholds:
++- 3 observed days
++- 3 open events
++- 1 task completion
++- 1 distinct role
++- 100% manager primary-workflow coverage
++- automatic deletion disabled
++
++These thresholds are review criteria, not deletion triggers.
++
++### V46.25 — Human-Approved Deprecation Manifest
++
++Adds a reversible manifest workflow:
++
++1. Build draft manifest from current deprecation candidates.
++2. Review evidence and primary-workflow coverage.
++3. Require explicit human approval.
++4. Optionally enable a reversible hide-preview feature flag.
++5. Disable preview to immediately restore hidden surfaces.
++
++The manifest policy is:
++
++`human-approved-reversible-hide-before-delete`
++
++Automatic deletion remains disabled.
++
++## UI
++
++Adds the Human-Approved Deprecation Preview center with:
++- manifest status
++- eligible item count
++- approved count
++- hidden-preview count
++- feature-flag state
++- approver
++- evidence thresholds
++- draft / approve / enable / disable controls
++
++## Validation
++
++- `node scripts/maintenance/test-operator-deprecation-manifest.js` passed.
++- Merge candidate routing validated.
++- Task completion evidence validated.
++- Evidence thresholds validated.
++- Feature-flag enable was blocked before approval.
++- Human approval succeeded.
++- Reversible hide preview enabled successfully.
++- Preview disable restored the flagged surfaces.
++- Automatic deletion remained false.
++- Desktop navigation audit:
++  - 24 entries
++  - 24 unique destinations
++  - 0 internal duplicate entries
++- `npm run check` passed:
++  - 826 JavaScript files
++  - 708 client scripts
++  - 5,279 unique HTML IDs
++- Server startup passed as V46.25.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Safety / fine-comb policy
++
++- No module code is permanently deleted.
++- Approved hiding is reversible.
++- No live restaurant execution behavior changed.
++- Runtime database is not included in this patch.
++- Feature-flag hiding requires human approval.
++
++## Next fine-comb milestone
++
++The next wave should strengthen operator evidence quality before any permanent removal:
++- multi-day evidence windows
++- per-role task completion rates
++- workflow success/failure outcomes
++- time-to-resolution measurement
++- manifest expiry and revalidation
++- explicit owner sign-off per surface
++- first reversible retirement candidate set
++
++Permanent code deletion should remain a separate, later step after a retirement candidate survives the preview period without breaking workflow coverage.

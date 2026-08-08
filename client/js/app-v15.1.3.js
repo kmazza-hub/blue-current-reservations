@@ -1213,6 +1213,7 @@ const operatorServiceFlowCenterModule = startupRegistry.register("operatorServic
 const operatorSurfaceRationalizationCenterModule = startupRegistry.register("operatorSurfaceRationalizationCenter", shouldInitializeCenter("operatorSurfaceRationalizationCenter") ? window.createBlueCurrentOperatorSurfaceRationalizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorServiceFlowCenter"]);
 const operatorConsolidationCenterModule = startupRegistry.register("operatorConsolidationCenter", shouldInitializeCenter("operatorConsolidationCenter") ? window.createBlueCurrentOperatorConsolidationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorSurfaceRationalizationCenter", "roleExperienceCenter"]);
 const operatorConsolidationScorecardCenterModule = startupRegistry.register("operatorConsolidationScorecardCenter", shouldInitializeCenter("operatorConsolidationScorecardCenter") ? window.createBlueCurrentOperatorConsolidationScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorConsolidationCenter"]);
+const deprecationManifestCenterModule = startupRegistry.register("deprecationManifestCenter", shouldInitializeCenter("deprecationManifestCenter") ? window.createBlueCurrentDeprecationManifestCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorConsolidationScorecardCenter"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

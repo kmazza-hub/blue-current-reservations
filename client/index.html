@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="46.20.0">
+  <meta name="blue-current-build" content="46.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -148,7 +148,7 @@
 
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="#command-center" aria-current="page">Command Center</a>
-      <a href="#blue-current-live">Live</a>
+        <a href="#blue-current-live">Live</a>
         <a href="#digital-twin">Digital Twin</a>
         <a href="#mission-control">Mission Control</a>
         <a href="#time-machine">Time Machine</a>
@@ -168,11 +168,6 @@
         <a href="#service-coordination">Service</a>
         <a href="#ai-restaurant-brain">AI Brain</a>
         <a href="#executive-command-center">Executive</a>
-        <a href="#autonomous-operations">Autonomous</a>
-        <a href="#guest-intelligence">Guests</a>
-        <a href="#autonomous-operations">Autonomous</a>
-        <a href="#executive-command-center">Executive</a>
-        <a href="#ai-restaurant-brain">AI Brain</a>
         <a href="#cloud-foundation">Cloud</a>
         <a href="#auth-organizations">Access</a>
         <a href="#ai-concierge">Concierge</a>
@@ -4166,6 +4161,7 @@
 <section class="v432-center v438-center v4316-center" id="operatorSurfaceRationalizationCenter"><header><div><small>V46.6–V46.10 · Operator Surface Rationalization</small><strong>Classify the platform into primary, merge, diagnostics, and evidence-gated deprecation candidates.</strong><span>No modules are deleted in this wave. The classification creates an evidence-based cut/merge map and makes cross-stage handoffs explicit.</span></div><button id="osrRefresh" type="button">Refresh rationalization</button></header><div class="v4316-actions"><button type="button" data-osr-view="all">All surfaces</button><button type="button" data-osr-view="merge">Merge review</button><button type="button" data-osr-view="diagnostics-admin">Diagnostics/admin</button><button type="button" data-osr-view="deprecation-candidate">Deprecation review</button></div><div class="v432-kpis"><article><small>Total surfaces</small><strong id="osrTotal">0</strong></article><article><small>Keep primary</small><strong id="osrPrimary">0</strong></article><article><small>Merge</small><strong id="osrMerge">0</strong></article><article><small>Diagnostics</small><strong id="osrDiagnostics">0</strong></article><article><small>Deprecation candidates</small><strong id="osrCandidates">0</strong></article><article><small>Attention handoffs</small><strong id="osrHandoffs">0</strong></article></div><div class="v4316-answer" id="osrHeadline">Classifying operator surfaces…</div><div id="osrGroups" class="v432-list"></div><div id="osrHandoffList" class="v432-list"></div></section>
 <section class="v432-center v438-center v4316-center" id="operatorConsolidationCenter"><header><div><small>V46.11–V46.15 · Operator Consolidation + Usage Evidence</small><strong>Merge duplicate operator entry points into primary surfaces, apply role defaults, and collect evidence before deprecation.</strong><span>This wave changes navigation and presentation only. It records non-destructive operator-use evidence in AppState; no working module is deleted.</span></div><div class="v4316-actions"><button id="ocRefresh" type="button">Refresh</button><button id="ocApplyRole" type="button">Apply role defaults</button><button id="ocFullPlatform" type="button">Full platform</button></div></header><div class="v432-kpis"><article><small>Role</small><strong id="ocRole">MANAGER</strong></article><article><small>Default surfaces</small><strong id="ocDefaults">0</strong></article><article><small>Merged primary</small><strong id="ocMerged">0</strong></article><article><small>Use evidence</small><strong id="ocUseEvidence">0</strong></article><article><small>Deprecation evidence</small><strong id="ocDepReady">0</strong></article></div><div class="v4316-answer" id="ocHeadline">Preparing consolidated operator navigation…</div><div id="ocPrimary" class="v432-list"></div><div id="ocDeprecation" class="v432-list"></div></section>
 <section class="v432-center v438-center v4316-center" id="operatorConsolidationScorecardCenter"><header><div><small>V46.16–V46.20 · Consolidation Scorecard</small><strong>Measure navigation duplication, workflow coverage, handoff pressure, role usage, and evidence-backed deprecation readiness.</strong><span>The scorecard produces a review shortlist only. It cannot remove modules automatically.</span></div><button id="ocsRefresh" type="button">Refresh scorecard</button></header><div class="v432-kpis"><article><small>Score</small><strong id="ocsScore">0%</strong></article><article><small>Grade</small><strong id="ocsGrade">—</strong></article><article><small>Duplicate nav</small><strong id="ocsDupNav">0</strong></article><article><small>Workflow coverage</small><strong id="ocsCoverage">0%</strong></article><article><small>Attention handoffs</small><strong id="ocsHandoffs">0</strong></article><article><small>Use evidence</small><strong id="ocsEvidence">0</strong></article><article><small>Review shortlist</small><strong id="ocsShortlist">0</strong></article></div><div class="v4316-answer" id="ocsHeadline">Calculating operator consolidation score…</div><div id="ocsNav" class="v432-list"></div><div id="ocsRoles" class="v432-list"></div><div id="ocsDeprecation" class="v432-list"></div></section>
+<section class="v432-center v438-center v4316-center" id="deprecationManifestCenter"><header><div><small>V46.21–V46.25 · Human-Approved Deprecation Preview</small><strong>Use evidence thresholds to create a review manifest, require human approval, then hide candidates reversibly behind a feature flag.</strong><span>Approved preview hiding is not code deletion. Full capability remains present and can be restored immediately.</span></div><button id="odmRefresh" type="button">Refresh</button></header><div class="v4316-actions"><button id="odmDraft" type="button">Build draft manifest</button><input id="odmApprover" class="v4312-input" placeholder="Approver name"><button id="odmApprove" type="button">Approve manifest</button><button id="odmEnable" type="button">Enable hide preview</button><button id="odmDisable" type="button">Disable preview</button></div><div class="v432-kpis"><article><small>Status</small><strong id="odmStatus">draft</strong></article><article><small>Items</small><strong id="odmItems">0</strong></article><article><small>Approved</small><strong id="odmApproved">0</strong></article><article><small>Hidden preview</small><strong id="odmHidden">0</strong></article><article><small>Feature flag</small><strong id="odmFlag">OFF</strong></article></div><div class="v4316-answer" id="odmHeadline">Build a draft manifest from evidence-backed candidates.</div><p id="odmThresholds"></p><div id="odmList" class="v432-list"></div></section>
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -8629,6 +8625,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationCenter" data-src="js/modules/operatorConsolidationCenter.js?v=46.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationScorecardCenter" data-src="js/modules/operatorConsolidationScorecardEngine.js?v=46.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationScorecardCenter" data-src="js/modules/operatorConsolidationScorecardCenter.js?v=46.20.0"></script>
-<script src="js/startup-loader.js?v=46.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="deprecationManifestCenter" data-src="js/modules/deprecationManifestEngine.js?v=46.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="deprecationManifestCenter" data-src="js/modules/deprecationManifestCenter.js?v=46.25.0"></script>
+<script src="js/startup-loader.js?v=46.25.0"></script>
 </body>
 </html>
