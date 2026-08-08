@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "44.22.0",
+        version: "45.5.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -949,6 +949,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname.startsWith("/api/guest-intelligence/profiles/") && url.pathname.endsWith("/recovery") && request.method === "POST") { const id=url.pathname.split("/")[4],body=await readJson(request); return sendJson(response,200,await guestIntelligenceService.recordRecovery(id,body,auth.user.name,organizationId)); }
 
     if (url.pathname === "/api/autonomous-operations" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.snapshot(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/cycles" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45DecisionCycles(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/cycles" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45DecisionCycle(organizationId,auth.user.name));
+    }
+    if (url.pathname === "/api/autonomous-assistance/readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45Readiness(organizationId));
     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));

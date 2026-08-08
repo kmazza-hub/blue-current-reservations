@@ -1,0 +1,440 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "44.22.0",
++  "version": "45.5.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V44 AIP supervised durable workflow runtime",
++  "description": "Blue Current Hospitality OS \u2014 V45 governed autonomous assistance foundation",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V44.22.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V45.5.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "44.22.0",
++        version: "45.5.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -949,6 +949,12 @@
+     if (url.pathname.startsWith("/api/guest-intelligence/profiles/") && url.pathname.endsWith("/recovery") && request.method === "POST") { const id=url.pathname.split("/")[4],body=await readJson(request); return sendJson(response,200,await guestIntelligenceService.recordRecovery(id,body,auth.user.name,organizationId)); }
+ 
+     if (url.pathname === "/api/autonomous-operations" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.snapshot(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/cycles" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45DecisionCycles(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/cycles" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45DecisionCycle(organizationId,auth.user.name));
++    }
++    if (url.pathname === "/api/autonomous-assistance/readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45Readiness(organizationId));
+     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
+       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
+--- a/server/services/autonomousOperationsService.js
++++ b/server/services/autonomousOperationsService.js
+@@ -20,6 +20,114 @@
+   async runCycle(org,actor){const snap=await this.snapshot(org),policy=snap.policy;let executed=0;const records=[];for(const action of snap.actions){let status='recommended';if(policy.enabled&&policy.autoExecuteRiskLevels.includes(action.risk)&&executed<policy.maxActionsPerCycle){status='executed';executed++;}const record={...action,id:`auto_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId:org,status,createdAt:this.now(),executedAt:status==='executed'?this.now():null,actor:status==='executed'?'Autonomous Operations Director':actor};records.push(record);}await this.database.mutate(db=>{db.autonomousActions||=[];db.operationsTimeline||=[];db.autonomousActions.push(...records);for(const r of records)db.operationsTimeline.push({id:`evt_${r.id}`,organizationId:org,time:this.now(),locationId:r.locationId,locationName:r.locationName,category:r.type,title:r.title,detail:r.status==='executed'?`Executed automatically: ${r.description}`:`Approval queued: ${r.description}`,status:r.status});return records;});await this.auditService.record({organizationId:org,actor,action:`Autonomous operations cycle completed: ${executed} actions executed`,category:'autonomous_operations'});this.realtimeHub.publish('autonomous:cycle-completed',{organizationId:org,executed,total:records.length});return this.snapshot(org);}
+   async decide(id,input,actor,org){const status=['approved','rejected','executed'].includes(input.status)?input.status:'rejected';const updated=await this.database.mutate(db=>{const item=(db.autonomousActions||[]).find(x=>x.id===id);if(!item)return null;item.status=status;item.decidedAt=this.now();item.executedAt=status==='executed'?this.now():item.executedAt;item.decisionNote=String(input.note||'');db.operationsTimeline||=[];db.operationsTimeline.push({id:`evt_${Date.now()}`,organizationId:org,time:this.now(),locationId:item.locationId,locationName:item.locationName,category:item.type,title:`Action ${status}: ${item.title}`,detail:item.decisionNote||item.description,status});return item;});if(!updated)return null;await this.auditService.record({organizationId:org,actor,action:`Autonomous action ${status}: ${updated.title}`,category:'autonomous_operations'});this.realtimeHub.publish('autonomous:action-decided',updated);return updated;}
+   async updatePolicy(input,actor,org){const updated=await this.database.mutate(db=>{db.autonomousPolicies||=[];let p=db.autonomousPolicies.find(x=>x.organizationId===org);if(!p){p={id:`auto_policy_${org}`,organizationId:org};db.autonomousPolicies.push(p);}Object.assign(p,{enabled:Boolean(input.enabled),mode:['manual','guarded','autonomous'].includes(input.mode)?input.mode:'guarded',autoExecuteRiskLevels:Array.isArray(input.autoExecuteRiskLevels)?input.autoExecuteRiskLevels:['low'],maxActionsPerCycle:this.clamp(Number(input.maxActionsPerCycle||3),0,10),forecastHorizonMinutes:this.clamp(Number(input.forecastHorizonMinutes||120),30,360),updatedAt:this.now()});return p;});await this.auditService.record({organizationId:org,actor,action:`Autonomous policy updated: ${updated.mode}`,category:'autonomous_operations'});this.realtimeHub.publish('autonomous:policy-updated',updated);return updated;}
++  autonomousSeverity(score){return score>=85?"critical":score>=65?"high":score>=40?"watch":"stable";}
++  buildV45Observation(snapshot){
++    const capturedAt=this.now();
++    const locations=(snapshot.locations||[]).map(location=>{
++      const forecast=(snapshot.forecasts||[]).find(x=>x.locationId===location.locationId)||{};
++      const profit=(snapshot.profits||[]).find(x=>x.locationId===location.locationId)||{};
++      return {
++        locationId:location.locationId,name:location.name,
++        evidence:{
++          occupancy:Number(location.occupancy||0),
++          waitlist:Number(location.waitlist||0),
++          averageTicketMinutes:Number(location.averageTicketMinutes||0),
++          readyTickets:Number(location.readyTickets||0),
++          activeStaff:Number(location.activeStaff||0),
++          health:Number(location.health||0),
++          revenue:Number(location.revenue||0),
++          revenueTrend:Number(location.revenueTrend||0),
++          projectedTicketPeak:Number(forecast.projectedTicketPeak||0),
++          projectedWaitlistPeak:Number(forecast.projectedWaitlistPeak||0),
++          additionalStaffNeeded:Number(forecast.additionalStaffNeeded||0),
++          forecastConfidence:Number(forecast.confidence||0),
++          laborPercent:Number(profit.laborPercent||0),
++          foodPercent:Number(profit.foodPercent||0),
++          margin:Number(profit.margin||0)
++        }
++      };
++    });
++    return {capturedAt,organizationId:snapshot.portfolio?.organizationId||null,portfolio:{health:Number(snapshot.portfolio?.health||0),atRiskLocations:Number(snapshot.portfolio?.atRiskLocations||0),revenue:Number(snapshot.portfolioProfit?.revenue||0),operatingProfit:Number(snapshot.portfolioProfit?.operatingProfit||0),margin:Number(snapshot.portfolioProfit?.margin||0),laborPercent:Number(snapshot.portfolioProfit?.laborPercent||0),foodPercent:Number(snapshot.portfolioProfit?.foodPercent||0)},locations,source:"autonomous-operations-snapshot",executionMode:"observation-only",liveExecutionAllowed:false,liveStateChanged:false};
++  }
++  detectV45Anomalies(observation){
++    const anomalies=[];
++    const add=(location,domain,score,title,evidence,reason)=>{
++      anomalies.push({id:`V45-ANOM-${location.locationId}-${domain}`,locationId:location.locationId,locationName:location.name,domain,score:this.clamp(score,0,100),severity:this.autonomousSeverity(score),title,evidence,reason,detectedAt:observation.capturedAt,executionMode:"observation-only",liveStateChanged:false});
++    };
++    for(const location of observation.locations){
++      const e=location.evidence;
++      const kitchenScore=Math.max(0,(e.projectedTicketPeak-16)*5+(e.readyTickets>=3?18:0));
++      if(kitchenScore>=40)add(location,"kitchen-throughput",kitchenScore,"Kitchen throughput pressure",[{metric:"projectedTicketPeak",value:e.projectedTicketPeak,unit:"minutes"},{metric:"readyTickets",value:e.readyTickets}],`Projected ticket pressure and ready-ticket accumulation indicate a throughput constraint.`);
++      const pacingScore=Math.max(0,(e.occupancy-75)*2+(e.projectedWaitlistPeak-3)*3+(e.projectedTicketPeak-18)*2);
++      if(pacingScore>=40)add(location,"reservation-pacing",pacingScore,"Reservation pacing mismatch",[{metric:"occupancy",value:e.occupancy,unit:"percent"},{metric:"projectedWaitlistPeak",value:e.projectedWaitlistPeak},{metric:"projectedTicketPeak",value:e.projectedTicketPeak,unit:"minutes"}],"Demand is projected to arrive faster than current service capacity.");
++      const staffingScore=Math.max(0,e.additionalStaffNeeded*28+(e.occupancy-80)*1.3+(e.projectedTicketPeak-20)*2);
++      if(staffingScore>=40)add(location,"staffing",staffingScore,"Staffing coverage risk",[{metric:"additionalStaffNeeded",value:e.additionalStaffNeeded},{metric:"activeStaff",value:e.activeStaff},{metric:"occupancy",value:e.occupancy,unit:"percent"}],"Forecast demand exceeds modeled staffing coverage.");
++      const guestScore=Math.max(0,(e.projectedWaitlistPeak-5)*5+(e.averageTicketMinutes-18)*3+(100-e.health)*1.2);
++      if(guestScore>=40)add(location,"guest-recovery",guestScore,"Guest experience risk",[{metric:"projectedWaitlistPeak",value:e.projectedWaitlistPeak},{metric:"averageTicketMinutes",value:e.averageTicketMinutes,unit:"minutes"},{metric:"health",value:e.health}],"Wait and service-duration signals indicate elevated guest-recovery risk.");
++      const revenueScore=Math.max(0,Math.abs(Math.min(0,e.revenueTrend))*6+(65-e.occupancy)*1.5);
++      if(e.revenueTrend<=-4&&revenueScore>=40)add(location,"revenue-opportunity",revenueScore,"Revenue underperformance signal",[{metric:"revenueTrend",value:e.revenueTrend,unit:"percent"},{metric:"occupancy",value:e.occupancy,unit:"percent"},{metric:"margin",value:e.margin,unit:"percent"}],"Revenue trend and capacity utilization indicate an opportunity requiring manager review.");
++    }
++    return anomalies.sort((a,b)=>b.score-a.score);
++  }
++  buildV45Recommendations(observation,anomalies){
++    const recommendations=[];
++    const domainTemplates={
++      "kitchen-throughput":{agent:"kitchen-flow-advisor",title:"Prepare kitchen throughput response",action:"Model runner/expo support and fire pacing for the next 20–30 minutes.",risk:"medium"},
++      "reservation-pacing":{agent:"operations-optimizer",title:"Prepare reservation pacing adjustment",action:"Simulate a temporary seating buffer and party sequencing change.",risk:"medium"},
++      "staffing":{agent:"staffing-advisor",title:"Prepare staffing coverage response",action:"Model redeployment or contingency coverage without changing the live schedule.",risk:"medium"},
++      "guest-recovery":{agent:"guest-experience-advisor",title:"Prepare proactive guest recovery",action:"Identify at-risk guest moments and draft manager-touch priorities.",risk:"medium"},
++      "revenue-opportunity":{agent:"revenue-planner",title:"Prepare revenue recovery option",action:"Model demand/capacity options; do not publish offers or discounts.",risk:"high"}
++    };
++    anomalies.slice(0,12).forEach((anomaly,index)=>{
++      const template=domainTemplates[anomaly.domain];if(!template)return;
++      recommendations.push({id:`V45-REC-${Date.now().toString(36).toUpperCase()}-${index+1}`,anomalyId:anomaly.id,locationId:anomaly.locationId,locationName:anomaly.locationName,domain:anomaly.domain,agentType:template.agent,title:template.title,recommendation:template.action,risk:template.risk,confidence:this.clamp(60+anomaly.score*.35,60,95),evidence:anomaly.evidence,reason:anomaly.reason,status:"recommended",approvalRequired:true,simulationRequired:true,executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false,createdAt:observation.capturedAt});
++    });
++    return recommendations;
++  }
++  simulateV45Recommendations(observation,recommendations){
++    const byLocation=new Map(observation.locations.map(x=>[x.locationId,x.evidence]));
++    return recommendations.map((r,index)=>{
++      const e=byLocation.get(r.locationId)||{};
++      let modeled={};
++      if(r.domain==="kitchen-throughput")modeled={ticketMinutesDelta:-Math.max(2,Math.min(6,Math.round((e.projectedTicketPeak||18)*.18))),throughputPercentDelta:Math.max(4,Math.min(14,Math.round((e.projectedTicketPeak||18)*.4)))};
++      else if(r.domain==="reservation-pacing")modeled={ticketMinutesDelta:-Math.max(1,Math.min(5,Math.round(((e.projectedTicketPeak||18)-16)*.28))),waitlistDelta:Math.max(-5,-Math.round((e.projectedWaitlistPeak||4)*.22))};
++      else if(r.domain==="staffing")modeled={serviceCapacityPercentDelta:Math.min(18,Math.max(5,(e.additionalStaffNeeded||1)*6)),laborPercentDelta:Math.min(2.5,Math.max(.4,(e.additionalStaffNeeded||1)*.7))};
++      else if(r.domain==="guest-recovery")modeled={guestRiskPercentDelta:-Math.min(30,Math.max(8,Math.round((100-(e.health||80))*.8))),retentionProtection:"modeled-positive"};
++      else modeled={revenueOpportunity:"modeled-only",discountPublished:false};
++      return {id:`V45-SIM-${Date.now().toString(36).toUpperCase()}-${index+1}`,recommendationId:r.id,locationId:r.locationId,domain:r.domain,baseline:e,modeled,confidence:this.clamp(r.confidence-5,50,92),assumptions:["Uses current Blue Current operating snapshot and heuristic response model.","Does not modify reservations, labor schedules, floor state, kitchen tickets, guest records, offers, or messaging."],status:"simulated",executionMode:"simulation-only",liveExecutionAllowed:false,liveStateChanged:false,createdAt:observation.capturedAt};
++    });
++  }
++  async v45DecisionCycle(org,actor="Operator"){
++    const snapshot=await this.snapshot(org);
++    const observation=this.buildV45Observation(snapshot);
++    observation.organizationId=org;
++    const anomalies=this.detectV45Anomalies(observation);
++    const recommendations=this.buildV45Recommendations(observation,anomalies);
++    const simulations=this.simulateV45Recommendations(observation,recommendations);
++    const cycle={id:`V45-CYCLE-${Date.now().toString(36).toUpperCase()}`,organizationId:org,observation,anomalies,recommendations,simulations,summary:{locationsObserved:observation.locations.length,anomalies:anomalies.length,critical:anomalies.filter(x=>x.severity==="critical").length,recommendations:recommendations.length,simulations:simulations.length},governance:{stage:"recommendation-and-simulation",approvalRequired:true,executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false},createdBy:actor,createdAt:this.now()};
++    await this.database.mutate(db=>{db.v45AutonomousDecisionCycles||={};const list=db.v45AutonomousDecisionCycles[org]||[];list.unshift(cycle);db.v45AutonomousDecisionCycles[org]=list.slice(0,100);return cycle;});
++    await this.auditService.record({organizationId:org,actor,action:`V45 governed autonomous decision cycle prepared: ${cycle.id}`,category:"v45-autonomous-operations"});
++    this.realtimeHub.publish("v45-autonomous-cycle-prepared",{organizationId:org,id:cycle.id,summary:cycle.summary,liveExecutionAllowed:false});
++    return {...cycle,build:"45.5.0-autonomous-assistance-foundation"};
++  }
++  async v45DecisionCycles(org){
++    const db=await this.database.read(),items=db.v45AutonomousDecisionCycles?.[org]||[];
++    return {organizationId:org,count:items.length,items:items.slice(0,50),latest:items[0]||null,build:"45.5.0-autonomous-assistance-foundation"};
++  }
++  async v45Readiness(org){
++    const db=await this.database.read(),cycles=db.v45AutonomousDecisionCycles?.[org]||[],latest=cycles[0]||null;
++    const checks=[
++      {id:"observation",label:"Evidence-backed operational observation",pass:Boolean(latest?.observation?.locations?.length),detail:`${latest?.observation?.locations?.length||0} location(s) observed`},
++      {id:"anomaly",label:"Cross-domain anomaly detection",pass:Boolean(latest)&&Array.isArray(latest.anomalies),detail:`${latest?.anomalies?.length||0} anomaly signal(s)`},
++      {id:"recommendation",label:"Agent-scoped recommendations",pass:Boolean(latest)&&Array.isArray(latest.recommendations)&&latest.recommendations.every(x=>Boolean(x.agentType)&&x.approvalRequired===true),detail:`${latest?.recommendations?.length||0} recommendation(s)`},
++      {id:"simulation",label:"Intervention simulation before execution",pass:Boolean(latest)&&latest.recommendations.length===latest.simulations.length&&latest.simulations.every(x=>x.executionMode==="simulation-only"),detail:`${latest?.simulations?.length||0} simulation(s)`},
++      {id:"evidence",label:"Recommendation evidence retained",pass:Boolean(latest)&&latest.recommendations.every(x=>Array.isArray(x.evidence)&&x.evidence.length>0),detail:"Recommendations retain originating operational evidence"},
++      {id:"approval",label:"Human approval remains required",pass:Boolean(latest)&&latest.recommendations.every(x=>x.approvalRequired===true),detail:"No V45 recommendation bypasses approval"},
++      {id:"live-safety",label:"Autonomous assistance cannot mutate live state",pass:cycles.every(c=>c.governance?.liveExecutionAllowed===false&&c.governance?.liveStateChanged===false&&(c.recommendations||[]).every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false)&&(c.simulations||[]).every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false)),detail:"Observation, anomaly, recommendation, and simulation layers are isolated from live restaurant state"}
++    ];
++    const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {organizationId:org,version:"45.5.0",score,status:score===100?"v45-autonomous-assistance-ready":score>=57?"conditional":"blocked",trusted:score===100,blockers,checks,latestCycleId:latest?.id||null,safety:{stage:"recommendation-and-simulation",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.5.0-autonomous-assistance-foundation"};
++  }
+   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
+ }
+ module.exports=AutonomousOperationsService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="44.22.0">
++  <meta name="blue-current-build" content="45.5.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8578,6 +8578,7 @@
+ <section class="v432-center v432-cert v4316-center" id="aipApprovalOrchestrationCenter"><header><div><small>V44.11–V44.12 · Approval Orchestration + Coordination Readiness</small><strong>Require explicit human decisions for approval-gated multi-agent plans and certify coordination safety.</strong><span>An approval authorizes only governed dry-run coordination; it never grants live execution authority.</span></div><button id="aaoRefresh" type="button">Refresh approvals</button></header><textarea id="aaoNote" class="v4312-input" placeholder="Optional approval/rejection note"></textarea><div class="v432-kpis"><article><small>Pending</small><strong id="aaoPending">0</strong></article><article><small>Decisions</small><strong id="aaoDecisions">0</strong></article><article><small>Readiness</small><strong id="aaoScore">0%</strong></article><article><small>Status</small><strong id="aaoStatus">—</strong></article><article><small>Trusted</small><strong id="aaoTrusted">NO</strong></article></div><div class="v4316-answer" id="aaoMessage">Approval decisions are audit-recorded and dry-run scoped.</div><div id="aaoList" class="v432-list"></div><div id="aaoChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="aipDurableWorkflowCenter"><header><div><small>V44.13–V44.16 · Durable Workflow Runtime</small><strong>Version, lease, checkpoint, recover, and replay long-running multi-agent work.</strong><span>Published workflow versions are immutable. Runtime instances use lease/heartbeat ownership, version-bound checkpoints, and idempotent execution history while remaining governed dry-runs.</span></div><div class="v4316-actions"><button id="adwRefresh" type="button">Refresh</button><button id="adwPublish" type="button">Publish version</button><button id="adwCreate" type="button">Create instance</button></div></header><div class="v432-kpis"><article><small>Definitions</small><strong id="adwDefinitions">0</strong></article><article><small>Instances</small><strong id="adwInstances">0</strong></article><article><small>Status</small><strong id="adwStatus">—</strong></article><article><small>Version</small><strong id="adwVersion">—</strong></article><article><small>Progress</small><strong id="adwProgress">0/0</strong></article><article><small>Lease</small><strong id="adwLease">—</strong></article><article><small>Readiness</small><strong id="adwReadiness">0%</strong></article></div><div class="v4316-answer" id="adwMessage">Publish an immutable workflow version from the latest orchestration.</div><div class="v4316-actions"><button data-wf-action="start" type="button">Start + lease</button><button data-wf-action="heartbeat" type="button">Heartbeat</button><button data-wf-action="advance" type="button">Advance</button><button data-wf-action="checkpoint" type="button">Checkpoint</button><button data-wf-action="pause" type="button">Pause</button><button data-wf-action="resume" type="button">Resume</button><button data-wf-action="recover" type="button">Recover</button><button data-wf-action="cancel" type="button">Cancel</button></div><div id="adwList" class="v432-list"></div><pre class="v4316-answer" id="adwHistory">Inspect an instance to view its version-bound execution journal and checkpoints.</pre></section>
+ <section class="v432-center v438-center v4316-center" id="aipWorkflowSupervisorCenter"><header><div><small>V44.18–V44.22 · Workflow Supervision + V44 Closure</small><strong>Resolve cross-agent dependencies, bound retries, escalate failures, and certify the V44 AI platform architecture.</strong><span>Supervision never promotes a workflow beyond governed dry-run scope. Retry limits and human escalation are explicit and auditable.</span></div><button id="awsRefresh" type="button">Refresh supervision</button></header><input id="awsReason" class="v4312-input" placeholder="Failure or escalation reason"><div class="v432-kpis"><article><small>Instances</small><strong id="awsInstances">0</strong></article><article><small>Retry pending</small><strong id="awsRetry">0</strong></article><article><small>Attention</small><strong id="awsAttention">0</strong></article><article><small>Escalations</small><strong id="awsEscalations">0</strong></article><article><small>Closure</small><strong id="awsScore">0%</strong></article><article><small>Status</small><strong id="awsStatus">—</strong></article><article><small>Trusted</small><strong id="awsTrusted">NO</strong></article></div><div class="v4316-answer" id="awsMessage">Select a durable workflow to exercise supervised failure handling.</div><div class="v4316-actions"><button type="button" data-supervisor-action="fail">Record failure</button><button type="button" data-supervisor-action="retry">Retry now</button><button type="button" data-supervisor-action="escalate">Escalate</button></div><div id="awsList" class="v432-list"></div><div id="awsChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="autonomousAssistanceCenter"><header><div><small>V45.1–V45.5 · Autonomous Operations Foundation</small><strong>Turn live operating evidence into anomalies, agent-scoped recommendations, and intervention simulations.</strong><span>V45 begins with governed assistance: observe → detect → recommend → simulate. No live restaurant mutation is authorized.</span></div><div class="v4316-actions"><button id="vaaRefresh" type="button">Refresh</button><button id="vaaRun" type="button">Run governed cycle</button></div></header><div class="v432-kpis"><article><small>Cycles</small><strong id="vaaCycles">0</strong></article><article><small>Locations</small><strong id="vaaLocations">0</strong></article><article><small>Anomalies</small><strong id="vaaAnomalies">0</strong></article><article><small>Critical</small><strong id="vaaCritical">0</strong></article><article><small>Recommendations</small><strong id="vaaRecommendations">0</strong></article><article><small>Simulations</small><strong id="vaaSimulations">0</strong></article><article><small>Readiness</small><strong id="vaaScore">0%</strong></article><article><small>Status</small><strong id="vaaStatus">—</strong></article><article><small>Trusted</small><strong id="vaaTrusted">NO</strong></article></div><div class="v4316-answer" id="vaaMessage">Run a governed observation cycle to establish the V45 operating picture.</div><div id="vaaList" class="v432-list"></div><div id="vaaChecks" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · Persistent Runtime Readiness</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryEngineV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryCenterV44.js?v=44.3.0"></script>
+@@ -8599,6 +8600,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipDurableWorkflowCenter" data-src="js/modules/aipDurableWorkflowCenter.js?v=44.17.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipWorkflowSupervisorCenter" data-src="js/modules/aipWorkflowSupervisorEngine.js?v=44.22.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipWorkflowSupervisorCenter" data-src="js/modules/aipWorkflowSupervisorCenter.js?v=44.22.0"></script>
+-<script src="js/startup-loader.js?v=44.22.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="autonomousAssistanceCenter" data-src="js/modules/autonomousAssistanceEngine.js?v=45.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="autonomousAssistanceCenter" data-src="js/modules/autonomousAssistanceCenter.js?v=45.5.0"></script>
++<script src="js/startup-loader.js?v=45.5.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -2443,6 +2443,7 @@
+ const aipApprovalOrchestrationCenterModule = startupRegistry.register("aipApprovalOrchestrationCenter",shouldInitializeCenter("aipApprovalOrchestrationCenter") ? window.createBlueCurrentAipApprovalOrchestrationCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipMultiAgentOrchestrationCenter"]);
+ const aipDurableWorkflowCenterModule = startupRegistry.register("aipDurableWorkflowCenter",shouldInitializeCenter("aipDurableWorkflowCenter") ? window.createBlueCurrentAipDurableWorkflowCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipMultiAgentOrchestrationCenter","aipApprovalOrchestrationCenter"]);
+ const aipWorkflowSupervisorCenterModule = startupRegistry.register("aipWorkflowSupervisorCenter",shouldInitializeCenter("aipWorkflowSupervisorCenter") ? window.createBlueCurrentAipWorkflowSupervisorCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipDurableWorkflowCenter"]);
++const autonomousAssistanceCenterModule = startupRegistry.register("autonomousAssistanceCenter",shouldInitializeCenter("autonomousAssistanceCenter") ? window.createBlueCurrentAutonomousAssistanceCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipWorkflowSupervisorCenter","autonomousPolicyCenter","predictiveOptimizationCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V44.22.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V45.5.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/autonomousAssistanceEngine.js
++++ b/client/js/modules/autonomousAssistanceEngine.js
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentAutonomousAssistanceEngine{constructor(){this.r=api();}cycles(){return this.r('/api/autonomous-assistance/cycles');}run(){return this.r('/api/autonomous-assistance/cycles',{method:'POST',body:'{}'});}readiness(){return this.r('/api/autonomous-assistance/readiness');}}
++window.BlueCurrentAutonomousAssistanceEngine=BlueCurrentAutonomousAssistanceEngine;})();--- a/client/js/modules/autonomousAssistanceCenter.js
++++ b/client/js/modules/autonomousAssistanceCenter.js
+@@ -0,0 +1,6 @@
++(function(){"use strict";
++function createBlueCurrentAutonomousAssistanceCenterModule(){const root=document.getElementById('autonomousAssistanceCenter');if(!root||!window.BlueCurrentAutonomousAssistanceEngine)return null;const e=new window.BlueCurrentAutonomousAssistanceEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
++function render(c,r){const latest=c.latest;$('vaaCycles').textContent=c.count||0;$('vaaLocations').textContent=latest?.summary?.locationsObserved||0;$('vaaAnomalies').textContent=latest?.summary?.anomalies||0;$('vaaCritical').textContent=latest?.summary?.critical||0;$('vaaRecommendations').textContent=latest?.summary?.recommendations||0;$('vaaSimulations').textContent=latest?.summary?.simulations||0;$('vaaScore').textContent=`${r.score||0}%`;$('vaaStatus').textContent=r.status||'—';$('vaaTrusted').textContent=r.trusted?'YES':'NO';$('vaaMessage').textContent=latest?`${latest.id} · governed recommendation + simulation only · live state isolated`:'Run a governed observation cycle to establish the V45 operating picture.';$('vaaList').innerHTML=(latest?.recommendations||[]).slice(0,12).map((x,i)=>{const s=latest.simulations?.find(y=>y.recommendationId===x.id);return `<article><div><strong>${esc(x.locationName)} · ${esc(x.title)}</strong><span>${esc(x.domain)} · ${esc(x.agentType)} · confidence ${x.confidence}% · approval required</span><span>${esc(x.recommendation)}</span>${s?`<span>Simulation: ${esc(JSON.stringify(s.modeled))}</span>`:''}</div></article>`;}).join('')||'<p>No V45 recommendations yet.</p>';$('vaaChecks').innerHTML=(r.checks||[]).map(x=>`<article><div><strong>${x.pass?'PASS':'BLOCK'} · ${esc(x.label)}</strong><span>${esc(x.detail)}</span></div></article>`).join('');}
++async function load(){try{const [c,r]=await Promise.all([e.cycles(),e.readiness()]);render(c,r);}catch(err){$('vaaMessage').textContent=err.message;}}
++$('vaaRun')?.addEventListener('click',async()=>{try{$('vaaMessage').textContent='Preparing governed V45 observation, anomaly, recommendation, and simulation cycle…';await e.run();await load();}catch(err){$('vaaMessage').textContent=err.message;}});$('vaaRefresh')?.addEventListener('click',load);load();return{engine:e,load};}
++window.createBlueCurrentAutonomousAssistanceCenterModule=createBlueCurrentAutonomousAssistanceCenterModule;})();--- a/scripts/maintenance/test-v45-autonomous-assistance.js
++++ b/scripts/maintenance/test-v45-autonomous-assistance.js
+@@ -0,0 +1,45 @@
++"use strict";
++const assert=require("assert"),AutonomousOperationsService=require("../../server/services/autonomousOperationsService");
++class MemoryDatabase{constructor(seed={}){this.data=structuredClone(seed);}async read(){return structuredClone(this.data);}async mutate(fn){return structuredClone(fn(this.data));}}
++(async()=>{
++ const org="org-test",db=new MemoryDatabase(),audits=[],events=[];
++ const svc=new AutonomousOperationsService(db,{record:async x=>audits.push(x)},{publish:(t,p)=>events.push({t,p})},{snapshot:async()=>({})});
++ svc.snapshot=async()=>({
++   portfolio:{organizationId:org,health:71,atRiskLocations:1},
++   locations:[
++    {locationId:"loc-a",name:"Harbor",occupancy:92,waitlist:9,averageTicketMinutes:24,readyTickets:4,activeStaff:15,health:68,revenue:12500,revenueTrend:-2,totalTables:30},
++    {locationId:"loc-b",name:"Market",occupancy:58,waitlist:1,averageTicketMinutes:14,readyTickets:0,activeStaff:11,health:86,revenue:7200,revenueTrend:-7,totalTables:24}
++   ],
++   forecasts:[
++    {locationId:"loc-a",name:"Harbor",projectedTicketPeak:29,projectedWaitlistPeak:14,additionalStaffNeeded:2,confidence:89},
++    {locationId:"loc-b",name:"Market",projectedTicketPeak:16,projectedWaitlistPeak:2,additionalStaffNeeded:0,confidence:91}
++   ],
++   profits:[
++    {locationId:"loc-a",laborPercent:31.5,foodPercent:30.1,margin:17.4},
++    {locationId:"loc-b",laborPercent:29.2,foodPercent:28.8,margin:18.1}
++   ],
++   portfolioProfit:{revenue:19700,operatingProfit:3500,margin:17.8,laborPercent:30.6,foodPercent:29.6}
++ });
++ const cycle=await svc.v45DecisionCycle(org,"Tester");
++ assert.equal(cycle.governance.liveExecutionAllowed,false);
++ assert.equal(cycle.governance.liveStateChanged,false);
++ assert.equal(cycle.observation.locations.length,2);
++ assert.ok(cycle.anomalies.length>=4);
++ assert.ok(cycle.recommendations.length>=4);
++ assert.equal(cycle.recommendations.length,cycle.simulations.length);
++ assert.ok(cycle.recommendations.every(x=>x.approvalRequired&&x.simulationRequired&&x.liveExecutionAllowed===false));
++ assert.ok(cycle.simulations.every(x=>x.executionMode==="simulation-only"&&x.liveStateChanged===false));
++ const domains=new Set(cycle.anomalies.map(x=>x.domain));
++ assert.ok(domains.has("kitchen-throughput"));
++ assert.ok(domains.has("reservation-pacing"));
++ assert.ok(domains.has("staffing"));
++ assert.ok(domains.has("guest-recovery"));
++ assert.ok(domains.has("revenue-opportunity"));
++ const list=await svc.v45DecisionCycles(org);
++ assert.equal(list.count,1);
++ const ready=await svc.v45Readiness(org);
++ assert.equal(ready.score,100);
++ assert.equal(ready.trusted,true);
++ assert.equal(ready.status,"v45-autonomous-assistance-ready");
++ console.log(JSON.stringify({ok:true,version:ready.version,cycleId:cycle.id,locations:cycle.summary.locationsObserved,anomalies:cycle.summary.anomalies,recommendations:cycle.summary.recommendations,simulations:cycle.summary.simulations,domains:[...domains],readiness:ready.score,liveExecutionAllowed:false,audits:audits.length,events:events.length},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V45.5.0.md
++++ b/README-APPLY-V45.5.0.md
+@@ -0,0 +1,64 @@
++# APPLY BLUE CURRENT V45.5.0
++
++## Baseline
++Apply over the authoritative repository containing V44.22.0.
++
++## Important
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++Extract `BLUE-CURRENT-V45.5.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v45-autonomous-assistance.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected version:
++
++```json
++"version": "45.5.0"
++```
++
++## Recommended Git staging
++Do not use `git add .` while runtime database artifacts may exist.
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/autonomousOperationsService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/autonomousAssistanceEngine.js
++git add client/js/modules/autonomousAssistanceCenter.js
++git add scripts/maintenance/test-v45-autonomous-assistance.js
++git add README-APPLY-V45.5.0.md
++git add V45.5.0-RELEASE.md
++git add V45.5.0-IMPLEMENTATION.patch
++```
++
++Then:
++
++```powershell
++git status
++git diff --cached
++git commit -m "V45.5.0 autonomous operations foundation"
++git push origin live-service-timeline
++```
++
++## Safety
++V45.5.0 is governed autonomous assistance, not autonomous live execution.
+--- a/V45.5.0-RELEASE.md
++++ b/V45.5.0-RELEASE.md
+@@ -0,0 +1,93 @@
++# BLUE CURRENT V45.5.0 — AUTONOMOUS OPERATIONS FOUNDATION
++
++## Release scope
++
++V45 begins Blue Current Autonomous Operations by connecting the governed V44 AI runtime to restaurant operating evidence. This release intentionally stops before live execution.
++
++### V45.1 — Operational Observation Frame
++- Normalizes the existing Autonomous Operations snapshot into an evidence-backed operating frame.
++- Retains location-level occupancy, waitlist, ticket time, ready tickets, staffing, health, revenue trend, forecast, labor, food cost, and margin evidence.
++- Uses one existing snapshot as the decision-cycle source rather than creating a new nested API fan-out.
++
++### V45.2 — Cross-Domain Anomaly Detection
++Detects governed operating anomalies in:
++- kitchen throughput
++- reservation pacing
++- staffing coverage
++- guest recovery
++- revenue opportunity
++
++Each anomaly retains its evidence, severity, score, location, reason, and detection time.
++
++### V45.3 — Agent-Scoped Recommendation Planner
++Maps detected anomalies to specialized V44-style agents:
++- Kitchen Flow Advisor
++- Operations Optimizer
++- Staffing Advisor
++- Guest Experience Advisor
++- Revenue Planner
++
++Every recommendation:
++- is evidence-backed
++- requires approval
++- requires simulation
++- is governed-dry-run only
++- cannot mutate live restaurant state
++
++### V45.4 — Intervention Simulator
++Creates a modeled intervention result for every recommendation before execution.
++Simulation outputs are explicitly `simulation-only`.
++No reservations, staff schedules, floor state, kitchen tickets, guest records, offers, or messages are changed.
++
++### V45.5 — Autonomous Assistance Readiness
++Adds a readiness gate covering:
++- operational observation
++- anomaly detection
++- agent-scoped recommendations
++- simulation-before-execution
++- evidence retention
++- approval requirements
++- live-state isolation
++
++## New APIs
++- `GET /api/autonomous-assistance/cycles`
++- `POST /api/autonomous-assistance/cycles`
++- `GET /api/autonomous-assistance/readiness`
++
++## UI
++Adds the V45 Autonomous Operations Foundation center with:
++- governed-cycle trigger
++- observed locations
++- anomaly and critical-signal counts
++- recommendation/simulation counts
++- evidence-backed recommendation list
++- V45 readiness status
++
++## Safety boundary
++V45.5.0 does not call the legacy autonomous auto-execution path.
++
++The new V45 path is restricted to:
++
++`Observation → Anomaly Detection → Recommendation → Simulation`
++
++All V45 recommendations require approval and all V45 simulation state carries:
++- `liveExecutionAllowed: false`
++- `liveStateChanged: false`
++
++## Validation
++- `node scripts/maintenance/test-v45-autonomous-assistance.js` passed.
++- Five target operational domains were detected in the focused harness.
++- Recommendation count matched simulation count.
++- All recommendations remained approval-required.
++- All simulations remained simulation-only.
++- Focused V45 readiness scored 100%.
++- `npm run check` passed:
++  - 806 JavaScript files
++  - 688 client scripts
++  - 5,141 unique HTML IDs
++- Server startup passed as V45.5.0.
++- `/api/health` returned HTTP 200 with database connected and auth enabled.
++- Authoritative runtime database SHA-256 remained unchanged during validation.
++
++## Operation V position
++V44 architecture is now being consumed by V45 rather than expanded in parallel. The next V45 milestone can build governed intervention proposals and domain-specific policy boundaries on top of this evidence/recommendation/simulation foundation before considering any limited executable action.

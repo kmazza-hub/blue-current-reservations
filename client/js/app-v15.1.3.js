@@ -2443,6 +2443,7 @@ const aipMultiAgentOrchestrationCenterModule = startupRegistry.register("aipMult
 const aipApprovalOrchestrationCenterModule = startupRegistry.register("aipApprovalOrchestrationCenter",shouldInitializeCenter("aipApprovalOrchestrationCenter") ? window.createBlueCurrentAipApprovalOrchestrationCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipMultiAgentOrchestrationCenter"]);
 const aipDurableWorkflowCenterModule = startupRegistry.register("aipDurableWorkflowCenter",shouldInitializeCenter("aipDurableWorkflowCenter") ? window.createBlueCurrentAipDurableWorkflowCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipMultiAgentOrchestrationCenter","aipApprovalOrchestrationCenter"]);
 const aipWorkflowSupervisorCenterModule = startupRegistry.register("aipWorkflowSupervisorCenter",shouldInitializeCenter("aipWorkflowSupervisorCenter") ? window.createBlueCurrentAipWorkflowSupervisorCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipDurableWorkflowCenter"]);
+const autonomousAssistanceCenterModule = startupRegistry.register("autonomousAssistanceCenter",shouldInitializeCenter("autonomousAssistanceCenter") ? window.createBlueCurrentAutonomousAssistanceCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipWorkflowSupervisorCenter","autonomousPolicyCenter","predictiveOptimizationCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(

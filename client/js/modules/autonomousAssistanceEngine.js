@@ -1,0 +1,4 @@
+(function(){"use strict";
+function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
+class BlueCurrentAutonomousAssistanceEngine{constructor(){this.r=api();}cycles(){return this.r('/api/autonomous-assistance/cycles');}run(){return this.r('/api/autonomous-assistance/cycles',{method:'POST',body:'{}'});}readiness(){return this.r('/api/autonomous-assistance/readiness');}}
+window.BlueCurrentAutonomousAssistanceEngine=BlueCurrentAutonomousAssistanceEngine;})();

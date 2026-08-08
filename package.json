@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "44.22.0",
+  "version": "45.5.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 V44 AIP supervised durable workflow runtime",
+  "description": "Blue Current Hospitality OS \u2014 V45 governed autonomous assistance foundation",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
