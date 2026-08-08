@@ -1,0 +1,4 @@
+
+# Blue Current runtime database artifacts
+database/data/blue-current.json.*.tmp
+database/data/blue-current.json.bak

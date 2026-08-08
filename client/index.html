@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="43.8.0-executive-performance-control">
+  <meta name="blue-current-build" content="43.12.0-executive-ai">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8526,6 +8526,10 @@
 <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionWorkspaceV43Center" data-src="js/modules/executiveDecisionWorkspaceV43Engine.js?v=43.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionWorkspaceV43Center" data-src="js/modules/executiveDecisionWorkspaceV43Center.js?v=43.5.0"></script>
 
+<section class="v432-center v438-center v4312-center" id="executiveKnowledgeGraphCenter"><header><div><small>V43.9 · Executive Knowledge Graph</small><strong>Connect locations, providers, goals, and governed evidence into one executive context graph.</strong><span id="ekgStatus">loading</span></div><button id="ekgRefresh" type="button">Refresh graph</button></header><div class="v432-kpis"><article><small>Nodes</small><strong id="ekgNodes">0</strong></article><article><small>Relationships</small><strong id="ekgEdges">0</strong></article></div><div id="ekgList" class="v432-list"></div></section>
+<section class="v432-center v438-center v4312-center" id="executiveReasoningCenterV43"><header><div><small>V43.10 · Executive Reasoning Engine</small><strong>Explain what matters, why it is happening, and the recommended next action.</strong></div><button id="erRefresh" type="button">Run reasoning</button></header><div class="v432-kpis"><article><small>Confidence</small><strong id="erConfidence">0%</strong></article><article><small>Status</small><strong id="erStatus">—</strong></article></div><div class="v4312-reason"><article><small>Finding</small><strong id="erFinding">—</strong></article><article><small>Likely cause</small><span id="erCause">—</span></article><article><small>Recommended action</small><span id="erAction">—</span></article></div><div id="erEvidence" class="v432-list"></div></section>
+<section class="v432-center v438-center v4312-center" id="executiveDecisionSimulatorCenter"><header><div><small>V43.11 · Decision Simulator</small><strong>Test an operating scenario before approving a real-world change.</strong></div><button id="edsRun" type="button">Simulate</button></header><textarea id="edsScenario" class="v4312-input">Add host coverage and slow reservation pacing for the next demand wave.</textarea><div class="v432-kpis"><article><small>Confidence</small><strong id="edsConfidence">0%</strong></article><article><small>Projected risk</small><strong id="edsRisk">—</strong></article><article><small>Revenue Δ</small><strong id="edsRevenue">—</strong></article><article><small>Guest wait Δ</small><strong id="edsWait">—</strong></article></div><div class="v4312-reason"><article><small>Tradeoff</small><span id="edsTradeoff">—</span></article><article><small>Recommendation</small><span id="edsRecommendation">—</span></article></div></section>
+<section class="v432-center v432-cert v4312-center" id="executiveAiConsoleCenter"><header><div><small>V43.12 · Executive AI Console</small><strong>Ask Blue Current about the operation in natural language.</strong><span>Answers are assembled from trusted operating evidence and remain advisory.</span></div><button id="eaiAsk" type="button">Ask Blue Current</button></header><textarea id="eaiQuery" class="v4312-input">Summarize tonight's operation and tell me what needs attention first.</textarea><div class="v432-kpis"><article><small>Confidence</small><strong id="eaiConfidence">0%</strong></article></div><div class="v4312-ai-answer"><strong id="eaiAnswer">Ask a question to begin.</strong><span id="eaiAction">—</span></div><div id="eaiEvidence" class="v432-list"></div></section>
 <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveKpiStudioCenter" data-src="js/modules/executiveKpiStudioEngine.js?v=43.8.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveKpiStudioCenter" data-src="js/modules/executiveKpiStudioCenter.js?v=43.8.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveTimelineCenterV43" data-src="js/modules/executiveTimelineEngineV43.js?v=43.8.0"></script>
@@ -8533,6 +8537,14 @@
 <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executivePortfolioHealthCenter" data-src="js/modules/executivePortfolioHealthEngine.js?v=43.8.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executivePortfolioHealthCenter" data-src="js/modules/executivePortfolioHealthCenter.js?v=43.8.0"></script>
 
-  <script src="js/startup-loader.js?v=43.8.0"></script>
+  <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveKnowledgeGraphCenter" data-src="js/modules/executiveKnowledgeGraphEngine.js?v=43.12.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveKnowledgeGraphCenter" data-src="js/modules/executiveKnowledgeGraphCenter.js?v=43.12.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveReasoningCenterV43" data-src="js/modules/executiveReasoningEngineV43.js?v=43.12.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveReasoningCenterV43" data-src="js/modules/executiveReasoningCenterV43.js?v=43.12.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionSimulatorCenter" data-src="js/modules/executiveDecisionSimulatorEngine.js?v=43.12.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionSimulatorCenter" data-src="js/modules/executiveDecisionSimulatorCenter.js?v=43.12.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiConsoleCenter" data-src="js/modules/executiveAiConsoleEngine.js?v=43.12.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiConsoleCenter" data-src="js/modules/executiveAiConsoleCenter.js?v=43.12.0"></script>
+<script src="js/startup-loader.js?v=43.12.0"></script>
 </body>
 </html>

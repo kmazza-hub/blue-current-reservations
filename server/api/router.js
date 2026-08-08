@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "43.8.0",
+        version: "43.12.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -474,6 +474,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/executive/kpi-studio" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveKpiStudio(organizationId, auth.user.name, await readJson(request)));
     if (url.pathname === "/api/executive/timeline" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveTimeline(organizationId));
     if (url.pathname === "/api/executive/portfolio-health" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executivePortfolioHealth(organizationId));
+    if (url.pathname === "/api/executive/knowledge-graph" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveKnowledgeGraph(organizationId));
+    if (url.pathname === "/api/executive/reasoning" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveReasoning(organizationId));
+    if (url.pathname === "/api/executive/simulate" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveDecisionSimulation(organizationId, await readJson(request)));
+    if (url.pathname === "/api/executive/ai-console" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveAiConsole(organizationId, await readJson(request)));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

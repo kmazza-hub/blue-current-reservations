@@ -4,10 +4,18 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
-const TRANSIENT_WINDOWS_ERRORS = new Set(["EPERM", "EBUSY", "EACCES", "ENOTEMPTY"]);
+const TRANSIENT_WINDOWS_ERRORS = new Set([
+  "EPERM", "EBUSY", "EACCES", "ENOTEMPTY", "EMFILE", "ENFILE"
+]);
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function clone(value) {
+  if (value === undefined) return undefined;
+  if (typeof structuredClone === "function") return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
 }
 
 class DatabaseService {
@@ -15,14 +23,115 @@ class DatabaseService {
     this.filePath = filePath;
     this.queue = Promise.resolve();
     this.maxWriteAttempts = Number(options.maxWriteAttempts || 7);
+    this.maxReadAttempts = Number(options.maxReadAttempts || 7);
     this.baseRetryDelayMs = Number(options.baseRetryDelayMs || 25);
     this.orphanMaxAgeMs = Number(options.orphanMaxAgeMs || 10 * 60 * 1000);
     this.logger = options.logger || console;
+
+    // V43.8.1: maintain one process-local snapshot and coalesce the initial disk
+    // read. The server is the sole writer for this JSON database, so repeated API
+    // reads should not reopen the file hundreds of times during startup fan-out.
+    this.snapshot = null;
+    this.snapshotLoadedAt = null;
+    this.inFlightRead = null;
+    this.stats = {
+      diskReads: 0,
+      coalescedReads: 0,
+      cacheReads: 0,
+      writes: 0,
+      retries: 0,
+      lastError: null
+    };
+  }
+
+  _recordError(error) {
+    this.stats.lastError = error ? {
+      code: error.code || error.name || "ERROR",
+      message: String(error.message || error),
+      at: new Date().toISOString()
+    } : null;
+  }
+
+  _isTransient(error) {
+    return Boolean(error && TRANSIENT_WINDOWS_ERRORS.has(error.code));
+  }
+
+  async _retry(label, operation, maxAttempts = this.maxWriteAttempts) {
+    let lastError;
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        return await operation(attempt);
+      } catch (error) {
+        lastError = error;
+        this._recordError(error);
+        if (!this._isTransient(error) || attempt >= maxAttempts) throw error;
+        this.stats.retries += 1;
+        const delay = Math.min(1000, this.baseRetryDelayMs * (2 ** (attempt - 1)));
+        this.logger.warn?.(
+          `[database] ${label} blocked by ${error.code}; retry ${attempt}/${maxAttempts} in ${delay}ms.`
+        );
+        await sleep(delay);
+      }
+    }
+    throw lastError;
+  }
+
+  async _readDisk() {
+    this.stats.diskReads += 1;
+    const raw = await this._retry(
+      "database read",
+      () => fs.promises.readFile(this.filePath, "utf8"),
+      this.maxReadAttempts
+    );
+    return JSON.parse(raw);
+  }
+
+  async _loadSnapshot() {
+    if (this.snapshot) {
+      this.stats.cacheReads += 1;
+      return this.snapshot;
+    }
+
+    if (this.inFlightRead) {
+      this.stats.coalescedReads += 1;
+      return this.inFlightRead;
+    }
+
+    this.inFlightRead = (async () => {
+      try {
+        const database = await this._readDisk();
+        this.snapshot = database;
+        this.snapshotLoadedAt = new Date().toISOString();
+        this._recordError(null);
+        return database;
+      } finally {
+        this.inFlightRead = null;
+      }
+    })();
+
+    return this.inFlightRead;
   }
 
   async read() {
-    const raw = await fs.promises.readFile(this.filePath, "utf8");
-    return JSON.parse(raw);
+    // Every consumer receives its own object, preventing accidental mutation of
+    // the shared process snapshot while eliminating repeated file opens.
+    return clone(await this._loadSnapshot());
+  }
+
+  async reload() {
+    this.snapshot = null;
+    this.snapshotLoadedAt = null;
+    return this.read();
+  }
+
+  diagnostics() {
+    return {
+      filePath: this.filePath,
+      snapshotLoaded: Boolean(this.snapshot),
+      snapshotLoadedAt: this.snapshotLoadedAt,
+      inFlightRead: Boolean(this.inFlightRead),
+      ...this.stats
+    };
   }
 
   _enqueue(operation) {
@@ -37,28 +146,6 @@ class DatabaseService {
     return `${this.filePath}.${process.pid}.${Date.now()}.${nonce}.${kind}`;
   }
 
-  _isTransient(error) {
-    return Boolean(error && TRANSIENT_WINDOWS_ERRORS.has(error.code));
-  }
-
-  async _retry(label, operation) {
-    let lastError;
-    for (let attempt = 1; attempt <= this.maxWriteAttempts; attempt += 1) {
-      try {
-        return await operation(attempt);
-      } catch (error) {
-        lastError = error;
-        if (!this._isTransient(error) || attempt >= this.maxWriteAttempts) throw error;
-        const delay = Math.min(1000, this.baseRetryDelayMs * (2 ** (attempt - 1)));
-        this.logger.warn?.(
-          `[database] ${label} blocked by ${error.code}; retry ${attempt}/${this.maxWriteAttempts} in ${delay}ms.`
-        );
-        await sleep(delay);
-      }
-    }
-    throw lastError;
-  }
-
   async _pathExists(target) {
     try {
       await fs.promises.access(target, fs.constants.F_OK);
@@ -69,12 +156,16 @@ class DatabaseService {
   }
 
   async _writeDurableFile(target, content) {
-    const handle = await fs.promises.open(target, "w");
+    const handle = await this._retry(
+      "open temporary database file",
+      () => fs.promises.open(target, "w"),
+      this.maxWriteAttempts
+    );
     try {
       await handle.writeFile(content, "utf8");
       await handle.sync();
     } finally {
-      await handle.close();
+      await handle.close().catch(() => undefined);
     }
   }
 
@@ -84,24 +175,30 @@ class DatabaseService {
     const now = Date.now();
     let entries = [];
     try {
-      entries = await fs.promises.readdir(directory, { withFileTypes: true });
+      entries = await this._retry(
+        "orphan scan",
+        () => fs.promises.readdir(directory, { withFileTypes: true }),
+        this.maxReadAttempts
+      );
     } catch {
       return;
     }
 
-    await Promise.all(entries
-      .filter(entry => entry.isFile() && entry.name.startsWith(prefix) && (entry.name.endsWith(".tmp") || entry.name.endsWith(".fallback")))
-      .map(async entry => {
-        const target = path.join(directory, entry.name);
-        try {
-          const stat = await fs.promises.stat(target);
-          if (now - stat.mtimeMs >= this.orphanMaxAgeMs) {
-            await fs.promises.unlink(target);
-          }
-        } catch {
-          // Cleanup is best effort and must never make the database unavailable.
+    // Deliberately sequential: Promise.all(stat/unlink) across many temp files can
+    // itself create an EMFILE storm on Windows/OneDrive.
+    for (const entry of entries) {
+      if (!entry.isFile() || !entry.name.startsWith(prefix) ||
+          !(entry.name.endsWith(".tmp") || entry.name.endsWith(".fallback"))) continue;
+      const target = path.join(directory, entry.name);
+      try {
+        const stat = await fs.promises.stat(target);
+        if (now - stat.mtimeMs >= this.orphanMaxAgeMs) {
+          await fs.promises.unlink(target);
         }
-      }));
+      } catch {
+        // Cleanup is best effort and must never make the database unavailable.
+      }
+    }
   }
 
   async _refreshBackup() {
@@ -117,9 +214,6 @@ class DatabaseService {
     } catch (renameError) {
       if (!this._isTransient(renameError)) throw renameError;
 
-      // Windows/OneDrive/AV can hold the destination open long enough to make
-      // rename-over-existing fail. Preserve the last known-good file, then use
-      // a retried copy replacement as a controlled fallback.
       this.logger.warn?.(
         `[database] Atomic rename remained blocked (${renameError.code}); using safe copy fallback.`
       );
@@ -140,29 +234,36 @@ class DatabaseService {
     try {
       await this._writeDurableFile(temporary, content);
       const mode = await this._replaceFromTemporary(temporary);
+      // Publish the new snapshot only after persistence succeeds.
+      this.snapshot = clone(data);
+      this.snapshotLoadedAt = new Date().toISOString();
+      this.stats.writes += 1;
+      this._recordError(null);
       return { data, mode };
     } catch (error) {
+      this._recordError(error);
       this.logger.error?.(
         `[database] Write failed for ${this.filePath}: ${error.code || error.name || "ERROR"} ${error.message}`
       );
-      // Keep a failed temp file briefly for diagnosis; orphan cleanup removes it later.
       throw error;
     }
   }
 
   write(data) {
     return this._enqueue(async () => {
-      const result = await this._writeImmediate(data);
-      return result.data;
+      const result = await this._writeImmediate(clone(data));
+      return clone(result.data);
     });
   }
 
   mutate(mutator) {
     return this._enqueue(async () => {
-      const database = await this.read();
+      // Use the process snapshot as the mutation base. The mutation queue makes
+      // this serial and therefore prevents read/write races between API modules.
+      const database = clone(await this._loadSnapshot());
       const result = await mutator(database);
       await this._writeImmediate(database);
-      return result;
+      return clone(result);
     });
   }
 

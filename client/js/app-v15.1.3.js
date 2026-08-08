@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "43.8.0-executive-performance-control", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "43.12.0-executive-ai", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2421,6 +2421,10 @@ const executiveDecisionWorkspaceV43CenterModule = startupRegistry.register("exec
 const executiveKpiStudioCenterModule = startupRegistry.register("executiveKpiStudioCenter",shouldInitializeCenter("executiveKpiStudioCenter") ? window.createBlueCurrentExecutiveKpiStudioCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveDecisionWorkspaceV43Center"]);
 const executiveTimelineCenterV43Module = startupRegistry.register("executiveTimelineCenterV43",shouldInitializeCenter("executiveTimelineCenterV43") ? window.createBlueCurrentExecutiveTimelineCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveRecommendationCenterV43"]);
 const executivePortfolioHealthCenterModule = startupRegistry.register("executivePortfolioHealthCenter",shouldInitializeCenter("executivePortfolioHealthCenter") ? window.createBlueCurrentExecutivePortfolioHealthCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveKpiStudioCenter","executiveTimelineCenterV43"]);
+const executiveKnowledgeGraphCenterModule = startupRegistry.register("executiveKnowledgeGraphCenter",shouldInitializeCenter("executiveKnowledgeGraphCenter") ? window.createBlueCurrentExecutiveKnowledgeGraphCenterModule?.(eventBus, appState) : null,["eventBus","appState","executivePortfolioHealthCenter"]);
+const executiveReasoningCenterV43Module = startupRegistry.register("executiveReasoningCenterV43",shouldInitializeCenter("executiveReasoningCenterV43") ? window.createBlueCurrentExecutiveReasoningCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveKnowledgeGraphCenter"]);
+const executiveDecisionSimulatorCenterModule = startupRegistry.register("executiveDecisionSimulatorCenter",shouldInitializeCenter("executiveDecisionSimulatorCenter") ? window.createBlueCurrentExecutiveDecisionSimulatorCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveReasoningCenterV43"]);
+const executiveAiConsoleCenterModule = startupRegistry.register("executiveAiConsoleCenter",shouldInitializeCenter("executiveAiConsoleCenter") ? window.createBlueCurrentExecutiveAiConsoleCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveReasoningCenterV43","executiveDecisionSimulatorCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(

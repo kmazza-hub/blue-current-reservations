@@ -1636,7 +1636,7 @@ class LiveIntegrationService {
         {id:"continuity",label:"Provider continuity",score:continuity.score||0,status:continuity.status||"unknown",trusted:(continuity.score||0)>=80}
       ],
       generatedAt:new Date().toISOString(),
-      build:"43.8.0-executive-performance-control"
+      build:"43.12.0-executive-ai"
     };
   }
 
@@ -1700,7 +1700,7 @@ class LiveIntegrationService {
       trusted:score===100,
       blockers,controls,
       priority:top?{locationId:top.locationId,locationName:top.locationName,risk:top.risk,severity:top.severity,recommendedAction:top.recommendedAction}:null,
-      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.8.0-executive-performance-control"
+      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.12.0-executive-ai"
     };
     if(persist) {
       await this.database.mutate(db=>{db.executiveDecisionGate||={};db.executiveDecisionGate[organizationId]=result;return result;});
@@ -1737,7 +1737,7 @@ class LiveIntegrationService {
     }
     const priorityOrder={critical:0,high:1,normal:2,low:3};
     insights.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
-    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
   }
 
   async executiveRecommendations(organizationId) {
@@ -1761,7 +1761,7 @@ class LiveIntegrationService {
     }
     const priorityOrder={critical:0,high:1,normal:2,low:3};
     recs.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
-    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
   }
 
   async executiveDecisionWorkspaceV43(organizationId, actor = null, persist = false) {
@@ -1782,7 +1782,7 @@ class LiveIntegrationService {
     const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length);
     const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
     const top=recommendations.topRecommendation||null;
-    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.8.0-executive-performance-control"};
+    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.12.0-executive-ai"};
     if(persist){
       await this.database.mutate(db=>{db.executiveDecisionWorkspaceV43||={};db.executiveDecisionWorkspaceV43[organizationId]=result;return result;});
       await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision workspace persisted: ${result.status}`,category:"executive-intelligence"});
@@ -1819,7 +1819,7 @@ class LiveIntegrationService {
       {id:"event-freshness",label:"Live event freshness",value:Number(snapshot.freshnessSeconds??999999),unit:"s",target:300,direction:"max"}
     ].map(row => ({...row, pass: row.direction === "min" ? row.value >= row.target : row.value <= row.target}));
     const score = Math.round(rows.reduce((sum,row)=>sum+(row.pass?100:0),0)/rows.length);
-    return {organizationId,name:definition.name,score,status:score===100?"on-target":score>=60?"watch":"off-target",targets:definition.targets,passing:rows.filter(x=>x.pass).length,total:rows.length,items:rows,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+    return {organizationId,name:definition.name,score,status:score===100?"on-target":score>=60?"watch":"off-target",targets:definition.targets,passing:rows.filter(x=>x.pass).length,total:rows.length,items:rows,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
   }
 
   async executiveTimeline(organizationId) {
@@ -1835,7 +1835,7 @@ class LiveIntegrationService {
     incidents.forEach(item=>timeline.push({id:`TL-INC-${item.id}`,at:item.openedAt||item.createdAt||new Date().toISOString(),kind:"incident",title:item.title||"Provider incident",detail:item.note||item.reason||item.status||"Incident recorded",priority:item.severity||"watch"}));
     timeline.sort((a,b)=>new Date(b.at)-new Date(a.at));
     const latest=timeline[0]||null;
-    return {organizationId,count:timeline.length,latestAt:latest?.at||null,liveEvents:timeline.filter(x=>x.kind==="live-event").length,decisions:timeline.filter(x=>x.kind.includes("decision")).length,incidents:timeline.filter(x=>x.kind==="incident").length,items:timeline.slice(0,40),generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+    return {organizationId,count:timeline.length,latestAt:latest?.at||null,liveEvents:timeline.filter(x=>x.kind==="live-event").length,decisions:timeline.filter(x=>x.kind.includes("decision")).length,incidents:timeline.filter(x=>x.kind==="incident").length,items:timeline.slice(0,40),generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
   }
 
   async executivePortfolioHealth(organizationId) {
@@ -1848,7 +1848,47 @@ class LiveIntegrationService {
       return {locationId:location.locationId,locationName:location.locationName,score,status:score>=85?"healthy":score>=65?"watch":"attention",coverage:Number(cov.score||0),risk:Number(risk.risk||0),cutover:location.cutoverStage||location.stage||"sandbox",recommendedAction:risk.recommendedAction||"Continue monitoring current operating controls."};
     }).sort((a,b)=>a.score-b.score);
     const score=locations.length?Math.round(locations.reduce((sum,x)=>sum+x.score,0)/locations.length):0;
-    return {organizationId,score,status:score>=85?"portfolio-healthy":score>=65?"watch":"attention",healthy:locations.filter(x=>x.status==="healthy").length,watch:locations.filter(x=>x.status==="watch").length,attention:locations.filter(x=>x.status==="attention").length,lowest:locations[0]||null,locations,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+    return {organizationId,score,status:score>=85?"portfolio-healthy":score>=65?"watch":"attention",healthy:locations.filter(x=>x.status==="healthy").length,watch:locations.filter(x=>x.status==="watch").length,attention:locations.filter(x=>x.status==="attention").length,lowest:locations[0]||null,locations,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
+  }
+
+  async executiveKnowledgeGraph(organizationId) {
+    const db = await this.database.read();
+    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId);
+    const connectors=(db.liveConnectors||[]).filter(x=>x.organizationId===organizationId);
+    const goals=(db.executiveGoals||[]).filter(x=>!x.organizationId||x.organizationId===organizationId);
+    const cert=db.providerLaunchCertification?.[organizationId]||null;
+    const nodes=[]; const edges=[];
+    for(const loc of locations) nodes.push({id:`location:${loc.id}`,type:'location',label:loc.name,status:'active',value:loc.capacity||0});
+    for(const c of connectors){nodes.push({id:`connector:${c.id}`,type:'provider',label:c.name||c.provider||c.id,status:c.status||c.mode||'configured'});const locationId=c.locationId||c.authorizedLocationId||null;if(locationId&&locations.some(l=>l.id===locationId))edges.push({from:`location:${locationId}`,to:`connector:${c.id}`,type:'receives-evidence-from',weight:100});}
+    for(const g of goals.slice(0,12)){const id=`goal:${g.id||g.name||nodes.length}`;nodes.push({id,type:'goal',label:g.name||g.title||g.metric||'Executive goal',status:g.status||'active',value:g.target??null});for(const loc of locations)edges.push({from:`location:${loc.id}`,to:id,type:'measured-against',weight:50});}
+    if(cert){nodes.push({id:'cert:provider-launch',type:'certification',label:'Provider Launch Certification',status:cert.status||'recorded',score:cert.score||0});for(const c of connectors)edges.push({from:`connector:${c.id}`,to:'cert:provider-launch',type:'governed-by',weight:100});}
+    const context=(db.auditLogs||[]).filter(x=>x.organizationId===organizationId).slice(-12).reverse().map(x=>({at:x.createdAt||x.timestamp||null,title:x.action||x.category||'Audit evidence'}));
+    return {organizationId,nodeCount:nodes.length,edgeCount:edges.length,locationCount:locations.length,providerCount:connectors.length,nodes,edges,recentContext:context,generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
+  }
+
+  async executiveReasoning(organizationId) {
+    const graph=await this.executiveKnowledgeGraph(organizationId);
+    const locationNodes=graph.nodes.filter(x=>x.type==='location');
+    const providerNodes=graph.nodes.filter(x=>x.type==='provider');
+    const unconnected=locationNodes.filter(loc=>!graph.edges.some(e=>e.from===loc.id&&e.type==='receives-evidence-from'));
+    const providerWarnings=providerNodes.filter(x=>!['healthy','live','active','configured'].includes(String(x.status||'').toLowerCase()));
+    let finding='Executive evidence graph is structurally connected.',cause='Live sources and executive goals are represented in one shared operating context.',recommendation='Continue monitoring the highest-priority operating evidence.';
+    if(unconnected.length){finding=`${unconnected.length} location${unconnected.length===1?' is':'s are'} missing an explicit live-source relationship.`;cause='The executive graph cannot trace trusted provider evidence to every restaurant.';recommendation=`Prioritize source binding for ${unconnected[0].label} before using AI recommendations for that location.`;}else if(providerWarnings.length){finding=`${providerWarnings.length} provider relationship${providerWarnings.length===1?' requires':'s require'} review.`;cause='At least one provider is outside the expected healthy/live state.';recommendation=`Review ${providerWarnings[0].label} before approving an executive action that depends on its data.`;}
+    const completeness=locationNodes.length?Math.round(((locationNodes.length-unconnected.length)/locationNodes.length)*100):0;
+    const confidence=Math.max(40,Math.min(98,Math.round(completeness*.75+(providerWarnings.length?10:23))));
+    return {organizationId,confidence,status:confidence>=80?'high-confidence':confidence>=60?'review':'low-confidence',finding,cause,recommendation,evidence:[`${graph.locationCount} locations in graph`,`${graph.providerCount} providers in graph`,`${graph.edgeCount} governed relationships`],graph:{nodes:graph.nodeCount,edges:graph.edgeCount},generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
+  }
+
+  async executiveDecisionSimulation(organizationId, input={}) {
+    const reasoning=await this.executiveReasoning(organizationId); const scenario=String(input.scenario||'balanced staffing and pacing').slice(0,220); const lower=scenario.toLowerCase(); let revenueDelta=0,riskDelta=-3,laborDelta=0,waitDelta=-2;
+    if(lower.includes('staff')){laborDelta=4;riskDelta=-8;waitDelta=-6;} if(lower.includes('reservation')||lower.includes('pace')){revenueDelta=-2;riskDelta=-6;waitDelta=-5;} if(lower.includes('patio')||lower.includes('capacity')){revenueDelta=6;riskDelta=3;waitDelta=-3;} if(lower.includes('kitchen')){laborDelta=3;riskDelta=-7;waitDelta=-4;}
+    const baseRisk=Math.max(0,100-reasoning.confidence); return {organizationId,scenario,confidence:Math.max(45,reasoning.confidence-5),baseline:{executiveConfidence:reasoning.confidence,modeledRisk:baseRisk},projected:{revenueIndexDeltaPct:revenueDelta,highestRisk:Math.max(0,baseRisk+riskDelta),laborDeltaPct:laborDelta,guestWaitDeltaMinutes:waitDelta},tradeoff:laborDelta>0?'Higher labor cost for lower service risk.':revenueDelta<0?'Protects service quality at modest revenue cost.':'Balanced operational impact.',recommendation:riskDelta<0?'Scenario is directionally favorable; require human approval before execution.':'Review downstream capacity before approval.',generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
+  }
+
+  async executiveAiConsole(organizationId, input={}) {
+    const query=String(input.query||"Summarize tonight's operation.").trim().slice(0,500); const reasoning=await this.executiveReasoning(organizationId); const graph=await this.executiveKnowledgeGraph(organizationId); const q=query.toLowerCase(); let answer;
+    if(q.includes('risk')||q.includes('attention')) answer=`Current modeled executive confidence is ${reasoning.confidence}%. ${reasoning.finding} ${reasoning.recommendation}`; else if(q.includes('why')) answer=`${reasoning.finding} ${reasoning.cause} Confidence is ${reasoning.confidence}%.`; else if(q.includes('recommend')||q.includes('what should')||q.includes('do')) answer=reasoning.recommendation; else answer=`Blue Current is reasoning across ${graph.locationCount} locations, ${graph.providerCount} providers, and ${graph.edgeCount} governed relationships. ${reasoning.finding} Recommended next action: ${reasoning.recommendation}`;
+    return {organizationId,query,answer,confidence:reasoning.confidence,evidence:reasoning.evidence,recommendedAction:reasoning.recommendation,approvalRequired:true,generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
   }
 
   async operatingSnapshot(organizationId) {
