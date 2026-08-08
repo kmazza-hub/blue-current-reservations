@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "46.65.0",
+        version: "46.70.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -88,6 +88,13 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Repository impact review permission required."});
       const surfaceId = url.searchParams.get("surfaceId") || "";
       return sendJson(response,200,repositoryImpactService.analyze(surfaceId));
+    }
+
+    if (url.pathname === "/api/operator-fine-comb/v46-certification" && request.method === "GET") {
+      const auth = await authService.authenticate(bearerToken(request));
+      if (!auth) return sendJson(response,401,{error:"Authentication required."});
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"V46 certification permission required."});
+      return sendJson(response,200,v46ReleaseCertificationService.snapshot());
     }
 
     if (url.pathname === "/api/operator-fine-comb/candidate-impact" && request.method === "POST") {
