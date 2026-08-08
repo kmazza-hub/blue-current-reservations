@@ -56,6 +56,10 @@ class DatabaseService {
     return Boolean(error && TRANSIENT_WINDOWS_ERRORS.has(error.code));
   }
 
+  _isCloudSyncedPath() {
+    return /(?:^|[\\/])(OneDrive|Dropbox|Google Drive)(?:[\\/]|$)/i.test(this.filePath);
+  }
+
   async _retry(label, operation, maxAttempts = this.maxWriteAttempts) {
     let lastError;
     for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
@@ -209,7 +213,8 @@ class DatabaseService {
 
   async _replaceFromTemporary(temporary) {
     try {
-      await this._retry("atomic rename", () => fs.promises.rename(temporary, this.filePath));
+      const renameAttempts = this._isCloudSyncedPath() ? 1 : this.maxWriteAttempts;
+      await this._retry("atomic rename", () => fs.promises.rename(temporary, this.filePath), renameAttempts);
       return "rename";
     } catch (renameError) {
       if (!this._isTransient(renameError)) throw renameError;

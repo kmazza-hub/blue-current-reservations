@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "46.55.0",
+  "version": "46.55.2",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 post-retirement assurance and next-candidate safety gate",
+  "description": "Blue Current Hospitality OS \u2014 localhost/network resilience and OneDrive database stability hotfix",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

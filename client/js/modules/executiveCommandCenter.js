@@ -21,11 +21,11 @@ function createExecutiveCommandCenterModule(eventBus,appState,cloudFoundationMod
   $("execGoalList").innerHTML=state.goals.map(g=>`<article><div><small>${g.label}</small><strong>${g.unit==="currency"?money(g.target):g.target+(g.unit==="minutes"?"m":"")}</strong></div><button data-exec-goal="${g.id}">Edit</button></article>`).join("");
   appState.update({executivePortfolioHealth:p.health||0,executivePortfolioRevenue:p.revenue||0});
  }
- async function load(){if(!api.token)return;state=await api.executiveCommand();if(!selected)selected=state.locations[0]?.locationId||null;render();eventBus.emit("executive:loaded",state.portfolio);}
+ async function load(){if(!api.token)return;try{state=await api.executiveCommand();if(!selected)selected=state.locations[0]?.locationId||null;render();eventBus.emit("executive:loaded",state.portfolio);}catch(err){const el=$("execLastUpdated");if(el)el.textContent="Connection interrupted — retrying";}}
  $("execLocationGrid")?.addEventListener("click",e=>{const b=e.target.closest("[data-exec-location]");if(b){selected=b.dataset.execLocation;render();}});
  $("execAlertFeed")?.addEventListener("click",e=>{const b=e.target.closest("[data-exec-alert-location]");if(b){selected=b.dataset.execAlertLocation;render();}});
  $("execGoalList")?.addEventListener("click",async e=>{const b=e.target.closest("[data-exec-goal]");if(!b)return;const g=state.goals.find(x=>x.id===b.dataset.execGoal),v=prompt(`Update ${g.label}`,g.target);if(v!==null&&!Number.isNaN(Number(v))){await api.updateExecutiveGoal(g.id,{target:Number(v)});await load();}});
- $("execRefreshButton")?.addEventListener("click",load);eventBus.on?.("auth:signed-in",load);eventBus.on?.("auth:restored",load);setInterval(load,60000);load();
+ $("execRefreshButton")?.addEventListener("click",load);eventBus.on?.("auth:signed-in",load);eventBus.on?.("auth:restored",load);setInterval(load,60000);window.addEventListener?.("online",load);load();
  return{reload:load,getState:()=>JSON.parse(JSON.stringify(state))};
 }
 window.createBlueCurrentExecutiveCommandCenterModule=createExecutiveCommandCenterModule;})();

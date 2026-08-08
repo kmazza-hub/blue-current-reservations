@@ -1,0 +1,286 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.55.1",
++  "version": "46.55.2",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V46.55.1 Margin Intelligence startup registration hotfix",
++  "description": "Blue Current Hospitality OS \u2014 localhost/network resilience and OneDrive database stability hotfix",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -158,7 +158,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.55.1 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.55.2 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.55.1",
++        version: "46.55.2",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+--- a/server/services/databaseService.js
++++ b/server/services/databaseService.js
+@@ -54,6 +54,10 @@
+ 
+   _isTransient(error) {
+     return Boolean(error && TRANSIENT_WINDOWS_ERRORS.has(error.code));
++  }
++
++  _isCloudSyncedPath() {
++    return /(?:^|[\\/])(OneDrive|Dropbox|Google Drive)(?:[\\/]|$)/i.test(this.filePath);
+   }
+ 
+   async _retry(label, operation, maxAttempts = this.maxWriteAttempts) {
+@@ -209,7 +213,8 @@
+ 
+   async _replaceFromTemporary(temporary) {
+     try {
+-      await this._retry("atomic rename", () => fs.promises.rename(temporary, this.filePath));
++      const renameAttempts = this._isCloudSyncedPath() ? 1 : this.maxWriteAttempts;
++      await this._retry("atomic rename", () => fs.promises.rename(temporary, this.filePath), renameAttempts);
+       return "rename";
+     } catch (renameError) {
+       if (!this._isTransient(renameError)) throw renameError;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.55.1">
++  <meta name="blue-current-build" content="46.55.2">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8614,6 +8614,6 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalRetirementAuthorizationCenter" data-src="js/modules/finalRetirementAuthorizationCenter.js?v=46.45.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementAssuranceCenter" data-src="js/modules/retirementAssuranceEngine.js?v=46.55.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementAssuranceCenter" data-src="js/modules/retirementAssuranceCenter.js?v=46.55.0"></script>
+-<script src="js/startup-loader.js?v=46.55.1"></script>
++<script src="js/startup-loader.js?v=46.55.2"></script>
+ </body>
+ </html>
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.55.1 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.55.2 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/executiveWorkflowComposerCenter.js
++++ b/client/js/modules/executiveWorkflowComposerCenter.js
+@@ -1 +1 @@
+-(function(){"use strict";function createBlueCurrentExecutiveWorkflowComposerCenterModule(){const root=document.getElementById('executiveWorkflowComposerCenter');if(!root||!window.BlueCurrentExecutiveWorkflowComposerEngine)return null;const e=new window.BlueCurrentExecutiveWorkflowComposerEngine(),$=id=>document.getElementById(id);async function load(){const x=await e.get();$('ewcCount').textContent=(x.items||[]).length;$('ewcList').innerHTML=(x.items||[]).map(w=>`<article><div><strong>${w.name||'Executive workflow'}</strong><span>${w.instruction} · ${w.status} · ${w.confidence||0}% confidence</span></div></article>`).join('')||'<article><span>No workflows yet.</span></article>';}async function create(){try{await e.create($('ewcInstruction').value);await load();}catch(err){$('ewcList').innerHTML=`<article><span>${err.message}</span></article>`;}}$('ewcCreate')?.addEventListener('click',create);$('ewcRefresh')?.addEventListener('click',load);load();return{engine:e,load};}window.createBlueCurrentExecutiveWorkflowComposerCenterModule=createBlueCurrentExecutiveWorkflowComposerCenterModule;})();+(function(){"use strict";function createBlueCurrentExecutiveWorkflowComposerCenterModule(){const root=document.getElementById('executiveWorkflowComposerCenter');if(!root||!window.BlueCurrentExecutiveWorkflowComposerEngine)return null;const e=new window.BlueCurrentExecutiveWorkflowComposerEngine(),$=id=>document.getElementById(id);async function load(){try{const x=await e.get();$('ewcCount').textContent=(x.items||[]).length;$('ewcList').innerHTML=(x.items||[]).map(w=>`<article><div><strong>${w.name||'Executive workflow'}</strong><span>${w.instruction} · ${w.status} · ${w.confidence||0}% confidence</span></div></article>`).join('')||'<article><span>No workflows yet.</span></article>';}catch(err){$('ewcList').innerHTML=`<article><span>${err.message||'Connection temporarily unavailable.'}</span></article>`;}}async function create(){try{await e.create($('ewcInstruction').value);await load();}catch(err){$('ewcList').innerHTML=`<article><span>${err.message}</span></article>`;}}$('ewcCreate')?.addEventListener('click',create);$('ewcRefresh')?.addEventListener('click',load);window.addEventListener?.('online',load);load();return{engine:e,load};}window.createBlueCurrentExecutiveWorkflowComposerCenterModule=createBlueCurrentExecutiveWorkflowComposerCenterModule;})();--- a/client/js/modules/executiveCommandCenter.js
++++ b/client/js/modules/executiveCommandCenter.js
+@@ -21,11 +21,11 @@
+   $("execGoalList").innerHTML=state.goals.map(g=>`<article><div><small>${g.label}</small><strong>${g.unit==="currency"?money(g.target):g.target+(g.unit==="minutes"?"m":"")}</strong></div><button data-exec-goal="${g.id}">Edit</button></article>`).join("");
+   appState.update({executivePortfolioHealth:p.health||0,executivePortfolioRevenue:p.revenue||0});
+  }
+- async function load(){if(!api.token)return;state=await api.executiveCommand();if(!selected)selected=state.locations[0]?.locationId||null;render();eventBus.emit("executive:loaded",state.portfolio);}
++ async function load(){if(!api.token)return;try{state=await api.executiveCommand();if(!selected)selected=state.locations[0]?.locationId||null;render();eventBus.emit("executive:loaded",state.portfolio);}catch(err){const el=$("execLastUpdated");if(el)el.textContent="Connection interrupted — retrying";}}
+  $("execLocationGrid")?.addEventListener("click",e=>{const b=e.target.closest("[data-exec-location]");if(b){selected=b.dataset.execLocation;render();}});
+  $("execAlertFeed")?.addEventListener("click",e=>{const b=e.target.closest("[data-exec-alert-location]");if(b){selected=b.dataset.execAlertLocation;render();}});
+  $("execGoalList")?.addEventListener("click",async e=>{const b=e.target.closest("[data-exec-goal]");if(!b)return;const g=state.goals.find(x=>x.id===b.dataset.execGoal),v=prompt(`Update ${g.label}`,g.target);if(v!==null&&!Number.isNaN(Number(v))){await api.updateExecutiveGoal(g.id,{target:Number(v)});await load();}});
+- $("execRefreshButton")?.addEventListener("click",load);eventBus.on?.("auth:signed-in",load);eventBus.on?.("auth:restored",load);setInterval(load,60000);load();
++ $("execRefreshButton")?.addEventListener("click",load);eventBus.on?.("auth:signed-in",load);eventBus.on?.("auth:restored",load);setInterval(load,60000);window.addEventListener?.("online",load);load();
+  return{reload:load,getState:()=>JSON.parse(JSON.stringify(state))};
+ }
+ window.createBlueCurrentExecutiveCommandCenterModule=createExecutiveCommandCenterModule;})();--- a/client/js/modules/kitchenCommandCenter.js
++++ b/client/js/modules/kitchenCommandCenter.js
+@@ -1 +1 @@
+-(function(){"use strict";function createKitchenCommandCenterModule(eventBus,appState,cloud){const api=cloud?.api||new window.BlueCurrentCloudApi("");const $=id=>document.getElementById(id);let state={tickets:[],stations:[],events:[]},selected=null,filter="all";const age=t=>Math.max(0,Math.floor((Date.now()-new Date(t).getTime())/60000));function loadMetrics(){const a=state.tickets.filter(t=>!["served","cancelled"].includes(t.status));$("kitchenActiveTickets").textContent=a.length;$("kitchenReadyTickets").textContent=a.filter(t=>t.status==="ready").length;$("kitchenOverdueTickets").textContent=a.filter(t=>age(t.createdAt)>t.targetMinutes).length;$("kitchenAverageTime").textContent=(a.length?Math.round(a.reduce((s,t)=>s+age(t.createdAt),0)/a.length):0)+"m"}function render(){loadMetrics();$("kitchenStationGrid").innerHTML=state.stations.map(s=>{const l=state.tickets.flatMap(t=>t.items).filter(i=>i.stationId===s.id&&["received","cooking"].includes(i.status)).length;return `<article><div><small>${s.name}</small><strong>${l}/${s.capacity}</strong></div><i><b style="width:${Math.min(100,l/s.capacity*100)}%"></b></i></article>`}).join("");const list=filter==="all"?state.tickets:state.tickets.filter(t=>t.status===filter);$("kitchenTicketBoard").innerHTML=list.map(t=>`<button class="kitchen-ticket-card ${selected===t.id?"selected":""}" data-ticket="${t.id}"><div><span>${t.tableName}</span><time>${age(t.createdAt)}m</time></div><strong>${t.guestName}</strong><small>${t.serverName} · ${t.items.length} items</small><footer>${t.status} · ${t.priority}</footer></button>`).join("");const t=state.tickets.find(x=>x.id===selected);$("kitchenInspector").innerHTML=t?`<h3>${t.tableName} · ${t.guestName}</h3><label>Status<select id="ktStatus">${["received","cooking","plating","ready","served"].map(x=>`<option ${x===t.status?"selected":""}>${x}</option>`).join("")}</select></label><div class="kitchen-item-list">${t.items.map(i=>`<article><strong>${i.qty}× ${i.name}</strong><select data-item="${i.id}">${["received","cooking","ready"].map(x=>`<option ${x===i.status?"selected":""}>${x}</option>`).join("")}</select></article>`).join("")}</div><button class="button button-gold button-full" id="ktSave">Save ticket</button>`:"<p>Select a ticket.</p>"}async function load(){if(!api.token)return;state=await api.kitchenOperations("loc_marina");if(!selected&&state.tickets[0])selected=state.tickets[0].id;render()}$("kitchenFilters")?.addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;filter=b.dataset.filter;render()});$("kitchenTicketBoard")?.addEventListener("click",e=>{const b=e.target.closest("[data-ticket]");if(!b)return;selected=b.dataset.ticket;render()});$("kitchenInspector")?.addEventListener("change",async e=>{const s=e.target.closest("[data-item]");if(!s)return;await api.updateKitchenItem(selected,s.dataset.item,{status:s.value});await load()});$("kitchenInspector")?.addEventListener("click",async e=>{if(!e.target.closest("#ktSave"))return;await api.updateKitchenTicket(selected,{status:$("ktStatus").value});await load()});eventBus.on?.("auth:signed-in",load);eventBus.on?.("auth:restored",load);["kitchen:ticket-created","kitchen:ticket-updated","kitchen:item-updated"].forEach(x=>eventBus.on?.(x,load));load();return{reload:load}}window.createBlueCurrentKitchenCommandCenterModule=createKitchenCommandCenterModule})();+(function(){"use strict";function createKitchenCommandCenterModule(eventBus,appState,cloud){const api=cloud?.api||new window.BlueCurrentCloudApi("");const $=id=>document.getElementById(id);let state={tickets:[],stations:[],events:[]},selected=null,filter="all";const age=t=>Math.max(0,Math.floor((Date.now()-new Date(t).getTime())/60000));function loadMetrics(){const a=state.tickets.filter(t=>!["served","cancelled"].includes(t.status));$("kitchenActiveTickets").textContent=a.length;$("kitchenReadyTickets").textContent=a.filter(t=>t.status==="ready").length;$("kitchenOverdueTickets").textContent=a.filter(t=>age(t.createdAt)>t.targetMinutes).length;$("kitchenAverageTime").textContent=(a.length?Math.round(a.reduce((s,t)=>s+age(t.createdAt),0)/a.length):0)+"m"}function render(){loadMetrics();$("kitchenStationGrid").innerHTML=state.stations.map(s=>{const l=state.tickets.flatMap(t=>t.items).filter(i=>i.stationId===s.id&&["received","cooking"].includes(i.status)).length;return `<article><div><small>${s.name}</small><strong>${l}/${s.capacity}</strong></div><i><b style="width:${Math.min(100,l/s.capacity*100)}%"></b></i></article>`}).join("");const list=filter==="all"?state.tickets:state.tickets.filter(t=>t.status===filter);$("kitchenTicketBoard").innerHTML=list.map(t=>`<button class="kitchen-ticket-card ${selected===t.id?"selected":""}" data-ticket="${t.id}"><div><span>${t.tableName}</span><time>${age(t.createdAt)}m</time></div><strong>${t.guestName}</strong><small>${t.serverName} · ${t.items.length} items</small><footer>${t.status} · ${t.priority}</footer></button>`).join("");const t=state.tickets.find(x=>x.id===selected);$("kitchenInspector").innerHTML=t?`<h3>${t.tableName} · ${t.guestName}</h3><label>Status<select id="ktStatus">${["received","cooking","plating","ready","served"].map(x=>`<option ${x===t.status?"selected":""}>${x}</option>`).join("")}</select></label><div class="kitchen-item-list">${t.items.map(i=>`<article><strong>${i.qty}× ${i.name}</strong><select data-item="${i.id}">${["received","cooking","ready"].map(x=>`<option ${x===i.status?"selected":""}>${x}</option>`).join("")}</select></article>`).join("")}</div><button class="button button-gold button-full" id="ktSave">Save ticket</button>`:"<p>Select a ticket.</p>"}async function load(){if(!api.token)return;try{state=await api.kitchenOperations("loc_marina");if(!selected&&state.tickets[0])selected=state.tickets[0].id;render()}catch(err){const el=$("kitchenAverageTime");if(el&&navigator.onLine===false)el.textContent="offline";}}$("kitchenFilters")?.addEventListener("click",e=>{const b=e.target.closest("[data-filter]");if(!b)return;filter=b.dataset.filter;render()});$("kitchenTicketBoard")?.addEventListener("click",e=>{const b=e.target.closest("[data-ticket]");if(!b)return;selected=b.dataset.ticket;render()});$("kitchenInspector")?.addEventListener("change",async e=>{const s=e.target.closest("[data-item]");if(!s)return;await api.updateKitchenItem(selected,s.dataset.item,{status:s.value});await load()});$("kitchenInspector")?.addEventListener("click",async e=>{if(!e.target.closest("#ktSave"))return;await api.updateKitchenTicket(selected,{status:$("ktStatus").value});await load()});eventBus.on?.("auth:signed-in",load);eventBus.on?.("auth:restored",load);window.addEventListener?.("online",load);["kitchen:ticket-created","kitchen:ticket-updated","kitchen:item-updated"].forEach(x=>eventBus.on?.(x,load));load();return{reload:load}}window.createBlueCurrentKitchenCommandCenterModule=createKitchenCommandCenterModule})();--- a/scripts/maintenance/test-v46.55.2-stability.js
++++ b/scripts/maintenance/test-v46.55.2-stability.js
+@@ -0,0 +1,34 @@
++"use strict";
++const assert=require("assert"),fs=require("fs"),path=require("path");
++const DatabaseService=require("../../server/services/databaseService");
++const root=path.resolve(__dirname,"../..");
++
++(async()=>{
++  // Undefined module export guard across all maintained app copies.
++  for(const rel of ["client/js/app-v15.1.3.js","client/app-v15.1.3.js","app-v15.1.3.js"]){
++    const text=fs.readFileSync(path.join(root,rel),"utf8");
++    const declared=new Set([...text.matchAll(/\bconst\s+([A-Za-z_$][\w$]*Module)\b/g)].map(m=>m[1]));
++    const refs=new Set([...text.matchAll(/:\s*([A-Za-z_$][\w$]*Module)\b/g)].map(m=>m[1]));
++    assert.deepEqual([...refs].filter(x=>!declared.has(x)).sort(),[],`${rel} has undefined module export`);
++  }
++
++  // Executive workflow load must handle fetch failure instead of producing an unhandled rejection.
++  const workflow=fs.readFileSync(path.join(root,"client/js/modules/executiveWorkflowComposerCenter.js"),"utf8");
++  assert.ok(/async function load\(\)\{try\{/.test(workflow),"Executive Workflow Composer load is not guarded");
++  assert.ok(workflow.includes("window.addEventListener?.('online',load)"),"Executive Workflow Composer does not retry when connection returns");
++
++  const exec=fs.readFileSync(path.join(root,"client/js/modules/executiveCommandCenter.js"),"utf8");
++  assert.ok(/async function load\(\)\{if\(!api\.token\)return;try\{/.test(exec),"Executive Command load is not guarded");
++
++  // OneDrive/Dropbox/Google Drive paths should skip the long atomic-rename retry loop.
++  const db=new DatabaseService("C:\\Users\\test\\OneDrive\\Desktop\\blue-current.json",{maxWriteAttempts:7,logger:{warn:()=>{},error:()=>{}}});
++  assert.equal(db._isCloudSyncedPath(),true);
++  const normal=new DatabaseService("C:\\BlueCurrent\\blue-current.json");
++  assert.equal(normal._isCloudSyncedPath(),false);
++
++  console.log(JSON.stringify({
++    ok:true,version:"46.55.2",undefinedModuleExports:0,
++    executiveWorkflowGuarded:true,executiveCommandGuarded:true,
++    cloudSyncedDatabaseFastFallback:true
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V46.55.2.md
++++ b/README-APPLY-V46.55.2.md
+@@ -0,0 +1,64 @@
++# APPLY BLUE CURRENT V46.55.2
++
++## Baseline
++Apply over the exact V46.55.1 repository.
++
++This is a normal overlay hotfix. No files are deleted.
++
++## Apply
++Extract `BLUE-CURRENT-V46.55.2-STABILITY-HOTFIX.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v46.55.2-stability.js
++npm run start
++```
++
++Then wait until the server says:
++
++```text
++Blue Current Cloud V46.55.2 running at http://localhost:8787
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++and press `Ctrl+F5`.
++
++## Expected behavior
++
++The previous:
++
++```text
++Uncaught (in promise) TypeError: Failed to fetch
++```
++
++from Executive Workflow Composer should no longer appear during a transient disconnect.
++
++On the OneDrive database path, a transient rename lock may still be logged once, but Blue Current should move to the safe fallback immediately rather than repeatedly retrying rename.
++
++## Health
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.55.2"
++```
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V46.55.2 stabilize localhost network and OneDrive database writes"
++git push origin live-service-timeline
++```
+--- a/V46.55.2-RELEASE.md
++++ b/V46.55.2-RELEASE.md
+@@ -0,0 +1,70 @@
++# BLUE CURRENT V46.55.2 — LOCAL STABILITY HOTFIX
++
++## What was actually wrong
++
++The latest V46.55.1 repository is structurally valid:
++- all referenced client script files exist
++- all 326 sampled startup registrations resolve to creator functions
++- undefined exported `*Module` variables: 0
++- all executive API routes shown in the browser screenshot exist on the server
++
++The browser screenshots exposed two separate stability issues.
++
++### 1. Unhandled transient fetch failure
++`executiveWorkflowComposerCenter` started an async load without a catch boundary.
++
++When Edge reported `ERR_NETWORK_CHANGED`, that one module surfaced:
++
++`Uncaught (in promise) TypeError: Failed to fetch`
++
++The endpoint itself exists; the problem was client error handling during a temporary network-stack change.
++
++### 2. OneDrive database file locking
++The runtime database path is under OneDrive.
++
++Windows/OneDrive can temporarily lock a JSON file during rename, producing:
++
++`EPERM`
++
++The database service already had a safe copy fallback, but it first retried atomic rename up to seven times. On a known cloud-synced path this created avoidable delay and warning noise.
++
++## V46.55.2 changes
++
++### Network resilience
++- Guards Executive Workflow Composer startup fetches.
++- Retries Executive Workflow Composer when the browser returns online.
++- Guards Executive Command Center startup/refresh fetches.
++- Retries Executive Command Center when connectivity returns.
++- Guards Kitchen Command Center startup fetches.
++
++### Cloud-synced database stability
++Adds cloud-sync path detection for:
++- OneDrive
++- Dropbox
++- Google Drive
++
++On those paths, atomic rename is attempted once. A transient Windows lock then moves immediately to the existing safe backup/copy fallback instead of burning through the full seven-rename retry cycle.
++
++Normal non-cloud paths retain the existing retry behavior.
++
++## What V46.55.2 does not claim to fix
++
++`ERR_NETWORK_CHANGED` is emitted by Chromium/Edge when Windows reports a network-interface change. That event is outside Blue Current.
++
++Blue Current can, however, avoid turning a brief network transition into unhandled application errors and can recover cleanly once localhost is reachable again. That is what this hotfix does.
++
++## Validation
++
++- `node scripts/maintenance/test-v46.55.2-stability.js` passed.
++- Undefined module exports: 0.
++- Executive Workflow Composer rejection guard: PASS.
++- Executive Command startup rejection guard: PASS.
++- Cloud-synced database fast fallback detection: PASS.
++- `npm run check` passed:
++  - 837 JavaScript files
++  - 716 client scripts
++  - 5,333 unique HTML IDs
++- Server startup passed as V46.55.2.
++- `/api/health` returned HTTP 200.
++- Database connected and authentication enabled.
++- Runtime database hash remained unchanged during validation.

@@ -2687,6 +2687,14 @@ const performanceGovernanceCenterModule = startupRegistry.register(
 );
 
 
+const marginIntelligenceCenterModule = startupRegistry.register(
+  "marginIntelligenceCenter",
+  shouldInitializeCenter("marginIntelligenceCenter")
+    ? window.createBlueCurrentMarginIntelligenceCenterModule?.(eventBus, appState)
+    : null,
+  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "portfolioPerformanceCenter", "performanceGovernanceCenter"]
+);
+
 const costVarianceCenterModule = startupRegistry.register(
   "costVarianceCenter",
   shouldInitializeCenter("costVarianceCenter")
