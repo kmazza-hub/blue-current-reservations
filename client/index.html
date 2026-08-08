@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.44.0-mvp-go-live-hardening">
+  <meta name="blue-current-build" content="42.47.0-controlled-production-release">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8483,6 +8483,17 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpGoLiveCenter" data-src="js/modules/mvpGoLiveEngine.js?v=42.44.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpGoLiveCenter" data-src="js/modules/mvpGoLiveCenter.js?v=42.44.0"></script>
 
-  <script src="js/startup-loader.js?v=42.44.0"></script>
+
+<section class="v4247-center" id="productionRolloutCenter" aria-labelledby="prodRolloutTitle"><header><div><small>V42.45 · Production Rollout Plan</small><strong id="prodRolloutTitle">Move the first MVP from pilot into a bounded, human-approved production window.</strong><span>Create location-specific rollout plans with explicit strategy, owner, timing, and completion evidence.</span></div><button type="button" id="prodRolloutRefresh">Refresh rollout</button></header><div class="v4247-kpis"><article><small>Plans</small><strong id="prodRolloutTotal">0</strong></article><article><small>Draft</small><strong id="prodRolloutDraft">0</strong></article><article><small>Approved</small><strong id="prodRolloutApproved">0</strong></article><article><small>Completed</small><strong id="prodRolloutCompleted">0</strong></article></div><div class="v4247-actions"><input id="prodRolloutLocation" placeholder="Location ID"><select id="prodRolloutStrategy"><option value="single-location">Single location</option><option value="canary">Canary</option><option value="portfolio">Portfolio</option></select><input id="prodRolloutWindow" placeholder="Production window"><input id="prodRolloutNote" placeholder="Rollout note"><button type="button" id="prodRolloutCreate">Create plan</button></div><div id="prodRolloutList" class="v4247-list"></div></section>
+<section class="v4247-center" id="rollbackReadinessCenter" aria-labelledby="rollbackReadyTitle"><header><div><small>V42.46 · Rollback Readiness</small><strong id="rollbackReadyTitle">Prove Blue Current can retreat safely before production traffic is trusted.</strong><span>Approved rollout ownership, provider continuity, support status, and evidence trust are checked together.</span></div><button type="button" id="rollbackReadyRefresh">Check rollback</button></header><div class="v4247-kpis"><article><small>Rollback score</small><strong id="rollbackReadyScore">0%</strong></article><article><small>Status</small><strong id="rollbackReadyStatus">—</strong></article><article><small>Trusted</small><strong id="rollbackReadyTrusted">NO</strong></article><article><small>Blockers</small><strong id="rollbackReadyBlockers">0</strong></article></div><div id="rollbackReadyList" class="v4247-list"></div></section>
+<section class="v4247-center v4247-cert" id="productionReleaseCenter" aria-labelledby="prcTitle"><header><div><small>V42.47 · Controlled Production Release</small><strong id="prcTitle">Certify the first Blue Current MVP for a governed production release.</strong><span>MVP go-live readiness, approved rollout, rollback readiness, live evidence, and V42 release trust must all align.</span></div><div class="v4247-actions"><button type="button" id="prcRefresh">Evaluate release</button><button type="button" id="prcCertify">Persist certificate</button></div></header><div class="v4247-kpis"><article><small>Release score</small><strong id="prcScore">0%</strong></article><article><small>Status</small><strong id="prcStatus">—</strong></article><article><small>Trusted</small><strong id="prcTrusted">NO</strong></article><article><small>Blockers</small><strong id="prcBlockers">0</strong></article><article><small>Certificate</small><strong id="prcId">—</strong></article></div><div id="prcList" class="v4247-list"></div></section>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="productionRolloutCenter" data-src="js/modules/productionRolloutEngine.js?v=42.47.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="productionRolloutCenter" data-src="js/modules/productionRolloutCenter.js?v=42.47.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="rollbackReadinessCenter" data-src="js/modules/rollbackReadinessEngine.js?v=42.47.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="rollbackReadinessCenter" data-src="js/modules/rollbackReadinessCenter.js?v=42.47.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="productionReleaseCenter" data-src="js/modules/productionReleaseEngine.js?v=42.47.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="productionReleaseCenter" data-src="js/modules/productionReleaseCenter.js?v=42.47.0"></script>
+
+  <script src="js/startup-loader.js?v=42.47.0"></script>
 </body>
 </html>

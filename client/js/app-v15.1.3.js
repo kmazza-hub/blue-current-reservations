@@ -2406,6 +2406,11 @@ const pilotSloCenterModule = startupRegistry.register("pilotSloCenter",shouldIni
 const pilotSupportCenterModule = startupRegistry.register("pilotSupportCenter",shouldInitializeCenter("pilotSupportCenter") ? window.createBlueCurrentPilotSupportCenterModule?.(eventBus, appState) : null,["eventBus","appState","pilotSessionCenter"]);
 const mvpGoLiveCenterModule = startupRegistry.register("mvpGoLiveCenter",shouldInitializeCenter("mvpGoLiveCenter") ? window.createBlueCurrentMvpGoLiveCenterModule?.(eventBus, appState) : null,["eventBus","appState","mvpReadinessCenter","pilotSloCenter","pilotSupportCenter"]);
 
+const productionRolloutCenterModule = startupRegistry.register("productionRolloutCenter",shouldInitializeCenter("productionRolloutCenter") ? window.createBlueCurrentProductionRolloutCenterModule?.(eventBus, appState) : null,["eventBus","appState","mvpGoLiveCenter"]);
+const rollbackReadinessCenterModule = startupRegistry.register("rollbackReadinessCenter",shouldInitializeCenter("rollbackReadinessCenter") ? window.createBlueCurrentRollbackReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionRolloutCenter"]);
+const productionReleaseCenterModule = startupRegistry.register("productionReleaseCenter",shouldInitializeCenter("productionReleaseCenter") ? window.createBlueCurrentProductionReleaseCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionRolloutCenter","rollbackReadinessCenter"]);
+
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

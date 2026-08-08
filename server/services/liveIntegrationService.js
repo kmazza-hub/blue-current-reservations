@@ -1434,6 +1434,84 @@ class LiveIntegrationService {
     return cert;
   }
 
+
+  async productionRolloutPlan(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const current = (db.productionRolloutPlans || []).filter(item => item.organizationId === organizationId);
+    if (input && input.action === "create") {
+      const locationId = String(input.locationId || "").trim();
+      if (!locationId) throw new Error("Location ID is required.");
+      const cutover = await this.locationCutover(organizationId);
+      const loc = (cutover.locations || []).find(item => item.locationId === locationId);
+      if (!loc) throw new Error("Location is not available for production rollout.");
+      const plan = {
+        id:`PRP-${Date.now().toString(36).toUpperCase()}`, organizationId, locationId,
+        locationName:loc.locationName || locationId, owner:actor || "system",
+        window:String(input.window || "").trim().slice(0,120) || "Controlled service window",
+        strategy:["canary","single-location","portfolio"].includes(input.strategy) ? input.strategy : "single-location",
+        status:"draft", createdAt:new Date().toISOString(), approvedAt:null, completedAt:null,
+        note:String(input.note || "").trim().slice(0,800)
+      };
+      await this.database.mutate(db2 => { db2.productionRolloutPlans ||= []; db2.productionRolloutPlans.unshift(plan); db2.productionRolloutPlans=db2.productionRolloutPlans.slice(0,500); return plan; });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Production rollout plan created: ${plan.id}`,category:"live-integration"});
+      return this.productionRolloutPlan(organizationId);
+    }
+    if (input && ["approve","complete","cancel"].includes(input.action)) {
+      const id=String(input.id||"").trim(); if(!id) throw new Error("Rollout plan ID is required.");
+      await this.database.mutate(db2 => {
+        const item=(db2.productionRolloutPlans||[]).find(x=>x.organizationId===organizationId&&x.id===id);
+        if(!item) throw new Error("Rollout plan not found.");
+        if(input.action==="approve"){ item.status="approved"; item.approvedAt=new Date().toISOString(); item.approvedBy=actor||"system"; }
+        if(input.action==="complete"){ item.status="completed"; item.completedAt=new Date().toISOString(); item.completedBy=actor||"system"; }
+        if(input.action==="cancel"){ item.status="cancelled"; item.cancelledAt=new Date().toISOString(); item.cancelledBy=actor||"system"; }
+        return item;
+      });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Production rollout plan ${input.action}: ${id}`,category:"live-integration"});
+      return this.productionRolloutPlan(organizationId);
+    }
+    const fresh=await this.database.read();
+    const items=(fresh.productionRolloutPlans||[]).filter(item=>item.organizationId===organizationId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    return {organizationId,total:items.length,draft:items.filter(x=>x.status==="draft").length,approved:items.filter(x=>x.status==="approved").length,completed:items.filter(x=>x.status==="completed").length,items,generatedAt:new Date().toISOString()};
+  }
+
+  async rollbackReadiness(organizationId) {
+    const [plans, continuity, support, evidence] = await Promise.all([
+      this.productionRolloutPlan(organizationId), this.providerContinuityCertification(organizationId),
+      this.pilotSupport(organizationId), this.liveEvidenceCertification(organizationId)
+    ]);
+    const approved=(plans.items||[]).filter(x=>x.status==="approved");
+    const controls=[
+      {id:"approved-plan",label:"Approved production rollout",pass:approved.length>0,detail:`${approved.length} approved rollout plans`},
+      {id:"provider-continuity",label:"Provider continuity",pass:continuity.trusted===true,detail:`${continuity.score||0}% · ${continuity.status||"unknown"}`},
+      {id:"critical-support",label:"Critical support issues clear",pass:(support.critical||0)===0,detail:`${support.critical||0} critical issues`},
+      {id:"trusted-evidence",label:"Trusted live evidence",pass:evidence.trusted===true,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`},
+      {id:"rollback-owner",label:"Named rollback ownership",pass:approved.every(x=>!!x.owner),detail:approved.length?`${approved.filter(x=>x.owner).length}/${approved.length} owned`:"No approved rollout"}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    return {organizationId,score,status:score===100?"rollback-ready":score>=60?"conditional":"blocked",trusted:score===100,approvedPlans:approved.length,blockers,controls,generatedAt:new Date().toISOString()};
+  }
+
+  async productionReleaseCertification(organizationId, actor = null, persist = false) {
+    const [goLive, rollout, rollback, evidence, release] = await Promise.all([
+      this.mvpGoLiveCertification(organizationId), this.productionRolloutPlan(organizationId),
+      this.rollbackReadiness(organizationId), this.liveEvidenceCertification(organizationId), this.v42ReleaseCertification(organizationId)
+    ]);
+    const approved=(rollout.items||[]).filter(x=>x.status==="approved").length;
+    const controls=[
+      {id:"mvp-go-live",label:"MVP go-live readiness",pass:goLive.trusted===true,detail:`${goLive.score||0}% · ${goLive.status||"unknown"}`},
+      {id:"rollout-plan",label:"Approved production rollout",pass:approved>0,detail:`${approved} approved plans`},
+      {id:"rollback",label:"Rollback readiness",pass:rollback.trusted===true,detail:`${rollback.score||0}% · ${rollback.status||"unknown"}`},
+      {id:"live-evidence",label:"Trusted live evidence",pass:evidence.trusted===true,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`},
+      {id:"v42-release",label:"V42 live operations release",pass:release.trusted===true,detail:`${release.score||0}% · ${release.status||"unknown"}`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`PRC-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"production-release-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.47.0-controlled-production-release"};
+    if(persist) await this.database.mutate(db=>{db.productionReleaseCertification||={};db.productionReleaseCertification[organizationId]=cert;return cert;});
+    return cert;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;

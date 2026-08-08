@@ -618,6 +618,21 @@
       "category": "security",
       "createdAt": "2026-08-07T21:28:16.412Z",
       "id": "audit_1786138096412_uvmpu6"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "category": "system",
+      "createdAt": "2026-08-08T01:13:28.605Z",
+      "id": "audit_1786151608605_rsbtrx"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 1 committed for /api/audit",
+      "category": "synchronization",
+      "createdAt": "2026-08-08T01:13:28.627Z",
+      "id": "audit_1786151608627_06xv7r"
     }
   ],
   "reservations": [
@@ -2561,6 +2576,23 @@
         "expiresAt": "2026-08-10T01:45:22.652Z"
       },
       "lastActor": "Sarah Morgan"
+    },
+    {
+      "id": "org_chefs:/api/audit:audit",
+      "organizationId": "org_chefs",
+      "path": "/api/audit",
+      "entityId": "audit",
+      "version": 1,
+      "createdAt": "2026-08-08T01:13:28.619Z",
+      "updatedAt": "2026-08-08T01:13:28.619Z",
+      "lastPayload": {
+        "organizationId": "org_chefs",
+        "actor": "Keith Mazza",
+        "category": "system",
+        "createdAt": "2026-08-08T01:13:28.605Z",
+        "id": "audit_1786151608605_rsbtrx"
+      },
+      "lastActor": "Keith Mazza"
     }
   ],
   "liveConnectors": [
@@ -2622,7 +2654,7 @@
   ],
   "providerLaunchCertification": {
     "org_chefs": {
-      "id": "PLC-MSJHSN68",
+      "id": "PLC-MSJOB371",
       "organizationId": "org_chefs",
       "score": 50,
       "status": "blocked",
@@ -2669,7 +2701,7 @@
           "detail": "controlled"
         }
       ],
-      "issuedAt": "2026-08-07T22:04:22.736Z",
+      "issuedAt": "2026-08-08T01:06:41.005Z",
       "issuedBy": "Keith Mazza",
       "build": "42.23.0-provider-launch-control"
     }
