@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="48.30.0">
+  <meta name="blue-current-build" content="49.5.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -252,6 +252,14 @@
       <div class="v4316-answer" id="v48certHeadline">Running V48 certification…</div>
       <p><strong>Commercial proof chain</strong></p><div id="v48certChain" class="v432-list"></div>
       <p><strong>Certification contracts</strong></p><div id="v48certChecks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="rolloutActivationControl">
+      <header><div><small>V49.01–V49.05 · Rollout Activation Control</small><strong>Approve restaurant rollout activation only after live preflight review.</strong><span>Blue Current evaluates signed scope, rollout-plan inclusion, current readiness, leadership attention, and urgent predictive pressure. Approval is human and admin-only; approval does not deploy or activate the restaurant technically.</span></div><button id="racRefresh" type="button">Refresh activation review</button></header>
+      <div class="v432-kpis"><article><small>Activation status</small><strong id="racStatus">—</strong></article><article><small>Current plan</small><strong id="racPlan">NONE</strong></article><article><small>Preflight passed</small><strong id="racPassed">0/0</strong></article><article><small>Approved</small><strong id="racApproved">0</strong></article></div>
+      <div class="v4316-answer" id="racHeadline">A signed rollout plan is required before activation review.</div>
+      <div class="v4316-actions"><input id="racApprover" class="v4312-input" placeholder="Activation approver"><input id="racOverride" class="v4312-input" placeholder="Executive override reason (required if a gate is open)"><input id="racNote" class="v4312-input" placeholder="Activation approval note"></div>
+      <p><strong>Location preflight</strong></p><div id="racLocations" class="v432-list"></div>
+      <p><strong>Activation approval ledger</strong></p><div id="racHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8772,6 +8780,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessCenter.js?v=48.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationEngine.js?v=48.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationCenter.js?v=48.30.0"></script>
-<script src="js/startup-loader.js?v=48.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlEngine.js?v=49.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlCenter.js?v=49.5.0"></script>
+<script src="js/startup-loader.js?v=49.5.0"></script>
 </body>
 </html>
