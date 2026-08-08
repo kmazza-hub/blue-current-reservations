@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="48.15.0">
+  <meta name="blue-current-build" content="48.20.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -230,6 +230,14 @@
       <div id="eprMovement" class="v432-kpis"></div><div id="eprGates" class="v432-list"></div><div id="eprLocations" class="v432-list"></div>
       <p><strong>Recommended next action:</strong> <span id="eprNext"></span></p>
       <div class="v4316-actions"><input id="eprNote" class="v4312-input" placeholder="Executive review note"><button id="eprCopy" type="button">Copy review packet</button><button id="eprArchive" type="button">Archive review packet</button></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="pilotDecisionLedger">
+      <header><div><small>V48.16–V48.20 · Pilot Decision Ledger & Executive Sign-Off</small><strong>Record the actual human commercial decision—separate from Blue Current's recommendation.</strong><span>Executive/admin sign-off captures approver, conditions, rollout scope, follow-up obligations, evidence at decision time, and whether leadership overrode the system recommendation.</span></div><button id="pdlRefresh" type="button">Refresh ledger</button></header>
+      <div class="v432-kpis"><article><small>System recommendation</small><strong id="pdlRecommendation">—</strong></article><article><small>Latest human decision</small><strong id="pdlLatest">UNSIGNED</strong></article><article><small>Approver</small><strong id="pdlApprover">—</strong></article><article><small>Decision history</small><strong id="pdlHistoryCount">0</strong></article></div>
+      <div class="v4316-answer" id="pdlHeadline">No human pilot decision has been signed yet.</div>
+      <div class="v4316-actions"><select id="pdlDecision" class="v4312-input"><option>CONTINUE</option><option>INTERVENE</option><option>EXPAND</option><option>PAUSE</option><option>CLOSE</option></select><input id="pdlApproverInput" class="v4312-input" placeholder="Executive approver"><input id="pdlConditions" class="v4312-input" placeholder="Decision conditions / rationale"><input id="pdlFollowUp" class="v4312-input" placeholder="Follow-up obligation"><button id="pdlSign" type="button">Sign human decision</button></div>
+      <p><strong>Expansion rollout scope</strong></p><div id="pdlLocations" class="v4316-actions"></div>
+      <div id="pdlHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8744,6 +8752,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramCenter.js?v=48.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewEngine.js?v=48.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewCenter.js?v=48.15.0"></script>
-<script src="js/startup-loader.js?v=48.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerEngine.js?v=48.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerCenter.js?v=48.20.0"></script>
+<script src="js/startup-loader.js?v=48.20.0"></script>
 </body>
 </html>

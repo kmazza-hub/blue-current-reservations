@@ -1232,6 +1232,7 @@ const multiLocationPerformanceModule = startupRegistry.register("multiLocationPe
 const pilotValueScorecardModule = startupRegistry.register("pilotValueScorecard", shouldInitializeCenter("pilotValueScorecard") ? window.createBlueCurrentPilotValueScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "multiLocationPerformance"]);
 const pilotProofProgramModule = startupRegistry.register("pilotProofProgram", shouldInitializeCenter("pilotProofProgram") ? window.createBlueCurrentPilotProofProgramCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotValueScorecard"]);
 const executivePilotReviewModule = startupRegistry.register("executivePilotReview", shouldInitializeCenter("executivePilotReview") ? window.createBlueCurrentExecutivePilotReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotProofProgram"]);
+const pilotDecisionLedgerModule = startupRegistry.register("pilotDecisionLedger", shouldInitializeCenter("pilotDecisionLedger") ? window.createBlueCurrentPilotDecisionLedgerCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "executivePilotReview"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
