@@ -1211,6 +1211,7 @@ const guidedShiftCenterModule = startupRegistry.register(
 
 const operatorServiceFlowCenterModule = startupRegistry.register("operatorServiceFlowCenter", shouldInitializeCenter("operatorServiceFlowCenter") ? window.createBlueCurrentOperatorServiceFlowCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "guidedShiftCenter"]);
 const operatorSurfaceRationalizationCenterModule = startupRegistry.register("operatorSurfaceRationalizationCenter", shouldInitializeCenter("operatorSurfaceRationalizationCenter") ? window.createBlueCurrentOperatorSurfaceRationalizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorServiceFlowCenter"]);
+const operatorConsolidationCenterModule = startupRegistry.register("operatorConsolidationCenter", shouldInitializeCenter("operatorConsolidationCenter") ? window.createBlueCurrentOperatorConsolidationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorSurfaceRationalizationCenter", "roleExperienceCenter"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

@@ -1,0 +1,29 @@
+(function(global){"use strict";
+class BlueCurrentOperatorConsolidationEngine{
+  constructor({eventBus,appState,rationalizationEngine}={}){this.eventBus=eventBus;this.appState=appState;this.rationalizationEngine=rationalizationEngine||null;this.roleDefaults={
+    manager:["unifiedCommandCenter","guidedShiftCenter","operatorServiceFlowCenter","operatorCopilotCenter","commandActionInboxCenter","shiftProfitPulseCenter","operationsWorkspaceCenter","reservationOperationsCenter","liveFloorOperationsCenter","kitchenThroughputCenter","laborDeploymentCenter","guestRecoveryCenter"],
+    executive:["unifiedCommandCenter","shiftProfitPulseCenter","executiveBriefingCenter","portfolioPerformanceCenter","marginIntelligenceCenter","enterpriseValuePlanCenter"],
+    technical:["unifiedCommandCenter","operatorSurfaceRationalizationCenter","platformIntegrationAudit","runtimeReadinessCenter","aipRuntimeReadinessCenter","observabilityDashboard","releaseCertificationCenter"]
+  };this.mergeMap=this.rationalizationEngine?.mergeTargets||{};}
+  state(){try{return this.appState?.getState?.()||{};}catch{return {};}}
+  role(){const s=this.state();return s.roleExperienceRole||s.unifiedCommandRole||"manager";}
+  defaultSurfaces(role=this.role()){return [...(this.roleDefaults[role]||this.roleDefaults.manager)];}
+  mergedSummary(target,state=this.state()){
+    const sources=Object.entries(this.mergeMap).filter(([,t])=>t===target).map(([s])=>s);
+    const sourceStates=sources.map(id=>({id,key:id.replace(/Center$/,""),value:state[id.replace(/Center$/,"")]||state[id]})).filter(x=>x.value!=null);
+    const primaryKey=target.replace(/Center$/,""),primary=state[primaryKey]||state[target]||null;
+    const headlines=[];if(primary?.headline)headlines.push(primary.headline);
+    for(const x of sourceStates){if(x.value?.headline&&!headlines.includes(x.value.headline))headlines.push(x.value.headline);}
+    return {target,sources,availableSources:sourceStates.map(x=>x.id),headline:headlines.slice(0,3).join(" · ")||null,primaryPresent:Boolean(primary),mergedSignalCount:(primary?1:0)+sourceStates.length};
+  }
+  consolidatedPrimary(){const state=this.state();const role=this.role();return this.defaultSurfaces(role).map(id=>({id,role,summary:this.mergedSummary(id,state)}));}
+  evidence(){const s=this.state(),items=Array.isArray(s.operatorUseEvidence)?s.operatorUseEvidence:[];return items.slice(0,500);}
+  recordUse(surfaceId,action="open",metadata={}){if(!surfaceId)return null;const s=this.state(),items=Array.isArray(s.operatorUseEvidence)?s.operatorUseEvidence:[],entry={id:`OUE-${Date.now().toString(36).toUpperCase()}`,surfaceId,action,role:this.role(),at:new Date().toISOString(),metadata};const next=[entry,...items].slice(0,500);this.appState?.update?.({operatorUseEvidence:next});this.eventBus?.emit?.("operator-use-evidence:recorded",structuredClone(entry));return entry;}
+  evidenceSummary(ids=null){const evidence=this.evidence(),scope=Array.isArray(ids)?ids:[...new Set(evidence.map(x=>x.surfaceId))];return scope.map(id=>{const hits=evidence.filter(x=>x.surfaceId===id),roles=[...new Set(hits.map(x=>x.role))];return {surfaceId:id,uses:hits.length,lastUsedAt:hits[0]?.at||null,roles,hasEvidence:hits.length>0};}).sort((a,b)=>b.uses-a.uses);}
+  deprecationEvidence(ids=[]){const audit=this.rationalizationEngine?.snapshot?.(ids)||{items:ids.map(id=>({id,disposition:"supporting"}))};const usage=new Map(this.evidenceSummary(ids).map(x=>[x.surfaceId,x]));return audit.items.filter(x=>x.disposition==="deprecation-candidate").map(item=>{const u=usage.get(item.id)||{uses:0,lastUsedAt:null,roles:[]};return {...item,usage:u,recommendation:u.uses===0?"evidence-needed":u.uses<=1?"retain-until-more-evidence":"retain-active-use"};});}
+  navigationModel(role=this.role()){const defaults=this.defaultSurfaces(role);return {role,defaultSurfaces:defaults,count:defaults.length,duplicateEntryPolicy:"merge-entry-points-into-primary-targets",fallback:"full-platform",version:"46.15.0"};}
+  snapshot(){const rational=this.rationalizationEngine?.snapshot?.()||null,role=this.role(),defaults=this.defaultSurfaces(role),primary=this.consolidatedPrimary(),evidence=this.evidence(),deprecation=rational?this.deprecationEvidence(rational.items.map(x=>x.id)):[];return {capturedAt:new Date().toISOString(),role,navigation:this.navigationModel(role),primary,mergedPrimaryCount:primary.filter(x=>x.summary.sources.length>0).length,evidenceCount:evidence.length,evidenceSummary:this.evidenceSummary(),deprecationCandidates:deprecation,deprecationReady:deprecation.filter(x=>x.recommendation!=="evidence-needed").length,policy:"merge-before-delete-and-require-use-evidence",version:"46.15.0"};}
+}
+if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentOperatorConsolidationEngine;
+if(global)global.BlueCurrentOperatorConsolidationEngine=BlueCurrentOperatorConsolidationEngine;
+})(typeof window!=="undefined"?window:globalThis);

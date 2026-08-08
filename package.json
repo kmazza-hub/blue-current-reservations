@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "46.10.0",
+  "version": "46.15.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 operator surface rationalization and cross-stage handoffs",
+  "description": "Blue Current Hospitality OS \u2014 operator consolidation, role navigation, and usage evidence",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
