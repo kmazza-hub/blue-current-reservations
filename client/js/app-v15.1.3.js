@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "43.16.0-executive-ai-governance", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "43.20.0-executive-ai-orchestration", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2429,6 +2429,10 @@ const executiveConversationCenterModule = startupRegistry.register("executiveCon
 const executiveCitationCenterModule = startupRegistry.register("executiveCitationCenter",shouldInitializeCenter("executiveCitationCenter") ? window.createBlueCurrentExecutiveCitationCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveKnowledgeGraphCenter","executiveReasoningCenterV43"]);
 const executiveActionDraftCenterModule = startupRegistry.register("executiveActionDraftCenter",shouldInitializeCenter("executiveActionDraftCenter") ? window.createBlueCurrentExecutiveActionDraftCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter"]);
 const executiveAiReadinessCenterModule = startupRegistry.register("executiveAiReadinessCenter",shouldInitializeCenter("executiveAiReadinessCenter") ? window.createBlueCurrentExecutiveAiReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter","executiveActionDraftCenter"]);
+const executiveIntentRouterCenterModule = startupRegistry.register("executiveIntentRouterCenter",shouldInitializeCenter("executiveIntentRouterCenter") ? window.createBlueCurrentExecutiveIntentRouterCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveAiConsoleCenter"]);
+const executiveApprovalQueueCenterModule = startupRegistry.register("executiveApprovalQueueCenter",shouldInitializeCenter("executiveApprovalQueueCenter") ? window.createBlueCurrentExecutiveApprovalQueueCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveActionDraftCenter"]);
+const executiveWorkflowComposerCenterModule = startupRegistry.register("executiveWorkflowComposerCenter",shouldInitializeCenter("executiveWorkflowComposerCenter") ? window.createBlueCurrentExecutiveWorkflowComposerCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveIntentRouterCenter","executiveApprovalQueueCenter"]);
+const v43ClosureCenterModule = startupRegistry.register("v43ClosureCenter",shouldInitializeCenter("v43ClosureCenter") ? window.createBlueCurrentV43ClosureCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveAiReadinessCenter","executiveWorkflowComposerCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(

@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "43.12.0",
+        version: "43.20.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -484,6 +484,13 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/executive/action-drafts" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId));
     if (url.pathname === "/api/executive/action-drafts" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId, auth.user.name, await readJson(request)));
     if (url.pathname === "/api/executive/ai-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveAiReadiness(organizationId));
+    if (url.pathname === "/api/executive/intent-router" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveIntentRouter(organizationId, await readJson(request)));
+    if (url.pathname === "/api/executive/approval-queue" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveApprovalQueue(organizationId));
+    if (url.pathname === "/api/executive/approval-queue" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveApprovalQueue(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/executive/workflows" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveWorkflowComposer(organizationId));
+    if (url.pathname === "/api/executive/workflows" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveWorkflowComposer(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/executive/v43-closure" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.v43ClosureCertification(organizationId));
+    if (url.pathname === "/api/executive/v43-closure" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.v43ClosureCertification(organizationId, auth.user.name, true));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

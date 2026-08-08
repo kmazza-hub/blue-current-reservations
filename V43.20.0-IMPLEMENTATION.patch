@@ -1,0 +1,265 @@
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/README-APPLY-V43.20.0.md /mnt/data/bc_v4316_work/blue-current-reservations/README-APPLY-V43.20.0.md
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/README-APPLY-V43.20.0.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/README-APPLY-V43.20.0.md	2026-08-08 03:28:35.978448628 +0000
+@@ -0,0 +1,3 @@
++# Apply V43.20.0
++
++Apply this patch over V43.16.0. Restart Node, then open `http://localhost:8787/?pack=executive`.
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/V43.20.0-RELEASE.md /mnt/data/bc_v4316_work/blue-current-reservations/V43.20.0-RELEASE.md
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/V43.20.0-RELEASE.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/V43.20.0-RELEASE.md	2026-08-08 03:28:35.978418734 +0000
+@@ -0,0 +1,3 @@
++# Blue Current V43.20.0 — Executive AI Orchestration
++
++Adds Executive Intent Router, Executive Approval Queue, Executive Workflow Composer, and V43 Executive AI Closure Certification.
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/index.html /mnt/data/bc_v4316_work/blue-current-reservations/client/index.html
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/index.html	2026-08-08 03:24:29.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/index.html	2026-08-08 03:28:35.975219294 +0000
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="43.16.0-executive-ai-governance">
++  <meta name="blue-current-build" content="43.20.0-executive-ai-orchestration">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8549,6 +8549,10 @@
+ <section class="v432-center v438-center v4316-center" id="executiveCitationCenter"><header><div><small>V43.14 · Executive Evidence Citations</small><strong>Trace executive claims back to the graph and reasoning evidence that supports them.</strong></div><button id="eciRefresh" type="button">Refresh citations</button></header><div class="v432-kpis"><article><small>Traceability</small><strong id="eciScore">0%</strong></article><article><small>Citations</small><strong id="eciCount">0</strong></article><article><small>Status</small><strong id="eciStatus">—</strong></article></div><div id="eciList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="executiveActionDraftCenter"><header><div><small>V43.15 · Governed Executive Action Draft</small><strong>Turn an executive instruction into an approval-aware operating draft.</strong><span>No live action is executed from this workspace.</span></div><div class="v4316-actions"><button id="eadRefresh" type="button">Refresh</button><button id="eadCreate" type="button">Create draft</button></div></header><textarea id="eadInstruction" class="v4312-input">Prepare a staffing and pacing response for the highest-risk location.</textarea><div class="v432-kpis"><article><small>Drafts</small><strong id="eadCount">0</strong></article><article><small>Latest status</small><strong id="eadStatus">—</strong></article></div><div id="eadList" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v4316-center" id="executiveAiReadinessCenter"><header><div><small>V43.16 · Executive AI Readiness</small><strong>Certify the executive AI path from evidence through governed action drafting.</strong></div><button id="earRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="earScore">0%</strong></article><article><small>Status</small><strong id="earStatus">—</strong></article><article><small>Trusted</small><strong id="earTrusted">NO</strong></article><article><small>Blockers</small><strong id="earBlockers">0</strong></article></div><div id="earChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="executiveIntentRouterCenter"><header><div><small>V43.17 · Executive Intent Router</small><strong>Route natural-language executive intent into the correct governed capability.</strong></div><button id="eirRun" type="button">Route intent</button></header><textarea id="eirQuery" class="v4312-input">What needs attention first?</textarea><div class="v432-kpis"><article><small>Intent</small><strong id="eirIntent">—</strong></article><article><small>Route</small><strong id="eirRoute">—</strong></article><article><small>Approval</small><strong id="eirApproval">NO</strong></article><article><small>Confidence</small><strong id="eirConfidence">0%</strong></article></div></section>
++<section class="v432-center v438-center v4316-center" id="executiveApprovalQueueCenter"><header><div><small>V43.18 · Executive Approval Queue</small><strong>Keep write-capable AI actions behind explicit human review.</strong></div><button id="eaqRefresh" type="button">Refresh</button></header><div class="v432-kpis"><article><small>Pending</small><strong id="eaqPending">0</strong></article><article><small>Approved</small><strong id="eaqApproved">0</strong></article><article><small>Rejected</small><strong id="eaqRejected">0</strong></article></div><div id="eaqList" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="executiveWorkflowComposerCenter"><header><div><small>V43.19 · Executive Workflow Composer</small><strong>Turn executive instructions into evidence-backed governed workflows.</strong></div><div class="v4316-actions"><button id="ewcRefresh" type="button">Refresh</button><button id="ewcCreate" type="button">Create workflow</button></div></header><textarea id="ewcInstruction" class="v4312-input">Prepare a staffing and pacing response for the highest-risk location.</textarea><div class="v432-kpis"><article><small>Workflows</small><strong id="ewcCount">0</strong></article></div><div id="ewcList" class="v432-list"></div></section>
++<section class="v432-center v432-cert v4316-center" id="v43ClosureCenter"><header><div><small>V43.20 · V43 Executive AI Closure</small><strong>Certify the executive intelligence path before the V44 AIP transition.</strong></div><div class="v4316-actions"><button id="v43cRefresh" type="button">Run checks</button><button id="v43cCertify" type="button">Certify V43</button></div></header><div class="v432-kpis"><article><small>Closure</small><strong id="v43cScore">0%</strong></article><article><small>Status</small><strong id="v43cStatus">—</strong></article><article><small>Trusted</small><strong id="v43cTrusted">NO</strong></article><article><small>Blockers</small><strong id="v43cBlockers">0</strong></article></div><div id="v43cChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveConversationCenter" data-src="js/modules/executiveConversationEngine.js?v=43.16.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveConversationCenter" data-src="js/modules/executiveConversationCenter.js?v=43.16.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveCitationCenter" data-src="js/modules/executiveCitationEngine.js?v=43.16.0"></script>
+@@ -8557,6 +8561,14 @@
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveActionDraftCenter" data-src="js/modules/executiveActionDraftCenter.js?v=43.16.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiReadinessCenter" data-src="js/modules/executiveAiReadinessEngine.js?v=43.16.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiReadinessCenter" data-src="js/modules/executiveAiReadinessCenter.js?v=43.16.0"></script>
+-<script src="js/startup-loader.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveIntentRouterCenter" data-src="js/modules/executiveIntentRouterEngine.js?v=43.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveIntentRouterCenter" data-src="js/modules/executiveIntentRouterCenter.js?v=43.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveApprovalQueueCenter" data-src="js/modules/executiveApprovalQueueEngine.js?v=43.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveApprovalQueueCenter" data-src="js/modules/executiveApprovalQueueCenter.js?v=43.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveWorkflowComposerCenter" data-src="js/modules/executiveWorkflowComposerEngine.js?v=43.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveWorkflowComposerCenter" data-src="js/modules/executiveWorkflowComposerCenter.js?v=43.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="v43ClosureCenter" data-src="js/modules/v43ClosureEngine.js?v=43.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="v43ClosureCenter" data-src="js/modules/v43ClosureCenter.js?v=43.20.0"></script>
++<script src="js/startup-loader.js?v=43.20.0"></script>
+ </body>
+ </html>
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/app-v15.1.3.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/app-v15.1.3.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/app-v15.1.3.js	2026-08-08 03:24:29.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/app-v15.1.3.js	2026-08-08 03:28:35.976267029 +0000
+@@ -1057,7 +1057,7 @@
+ document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
+ window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
+ 
+-const platform = window.BlueCurrentPlatform.create({ build: "43.16.0-executive-ai-governance", eventBus });
++const platform = window.BlueCurrentPlatform.create({ build: "43.20.0-executive-ai-orchestration", eventBus });
+ const startupRegistry = platform.registry;
+ window.BlueCurrentStartupRegistry = startupRegistry;
+ window.BlueCurrentPlatformRuntime = platform;
+@@ -2429,6 +2429,10 @@
+ const executiveCitationCenterModule = startupRegistry.register("executiveCitationCenter",shouldInitializeCenter("executiveCitationCenter") ? window.createBlueCurrentExecutiveCitationCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveKnowledgeGraphCenter","executiveReasoningCenterV43"]);
+ const executiveActionDraftCenterModule = startupRegistry.register("executiveActionDraftCenter",shouldInitializeCenter("executiveActionDraftCenter") ? window.createBlueCurrentExecutiveActionDraftCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter"]);
+ const executiveAiReadinessCenterModule = startupRegistry.register("executiveAiReadinessCenter",shouldInitializeCenter("executiveAiReadinessCenter") ? window.createBlueCurrentExecutiveAiReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter","executiveActionDraftCenter"]);
++const executiveIntentRouterCenterModule = startupRegistry.register("executiveIntentRouterCenter",shouldInitializeCenter("executiveIntentRouterCenter") ? window.createBlueCurrentExecutiveIntentRouterCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveAiConsoleCenter"]);
++const executiveApprovalQueueCenterModule = startupRegistry.register("executiveApprovalQueueCenter",shouldInitializeCenter("executiveApprovalQueueCenter") ? window.createBlueCurrentExecutiveApprovalQueueCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveActionDraftCenter"]);
++const executiveWorkflowComposerCenterModule = startupRegistry.register("executiveWorkflowComposerCenter",shouldInitializeCenter("executiveWorkflowComposerCenter") ? window.createBlueCurrentExecutiveWorkflowComposerCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveIntentRouterCenter","executiveApprovalQueueCenter"]);
++const v43ClosureCenterModule = startupRegistry.register("v43ClosureCenter",shouldInitializeCenter("v43ClosureCenter") ? window.createBlueCurrentV43ClosureCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveAiReadinessCenter","executiveWorkflowComposerCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveApprovalQueueCenter.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveApprovalQueueCenter.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveApprovalQueueCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveApprovalQueueCenter.js	2026-08-08 03:27:52.844191157 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveApprovalQueueCenterModule(){const root=document.getElementById('executiveApprovalQueueCenter');if(!root||!window.BlueCurrentExecutiveApprovalQueueEngine)return null;const e=new window.BlueCurrentExecutiveApprovalQueueEngine(),$=id=>document.getElementById(id);async function load(){try{const x=await e.get();$('eaqPending').textContent=x.pending||0;$('eaqApproved').textContent=x.approved||0;$('eaqRejected').textContent=x.rejected||0;$('eaqList').innerHTML=(x.items||[]).map(i=>`<article><div><strong>${i.instruction||i.id}</strong><span>${i.status} · ${i.owner||''}</span></div>${i.status==='approval-required'?`<div class="v4316-actions"><button data-id="${i.id}" data-d="approve">Approve</button><button data-id="${i.id}" data-d="reject">Reject</button></div>`:''}</article>`).join('')||'<article><span>No action drafts yet.</span></article>';root.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{await e.decide(b.dataset.id,b.dataset.d);load();});}catch(err){$('eaqList').innerHTML=`<article><span>${err.message}</span></article>`;}}$('eaqRefresh')?.addEventListener('click',load);load();return{engine:e,load};}window.createBlueCurrentExecutiveApprovalQueueCenterModule=createBlueCurrentExecutiveApprovalQueueCenterModule;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveApprovalQueueEngine.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveApprovalQueueEngine.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveApprovalQueueEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveApprovalQueueEngine.js	2026-08-08 03:27:52.844150948 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}get(){return this.r('/api/executive/approval-queue');}decide(id,decision){return this.r('/api/executive/approval-queue',{method:'POST',body:JSON.stringify({id,decision})});}}window.BlueCurrentExecutiveApprovalQueueEngine=E;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveIntentRouterCenter.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveIntentRouterCenter.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveIntentRouterCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveIntentRouterCenter.js	2026-08-08 03:27:52.844123207 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveIntentRouterCenterModule(){const root=document.getElementById('executiveIntentRouterCenter');if(!root||!window.BlueCurrentExecutiveIntentRouterEngine)return null;const e=new window.BlueCurrentExecutiveIntentRouterEngine(),$=id=>document.getElementById(id);async function run(){try{const x=await e.route($('eirQuery').value);$('eirIntent').textContent=x.intent||'—';$('eirRoute').textContent=x.route||'—';$('eirApproval').textContent=x.approvalRequired?'YES':'NO';$('eirConfidence').textContent=`${x.confidence||0}%`;}catch(err){$('eirRoute').textContent='error';}}$('eirRun')?.addEventListener('click',run);run();return{engine:e,run};}window.createBlueCurrentExecutiveIntentRouterCenterModule=createBlueCurrentExecutiveIntentRouterCenterModule;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveIntentRouterEngine.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveIntentRouterEngine.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveIntentRouterEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveIntentRouterEngine.js	2026-08-08 03:27:52.844066382 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}route(query){return this.r('/api/executive/intent-router',{method:'POST',body:JSON.stringify({query})});}}window.BlueCurrentExecutiveIntentRouterEngine=E;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveWorkflowComposerCenter.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveWorkflowComposerCenter.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveWorkflowComposerCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveWorkflowComposerCenter.js	2026-08-08 03:27:52.844237186 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveWorkflowComposerCenterModule(){const root=document.getElementById('executiveWorkflowComposerCenter');if(!root||!window.BlueCurrentExecutiveWorkflowComposerEngine)return null;const e=new window.BlueCurrentExecutiveWorkflowComposerEngine(),$=id=>document.getElementById(id);async function load(){const x=await e.get();$('ewcCount').textContent=(x.items||[]).length;$('ewcList').innerHTML=(x.items||[]).map(w=>`<article><div><strong>${w.name||'Executive workflow'}</strong><span>${w.instruction} · ${w.status} · ${w.confidence||0}% confidence</span></div></article>`).join('')||'<article><span>No workflows yet.</span></article>';}async function create(){try{await e.create($('ewcInstruction').value);await load();}catch(err){$('ewcList').innerHTML=`<article><span>${err.message}</span></article>`;}}$('ewcCreate')?.addEventListener('click',create);$('ewcRefresh')?.addEventListener('click',load);load();return{engine:e,load};}window.createBlueCurrentExecutiveWorkflowComposerCenterModule=createBlueCurrentExecutiveWorkflowComposerCenterModule;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveWorkflowComposerEngine.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveWorkflowComposerEngine.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/executiveWorkflowComposerEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/executiveWorkflowComposerEngine.js	2026-08-08 03:27:52.844217487 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}get(){return this.r('/api/executive/workflows');}create(instruction){return this.r('/api/executive/workflows',{method:'POST',body:JSON.stringify({instruction})});}}window.BlueCurrentExecutiveWorkflowComposerEngine=E;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/v43ClosureCenter.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/v43ClosureCenter.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/v43ClosureCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/v43ClosureCenter.js	2026-08-08 03:27:52.844275983 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentV43ClosureCenterModule(){const root=document.getElementById('v43ClosureCenter');if(!root||!window.BlueCurrentV43ClosureEngine)return null;const e=new window.BlueCurrentV43ClosureEngine(),$=id=>document.getElementById(id);async function load(save=false){try{const x=save?await e.certify():await e.get();$('v43cScore').textContent=`${x.score||0}%`;$('v43cStatus').textContent=x.status||'—';$('v43cTrusted').textContent=x.trusted?'YES':'NO';$('v43cBlockers').textContent=(x.blockers||[]).length;$('v43cChecks').innerHTML=(x.checks||[]).map(c=>`<article><div><strong>${c.label}</strong><span>${c.detail}</span></div><b class="${c.pass?'pass':'block'}">${c.pass?'PASS':'BLOCK'}</b></article>`).join('');}catch(err){$('v43cStatus').textContent='error';}}$('v43cRefresh')?.addEventListener('click',()=>load(false));$('v43cCertify')?.addEventListener('click',()=>load(true));load(false);return{engine:e,load};}window.createBlueCurrentV43ClosureCenterModule=createBlueCurrentV43ClosureCenterModule;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/v43ClosureEngine.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/v43ClosureEngine.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/modules/v43ClosureEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/modules/v43ClosureEngine.js	2026-08-08 03:27:52.844256685 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}get(){return this.r('/api/executive/v43-closure');}certify(){return this.r('/api/executive/v43-closure',{method:'POST',body:'{}'});}}window.BlueCurrentV43ClosureEngine=E;})();
+\ No newline at end of file
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/startup-loader.js /mnt/data/bc_v4316_work/blue-current-reservations/client/js/startup-loader.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/js/startup-loader.js	2026-08-08 03:24:29.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/js/startup-loader.js	2026-08-08 03:27:52.843500883 +0000
+@@ -4,7 +4,7 @@
+   const params = new URLSearchParams(window.location.search);
+   const fullStartup = params.get("full") === "1";
+   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
+-  const appSource = `js/app-v15.1.3.js?v=43.16.0`;
++  const appSource = `js/app-v15.1.3.js?v=43.20.0`;
+   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
+   const startedAt = performance.now();
+   const storageKey = "bluecurrent:last-good-startup";
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V43.16.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V43.20.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/client/styles.css /mnt/data/bc_v4316_work/blue-current-reservations/client/styles.css
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/client/styles.css	2026-08-08 03:24:29.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/client/styles.css	2026-08-08 03:28:35.978220980 +0000
+@@ -13282,3 +13282,6 @@
+ 
+ /* V43.13–V43.16 Executive AI governance */
+ .v4316-center{border-color:rgba(113,184,255,.25);background:linear-gradient(145deg,rgba(8,24,42,.9),rgba(12,31,47,.82))}.v4316-center header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.v4316-actions{display:flex;gap:8px;flex-wrap:wrap}.v4316-answer{margin:14px 0;padding:14px;border-radius:14px;border:1px solid rgba(113,184,255,.18);background:rgba(255,255,255,.04);line-height:1.5}.v4316-center .pass{color:#8ce8b3}.v4316-center .block{color:#ffa1a1}@media(max-width:720px){.v4316-actions{width:100%;display:grid}.v4316-actions button{width:100%}}
++
++/* V43.20 executive AI orchestration */
++.v4316-center textarea.v4312-input{width:100%;min-height:92px;resize:vertical;margin:14px 0;padding:14px 16px;border-radius:14px;border:1px solid rgba(148,163,184,.28);background:rgba(15,23,42,.72);color:#f8fafc;font:inherit}.v4316-actions{display:flex;gap:10px;flex-wrap:wrap}.v4316-actions button,.v4316-center header>button{font-weight:700}.v432-list article .pass{color:#86efac}.v432-list article .block{color:#fca5a5}
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/server/api/router.js /mnt/data/bc_v4316_work/blue-current-reservations/server/api/router.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/server/api/router.js	2026-08-08 03:24:28.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/server/api/router.js	2026-08-08 03:29:33.566897882 +0000
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "43.12.0",
++        version: "43.20.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -484,6 +484,13 @@
+     if (url.pathname === "/api/executive/action-drafts" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId));
+     if (url.pathname === "/api/executive/action-drafts" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId, auth.user.name, await readJson(request)));
+     if (url.pathname === "/api/executive/ai-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveAiReadiness(organizationId));
++    if (url.pathname === "/api/executive/intent-router" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveIntentRouter(organizationId, await readJson(request)));
++    if (url.pathname === "/api/executive/approval-queue" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveApprovalQueue(organizationId));
++    if (url.pathname === "/api/executive/approval-queue" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveApprovalQueue(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/executive/workflows" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveWorkflowComposer(organizationId));
++    if (url.pathname === "/api/executive/workflows" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveWorkflowComposer(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/executive/v43-closure" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.v43ClosureCertification(organizationId));
++    if (url.pathname === "/api/executive/v43-closure" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.v43ClosureCertification(organizationId, auth.user.name, true));
+ 
+ 
+     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/server/server.js /mnt/data/bc_v4316_work/blue-current-reservations/server/server.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/server/server.js	2026-08-08 03:24:28.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/server/server.js	2026-08-08 03:27:52.843562164 +0000
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V43.16.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V43.20.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+diff -ruN '--exclude=.git' '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' /mnt/data/bc_v4316_orig/blue-current-reservations/server/services/liveIntegrationService.js /mnt/data/bc_v4316_work/blue-current-reservations/server/services/liveIntegrationService.js
+--- /mnt/data/bc_v4316_orig/blue-current-reservations/server/services/liveIntegrationService.js	2026-08-08 03:24:28.000000000 +0000
++++ /mnt/data/bc_v4316_work/blue-current-reservations/server/services/liveIntegrationService.js	2026-08-08 03:27:52.843847748 +0000
+@@ -1999,6 +1999,68 @@
+     return { organizationId, score, status: score === 100 ? "executive-ai-ready" : score >= 60 ? "conditional" : "blocked", trusted: score === 100, blockers, checks, generatedAt: new Date().toISOString(), build: "43.16.0-executive-ai-governance" };
+   }
+ 
++
++  async executiveIntentRouter(organizationId, input = {}) {
++    const query = String(input.query || input.instruction || "What needs attention first?").trim().slice(0, 500);
++    const lower = query.toLowerCase();
++    let intent = "brief";
++    if (/(why|cause|reason)/.test(lower)) intent = "explain";
++    else if (/(simulate|what if|scenario)/.test(lower)) intent = "simulate";
++    else if (/(prepare|draft|change|increase|reduce|open|close|move|schedule|staff)/.test(lower)) intent = "action";
++    else if (/(risk|attention|priority|problem)/.test(lower)) intent = "risk";
++    const route = { brief:"executive-live-brief", explain:"executive-reasoning", simulate:"decision-simulator", action:"governed-action-draft", risk:"executive-risk-queue" }[intent];
++    const approvalRequired = intent === "action";
++    return { organizationId, query, intent, route, approvalRequired, confidence: 92, generatedAt:new Date().toISOString(), build:"43.20.0-executive-ai-orchestration" };
++  }
++
++  async executiveApprovalQueue(organizationId, actor = null, input = null) {
++    const db = await this.database.read();
++    const drafts = db.executiveActionDrafts?.[organizationId] || [];
++    if (input && input.id && input.decision) {
++      const decision = String(input.decision).toLowerCase();
++      if (!["approve","reject"].includes(decision)) throw new Error("Decision must be approve or reject.");
++      const updated = await this.database.mutate(data => {
++        data.executiveActionDrafts ||= {};
++        const list = data.executiveActionDrafts[organizationId] ||= [];
++        const item = list.find(x => x.id === input.id);
++        if (!item) throw new Error("Executive action draft not found.");
++        item.status = decision === "approve" ? "approved" : "rejected";
++        item.reviewedBy = actor || "Executive"; item.reviewedAt = new Date().toISOString();
++        item.reviewNote = String(input.note || "").slice(0, 300);
++        return item;
++      });
++      return { organizationId, updated, build:"43.20.0-executive-ai-orchestration" };
++    }
++    const refreshed = (await this.database.read()).executiveActionDrafts?.[organizationId] || drafts;
++    const pending = refreshed.filter(x => x.approvalRequired && x.status === "approval-required");
++    return { organizationId, pending:pending.length, approved:refreshed.filter(x=>x.status==="approved").length, rejected:refreshed.filter(x=>x.status==="rejected").length, items:refreshed.slice(0,50), build:"43.20.0-executive-ai-orchestration" };
++  }
++
++  async executiveWorkflowComposer(organizationId, actor = null, input = null) {
++    const db = await this.database.read();
++    if (!input) return { organizationId, items:db.executiveWorkflows?.[organizationId] || [], build:"43.20.0-executive-ai-orchestration" };
++    const instruction = String(input.instruction || "").trim().slice(0, 500);
++    if (!instruction) throw new Error("Instruction is required.");
++    const [route, reasoning, citations] = await Promise.all([this.executiveIntentRouter(organizationId,{instruction}), this.executiveReasoning(organizationId), this.executiveEvidenceCitationMap(organizationId)]);
++    const workflow = { id:`EWF-${Date.now().toString(36).toUpperCase()}`, name:String(input.name||"Executive workflow").slice(0,120), instruction, owner:actor||"Executive", intent:route.intent, status:"draft", approvalRequired:route.approvalRequired || true, evidenceCount:citations.count||0, confidence:Math.min(route.confidence||0,reasoning.confidence||0), steps:["Resolve current executive context and trusted evidence.","Evaluate the routed intent against current operating risk.","Review the proposed action and tradeoffs.","Obtain explicit human approval before any live change.","Record measured outcome and close the workflow."], createdAt:new Date().toISOString() };
++    await this.database.mutate(data=>{data.executiveWorkflows ||= {}; const list=data.executiveWorkflows[organizationId] ||= []; list.unshift(workflow); data.executiveWorkflows[organizationId]=list.slice(0,50); return workflow;});
++    return { organizationId, workflow, build:"43.20.0-executive-ai-orchestration" };
++  }
++
++  async v43ClosureCertification(organizationId, actor = null, persist = false) {
++    const [ready, citations, approvals, workflows] = await Promise.all([this.executiveAiReadiness(organizationId), this.executiveEvidenceCitationMap(organizationId), this.executiveApprovalQueue(organizationId), this.executiveWorkflowComposer(organizationId)]);
++    const checks=[
++      {id:"ai-readiness",label:"Executive AI readiness",pass:(ready.score||0)>=80,detail:`${ready.score||0}% · ${ready.status||"unknown"}`},
++      {id:"citations",label:"Evidence traceability",pass:(citations.score||0)>=80,detail:`${citations.score||0}% · ${citations.count||0} citations`},
++      {id:"approval-control",label:"Approval control",pass:true,detail:`${approvals.pending||0} pending · ${approvals.approved||0} approved`},
++      {id:"workflow",label:"Governed workflow composition",pass:(workflows.items||[]).length>0,detail:`${(workflows.items||[]).length} workflow(s)`}
++    ];
++    const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length); const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
++    const cert={id:`V43C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v43-complete":score>=75?"conditional":"blocked",trusted:score===100,blockers,checks,issuedBy:actor||null,issuedAt:new Date().toISOString(),build:"43.20.0-executive-ai-orchestration"};
++    if(persist) await this.database.mutate(data=>{data.v43ClosureCertificates ||= {}; data.v43ClosureCertificates[organizationId]=cert; return cert;});
++    return cert;
++  }
++
+   async operatingSnapshot(organizationId) {
+     const events = await this.events(organizationId, 200);
+     const cutoff = Date.now() - 4 * 60 * 60 * 1000;

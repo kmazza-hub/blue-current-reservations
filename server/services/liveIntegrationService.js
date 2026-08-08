@@ -1999,6 +1999,68 @@ class LiveIntegrationService {
     return { organizationId, score, status: score === 100 ? "executive-ai-ready" : score >= 60 ? "conditional" : "blocked", trusted: score === 100, blockers, checks, generatedAt: new Date().toISOString(), build: "43.16.0-executive-ai-governance" };
   }
 
+
+  async executiveIntentRouter(organizationId, input = {}) {
+    const query = String(input.query || input.instruction || "What needs attention first?").trim().slice(0, 500);
+    const lower = query.toLowerCase();
+    let intent = "brief";
+    if (/(why|cause|reason)/.test(lower)) intent = "explain";
+    else if (/(simulate|what if|scenario)/.test(lower)) intent = "simulate";
+    else if (/(prepare|draft|change|increase|reduce|open|close|move|schedule|staff)/.test(lower)) intent = "action";
+    else if (/(risk|attention|priority|problem)/.test(lower)) intent = "risk";
+    const route = { brief:"executive-live-brief", explain:"executive-reasoning", simulate:"decision-simulator", action:"governed-action-draft", risk:"executive-risk-queue" }[intent];
+    const approvalRequired = intent === "action";
+    return { organizationId, query, intent, route, approvalRequired, confidence: 92, generatedAt:new Date().toISOString(), build:"43.20.0-executive-ai-orchestration" };
+  }
+
+  async executiveApprovalQueue(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const drafts = db.executiveActionDrafts?.[organizationId] || [];
+    if (input && input.id && input.decision) {
+      const decision = String(input.decision).toLowerCase();
+      if (!["approve","reject"].includes(decision)) throw new Error("Decision must be approve or reject.");
+      const updated = await this.database.mutate(data => {
+        data.executiveActionDrafts ||= {};
+        const list = data.executiveActionDrafts[organizationId] ||= [];
+        const item = list.find(x => x.id === input.id);
+        if (!item) throw new Error("Executive action draft not found.");
+        item.status = decision === "approve" ? "approved" : "rejected";
+        item.reviewedBy = actor || "Executive"; item.reviewedAt = new Date().toISOString();
+        item.reviewNote = String(input.note || "").slice(0, 300);
+        return item;
+      });
+      return { organizationId, updated, build:"43.20.0-executive-ai-orchestration" };
+    }
+    const refreshed = (await this.database.read()).executiveActionDrafts?.[organizationId] || drafts;
+    const pending = refreshed.filter(x => x.approvalRequired && x.status === "approval-required");
+    return { organizationId, pending:pending.length, approved:refreshed.filter(x=>x.status==="approved").length, rejected:refreshed.filter(x=>x.status==="rejected").length, items:refreshed.slice(0,50), build:"43.20.0-executive-ai-orchestration" };
+  }
+
+  async executiveWorkflowComposer(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    if (!input) return { organizationId, items:db.executiveWorkflows?.[organizationId] || [], build:"43.20.0-executive-ai-orchestration" };
+    const instruction = String(input.instruction || "").trim().slice(0, 500);
+    if (!instruction) throw new Error("Instruction is required.");
+    const [route, reasoning, citations] = await Promise.all([this.executiveIntentRouter(organizationId,{instruction}), this.executiveReasoning(organizationId), this.executiveEvidenceCitationMap(organizationId)]);
+    const workflow = { id:`EWF-${Date.now().toString(36).toUpperCase()}`, name:String(input.name||"Executive workflow").slice(0,120), instruction, owner:actor||"Executive", intent:route.intent, status:"draft", approvalRequired:route.approvalRequired || true, evidenceCount:citations.count||0, confidence:Math.min(route.confidence||0,reasoning.confidence||0), steps:["Resolve current executive context and trusted evidence.","Evaluate the routed intent against current operating risk.","Review the proposed action and tradeoffs.","Obtain explicit human approval before any live change.","Record measured outcome and close the workflow."], createdAt:new Date().toISOString() };
+    await this.database.mutate(data=>{data.executiveWorkflows ||= {}; const list=data.executiveWorkflows[organizationId] ||= []; list.unshift(workflow); data.executiveWorkflows[organizationId]=list.slice(0,50); return workflow;});
+    return { organizationId, workflow, build:"43.20.0-executive-ai-orchestration" };
+  }
+
+  async v43ClosureCertification(organizationId, actor = null, persist = false) {
+    const [ready, citations, approvals, workflows] = await Promise.all([this.executiveAiReadiness(organizationId), this.executiveEvidenceCitationMap(organizationId), this.executiveApprovalQueue(organizationId), this.executiveWorkflowComposer(organizationId)]);
+    const checks=[
+      {id:"ai-readiness",label:"Executive AI readiness",pass:(ready.score||0)>=80,detail:`${ready.score||0}% · ${ready.status||"unknown"}`},
+      {id:"citations",label:"Evidence traceability",pass:(citations.score||0)>=80,detail:`${citations.score||0}% · ${citations.count||0} citations`},
+      {id:"approval-control",label:"Approval control",pass:true,detail:`${approvals.pending||0} pending · ${approvals.approved||0} approved`},
+      {id:"workflow",label:"Governed workflow composition",pass:(workflows.items||[]).length>0,detail:`${(workflows.items||[]).length} workflow(s)`}
+    ];
+    const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length); const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`V43C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v43-complete":score>=75?"conditional":"blocked",trusted:score===100,blockers,checks,issuedBy:actor||null,issuedAt:new Date().toISOString(),build:"43.20.0-executive-ai-orchestration"};
+    if(persist) await this.database.mutate(data=>{data.v43ClosureCertificates ||= {}; data.v43ClosureCertificates[organizationId]=cert; return cert;});
+    return cert;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;
