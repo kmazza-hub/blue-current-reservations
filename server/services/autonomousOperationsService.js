@@ -560,6 +560,158 @@ class AutonomousOperationsService {
     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
     return {organizationId:org,version:"45.20.0",score,status:score===100?"v45-shadow-execution-boundary-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestShadowExecutionId:latestShadow?.id||null,safety:{executionMode:"shadow-only",liveExecutionEnabled:false,emergencyStopEngaged:state.engaged,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.20.0-shadow-execution-boundary"};
   }
+  v45ControlledExecutionPolicy(){
+    const adapters=this.v45ExecutionAdapterRegistry();
+    const canonical={
+      version:"45.25.0",
+      mode:"certification-only",
+      liveExecutionEnabled:false,
+      dualAuthorizationRequired:true,
+      minimumDistinctApprovers:2,
+      minimumObservationMinutes:15,
+      maximumCanaryPercent:0,
+      circuitBreaker:{
+        maxConsecutiveFailures:1,
+        maxErrorRatePercent:0,
+        maxLiveStateChanges:0,
+        tripOnCompensationFailure:true,
+        tripOnEvidenceDrift:true
+      },
+      promotionCriteria:{
+        minimumShadowRuns:3,
+        minimumSuccessfulShadowRuns:3,
+        minimumCompensationDrills:1,
+        requiredPreflightPassRate:100,
+        requiredIdempotencyReplay:true,
+        requiredEmergencyStopEngaged:true,
+        requiredLiveHandlerCount:0
+      },
+      adapters:Object.fromEntries(Object.entries(adapters.adapters).map(([key,value])=>[key,{
+        adapterId:value.adapterId,domain:value.domain,certificationStatus:"shadow-only",
+        liveHandlerPresent:Boolean(value.liveHandler),compensationRequired:true
+      }]))
+    };
+    return {...canonical,contentHash:this.hashV45AuthorizationPayload(canonical),immutable:true};
+  }
+  async v45ExecutionCertifications(org,actor=null,input=null){
+    const db=await this.database.read(),stored=db.v45ExecutionCertifications?.[org]||[];
+    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,policy:this.v45ControlledExecutionPolicy(),build:"45.25.0-controlled-execution-certification"};
+    const draftId=String(input.draftId||"").trim();
+    if(!draftId)throw new Error("draftId is required.");
+    const draft=(db.v45CommandDrafts?.[org]||[]).find(x=>x.id===draftId);
+    if(!draft)throw new Error("V45 command draft not found.");
+    const shadows=(db.v45ShadowExecutions?.[org]||[]).filter(x=>x.draftId===draftId);
+    if(!shadows.length)throw new Error("At least one shadow execution is required before certification.");
+    const policy=this.v45ControlledExecutionPolicy();
+    const commandTypes=[...new Set((draft.commands||[]).map(x=>x.commandType))];
+    const adapterRegistry=this.v45ExecutionAdapterRegistry();
+    const adapterChecks=commandTypes.map(commandType=>{
+      const adapter=adapterRegistry.adapters[commandType];
+      return {commandType,adapterId:adapter?.adapterId||null,registered:Boolean(adapter),shadowHandler:Boolean(adapter?.shadowHandler),liveHandlerPresent:Boolean(adapter?.liveHandler),compensationSupported:Boolean(adapter?.compensation?.supported)};
+    });
+    const now=this.now();
+    const certification={
+      id:`V45-CERT-${Date.now().toString(36).toUpperCase()}`,organizationId:org,draftId,
+      policyVersion:policy.version,policyHash:policy.contentHash,status:"pending-dual-authorization",
+      commandTypes,adapterChecks,shadowRunIds:shadows.map(x=>x.id),shadowRunCount:shadows.length,
+      approvals:[],distinctApprovers:0,dualAuthorizationSatisfied:false,
+      observation:{requiredMinutes:policy.minimumObservationMinutes,status:"not-started",startedAt:null,endsAt:null,completedAt:null},
+      circuitBreaker:{...policy.circuitBreaker,status:"armed",tripped:false,tripReason:null},
+      compensation:{required:true,status:"not-tested",drills:[]},
+      promotion:{eligible:false,criteria:policy.promotionCriteria,blockers:["Dual authorization required","Observation window incomplete","Compensation drill required","Minimum shadow-run count not met"]},
+      canary:{maximumPercent:0,currentPercent:0,liveTraffic:false,promotionLocked:true},
+      executionMode:"certification-only",liveExecutionEnabled:false,liveExecutionAllowed:false,liveStateChanged:false,
+      createdBy:actor||"Operator",createdAt:now,updatedAt:now
+    };
+    await this.database.mutate(data=>{data.v45ExecutionCertifications||={};const list=data.v45ExecutionCertifications[org]||[];list.unshift(certification);data.v45ExecutionCertifications[org]=list.slice(0,200);return certification;});
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 controlled execution certification created: ${certification.id}`,category:"v45-execution-certification"});
+    this.realtimeHub.publish("v45-execution-certification-created",{organizationId:org,id:certification.id,liveExecutionEnabled:false});
+    return {organizationId:org,certification,policy,build:"45.25.0-controlled-execution-certification"};
+  }
+  async v45ExecutionCertificationControl(org,actor,input={}){
+    const certificationId=String(input.certificationId||"").trim(),action=String(input.action||"").trim().toLowerCase();
+    if(!certificationId)throw new Error("certificationId is required.");
+    const allowed=["authorize","start-observation","complete-observation","compensation-drill","trip-breaker","reset-review","evaluate"];
+    if(!allowed.includes(action))throw new Error("Unsupported execution-certification action.");
+    const now=new Date(),nowIso=now.toISOString();
+    const result=await this.database.mutate(db=>{
+      db.v45ExecutionCertifications||={};const list=db.v45ExecutionCertifications[org]||[];const c=list.find(x=>x.id===certificationId);if(!c)throw new Error("Execution certification not found.");
+      const policy=this.v45ControlledExecutionPolicy();
+      const shadows=(db.v45ShadowExecutions?.[org]||[]).filter(x=>x.draftId===c.draftId);
+      const event=(type,detail={})=>{c.history||=[];c.history.push({type,actor:actor||"Operator",at:nowIso,...detail});c.history=c.history.slice(-200);};
+      if(action==="authorize"){
+        const approverId=String(input.approverId||actor||"Operator").trim(),role=String(input.actorRole||"manager").trim().toLowerCase();
+        if(!approverId)throw new Error("approverId is required.");
+        if(this.v45ApprovalRoleRank(role)<this.v45ApprovalRoleRank("general-manager"))throw new Error("Execution certification authorization requires General Manager or higher.");
+        if(c.approvals.some(x=>x.approverId===approverId))throw new Error("Dual authorization requires distinct approvers.");
+        c.approvals.push({approverId,role,authorizedAt:nowIso,scope:"certification-only",liveExecutionAllowed:false});
+        c.distinctApprovers=new Set(c.approvals.map(x=>x.approverId)).size;
+        c.dualAuthorizationSatisfied=c.distinctApprovers>=policy.minimumDistinctApprovers;
+        c.status=c.dualAuthorizationSatisfied?"authorized-for-observation":"pending-dual-authorization";
+        event("authorization-recorded",{approverId,role});
+      }else if(action==="start-observation"){
+        if(!c.dualAuthorizationSatisfied)throw new Error("Dual authorization is required before the observation window.");
+        if(c.circuitBreaker.tripped)throw new Error("Circuit breaker is tripped.");
+        c.observation.status="running";c.observation.startedAt=nowIso;c.observation.endsAt=new Date(now.getTime()+policy.minimumObservationMinutes*60000).toISOString();c.status="observation-running";event("observation-started");
+      }else if(action==="complete-observation"){
+        if(c.observation.status!=="running")throw new Error("Observation window is not running.");
+        const force=Boolean(input.forceForTest);
+        if(!force&&new Date(c.observation.endsAt).getTime()>now.getTime())throw new Error(`Observation window remains active until ${c.observation.endsAt}.`);
+        c.observation.status="completed";c.observation.completedAt=nowIso;c.status="observation-complete";event("observation-completed",{forcedTest:force});
+      }else if(action==="compensation-drill"){
+        const commandType=String(input.commandType||c.commandTypes[0]||"").trim();
+        const adapter=this.v45ExecutionAdapterRegistry().adapters[commandType];
+        if(!adapter||!adapter.compensation?.supported)throw new Error("Adapter does not have a supported compensation contract.");
+        const drill={id:`V45-COMP-${Date.now().toString(36).toUpperCase()}`,commandType,adapterId:adapter.adapterId,compensationType:adapter.compensation.type,status:"passed",simulationOnly:true,liveStateChanged:false,performedBy:actor||"Operator",performedAt:nowIso};
+        c.compensation.drills.push(drill);c.compensation.status="passed";event("compensation-drill-passed",{drillId:drill.id,commandType});
+      }else if(action==="trip-breaker"){
+        c.circuitBreaker.tripped=true;c.circuitBreaker.status="tripped";c.circuitBreaker.tripReason=String(input.reason||"Manual certification breaker trip").slice(0,500);c.status="blocked";c.promotion.eligible=false;event("circuit-breaker-tripped",{reason:c.circuitBreaker.tripReason});
+      }else if(action==="reset-review"){
+        if(!c.circuitBreaker.tripped)throw new Error("Circuit breaker is not tripped.");
+        c.circuitBreaker.tripped=false;c.circuitBreaker.status="armed";c.circuitBreaker.tripReason=null;c.status="review-required";event("circuit-breaker-reset-for-review");
+      }
+      const successfulShadows=shadows.filter(x=>x.status==="completed"&&x.preflight?.pass&&x.liveStateChanged===false);
+      const idempotencyEvidence=shadows.some(x=>Boolean(x.idempotencyKey));
+      const blockers=[];
+      if(!c.dualAuthorizationSatisfied)blockers.push("Dual authorization required");
+      if(c.observation.status!=="completed")blockers.push("Observation window incomplete");
+      if(c.compensation.drills.length<policy.promotionCriteria.minimumCompensationDrills||c.compensation.status!=="passed")blockers.push("Compensation drill required");
+      if(shadows.length<policy.promotionCriteria.minimumShadowRuns)blockers.push(`Minimum ${policy.promotionCriteria.minimumShadowRuns} shadow runs required`);
+      if(successfulShadows.length<policy.promotionCriteria.minimumSuccessfulShadowRuns)blockers.push(`Minimum ${policy.promotionCriteria.minimumSuccessfulShadowRuns} successful shadow runs required`);
+      if(!idempotencyEvidence)blockers.push("Idempotency evidence missing");
+      if(c.adapterChecks.some(x=>x.liveHandlerPresent))blockers.push("Live handler unexpectedly present");
+      if(c.circuitBreaker.tripped)blockers.push("Circuit breaker tripped");
+      const emergency=this.v45ExecutionEmergencyState(db,org);if(!emergency.engaged)blockers.push("Emergency stop must remain engaged");
+      c.shadowRunIds=shadows.map(x=>x.id);c.shadowRunCount=shadows.length;
+      c.promotion={eligible:blockers.length===0,criteria:policy.promotionCriteria,blockers};
+      c.status=blockers.length===0?"certified-shadow-boundary":"certification-incomplete";
+      c.canary.currentPercent=0;c.canary.liveTraffic=false;c.canary.promotionLocked=true;
+      c.liveExecutionEnabled=false;c.liveExecutionAllowed=false;c.liveStateChanged=false;c.updatedAt=nowIso;
+      event("certification-evaluated",{eligible:c.promotion.eligible,blockers:[...blockers]});
+      return {...c};
+    });
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 execution certification ${action}: ${certificationId}`,category:"v45-execution-certification"});
+    this.realtimeHub.publish("v45-execution-certification-updated",{organizationId:org,id:certificationId,status:result.status,eligible:result.promotion?.eligible,liveExecutionEnabled:false});
+    return {organizationId:org,certification:result,build:"45.25.0-controlled-execution-certification"};
+  }
+  async v45ControlledExecutionReadiness(org){
+    const db=await this.database.read(),policy=this.v45ControlledExecutionPolicy(),certs=db.v45ExecutionCertifications?.[org]||[],latest=certs[0]||null,shadows=db.v45ShadowExecutions?.[org]||[];
+    const adapters=Object.values(this.v45ExecutionAdapterRegistry().adapters);
+    const checks=[
+      {id:"immutable-policy",label:"Immutable controlled-execution policy",pass:policy.immutable===true&&Boolean(policy.contentHash),detail:`${policy.version} · ${policy.contentHash.slice(0,12)}`},
+      {id:"dual-auth",label:"Dual authorization architecture",pass:Boolean(latest)&&latest.dualAuthorizationSatisfied===true&&latest.distinctApprovers>=2,detail:`${latest?.distinctApprovers||0}/2 distinct approver(s)`},
+      {id:"observation-window",label:"Observation window completed",pass:latest?.observation?.status==="completed",detail:latest?.observation?.status||"no certification"},
+      {id:"circuit-breaker",label:"Circuit breaker armed and untripped",pass:Boolean(latest)&&latest.circuitBreaker?.status==="armed"&&latest.circuitBreaker?.tripped===false,detail:latest?.circuitBreaker?.status||"no certification"},
+      {id:"compensation-drill",label:"Compensation contract validated",pass:Boolean(latest)&&latest.compensation?.status==="passed"&&latest.compensation.drills.length>=1,detail:`${latest?.compensation?.drills?.length||0} drill(s)`},
+      {id:"shadow-evidence",label:"Shadow execution promotion evidence",pass:Boolean(latest)&&latest.shadowRunCount>=policy.promotionCriteria.minimumShadowRuns,detail:`${latest?.shadowRunCount||0}/${policy.promotionCriteria.minimumShadowRuns} shadow run(s)`},
+      {id:"promotion",label:"Promotion criteria evaluated",pass:Boolean(latest)&&latest.promotion?.eligible===true,detail:latest?.promotion?.eligible?"Eligible for future controlled-release design":`${latest?.promotion?.blockers?.length||0} blocker(s)`},
+      {id:"zero-canary",label:"Canary remains locked to zero live traffic",pass:Boolean(latest)&&latest.canary?.currentPercent===0&&latest.canary?.liveTraffic===false&&latest.canary?.promotionLocked===true,detail:"0% live traffic · promotion locked"},
+      {id:"no-production-handlers",label:"Production mutation handlers remain absent",pass:adapters.every(x=>x.liveHandler===null),detail:`${adapters.length} adapter(s), 0 live handlers`},
+      {id:"live-safety",label:"Controlled execution certification cannot mutate live state",pass:policy.liveExecutionEnabled===false&&certs.every(x=>x.liveExecutionEnabled===false&&x.liveExecutionAllowed===false&&x.liveStateChanged===false)&&shadows.every(x=>x.liveStateChanged===false),detail:"Certification remains shadow-only"}
+    ];
+    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+    return {organizationId:org,version:"45.25.0",score,status:score===100?"v45-controlled-execution-certification-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestCertificationId:latest?.id||null,policyHash:policy.contentHash,safety:{certificationOnly:true,liveExecutionEnabled:false,liveHandlers:0,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.25.0-controlled-execution-certification"};
+  }
   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
 }
 module.exports=AutonomousOperationsService;

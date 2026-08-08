@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "45.20.0",
+        version: "45.25.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -996,6 +996,16 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response,200,await autonomousOperationsService.v45ShadowExecutions(organizationId,auth.user.name,await readJson(request)));
     }
     if (url.pathname === "/api/autonomous-assistance/execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionReadiness(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/execution-certifications" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertifications(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/execution-certifications" && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Execution certification permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertifications(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/execution-certification-control" && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Execution certification permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertificationControl(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/controlled-execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ControlledExecutionReadiness(organizationId));
     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));

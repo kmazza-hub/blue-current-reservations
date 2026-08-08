@@ -1,0 +1,523 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "45.20.0",
++  "version": "45.25.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V45 shadow execution boundary and safety certification",
++  "description": "Blue Current Hospitality OS \u2014 V45 controlled execution certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V45.20.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V45.25.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "45.20.0",
++        version: "45.25.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -996,6 +996,16 @@
+       return sendJson(response,200,await autonomousOperationsService.v45ShadowExecutions(organizationId,auth.user.name,await readJson(request)));
+     }
+     if (url.pathname === "/api/autonomous-assistance/execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionReadiness(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/execution-certifications" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertifications(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/execution-certifications" && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Execution certification permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertifications(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/execution-certification-control" && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Execution certification permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertificationControl(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/controlled-execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ControlledExecutionReadiness(organizationId));
+     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
+       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
+--- a/server/services/autonomousOperationsService.js
++++ b/server/services/autonomousOperationsService.js
+@@ -560,6 +560,158 @@
+     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+     return {organizationId:org,version:"45.20.0",score,status:score===100?"v45-shadow-execution-boundary-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestShadowExecutionId:latestShadow?.id||null,safety:{executionMode:"shadow-only",liveExecutionEnabled:false,emergencyStopEngaged:state.engaged,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.20.0-shadow-execution-boundary"};
+   }
++  v45ControlledExecutionPolicy(){
++    const adapters=this.v45ExecutionAdapterRegistry();
++    const canonical={
++      version:"45.25.0",
++      mode:"certification-only",
++      liveExecutionEnabled:false,
++      dualAuthorizationRequired:true,
++      minimumDistinctApprovers:2,
++      minimumObservationMinutes:15,
++      maximumCanaryPercent:0,
++      circuitBreaker:{
++        maxConsecutiveFailures:1,
++        maxErrorRatePercent:0,
++        maxLiveStateChanges:0,
++        tripOnCompensationFailure:true,
++        tripOnEvidenceDrift:true
++      },
++      promotionCriteria:{
++        minimumShadowRuns:3,
++        minimumSuccessfulShadowRuns:3,
++        minimumCompensationDrills:1,
++        requiredPreflightPassRate:100,
++        requiredIdempotencyReplay:true,
++        requiredEmergencyStopEngaged:true,
++        requiredLiveHandlerCount:0
++      },
++      adapters:Object.fromEntries(Object.entries(adapters.adapters).map(([key,value])=>[key,{
++        adapterId:value.adapterId,domain:value.domain,certificationStatus:"shadow-only",
++        liveHandlerPresent:Boolean(value.liveHandler),compensationRequired:true
++      }]))
++    };
++    return {...canonical,contentHash:this.hashV45AuthorizationPayload(canonical),immutable:true};
++  }
++  async v45ExecutionCertifications(org,actor=null,input=null){
++    const db=await this.database.read(),stored=db.v45ExecutionCertifications?.[org]||[];
++    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,policy:this.v45ControlledExecutionPolicy(),build:"45.25.0-controlled-execution-certification"};
++    const draftId=String(input.draftId||"").trim();
++    if(!draftId)throw new Error("draftId is required.");
++    const draft=(db.v45CommandDrafts?.[org]||[]).find(x=>x.id===draftId);
++    if(!draft)throw new Error("V45 command draft not found.");
++    const shadows=(db.v45ShadowExecutions?.[org]||[]).filter(x=>x.draftId===draftId);
++    if(!shadows.length)throw new Error("At least one shadow execution is required before certification.");
++    const policy=this.v45ControlledExecutionPolicy();
++    const commandTypes=[...new Set((draft.commands||[]).map(x=>x.commandType))];
++    const adapterRegistry=this.v45ExecutionAdapterRegistry();
++    const adapterChecks=commandTypes.map(commandType=>{
++      const adapter=adapterRegistry.adapters[commandType];
++      return {commandType,adapterId:adapter?.adapterId||null,registered:Boolean(adapter),shadowHandler:Boolean(adapter?.shadowHandler),liveHandlerPresent:Boolean(adapter?.liveHandler),compensationSupported:Boolean(adapter?.compensation?.supported)};
++    });
++    const now=this.now();
++    const certification={
++      id:`V45-CERT-${Date.now().toString(36).toUpperCase()}`,organizationId:org,draftId,
++      policyVersion:policy.version,policyHash:policy.contentHash,status:"pending-dual-authorization",
++      commandTypes,adapterChecks,shadowRunIds:shadows.map(x=>x.id),shadowRunCount:shadows.length,
++      approvals:[],distinctApprovers:0,dualAuthorizationSatisfied:false,
++      observation:{requiredMinutes:policy.minimumObservationMinutes,status:"not-started",startedAt:null,endsAt:null,completedAt:null},
++      circuitBreaker:{...policy.circuitBreaker,status:"armed",tripped:false,tripReason:null},
++      compensation:{required:true,status:"not-tested",drills:[]},
++      promotion:{eligible:false,criteria:policy.promotionCriteria,blockers:["Dual authorization required","Observation window incomplete","Compensation drill required","Minimum shadow-run count not met"]},
++      canary:{maximumPercent:0,currentPercent:0,liveTraffic:false,promotionLocked:true},
++      executionMode:"certification-only",liveExecutionEnabled:false,liveExecutionAllowed:false,liveStateChanged:false,
++      createdBy:actor||"Operator",createdAt:now,updatedAt:now
++    };
++    await this.database.mutate(data=>{data.v45ExecutionCertifications||={};const list=data.v45ExecutionCertifications[org]||[];list.unshift(certification);data.v45ExecutionCertifications[org]=list.slice(0,200);return certification;});
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 controlled execution certification created: ${certification.id}`,category:"v45-execution-certification"});
++    this.realtimeHub.publish("v45-execution-certification-created",{organizationId:org,id:certification.id,liveExecutionEnabled:false});
++    return {organizationId:org,certification,policy,build:"45.25.0-controlled-execution-certification"};
++  }
++  async v45ExecutionCertificationControl(org,actor,input={}){
++    const certificationId=String(input.certificationId||"").trim(),action=String(input.action||"").trim().toLowerCase();
++    if(!certificationId)throw new Error("certificationId is required.");
++    const allowed=["authorize","start-observation","complete-observation","compensation-drill","trip-breaker","reset-review","evaluate"];
++    if(!allowed.includes(action))throw new Error("Unsupported execution-certification action.");
++    const now=new Date(),nowIso=now.toISOString();
++    const result=await this.database.mutate(db=>{
++      db.v45ExecutionCertifications||={};const list=db.v45ExecutionCertifications[org]||[];const c=list.find(x=>x.id===certificationId);if(!c)throw new Error("Execution certification not found.");
++      const policy=this.v45ControlledExecutionPolicy();
++      const shadows=(db.v45ShadowExecutions?.[org]||[]).filter(x=>x.draftId===c.draftId);
++      const event=(type,detail={})=>{c.history||=[];c.history.push({type,actor:actor||"Operator",at:nowIso,...detail});c.history=c.history.slice(-200);};
++      if(action==="authorize"){
++        const approverId=String(input.approverId||actor||"Operator").trim(),role=String(input.actorRole||"manager").trim().toLowerCase();
++        if(!approverId)throw new Error("approverId is required.");
++        if(this.v45ApprovalRoleRank(role)<this.v45ApprovalRoleRank("general-manager"))throw new Error("Execution certification authorization requires General Manager or higher.");
++        if(c.approvals.some(x=>x.approverId===approverId))throw new Error("Dual authorization requires distinct approvers.");
++        c.approvals.push({approverId,role,authorizedAt:nowIso,scope:"certification-only",liveExecutionAllowed:false});
++        c.distinctApprovers=new Set(c.approvals.map(x=>x.approverId)).size;
++        c.dualAuthorizationSatisfied=c.distinctApprovers>=policy.minimumDistinctApprovers;
++        c.status=c.dualAuthorizationSatisfied?"authorized-for-observation":"pending-dual-authorization";
++        event("authorization-recorded",{approverId,role});
++      }else if(action==="start-observation"){
++        if(!c.dualAuthorizationSatisfied)throw new Error("Dual authorization is required before the observation window.");
++        if(c.circuitBreaker.tripped)throw new Error("Circuit breaker is tripped.");
++        c.observation.status="running";c.observation.startedAt=nowIso;c.observation.endsAt=new Date(now.getTime()+policy.minimumObservationMinutes*60000).toISOString();c.status="observation-running";event("observation-started");
++      }else if(action==="complete-observation"){
++        if(c.observation.status!=="running")throw new Error("Observation window is not running.");
++        const force=Boolean(input.forceForTest);
++        if(!force&&new Date(c.observation.endsAt).getTime()>now.getTime())throw new Error(`Observation window remains active until ${c.observation.endsAt}.`);
++        c.observation.status="completed";c.observation.completedAt=nowIso;c.status="observation-complete";event("observation-completed",{forcedTest:force});
++      }else if(action==="compensation-drill"){
++        const commandType=String(input.commandType||c.commandTypes[0]||"").trim();
++        const adapter=this.v45ExecutionAdapterRegistry().adapters[commandType];
++        if(!adapter||!adapter.compensation?.supported)throw new Error("Adapter does not have a supported compensation contract.");
++        const drill={id:`V45-COMP-${Date.now().toString(36).toUpperCase()}`,commandType,adapterId:adapter.adapterId,compensationType:adapter.compensation.type,status:"passed",simulationOnly:true,liveStateChanged:false,performedBy:actor||"Operator",performedAt:nowIso};
++        c.compensation.drills.push(drill);c.compensation.status="passed";event("compensation-drill-passed",{drillId:drill.id,commandType});
++      }else if(action==="trip-breaker"){
++        c.circuitBreaker.tripped=true;c.circuitBreaker.status="tripped";c.circuitBreaker.tripReason=String(input.reason||"Manual certification breaker trip").slice(0,500);c.status="blocked";c.promotion.eligible=false;event("circuit-breaker-tripped",{reason:c.circuitBreaker.tripReason});
++      }else if(action==="reset-review"){
++        if(!c.circuitBreaker.tripped)throw new Error("Circuit breaker is not tripped.");
++        c.circuitBreaker.tripped=false;c.circuitBreaker.status="armed";c.circuitBreaker.tripReason=null;c.status="review-required";event("circuit-breaker-reset-for-review");
++      }
++      const successfulShadows=shadows.filter(x=>x.status==="completed"&&x.preflight?.pass&&x.liveStateChanged===false);
++      const idempotencyEvidence=shadows.some(x=>Boolean(x.idempotencyKey));
++      const blockers=[];
++      if(!c.dualAuthorizationSatisfied)blockers.push("Dual authorization required");
++      if(c.observation.status!=="completed")blockers.push("Observation window incomplete");
++      if(c.compensation.drills.length<policy.promotionCriteria.minimumCompensationDrills||c.compensation.status!=="passed")blockers.push("Compensation drill required");
++      if(shadows.length<policy.promotionCriteria.minimumShadowRuns)blockers.push(`Minimum ${policy.promotionCriteria.minimumShadowRuns} shadow runs required`);
++      if(successfulShadows.length<policy.promotionCriteria.minimumSuccessfulShadowRuns)blockers.push(`Minimum ${policy.promotionCriteria.minimumSuccessfulShadowRuns} successful shadow runs required`);
++      if(!idempotencyEvidence)blockers.push("Idempotency evidence missing");
++      if(c.adapterChecks.some(x=>x.liveHandlerPresent))blockers.push("Live handler unexpectedly present");
++      if(c.circuitBreaker.tripped)blockers.push("Circuit breaker tripped");
++      const emergency=this.v45ExecutionEmergencyState(db,org);if(!emergency.engaged)blockers.push("Emergency stop must remain engaged");
++      c.shadowRunIds=shadows.map(x=>x.id);c.shadowRunCount=shadows.length;
++      c.promotion={eligible:blockers.length===0,criteria:policy.promotionCriteria,blockers};
++      c.status=blockers.length===0?"certified-shadow-boundary":"certification-incomplete";
++      c.canary.currentPercent=0;c.canary.liveTraffic=false;c.canary.promotionLocked=true;
++      c.liveExecutionEnabled=false;c.liveExecutionAllowed=false;c.liveStateChanged=false;c.updatedAt=nowIso;
++      event("certification-evaluated",{eligible:c.promotion.eligible,blockers:[...blockers]});
++      return {...c};
++    });
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 execution certification ${action}: ${certificationId}`,category:"v45-execution-certification"});
++    this.realtimeHub.publish("v45-execution-certification-updated",{organizationId:org,id:certificationId,status:result.status,eligible:result.promotion?.eligible,liveExecutionEnabled:false});
++    return {organizationId:org,certification:result,build:"45.25.0-controlled-execution-certification"};
++  }
++  async v45ControlledExecutionReadiness(org){
++    const db=await this.database.read(),policy=this.v45ControlledExecutionPolicy(),certs=db.v45ExecutionCertifications?.[org]||[],latest=certs[0]||null,shadows=db.v45ShadowExecutions?.[org]||[];
++    const adapters=Object.values(this.v45ExecutionAdapterRegistry().adapters);
++    const checks=[
++      {id:"immutable-policy",label:"Immutable controlled-execution policy",pass:policy.immutable===true&&Boolean(policy.contentHash),detail:`${policy.version} · ${policy.contentHash.slice(0,12)}`},
++      {id:"dual-auth",label:"Dual authorization architecture",pass:Boolean(latest)&&latest.dualAuthorizationSatisfied===true&&latest.distinctApprovers>=2,detail:`${latest?.distinctApprovers||0}/2 distinct approver(s)`},
++      {id:"observation-window",label:"Observation window completed",pass:latest?.observation?.status==="completed",detail:latest?.observation?.status||"no certification"},
++      {id:"circuit-breaker",label:"Circuit breaker armed and untripped",pass:Boolean(latest)&&latest.circuitBreaker?.status==="armed"&&latest.circuitBreaker?.tripped===false,detail:latest?.circuitBreaker?.status||"no certification"},
++      {id:"compensation-drill",label:"Compensation contract validated",pass:Boolean(latest)&&latest.compensation?.status==="passed"&&latest.compensation.drills.length>=1,detail:`${latest?.compensation?.drills?.length||0} drill(s)`},
++      {id:"shadow-evidence",label:"Shadow execution promotion evidence",pass:Boolean(latest)&&latest.shadowRunCount>=policy.promotionCriteria.minimumShadowRuns,detail:`${latest?.shadowRunCount||0}/${policy.promotionCriteria.minimumShadowRuns} shadow run(s)`},
++      {id:"promotion",label:"Promotion criteria evaluated",pass:Boolean(latest)&&latest.promotion?.eligible===true,detail:latest?.promotion?.eligible?"Eligible for future controlled-release design":`${latest?.promotion?.blockers?.length||0} blocker(s)`},
++      {id:"zero-canary",label:"Canary remains locked to zero live traffic",pass:Boolean(latest)&&latest.canary?.currentPercent===0&&latest.canary?.liveTraffic===false&&latest.canary?.promotionLocked===true,detail:"0% live traffic · promotion locked"},
++      {id:"no-production-handlers",label:"Production mutation handlers remain absent",pass:adapters.every(x=>x.liveHandler===null),detail:`${adapters.length} adapter(s), 0 live handlers`},
++      {id:"live-safety",label:"Controlled execution certification cannot mutate live state",pass:policy.liveExecutionEnabled===false&&certs.every(x=>x.liveExecutionEnabled===false&&x.liveExecutionAllowed===false&&x.liveStateChanged===false)&&shadows.every(x=>x.liveStateChanged===false),detail:"Certification remains shadow-only"}
++    ];
++    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {organizationId:org,version:"45.25.0",score,status:score===100?"v45-controlled-execution-certification-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestCertificationId:latest?.id||null,policyHash:policy.contentHash,safety:{certificationOnly:true,liveExecutionEnabled:false,liveHandlers:0,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.25.0-controlled-execution-certification"};
++  }
+   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
+ }
+ module.exports=AutonomousOperationsService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="45.20.0">
++  <meta name="blue-current-build" content="45.25.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8582,6 +8582,7 @@
+ <section class="v432-center v438-center v4316-center" id="interventionPlanningCenter"><header><div><small>V45.6–V45.10 · Governed Intervention Planning</small><strong>Convert autonomous recommendations into policy-bounded proposals, detect conflicts, and rehearse coordinated interventions.</strong><span>Plans stop at approval review. No intervention proposal, rehearsal, or conflict resolution mutates live restaurant state.</span></div><div class="v4316-actions"><button id="vipRefresh" type="button">Refresh</button><button id="vipPrepare" type="button">Prepare proposals</button><button id="vipRehearse" type="button">Rehearse plan</button></div></header><div class="v432-kpis"><article><small>Proposals</small><strong id="vipProposals">0</strong></article><article><small>Rehearsals</small><strong id="vipRehearsals">0</strong></article><article><small>Conflicts</small><strong id="vipConflicts">0</strong></article><article><small>Blocking</small><strong id="vipBlocking">0</strong></article><article><small>Readiness</small><strong id="vipScore">0%</strong></article><article><small>Status</small><strong id="vipStatus">—</strong></article><article><small>Trusted</small><strong id="vipTrusted">NO</strong></article></div><div class="v4316-answer" id="vipMessage">Prepare intervention proposals from the latest V45 assistance cycle.</div><div id="vipList" class="v432-list"></div><div id="vipChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="interventionAuthorizationCenter"><header><div><small>V45.11–V45.15 · Governed Intervention Authorization</small><strong>Package evidence for approval, revalidate state, enforce scoped expiry/revocation, and draft non-executable commands.</strong><span>Approval authorizes command drafting only. No command in this release has an execution endpoint.</span></div><div class="v4316-actions"><button id="viaRefresh" type="button">Refresh</button><button id="viaPrepare" type="button">Prepare approval packet</button></div></header><div class="v4316-actions"><select id="viaRole"><option value="manager">Manager</option><option value="general-manager">General manager</option><option value="regional-operator">Regional operator</option><option value="executive">Executive</option></select><input id="viaNote" class="v4312-input" placeholder="Approval / rejection note"><button type="button" data-auth-action="approve">Approve</button><button type="button" data-auth-action="reject">Reject</button><button type="button" data-auth-action="revoke">Revoke</button><button type="button" data-auth-action="draft">Draft commands</button></div><div class="v432-kpis"><article><small>Packets</small><strong id="viaPackets">0</strong></article><article><small>Pending</small><strong id="viaPending">0</strong></article><article><small>Approved</small><strong id="viaApproved">0</strong></article><article><small>Drafts</small><strong id="viaDrafts">0</strong></article><article><small>Readiness</small><strong id="viaScore">0%</strong></article><article><small>Status</small><strong id="viaStatus">—</strong></article><article><small>Trusted</small><strong id="viaTrusted">NO</strong></article></div><div class="v4316-answer" id="viaMessage">Prepare an approval packet from a conflict-free rehearsal.</div><div id="viaList" class="v432-list"></div><div id="viaChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="shadowExecutionBoundaryCenter"><header><div><small>V45.16–V45.20 · Shadow Execution Boundary</small><strong>Preflight allowlisted commands, enforce compensation contracts and emergency stop, and shadow-run adapters with canary traffic locked to zero.</strong><span>Live handlers are intentionally absent. This release certifies the boundary architecture without enabling restaurant mutations.</span></div><div class="v4316-actions"><button id="vseRefresh" type="button">Refresh</button><button id="vseShadow" type="button">Run shadow execution</button></div></header><div class="v4316-actions"><input id="vseReason" class="v4312-input" placeholder="Emergency-stop reason"><button id="vseStopBtn" type="button">Engage emergency stop</button></div><div class="v432-kpis"><article><small>Adapters</small><strong id="vseAdapters">0</strong></article><article><small>Emergency stop</small><strong id="vseStop">ENGAGED</strong></article><article><small>Shadow runs</small><strong id="vseShadows">0</strong></article><article><small>Canary live</small><strong id="vseCanary">0%</strong></article><article><small>Readiness</small><strong id="vseScore">0%</strong></article><article><small>Status</small><strong id="vseStatus">—</strong></article><article><small>Trusted</small><strong id="vseTrusted">NO</strong></article></div><div class="v4316-answer" id="vseMessage">Shadow-run the latest approved command draft to certify the boundary.</div><div id="vseList" class="v432-list"></div><div id="vseChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="executionCertificationCenter"><header><div><small>V45.21–V45.25 · Controlled Execution Certification</small><strong>Certify immutable policy, dual authorization, observation windows, compensation, circuit breakers, and promotion criteria before any future live release.</strong><span>Certification can declare the shadow boundary ready; it still cannot enable live handlers or live canary traffic.</span></div><div class="v4316-actions"><button id="vecRefresh" type="button">Refresh</button><button id="vecCreate" type="button">Create certification</button></div></header><div class="v4316-actions"><input id="vecApprover" class="v4312-input" placeholder="Distinct approver ID"><select id="vecRole"><option value="general-manager">General manager</option><option value="regional-operator">Regional operator</option><option value="executive">Executive</option></select><button type="button" data-cert-action="authorize">Authorize</button><button type="button" data-cert-action="start-observation">Start observation</button><button type="button" data-cert-action="complete-observation">Complete test observation</button><button type="button" data-cert-action="compensation-drill">Compensation drill</button><button type="button" data-cert-action="evaluate">Evaluate</button><button type="button" data-cert-action="trip-breaker">Trip breaker drill</button><button type="button" data-cert-action="reset-review">Reset for review</button></div><div class="v432-kpis"><article><small>Certifications</small><strong id="vecCerts">0</strong></article><article><small>Approvers</small><strong id="vecApprovers">0</strong></article><article><small>Observation</small><strong id="vecObservation">—</strong></article><article><small>Compensation</small><strong id="vecComp">—</strong></article><article><small>Shadow runs</small><strong id="vecShadows">0</strong></article><article><small>Canary live</small><strong id="vecCanary">0%</strong></article><article><small>Readiness</small><strong id="vecScore">0%</strong></article><article><small>Status</small><strong id="vecStatus">—</strong></article><article><small>Trusted</small><strong id="vecTrusted">NO</strong></article></div><div class="v4316-answer" id="vecMessage">Create a certification from the latest command draft after shadow runs exist.</div><div id="vecChecks" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · Persistent Runtime Readiness</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryEngineV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryCenterV44.js?v=44.3.0"></script>
+@@ -8611,6 +8612,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionAuthorizationCenter" data-src="js/modules/interventionAuthorizationCenter.js?v=45.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="shadowExecutionBoundaryCenter" data-src="js/modules/shadowExecutionBoundaryEngine.js?v=45.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="shadowExecutionBoundaryCenter" data-src="js/modules/shadowExecutionBoundaryCenter.js?v=45.20.0"></script>
+-<script src="js/startup-loader.js?v=45.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executionCertificationCenter" data-src="js/modules/executionCertificationEngine.js?v=45.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executionCertificationCenter" data-src="js/modules/executionCertificationCenter.js?v=45.25.0"></script>
++<script src="js/startup-loader.js?v=45.25.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -2447,6 +2447,7 @@
+ const interventionPlanningCenterModule = startupRegistry.register("interventionPlanningCenter",shouldInitializeCenter("interventionPlanningCenter") ? window.createBlueCurrentInterventionPlanningCenterModule?.(eventBus, appState) : null,["eventBus","appState","autonomousAssistanceCenter"]);
+ const interventionAuthorizationCenterModule = startupRegistry.register("interventionAuthorizationCenter",shouldInitializeCenter("interventionAuthorizationCenter") ? window.createBlueCurrentInterventionAuthorizationCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionPlanningCenter"]);
+ const shadowExecutionBoundaryCenterModule = startupRegistry.register("shadowExecutionBoundaryCenter",shouldInitializeCenter("shadowExecutionBoundaryCenter") ? window.createBlueCurrentShadowExecutionBoundaryCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionAuthorizationCenter"]);
++const executionCertificationCenterModule = startupRegistry.register("executionCertificationCenter",shouldInitializeCenter("executionCertificationCenter") ? window.createBlueCurrentExecutionCertificationCenterModule?.(eventBus, appState) : null,["eventBus","appState","shadowExecutionBoundaryCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V45.20.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V45.25.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/executionCertificationEngine.js
++++ b/client/js/modules/executionCertificationEngine.js
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentExecutionCertificationEngine{constructor(){this.r=api();}certifications(){return this.r('/api/autonomous-assistance/execution-certifications');}create(draftId){return this.r('/api/autonomous-assistance/execution-certifications',{method:'POST',body:JSON.stringify({draftId})});}control(certificationId,action,extra={}){return this.r('/api/autonomous-assistance/execution-certification-control',{method:'POST',body:JSON.stringify({certificationId,action,...extra})});}readiness(){return this.r('/api/autonomous-assistance/controlled-execution-readiness');}}
++window.BlueCurrentExecutionCertificationEngine=BlueCurrentExecutionCertificationEngine;})();--- a/client/js/modules/executionCertificationCenter.js
++++ b/client/js/modules/executionCertificationCenter.js
+@@ -0,0 +1,8 @@
++(function(){"use strict";
++function createBlueCurrentExecutionCertificationCenterModule(){const root=document.getElementById('executionCertificationCenter');if(!root||!window.BlueCurrentExecutionCertificationEngine)return null;const e=new window.BlueCurrentExecutionCertificationEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));let cert=null;
++async function load(){try{const [c,r]=await Promise.all([e.certifications(),e.readiness()]);cert=c.items?.[0]||null;$('vecCerts').textContent=c.count||0;$('vecApprovers').textContent=cert?.distinctApprovers||0;$('vecObservation').textContent=cert?.observation?.status||'—';$('vecComp').textContent=cert?.compensation?.status||'—';$('vecShadows').textContent=cert?.shadowRunCount||0;$('vecCanary').textContent='0%';$('vecScore').textContent=`${r.score||0}%`;$('vecStatus').textContent=r.status||'—';$('vecTrusted').textContent=r.trusted?'YES':'NO';$('vecMessage').textContent=cert?`${cert.id} · ${cert.status} · ${cert.promotion?.blockers?.length||0} blocker(s) · live execution disabled`:'Create a certification from the latest command draft after shadow runs exist.';$('vecChecks').innerHTML=(r.checks||[]).map(x=>`<article><div><strong>${x.pass?'PASS':'BLOCK'} · ${esc(x.label)}</strong><span>${esc(x.detail)}</span></div></article>`).join('');}catch(err){$('vecMessage').textContent=err.message;}}
++async function latestDraft(){const t=localStorage.getItem("blueCurrentV3230Token")||"",r=await fetch('/api/autonomous-assistance/command-drafts',{headers:{Authorization:`Bearer ${t}`}}),d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to load drafts');return d.latest||d.items?.[0]||null;}
++$('vecCreate')?.addEventListener('click',async()=>{try{const d=await latestDraft();if(!d)throw new Error('Create an approved command draft first.');await e.create(d.id);await load();}catch(err){$('vecMessage').textContent=err.message;}});
++root.addEventListener('click',async ev=>{const action=ev.target.closest('[data-cert-action]')?.dataset.certAction;if(!action)return;if(!cert){$('vecMessage').textContent='Create a certification first.';return;}try{const approver=$('vecApprover').value||'Approver',role=$('vecRole').value||'general-manager';const extra=action==='authorize'?{approverId:approver,actorRole:role}:action==='compensation-drill'?{commandType:cert.commandTypes?.[0]}:action==='complete-observation'?{forceForTest:true}:action==='trip-breaker'?{reason:'Operator certification drill'}:{};await e.control(cert.id,action,extra);await load();}catch(err){$('vecMessage').textContent=err.message;}});
++$('vecRefresh')?.addEventListener('click',load);load();return{engine:e,load};}
++window.createBlueCurrentExecutionCertificationCenterModule=createBlueCurrentExecutionCertificationCenterModule;})();--- a/scripts/maintenance/test-v45-controlled-execution-certification.js
++++ b/scripts/maintenance/test-v45-controlled-execution-certification.js
+@@ -0,0 +1,57 @@
++"use strict";
++const assert=require("assert"),AutonomousOperationsService=require("../../server/services/autonomousOperationsService");
++class MemoryDatabase{constructor(seed){this.data=structuredClone(seed);}async read(){return structuredClone(this.data);}async mutate(fn){return structuredClone(fn(this.data));}}
++(async()=>{
++ const org="org-test";
++ const draft={id:"D1",organizationId:org,status:"drafted",executionCertified:false,liveExecutionAllowed:false,liveStateChanged:false,commands:[
++  {id:"C1",locationId:"L1",domain:"kitchen-throughput",commandType:"fire-pacing-plan",status:"draft-only",executionEndpoint:null,liveExecutionAllowed:false,liveStateChanged:false},
++  {id:"C2",locationId:"L2",domain:"staffing",commandType:"contingency-coverage-plan",status:"draft-only",executionEndpoint:null,liveExecutionAllowed:false,liveStateChanged:false}
++ ]};
++ const db=new MemoryDatabase({v45CommandDrafts:{[org]:[draft]}}),audits=[],events=[];
++ const svc=new AutonomousOperationsService(db,{record:async x=>audits.push(x)},{publish:(t,p)=>events.push({t,p})},{snapshot:async()=>({})});
++ const policy=svc.v45ControlledExecutionPolicy();
++ assert.equal(policy.immutable,true);
++ assert.ok(policy.contentHash);
++ assert.equal(policy.liveExecutionEnabled,false);
++ assert.equal(policy.maximumCanaryPercent,0);
++ assert.equal(Object.values(policy.adapters).every(x=>x.liveHandlerPresent===false),true);
++ for(let i=1;i<=3;i++){
++   const s=await svc.v45ShadowExecutions(org,"Tester",{draftId:"D1",idempotencyKey:`shadow-${i}`});
++   assert.equal(s.shadowExecution.preflight.pass,true);
++   assert.equal(s.shadowExecution.liveStateChanged,false);
++ }
++ const created=await svc.v45ExecutionCertifications(org,"Tester",{draftId:"D1"}),id=created.certification.id;
++ assert.equal(created.certification.status,"pending-dual-authorization");
++ let duplicateBlocked=false;
++ await svc.v45ExecutionCertificationControl(org,"Approver A",{certificationId:id,action:"authorize",approverId:"A",actorRole:"general-manager"});
++ try{await svc.v45ExecutionCertificationControl(org,"Approver A",{certificationId:id,action:"authorize",approverId:"A",actorRole:"executive"});}catch(e){duplicateBlocked=/distinct approvers/.test(e.message);}
++ assert.equal(duplicateBlocked,true);
++ let lowRoleBlocked=false;
++ try{await svc.v45ExecutionCertificationControl(org,"Approver B",{certificationId:id,action:"authorize",approverId:"B",actorRole:"manager"});}catch(e){lowRoleBlocked=/General Manager/.test(e.message);}
++ assert.equal(lowRoleBlocked,true);
++ let c=await svc.v45ExecutionCertificationControl(org,"Approver B",{certificationId:id,action:"authorize",approverId:"B",actorRole:"regional-operator"});
++ assert.equal(c.certification.dualAuthorizationSatisfied,true);
++ c=await svc.v45ExecutionCertificationControl(org,"Tester",{certificationId:id,action:"start-observation"});
++ assert.equal(c.certification.observation.status,"running");
++ c=await svc.v45ExecutionCertificationControl(org,"Tester",{certificationId:id,action:"complete-observation",forceForTest:true});
++ assert.equal(c.certification.observation.status,"completed");
++ c=await svc.v45ExecutionCertificationControl(org,"Tester",{certificationId:id,action:"compensation-drill",commandType:"fire-pacing-plan"});
++ assert.equal(c.certification.compensation.status,"passed");
++ c=await svc.v45ExecutionCertificationControl(org,"Tester",{certificationId:id,action:"evaluate"});
++ assert.equal(c.certification.promotion.eligible,true);
++ assert.equal(c.certification.status,"certified-shadow-boundary");
++ assert.equal(c.certification.liveExecutionEnabled,false);
++ assert.equal(c.certification.canary.currentPercent,0);
++ const ready=await svc.v45ControlledExecutionReadiness(org);
++ assert.equal(ready.score,100);
++ assert.equal(ready.trusted,true);
++ assert.equal(ready.status,"v45-controlled-execution-certification-ready");
++ assert.equal(ready.safety.liveHandlers,0);
++ c=await svc.v45ExecutionCertificationControl(org,"Tester",{certificationId:id,action:"trip-breaker",reason:"Drill"});
++ assert.equal(c.certification.circuitBreaker.tripped,true);
++ assert.equal(c.certification.promotion.eligible,false);
++ c=await svc.v45ExecutionCertificationControl(org,"Tester",{certificationId:id,action:"reset-review"});
++ assert.equal(c.certification.circuitBreaker.tripped,false);
++ assert.equal(c.certification.liveExecutionEnabled,false);
++ console.log(JSON.stringify({ok:true,version:ready.version,policyHash:ready.policyHash.slice(0,12),shadowRuns:3,dualAuthorization:true,duplicateApproverBlocked:duplicateBlocked,lowRoleBlocked,observation:"completed",compensation:"passed",promotionEligible:true,circuitBreakerDrill:"passed",readiness:ready.score,canaryLivePercentage:0,liveHandlers:0,liveExecutionEnabled:false,audits:audits.length,events:events.length},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V45.25.0.md
++++ b/README-APPLY-V45.25.0.md
+@@ -0,0 +1,69 @@
++# APPLY BLUE CURRENT V45.25.0
++
++## Baseline
++Apply over the authoritative repository containing V45.20.0.
++
++## Important
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++Extract `BLUE-CURRENT-V45.25.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v45-controlled-execution-certification.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "45.25.0"
++```
++
++## Recommended Git staging
++Do not use `git add .` while runtime database artifacts may exist.
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/autonomousOperationsService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/executionCertificationEngine.js
++git add client/js/modules/executionCertificationCenter.js
++git add scripts/maintenance/test-v45-controlled-execution-certification.js
++git add README-APPLY-V45.25.0.md
++git add V45.25.0-RELEASE.md
++git add V45.25.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V45.25.0 controlled execution certification"
++git push origin live-service-timeline
++```
++
++## Safety
++V45.25.0 certifies the shadow execution boundary only. It does not add live handlers or live canary traffic.
+--- a/V45.25.0-RELEASE.md
++++ b/V45.25.0-RELEASE.md
+@@ -0,0 +1,109 @@
++# BLUE CURRENT V45.25.0 — CONTROLLED EXECUTION CERTIFICATION
++
++## Release scope
++
++V45.21–V45.25 builds the certification layer around the existing shadow execution boundary. It proves policy, authorization, observation, compensation, circuit breaker, and promotion controls while keeping live restaurant mutation disabled.
++
++### V45.21 — Immutable Controlled-Execution Policy
++Adds a hashed immutable policy declaring:
++- certification-only mode
++- live execution disabled
++- dual authorization required
++- minimum 15-minute observation window
++- zero-percent maximum live canary
++- circuit-breaker thresholds
++- promotion criteria
++- adapter certification status
++
++### V45.22 — Dual Authorization
++Execution certification now requires two distinct approvers.
++
++Approvers must be General Manager or higher.
++
++A duplicate approver cannot satisfy both authorization slots.
++
++### V45.23 — Observation Window + Circuit Breaker
++Certification supports:
++- starting an observation window
++- completing the observation window
++- explicit circuit-breaker trip
++- reset-for-review after a breaker drill
++
++Circuit-breaker trip immediately makes the certification ineligible for promotion.
++
++### V45.24 — Compensation Validation
++Allowlisted adapters can run compensation-contract drills.
++
++A successful compensation drill is required by promotion criteria.
++
++The drill is simulation-only and cannot touch restaurant state.
++
++### V45.25 — Promotion Criteria + Controlled Execution Readiness
++Certification evaluates:
++- dual authorization
++- completed observation window
++- successful compensation drill
++- minimum shadow-run evidence
++- successful shadow preflight
++- idempotency evidence
++- emergency-stop engagement
++- absence of live handlers
++- untripped circuit breaker
++
++A successful certification may reach:
++
++`certified-shadow-boundary`
++
++This means the safety architecture is ready for future controlled-release design. It does NOT enable live execution.
++
++## New APIs
++- `GET/POST /api/autonomous-assistance/execution-certifications`
++- `POST /api/autonomous-assistance/execution-certification-control`
++- `GET /api/autonomous-assistance/controlled-execution-readiness`
++
++## UI
++Adds the Controlled Execution Certification center with:
++- certification creation
++- distinct approver controls
++- observation-window controls
++- compensation drill
++- certification evaluation
++- circuit-breaker drill/reset
++- readiness visibility
++
++## Safety boundary
++Live mutation remains impossible through the V45 controlled-execution path.
++
++Current certification policy requires:
++- `liveExecutionEnabled: false`
++- zero live canary traffic
++- emergency stop engaged
++- all production/live handlers absent
++
++## Validation
++- `node scripts/maintenance/test-v45-controlled-execution-certification.js` passed.
++- Immutable policy SHA-256 generated.
++- 3 successful shadow runs supplied certification evidence.
++- Duplicate approver was blocked.
++- Manager-level execution certification approval was blocked.
++- Two distinct GM-or-higher authorizations succeeded.
++- Observation window completed in the focused harness.
++- Compensation drill passed.
++- Promotion criteria evaluated eligible for the shadow boundary.
++- Circuit-breaker drill removed eligibility.
++- Reset-for-review did not enable live execution.
++- Controlled execution readiness scored 100%.
++- Canary live percentage remained 0.
++- Live handler count remained 0.
++- `npm run check` passed:
++  - 814 JavaScript files
++  - 696 client scripts
++  - 5,201 unique HTML IDs
++- Server startup passed as V45.25.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged during validation.
++
++## Operation V position
++The next V45 milestone should focus on production-like failure testing and V45 closure: certification history, degraded-state scenarios, automatic rollback rehearsal, timeout/partial-failure simulations, recovery evidence, and an overall V45 closure gate.
++
++Live mutation should remain disabled through V45 closure unless a later, separately deliberate release explicitly introduces production handlers.
