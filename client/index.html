@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="47.20.0">
+  <meta name="blue-current-build" content="47.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -247,6 +247,16 @@
       <div id="spiProductivity" class="v432-kpis"></div>
       <div id="spiConstraints" class="v432-list"></div>
       <p id="spiMethod"></p>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="predictiveShiftControl">
+      <header><div><small>V47.21–V47.25 · Predictive Shift Control</small><strong>See the next service constraint before it becomes a live-service problem.</strong><span>Blue Current combines demand inventory, table capacity, kitchen load, staffing coverage, revenue pace, and profitability exposure into a transparent 90-minute operating-pressure forecast. Every intervention remains manager-approved.</span></div><button id="pshiftRefresh" type="button">Refresh forecast</button></header>
+      <div class="v432-kpis"><article><small>Time to constraint</small><strong id="pshiftEta">CLEAR</strong></article><article><small>First constraint</small><strong id="pshiftConstraint">NONE</strong></article><article><small>Peak pressure</small><strong id="pshiftPeak">0</strong></article><article><small>Confidence</small><strong id="pshiftConfidence">0%</strong></article><article><small>Interventions</small><strong id="pshiftActions">0</strong></article></div>
+      <div class="v4316-answer" id="pshiftHeadline">Forecasting the next 90 minutes…</div>
+      <div id="pshiftForecast" class="v432-kpis"></div>
+      <div id="pshiftSignals" class="v432-kpis"></div>
+      <div class="v4316-actions"><input id="pshiftOwner" class="v4312-input" placeholder="Intervention owner"><input id="pshiftNote" class="v4312-input" placeholder="Manager decision note"></div>
+      <div id="pshiftInterventions" class="v432-list"></div>
+      <p id="pshiftMethod"></p>
     </section>
 
     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
@@ -8676,6 +8686,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityOutcomeMeasurement" data-src="js/modules/hospitalityOutcomeMeasurement.js?v=47.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityEngine.js?v=47.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityCenter.js?v=47.20.0"></script>
-<script src="js/startup-loader.js?v=47.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlEngine.js?v=47.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlCenter.js?v=47.25.0"></script>
+<script src="js/startup-loader.js?v=47.25.0"></script>
 </body>
 </html>

@@ -1,0 +1,678 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "47.20.0",
++  "version": "47.25.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 service profitability intelligence and constraint ranking",
++  "description": "Blue Current Hospitality OS \u2014 predictive shift control and preemptive interventions",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -39,6 +39,7 @@
+ const HospitalityPerformanceService = require("./services/hospitalityPerformanceService");
+ const HospitalityActionWorkspaceService = require("./services/hospitalityActionWorkspaceService");
+ const ServiceProfitabilityIntelligenceService = require("./services/serviceProfitabilityIntelligenceService");
++const PredictiveShiftControlService = require("./services/predictiveShiftControlService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -81,7 +82,8 @@
+ const hospitalityPerformanceService = new HospitalityPerformanceService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, inventoryIntelligenceService, guestIntelligenceService, executiveCommandCenterService);
+ const hospitalityActionWorkspaceService = new HospitalityActionWorkspaceService(database, auditService, realtimeHub, hospitalityPerformanceService);
+ const serviceProfitabilityIntelligenceService = new ServiceProfitabilityIntelligenceService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, inventoryIntelligenceService, guestIntelligenceService, executiveCommandCenterService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService });
++const predictiveShiftControlService = new PredictiveShiftControlService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, serviceProfitabilityIntelligenceService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -168,7 +170,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V47.20.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V47.25.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "47.20.0",
++        version: "47.25.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -193,6 +193,20 @@
+ 
+     const auth = await authService.authenticate(bearerToken(request));
+     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
++
++    if (url.pathname === "/api/predictive-shift-control" && request.method === "GET") {
++      const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
++      return sendJson(response,200,await predictiveShiftControlService.snapshot(auth.membership.organizationId,locationId));
++    }
++
++    if (url.pathname.startsWith("/api/predictive-shift-control/interventions/") && url.pathname.endsWith("/decision") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Predictive intervention permission required."});
++      const interventionId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const body=await readJson(request);
++      const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
++      try{return sendJson(response,201,await predictiveShiftControlService.decide(auth.membership.organizationId,locationId,interventionId,body,auth.user.name));}
++      catch(error){return sendJson(response,/no longer active/i.test(error.message)?409:400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/service-profitability" && request.method === "GET") {
+       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+--- a/server/services/predictiveShiftControlService.js
++++ b/server/services/predictiveShiftControlService.js
+@@ -0,0 +1,112 @@
++"use strict";
++
++class PredictiveShiftControlService {
++  constructor(database,auditService,realtimeHub,commandCenterService,workforceIntelligenceService,serviceProfitabilityIntelligenceService){
++    Object.assign(this,{database,auditService,realtimeHub,commandCenterService,workforceIntelligenceService,serviceProfitabilityIntelligenceService});
++  }
++  now(){return new Date().toISOString();}
++  clamp(n,min=0,max=100){return Math.max(min,Math.min(max,Number(n)||0));}
++  round(n,d=0){const p=10**d;return Math.round((Number(n)||0)*p)/p;}
++  severity(score){return score>=88?"critical":score>=75?"high":score>=60?"watch":"stable";}
++  intervention(type,etaMinutes,pressure,detail,action,owner,expectedImpact){
++    return {id:`psi_${type}`,type,etaMinutes,pressure,severity:this.severity(pressure),detail,action,owner,expectedImpact,requiresApproval:true,automaticExecution:false};
++  }
++  async snapshot(organizationId,locationId="loc_marina"){
++    const [db,command,workforce,profitability]=await Promise.all([
++      this.database.read(),
++      this.commandCenterService.snapshot(organizationId,locationId),
++      this.workforceIntelligenceService.snapshot(organizationId,locationId),
++      this.serviceProfitabilityIntelligenceService.snapshot(organizationId,locationId)
++    ]);
++    const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["cancelled","completed","no_show"].includes(x.status));
++    const waitlist=(db.waitlist||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["seated","cancelled"].includes(x.status));
++    const tickets=(db.kitchenTickets||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["served","cancelled"].includes(x.status));
++    const stations=(db.kitchenStations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const decisions=(db.predictiveShiftDecisions||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId).slice(-40).reverse();
++
++    const totalSeats=tables.reduce((s,x)=>s+Number(x.seats||0),0);
++    const seatedSeats=tables.filter(x=>x.status==="seated").reduce((s,x)=>s+Math.max(Number(x.partySize||0),Number(x.seats||0)*.65),0);
++    const availableSeats=tables.filter(x=>x.status==="available").reduce((s,x)=>s+Number(x.seats||0),0);
++    const unavailableSeats=tables.filter(x=>["blocked","cleaning"].includes(x.status)).reduce((s,x)=>s+Number(x.seats||0),0);
++    const reservationCovers=reservations.reduce((s,x)=>s+Number(x.partySize||0),0);
++    const unassignedCovers=reservations.filter(x=>!x.tableId).reduce((s,x)=>s+Number(x.partySize||0),0);
++    const waitCovers=waitlist.reduce((s,x)=>s+Number(x.partySize||0),0);
++    const longWaitCovers=waitlist.filter(x=>Number(x.quotedMinutes||0)>=20).reduce((s,x)=>s+Number(x.partySize||0),0);
++
++    const nowMs=Date.now();
++    const delayed=tickets.map(t=>({...t,ageMinutes:Math.max(0,Math.round((nowMs-new Date(t.createdAt||nowMs).getTime())/60000))})).filter(t=>t.ageMinutes>Number(t.targetMinutes||18));
++    const kitchenLoad=tickets.reduce((s,t)=>s+(t.items||[]).reduce((q,i)=>q+Number(i.qty||1),0),0);
++    const readyTickets=tickets.filter(x=>["ready","plating"].includes(x.status)).length;
++    const unavailableStations=stations.filter(x=>x.status&&x.status!=="open"&&x.status!=="active").length;
++
++    const coverage=workforce?.roleCoverage||[];
++    const staffRequired=coverage.reduce((s,x)=>s+Number(x.required||0),0);
++    const staffScheduled=coverage.reduce((s,x)=>s+Number(x.scheduled||0),0);
++    const staffingGap=coverage.reduce((s,x)=>s+Math.max(0,Number(x.required||0)-Number(x.scheduled||0)),0);
++    const laborPercent=Number(workforce?.summary?.laborPercent||0);
++    const targetLaborPercent=Number(workforce?.summary?.targetLaborPercent||18);
++    const revenueTrend=Number(profitability?.summary?.revenueTrend||0);
++    const modeledLeakage=Number(profitability?.summary?.modeledLeakageDollars||0);
++    const averageCheck=Number(profitability?.summary?.averageCheck||command?.business?.averageCheck||30);
++
++    const seatUtilization=totalSeats?seatedSeats/totalSeats*100:0;
++    const demandInventoryCovers=reservationCovers+waitCovers;
++    const hostBase=this.clamp(seatUtilization*.55+(totalSeats?unavailableSeats/totalSeats*100:0)*.20+(availableSeats?Math.min(100,unassignedCovers/availableSeats*100):unassignedCovers?100:0)*.15+Math.min(100,longWaitCovers*8)*.10);
++    const kitchenBase=this.clamp(Math.min(100,tickets.length*11)*.28+Math.min(100,delayed.length*24)*.42+Math.min(100,kitchenLoad*4)*.18+Math.min(100,readyTickets*18)*.08+Math.min(100,unavailableStations*35)*.04);
++    const laborBase=this.clamp((staffRequired?Math.min(100,staffingGap/Math.max(1,staffRequired)*160):0)*.65+Math.max(0,laborPercent-targetLaborPercent)*5*.20+Math.min(100,Number(workforce?.summary?.calloutRisk||0)*28)*.15);
++    const revenueBase=this.clamp(Math.max(0,-revenueTrend)*7*.55+Math.min(100,modeledLeakage/50)*.45);
++
++    const horizons=[0,15,30,45,60,90],demandRamp={0:0,15:.18,30:.38,45:.60,60:.78,90:.52},kitchenRamp={0:0,15:.22,30:.45,45:.70,60:.86,90:.64},laborRamp={0:0,15:.10,30:.24,45:.42,60:.58,90:.70};
++    const demandWaveStrength=this.clamp(totalSeats?demandInventoryCovers/Math.max(1,totalSeats)*100:0);
++    const kitchenWaveStrength=this.clamp(reservationCovers*.9+waitCovers*1.4+unassignedCovers*.8);
++    const laborWaveStrength=this.clamp(demandInventoryCovers*1.3+staffingGap*22);
++    const revenueWaveStrength=this.clamp(Math.max(0,-revenueTrend)*8+modeledLeakage/70);
++
++    const forecast=horizons.map(minutes=>{
++      const host=this.clamp(hostBase+demandWaveStrength*demandRamp[minutes]);
++      const kitchen=this.clamp(kitchenBase+kitchenWaveStrength*kitchenRamp[minutes]);
++      const labor=this.clamp(laborBase+laborWaveStrength*laborRamp[minutes]);
++      const revenue=this.clamp(revenueBase+revenueWaveStrength*(minutes/90)*.35);
++      const overall=this.round(host*.34+kitchen*.34+labor*.20+revenue*.12);
++      return {minutes,overall,host:this.round(host),kitchen:this.round(kitchen),labor:this.round(labor),revenue:this.round(revenue),severity:this.severity(overall)};
++    });
++
++    const dimensions=["host","kitchen","labor","revenue"],crossings=[];
++    for(const dimension of dimensions){const hit=forecast.find(x=>x.minutes>0&&x[dimension]>=75);if(hit)crossings.push({dimension,etaMinutes:hit.minutes,pressure:hit[dimension]});}
++    crossings.sort((a,b)=>a.etaMinutes-b.etaMinutes||b.pressure-a.pressure);
++    const first=crossings[0]||null,interventions=[];
++    for(const x of crossings){
++      if(x.dimension==="host")interventions.push(this.intervention("host-table-capacity",x.etaMinutes,x.pressure,`${reservationCovers} active reservation covers + ${waitCovers} waitlist covers are approaching ${availableSeats} currently available seats.`,"Pre-assign unassigned parties, clear cleaning tables, and verify blocked tables before the arrival wave.","Host Lead",`Protect approximately $${Math.round((unassignedCovers+waitCovers)*averageCheck*.20).toLocaleString()} of demand exposure`));
++      if(x.dimension==="kitchen")interventions.push(this.intervention("kitchen-throughput",x.etaMinutes,x.pressure,`${tickets.length} active tickets, ${delayed.length} delayed tickets, and ${kitchenLoad} active item units are compounding with incoming demand.`,"Rebalance the highest-load station, stage expo support, and protect the oldest ticket before the next seating wave.","Kitchen Manager",`Protect ${delayed.length||tickets.length} ticket${(delayed.length||tickets.length)===1?"":"s"} and future table turns`));
++      if(x.dimension==="labor")interventions.push(this.intervention("labor-capacity",x.etaMinutes,x.pressure,`${staffScheduled} scheduled people are covering ${staffRequired} modeled required positions with a current gap of ${staffingGap}.`,"Move coverage before demand peaks; fill the highest-impact role gap without adding unnecessary labor.","General Manager","Protect service capacity while holding labor discipline"));
++      if(x.dimension==="revenue")interventions.push(this.intervention("revenue-pace",x.etaMinutes,x.pressure,`Revenue trend is ${revenueTrend>=0?"+":""}${revenueTrend}% with $${Math.round(modeledLeakage).toLocaleString()} of current modeled operating exposure.`,"Protect conversion and service capacity first; use remaining table inventory for the highest-value incremental demand.","General Manager","Protect near-term revenue capture"));
++    }
++
++    const decisionMap=new Map(decisions.map(x=>[x.interventionId,x]));
++    const ranked=interventions.sort((a,b)=>a.etaMinutes-b.etaMinutes||b.pressure-a.pressure).map((x,i)=>({...x,rank:i+1,lastDecision:decisionMap.get(x.id)||null}));
++    const completeness=[tables.length>0,reservations.length>0,tickets.length>0,Boolean(workforce?.summary),Boolean(profitability?.summary),Boolean(command?.business)].filter(Boolean).length;
++    const confidence=this.clamp(62+completeness*5-Math.min(12,Math.abs(revenueTrend)));
++
++    return {
++      version:"47.25.0",generatedAt:this.now(),organizationId,locationId,
++      headline:first?`${first.dimension==="host"?"Host/table":first.dimension.charAt(0).toUpperCase()+first.dimension.slice(1)} pressure is forecast to cross the action threshold in about ${first.etaMinutes} minutes.`:"No modeled service dimension crosses the intervention threshold in the next 90 minutes.",
++      summary:{confidence:this.round(confidence),firstConstraint:first?.dimension||null,timeToConstraintMinutes:first?.etaMinutes??null,firstConstraintPressure:first?.pressure??null,peakOverallPressure:Math.max(...forecast.map(x=>x.overall)),interventionCount:ranked.length,reservationCovers,waitCovers,availableSeats,unavailableSeats,activeTickets:tickets.length,delayedTickets:delayed.length,staffingGap,revenueTrend},
++      signals:{tables:{totalSeats:this.round(totalSeats),seatedSeats:this.round(seatedSeats),availableSeats,unavailableSeats,seatUtilizationPercent:this.round(seatUtilization)},demand:{reservationCovers,unassignedCovers,waitCovers,longWaitCovers,demandInventoryCovers},kitchen:{activeTickets:tickets.length,delayedTickets:delayed.length,kitchenLoad,readyTickets,unavailableStations},labor:{staffScheduled,staffRequired,staffingGap,laborPercent:this.round(laborPercent,1),targetLaborPercent:this.round(targetLaborPercent,1)},economics:{revenueTrend:this.round(revenueTrend,1),modeledLeakageDollars:Math.round(modeledLeakage),averageCheck:this.round(averageCheck,2)}},
++      baseline:{host:this.round(hostBase),kitchen:this.round(kitchenBase),labor:this.round(laborBase),revenue:this.round(revenueBase)},
++      forecast,interventions:ranked,decisions,
++      thresholds:{watch:60,action:75,critical:88,horizonMinutes:90},
++      methodology:{model:"transparent operating-pressure heuristic",machineLearning:false,inputs:["reservation/waitlist demand inventory","table/seat availability","kitchen ticket load and delay","workforce role coverage","revenue trend","modeled profitability leakage"],caveat:"This is a decision-support forecast, not a guaranteed prediction. Managers approve every intervention."},
++      policy:{humanApprovalRequired:true,automaticExecution:false}
++    };
++  }
++  async decide(organizationId,locationId,interventionId,input,actor){
++    const allowed=new Set(["accepted","snoozed","dismissed","completed"]),decision=allowed.has(input.decision)?input.decision:"accepted",snapshot=await this.snapshot(organizationId,locationId),intervention=snapshot.interventions.find(x=>x.id===interventionId);
++    if(!intervention)throw new Error("Predictive intervention is no longer active.");
++    const record={id:`psd_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,interventionId,decision,owner:String(input.owner||intervention.owner||actor).slice(0,120),note:String(input.note||"").slice(0,500),etaMinutes:intervention.etaMinutes,pressure:intervention.pressure,actor,createdAt:this.now()};
++    await this.database.mutate(db=>{db.predictiveShiftDecisions||=[];db.predictiveShiftDecisions.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Predictive shift intervention ${decision}: ${interventionId}`,category:"predictive_shift_control"});
++    this.realtimeHub.publish("predictive-shift:decision",record);return record;
++  }
++}
++module.exports=PredictiveShiftControlService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="47.20.0">
++  <meta name="blue-current-build" content="47.25.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -247,6 +247,16 @@
+       <div id="spiProductivity" class="v432-kpis"></div>
+       <div id="spiConstraints" class="v432-list"></div>
+       <p id="spiMethod"></p>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="predictiveShiftControl">
++      <header><div><small>V47.21–V47.25 · Predictive Shift Control</small><strong>See the next service constraint before it becomes a live-service problem.</strong><span>Blue Current combines demand inventory, table capacity, kitchen load, staffing coverage, revenue pace, and profitability exposure into a transparent 90-minute operating-pressure forecast. Every intervention remains manager-approved.</span></div><button id="pshiftRefresh" type="button">Refresh forecast</button></header>
++      <div class="v432-kpis"><article><small>Time to constraint</small><strong id="pshiftEta">CLEAR</strong></article><article><small>First constraint</small><strong id="pshiftConstraint">NONE</strong></article><article><small>Peak pressure</small><strong id="pshiftPeak">0</strong></article><article><small>Confidence</small><strong id="pshiftConfidence">0%</strong></article><article><small>Interventions</small><strong id="pshiftActions">0</strong></article></div>
++      <div class="v4316-answer" id="pshiftHeadline">Forecasting the next 90 minutes…</div>
++      <div id="pshiftForecast" class="v432-kpis"></div>
++      <div id="pshiftSignals" class="v432-kpis"></div>
++      <div class="v4316-actions"><input id="pshiftOwner" class="v4312-input" placeholder="Intervention owner"><input id="pshiftNote" class="v4312-input" placeholder="Manager decision note"></div>
++      <div id="pshiftInterventions" class="v432-list"></div>
++      <p id="pshiftMethod"></p>
+     </section>
+ 
+     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
+@@ -8676,6 +8686,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityOutcomeMeasurement" data-src="js/modules/hospitalityOutcomeMeasurement.js?v=47.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityEngine.js?v=47.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityCenter.js?v=47.20.0"></script>
+-<script src="js/startup-loader.js?v=47.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlEngine.js?v=47.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlCenter.js?v=47.25.0"></script>
++<script src="js/startup-loader.js?v=47.25.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1226,6 +1226,7 @@
+ const hospitalityActionWorkspaceModule = startupRegistry.register("hospitalityActionWorkspace", shouldInitializeCenter("hospitalityActionWorkspace") ? window.createBlueCurrentHospitalityActionWorkspaceModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityPerformanceCommand"]);
+ const hospitalityOutcomeMeasurementModule = startupRegistry.register("hospitalityOutcomeMeasurement", shouldInitializeCenter("hospitalityOutcomeMeasurement") ? window.createBlueCurrentHospitalityOutcomeMeasurementModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityActionWorkspace"]);
+ const serviceProfitabilityIntelligenceModule = startupRegistry.register("serviceProfitabilityIntelligence", shouldInitializeCenter("serviceProfitabilityIntelligence") ? window.createBlueCurrentServiceProfitabilityCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityOutcomeMeasurement"]);
++const predictiveShiftControlModule = startupRegistry.register("predictiveShiftControl", shouldInitializeCenter("predictiveShiftControl") ? window.createBlueCurrentPredictiveShiftControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "serviceProfitabilityIntelligence"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V47.20.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V47.25.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/predictiveShiftControlEngine.js
++++ b/client/js/modules/predictiveShiftControlEngine.js
+@@ -0,0 +1,11 @@
++(function(global){"use strict";
++class BlueCurrentPredictiveShiftControlEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  locationId(){const s=this.appState?.getState?.()||{};return s.activeLocationId||s.selectedLocationId||s.auth?.locationId||"loc_marina";}
++  async snapshot(){const r=await fetch(`/api/predictive-shift-control?locationId=${encodeURIComponent(this.locationId())}`,{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Predictive shift control failed (${r.status})`);this.appState?.update?.({predictiveShiftControl:d});this.eventBus?.emit?.("predictive-shift:updated",structuredClone(d));return d;}
++  async decide(interventionId,decision,owner="",note=""){const r=await fetch(`/api/predictive-shift-control/interventions/${encodeURIComponent(interventionId)}/decision`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),decision,owner,note})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Predictive intervention failed (${r.status})`);this.eventBus?.emit?.("predictive-shift:decision",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPredictiveShiftControlEngine;
++if(global)global.BlueCurrentPredictiveShiftControlEngine=BlueCurrentPredictiveShiftControlEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/predictiveShiftControlCenter.js
++++ b/client/js/modules/predictiveShiftControlCenter.js
+@@ -0,0 +1,11 @@
++(function(){"use strict";
++function createBlueCurrentPredictiveShiftControlCenterModule(eventBus,appState){const root=document.getElementById("predictiveShiftControl");if(!root||!window.BlueCurrentPredictiveShiftControlEngine)return null;const e=new window.BlueCurrentPredictiveShiftControlEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++function tone(n){return n>=88?"CRITICAL":n>=75?"ACTION":n>=60?"WATCH":"STABLE";}
++function render(s){const m=s.summary||{};$("pshiftEta").textContent=m.timeToConstraintMinutes==null?"CLEAR":`${m.timeToConstraintMinutes}m`;$("pshiftConstraint").textContent=m.firstConstraint?String(m.firstConstraint).toUpperCase():"NONE";$("pshiftPeak").textContent=`${m.peakOverallPressure||0}`;$("pshiftConfidence").textContent=`${m.confidence||0}%`;$("pshiftActions").textContent=m.interventionCount||0;$("pshiftHeadline").textContent=s.headline||"No modeled service dimension crosses the intervention threshold.";
++$("pshiftForecast").innerHTML=(s.forecast||[]).map(x=>`<article><small>${x.minutes===0?"Now":`+${x.minutes}m`}</small><strong>${x.overall}</strong><span>${tone(x.overall)}</span><p>Host ${x.host} · Kitchen ${x.kitchen} · Labor ${x.labor} · Revenue ${x.revenue}</p></article>`).join("");
++$("pshiftInterventions").innerHTML=(s.interventions||[]).map(x=>`<article data-pshift-id="${esc(x.id)}"><div><strong>#${x.rank} · ${esc(x.type)}</strong><span>${x.etaMinutes}m · pressure ${x.pressure} · ${esc(x.severity)}</span></div><p>${esc(x.detail)}</p><p><b>Preemptive action:</b> ${esc(x.action)}</p><small>${esc(x.owner)} · ${esc(x.expectedImpact)}</small>${x.lastDecision?`<small>Last decision: ${esc(x.lastDecision.decision)} · ${esc(x.lastDecision.owner)}</small>`:""}<div class="v4316-actions"><button type="button" data-pshift-decision="accepted">Own intervention</button><button type="button" data-pshift-decision="snoozed">Snooze</button><button type="button" data-pshift-decision="dismissed">Dismiss</button></div></article>`).join("")||"<article><strong>No intervention threshold crossed.</strong><span>Continue monitoring the next 90 minutes.</span></article>";
++const sig=s.signals||{};$("pshiftSignals").innerHTML=`<article><small>Demand</small><strong>${sig.demand?.demandInventoryCovers||0} covers</strong><span>${sig.demand?.unassignedCovers||0} unassigned · ${sig.demand?.waitCovers||0} waitlist</span></article><article><small>Tables</small><strong>${sig.tables?.availableSeats||0} open seats</strong><span>${sig.tables?.unavailableSeats||0} unavailable</span></article><article><small>Kitchen</small><strong>${sig.kitchen?.activeTickets||0} tickets</strong><span>${sig.kitchen?.delayedTickets||0} delayed</span></article><article><small>Labor</small><strong>${sig.labor?.staffingGap||0} gap</strong><span>${sig.labor?.staffScheduled||0}/${sig.labor?.staffRequired||0} scheduled/required</span></article>`;$("pshiftMethod").textContent=s.methodology?.caveat||"";}
++async function load(){try{$("pshiftHeadline").textContent="Forecasting the next 90 minutes…";render(await e.snapshot());}catch(err){$("pshiftHeadline").textContent=err.message;}}
++root.addEventListener("click",async ev=>{const btn=ev.target.closest("[data-pshift-decision]"),card=ev.target.closest("[data-pshift-id]");if(!btn||!card)return;try{btn.disabled=true;await e.decide(card.dataset.pshiftId,btn.dataset.pshiftDecision,$("pshiftOwner").value||"Manager",$("pshiftNote").value||"");await load();}catch(err){$("pshiftHeadline").textContent=err.message;}finally{btn.disabled=false;}});
++$("pshiftRefresh")?.addEventListener("click",load);eventBus?.on?.("hospitality-action:updated",load);eventBus?.on?.("reservation:updated",load);eventBus?.on?.("inventory:action-recorded",load);eventBus?.on?.("workforce:action-recorded",load);eventBus?.on?.("auth:restored",load);window.addEventListener?.("online",load);load();return{engine:e,load};}
++window.createBlueCurrentPredictiveShiftControlCenterModule=createBlueCurrentPredictiveShiftControlCenterModule;})();--- a/scripts/maintenance/test-v47.25-predictive-shift-control.js
++++ b/scripts/maintenance/test-v47.25-predictive-shift-control.js
+@@ -0,0 +1,83 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/predictiveShiftControlService");
++
++(async()=>{
++  const now=Date.now(),state={
++    tables:[
++      {organizationId:"org",locationId:"loc",status:"seated",seats:4,partySize:4},
++      {organizationId:"org",locationId:"loc",status:"seated",seats:4,partySize:4},
++      {organizationId:"org",locationId:"loc",status:"available",seats:2},
++      {organizationId:"org",locationId:"loc",status:"cleaning",seats:6},
++      {organizationId:"org",locationId:"loc",status:"blocked",seats:4}
++    ],
++    reservations:[
++      {organizationId:"org",locationId:"loc",status:"confirmed",partySize:8,tableId:null},
++      {organizationId:"org",locationId:"loc",status:"confirmed",partySize:6,tableId:null},
++      {organizationId:"org",locationId:"loc",status:"arrived",partySize:4,tableId:null}
++    ],
++    waitlist:[
++      {organizationId:"org",locationId:"loc",status:"waiting",partySize:6,quotedMinutes:35},
++      {organizationId:"org",locationId:"loc",status:"waiting",partySize:4,quotedMinutes:30}
++    ],
++    kitchenTickets:[
++      {id:"t1",organizationId:"org",locationId:"loc",status:"cooking",createdAt:new Date(now-45*60000).toISOString(),targetMinutes:18,items:[{qty:5},{qty:4}]},
++      {id:"t2",organizationId:"org",locationId:"loc",status:"ready",createdAt:new Date(now-38*60000).toISOString(),targetMinutes:16,items:[{qty:6}]},
++      {id:"t3",organizationId:"org",locationId:"loc",status:"plating",createdAt:new Date(now-32*60000).toISOString(),targetMinutes:17,items:[{qty:5}]},
++      {id:"t4",organizationId:"org",locationId:"loc",status:"received",createdAt:new Date(now-29*60000).toISOString(),targetMinutes:15,items:[{qty:4}]}
++    ],
++    kitchenStations:[
++      {organizationId:"org",locationId:"loc",status:"active"},
++      {organizationId:"org",locationId:"loc",status:"offline"}
++    ],
++    predictiveShiftDecisions:[]
++  };
++  const audit=[],events=[];
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>({business:{averageCheck:42},operation:{}})},
++    {snapshot:async()=>({summary:{laborPercent:19,targetLaborPercent:18,calloutRisk:1},roleCoverage:[
++      {role:"server",scheduled:1,required:4},
++      {role:"cook",scheduled:1,required:3},
++      {role:"host",scheduled:0,required:2}
++    ]})},
++    {snapshot:async()=>({summary:{revenueTrend:-6,modeledLeakageDollars:1800,averageCheck:42}})}
++  );
++
++  const snap=await svc.snapshot("org","loc");
++  assert.equal(snap.version,"47.25.0");
++  assert.equal(snap.methodology.machineLearning,false);
++  assert.equal(snap.policy.humanApprovalRequired,true);
++  assert.equal(snap.policy.automaticExecution,false);
++  assert.deepEqual(snap.forecast.map(x=>x.minutes),[0,15,30,45,60,90]);
++  assert.ok(snap.summary.timeToConstraintMinutes!==null);
++  assert.ok(snap.interventions.some(x=>x.type==="host-table-capacity"));
++  assert.ok(snap.interventions.some(x=>x.type==="kitchen-throughput"));
++  assert.ok(snap.interventions.some(x=>x.type==="labor-capacity"));
++  assert.ok(snap.interventions.every(x=>x.requiresApproval===true&&x.automaticExecution===false));
++
++  const first=snap.interventions[0];
++  const decision=await svc.decide("org","loc",first.id,{decision:"accepted",owner:"GM",note:"Pre-position now"},"Tester");
++  assert.equal(decision.decision,"accepted");
++  assert.equal(state.predictiveShiftDecisions.length,1);
++  assert.equal(audit.length,1);
++  assert.equal(events[0][0],"predictive-shift:decision");
++
++  const after=await svc.snapshot("org","loc");
++  assert.equal(after.interventions.find(x=>x.id===first.id).lastDecision.decision,"accepted");
++
++  console.log(JSON.stringify({
++    ok:true,version:snap.version,
++    forecastHorizons:snap.forecast.map(x=>x.minutes),
++    firstConstraint:snap.summary.firstConstraint,
++    timeToConstraintMinutes:snap.summary.timeToConstraintMinutes,
++    peakOverallPressure:snap.summary.peakOverallPressure,
++    interventions:snap.interventions.map(x=>x.type),
++    decisionPersisted:true,
++    transparentHeuristic:true,
++    humanApprovalRequired:true,
++    automaticExecution:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V47.25.0.md
++++ b/README-APPLY-V47.25.0.md
+@@ -0,0 +1,67 @@
++# APPLY BLUE CURRENT V47.25.0
++
++## Baseline
++
++Apply over the exact Blue Current V47.20.0 repository.
++
++This is a normal overlay patch. No files are deleted.
++
++## Apply
++
++Extract `BLUE-CURRENT-V47.25.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v47.25-predictive-shift-control.js
++npm run start
++```
++
++Wait for:
++
++```text
++Blue Current Cloud V47.25.0 running at http://localhost:8787
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "47.25.0"
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++Press:
++
++```text
++Ctrl+F5
++```
++
++The top operating flow is now:
++
++1. Hospitality Performance Command
++2. Action Workspace
++3. Outcome Measurement
++4. Service Profitability Intelligence
++5. Predictive Shift Control
++6. Restaurant Command Center
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V47.25.0 add predictive shift control"
++git push origin live-service-timeline
++```
+--- a/V47.25.0-RELEASE.md
++++ b/V47.25.0-RELEASE.md
+@@ -0,0 +1,236 @@
++# BLUE CURRENT V47.25.0 — PREDICTIVE SHIFT CONTROL
++
++## Scope
++
++V47.21–V47.25 moves Blue Current from current-state intelligence to preemptive operating control.
++
++The new server-grounded forecast answers:
++
++`What service constraint is likely to hit next, when will it hit, and what should the manager do before it happens?`
++
++This is deliberately separate from the older client-only Predictive Operations panel. V47.25 uses current server-side operating data rather than reading rendered DOM values.
++
++## V47.21 — Operating Signal Model
++
++Predictive Shift Control combines:
++
++- active reservation covers
++- unassigned reservation covers
++- waitlist covers
++- long-wait exposure
++- seated / available / unavailable seat capacity
++- active kitchen tickets
++- delayed kitchen tickets
++- active kitchen item load
++- ready / plating tickets
++- unavailable kitchen stations
++- workforce role coverage
++- staffing gaps
++- labor position
++- callout risk
++- revenue trend
++- modeled profitability leakage
++
++## V47.22 — 90-Minute Pressure Curve
++
++The server produces forecast checkpoints for:
++
++- now
++- +15 minutes
++- +30 minutes
++- +45 minutes
++- +60 minutes
++- +90 minutes
++
++Each checkpoint contains transparent pressure scores for:
++
++- host / table capacity
++- kitchen throughput
++- labor capacity
++- revenue pace
++- combined operating pressure
++
++Thresholds:
++
++- Watch: 60
++- Action: 75
++- Critical: 88
++
++The forecast uses a transparent operating-pressure heuristic.
++
++It is explicitly marked:
++
++`machineLearning: false`
++
++## V47.23 — Time-to-Constraint
++
++Blue Current detects the first operating dimension forecast to cross the action threshold.
++
++The result contains:
++
++- first constraint
++- time to constraint
++- projected pressure at crossing
++- peak combined pressure
++- model confidence
++
++This lets the manager see the problem while there is still time to intervene.
++
++## V47.24 — Preemptive Intervention Queue
++
++When a dimension is forecast to cross threshold, Blue Current creates a manager intervention.
++
++Current intervention families:
++
++### Host / Table Capacity
++Pre-assign parties, clear cleaning tables, and verify blocked inventory before the arrival wave.
++
++### Kitchen Throughput
++Rebalance the constrained station, prepare expo support, and protect the oldest ticket before the next seating wave.
++
++### Labor Capacity
++Move coverage before the demand peak while avoiding unnecessary labor additions.
++
++### Revenue Pace
++Protect conversion and capacity first, then use remaining inventory for the highest-value incremental demand.
++
++Every intervention includes:
++
++- ETA
++- pressure
++- severity
++- operating evidence
++- preemptive action
++- owner
++- expected impact
++- human approval requirement
++
++## V47.25 — Human-Controlled Predictive Decisions
++
++Adds:
++
++`POST /api/predictive-shift-control/interventions/:id/decision`
++
++Supported decisions:
++
++- accepted
++- snoozed
++- dismissed
++- completed
++
++Predictive decisions persist:
++- organization
++- location
++- intervention
++- decision
++- owner
++- note
++- ETA
++- pressure
++- actor
++- timestamp
++
++They are also written to the audit trail and realtime event stream.
++
++Policy:
++
++- `humanApprovalRequired: true`
++- `automaticExecution: false`
++
++## API
++
++### GET
++
++`/api/predictive-shift-control?locationId=<location>`
++
++Returns the full 90-minute forecast and active intervention queue.
++
++### POST
++
++`/api/predictive-shift-control/interventions/:id/decision`
++
++Records a human manager decision.
++
++## Current real Blue Current result
++
++The authenticated integration test ran against the current Marina Grille runtime/demo state.
++
++At validation time:
++
++- Forecast confidence: 89%
++- First predicted constraint: Kitchen
++- Time to action threshold: 15 minutes
++- Kitchen pressure at first crossing: 77
++- Peak combined pressure: 69
++- Active predictive interventions: 2
++- Reservation covers: 17
++- Waitlist covers: 6
++- Available seats: 30
++- Unavailable seats: 6
++- Active kitchen tickets: 4
++- Delayed kitchen tickets: 4
++- Staffing gap: 0
++- Revenue trend: -3%
++
++Pressure curve:
++
++- Now: overall 41 · host 22 · kitchen 70 · labor 15 · revenue 57
++- +15m: overall 48 · host 30 · kitchen 77 · labor 18 · revenue 62
++- +30m: overall 55 · host 39 · kitchen 85 · labor 22 · revenue 68
++- +45m: overall 63 · host 50 · kitchen 94 · labor 28 · revenue 74
++- +60m: overall 69 · host 58 · kitchen 99 · labor 32 · revenue 80
++- +90m: overall 65 · host 46 · kitchen 92 · labor 36 · revenue 92
++
++Current intervention queue:
++
++1. Kitchen throughput — action threshold in 15 minutes
++2. Revenue pace — action threshold in 60 minutes
++
++The authenticated test accepted the first kitchen intervention successfully and persisted the manager decision.
++
++## Model boundary
++
++This is a transparent decision-support forecast, not a guaranteed prediction.
++
++The model does not claim to be machine learning and does not hide its operating inputs.
++
++The primary purpose is to create useful lead time for managers before a constraint becomes a live-service failure.
++
++## Validation
++
++- `node scripts/maintenance/test-v47.25-predictive-shift-control.js` passed.
++- Six forecast horizons validated.
++- Host/table constraint forecasting validated.
++- Kitchen-throughput forecasting validated.
++- Labor-capacity forecasting validated.
++- Time-to-constraint validated.
++- Manager intervention persistence validated.
++- Audit trail validated.
++- Realtime event validated.
++- Human approval requirement validated.
++- Automatic execution remained false.
++- Authenticated GET `/api/predictive-shift-control` passed.
++- Authenticated intervention decision POST passed against an isolated database copy.
++- Undefined module exports remained 0 across all three maintained app copies.
++- Duplicate HTML IDs: 0.
++- `npm run check` passed:
++  - 857 JavaScript files
++  - 730 client scripts
++  - 5,437 unique HTML IDs
++- Server startup passed as V47.25.0.
++- `/api/health` returned HTTP 200.
++- Database connected/auth enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Next milestone
++
++V47.26–V47.30 should build the Manager Operating Rhythm:
++
++- pre-shift priorities
++- explicit shift plan
++- live-service interventions
++- owned actions
++- profitability movement
++- manager handoff
++- post-shift results
++- one continuous operating narrative from pre-shift through close
