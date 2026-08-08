@@ -128,6 +128,172 @@ class AutonomousOperationsService {
     const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
     return {organizationId:org,version:"45.5.0",score,status:score===100?"v45-autonomous-assistance-ready":score>=57?"conditional":"blocked",trusted:score===100,blockers,checks,latestCycleId:latest?.id||null,safety:{stage:"recommendation-and-simulation",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.5.0-autonomous-assistance-foundation"};
   }
+  v45InterventionPolicies(){
+    return {
+      version:"45.10.0",
+      defaultMode:"governed-dry-run",
+      liveExecutionAllowed:false,
+      domains:{
+        "kitchen-throughput":{
+          policyId:"V45-POL-KITCHEN",risk:"medium",approvalRole:"manager",
+          allowedProposalTypes:["temporary-runner-support","fire-pacing-plan","expo-support-plan"],
+          limits:{maxDurationMinutes:30,maxAdditionalRunners:1},
+          prohibited:["close-kitchen-station","modify-live-ticket","void-item","change-menu-availability"]
+        },
+        "reservation-pacing":{
+          policyId:"V45-POL-PACING",risk:"medium",approvalRole:"manager",
+          allowedProposalTypes:["temporary-seating-buffer","party-sequencing-plan"],
+          limits:{maxBufferMinutes:10,maxDurationMinutes:45},
+          prohibited:["cancel-reservation","move-reservation-without-confirmation","close-inventory","change-live-booking"]
+        },
+        "staffing":{
+          policyId:"V45-POL-STAFFING",risk:"medium",approvalRole:"manager",
+          allowedProposalTypes:["redeployment-plan","contingency-coverage-plan"],
+          limits:{maxAdditionalStaff:3,maxDurationMinutes:120},
+          prohibited:["clock-in-employee","clock-out-employee","publish-shift","change-pay-rate"]
+        },
+        "guest-recovery":{
+          policyId:"V45-POL-GUEST",risk:"medium",approvalRole:"manager",
+          allowedProposalTypes:["manager-touch-plan","recovery-priority-plan"],
+          limits:{maxOpenCases:8},
+          prohibited:["send-message","issue-refund","issue-comp","alter-guest-profile"]
+        },
+        "revenue-opportunity":{
+          policyId:"V45-POL-REVENUE",risk:"high",approvalRole:"general-manager",
+          allowedProposalTypes:["demand-capacity-plan","revenue-recovery-plan"],
+          limits:{maxModeledDiscountPercent:10,maxDurationMinutes:180},
+          prohibited:["publish-offer","send-campaign","change-price","apply-discount"]
+        }
+      }
+    };
+  }
+  buildV45InterventionProposals(cycle,actor="Operator"){
+    const policies=this.v45InterventionPolicies();
+    const simulations=new Map((cycle.simulations||[]).map(x=>[x.recommendationId,x]));
+    return (cycle.recommendations||[]).map((recommendation,index)=>{
+      const policy=policies.domains[recommendation.domain];
+      if(!policy)return null;
+      const simulation=simulations.get(recommendation.id)||null;
+      const proposalType={
+        "kitchen-throughput":"fire-pacing-plan",
+        "reservation-pacing":"temporary-seating-buffer",
+        "staffing":"contingency-coverage-plan",
+        "guest-recovery":"manager-touch-plan",
+        "revenue-opportunity":"revenue-recovery-plan"
+      }[recommendation.domain];
+      return {
+        id:`V45-INT-${Date.now().toString(36).toUpperCase()}-${index+1}`,
+        organizationId:cycle.organizationId,cycleId:cycle.id,recommendationId:recommendation.id,simulationId:simulation?.id||null,
+        locationId:recommendation.locationId,locationName:recommendation.locationName,domain:recommendation.domain,
+        proposalType,title:recommendation.title,proposedAction:recommendation.recommendation,
+        agentType:recommendation.agentType,risk:policy.risk,confidence:recommendation.confidence,
+        policy:{policyId:policy.policyId,approvalRole:policy.approvalRole,limits:policy.limits,prohibited:policy.prohibited},
+        evidence:recommendation.evidence||[],simulation:simulation?{modeled:simulation.modeled,confidence:simulation.confidence,assumptions:simulation.assumptions}:null,
+        status:"draft",approvalStatus:"not-requested",approvalRequired:true,rehearsalRequired:true,
+        executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false,
+        createdBy:actor,createdAt:this.now()
+      };
+    }).filter(Boolean);
+  }
+  detectV45InterventionConflicts(proposals){
+    const conflicts=[];
+    const pairs=[];
+    for(let i=0;i<proposals.length;i++)for(let j=i+1;j<proposals.length;j++)pairs.push([proposals[i],proposals[j]]);
+    const conflict=(a,b,type,severity,reason)=>conflicts.push({
+      id:`V45-CONF-${a.id}-${b.id}`,proposalIds:[a.id,b.id],locationId:a.locationId===b.locationId?a.locationId:null,
+      type,severity,reason,status:"unresolved",liveExecutionAllowed:false,liveStateChanged:false
+    });
+    for(const [a,b] of pairs){
+      if(a.locationId!==b.locationId)continue;
+      const domains=new Set([a.domain,b.domain]);
+      if(domains.has("reservation-pacing")&&domains.has("revenue-opportunity"))
+        conflict(a,b,"capacity-vs-demand","high","Demand stimulation conflicts with a simultaneous seating-capacity protection plan at the same location.");
+      if(domains.has("kitchen-throughput")&&domains.has("revenue-opportunity"))
+        conflict(a,b,"throughput-vs-demand","high","Revenue stimulation should not proceed while kitchen throughput is under active pressure.");
+      if(a.domain===b.domain)
+        conflict(a,b,"duplicate-domain-plan","medium","Multiple intervention proposals target the same operating domain at the same location.");
+      if(domains.has("staffing")&&domains.has("reservation-pacing")&&a.risk==="high"&&b.risk==="high")
+        conflict(a,b,"high-risk-concurrency","high","Concurrent high-risk staffing and pacing changes require sequencing.");
+    }
+    return conflicts;
+  }
+  rehearseV45Interventions(proposals,conflicts){
+    const byLocation={};
+    for(const proposal of proposals){
+      (byLocation[proposal.locationId] ||= []).push(proposal);
+    }
+    const locationPlans=Object.entries(byLocation).map(([locationId,items])=>{
+      const blocking=conflicts.filter(c=>c.locationId===locationId&&c.status==="unresolved"&&c.severity==="high");
+      const ordered=[...items].sort((a,b)=>{
+        const order={"kitchen-throughput":1,"staffing":2,"reservation-pacing":3,"guest-recovery":4,"revenue-opportunity":5};
+        return (order[a.domain]||9)-(order[b.domain]||9);
+      });
+      return {
+        locationId,locationName:items[0]?.locationName||locationId,
+        sequence:ordered.map((p,index)=>({step:index+1,proposalId:p.id,domain:p.domain,title:p.title,rehearsalOnly:true})),
+        blockingConflicts:blocking.map(x=>x.id),
+        status:blocking.length?"blocked-by-conflict":"rehearsed",
+        liveExecutionAllowed:false,liveStateChanged:false
+      };
+    });
+    const blocking=conflicts.filter(c=>c.severity==="high"&&c.status==="unresolved");
+    return {
+      status:blocking.length?"blocked":"ready-for-approval-review",
+      proposals:proposals.length,locations:locationPlans.length,conflictCount:conflicts.length,blockingConflicts:blocking.length,
+      locationPlans,
+      governance:{rehearsalOnly:true,approvalRequired:true,executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false}
+    };
+  }
+  async v45InterventionProposals(org,actor=null,input=null){
+    const db=await this.database.read();
+    const stored=db.v45InterventionProposals?.[org]||[];
+    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,policies:this.v45InterventionPolicies(),build:"45.10.0-governed-intervention-planning"};
+    const cycles=db.v45AutonomousDecisionCycles?.[org]||[];
+    const cycle=(input.cycleId?cycles.find(x=>x.id===input.cycleId):cycles[0])||null;
+    if(!cycle)throw new Error("Run a V45 autonomous assistance cycle before preparing intervention proposals.");
+    const proposals=this.buildV45InterventionProposals(cycle,actor||"Operator");
+    const conflicts=this.detectV45InterventionConflicts(proposals);
+    await this.database.mutate(data=>{
+      data.v45InterventionProposals||={};data.v45InterventionConflicts||={};
+      const p=data.v45InterventionProposals[org]||[];p.unshift(...proposals);data.v45InterventionProposals[org]=p.slice(0,300);
+      const c=data.v45InterventionConflicts[org]||[];c.unshift(...conflicts);data.v45InterventionConflicts[org]=c.slice(0,500);
+      return true;
+    });
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 intervention proposals prepared from ${cycle.id}: ${proposals.length} proposal(s), ${conflicts.length} conflict(s)`,category:"v45-intervention-planning"});
+    this.realtimeHub.publish("v45-intervention-proposals-prepared",{organizationId:org,cycleId:cycle.id,count:proposals.length,conflicts:conflicts.length,liveExecutionAllowed:false});
+    return {organizationId:org,cycleId:cycle.id,proposals,conflicts,policies:this.v45InterventionPolicies(),build:"45.10.0-governed-intervention-planning"};
+  }
+  async v45InterventionRehearsals(org,actor=null,input=null){
+    const db=await this.database.read(),stored=db.v45InterventionRehearsals?.[org]||[];
+    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,build:"45.10.0-governed-intervention-planning"};
+    const allProposals=db.v45InterventionProposals?.[org]||[];
+    let proposals=Array.isArray(input.proposalIds)&&input.proposalIds.length?allProposals.filter(x=>input.proposalIds.includes(x.id)):allProposals.filter(x=>x.cycleId===(input.cycleId||allProposals[0]?.cycleId));
+    if(!proposals.length)throw new Error("Prepare V45 intervention proposals before rehearsal.");
+    const conflicts=this.detectV45InterventionConflicts(proposals);
+    const result=this.rehearseV45Interventions(proposals,conflicts);
+    const rehearsal={id:`V45-REH-${Date.now().toString(36).toUpperCase()}`,organizationId:org,cycleId:proposals[0]?.cycleId||null,proposalIds:proposals.map(x=>x.id),conflicts,...result,createdBy:actor||"Operator",createdAt:this.now()};
+    await this.database.mutate(data=>{data.v45InterventionRehearsals||={};const list=data.v45InterventionRehearsals[org]||[];list.unshift(rehearsal);data.v45InterventionRehearsals[org]=list.slice(0,150);return rehearsal;});
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 intervention rehearsal ${rehearsal.id}: ${rehearsal.status}`,category:"v45-intervention-rehearsal"});
+    this.realtimeHub.publish("v45-intervention-rehearsed",{organizationId:org,id:rehearsal.id,status:rehearsal.status,blockingConflicts:rehearsal.blockingConflicts,liveExecutionAllowed:false});
+    return {...rehearsal,build:"45.10.0-governed-intervention-planning"};
+  }
+  async v45InterventionReadiness(org){
+    const db=await this.database.read();
+    const proposals=db.v45InterventionProposals?.[org]||[],rehearsals=db.v45InterventionRehearsals?.[org]||[];
+    const policies=this.v45InterventionPolicies(),latest=rehearsals[0]||null;
+    const checks=[
+      {id:"policies",label:"Domain-specific policy envelopes",pass:Object.keys(policies.domains).length===5&&Object.values(policies.domains).every(x=>x.approvalRole&&x.prohibited?.length),detail:`${Object.keys(policies.domains).length} governed domain policy envelope(s)`},
+      {id:"proposals",label:"Immutable-style intervention proposal records",pass:proposals.length>0&&proposals.every(x=>x.approvalRequired&&x.rehearsalRequired),detail:`${proposals.length} intervention proposal(s)`},
+      {id:"simulation-link",label:"Proposal retains simulation evidence",pass:proposals.length>0&&proposals.every(x=>Boolean(x.simulationId)&&Boolean(x.simulation)),detail:"Every proposal links recommendation evidence to its simulation"},
+      {id:"risk-boundary",label:"Risk and approval roles declared",pass:proposals.length>0&&proposals.every(x=>Boolean(x.risk)&&Boolean(x.policy?.approvalRole)),detail:"Every proposal carries risk and approval ownership"},
+      {id:"conflicts",label:"Cross-domain conflict detection",pass:Boolean(latest)&&Array.isArray(latest.conflicts),detail:`${latest?.conflicts?.length||0} conflict(s) identified in latest rehearsal`},
+      {id:"rehearsal",label:"Multi-domain intervention rehearsal",pass:Boolean(latest)&&Array.isArray(latest.locationPlans)&&latest.locationPlans.length>0,detail:`${latest?.locationPlans?.length||0} location plan(s) rehearsed`},
+      {id:"approval-gate",label:"Rehearsal cannot bypass human approval",pass:rehearsals.every(x=>x.governance?.approvalRequired===true),detail:"Rehearsal result stops at approval review"},
+      {id:"live-safety",label:"Intervention planning cannot mutate live state",pass:proposals.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false)&&rehearsals.every(x=>x.governance?.liveExecutionAllowed===false&&x.governance?.liveStateChanged===false),detail:"Policies, proposals, conflicts, and rehearsals remain dry-run only"}
+    ];
+    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+    return {organizationId:org,version:"45.10.0",score,status:score===100?"v45-intervention-planning-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestRehearsalId:latest?.id||null,safety:{stage:"governed-intervention-planning",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.10.0-governed-intervention-planning"};
+  }
   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
 }
 module.exports=AutonomousOperationsService;

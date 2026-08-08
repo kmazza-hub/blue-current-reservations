@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "45.5.0",
+        version: "45.10.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -955,6 +955,18 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response,200,await autonomousOperationsService.v45DecisionCycle(organizationId,auth.user.name));
     }
     if (url.pathname === "/api/autonomous-assistance/readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45Readiness(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/intervention-policies" && request.method === "GET") return sendJson(response,200,{organizationId,policies:autonomousOperationsService.v45InterventionPolicies(),build:"45.10.0-governed-intervention-planning"});
+    if (url.pathname === "/api/autonomous-assistance/intervention-proposals" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionProposals(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/intervention-proposals" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45InterventionProposals(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/intervention-rehearsals" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionRehearsals(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/intervention-rehearsals" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45InterventionRehearsals(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/intervention-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionReadiness(organizationId));
     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));

@@ -649,6 +649,38 @@
       "category": "security",
       "createdAt": "2026-08-08T03:19:34.202Z",
       "id": "audit_1786159174202_cmr8gn"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-08T14:43:52.426Z",
+      "id": "audit_1786200232427_yjzuuz"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-08T14:43:52.435Z",
+      "id": "audit_1786200232435_7zmkq9"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Sarah Morgan",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-08T14:43:52.445Z",
+      "id": "audit_1786200232445_bq5rt2"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-08T14:44:04.470Z",
+      "id": "audit_1786200244470_p1cahi"
     }
   ],
   "reservations": [
@@ -1199,6 +1231,54 @@
       ],
       "createdAt": "2026-08-08T03:19:34.190Z",
       "expiresAt": "2026-08-08T15:19:34.190Z"
+    },
+    {
+      "id": "ses_1786199477836_5wh88d",
+      "tokenHash": "7d42eab57e62d501533ed19906a5886602b25e1e6e99e0c16a0beab7ea73e668",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-08T14:31:17.836Z",
+      "expiresAt": "2026-08-09T02:31:17.836Z"
+    },
+    {
+      "id": "ses_1786199477905_qk2lxa",
+      "tokenHash": "1e3fd2452c7b6b946c979c455f63a960c2ed34c3c2d89bd46a875305a0335837",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-08T14:31:17.905Z",
+      "expiresAt": "2026-08-09T02:31:17.905Z"
+    },
+    {
+      "id": "ses_1786199477972_g3y3jj",
+      "tokenHash": "80cdaead1a9d44f3b58e98e202d0d6390e0d56df73ff6d6ce545e0cba8885be5",
+      "userId": "usr_sarah",
+      "organizationId": "org_chefs",
+      "role": "general_manager",
+      "locationIds": [
+        "loc_marina"
+      ],
+      "createdAt": "2026-08-08T14:31:17.972Z",
+      "expiresAt": "2026-08-09T02:31:17.972Z"
+    },
+    {
+      "id": "ses_1786199551420_6fkh1v",
+      "tokenHash": "f3bd9f2ec04049695d7d1d9d8f5c437b7db153ce4ca73b22c24948660a219b84",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-08T14:32:31.420Z",
+      "expiresAt": "2026-08-09T02:32:31.420Z"
     }
   ],
   "invitations": [

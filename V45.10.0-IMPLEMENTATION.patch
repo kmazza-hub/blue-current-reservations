@@ -1,0 +1,534 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "45.5.0",
++  "version": "45.10.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V45 governed autonomous assistance foundation",
++  "description": "Blue Current Hospitality OS \u2014 V45 governed intervention planning and rehearsal",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V45.5.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V45.10.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "45.5.0",
++        version: "45.10.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -955,6 +955,18 @@
+       return sendJson(response,200,await autonomousOperationsService.v45DecisionCycle(organizationId,auth.user.name));
+     }
+     if (url.pathname === "/api/autonomous-assistance/readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45Readiness(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/intervention-policies" && request.method === "GET") return sendJson(response,200,{organizationId,policies:autonomousOperationsService.v45InterventionPolicies(),build:"45.10.0-governed-intervention-planning"});
++    if (url.pathname === "/api/autonomous-assistance/intervention-proposals" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionProposals(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/intervention-proposals" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45InterventionProposals(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/intervention-rehearsals" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionRehearsals(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/intervention-rehearsals" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45InterventionRehearsals(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/intervention-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionReadiness(organizationId));
+     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
+       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
+--- a/server/services/autonomousOperationsService.js
++++ b/server/services/autonomousOperationsService.js
+@@ -128,6 +128,172 @@
+     const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+     return {organizationId:org,version:"45.5.0",score,status:score===100?"v45-autonomous-assistance-ready":score>=57?"conditional":"blocked",trusted:score===100,blockers,checks,latestCycleId:latest?.id||null,safety:{stage:"recommendation-and-simulation",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.5.0-autonomous-assistance-foundation"};
+   }
++  v45InterventionPolicies(){
++    return {
++      version:"45.10.0",
++      defaultMode:"governed-dry-run",
++      liveExecutionAllowed:false,
++      domains:{
++        "kitchen-throughput":{
++          policyId:"V45-POL-KITCHEN",risk:"medium",approvalRole:"manager",
++          allowedProposalTypes:["temporary-runner-support","fire-pacing-plan","expo-support-plan"],
++          limits:{maxDurationMinutes:30,maxAdditionalRunners:1},
++          prohibited:["close-kitchen-station","modify-live-ticket","void-item","change-menu-availability"]
++        },
++        "reservation-pacing":{
++          policyId:"V45-POL-PACING",risk:"medium",approvalRole:"manager",
++          allowedProposalTypes:["temporary-seating-buffer","party-sequencing-plan"],
++          limits:{maxBufferMinutes:10,maxDurationMinutes:45},
++          prohibited:["cancel-reservation","move-reservation-without-confirmation","close-inventory","change-live-booking"]
++        },
++        "staffing":{
++          policyId:"V45-POL-STAFFING",risk:"medium",approvalRole:"manager",
++          allowedProposalTypes:["redeployment-plan","contingency-coverage-plan"],
++          limits:{maxAdditionalStaff:3,maxDurationMinutes:120},
++          prohibited:["clock-in-employee","clock-out-employee","publish-shift","change-pay-rate"]
++        },
++        "guest-recovery":{
++          policyId:"V45-POL-GUEST",risk:"medium",approvalRole:"manager",
++          allowedProposalTypes:["manager-touch-plan","recovery-priority-plan"],
++          limits:{maxOpenCases:8},
++          prohibited:["send-message","issue-refund","issue-comp","alter-guest-profile"]
++        },
++        "revenue-opportunity":{
++          policyId:"V45-POL-REVENUE",risk:"high",approvalRole:"general-manager",
++          allowedProposalTypes:["demand-capacity-plan","revenue-recovery-plan"],
++          limits:{maxModeledDiscountPercent:10,maxDurationMinutes:180},
++          prohibited:["publish-offer","send-campaign","change-price","apply-discount"]
++        }
++      }
++    };
++  }
++  buildV45InterventionProposals(cycle,actor="Operator"){
++    const policies=this.v45InterventionPolicies();
++    const simulations=new Map((cycle.simulations||[]).map(x=>[x.recommendationId,x]));
++    return (cycle.recommendations||[]).map((recommendation,index)=>{
++      const policy=policies.domains[recommendation.domain];
++      if(!policy)return null;
++      const simulation=simulations.get(recommendation.id)||null;
++      const proposalType={
++        "kitchen-throughput":"fire-pacing-plan",
++        "reservation-pacing":"temporary-seating-buffer",
++        "staffing":"contingency-coverage-plan",
++        "guest-recovery":"manager-touch-plan",
++        "revenue-opportunity":"revenue-recovery-plan"
++      }[recommendation.domain];
++      return {
++        id:`V45-INT-${Date.now().toString(36).toUpperCase()}-${index+1}`,
++        organizationId:cycle.organizationId,cycleId:cycle.id,recommendationId:recommendation.id,simulationId:simulation?.id||null,
++        locationId:recommendation.locationId,locationName:recommendation.locationName,domain:recommendation.domain,
++        proposalType,title:recommendation.title,proposedAction:recommendation.recommendation,
++        agentType:recommendation.agentType,risk:policy.risk,confidence:recommendation.confidence,
++        policy:{policyId:policy.policyId,approvalRole:policy.approvalRole,limits:policy.limits,prohibited:policy.prohibited},
++        evidence:recommendation.evidence||[],simulation:simulation?{modeled:simulation.modeled,confidence:simulation.confidence,assumptions:simulation.assumptions}:null,
++        status:"draft",approvalStatus:"not-requested",approvalRequired:true,rehearsalRequired:true,
++        executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false,
++        createdBy:actor,createdAt:this.now()
++      };
++    }).filter(Boolean);
++  }
++  detectV45InterventionConflicts(proposals){
++    const conflicts=[];
++    const pairs=[];
++    for(let i=0;i<proposals.length;i++)for(let j=i+1;j<proposals.length;j++)pairs.push([proposals[i],proposals[j]]);
++    const conflict=(a,b,type,severity,reason)=>conflicts.push({
++      id:`V45-CONF-${a.id}-${b.id}`,proposalIds:[a.id,b.id],locationId:a.locationId===b.locationId?a.locationId:null,
++      type,severity,reason,status:"unresolved",liveExecutionAllowed:false,liveStateChanged:false
++    });
++    for(const [a,b] of pairs){
++      if(a.locationId!==b.locationId)continue;
++      const domains=new Set([a.domain,b.domain]);
++      if(domains.has("reservation-pacing")&&domains.has("revenue-opportunity"))
++        conflict(a,b,"capacity-vs-demand","high","Demand stimulation conflicts with a simultaneous seating-capacity protection plan at the same location.");
++      if(domains.has("kitchen-throughput")&&domains.has("revenue-opportunity"))
++        conflict(a,b,"throughput-vs-demand","high","Revenue stimulation should not proceed while kitchen throughput is under active pressure.");
++      if(a.domain===b.domain)
++        conflict(a,b,"duplicate-domain-plan","medium","Multiple intervention proposals target the same operating domain at the same location.");
++      if(domains.has("staffing")&&domains.has("reservation-pacing")&&a.risk==="high"&&b.risk==="high")
++        conflict(a,b,"high-risk-concurrency","high","Concurrent high-risk staffing and pacing changes require sequencing.");
++    }
++    return conflicts;
++  }
++  rehearseV45Interventions(proposals,conflicts){
++    const byLocation={};
++    for(const proposal of proposals){
++      (byLocation[proposal.locationId] ||= []).push(proposal);
++    }
++    const locationPlans=Object.entries(byLocation).map(([locationId,items])=>{
++      const blocking=conflicts.filter(c=>c.locationId===locationId&&c.status==="unresolved"&&c.severity==="high");
++      const ordered=[...items].sort((a,b)=>{
++        const order={"kitchen-throughput":1,"staffing":2,"reservation-pacing":3,"guest-recovery":4,"revenue-opportunity":5};
++        return (order[a.domain]||9)-(order[b.domain]||9);
++      });
++      return {
++        locationId,locationName:items[0]?.locationName||locationId,
++        sequence:ordered.map((p,index)=>({step:index+1,proposalId:p.id,domain:p.domain,title:p.title,rehearsalOnly:true})),
++        blockingConflicts:blocking.map(x=>x.id),
++        status:blocking.length?"blocked-by-conflict":"rehearsed",
++        liveExecutionAllowed:false,liveStateChanged:false
++      };
++    });
++    const blocking=conflicts.filter(c=>c.severity==="high"&&c.status==="unresolved");
++    return {
++      status:blocking.length?"blocked":"ready-for-approval-review",
++      proposals:proposals.length,locations:locationPlans.length,conflictCount:conflicts.length,blockingConflicts:blocking.length,
++      locationPlans,
++      governance:{rehearsalOnly:true,approvalRequired:true,executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false}
++    };
++  }
++  async v45InterventionProposals(org,actor=null,input=null){
++    const db=await this.database.read();
++    const stored=db.v45InterventionProposals?.[org]||[];
++    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,policies:this.v45InterventionPolicies(),build:"45.10.0-governed-intervention-planning"};
++    const cycles=db.v45AutonomousDecisionCycles?.[org]||[];
++    const cycle=(input.cycleId?cycles.find(x=>x.id===input.cycleId):cycles[0])||null;
++    if(!cycle)throw new Error("Run a V45 autonomous assistance cycle before preparing intervention proposals.");
++    const proposals=this.buildV45InterventionProposals(cycle,actor||"Operator");
++    const conflicts=this.detectV45InterventionConflicts(proposals);
++    await this.database.mutate(data=>{
++      data.v45InterventionProposals||={};data.v45InterventionConflicts||={};
++      const p=data.v45InterventionProposals[org]||[];p.unshift(...proposals);data.v45InterventionProposals[org]=p.slice(0,300);
++      const c=data.v45InterventionConflicts[org]||[];c.unshift(...conflicts);data.v45InterventionConflicts[org]=c.slice(0,500);
++      return true;
++    });
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 intervention proposals prepared from ${cycle.id}: ${proposals.length} proposal(s), ${conflicts.length} conflict(s)`,category:"v45-intervention-planning"});
++    this.realtimeHub.publish("v45-intervention-proposals-prepared",{organizationId:org,cycleId:cycle.id,count:proposals.length,conflicts:conflicts.length,liveExecutionAllowed:false});
++    return {organizationId:org,cycleId:cycle.id,proposals,conflicts,policies:this.v45InterventionPolicies(),build:"45.10.0-governed-intervention-planning"};
++  }
++  async v45InterventionRehearsals(org,actor=null,input=null){
++    const db=await this.database.read(),stored=db.v45InterventionRehearsals?.[org]||[];
++    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,build:"45.10.0-governed-intervention-planning"};
++    const allProposals=db.v45InterventionProposals?.[org]||[];
++    let proposals=Array.isArray(input.proposalIds)&&input.proposalIds.length?allProposals.filter(x=>input.proposalIds.includes(x.id)):allProposals.filter(x=>x.cycleId===(input.cycleId||allProposals[0]?.cycleId));
++    if(!proposals.length)throw new Error("Prepare V45 intervention proposals before rehearsal.");
++    const conflicts=this.detectV45InterventionConflicts(proposals);
++    const result=this.rehearseV45Interventions(proposals,conflicts);
++    const rehearsal={id:`V45-REH-${Date.now().toString(36).toUpperCase()}`,organizationId:org,cycleId:proposals[0]?.cycleId||null,proposalIds:proposals.map(x=>x.id),conflicts,...result,createdBy:actor||"Operator",createdAt:this.now()};
++    await this.database.mutate(data=>{data.v45InterventionRehearsals||={};const list=data.v45InterventionRehearsals[org]||[];list.unshift(rehearsal);data.v45InterventionRehearsals[org]=list.slice(0,150);return rehearsal;});
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 intervention rehearsal ${rehearsal.id}: ${rehearsal.status}`,category:"v45-intervention-rehearsal"});
++    this.realtimeHub.publish("v45-intervention-rehearsed",{organizationId:org,id:rehearsal.id,status:rehearsal.status,blockingConflicts:rehearsal.blockingConflicts,liveExecutionAllowed:false});
++    return {...rehearsal,build:"45.10.0-governed-intervention-planning"};
++  }
++  async v45InterventionReadiness(org){
++    const db=await this.database.read();
++    const proposals=db.v45InterventionProposals?.[org]||[],rehearsals=db.v45InterventionRehearsals?.[org]||[];
++    const policies=this.v45InterventionPolicies(),latest=rehearsals[0]||null;
++    const checks=[
++      {id:"policies",label:"Domain-specific policy envelopes",pass:Object.keys(policies.domains).length===5&&Object.values(policies.domains).every(x=>x.approvalRole&&x.prohibited?.length),detail:`${Object.keys(policies.domains).length} governed domain policy envelope(s)`},
++      {id:"proposals",label:"Immutable-style intervention proposal records",pass:proposals.length>0&&proposals.every(x=>x.approvalRequired&&x.rehearsalRequired),detail:`${proposals.length} intervention proposal(s)`},
++      {id:"simulation-link",label:"Proposal retains simulation evidence",pass:proposals.length>0&&proposals.every(x=>Boolean(x.simulationId)&&Boolean(x.simulation)),detail:"Every proposal links recommendation evidence to its simulation"},
++      {id:"risk-boundary",label:"Risk and approval roles declared",pass:proposals.length>0&&proposals.every(x=>Boolean(x.risk)&&Boolean(x.policy?.approvalRole)),detail:"Every proposal carries risk and approval ownership"},
++      {id:"conflicts",label:"Cross-domain conflict detection",pass:Boolean(latest)&&Array.isArray(latest.conflicts),detail:`${latest?.conflicts?.length||0} conflict(s) identified in latest rehearsal`},
++      {id:"rehearsal",label:"Multi-domain intervention rehearsal",pass:Boolean(latest)&&Array.isArray(latest.locationPlans)&&latest.locationPlans.length>0,detail:`${latest?.locationPlans?.length||0} location plan(s) rehearsed`},
++      {id:"approval-gate",label:"Rehearsal cannot bypass human approval",pass:rehearsals.every(x=>x.governance?.approvalRequired===true),detail:"Rehearsal result stops at approval review"},
++      {id:"live-safety",label:"Intervention planning cannot mutate live state",pass:proposals.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false)&&rehearsals.every(x=>x.governance?.liveExecutionAllowed===false&&x.governance?.liveStateChanged===false),detail:"Policies, proposals, conflicts, and rehearsals remain dry-run only"}
++    ];
++    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {organizationId:org,version:"45.10.0",score,status:score===100?"v45-intervention-planning-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestRehearsalId:latest?.id||null,safety:{stage:"governed-intervention-planning",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.10.0-governed-intervention-planning"};
++  }
+   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
+ }
+ module.exports=AutonomousOperationsService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="45.5.0">
++  <meta name="blue-current-build" content="45.10.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8579,6 +8579,7 @@
+ <section class="v432-center v438-center v4316-center" id="aipDurableWorkflowCenter"><header><div><small>V44.13–V44.16 · Durable Workflow Runtime</small><strong>Version, lease, checkpoint, recover, and replay long-running multi-agent work.</strong><span>Published workflow versions are immutable. Runtime instances use lease/heartbeat ownership, version-bound checkpoints, and idempotent execution history while remaining governed dry-runs.</span></div><div class="v4316-actions"><button id="adwRefresh" type="button">Refresh</button><button id="adwPublish" type="button">Publish version</button><button id="adwCreate" type="button">Create instance</button></div></header><div class="v432-kpis"><article><small>Definitions</small><strong id="adwDefinitions">0</strong></article><article><small>Instances</small><strong id="adwInstances">0</strong></article><article><small>Status</small><strong id="adwStatus">—</strong></article><article><small>Version</small><strong id="adwVersion">—</strong></article><article><small>Progress</small><strong id="adwProgress">0/0</strong></article><article><small>Lease</small><strong id="adwLease">—</strong></article><article><small>Readiness</small><strong id="adwReadiness">0%</strong></article></div><div class="v4316-answer" id="adwMessage">Publish an immutable workflow version from the latest orchestration.</div><div class="v4316-actions"><button data-wf-action="start" type="button">Start + lease</button><button data-wf-action="heartbeat" type="button">Heartbeat</button><button data-wf-action="advance" type="button">Advance</button><button data-wf-action="checkpoint" type="button">Checkpoint</button><button data-wf-action="pause" type="button">Pause</button><button data-wf-action="resume" type="button">Resume</button><button data-wf-action="recover" type="button">Recover</button><button data-wf-action="cancel" type="button">Cancel</button></div><div id="adwList" class="v432-list"></div><pre class="v4316-answer" id="adwHistory">Inspect an instance to view its version-bound execution journal and checkpoints.</pre></section>
+ <section class="v432-center v438-center v4316-center" id="aipWorkflowSupervisorCenter"><header><div><small>V44.18–V44.22 · Workflow Supervision + V44 Closure</small><strong>Resolve cross-agent dependencies, bound retries, escalate failures, and certify the V44 AI platform architecture.</strong><span>Supervision never promotes a workflow beyond governed dry-run scope. Retry limits and human escalation are explicit and auditable.</span></div><button id="awsRefresh" type="button">Refresh supervision</button></header><input id="awsReason" class="v4312-input" placeholder="Failure or escalation reason"><div class="v432-kpis"><article><small>Instances</small><strong id="awsInstances">0</strong></article><article><small>Retry pending</small><strong id="awsRetry">0</strong></article><article><small>Attention</small><strong id="awsAttention">0</strong></article><article><small>Escalations</small><strong id="awsEscalations">0</strong></article><article><small>Closure</small><strong id="awsScore">0%</strong></article><article><small>Status</small><strong id="awsStatus">—</strong></article><article><small>Trusted</small><strong id="awsTrusted">NO</strong></article></div><div class="v4316-answer" id="awsMessage">Select a durable workflow to exercise supervised failure handling.</div><div class="v4316-actions"><button type="button" data-supervisor-action="fail">Record failure</button><button type="button" data-supervisor-action="retry">Retry now</button><button type="button" data-supervisor-action="escalate">Escalate</button></div><div id="awsList" class="v432-list"></div><div id="awsChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="autonomousAssistanceCenter"><header><div><small>V45.1–V45.5 · Autonomous Operations Foundation</small><strong>Turn live operating evidence into anomalies, agent-scoped recommendations, and intervention simulations.</strong><span>V45 begins with governed assistance: observe → detect → recommend → simulate. No live restaurant mutation is authorized.</span></div><div class="v4316-actions"><button id="vaaRefresh" type="button">Refresh</button><button id="vaaRun" type="button">Run governed cycle</button></div></header><div class="v432-kpis"><article><small>Cycles</small><strong id="vaaCycles">0</strong></article><article><small>Locations</small><strong id="vaaLocations">0</strong></article><article><small>Anomalies</small><strong id="vaaAnomalies">0</strong></article><article><small>Critical</small><strong id="vaaCritical">0</strong></article><article><small>Recommendations</small><strong id="vaaRecommendations">0</strong></article><article><small>Simulations</small><strong id="vaaSimulations">0</strong></article><article><small>Readiness</small><strong id="vaaScore">0%</strong></article><article><small>Status</small><strong id="vaaStatus">—</strong></article><article><small>Trusted</small><strong id="vaaTrusted">NO</strong></article></div><div class="v4316-answer" id="vaaMessage">Run a governed observation cycle to establish the V45 operating picture.</div><div id="vaaList" class="v432-list"></div><div id="vaaChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="interventionPlanningCenter"><header><div><small>V45.6–V45.10 · Governed Intervention Planning</small><strong>Convert autonomous recommendations into policy-bounded proposals, detect conflicts, and rehearse coordinated interventions.</strong><span>Plans stop at approval review. No intervention proposal, rehearsal, or conflict resolution mutates live restaurant state.</span></div><div class="v4316-actions"><button id="vipRefresh" type="button">Refresh</button><button id="vipPrepare" type="button">Prepare proposals</button><button id="vipRehearse" type="button">Rehearse plan</button></div></header><div class="v432-kpis"><article><small>Proposals</small><strong id="vipProposals">0</strong></article><article><small>Rehearsals</small><strong id="vipRehearsals">0</strong></article><article><small>Conflicts</small><strong id="vipConflicts">0</strong></article><article><small>Blocking</small><strong id="vipBlocking">0</strong></article><article><small>Readiness</small><strong id="vipScore">0%</strong></article><article><small>Status</small><strong id="vipStatus">—</strong></article><article><small>Trusted</small><strong id="vipTrusted">NO</strong></article></div><div class="v4316-answer" id="vipMessage">Prepare intervention proposals from the latest V45 assistance cycle.</div><div id="vipList" class="v432-list"></div><div id="vipChecks" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · Persistent Runtime Readiness</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryEngineV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryCenterV44.js?v=44.3.0"></script>
+@@ -8602,6 +8603,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipWorkflowSupervisorCenter" data-src="js/modules/aipWorkflowSupervisorCenter.js?v=44.22.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="autonomousAssistanceCenter" data-src="js/modules/autonomousAssistanceEngine.js?v=45.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="autonomousAssistanceCenter" data-src="js/modules/autonomousAssistanceCenter.js?v=45.5.0"></script>
+-<script src="js/startup-loader.js?v=45.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionPlanningCenter" data-src="js/modules/interventionPlanningEngine.js?v=45.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionPlanningCenter" data-src="js/modules/interventionPlanningCenter.js?v=45.10.0"></script>
++<script src="js/startup-loader.js?v=45.10.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -2444,6 +2444,7 @@
+ const aipDurableWorkflowCenterModule = startupRegistry.register("aipDurableWorkflowCenter",shouldInitializeCenter("aipDurableWorkflowCenter") ? window.createBlueCurrentAipDurableWorkflowCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipMultiAgentOrchestrationCenter","aipApprovalOrchestrationCenter"]);
+ const aipWorkflowSupervisorCenterModule = startupRegistry.register("aipWorkflowSupervisorCenter",shouldInitializeCenter("aipWorkflowSupervisorCenter") ? window.createBlueCurrentAipWorkflowSupervisorCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipDurableWorkflowCenter"]);
+ const autonomousAssistanceCenterModule = startupRegistry.register("autonomousAssistanceCenter",shouldInitializeCenter("autonomousAssistanceCenter") ? window.createBlueCurrentAutonomousAssistanceCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipWorkflowSupervisorCenter","autonomousPolicyCenter","predictiveOptimizationCenter"]);
++const interventionPlanningCenterModule = startupRegistry.register("interventionPlanningCenter",shouldInitializeCenter("interventionPlanningCenter") ? window.createBlueCurrentInterventionPlanningCenterModule?.(eventBus, appState) : null,["eventBus","appState","autonomousAssistanceCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V45.5.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V45.10.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/interventionPlanningEngine.js
++++ b/client/js/modules/interventionPlanningEngine.js
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentInterventionPlanningEngine{constructor(){this.r=api();}proposals(){return this.r('/api/autonomous-assistance/intervention-proposals');}prepare(cycleId){return this.r('/api/autonomous-assistance/intervention-proposals',{method:'POST',body:JSON.stringify({cycleId})});}rehearsals(){return this.r('/api/autonomous-assistance/intervention-rehearsals');}rehearse(cycleId){return this.r('/api/autonomous-assistance/intervention-rehearsals',{method:'POST',body:JSON.stringify({cycleId})});}readiness(){return this.r('/api/autonomous-assistance/intervention-readiness');}}
++window.BlueCurrentInterventionPlanningEngine=BlueCurrentInterventionPlanningEngine;})();--- a/client/js/modules/interventionPlanningCenter.js
++++ b/client/js/modules/interventionPlanningCenter.js
+@@ -0,0 +1,8 @@
++(function(){"use strict";
++function createBlueCurrentInterventionPlanningCenterModule(){const root=document.getElementById('interventionPlanningCenter');if(!root||!window.BlueCurrentInterventionPlanningEngine)return null;const e=new window.BlueCurrentInterventionPlanningEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
++async function load(){try{const [p,r,x]=await Promise.all([e.proposals(),e.rehearsals(),e.readiness()]);const latest=r.latest;$('vipProposals').textContent=p.count||0;$('vipRehearsals').textContent=r.count||0;$('vipConflicts').textContent=latest?.conflictCount??latest?.conflicts?.length??0;$('vipBlocking').textContent=latest?.blockingConflicts||0;$('vipScore').textContent=`${x.score||0}%`;$('vipStatus').textContent=x.status||'—';$('vipTrusted').textContent=x.trusted?'YES':'NO';$('vipMessage').textContent=latest?`${latest.id} · ${latest.status} · approval review is the hard stop`:'Prepare intervention proposals from the latest V45 assistance cycle.';$('vipList').innerHTML=(p.items||[]).slice(0,12).map(a=>`<article><div><strong>${esc(a.locationName)} · ${esc(a.title)}</strong><span>${esc(a.domain)} · ${esc(a.proposalType)} · ${esc(a.risk)} risk · approval: ${esc(a.policy?.approvalRole)}</span><span>${esc(a.proposedAction)}</span></div></article>`).join('')||'<p>No intervention proposals yet.</p>';$('vipChecks').innerHTML=(x.checks||[]).map(c=>`<article><div><strong>${c.pass?'PASS':'BLOCK'} · ${esc(c.label)}</strong><span>${esc(c.detail)}</span></div></article>`).join('');}catch(err){$('vipMessage').textContent=err.message;}}
++async function latestCycleId(){const r=await fetch('/api/autonomous-assistance/cycles',{headers:{Authorization:`Bearer ${localStorage.getItem("blueCurrentV3230Token")||""}`}}),d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to load V45 cycles');return d.latest?.id||null;}
++$('vipPrepare')?.addEventListener('click',async()=>{try{const id=await latestCycleId();if(!id)throw new Error('Run a governed V45 assistance cycle first.');await e.prepare(id);await load();}catch(err){$('vipMessage').textContent=err.message;}});
++$('vipRehearse')?.addEventListener('click',async()=>{try{const id=await latestCycleId();if(!id)throw new Error('Run a governed V45 assistance cycle first.');await e.rehearse(id);await load();}catch(err){$('vipMessage').textContent=err.message;}});
++$('vipRefresh')?.addEventListener('click',load);load();return{engine:e,load};}
++window.createBlueCurrentInterventionPlanningCenterModule=createBlueCurrentInterventionPlanningCenterModule;})();--- a/scripts/maintenance/test-v45-intervention-planning.js
++++ b/scripts/maintenance/test-v45-intervention-planning.js
+@@ -0,0 +1,46 @@
++"use strict";
++const assert=require("assert"),AutonomousOperationsService=require("../../server/services/autonomousOperationsService");
++class MemoryDatabase{constructor(seed){this.data=structuredClone(seed);}async read(){return structuredClone(this.data);}async mutate(fn){return structuredClone(fn(this.data));}}
++(async()=>{
++ const org="org-test",cycle={
++  id:"C1",organizationId:org,
++  recommendations:[
++   {id:"R1",locationId:"L1",locationName:"Harbor",domain:"kitchen-throughput",agentType:"kitchen-flow-advisor",title:"Kitchen response",recommendation:"Model fire pacing",risk:"medium",confidence:90,evidence:[{metric:"ticket",value:29}],approvalRequired:true,simulationRequired:true,liveExecutionAllowed:false,liveStateChanged:false},
++   {id:"R2",locationId:"L1",locationName:"Harbor",domain:"reservation-pacing",agentType:"operations-optimizer",title:"Pacing response",recommendation:"Model seating buffer",risk:"medium",confidence:88,evidence:[{metric:"occupancy",value:92}],approvalRequired:true,simulationRequired:true,liveExecutionAllowed:false,liveStateChanged:false},
++   {id:"R3",locationId:"L1",locationName:"Harbor",domain:"revenue-opportunity",agentType:"revenue-planner",title:"Revenue response",recommendation:"Model demand option",risk:"high",confidence:82,evidence:[{metric:"trend",value:-7}],approvalRequired:true,simulationRequired:true,liveExecutionAllowed:false,liveStateChanged:false},
++   {id:"R4",locationId:"L2",locationName:"Market",domain:"staffing",agentType:"staffing-advisor",title:"Staffing response",recommendation:"Model contingency",risk:"medium",confidence:86,evidence:[{metric:"need",value:2}],approvalRequired:true,simulationRequired:true,liveExecutionAllowed:false,liveStateChanged:false},
++   {id:"R5",locationId:"L2",locationName:"Market",domain:"guest-recovery",agentType:"guest-experience-advisor",title:"Guest response",recommendation:"Model manager touch",risk:"medium",confidence:84,evidence:[{metric:"health",value:70}],approvalRequired:true,simulationRequired:true,liveExecutionAllowed:false,liveStateChanged:false}
++  ],
++  simulations:[
++   {id:"S1",recommendationId:"R1",modeled:{ticketMinutesDelta:-4},confidence:85,assumptions:["dry-run"],liveStateChanged:false},
++   {id:"S2",recommendationId:"R2",modeled:{ticketMinutesDelta:-3},confidence:83,assumptions:["dry-run"],liveStateChanged:false},
++   {id:"S3",recommendationId:"R3",modeled:{revenueOpportunity:"modeled-only"},confidence:77,assumptions:["dry-run"],liveStateChanged:false},
++   {id:"S4",recommendationId:"R4",modeled:{serviceCapacityPercentDelta:12},confidence:81,assumptions:["dry-run"],liveStateChanged:false},
++   {id:"S5",recommendationId:"R5",modeled:{guestRiskPercentDelta:-18},confidence:79,assumptions:["dry-run"],liveStateChanged:false}
++  ],
++  governance:{liveExecutionAllowed:false,liveStateChanged:false}
++ };
++ const db=new MemoryDatabase({v45AutonomousDecisionCycles:{[org]:[cycle]}}),audits=[],events=[];
++ const svc=new AutonomousOperationsService(db,{record:async x=>audits.push(x)},{publish:(t,p)=>events.push({t,p})},{snapshot:async()=>({})});
++ const prepared=await svc.v45InterventionProposals(org,"Tester",{cycleId:"C1"});
++ assert.equal(prepared.proposals.length,5);
++ assert.ok(prepared.proposals.every(x=>x.approvalRequired&&x.rehearsalRequired&&x.liveExecutionAllowed===false));
++ assert.ok(prepared.proposals.every(x=>x.policy?.approvalRole&&x.simulationId));
++ assert.ok(prepared.conflicts.some(x=>x.type==="capacity-vs-demand"));
++ assert.ok(prepared.conflicts.some(x=>x.type==="throughput-vs-demand"));
++ const rehearsed=await svc.v45InterventionRehearsals(org,"Tester",{cycleId:"C1"});
++ assert.equal(rehearsed.status,"blocked");
++ assert.ok(rehearsed.blockingConflicts>=2);
++ assert.equal(rehearsed.governance.liveExecutionAllowed,false);
++ assert.equal(rehearsed.locationPlans.length,2);
++ const safeIds=prepared.proposals.filter(x=>x.locationId==="L2").map(x=>x.id);
++ const safeRehearsal=await svc.v45InterventionRehearsals(org,"Tester",{proposalIds:safeIds});
++ assert.equal(safeRehearsal.status,"ready-for-approval-review");
++ assert.equal(safeRehearsal.blockingConflicts,0);
++ assert.equal(safeRehearsal.governance.liveExecutionAllowed,false);
++ const ready=await svc.v45InterventionReadiness(org);
++ assert.equal(ready.score,100);
++ assert.equal(ready.trusted,true);
++ assert.equal(ready.status,"v45-intervention-planning-ready");
++ console.log(JSON.stringify({ok:true,version:ready.version,proposals:prepared.proposals.length,conflicts:prepared.conflicts.length,blocking:rehearsed.blockingConflicts,blockedRehearsal:rehearsed.status,safeRehearsal:safeRehearsal.status,locations:rehearsed.locationPlans.length,readiness:ready.score,liveExecutionAllowed:false,audits:audits.length,events:events.length},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V45.10.0.md
++++ b/README-APPLY-V45.10.0.md
+@@ -0,0 +1,69 @@
++# APPLY BLUE CURRENT V45.10.0
++
++## Baseline
++Apply this patch over the authoritative repository containing V45.5.0.
++
++## Important
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++Extract `BLUE-CURRENT-V45.10.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v45-intervention-planning.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "45.10.0"
++```
++
++## Recommended Git staging
++Do not use `git add .` while runtime database artifacts may exist.
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/autonomousOperationsService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/interventionPlanningEngine.js
++git add client/js/modules/interventionPlanningCenter.js
++git add scripts/maintenance/test-v45-intervention-planning.js
++git add README-APPLY-V45.10.0.md
++git add V45.10.0-RELEASE.md
++git add V45.10.0-IMPLEMENTATION.patch
++```
++
++Inspect before committing:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V45.10.0 governed intervention planning"
++git push origin live-service-timeline
++```
++
++## Safety
++V45.10.0 ends at governed intervention rehearsal and approval review. It does not execute live restaurant actions.
+--- a/V45.10.0-RELEASE.md
++++ b/V45.10.0-RELEASE.md
+@@ -0,0 +1,115 @@
++# BLUE CURRENT V45.10.0 — GOVERNED INTERVENTION PLANNING
++
++## Release scope
++
++V45.6–V45.10 advances Autonomous Operations from evidence-backed recommendations and simulation into governed intervention planning. This release still stops before live execution.
++
++### V45.6 — Domain Policy Envelopes
++Adds explicit policy envelopes for:
++- kitchen throughput
++- reservation pacing
++- staffing
++- guest recovery
++- revenue opportunity
++
++Each domain declares:
++- allowed proposal types
++- risk level
++- required approval role
++- bounded limits
++- prohibited live actions
++
++Examples of explicitly prohibited actions include changing live reservations, publishing staff shifts, modifying kitchen tickets, issuing guest compensation, and publishing revenue offers.
++
++### V45.7 — Intervention Proposal Objects
++Recommendations and their simulations can now be converted into persistent intervention proposals.
++
++Every proposal retains:
++- source cycle
++- source recommendation
++- source simulation
++- operating evidence
++- agent ownership
++- domain
++- risk
++- approval role
++- policy limits
++- prohibited actions
++
++All proposals remain `governed-dry-run`.
++
++### V45.8 — Cross-Domain Conflict Detection
++Adds conflict detection before coordinated interventions can progress.
++
++Current conflict classes include:
++- capacity versus demand
++- kitchen throughput versus demand stimulation
++- duplicate same-domain interventions
++- high-risk concurrency sequencing
++
++A high-severity unresolved conflict blocks rehearsal from reaching approval review.
++
++### V45.9 — Multi-Domain Intervention Rehearsal
++Creates location-scoped intervention sequences using an operational order:
++
++Kitchen stabilization → staffing coverage → reservation pacing → guest recovery → revenue opportunity.
++
++Rehearsal results are either:
++- `blocked`
++- `ready-for-approval-review`
++
++They never become executable.
++
++### V45.10 — Intervention Planning Readiness
++Adds certification across:
++- policy envelopes
++- intervention proposal persistence
++- simulation linkage
++- risk and approval ownership
++- conflict detection
++- multi-domain rehearsal
++- approval hard-stop
++- live-state isolation
++
++## New APIs
++- `GET /api/autonomous-assistance/intervention-policies`
++- `GET/POST /api/autonomous-assistance/intervention-proposals`
++- `GET/POST /api/autonomous-assistance/intervention-rehearsals`
++- `GET /api/autonomous-assistance/intervention-readiness`
++
++## UI
++Adds the Governed Intervention Planning center:
++- prepare proposals
++- rehearse plans
++- proposal/rehearsal counts
++- conflict and blocking-conflict visibility
++- proposal risk and approval ownership
++- intervention readiness certification
++
++## Safety boundary
++V45.10.0 introduces no live action executor.
++
++Policy, proposal, conflict, and rehearsal objects carry:
++- `liveExecutionAllowed: false`
++- `liveStateChanged: false`
++
++A conflict-free rehearsal stops at `ready-for-approval-review`.
++
++## Validation
++- `node scripts/maintenance/test-v45-intervention-planning.js` passed.
++- Five domain proposals created from the focused harness.
++- High-severity capacity/demand and throughput/demand conflicts were detected.
++- Conflicting multi-domain rehearsal correctly returned `blocked`.
++- Conflict-free rehearsal correctly returned `ready-for-approval-review`.
++- Both paths remained non-executable.
++- Intervention readiness scored 100% in the focused harness.
++- `npm run check` passed:
++  - 808 JavaScript files
++  - 690 client scripts
++  - 5,155 unique HTML IDs
++- Server startup passed as V45.10.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged during validation.
++
++## Operation V position
++The next logical V45 milestone is governed approval and intervention authorization architecture: policy-aware approval packets, expiry/revalidation, approval scope, revocation, and executable-command drafting. Even there, command drafting should remain distinct from live execution until a separately certified execution boundary is deliberately introduced.
