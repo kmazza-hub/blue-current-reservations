@@ -1,0 +1,602 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "47.5.0",
++  "version": "47.10.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 Hospitality Performance Command opportunity queue",
++  "description": "Blue Current Hospitality OS \u2014 owned hospitality action workspaces",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -37,6 +37,7 @@
+ const RetirementCandidateImpactService = require("./services/retirementCandidateImpactService");
+ const V46ReleaseCertificationService = require("./services/v46ReleaseCertificationService");
+ const HospitalityPerformanceService = require("./services/hospitalityPerformanceService");
++const HospitalityActionWorkspaceService = require("./services/hospitalityActionWorkspaceService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -77,7 +78,8 @@
+ const retirementCandidateImpactService = new RetirementCandidateImpactService(repositoryImpactService, retirementAssuranceService);
+ const v46ReleaseCertificationService = new V46ReleaseCertificationService(ROOT, retirementAssuranceService);
+ const hospitalityPerformanceService = new HospitalityPerformanceService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, inventoryIntelligenceService, guestIntelligenceService, executiveCommandCenterService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService });
++const hospitalityActionWorkspaceService = new HospitalityActionWorkspaceService(database, auditService, realtimeHub, hospitalityPerformanceService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -164,7 +166,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V47.5.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V47.10.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "47.5.0",
++        version: "47.10.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -193,6 +193,30 @@
+ 
+     const auth = await authService.authenticate(bearerToken(request));
+     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
++
++    if (url.pathname === "/api/hospitality-actions" && request.method === "GET") {
++      const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
++      return sendJson(response,200,await hospitalityActionWorkspaceService.list(auth.membership.organizationId,locationId));
++    }
++
++    if (url.pathname === "/api/hospitality-actions" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Hospitality action permission required."});
++      const body=await readJson(request);
++      const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
++      const performance=await hospitalityPerformanceService.snapshot(auth.membership.organizationId,locationId);
++      const opportunity=performance.opportunities.find(x=>x.id===body.opportunityId);
++      if(!opportunity)return sendJson(response,404,{error:"Performance opportunity not found or no longer active."});
++      return sendJson(response,201,await hospitalityActionWorkspaceService.createFromOpportunity(auth.membership.organizationId,locationId,opportunity,body,auth.user.name));
++    }
++
++    if (url.pathname.startsWith("/api/hospitality-actions/") && request.method === "PATCH") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Hospitality action permission required."});
++      const workspaceId=decodeURIComponent(url.pathname.split("/")[3]||"");
++      const body=await readJson(request);
++      const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
++      try{return sendJson(response,200,await hospitalityActionWorkspaceService.update(auth.membership.organizationId,locationId,workspaceId,body,auth.user.name));}
++      catch(error){return sendJson(response,/not found/i.test(error.message)?404:400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/hospitality-performance" && request.method === "GET") {
+       const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+--- a/server/services/hospitalityPerformanceService.js
++++ b/server/services/hospitalityPerformanceService.js
+@@ -73,7 +73,7 @@
+     const totalImpact=ranked.filter(x=>!["dismissed","completed"].includes(x.lastDecision?.decision)).reduce((s,x)=>s+x.estimatedImpactDollars,0);
+     const categories={};for(const x of ranked)categories[x.category]=(categories[x.category]||0)+1;
+     return {
+-      version:"47.5.0",generatedAt:new Date().toISOString(),organizationId,locationId,
++      version:"47.10.0",generatedAt:new Date().toISOString(),organizationId,locationId,
+       headline:ranked[0]?`#1 opportunity: ${ranked[0].title}`:"No material performance opportunities are active.",
+       summary:{openOpportunities:ranked.length,totalEstimatedImpactDollars:totalImpact,highPriority:ranked.filter(x=>["critical","high"].includes(x.severity)).length,categories,readinessScore:command?.readiness?.score||null,portfolioRevenueTrend:executive?.portfolio?.revenueTrend||0},
+       opportunities:ranked.slice(0,12),decisions,
+--- a/server/services/hospitalityActionWorkspaceService.js
++++ b/server/services/hospitalityActionWorkspaceService.js
+@@ -0,0 +1,97 @@
++"use strict";
++
++class HospitalityActionWorkspaceService {
++  constructor(database,auditService,realtimeHub,hospitalityPerformanceService){
++    Object.assign(this,{database,auditService,realtimeHub,hospitalityPerformanceService});
++  }
++  now(){return new Date().toISOString();}
++  normalizeStatus(value){return new Set(["accepted","in_progress","blocked","completed","cancelled"]).has(value)?value:"in_progress";}
++  async list(organizationId,locationId){
++    const db=await this.database.read();
++    const items=(db.hospitalityActionWorkspaces||[])
++      .filter(x=>x.organizationId===organizationId&&x.locationId===locationId)
++      .sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt));
++    const active=items.filter(x=>!["completed","cancelled"].includes(x.status));
++    const blocked=active.filter(x=>x.status==="blocked");
++    const overdue=active.filter(x=>x.targetAt&&new Date(x.targetAt).getTime()<Date.now());
++    return {
++      version:"47.10.0",generatedAt:this.now(),organizationId,locationId,
++      summary:{
++        total:items.length,active:active.length,blocked:blocked.length,overdue:overdue.length,
++        expectedImpactDollars:active.reduce((s,x)=>s+Number(x.expectedImpactDollars||0),0),
++        completed:items.filter(x=>x.status==="completed").length
++      },
++      workspaces:items.slice(0,100),
++      policy:{humanOwned:true,automaticExecution:false,outcomeMeasurement:"next-wave"}
++    };
++  }
++  async createFromOpportunity(organizationId,locationId,opportunity,input={},actor="Manager"){
++    if(!opportunity?.id)throw new Error("A valid opportunity is required.");
++    const now=this.now(),targetMinutes=Math.max(5,Math.min(1440,Number(input.targetMinutes)||60));
++    let created=null;
++    await this.database.mutate(db=>{
++      db.hospitalityActionWorkspaces||=[];
++      const existing=db.hospitalityActionWorkspaces.find(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.opportunityId===opportunity.id&&!["completed","cancelled"].includes(x.status));
++      if(existing){created=existing;return existing;}
++      created={
++        id:`haw_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++        organizationId,locationId,opportunityId:opportunity.id,
++        title:opportunity.title,category:opportunity.category,severity:opportunity.severity,
++        owner:String(input.owner||opportunity.owner||actor||"Manager").slice(0,120),
++        status:"accepted",
++        why:opportunity.why,nextAction:opportunity.nextAction,
++        expectedImpactDollars:Number(opportunity.estimatedImpactDollars||0),
++        impactLabel:opportunity.impactLabel||"",
++        confidence:Number(opportunity.confidence||0),
++        targetMetric:String(input.targetMetric||this.defaultMetric(opportunity)).slice(0,240),
++        targetValue:String(input.targetValue||this.defaultTarget(opportunity)).slice(0,120),
++        targetAt:new Date(Date.now()+targetMinutes*60000).toISOString(),
++        baseline:{capturedAt:now,score:opportunity.score,metadata:opportunity.metadata||{},estimatedImpactDollars:Number(opportunity.estimatedImpactDollars||0)},
++        updates:[{id:`hau_${Date.now()}`,status:"accepted",note:String(input.note||"Action accepted from Hospitality Performance Command").slice(0,500),actor,at:now}],
++        createdBy:actor,createdAt:now,updatedAt:now,completedAt:null,
++        realizedImpactDollars:null,outcomeNote:""
++      };
++      db.hospitalityActionWorkspaces.push(created);
++      return created;
++    });
++    await this.auditService.record({organizationId,actor,action:`Hospitality action workspace created: ${created.id} · ${created.title}`,category:"hospitality_performance"});
++    this.realtimeHub.publish("hospitality-action:created",created);
++    return created;
++  }
++  defaultMetric(o){
++    return ({kitchen:"Oldest delayed ticket / ticket recovery",reservations:"Unassigned parties / wait exposure",labor:"Labor coverage / labor cost",inventory:"Availability / food-cost variance",guests:"At-risk guest recovery",revenue:"Revenue pacing gap"})[o.category]||"Operating condition";
++  }
++  defaultTarget(o){
++    const m=o.metadata||{};
++    if(o.category==="kitchen")return "Return delayed tickets to service target";
++    if(o.category==="reservations")return "Clear preventable assignment/wait exposure";
++    if(o.category==="labor")return "Restore planned coverage and labor efficiency";
++    if(o.category==="inventory")return "Resolve flagged availability or margin variance";
++    if(o.category==="guests")return `Recover priority guest relationship`;
++    if(o.category==="revenue")return "Reduce modeled revenue pacing gap";
++    return "Resolve opportunity";
++  }
++  async update(organizationId,locationId,workspaceId,input,actor){
++    let updated=null;
++    await this.database.mutate(db=>{
++      db.hospitalityActionWorkspaces||=[];
++      const item=db.hospitalityActionWorkspaces.find(x=>x.id===workspaceId&&x.organizationId===organizationId&&x.locationId===locationId);
++      if(!item)throw new Error("Hospitality action workspace not found.");
++      const status=this.normalizeStatus(input.status||item.status),now=this.now();
++      if(input.owner!==undefined)item.owner=String(input.owner||item.owner).slice(0,120);
++      if(input.targetMetric!==undefined)item.targetMetric=String(input.targetMetric||item.targetMetric).slice(0,240);
++      if(input.targetValue!==undefined)item.targetValue=String(input.targetValue||item.targetValue).slice(0,120);
++      if(input.targetAt!==undefined&&input.targetAt)item.targetAt=new Date(input.targetAt).toISOString();
++      item.status=status;item.updatedAt=now;
++      if(status==="completed"&&!item.completedAt)item.completedAt=now;
++      if(status!=="completed")item.completedAt=null;
++      item.updates||=[];
++      item.updates.push({id:`hau_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,status,note:String(input.note||"Status updated").slice(0,500),actor,at:now});
++      updated=item;return item;
++    });
++    await this.auditService.record({organizationId,actor,action:`Hospitality action ${updated.status}: ${updated.id}`,category:"hospitality_performance"});
++    this.realtimeHub.publish("hospitality-action:updated",updated);
++    return updated;
++  }
++}
++module.exports=HospitalityActionWorkspaceService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="47.5.0">
++  <meta name="blue-current-build" content="47.10.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -225,6 +225,13 @@
+       </div>
+       <div id="hpcQueue" class="v432-list"></div>
+       <p><strong>Live sources:</strong> <span id="hpcSources">Loading…</span> · <strong>Updated:</strong> <span id="hpcUpdated">—</span></p>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="hospitalityActionWorkspace">
++      <header><div><small>V47.06–V47.10 · Action Workspace</small><strong>Turn a high-value opportunity into an owned operating action with a target, deadline, status, and decision history.</strong><span>Accepted actions stay human-owned. Blue Current tracks execution without automatically changing restaurant operations.</span></div><button id="hawRefresh" type="button">Refresh actions</button></header>
++      <div class="v432-kpis"><article><small>Active actions</small><strong id="hawActive">0</strong></article><article><small>Blocked</small><strong id="hawBlocked">0</strong></article><article><small>Overdue</small><strong id="hawOverdue">0</strong></article><article><small>Expected impact</small><strong id="hawImpact">$0</strong></article><article><small>Completed</small><strong id="hawCompleted">0</strong></article></div>
++      <div class="v4316-answer" id="hawHeadline">Loading owned actions…</div>
++      <div class="v4316-actions"><input id="hawOwner" class="v4312-input" placeholder="Update owner"><input id="hawNote" class="v4312-input" placeholder="Action update / blocker note"></div>
++      <div id="hawList" class="v432-list"></div>
+     </section>
+ 
+     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
+@@ -8650,6 +8657,7 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationCenter.js?v=46.70.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceEngine.js?v=47.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceCenter.js?v=47.5.0"></script>
+-<script src="js/startup-loader.js?v=47.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityActionWorkspace" data-src="js/modules/hospitalityActionWorkspace.js?v=47.10.0"></script>
++<script src="js/startup-loader.js?v=47.10.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1223,6 +1223,7 @@
+ const selectedCandidatePreviewCenterModule = startupRegistry.register("selectedCandidatePreviewCenter", shouldInitializeCenter("selectedCandidatePreviewCenter") ? window.createBlueCurrentSelectedCandidatePreviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementCandidateSelectionCenter"]);
+ const v46ReleaseCertificationCenterModule = startupRegistry.register("v46ReleaseCertificationCenter", shouldInitializeCenter("v46ReleaseCertificationCenter") ? window.createBlueCurrentV46ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "selectedCandidatePreviewCenter"]);
+ const hospitalityPerformanceCommandModule = startupRegistry.register("hospitalityPerformanceCommand", shouldInitializeCenter("hospitalityPerformanceCommand") ? window.createBlueCurrentHospitalityPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState"]);
++const hospitalityActionWorkspaceModule = startupRegistry.register("hospitalityActionWorkspace", shouldInitializeCenter("hospitalityActionWorkspace") ? window.createBlueCurrentHospitalityActionWorkspaceModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityPerformanceCommand"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V47.5.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V47.10.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/hospitalityPerformanceEngine.js
++++ b/client/js/modules/hospitalityPerformanceEngine.js
+@@ -4,6 +4,9 @@
+   token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
+   locationId(){const s=this.appState?.getState?.()||{};return s.activeLocationId||s.selectedLocationId||s.auth?.locationId||"loc_marina";}
+   async snapshot(){const r=await fetch(`/api/hospitality-performance?locationId=${encodeURIComponent(this.locationId())}`,{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Hospitality Performance failed (${r.status})`);this.appState?.update?.({hospitalityPerformance:d});this.eventBus?.emit?.("hospitality-performance:updated",structuredClone(d));return d;}
++  async actions(){const r=await fetch(`/api/hospitality-actions?locationId=${encodeURIComponent(this.locationId())}`,{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Hospitality actions failed (${r.status})`);this.appState?.update?.({hospitalityActions:d});return d;}
++  async createAction(opportunityId,owner="",note="",targetMetric="",targetValue="",targetMinutes=60){const r=await fetch("/api/hospitality-actions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),opportunityId,owner,note,targetMetric,targetValue,targetMinutes})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Create action failed (${r.status})`);this.eventBus?.emit?.("hospitality-action:created",structuredClone(d));return d;}
++  async updateAction(workspaceId,status,note="",owner=""){const r=await fetch(`/api/hospitality-actions/${encodeURIComponent(workspaceId)}`,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),status,note,owner})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Update action failed (${r.status})`);this.eventBus?.emit?.("hospitality-action:updated",structuredClone(d));return d;}
+   async decide(opportunityId,decision,owner="",note=""){const r=await fetch(`/api/hospitality-performance/opportunities/${encodeURIComponent(opportunityId)}/decision`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),decision,owner,note})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Performance decision failed (${r.status})`);this.eventBus?.emit?.("hospitality-performance:decision",structuredClone(d));return d;}
+ }
+ if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentHospitalityPerformanceEngine;
+--- a/client/js/modules/hospitalityPerformanceCenter.js
++++ b/client/js/modules/hospitalityPerformanceCenter.js
+@@ -6,6 +6,6 @@
+ $("hpcQueue").innerHTML=(s.opportunities||[]).map(x=>`<article class="hpc-opportunity" data-opportunity="${esc(x.id)}"><div class="hpc-rank">#${x.rank}</div><div class="hpc-copy"><div><span>${esc(categoryLabel(x.category))}</span><b>${esc(x.severity)}</b><small>${x.confidence}% confidence</small></div><strong>${esc(x.title)}</strong><p>${esc(x.why)}</p><p><b>Next:</b> ${esc(x.nextAction)}</p><div class="hpc-meta"><span>${esc(x.owner)}</span><span>Score ${x.score}</span><span>${esc(x.impactLabel)}</span></div>${x.lastDecision?`<small>Last decision: ${esc(x.lastDecision.decision)} · ${esc(x.lastDecision.owner||x.lastDecision.actor)}</small>`:""}</div><div class="hpc-impact"><strong>${money(x.estimatedImpactDollars)}</strong><span>estimated impact</span><button type="button" data-hpc-decision="accepted">Own action</button><button type="button" data-hpc-decision="snoozed">Snooze</button><button type="button" data-hpc-decision="completed">Complete</button></div></article>`).join("")||"<article><strong>Operation is clear.</strong><span>No material opportunities are active right now.</span></article>";
+ $("hpcSources").textContent=Object.entries(s.sourceHealth||{}).filter(([,ok])=>ok).map(([name])=>name.replace(/([A-Z])/g," $1")).join(" · ");}
+ async function load(){try{$("hpcHeadline").textContent="Building the highest-value operating queue…";render(await e.snapshot());}catch(err){$("hpcHeadline").textContent=err.message;}}
+-root.addEventListener("click",async ev=>{const btn=ev.target.closest("[data-hpc-decision]"),card=ev.target.closest("[data-opportunity]");if(!btn||!card)return;try{btn.disabled=true;await e.decide(card.dataset.opportunity,btn.dataset.hpcDecision,$("hpcOwner").value||"Manager",$("hpcNote").value||"");await load();}catch(err){$("hpcHeadline").textContent=err.message;}finally{btn.disabled=false;}});
++root.addEventListener("click",async ev=>{const btn=ev.target.closest("[data-hpc-decision]"),card=ev.target.closest("[data-opportunity]");if(!btn||!card)return;try{btn.disabled=true;const decision=btn.dataset.hpcDecision,owner=$("hpcOwner").value||"Manager",note=$("hpcNote").value||"";await e.decide(card.dataset.opportunity,decision,owner,note);if(decision==="accepted")await e.createAction(card.dataset.opportunity,owner,note);await load();}catch(err){$("hpcHeadline").textContent=err.message;}finally{btn.disabled=false;}});
+ $("hpcRefresh")?.addEventListener("click",load);window.addEventListener?.("online",load);eventBus?.on?.("auth:restored",load);eventBus?.on?.("reservation:updated",load);eventBus?.on?.("inventory:action-recorded",load);eventBus?.on?.("workforce:action-recorded",load);load();return{engine:e,load};}
+ window.createBlueCurrentHospitalityPerformanceCenterModule=createBlueCurrentHospitalityPerformanceCenterModule;})();--- a/client/js/modules/hospitalityActionWorkspace.js
++++ b/client/js/modules/hospitalityActionWorkspace.js
+@@ -0,0 +1,9 @@
++(function(){"use strict";
++function createBlueCurrentHospitalityActionWorkspaceModule(eventBus,appState){const root=document.getElementById("hospitalityActionWorkspace");if(!root||!window.BlueCurrentHospitalityPerformanceEngine)return null;const e=new window.BlueCurrentHospitalityPerformanceEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c])),money=n=>`$${Number(n||0).toLocaleString()}`;
++function age(x){const ms=Date.now()-new Date(x.createdAt).getTime(),m=Math.max(0,Math.round(ms/60000));return m<60?`${m}m`:m<1440?`${Math.round(m/60)}h`:`${Math.round(m/1440)}d`;}
++function render(s){$("hawActive").textContent=s.summary?.active||0;$("hawBlocked").textContent=s.summary?.blocked||0;$("hawOverdue").textContent=s.summary?.overdue||0;$("hawImpact").textContent=money(s.summary?.expectedImpactDollars||0);$("hawCompleted").textContent=s.summary?.completed||0;$("hawHeadline").textContent=s.summary?.active?`${s.summary.active} owned action${s.summary.active===1?" is":"s are"} moving through the operation.`:"No active actions. Own a Performance Command opportunity to start one.";
++$("hawList").innerHTML=(s.workspaces||[]).map(x=>`<article class="haw-card" data-workspace="${esc(x.id)}"><div><span>${esc(x.category)}</span><b>${esc(x.status)}</b><small>${age(x)} old</small></div><strong>${esc(x.title)}</strong><p>${esc(x.why)}</p><p><b>Action:</b> ${esc(x.nextAction)}</p><div class="hpc-meta"><span>Owner: ${esc(x.owner)}</span><span>Target: ${esc(x.targetMetric)}</span><span>${esc(x.targetValue)}</span><span>${money(x.expectedImpactDollars)} expected</span></div><small>Target by ${new Date(x.targetAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})} · ${x.updates?.length||0} update(s)</small><div class="v4316-actions"><button type="button" data-haw-status="in_progress">Start</button><button type="button" data-haw-status="blocked">Block</button><button type="button" data-haw-status="completed">Complete</button><button type="button" data-haw-status="cancelled">Cancel</button></div></article>`).join("")||"<article><strong>No owned actions yet.</strong><span>Use Own Action in Hospitality Performance Command to create the first workspace.</span></article>";}
++async function load(){try{render(await e.actions());}catch(err){$("hawHeadline").textContent=err.message;}}
++root.addEventListener("click",async ev=>{const btn=ev.target.closest("[data-haw-status]"),card=ev.target.closest("[data-workspace]");if(!btn||!card)return;try{btn.disabled=true;await e.updateAction(card.dataset.workspace,btn.dataset.hawStatus,$("hawNote").value||"",$("hawOwner").value||"");await load();}catch(err){$("hawHeadline").textContent=err.message;}finally{btn.disabled=false;}});
++$("hawRefresh")?.addEventListener("click",load);eventBus?.on?.("hospitality-action:created",load);eventBus?.on?.("hospitality-action:updated",load);eventBus?.on?.("auth:restored",load);load();return{engine:e,load};}
++window.createBlueCurrentHospitalityActionWorkspaceModule=createBlueCurrentHospitalityActionWorkspaceModule;})();--- a/scripts/maintenance/test-v47.10-action-workspace.js
++++ b/scripts/maintenance/test-v47.10-action-workspace.js
+@@ -0,0 +1,44 @@
++"use strict";
++const assert=require("assert");
++const ActionService=require("../../server/services/hospitalityActionWorkspaceService");
++
++(async()=>{
++  const state={hospitalityActionWorkspaces:[]},audit=[],events=[];
++  const database={read:async()=>state,mutate:async fn=>fn(state)};
++  const svc=new ActionService(database,{record:async x=>audit.push(x)},{publish:(n,p)=>events.push([n,p])},{});
++  const opportunity={id:"perf_kitchen_loc",category:"kitchen",title:"Recover 4 delayed kitchen tickets",why:"Four tickets are beyond target.",nextAction:"Rebalance station load.",owner:"Kitchen Manager",severity:"critical",score:92,estimatedImpactDollars:180,impactLabel:"Protect 4 guest experiences",confidence:94,metadata:{agedTickets:4,oldestMinutes:35}};
++  const created=await svc.createFromOpportunity("org","loc",opportunity,{owner:"Alex",note:"Taking expo","targetMinutes":30},"Tester");
++  assert.equal(created.owner,"Alex");
++  assert.equal(created.status,"accepted");
++  assert.equal(created.expectedImpactDollars,180);
++  assert.equal(created.baseline.metadata.oldestMinutes,35);
++  assert.equal(state.hospitalityActionWorkspaces.length,1);
++
++  // Duplicate acceptance must not create a second active workspace.
++  const duplicate=await svc.createFromOpportunity("org","loc",opportunity,{owner:"Other"},"Tester");
++  assert.equal(duplicate.id,created.id);
++  assert.equal(state.hospitalityActionWorkspaces.length,1);
++
++  let list=await svc.list("org","loc");
++  assert.equal(list.summary.active,1);
++  assert.equal(list.summary.expectedImpactDollars,180);
++  assert.equal(list.policy.automaticExecution,false);
++
++  const blocked=await svc.update("org","loc",created.id,{status:"blocked",note:"Waiting on line reset"},"Tester");
++  assert.equal(blocked.status,"blocked");
++  list=await svc.list("org","loc");
++  assert.equal(list.summary.blocked,1);
++
++  const completed=await svc.update("org","loc",created.id,{status:"completed",note:"Tickets recovered"},"Tester");
++  assert.equal(completed.status,"completed");
++  assert.ok(completed.completedAt);
++  list=await svc.list("org","loc");
++  assert.equal(list.summary.active,0);
++  assert.equal(list.summary.completed,1);
++  assert.equal(list.summary.expectedImpactDollars,0);
++  assert.ok(audit.length>=3);
++  assert.ok(events.some(x=>x[0]==="hospitality-action:created"));
++  assert.ok(events.some(x=>x[0]==="hospitality-action:updated"));
++
++  console.log(JSON.stringify({ok:true,version:"47.10.0",workspaceCreated:true,duplicateProtected:true,baselineCaptured:true,ownershipPersisted:true,blockedStateTracked:true,completionTracked:true,expectedImpactDollars:180,auditEvents:audit.length,realtimeEvents:events.length,humanOwned:list.policy.humanOwned,automaticExecution:list.policy.automaticExecution},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V47.10.0.md
++++ b/README-APPLY-V47.10.0.md
+@@ -0,0 +1,68 @@
++# APPLY BLUE CURRENT V47.10.0
++
++## Baseline
++
++Apply over the exact Blue Current V47.5.0 repository.
++
++This is a normal overlay patch. No files are deleted.
++
++## Apply
++
++Extract `BLUE-CURRENT-V47.10.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v47.10-action-workspace.js
++npm run start
++```
++
++Wait for:
++
++```text
++Blue Current Cloud V47.10.0 running at http://localhost:8787
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "47.10.0"
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++Press `Ctrl+F5`.
++
++At the top of the application you should now see:
++
++1. **Hospitality Performance Command**
++2. **Action Workspace**
++3. the existing Restaurant Command Center
++
++To exercise the workflow:
++
++1. Choose an opportunity in Hospitality Performance Command.
++2. Enter an owner/note if desired.
++3. Click **Own Action**.
++4. The action appears in Action Workspace.
++5. Use **Start**, **Block**, **Complete**, or **Cancel** as service progresses.
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V47.10.0 add hospitality action workspace"
++git push origin live-service-timeline
++```
+--- a/V47.10.0-RELEASE.md
++++ b/V47.10.0-RELEASE.md
+@@ -0,0 +1,190 @@
++# BLUE CURRENT V47.10.0 — HOSPITALITY ACTION WORKSPACE
++
++## Scope
++
++V47.06–V47.10 closes the first execution loop introduced by Hospitality Performance Command.
++
++V47.05 answered:
++
++`What should the manager act on first?`
++
++V47.10 now answers:
++
++`Who owns it, what exactly are we trying to accomplish, when should it be resolved, and where is the action right now?`
++
++## V47.06 — Opportunity-to-Action Conversion
++
++The **Own Action** decision in Hospitality Performance Command now creates an operating workspace for that opportunity.
++
++The workspace captures the opportunity at acceptance time rather than relying on the signal remaining unchanged later.
++
++Captured fields include:
++- opportunity ID
++- title
++- category
++- severity
++- reason
++- next action
++- owner
++- confidence
++- estimated impact
++- impact label
++- source metadata
++- priority score
++
++Duplicate protection prevents the same unresolved opportunity from creating multiple active workspaces.
++
++## V47.07 — Baseline + Target
++
++Each action records a baseline at creation:
++- creation timestamp
++- opportunity score
++- source metadata
++- expected financial impact
++
++Each action also receives:
++- target metric
++- target value
++- target time
++
++Category-aware default targets are provided for:
++- kitchen
++- reservations
++- labor
++- inventory
++- guests
++- revenue
++
++## V47.08 — Ownership + Execution State
++
++Action states:
++- accepted
++- in_progress
++- blocked
++- completed
++- cancelled
++
++Managers can:
++- start an action
++- mark it blocked
++- complete it
++- cancel it
++- change the owner
++- add an operating note
++
++Every transition is timestamped and appended to the action update history.
++
++## V47.09 — Accountability + Audit Trail
++
++Action creation and state changes:
++- persist in the Blue Current database
++- write to the audit ledger
++- emit realtime events
++
++The Action Workspace summarizes:
++- active actions
++- blocked actions
++- overdue actions
++- active expected impact
++- completed actions
++
++## V47.10 — Action Workspace UI
++
++Adds **Action Workspace** immediately below Hospitality Performance Command.
++
++Each workspace shows:
++- category
++- status
++- age
++- title
++- why it matters
++- prescribed action
++- owner
++- target metric
++- target state
++- deadline
++- expected impact
++- update count
++- execution controls
++
++The workspace refreshes after action creation, action updates, and authentication restoration.
++
++## Safety
++
++This remains a manager-controlled execution layer.
++
++Policy:
++- `humanOwned: true`
++- `automaticExecution: false`
++
++Blue Current records and measures the manager's operating action. It does not automatically change restaurant operations.
++
++## API
++
++### GET
++`/api/hospitality-actions?locationId=<location>`
++
++Returns the location action workspace and summary.
++
++### POST
++`/api/hospitality-actions`
++
++Creates an action from a currently active Hospitality Performance opportunity.
++
++### PATCH
++`/api/hospitality-actions/:workspaceId`
++
++Updates status, ownership, target data, and notes.
++
++All endpoints require authentication. Writes require write/admin permission.
++
++## Validation
++
++Focused action-workspace validation passed:
++- workspace creation
++- duplicate active-workspace protection
++- baseline capture
++- ownership persistence
++- blocked-state tracking
++- completion tracking
++- expected-impact accounting
++- audit events
++- realtime events
++- human ownership
++- automatic execution remained false
++
++Authenticated integration validation passed against an isolated database copy:
++- login
++- Hospitality Performance GET
++- Action Workspace POST
++- Action Workspace GET
++- Action Workspace PATCH
++- completion lifecycle
++
++Real current demo opportunity used by integration test:
++- `Close the food-cost variance`
++- expected impact: `$1,523`
++- action owner: Keith
++- target metric: `Availability / food-cost variance`
++
++Full repository validation:
++- 850 JavaScript files
++- 725 client scripts
++- 5,398 unique HTML IDs
++- server V47.10.0
++- `/api/health` HTTP 200
++- database connected
++- authentication enabled
++- authoritative database SHA-256 unchanged
++
++## Next milestone
++
++V47.11–V47.15 should implement Outcome Measurement:
++
++- capture the operating state when an action starts
++- capture the operating state when it completes
++- calculate time-to-resolution
++- compare target vs actual outcome
++- calculate realized vs estimated impact
++- flag actions that did not improve the expected metric
++- begin a closed-loop confidence record for future opportunity ranking

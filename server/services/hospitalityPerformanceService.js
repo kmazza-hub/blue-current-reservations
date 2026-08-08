@@ -73,7 +73,7 @@ class HospitalityPerformanceService {
     const totalImpact=ranked.filter(x=>!["dismissed","completed"].includes(x.lastDecision?.decision)).reduce((s,x)=>s+x.estimatedImpactDollars,0);
     const categories={};for(const x of ranked)categories[x.category]=(categories[x.category]||0)+1;
     return {
-      version:"47.5.0",generatedAt:new Date().toISOString(),organizationId,locationId,
+      version:"47.10.0",generatedAt:new Date().toISOString(),organizationId,locationId,
       headline:ranked[0]?`#1 opportunity: ${ranked[0].title}`:"No material performance opportunities are active.",
       summary:{openOpportunities:ranked.length,totalEstimatedImpactDollars:totalImpact,highPriority:ranked.filter(x=>["critical","high"].includes(x.severity)).length,categories,readinessScore:command?.readiness?.score||null,portfolioRevenueTrend:executive?.portfolio?.revenueTrend||0},
       opportunities:ranked.slice(0,12),decisions,

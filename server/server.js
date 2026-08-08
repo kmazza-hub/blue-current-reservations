@@ -37,6 +37,7 @@ const RetirementAssuranceService = require("./services/retirementAssuranceServic
 const RetirementCandidateImpactService = require("./services/retirementCandidateImpactService");
 const V46ReleaseCertificationService = require("./services/v46ReleaseCertificationService");
 const HospitalityPerformanceService = require("./services/hospitalityPerformanceService");
+const HospitalityActionWorkspaceService = require("./services/hospitalityActionWorkspaceService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -77,7 +78,8 @@ const retirementAssuranceService = new RetirementAssuranceService(ROOT, reposito
 const retirementCandidateImpactService = new RetirementCandidateImpactService(repositoryImpactService, retirementAssuranceService);
 const v46ReleaseCertificationService = new V46ReleaseCertificationService(ROOT, retirementAssuranceService);
 const hospitalityPerformanceService = new HospitalityPerformanceService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, inventoryIntelligenceService, guestIntelligenceService, executiveCommandCenterService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService });
+const hospitalityActionWorkspaceService = new HospitalityActionWorkspaceService(database, auditService, realtimeHub, hospitalityPerformanceService);
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -164,7 +166,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V47.5.0 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V47.10.0 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);

@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "47.5.0",
+        version: "47.10.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -193,6 +193,30 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     const auth = await authService.authenticate(bearerToken(request));
     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
+
+    if (url.pathname === "/api/hospitality-actions" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      return sendJson(response,200,await hospitalityActionWorkspaceService.list(auth.membership.organizationId,locationId));
+    }
+
+    if (url.pathname === "/api/hospitality-actions" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Hospitality action permission required."});
+      const body=await readJson(request);
+      const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      const performance=await hospitalityPerformanceService.snapshot(auth.membership.organizationId,locationId);
+      const opportunity=performance.opportunities.find(x=>x.id===body.opportunityId);
+      if(!opportunity)return sendJson(response,404,{error:"Performance opportunity not found or no longer active."});
+      return sendJson(response,201,await hospitalityActionWorkspaceService.createFromOpportunity(auth.membership.organizationId,locationId,opportunity,body,auth.user.name));
+    }
+
+    if (url.pathname.startsWith("/api/hospitality-actions/") && request.method === "PATCH") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Hospitality action permission required."});
+      const workspaceId=decodeURIComponent(url.pathname.split("/")[3]||"");
+      const body=await readJson(request);
+      const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      try{return sendJson(response,200,await hospitalityActionWorkspaceService.update(auth.membership.organizationId,locationId,workspaceId,body,auth.user.name));}
+      catch(error){return sendJson(response,/not found/i.test(error.message)?404:400,{error:error.message});}
+    }
 
     if (url.pathname === "/api/hospitality-performance" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="47.5.0">
+  <meta name="blue-current-build" content="47.10.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -225,6 +225,13 @@
       </div>
       <div id="hpcQueue" class="v432-list"></div>
       <p><strong>Live sources:</strong> <span id="hpcSources">Loading…</span> · <strong>Updated:</strong> <span id="hpcUpdated">—</span></p>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="hospitalityActionWorkspace">
+      <header><div><small>V47.06–V47.10 · Action Workspace</small><strong>Turn a high-value opportunity into an owned operating action with a target, deadline, status, and decision history.</strong><span>Accepted actions stay human-owned. Blue Current tracks execution without automatically changing restaurant operations.</span></div><button id="hawRefresh" type="button">Refresh actions</button></header>
+      <div class="v432-kpis"><article><small>Active actions</small><strong id="hawActive">0</strong></article><article><small>Blocked</small><strong id="hawBlocked">0</strong></article><article><small>Overdue</small><strong id="hawOverdue">0</strong></article><article><small>Expected impact</small><strong id="hawImpact">$0</strong></article><article><small>Completed</small><strong id="hawCompleted">0</strong></article></div>
+      <div class="v4316-answer" id="hawHeadline">Loading owned actions…</div>
+      <div class="v4316-actions"><input id="hawOwner" class="v4312-input" placeholder="Update owner"><input id="hawNote" class="v4312-input" placeholder="Action update / blocker note"></div>
+      <div id="hawList" class="v432-list"></div>
     </section>
 
     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
@@ -8650,6 +8657,7 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationCenter.js?v=46.70.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceEngine.js?v=47.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceCenter.js?v=47.5.0"></script>
-<script src="js/startup-loader.js?v=47.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityActionWorkspace" data-src="js/modules/hospitalityActionWorkspace.js?v=47.10.0"></script>
+<script src="js/startup-loader.js?v=47.10.0"></script>
 </body>
 </html>

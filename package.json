@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "47.5.0",
+  "version": "47.10.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 Hospitality Performance Command opportunity queue",
+  "description": "Blue Current Hospitality OS \u2014 owned hospitality action workspaces",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
