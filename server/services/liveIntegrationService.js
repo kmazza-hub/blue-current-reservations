@@ -2072,12 +2072,12 @@ class LiveIntegrationService {
       { id:"live.operating-snapshot", name:"Live Operating Snapshot", domain:"live", mode:"read", risk:"low", approvalRequired:false, endpoint:"/api/live/operating-snapshot" },
       { id:"live.reasoning-feed", name:"Reasoning Feed Gate", domain:"live", mode:"read", risk:"medium", approvalRequired:false, endpoint:"/api/live/reasoning-feed" }
     ];
-    return { organizationId, count:capabilities.length, writeCapable:capabilities.filter(x=>x.mode.startsWith("write")).length, approvalGated:capabilities.filter(x=>x.approvalRequired).length, capabilities, generatedAt:new Date().toISOString(), build:"44.3.0-aip-runtime-foundation" };
+    return { organizationId, count:capabilities.length, writeCapable:capabilities.filter(x=>x.mode.startsWith("write")).length, approvalGated:capabilities.filter(x=>x.approvalRequired).length, capabilities, generatedAt:new Date().toISOString(), build:"44.7.0-aip-persistent-agent-runtime" };
   }
 
   async aipAutomationCompiler(organizationId, actor = null, input = null) {
     const db = await this.database.read();
-    if (!input) return { organizationId, items:db.aipAutomationDrafts?.[organizationId] || [], build:"44.3.0-aip-runtime-foundation" };
+    if (!input) return { organizationId, items:db.aipAutomationDrafts?.[organizationId] || [], build:"44.7.0-aip-persistent-agent-runtime" };
     const instruction = String(input.instruction || "").trim().slice(0,700);
     if (!instruction) throw new Error("Instruction is required.");
     const [route, capabilities, reasoning] = await Promise.all([this.executiveIntentRouter(organizationId,{instruction}), this.aipCapabilityRegistry(organizationId), this.executiveReasoning(organizationId)]);
@@ -2090,36 +2090,136 @@ class LiveIntegrationService {
     const approvalRequired = route.approvalRequired || chosen.some(x=>x.approvalRequired);
     const draft = { id:`AIP-${Date.now().toString(36).toUpperCase()}`, organizationId, instruction, intent:route.intent, owner:actor||"Operator", status:"draft", approvalRequired, confidence:Math.min(route.confidence||0, reasoning.confidence||0), capabilityIds:chosen.map(x=>x.id), steps:chosen.map((x,i)=>({order:i+1,capabilityId:x.id,mode:x.mode,risk:x.risk,approvalRequired:x.approvalRequired})), createdAt:new Date().toISOString() };
     await this.database.mutate(data=>{data.aipAutomationDrafts ||= {}; const list=data.aipAutomationDrafts[organizationId] ||= []; list.unshift(draft); data.aipAutomationDrafts[organizationId]=list.slice(0,50); return draft;});
-    return { organizationId, draft, build:"44.3.0-aip-runtime-foundation" };
+    return { organizationId, draft, build:"44.7.0-aip-persistent-agent-runtime" };
   }
 
   async aipExecutionSandbox(organizationId, actor = null, input = null) {
     const db = await this.database.read();
     const runs = db.aipSandboxRuns?.[organizationId] || [];
-    if (!input) return { organizationId, count:runs.length, items:runs.slice(0,50), build:"44.3.0-aip-runtime-foundation" };
+    if (!input) return { organizationId, count:runs.length, items:runs.slice(0,50), build:"44.7.0-aip-persistent-agent-runtime" };
     const drafts = db.aipAutomationDrafts?.[organizationId] || [];
     const draft = drafts.find(x=>x.id===input.draftId) || drafts[0];
     if (!draft) throw new Error("Compile an AIP automation before running the sandbox.");
     const blockedSteps = (draft.steps||[]).filter(step=>step.risk==="high" && step.approvalRequired).length;
     const run = { id:`SBX-${Date.now().toString(36).toUpperCase()}`, organizationId, draftId:draft.id, owner:actor||"Operator", status:blockedSteps?"approval-required":"simulated", approvalRequired:blockedSteps>0, blockedSteps, simulatedSteps:(draft.steps||[]).map(step=>({...step,result:step.approvalRequired?"held-for-approval":"simulated"})), liveStateChanged:false, createdAt:new Date().toISOString() };
     await this.database.mutate(data=>{data.aipSandboxRuns ||= {}; const list=data.aipSandboxRuns[organizationId] ||= []; list.unshift(run); data.aipSandboxRuns[organizationId]=list.slice(0,50); return run;});
-    return { organizationId, run, build:"44.3.0-aip-runtime-foundation" };
+    return { organizationId, run, build:"44.7.0-aip-persistent-agent-runtime" };
   }
 
   async aipRuntimeReadiness(organizationId) {
     const db = await this.database.read();
     const [v43, registry] = await Promise.all([this.v43ClosureCertification(organizationId), this.aipCapabilityRegistry(organizationId)]);
     const drafts = db.aipAutomationDrafts?.[organizationId] || [];
-    const runs = db.aipSandboxRuns?.[organizationId] || [];
+    const sandboxRuns = db.aipSandboxRuns?.[organizationId] || [];
+    const agentRuns = db.aipAgentRuns?.[organizationId] || [];
+    const checkpoints = db.aipRunCheckpoints?.[organizationId] || [];
     const checks = [
       {id:"v43",label:"V43 executive AI closure",pass:(v43.score||0)>=75,detail:`${v43.score||0}% · ${v43.status||"unknown"}`},
       {id:"registry",label:"AIP capability registry",pass:(registry.count||0)>=6,detail:`${registry.count||0} capabilities`},
       {id:"compiler",label:"Natural-language automation compiler",pass:drafts.length>0,detail:`${drafts.length} compiled draft(s)`},
-      {id:"sandbox",label:"Governed execution sandbox",pass:runs.length>0,detail:`${runs.length} sandbox run(s)`},
-      {id:"live-safety",label:"No automatic live execution",pass:runs.every(x=>x.liveStateChanged===false),detail:"Sandbox runs remain isolated from live state"}
+      {id:"sandbox",label:"Governed execution sandbox",pass:sandboxRuns.length>0,detail:`${sandboxRuns.length} sandbox run(s)`},
+      {id:"agent-runtime",label:"Persistent agent runtime",pass:agentRuns.length>0,detail:`${agentRuns.length} persistent agent run(s)`},
+      {id:"shared-context",label:"Shared execution context",pass:agentRuns.some(x=>(x.capabilityIds||[]).length>0),detail:"Agent run retains governed capability and plan context"},
+      {id:"checkpointing",label:"Workflow checkpoint persistence",pass:checkpoints.length>0,detail:`${checkpoints.length} persisted checkpoint(s)`},
+      {id:"lifecycle",label:"Pause/resume/recovery lifecycle",pass:agentRuns.some(x=>(x.history||[]).some(h=>["paused","resumed","recovered"].includes(h.event))),detail:"Lifecycle history requires at least one governed control transition"},
+      {id:"live-safety",label:"No automatic live execution",pass:sandboxRuns.every(x=>x.liveStateChanged===false)&&agentRuns.every(x=>x.liveStateChanged===false&&x.executionMode==="governed-dry-run"),detail:"Sandbox and persistent agent runs remain isolated from live state"}
     ];
     const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length); const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
-    return { organizationId, score, status:score===100?"aip-runtime-ready":score>=60?"conditional":"blocked", trusted:score===100, blockers, checks, generatedAt:new Date().toISOString(), build:"44.3.0-aip-runtime-foundation" };
+    return { organizationId, score, status:score===100?"aip-runtime-ready":score>=60?"conditional":"blocked", trusted:score===100, blockers, checks, generatedAt:new Date().toISOString(), build:"44.7.0-aip-persistent-agent-runtime" };
+  }
+
+  async aipAgentRuns(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const runs = db.aipAgentRuns?.[organizationId] || [];
+    if (!input) {
+      return { organizationId, count:runs.length, active:runs.filter(x=>["ready","running","paused","approval-pending"].includes(x.status)).length, items:runs.slice(0,100), build:"44.7.0-aip-persistent-agent-runtime" };
+    }
+    const drafts = db.aipAutomationDrafts?.[organizationId] || [];
+    const draft = drafts.find(x=>x.id===input.draftId) || drafts[0];
+    if (!draft) throw new Error("Compile an AIP automation before creating a persistent agent run.");
+    const agentType = String(input.agentType || ({risk:"operations-optimizer",action:"operations-optimizer",simulate:"operations-optimizer",brief:"executive-analyst"}[draft.intent] || "operations-optimizer")).trim().slice(0,80);
+    const createdAt = new Date().toISOString();
+    const run = {
+      id:`AIP-RUN-${Date.now().toString(36).toUpperCase()}`, organizationId, draftId:draft.id, agentType,
+      owner:actor||"Operator", instruction:draft.instruction, intent:draft.intent, capabilityIds:[...(draft.capabilityIds||[])],
+      executionMode:"governed-dry-run", status:draft.approvalRequired?"approval-pending":"ready", approvalRequired:Boolean(draft.approvalRequired),
+      currentStep:0, stepCount:(draft.steps||[]).length, checkpointCount:0, liveStateChanged:false,
+      createdAt, updatedAt:createdAt,
+      history:[{event:"created",status:draft.approvalRequired?"approval-pending":"ready",actor:actor||"Operator",at:createdAt}]
+    };
+    await this.database.mutate(data=>{data.aipAgentRuns ||= {}; const list=data.aipAgentRuns[organizationId] ||= []; list.unshift(run); data.aipAgentRuns[organizationId]=list.slice(0,100); return run;});
+    await this.auditService.record({ organizationId, actor:actor||"Operator", action:`AIP persistent agent run created: ${run.id} (${run.agentType})`, category:"aip-runtime" });
+    this.realtimeHub.publish("aip-agent-run-updated", run);
+    return { organizationId, run, build:"44.7.0-aip-persistent-agent-runtime" };
+  }
+
+  async aipExecutionContext(organizationId, runId = null) {
+    const db = await this.database.read();
+    const runs = db.aipAgentRuns?.[organizationId] || [];
+    const run = (runId ? runs.find(x=>x.id===runId) : runs[0]) || null;
+    if (!run) return { organizationId, run:null, context:null, build:"44.7.0-aip-persistent-agent-runtime" };
+    const drafts = db.aipAutomationDrafts?.[organizationId] || [];
+    const sandboxRuns = db.aipSandboxRuns?.[organizationId] || [];
+    const draft = drafts.find(x=>x.id===run.draftId) || null;
+    const sandbox = sandboxRuns.find(x=>x.draftId===run.draftId) || null;
+    const context = {
+      id:`CTX-${run.id}`, organizationId, runId:run.id, draftId:run.draftId, instruction:run.instruction, intent:run.intent,
+      agentType:run.agentType, owner:run.owner, executionMode:run.executionMode, status:run.status,
+      capabilities:[...(run.capabilityIds||[])], planSteps:(draft?.steps||[]).map(step=>({...step})),
+      sandboxEvidence:sandbox?{id:sandbox.id,status:sandbox.status,blockedSteps:sandbox.blockedSteps,liveStateChanged:sandbox.liveStateChanged}:null,
+      governance:{approvalRequired:run.approvalRequired,liveExecutionAllowed:false,reversible:true},
+      lifecycle:{currentStep:run.currentStep||0,stepCount:run.stepCount||0,checkpointCount:run.checkpointCount||0,lastCheckpointAt:run.lastCheckpointAt||null},
+      generatedAt:new Date().toISOString()
+    };
+    return { organizationId, run, context, build:"44.7.0-aip-persistent-agent-runtime" };
+  }
+
+  async aipAgentRunControl(organizationId, actor, input = {}) {
+    const runId = String(input.runId || "").trim();
+    const action = String(input.action || "").trim().toLowerCase();
+    if (!runId) throw new Error("runId is required.");
+    if (!["start","checkpoint","pause","resume","recover","complete","cancel"].includes(action)) throw new Error("Unsupported AIP runtime action.");
+    const now = new Date().toISOString();
+    const result = await this.database.mutate(db=>{
+      db.aipAgentRuns ||= {}; const runs=db.aipAgentRuns[organizationId] ||= [];
+      const run=runs.find(x=>x.id===runId); if(!run) throw new Error("AIP agent run not found.");
+      db.aipRunCheckpoints ||= {}; const checkpoints=db.aipRunCheckpoints[organizationId] ||= [];
+      const pushHistory=(event,status)=>{run.history ||= []; run.history.push({event,status,actor:actor||"Operator",at:now}); run.history=run.history.slice(-100);};
+      if(action==="start"){
+        if(run.approvalRequired && run.status==="approval-pending") throw new Error("This run is approval-gated and cannot start until approval orchestration authorizes it.");
+        if(!["ready","paused","recovered"].includes(run.status)) throw new Error(`Run cannot start from status ${run.status}.`);
+        run.status="running"; pushHistory("started",run.status);
+      } else if(action==="checkpoint"){
+        if(!["ready","running","paused","recovered","approval-pending"].includes(run.status)) throw new Error(`Checkpoint unavailable from status ${run.status}.`);
+        const checkpoint={id:`AIP-CP-${Date.now().toString(36).toUpperCase()}`,organizationId,runId:run.id,status:run.status,currentStep:run.currentStep||0,executionMode:run.executionMode,liveStateChanged:false,createdBy:actor||"Operator",createdAt:now};
+        checkpoints.unshift(checkpoint); db.aipRunCheckpoints[organizationId]=checkpoints.slice(0,300); run.checkpointCount=(run.checkpointCount||0)+1; run.lastCheckpointAt=now; run.lastCheckpointId=checkpoint.id; pushHistory("checkpoint",run.status);
+      } else if(action==="pause"){
+        if(run.status!=="running") throw new Error("Only a running dry-run can be paused."); run.status="paused"; pushHistory("paused",run.status);
+      } else if(action==="resume"){
+        if(run.status!=="paused") throw new Error("Only a paused run can be resumed."); run.status="running"; pushHistory("resumed",run.status);
+      } else if(action==="recover"){
+        const checkpoint=checkpoints.find(x=>x.runId===run.id); if(!checkpoint) throw new Error("Create a checkpoint before recovery.");
+        if(["completed","cancelled"].includes(run.status)) throw new Error(`Run cannot recover from status ${run.status}.`);
+        run.status="recovered"; run.currentStep=checkpoint.currentStep||0; run.recoveredFromCheckpointId=checkpoint.id; pushHistory("recovered",run.status);
+      } else if(action==="complete"){
+        if(run.status!=="running") throw new Error("Only a running dry-run can be completed."); run.status="completed"; run.completedAt=now; pushHistory("completed",run.status);
+      } else if(action==="cancel"){
+        if(["completed","cancelled"].includes(run.status)) throw new Error(`Run is already ${run.status}.`); run.status="cancelled"; run.cancelledAt=now; pushHistory("cancelled",run.status);
+      }
+      run.updatedAt=now; run.liveStateChanged=false;
+      return {run:{...run}, checkpoints:checkpoints.filter(x=>x.runId===run.id).slice(0,25)};
+    });
+    await this.auditService.record({ organizationId, actor:actor||"Operator", action:`AIP agent run ${action}: ${runId}`, category:"aip-runtime" });
+    this.realtimeHub.publish("aip-agent-run-updated", result.run);
+    return { organizationId, ...result, build:"44.7.0-aip-persistent-agent-runtime" };
+  }
+
+  async aipRuntimeLifecycle(organizationId, runId = null) {
+    const db = await this.database.read();
+    const runs = db.aipAgentRuns?.[organizationId] || [];
+    const run = (runId ? runs.find(x=>x.id===runId) : runs[0]) || null;
+    const checkpoints = (db.aipRunCheckpoints?.[organizationId] || []).filter(x=>!run || x.runId===run.id).slice(0,50);
+    return { organizationId, run, checkpointCount:checkpoints.length, checkpoints, safety:{liveExecutionAllowed:false,allCheckpointsIsolated:checkpoints.every(x=>x.liveStateChanged===false)}, build:"44.7.0-aip-persistent-agent-runtime" };
   }
 
   async operatingSnapshot(organizationId) {
