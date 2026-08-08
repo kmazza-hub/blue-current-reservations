@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "43.12.0-executive-ai", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "43.16.0-executive-ai-governance", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2425,6 +2425,10 @@ const executiveKnowledgeGraphCenterModule = startupRegistry.register("executiveK
 const executiveReasoningCenterV43Module = startupRegistry.register("executiveReasoningCenterV43",shouldInitializeCenter("executiveReasoningCenterV43") ? window.createBlueCurrentExecutiveReasoningCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveKnowledgeGraphCenter"]);
 const executiveDecisionSimulatorCenterModule = startupRegistry.register("executiveDecisionSimulatorCenter",shouldInitializeCenter("executiveDecisionSimulatorCenter") ? window.createBlueCurrentExecutiveDecisionSimulatorCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveReasoningCenterV43"]);
 const executiveAiConsoleCenterModule = startupRegistry.register("executiveAiConsoleCenter",shouldInitializeCenter("executiveAiConsoleCenter") ? window.createBlueCurrentExecutiveAiConsoleCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveReasoningCenterV43","executiveDecisionSimulatorCenter"]);
+const executiveConversationCenterModule = startupRegistry.register("executiveConversationCenter",shouldInitializeCenter("executiveConversationCenter") ? window.createBlueCurrentExecutiveConversationCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveAiConsoleCenter"]);
+const executiveCitationCenterModule = startupRegistry.register("executiveCitationCenter",shouldInitializeCenter("executiveCitationCenter") ? window.createBlueCurrentExecutiveCitationCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveKnowledgeGraphCenter","executiveReasoningCenterV43"]);
+const executiveActionDraftCenterModule = startupRegistry.register("executiveActionDraftCenter",shouldInitializeCenter("executiveActionDraftCenter") ? window.createBlueCurrentExecutiveActionDraftCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter"]);
+const executiveAiReadinessCenterModule = startupRegistry.register("executiveAiReadinessCenter",shouldInitializeCenter("executiveAiReadinessCenter") ? window.createBlueCurrentExecutiveAiReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter","executiveActionDraftCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(

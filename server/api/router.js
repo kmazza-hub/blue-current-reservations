@@ -478,6 +478,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/executive/reasoning" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveReasoning(organizationId));
     if (url.pathname === "/api/executive/simulate" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveDecisionSimulation(organizationId, await readJson(request)));
     if (url.pathname === "/api/executive/ai-console" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveAiConsole(organizationId, await readJson(request)));
+    if (url.pathname === "/api/executive/conversation-session" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveConversationSession(organizationId));
+    if (url.pathname === "/api/executive/conversation-session" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveConversationSession(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/executive/evidence-citations" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveEvidenceCitationMap(organizationId));
+    if (url.pathname === "/api/executive/action-drafts" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId));
+    if (url.pathname === "/api/executive/action-drafts" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/executive/ai-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveAiReadiness(organizationId));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

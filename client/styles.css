@@ -13278,3 +13278,7 @@ html[data-boot-complete="true"] .startup-loading, html[data-boot-complete="true"
 .v4312-center{border-color:rgba(79,145,149,.35)}
 .v4312-input{width:100%;min-height:88px;box-sizing:border-box;border:1px solid rgba(190,213,213,.28);background:#0f3039;color:#f8f4e9;border-radius:14px;padding:14px 16px;font:inherit;resize:vertical;margin:14px 0}
 .v4312-reason{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.v4312-reason article,.v4312-ai-answer{border:1px solid rgba(190,213,213,.16);background:rgba(12,43,51,.72);border-radius:14px;padding:14px}.v4312-reason small{display:block;color:#8fb0b5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}.v4312-ai-answer{display:grid;gap:8px;margin:14px 0}.v4312-ai-answer strong{font-size:1.05rem}.v4312-ai-answer span{color:#a8c0c4}@media(max-width:900px){.v4312-reason{grid-template-columns:1fr}}
+
+
+/* V43.13–V43.16 Executive AI governance */
+.v4316-center{border-color:rgba(113,184,255,.25);background:linear-gradient(145deg,rgba(8,24,42,.9),rgba(12,31,47,.82))}.v4316-center header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.v4316-actions{display:flex;gap:8px;flex-wrap:wrap}.v4316-answer{margin:14px 0;padding:14px;border-radius:14px;border:1px solid rgba(113,184,255,.18);background:rgba(255,255,255,.04);line-height:1.5}.v4316-center .pass{color:#8ce8b3}.v4316-center .block{color:#ffa1a1}@media(max-width:720px){.v4316-actions{width:100%;display:grid}.v4316-actions button{width:100%}}
