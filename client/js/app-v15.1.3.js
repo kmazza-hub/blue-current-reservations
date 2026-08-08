@@ -1225,6 +1225,7 @@ const v46ReleaseCertificationCenterModule = startupRegistry.register("v46Release
 const hospitalityPerformanceCommandModule = startupRegistry.register("hospitalityPerformanceCommand", shouldInitializeCenter("hospitalityPerformanceCommand") ? window.createBlueCurrentHospitalityPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState"]);
 const hospitalityActionWorkspaceModule = startupRegistry.register("hospitalityActionWorkspace", shouldInitializeCenter("hospitalityActionWorkspace") ? window.createBlueCurrentHospitalityActionWorkspaceModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityPerformanceCommand"]);
 const hospitalityOutcomeMeasurementModule = startupRegistry.register("hospitalityOutcomeMeasurement", shouldInitializeCenter("hospitalityOutcomeMeasurement") ? window.createBlueCurrentHospitalityOutcomeMeasurementModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityActionWorkspace"]);
+const serviceProfitabilityIntelligenceModule = startupRegistry.register("serviceProfitabilityIntelligence", shouldInitializeCenter("serviceProfitabilityIntelligence") ? window.createBlueCurrentServiceProfitabilityCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityOutcomeMeasurement"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

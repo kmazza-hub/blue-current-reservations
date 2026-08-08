@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="47.15.0">
+  <meta name="blue-current-build" content="47.20.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -238,6 +238,15 @@
       <div class="v432-kpis"><article><small>Measured outcomes</small><strong id="homMeasured">0</strong></article><article><small>Improved</small><strong id="homImproved">0</strong></article><article><small>Not improved</small><strong id="homMissed">0</strong></article><article><small>Realized impact</small><strong id="homRealized">$0</strong></article><article><small>Realization rate</small><strong id="homRate">0%</strong></article><article><small>Avg resolution</small><strong id="homResolution">0m</strong></article></div>
       <div class="v4316-answer" id="homHeadline">Waiting for completed actions with measured outcomes.</div>
       <div id="homList" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="serviceProfitabilityIntelligence">
+      <header><div><small>V47.16–V47.20 · Service Profitability Intelligence</small><strong>See the controllable profit picture for the shift—and the operating constraint costing the restaurant the most money right now.</strong><span>Blue Current models controllable contribution from the operating data it actually has. This is not GAAP net income and does not pretend to include rent, taxes, depreciation, or other unmodeled fixed costs.</span></div><div><button id="spiRefresh" type="button">Refresh profitability</button><button id="spiCapture" type="button">Capture shift snapshot</button></div></header>
+      <div class="v432-kpis"><article><small>Sales forecast</small><strong id="spiSales">$0</strong></article><article><small>Controllable contribution</small><strong id="spiContribution">$0</strong></article><article><small>Controllable margin</small><strong id="spiMargin">0%</strong></article><article><small>Modeled leakage</small><strong id="spiLeakage">$0</strong></article><article><small>Food cost</small><strong id="spiFood">0%</strong></article><article><small>Labor</small><strong id="spiLabor">0%</strong></article></div>
+      <div class="v4316-answer" id="spiHeadline">Calculating controllable contribution and profit constraints…</div>
+      <div id="spiBridge" class="v432-list"></div>
+      <div id="spiProductivity" class="v432-kpis"></div>
+      <div id="spiConstraints" class="v432-list"></div>
+      <p id="spiMethod"></p>
     </section>
 
     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
@@ -8665,6 +8674,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceCenter.js?v=47.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityActionWorkspace" data-src="js/modules/hospitalityActionWorkspace.js?v=47.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityOutcomeMeasurement" data-src="js/modules/hospitalityOutcomeMeasurement.js?v=47.15.0"></script>
-<script src="js/startup-loader.js?v=47.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityEngine.js?v=47.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityCenter.js?v=47.20.0"></script>
+<script src="js/startup-loader.js?v=47.20.0"></script>
 </body>
 </html>
