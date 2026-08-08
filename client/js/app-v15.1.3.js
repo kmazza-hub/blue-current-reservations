@@ -2402,6 +2402,10 @@ const pilotSessionCenterModule = startupRegistry.register("pilotSessionCenter",s
 const pilotSignalValidationCenterModule = startupRegistry.register("pilotSignalValidationCenter",shouldInitializeCenter("pilotSignalValidationCenter") ? window.createBlueCurrentPilotSignalValidationCenterModule?.(eventBus, appState) : null,["eventBus","appState","pilotSessionCenter","portfolioLiveTelemetryCenter"]);
 const mvpReadinessCenterModule = startupRegistry.register("mvpReadinessCenter",shouldInitializeCenter("mvpReadinessCenter") ? window.createBlueCurrentMvpReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","pilotSignalValidationCenter","enterprisePilotCutoverCenter"]);
 
+const pilotSloCenterModule = startupRegistry.register("pilotSloCenter",shouldInitializeCenter("pilotSloCenter") ? window.createBlueCurrentPilotSloCenterModule?.(eventBus, appState) : null,["eventBus","appState","pilotSessionCenter","pilotSignalValidationCenter"]);
+const pilotSupportCenterModule = startupRegistry.register("pilotSupportCenter",shouldInitializeCenter("pilotSupportCenter") ? window.createBlueCurrentPilotSupportCenterModule?.(eventBus, appState) : null,["eventBus","appState","pilotSessionCenter"]);
+const mvpGoLiveCenterModule = startupRegistry.register("mvpGoLiveCenter",shouldInitializeCenter("mvpGoLiveCenter") ? window.createBlueCurrentMvpGoLiveCenterModule?.(eventBus, appState) : null,["eventBus","appState","mvpReadinessCenter","pilotSloCenter","pilotSupportCenter"]);
+
 const operationsWorkspaceCenterModule = startupRegistry.register(
   "operationsWorkspaceCenter",
   shouldInitializeCenter("operationsWorkspaceCenter") ? window.createBlueCurrentOperationsWorkspaceCenterModule?.(eventBus, appState) : null,

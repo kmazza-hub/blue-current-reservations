@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="42.41.0-pilot-runtime-mvp-readiness">
+  <meta name="blue-current-build" content="42.44.0-mvp-go-live-hardening">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -8472,6 +8472,17 @@
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpReadinessCenter" data-src="js/modules/mvpReadinessEngine.js?v=42.41.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpReadinessCenter" data-src="js/modules/mvpReadinessCenter.js?v=42.41.0"></script>
 
-  <script src="js/startup-loader.js?v=42.41.0"></script>
+
+<section class="v4244-center" id="pilotSloCenter" aria-labelledby="psloTitle"><header><div><small>V42.42 · Pilot Service Level Monitor</small><strong id="psloTitle">Keep the first live pilot inside explicit operating service levels.</strong><span>Signal quality, freshness, recovery backlog, and trusted evidence are evaluated together while pilot sessions are active.</span></div><button type="button" id="psloRefresh">Refresh SLO</button></header><div class="v4244-kpis"><article><small>SLO score</small><strong id="psloScore">0%</strong></article><article><small>Status</small><strong id="psloStatus">—</strong></article><article><small>Active sessions</small><strong id="psloActive">0</strong></article><article><small>Violations</small><strong id="psloViolations">0</strong></article></div><div id="psloList" class="v4244-list"></div></section>
+<section class="v4244-center" id="pilotSupportCenter" aria-labelledby="psupTitle"><header><div><small>V42.43 · Pilot Support & Escalation</small><strong id="psupTitle">Make every pilot issue visible, owned, and resolvable.</strong><span>Operators can record location-specific watch, major, or critical issues and preserve resolution evidence.</span></div><button type="button" id="psupRefresh">Refresh support</button></header><div class="v4244-kpis"><article><small>Open issues</small><strong id="psupOpen">0</strong></article><article><small>Critical</small><strong id="psupCritical">0</strong></article><article><small>Resolved</small><strong id="psupResolved">0</strong></article><article><small>Status</small><strong id="psupStatus">—</strong></article></div><div class="v4244-actions"><input id="psupLocation" placeholder="Location ID"><select id="psupSeverity"><option value="watch">Watch</option><option value="major">Major</option><option value="critical">Critical</option></select><input id="psupIssueTitle" placeholder="Issue title"><input id="psupNote" placeholder="Support note"><button type="button" id="psupOpenIssue">Open issue</button></div><div id="psupList" class="v4244-list"></div></section>
+<section class="v4244-center v4244-cert" id="mvpGoLiveCenter" aria-labelledby="mglTitle"><header><div><small>V42.44 · MVP Go-Live Readiness</small><strong id="mglTitle">Certify that the first MVP has completed a controlled pilot and is ready for a governed go-live decision.</strong><span>First-MVP readiness, pilot SLOs, support issues, completed pilot evidence, and trusted live evidence are checked together.</span></div><div class="v4244-actions"><button type="button" id="mglRefresh">Evaluate go-live</button><button type="button" id="mglCertify">Persist certificate</button></div></header><div class="v4244-kpis"><article><small>Go-live readiness</small><strong id="mglScore">0%</strong></article><article><small>Status</small><strong id="mglStatus">—</strong></article><article><small>Trusted</small><strong id="mglTrusted">NO</strong></article><article><small>Blockers</small><strong id="mglBlockers">0</strong></article><article><small>Certificate</small><strong id="mglId">—</strong></article></div><div id="mglChecks" class="v4244-list"></div></section>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSloCenter" data-src="js/modules/pilotSloEngine.js?v=42.44.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSloCenter" data-src="js/modules/pilotSloCenter.js?v=42.44.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSupportCenter" data-src="js/modules/pilotSupportEngine.js?v=42.44.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="pilotSupportCenter" data-src="js/modules/pilotSupportCenter.js?v=42.44.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpGoLiveCenter" data-src="js/modules/mvpGoLiveEngine.js?v=42.44.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="live" data-pack-explicit="true" data-center="mvpGoLiveCenter" data-src="js/modules/mvpGoLiveCenter.js?v=42.44.0"></script>
+
+  <script src="js/startup-loader.js?v=42.44.0"></script>
 </body>
 </html>

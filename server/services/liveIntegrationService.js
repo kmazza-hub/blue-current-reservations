@@ -1370,6 +1370,70 @@ class LiveIntegrationService {
     return cert;
   }
 
+
+  async pilotSlo(organizationId) {
+    const [sessions, signals, status, evidence] = await Promise.all([
+      this.pilotSessions(organizationId), this.pilotSignalValidation(organizationId), this.status(organizationId), this.liveEvidenceCertification(organizationId)
+    ]);
+    const active = (sessions.sessions || []).filter(item => item.status === "active");
+    const signalPass = active.length > 0 && signals.score >= 80 && signals.status !== "blocked";
+    const freshnessPass = (status.events15m || 0) > 0 && status.staleConnectors === 0;
+    const deadLetterPass = (status.openDeadLetters || 0) === 0;
+    const evidencePass = evidence.trusted === true;
+    const controls = [
+      {id:"active-session",label:"Active pilot session",pass:active.length>0,detail:`${active.length} active`},
+      {id:"signal-quality",label:"Pilot signal quality",pass:signalPass,detail:`${signals.score||0}% · ${signals.status||"unknown"}`},
+      {id:"freshness",label:"Live feed freshness",pass:freshnessPass,detail:`${status.events15m||0} events · 15m · ${status.staleConnectors||0} stale`},
+      {id:"recovery",label:"Recovery backlog clear",pass:deadLetterPass,detail:`${status.openDeadLetters||0} open dead letters`},
+      {id:"evidence",label:"Trusted live evidence",pass:evidencePass,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const violations=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    return {organizationId,score,status:score===100?"healthy":score>=60?"watch":"breach",activeSessions:active.length,violations,controls,generatedAt:new Date().toISOString()};
+  }
+
+  async pilotSupport(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const current = (db.livePilotSupportIssues || []).filter(item => item.organizationId === organizationId);
+    if (input && input.action === "open") {
+      const title=String(input.title||"").trim(); if(!title) throw new Error("Support issue title is required.");
+      const severity=["watch","major","critical"].includes(input.severity)?input.severity:"watch";
+      const issue={id:`PSI-${Date.now().toString(36).toUpperCase()}`,organizationId,locationId:String(input.locationId||"").trim()||null,title:title.slice(0,180),severity,note:String(input.note||"").trim().slice(0,800),status:"open",owner:actor||"system",openedAt:new Date().toISOString(),resolvedAt:null};
+      await this.database.mutate(db2=>{db2.livePilotSupportIssues||=[];db2.livePilotSupportIssues.unshift(issue);db2.livePilotSupportIssues=db2.livePilotSupportIssues.slice(0,1000);return issue;});
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Pilot support issue opened: ${issue.id}`,category:"live-integration"});
+      return this.pilotSupport(organizationId);
+    }
+    if (input && input.action === "resolve") {
+      const id=String(input.id||"").trim(); if(!id) throw new Error("Support issue ID is required.");
+      await this.database.mutate(db2=>{const item=(db2.livePilotSupportIssues||[]).find(x=>x.organizationId===organizationId&&x.id===id);if(!item)throw new Error("Pilot support issue not found.");item.status="resolved";item.resolvedAt=new Date().toISOString();item.resolvedBy=actor||"system";item.resolutionNote=String(input.note||"").trim().slice(0,800);return item;});
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Pilot support issue resolved: ${id}`,category:"live-integration"});
+      return this.pilotSupport(organizationId);
+    }
+    const fresh=await this.database.read();
+    const items=(fresh.livePilotSupportIssues||[]).filter(item=>item.organizationId===organizationId).sort((a,b)=>new Date(b.openedAt)-new Date(a.openedAt));
+    const open=items.filter(x=>x.status==="open");
+    return {organizationId,open:open.length,critical:open.filter(x=>x.severity==="critical").length,resolved:items.filter(x=>x.status==="resolved").length,status:open.some(x=>x.severity==="critical")?"critical":open.length?"watch":"clear",items,generatedAt:new Date().toISOString()};
+  }
+
+  async mvpGoLiveCertification(organizationId, actor = null, persist = false) {
+    const [mvp, slo, support, sessions, evidence] = await Promise.all([
+      this.mvpReadinessCertification(organizationId), this.pilotSlo(organizationId), this.pilotSupport(organizationId), this.pilotSessions(organizationId), this.liveEvidenceCertification(organizationId)
+    ]);
+    const completed=(sessions.sessions||[]).filter(x=>x.status==="completed").length;
+    const controls=[
+      {id:"mvp-readiness",label:"First MVP readiness",pass:mvp.trusted===true,detail:`${mvp.score||0}% · ${mvp.status||"unknown"}`},
+      {id:"pilot-slo",label:"Pilot service level",pass:slo.score>=80&&slo.status!=="breach",detail:`${slo.score||0}% · ${slo.status||"unknown"}`},
+      {id:"support",label:"Critical pilot issues clear",pass:(support.critical||0)===0,detail:`${support.open||0} open · ${support.critical||0} critical`},
+      {id:"completed-pilot",label:"Completed pilot evidence",pass:completed>0,detail:`${completed} completed sessions`},
+      {id:"live-evidence",label:"Trusted live evidence",pass:evidence.trusted===true,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`MGL-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"mvp-go-live-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.44.0-mvp-go-live-hardening"};
+    if(persist) await this.database.mutate(db=>{db.mvpGoLiveCertification||={};db.mvpGoLiveCertification[organizationId]=cert;return cert;});
+    return cert;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;
