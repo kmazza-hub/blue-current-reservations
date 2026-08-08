@@ -1,0 +1,4 @@
+(function(){"use strict";
+function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
+class BlueCurrentAipWorkflowSupervisorEngine{constructor(){this.r=api();}supervision(){return this.r('/api/aip/workflow-supervision');}closure(){return this.r('/api/aip/v44-closure-readiness');}control(instanceId,action,extra={}){return this.r('/api/aip/workflow-control',{method:'POST',body:JSON.stringify({instanceId,action,operationKey:`${instanceId}-${action}-${Date.now()}`,...extra})});}}
+window.BlueCurrentAipWorkflowSupervisorEngine=BlueCurrentAipWorkflowSupervisorEngine;})();

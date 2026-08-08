@@ -2378,7 +2378,7 @@ class LiveIntegrationService {
     if (!input) {
       const lineages = new Map();
       definitions.forEach(item => { if (!lineages.has(item.lineageId)) lineages.set(item.lineageId, item); });
-      return { organizationId, count:definitions.length, lineages:lineages.size, items:definitions.slice(0,100), build:"44.17.0-aip-durable-workflows" };
+      return { organizationId, count:definitions.length, lineages:lineages.size, items:definitions.slice(0,100), build:"44.22.0-aip-supervision-closure" };
     }
     const orchestrationId=String(input.orchestrationId||"").trim();
     if(!orchestrationId) throw new Error("orchestrationId is required to publish a workflow definition.");
@@ -2395,62 +2395,144 @@ class LiveIntegrationService {
     await this.database.mutate(data=>{data.aipWorkflowDefinitions ||= {};const list=data.aipWorkflowDefinitions[organizationId] ||= [];list.unshift(definition);data.aipWorkflowDefinitions[organizationId]=list.slice(0,200);return definition;});
     await this.auditService.record({organizationId,actor:actor||"Operator",action:`AIP workflow definition published: ${definition.id}`,category:"aip-workflow-definition"});
     this.realtimeHub.publish("aip-workflow-definition-published",definition);
-    return {organizationId,definition,build:"44.17.0-aip-durable-workflows"};
+    return {organizationId,definition,build:"44.22.0-aip-supervision-closure"};
   }
 
   async aipWorkflowInstances(organizationId, actor = null, input = null) {
     const db=await this.database.read();
     const instances=db.aipWorkflowInstances?.[organizationId]||[];
-    if(!input) return {organizationId,count:instances.length,active:instances.filter(x=>["ready","running","paused","stale","recovered"].includes(x.status)).length,items:instances.slice(0,100),build:"44.17.0-aip-durable-workflows"};
+    if(!input) return {organizationId,count:instances.length,active:instances.filter(x=>["ready","running","paused","stale","recovered"].includes(x.status)).length,items:instances.slice(0,100),build:"44.22.0-aip-supervision-closure"};
     const definitions=db.aipWorkflowDefinitions?.[organizationId]||[];
     const definition=(input.definitionId?definitions.find(x=>x.id===input.definitionId):definitions[0])||null;
     if(!definition) throw new Error("Publish a workflow definition before creating a durable workflow instance.");
     if(definition.liveExecutionAllowed!==false || definition.executionMode!=="governed-dry-run") throw new Error("Workflow definition is outside the governed dry-run boundary.");
     const now=new Date().toISOString();const id=`AIP-WFI-${Date.now().toString(36).toUpperCase()}`;
-    const tasks=(definition.taskBlueprint||[]).map((t,index)=>({id:`${id}-T${index+1}`,...t,status:index===0?"ready":"blocked",attempts:0,liveStateChanged:false}));
-    const instance={id,organizationId,definitionId:definition.id,lineageId:definition.lineageId,definitionVersion:definition.version,instruction:definition.instruction,intent:definition.intent,owner:actor||"Operator",status:"ready",executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false,currentTaskIndex:0,completedTaskCount:0,taskCount:tasks.length,tasks,lease:null,checkpointCount:0,journalCount:0,createdAt:now,updatedAt:now};
+    const tasks=(definition.taskBlueprint||[]).map((t,index)=>{
+      const dependsOnOrder=Array.isArray(t.dependsOnOrder)?t.dependsOnOrder:[];
+      return {id:`${id}-T${index+1}`,...t,order:Number(t.order)||index+1,dependsOnOrder,maxAttempts:Math.max(1,Math.min(5,Number(input.maxAttempts||t.maxAttempts||3))),failurePolicy:"bounded-retry-then-escalate",status:dependsOnOrder.length===0?"ready":"blocked",attempts:0,failureCount:0,retryCount:0,lastFailure:null,nextRetryAt:null,liveStateChanged:false};
+    });
+    const firstReady=tasks.findIndex(t=>t.status==="ready");
+    const instance={id,organizationId,definitionId:definition.id,lineageId:definition.lineageId,definitionVersion:definition.version,instruction:definition.instruction,intent:definition.intent,owner:actor||"Operator",status:"ready",executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false,currentTaskIndex:firstReady<0?0:firstReady,completedTaskCount:0,taskCount:tasks.length,tasks,lease:null,checkpointCount:0,journalCount:0,supervision:{mode:"dependency-aware",retryPolicy:"bounded-exponential-backoff",escalationPolicy:"human-attention-required"},createdAt:now,updatedAt:now};
     await this.database.mutate(data=>{data.aipWorkflowInstances ||= {};const list=data.aipWorkflowInstances[organizationId] ||= [];list.unshift(instance);data.aipWorkflowInstances[organizationId]=list.slice(0,150);return instance;});
     await this.auditService.record({organizationId,actor:actor||"Operator",action:`Durable AIP workflow instance created: ${instance.id} @ ${definition.id}`,category:"aip-workflow-runtime"});
     this.realtimeHub.publish("aip-workflow-instance-updated",instance);
-    return {organizationId,instance,build:"44.17.0-aip-durable-workflows"};
+    return {organizationId,instance,build:"44.22.0-aip-supervision-closure"};
   }
 
   async aipWorkflowControl(organizationId, actor, input={}) {
     const instanceId=String(input.instanceId||"").trim(),action=String(input.action||"").trim().toLowerCase(),operationKey=String(input.operationKey||"").trim();
     if(!instanceId) throw new Error("instanceId is required.");
-    if(!["start","heartbeat","advance","checkpoint","pause","resume","recover","complete","cancel"].includes(action)) throw new Error("Unsupported durable workflow action.");
+    if(!["start","heartbeat","advance","checkpoint","pause","resume","recover","fail","retry","escalate","complete","cancel"].includes(action)) throw new Error("Unsupported durable workflow action.");
     const now=new Date(),nowIso=now.toISOString();
     const result=await this.database.mutate(db=>{
       db.aipWorkflowInstances ||= {};const list=db.aipWorkflowInstances[organizationId] ||= [];const w=list.find(x=>x.id===instanceId);if(!w) throw new Error("Durable AIP workflow instance not found.");
       if(w.liveExecutionAllowed!==false || w.executionMode!=="governed-dry-run") throw new Error("Workflow runtime safety boundary violated.");
       db.aipWorkflowCheckpoints ||= {};const cps=db.aipWorkflowCheckpoints[organizationId] ||= [];
       db.aipWorkflowExecutionJournal ||= {};const journal=db.aipWorkflowExecutionJournal[organizationId] ||= [];
+      db.aipWorkflowEscalations ||= {};const escalations=db.aipWorkflowEscalations[organizationId] ||= [];
       const existing=operationKey?journal.find(x=>x.instanceId===w.id&&x.operationKey===operationKey):null;
       if(existing) return {instance:w,entry:existing,replayed:true};
       const lease=()=>({token:crypto.randomBytes(16).toString("hex"),holder:actor||"Operator",acquiredAt:nowIso,heartbeatAt:nowIso,expiresAt:new Date(now.getTime()+5*60*1000).toISOString()});
       const expired=()=>w.lease?.expiresAt && new Date(w.lease.expiresAt).getTime()<=now.getTime();
-      if(expired() && w.status==="running") w.status="stale";
-      let detail="";
-      if(action==="start") {if(!["ready","recovered"].includes(w.status)) throw new Error(`Workflow cannot start from status ${w.status}.`);w.status="running";w.lease=lease();detail="lease-acquired";}
-      else if(action==="heartbeat") {if(w.status!=="running"||!w.lease) throw new Error("Only a leased running workflow can heartbeat.");w.lease={...w.lease,heartbeatAt:nowIso,expiresAt:new Date(now.getTime()+5*60*1000).toISOString()};detail="lease-renewed";}
-      else if(action==="advance") {if(w.status!=="running") throw new Error("Only a running workflow can advance.");if(!w.lease||expired()) {w.status="stale";throw new Error("Workflow lease expired; recover from a checkpoint before continuing.");}const idx=Math.max(0,Number(w.currentTaskIndex)||0),task=(w.tasks||[])[idx];if(!task){w.status="completed";w.completedAt=nowIso;detail="already-complete";}else{task.status="completed";task.completedAt=nowIso;task.attempts=(task.attempts||0)+1;task.liveStateChanged=false;w.completedTaskCount=(w.completedTaskCount||0)+1;const next=w.tasks[idx+1];if(next){next.status="ready";w.currentTaskIndex=idx+1;detail=`advanced-to-${next.id}`;}else{w.status="completed";w.completedAt=nowIso;w.lease=null;detail="completed-final-task";}}}
-      else if(action==="checkpoint") {if(["completed","cancelled"].includes(w.status)) throw new Error(`Checkpoint unavailable from status ${w.status}.`);const cp={id:`AIP-WFCP-${Date.now().toString(36).toUpperCase()}`,organizationId,instanceId:w.id,definitionId:w.definitionId,definitionVersion:w.definitionVersion,status:w.status,currentTaskIndex:w.currentTaskIndex||0,completedTaskCount:w.completedTaskCount||0,taskStatuses:(w.tasks||[]).map(x=>({id:x.id,status:x.status,attempts:x.attempts||0})),executionMode:"governed-dry-run",liveStateChanged:false,createdBy:actor||"Operator",createdAt:nowIso};cps.unshift(cp);db.aipWorkflowCheckpoints[organizationId]=cps.slice(0,500);w.checkpointCount=(w.checkpointCount||0)+1;w.lastCheckpointId=cp.id;w.lastCheckpointAt=nowIso;detail=cp.id;}
+      const completedOrders=()=>new Set((w.tasks||[]).filter(t=>t.status==="completed").map(t=>Number(t.order)));
+      const unlockDependencies=()=>{
+        const completed=completedOrders();
+        (w.tasks||[]).forEach(t=>{
+          if(t.status!=="blocked") return;
+          const deps=Array.isArray(t.dependsOnOrder)?t.dependsOnOrder:[];
+          if(deps.every(order=>completed.has(Number(order)))) t.status="ready";
+        });
+      };
+      const selectNextReady=()=>{
+        unlockDependencies();
+        const index=(w.tasks||[]).findIndex(t=>t.status==="ready");
+        w.currentTaskIndex=index<0?Math.max(0,Number(w.currentTaskIndex)||0):index;
+        return index<0?null:w.tasks[index];
+      };
+      const currentTask=()=>{const idx=Math.max(0,Number(w.currentTaskIndex)||0);return (w.tasks||[])[idx]||null;};
+      if(expired() && w.status==="running"){w.status="stale";w.lease=null;}
+      let detail="", escalation=null;
+      if(action==="start") {
+        if(!["ready","recovered"].includes(w.status)) throw new Error(`Workflow cannot start from status ${w.status}.`);
+        const next=selectNextReady();if(!next&&w.completedTaskCount<w.taskCount) throw new Error("Workflow has unresolved task dependencies.");
+        w.status="running";w.lease=lease();detail=next?`lease-acquired:${next.id}`:"lease-acquired";
+      }
+      else if(action==="heartbeat") {
+        if(w.status!=="running"||!w.lease) throw new Error("Only a leased running workflow can heartbeat.");
+        w.lease={...w.lease,heartbeatAt:nowIso,expiresAt:new Date(now.getTime()+5*60*1000).toISOString()};detail="lease-renewed";
+      }
+      else if(action==="advance") {
+        if(w.status!=="running") throw new Error("Only a running workflow can advance.");
+        if(!w.lease||expired()) {w.status="stale";w.lease=null;throw new Error("Workflow lease expired; recover from a checkpoint before continuing.");}
+        const task=currentTask();if(!task){w.status="completed";w.completedAt=nowIso;w.lease=null;detail="already-complete";}
+        else if(task.status!=="ready"&&task.status!=="running") throw new Error(`Current task cannot advance from status ${task.status}.`);
+        else{
+          task.status="completed";task.completedAt=nowIso;task.attempts=(task.attempts||0)+1;task.liveStateChanged=false;task.nextRetryAt=null;
+          w.completedTaskCount=(w.tasks||[]).filter(t=>t.status==="completed").length;
+          const next=selectNextReady();
+          if(next){detail=`advanced-to-${next.id}`;}
+          else if(w.completedTaskCount>=w.taskCount){w.status="completed";w.completedAt=nowIso;w.lease=null;detail="completed-final-task";}
+          else{w.status="waiting-dependencies";w.lease=null;detail="waiting-for-dependencies";}
+        }
+      }
+      else if(action==="fail") {
+        if(w.status!=="running") throw new Error("Only a running workflow can record task failure.");
+        const task=currentTask();if(!task) throw new Error("No current workflow task is available.");
+        task.attempts=(task.attempts||0)+1;task.failureCount=(task.failureCount||0)+1;
+        const maxAttempts=Math.max(1,Number(task.maxAttempts)||3);
+        const reason=String(input.reason||"Agent task failed").trim().slice(0,500);
+        const retryable=input.retryable!==false;
+        task.lastFailure={reason,retryable,at:nowIso,actor:actor||"Operator",attempt:task.attempts};
+        if(retryable&&task.attempts<maxAttempts){
+          const backoffSeconds=Math.min(300,Math.pow(2,Math.max(0,task.attempts-1))*15);
+          task.status="retry-wait";task.nextRetryAt=new Date(now.getTime()+backoffSeconds*1000).toISOString();w.status="retry-pending";w.lease=null;detail=`retry-scheduled:${backoffSeconds}s:${task.id}`;
+        }else{
+          task.status="escalated";task.nextRetryAt=null;w.status="attention-required";w.lease=null;
+          escalation={id:`AIP-WFE-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString("hex")}`,organizationId,instanceId:w.id,taskId:task.id,definitionId:w.definitionId,reason,attempts:task.attempts,maxAttempts,severity:task.risk==="high"?"high":"medium",status:"open",scope:"governed-dry-run-only",liveExecutionAllowed:false,liveStateChanged:false,createdBy:actor||"Operator",createdAt:nowIso};
+          escalations.unshift(escalation);db.aipWorkflowEscalations[organizationId]=escalations.slice(0,500);detail=`escalated:${escalation.id}`;
+        }
+      }
+      else if(action==="retry") {
+        if(w.status!=="retry-pending") throw new Error("Only a retry-pending workflow can retry.");
+        const task=currentTask();if(!task||task.status!=="retry-wait") throw new Error("Current task is not waiting for retry.");
+        if(task.nextRetryAt&&new Date(task.nextRetryAt).getTime()>now.getTime()&&input.force!==true) throw new Error(`Retry backoff active until ${task.nextRetryAt}.`);
+        task.status="ready";task.retryCount=(task.retryCount||0)+1;task.nextRetryAt=null;w.status="running";w.lease=lease();detail=`retry-started:${task.id}`;
+      }
+      else if(action==="escalate") {
+        const task=currentTask();if(!task) throw new Error("No current workflow task is available.");
+        if(["completed","cancelled"].includes(w.status)) throw new Error(`Workflow cannot escalate from status ${w.status}.`);
+        const reason=String(input.reason||task.lastFailure?.reason||"Operator escalation").trim().slice(0,500);
+        task.status="escalated";task.nextRetryAt=null;w.status="attention-required";w.lease=null;
+        escalation={id:`AIP-WFE-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString("hex")}`,organizationId,instanceId:w.id,taskId:task.id,definitionId:w.definitionId,reason,attempts:task.attempts||0,maxAttempts:Math.max(1,Number(task.maxAttempts)||3),severity:task.risk==="high"?"high":"medium",status:"open",scope:"governed-dry-run-only",liveExecutionAllowed:false,liveStateChanged:false,createdBy:actor||"Operator",createdAt:nowIso};
+        escalations.unshift(escalation);db.aipWorkflowEscalations[organizationId]=escalations.slice(0,500);detail=`operator-escalated:${escalation.id}`;
+      }
+      else if(action==="checkpoint") {
+        if(["completed","cancelled"].includes(w.status)) throw new Error(`Checkpoint unavailable from status ${w.status}.`);
+        const cp={id:`AIP-WFCP-${Date.now().toString(36).toUpperCase()}`,organizationId,instanceId:w.id,definitionId:w.definitionId,definitionVersion:w.definitionVersion,status:w.status,currentTaskIndex:w.currentTaskIndex||0,completedTaskCount:w.completedTaskCount||0,taskStatuses:(w.tasks||[]).map(x=>({id:x.id,status:x.status,attempts:x.attempts||0,failureCount:x.failureCount||0,retryCount:x.retryCount||0,nextRetryAt:x.nextRetryAt||null,lastFailure:x.lastFailure||null})),executionMode:"governed-dry-run",liveStateChanged:false,createdBy:actor||"Operator",createdAt:nowIso};
+        cps.unshift(cp);db.aipWorkflowCheckpoints[organizationId]=cps.slice(0,500);w.checkpointCount=(w.checkpointCount||0)+1;w.lastCheckpointId=cp.id;w.lastCheckpointAt=nowIso;detail=cp.id;
+      }
       else if(action==="pause") {if(w.status!=="running") throw new Error("Only a running workflow can be paused.");w.status="paused";w.lease=null;detail="lease-released";}
-      else if(action==="resume") {if(w.status!=="paused") throw new Error("Only a paused workflow can resume.");w.status="running";w.lease=lease();detail="lease-reacquired";}
-      else if(action==="recover") {const cp=cps.find(x=>x.instanceId===w.id);if(!cp) throw new Error("Create a durable workflow checkpoint before recovery.");if(!["paused","stale","running","ready"].includes(w.status)) throw new Error(`Workflow cannot recover from status ${w.status}.`);w.currentTaskIndex=cp.currentTaskIndex||0;w.completedTaskCount=cp.completedTaskCount||0;(w.tasks||[]).forEach(t=>{const st=cp.taskStatuses.find(x=>x.id===t.id);if(st){t.status=st.status;t.attempts=st.attempts||0;}});w.status="recovered";w.lease=null;w.recoveredFromCheckpointId=cp.id;detail=cp.id;}
+      else if(action==="resume") {if(w.status!=="paused") throw new Error("Only a paused workflow can resume.");selectNextReady();w.status="running";w.lease=lease();detail="lease-reacquired";}
+      else if(action==="recover") {
+        const cp=cps.find(x=>x.instanceId===w.id);if(!cp) throw new Error("Create a durable workflow checkpoint before recovery.");
+        if(!["paused","stale","running","ready","retry-pending","waiting-dependencies","attention-required"].includes(w.status)) throw new Error(`Workflow cannot recover from status ${w.status}.`);
+        w.currentTaskIndex=cp.currentTaskIndex||0;w.completedTaskCount=cp.completedTaskCount||0;(w.tasks||[]).forEach(t=>{const st=cp.taskStatuses.find(x=>x.id===t.id);if(st){t.status=st.status;t.attempts=st.attempts||0;t.failureCount=st.failureCount||0;t.retryCount=st.retryCount||0;t.nextRetryAt=st.nextRetryAt||null;t.lastFailure=st.lastFailure||null;}});
+        w.status="recovered";w.lease=null;w.recoveredFromCheckpointId=cp.id;detail=cp.id;
+      }
       else if(action==="complete") {if(w.status!=="running") throw new Error("Only a running workflow can be completed.");w.status="completed";w.completedAt=nowIso;w.lease=null;detail="operator-completed";}
       else if(action==="cancel") {if(["completed","cancelled"].includes(w.status)) throw new Error(`Workflow is already ${w.status}.`);w.status="cancelled";w.cancelledAt=nowIso;w.lease=null;detail="cancelled";}
       w.updatedAt=nowIso;w.liveStateChanged=false;
-      const entry={id:`AIP-WFJ-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString("hex")}`,organizationId,instanceId:w.id,definitionId:w.definitionId,definitionVersion:w.definitionVersion,operationKey:operationKey||null,action,status:w.status,detail,actor:actor||"Operator",executionMode:"governed-dry-run",liveStateChanged:false,createdAt:nowIso};journal.unshift(entry);db.aipWorkflowExecutionJournal[organizationId]=journal.slice(0,2000);w.journalCount=(w.journalCount||0)+1;return {instance:w,entry,replayed:false};
+      const entry={id:`AIP-WFJ-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString("hex")}`,organizationId,instanceId:w.id,definitionId:w.definitionId,definitionVersion:w.definitionVersion,operationKey:operationKey||null,action,status:w.status,detail,taskId:currentTask()?.id||null,actor:actor||"Operator",executionMode:"governed-dry-run",liveStateChanged:false,createdAt:nowIso};
+      journal.unshift(entry);db.aipWorkflowExecutionJournal[organizationId]=journal.slice(0,2000);w.journalCount=(w.journalCount||0)+1;return {instance:w,entry,escalation,replayed:false};
     });
-    if(!result.replayed){await this.auditService.record({organizationId,actor:actor||"Operator",action:`Durable AIP workflow ${action}: ${instanceId}`,category:"aip-workflow-runtime"});this.realtimeHub.publish("aip-workflow-instance-updated",result.instance);}
-    return {organizationId,...result,build:"44.17.0-aip-durable-workflows"};
+    if(!result.replayed){await this.auditService.record({organizationId,actor:actor||"Operator",action:`Durable AIP workflow ${action}: ${instanceId}`,category:"aip-workflow-runtime"});this.realtimeHub.publish("aip-workflow-instance-updated",result.instance);if(result.escalation)this.realtimeHub.publish("aip-workflow-escalated",result.escalation);}
+    return {organizationId,...result,build:"44.22.0-aip-supervision-closure"};
   }
 
   async aipWorkflowHistory(organizationId, instanceId = null) {
     const db=await this.database.read();const instances=db.aipWorkflowInstances?.[organizationId]||[];const instance=(instanceId?instances.find(x=>x.id===instanceId):instances[0])||null;
     const journal=(db.aipWorkflowExecutionJournal?.[organizationId]||[]).filter(x=>!instance||x.instanceId===instance.id).slice(0,250);const checkpoints=(db.aipWorkflowCheckpoints?.[organizationId]||[]).filter(x=>!instance||x.instanceId===instance.id).slice(0,100);
-    return {organizationId,instance,journalCount:journal.length,checkpointCount:checkpoints.length,journal,checkpoints,safety:{liveExecutionAllowed:false,isolated:journal.every(x=>x.liveStateChanged===false)&&checkpoints.every(x=>x.liveStateChanged===false)},build:"44.17.0-aip-durable-workflows"};
+    return {organizationId,instance,journalCount:journal.length,checkpointCount:checkpoints.length,journal,checkpoints,safety:{liveExecutionAllowed:false,isolated:journal.every(x=>x.liveStateChanged===false)&&checkpoints.every(x=>x.liveStateChanged===false)},build:"44.22.0-aip-supervision-closure"};
   }
 
   async aipWorkflowReadiness(organizationId) {
@@ -2465,7 +2547,49 @@ class LiveIntegrationService {
       {id:"execution-history",label:"Replayable execution history",pass:journal.length>0&&journal.every(x=>Boolean(x.definitionId)&&Boolean(x.action)),detail:`${journal.length} journal event(s)`},
       {id:"live-safety",label:"Durable workflows remain isolated",pass:definitions.every(x=>x.liveExecutionAllowed===false)&&instances.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged!==true)&&journal.every(x=>x.liveStateChanged===false)&&checkpoints.every(x=>x.liveStateChanged===false),detail:"No workflow version/runtime path authorizes live restaurant mutation"}
     ];const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length),blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
-    return {organizationId,score,status:score===100?"aip-durable-workflow-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,generatedAt:new Date().toISOString(),build:"44.17.0-aip-durable-workflows"};
+    return {organizationId,score,status:score===100?"aip-durable-workflow-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,generatedAt:new Date().toISOString(),build:"44.22.0-aip-supervision-closure"};
+  }
+
+  async aipWorkflowSupervision(organizationId) {
+    const db=await this.database.read();
+    const instances=db.aipWorkflowInstances?.[organizationId]||[];
+    const journal=db.aipWorkflowExecutionJournal?.[organizationId]||[];
+    const escalations=db.aipWorkflowEscalations?.[organizationId]||[];
+    const now=Date.now();
+    const items=instances.slice(0,150).map(w=>{
+      const task=(w.tasks||[])[Math.max(0,Number(w.currentTaskIndex)||0)]||null;
+      const expired=Boolean(w.lease?.expiresAt&&new Date(w.lease.expiresAt).getTime()<=now);
+      const blocked=(w.tasks||[]).filter(t=>t.status==="blocked").length;
+      const ready=(w.tasks||[]).filter(t=>t.status==="ready").length;
+      return {id:w.id,definitionId:w.definitionId,definitionVersion:w.definitionVersion,status:expired&&w.status==="running"?"stale":w.status,currentTask:task?{id:task.id,agentType:task.agentType,status:task.status,attempts:task.attempts||0,maxAttempts:task.maxAttempts||3,nextRetryAt:task.nextRetryAt||null,lastFailure:task.lastFailure||null}:null,blockedTasks:blocked,readyTasks:ready,leaseExpired:expired,openEscalations:escalations.filter(e=>e.instanceId===w.id&&e.status==="open").length,executionMode:w.executionMode,liveExecutionAllowed:false,liveStateChanged:false};
+    });
+    const statusCounts=items.reduce((acc,item)=>(acc[item.status]=(acc[item.status]||0)+1,acc),{});
+    return {organizationId,count:items.length,statusCounts,retryPending:items.filter(x=>x.status==="retry-pending").length,attentionRequired:items.filter(x=>x.status==="attention-required").length,stale:items.filter(x=>x.status==="stale").length,openEscalations:escalations.filter(x=>x.status==="open").length,recentFailures:journal.filter(x=>x.action==="fail").slice(0,50),items,policies:{dependencyResolution:"explicit task dependency graph",retry:"bounded exponential backoff",maxAttempts:3,escalation:"human-attention-required",executionScope:"governed-dry-run-only"},generatedAt:new Date().toISOString(),build:"44.22.0-aip-supervision-closure"};
+  }
+
+  async aipV44ClosureReadiness(organizationId) {
+    const db=await this.database.read();
+    const workflow=await this.aipWorkflowReadiness(organizationId);
+    const supervision=await this.aipWorkflowSupervision(organizationId);
+    const definitions=db.aipWorkflowDefinitions?.[organizationId]||[];
+    const instances=db.aipWorkflowInstances?.[organizationId]||[];
+    const journal=db.aipWorkflowExecutionJournal?.[organizationId]||[];
+    const escalations=db.aipWorkflowEscalations?.[organizationId]||[];
+    const tasks=instances.flatMap(x=>x.tasks||[]);
+    const checks=[
+      {id:"workflow-foundation",label:"Durable workflow foundation",pass:(workflow.score||0)>=80,detail:`${workflow.score||0}% · ${workflow.status||"unknown"}`},
+      {id:"dependency-graph",label:"Cross-agent dependency resolution",pass:definitions.length>0&&definitions.every(d=>(d.taskBlueprint||[]).every(t=>Array.isArray(t.dependsOnOrder))),detail:`${definitions.length} immutable definition(s) carry dependency metadata`},
+      {id:"supervision",label:"Workflow supervision model",pass:instances.length>0&&instances.every(x=>x.supervision?.mode==="dependency-aware"),detail:`${instances.length} supervised durable instance(s)`},
+      {id:"bounded-retry",label:"Bounded retry policy",pass:tasks.length>0&&tasks.every(t=>Number(t.maxAttempts)>=1&&Number(t.maxAttempts)<=5&&t.failurePolicy==="bounded-retry-then-escalate"),detail:`${tasks.length} task(s) have bounded retry policy`},
+      {id:"failure-journal",label:"Failure/retry execution history",pass:journal.some(x=>["fail","retry","escalate"].includes(x.action)),detail:`${journal.filter(x=>["fail","retry","escalate"].includes(x.action)).length} supervised failure event(s)`},
+      {id:"escalation",label:"Human escalation path",pass:escalations.length>0,detail:`${escalations.length} escalation record(s)`},
+      {id:"recovery",label:"Checkpoint recovery remains available",pass:journal.some(x=>x.action==="recover")||((db.aipWorkflowCheckpoints?.[organizationId]||[]).length>0),detail:"Recovery state is version-bound and journaled"},
+      {id:"approval-boundary",label:"Approval remains dry-run scoped",pass:(db.aipApprovals?.[organizationId]||[]).every(x=>x.scope==="governed-dry-run-only"&&x.liveExecutionAllowed===false),detail:"No approval path grants live execution"},
+      {id:"live-safety",label:"V44 runtime remains isolated from live restaurant state",pass:instances.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged!==true)&&journal.every(x=>x.liveStateChanged===false)&&escalations.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false),detail:"Runtime, retries, escalations, checkpoints, and approvals remain governed dry-runs"}
+    ];
+    const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length);
+    const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    return {organizationId,version:"44.22.0",score,status:score===100?"v44-architecture-closed":score>=67?"conditional":"blocked",trusted:score===100,operationVPhase:"V44 Artificial Intelligence Platform",blockers,checks,supervision:{retryPending:supervision.retryPending,attentionRequired:supervision.attentionRequired,openEscalations:supervision.openEscalations},safety:{executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:new Date().toISOString(),build:"44.22.0-aip-supervision-closure"};
   }
 
   async operatingSnapshot(organizationId) {

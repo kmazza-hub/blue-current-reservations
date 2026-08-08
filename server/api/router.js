@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "44.17.0",
+        version: "44.22.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -516,6 +516,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/aip/workflow-control" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipWorkflowControl(organizationId, auth.user.name, await readJson(request)));
     if (url.pathname === "/api/aip/workflow-history" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipWorkflowHistory(organizationId, url.searchParams.get("instanceId")));
     if (url.pathname === "/api/aip/workflow-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipWorkflowReadiness(organizationId));
+    if (url.pathname === "/api/aip/workflow-supervision" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipWorkflowSupervision(organizationId));
+    if (url.pathname === "/api/aip/v44-closure-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipV44ClosureReadiness(organizationId));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
