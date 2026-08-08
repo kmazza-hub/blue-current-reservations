@@ -1636,7 +1636,7 @@ class LiveIntegrationService {
         {id:"continuity",label:"Provider continuity",score:continuity.score||0,status:continuity.status||"unknown",trusted:(continuity.score||0)>=80}
       ],
       generatedAt:new Date().toISOString(),
-      build:"43.2.0-executive-live-intelligence"
+      build:"43.5.0-executive-decision-intelligence"
     };
   }
 
@@ -1646,7 +1646,7 @@ class LiveIntegrationService {
       this.liveCoverageMatrix(organizationId),
       this.locationCutoverControl(organizationId),
       this.status(organizationId),
-      this.providerIncidents(organizationId),
+      this.providerIncidentLedger(organizationId),
       this.pilotSupport(organizationId)
     ]);
     const openIncidents = (incidents.items || incidents.incidents || []).filter(item => item.status !== "resolved" && item.status !== "closed");
@@ -1700,11 +1700,92 @@ class LiveIntegrationService {
       trusted:score===100,
       blockers,controls,
       priority:top?{locationId:top.locationId,locationName:top.locationName,risk:top.risk,severity:top.severity,recommendedAction:top.recommendedAction}:null,
-      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.2.0-executive-live-intelligence"
+      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"
     };
     if(persist) {
       await this.database.mutate(db=>{db.executiveDecisionGate||={};db.executiveDecisionGate[organizationId]=result;return result;});
       await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision gate persisted: ${result.status}`,category:"executive-intelligence"});
+    }
+    return result;
+  }
+
+
+  async executiveInsights(organizationId) {
+    const [brief, queue, snapshot, health] = await Promise.all([
+      this.executiveLiveBrief(organizationId),
+      this.executiveRiskQueue(organizationId),
+      this.operatingSnapshot(organizationId),
+      this.productionHealthTelemetry(organizationId)
+    ]);
+    const insights=[];
+    const top=queue.topRisk;
+    if(top){
+      insights.push({id:`INS-RISK-${top.locationId||"portfolio"}`,kind:"risk",priority:top.severity==="critical"?"critical":top.severity==="watch"?"high":"normal",title:`${top.locationName||"Portfolio"} carries the highest current operating risk`,summary:top.recommendedAction||"Review the highest-risk location before the next service period.",confidence:Math.max(55,Math.min(98,Math.round(100-(top.risk||0)/3))),locationId:top.locationId||null,evidence:[...(top.reasons||[]),`Executive live score ${brief.score||0}%`],recommendedReview:"Open the location evidence chain and confirm ownership before changing operating policy."});
+    }
+    if((snapshot.openKitchenTickets||0)>8){
+      insights.push({id:"INS-KITCHEN-PRESSURE",kind:"risk",priority:(snapshot.openKitchenTickets||0)>15?"critical":"high",title:"Kitchen throughput pressure is building",summary:`${snapshot.openKitchenTickets||0} live tickets remain open in the current operating window.`,confidence:90,evidence:[`${snapshot.openKitchenTickets||0} open kitchen tickets`,`${snapshot.recentEvents||0} live events in the operating window`],recommendedReview:"Review seating pace and kitchen capacity before adding demand."});
+    }
+    if((snapshot.revenue||0)>0 && (health.score||0)>=80){
+      insights.push({id:"INS-CONTROLLED-REVENUE",kind:"opportunity",priority:"normal",title:"Live revenue is flowing through a controlled operating path",summary:`$${Number(snapshot.revenue||0).toLocaleString()} recorded in the current four-hour window with production health at ${health.score||0}%.`,confidence:92,evidence:[`Production health ${health.score||0}%`,`Live evidence ${brief.controls?.find(c=>c.id==='evidence')?.score||0}%`],recommendedReview:"Use this controlled baseline for shift-to-shift comparison and optimization."});
+    }
+    if((snapshot.employeesOnClock||0)>0 && (snapshot.seatedCovers||0)>0){
+      const coversPerEmployee=(snapshot.seatedCovers||0)/Math.max(1,snapshot.employeesOnClock||0);
+      insights.push({id:"INS-LABOR-LEVERAGE",kind:"efficiency",priority:coversPerEmployee<2?"high":"normal",title:"Labor leverage can be evaluated against live covers",summary:`${snapshot.seatedCovers||0} seated covers across ${snapshot.employeesOnClock||0} employees on clock (${coversPerEmployee.toFixed(1)} covers per employee in-window).`,confidence:84,evidence:[`${snapshot.seatedCovers||0} seated covers`,`${snapshot.employeesOnClock||0} employees on clock`],recommendedReview:coversPerEmployee<2?"Review deployment before adding labor.":"Maintain deployment and monitor guest wait and kitchen pressure."});
+    }
+    if(!insights.length){
+      insights.push({id:"INS-EVIDENCE-BUILDING",kind:"readiness",priority:"high",title:"Executive evidence is still building",summary:brief.headline||"Live operating evidence is not yet sufficient for a high-confidence executive insight.",confidence:60,evidence:brief.risks||[],recommendedReview:"Complete the live evidence and production controls before relying on automated recommendations."});
+    }
+    const priorityOrder={critical:0,high:1,normal:2,low:3};
+    insights.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
+    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
+  }
+
+  async executiveRecommendations(organizationId) {
+    const [insights, gate, brief, snapshot] = await Promise.all([
+      this.executiveInsights(organizationId),
+      this.executiveDecisionGate(organizationId),
+      this.executiveLiveBrief(organizationId),
+      this.operatingSnapshot(organizationId)
+    ]);
+    const recs=[];
+    for(const insight of insights.items||[]){
+      let category="operations", action=insight.recommendedReview, impact="Protect operating control", approval=true;
+      if(insight.id==="INS-KITCHEN-PRESSURE"){category="kitchen";action="Reduce seating pressure or add kitchen capacity before accepting additional demand.";impact="Lower ticket accumulation and protect guest pacing";}
+      else if(insight.id==="INS-LABOR-LEVERAGE"){category="staffing";action=insight.recommendedReview;impact="Improve labor deployment against live covers";}
+      else if(insight.kind==="opportunity"){category="portfolio";action="Use the current controlled window as the benchmark for the next comparable service period.";impact="Create a trusted performance baseline";approval=false;}
+      else if(insight.kind==="readiness"){category="governance";action="Resolve live-evidence blockers before approving operating changes.";impact="Prevent decisions from being made on untrusted data";}
+      recs.push({id:`REC-${insight.id}`,category,priority:insight.priority,title:insight.title,action,expectedImpact:impact,confidence:insight.confidence,approvalRequired:approval,decisionGateStatus:gate.status||"unknown",locationId:insight.locationId||null,evidence:insight.evidence||[]});
+    }
+    if((snapshot.freshnessSeconds??0)>300){
+      recs.unshift({id:"REC-FRESHNESS",category:"governance",priority:"critical",title:"Pause executive action until live evidence is fresh",action:"Restore live source freshness and rerun the Executive Decision Gate.",expectedImpact:"Avoid acting on stale operating conditions",confidence:99,approvalRequired:true,decisionGateStatus:gate.status||"unknown",locationId:null,evidence:[`Evidence age ${snapshot.freshnessSeconds}s`,brief.headline||""]});
+    }
+    const priorityOrder={critical:0,high:1,normal:2,low:3};
+    recs.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
+    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
+  }
+
+  async executiveDecisionWorkspaceV43(organizationId, actor = null, persist = false) {
+    const [brief, queue, insights, recommendations, gate] = await Promise.all([
+      this.executiveLiveBrief(organizationId),
+      this.executiveRiskQueue(organizationId),
+      this.executiveInsights(organizationId),
+      this.executiveRecommendations(organizationId),
+      this.executiveDecisionGate(organizationId)
+    ]);
+    const checks=[
+      {id:"live-brief",label:"Executive live brief",pass:(brief.score||0)>=80,detail:`${brief.score||0}% · ${brief.status||"unknown"}`},
+      {id:"insights",label:"Evidence-backed insights",pass:(insights.count||0)>0,detail:`${insights.count||0} insight(s)`},
+      {id:"recommendations",label:"Actionable recommendations",pass:(recommendations.count||0)>0,detail:`${recommendations.count||0} recommendation(s)`},
+      {id:"decision-gate",label:"Executive decision gate",pass:gate.trusted===true,detail:`${gate.score||0}% · ${gate.status||"unknown"}`},
+      {id:"critical-risk",label:"Critical portfolio risk controlled",pass:(queue.critical||0)===0,detail:`${queue.critical||0} critical · ${queue.watch||0} watch`}
+    ];
+    const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length);
+    const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const top=recommendations.topRecommendation||null;
+    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"};
+    if(persist){
+      await this.database.mutate(db=>{db.executiveDecisionWorkspaceV43||={};db.executiveDecisionWorkspaceV43[organizationId]=result;return result;});
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision workspace persisted: ${result.status}`,category:"executive-intelligence"});
     }
     return result;
   }

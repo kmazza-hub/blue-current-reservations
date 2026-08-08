@@ -1,0 +1,284 @@
+--- a/README-APPLY-V43.5.0.md
++++ b/README-APPLY-V43.5.0.md
+@@ -0,0 +1,14 @@
++# Apply V43.5.0
++
++Replace the included changed files and add the six new V43 modules. Do not replace `database/data/blue-current.json` with test/runtime state.
++
++Restart:
++
++```powershell
++taskkill /F /IM node.exe
++npm run start
++```
++
++Open `http://localhost:8787/?pack=executive`.
++
++Recommended order: Executive Live Brief → Executive Risk Queue → Executive Insights → Executive Recommendations → Executive Decision Gate → Executive Decision Workspace.
+--- a/V43.5.0-RELEASE.md
++++ b/V43.5.0-RELEASE.md
+@@ -0,0 +1,12 @@
++# Blue Current V43.5.0 — Executive Decision Intelligence
++
++## V43.3 Executive Insight Engine
++Synthesizes trusted live evidence into ranked risks, opportunities, readiness signals, and efficiency insights.
++
++## V43.4 Executive Recommendation Engine
++Turns insights into governed recommendations with confidence, expected impact, approval requirements, and evidence.
++
++## V43.5 Executive Decision Workspace
++Combines the live brief, portfolio risk queue, insights, recommendations, and decision gate into one persistable executive decision package.
++
++Build: `43.5.0-executive-decision-intelligence`
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="43.2.0-executive-live-intelligence">
++  <meta name="blue-current-build" content="43.5.0-executive-decision-intelligence">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8507,13 +8507,22 @@
+ <section class="v432-center" id="executiveLiveBriefCenter" aria-labelledby="elbTitle"><header><div><small>V43.0 · Executive Live Brief</small><strong id="elbTitle">Turn trusted production evidence into one live executive operating picture.</strong><span id="elbHeadline">Building executive live brief…</span></div><button type="button" id="elbRefresh">Refresh brief</button></header><div class="v432-kpis"><article><small>Executive score</small><strong id="elbScore">0%</strong></article><article><small>Status</small><strong id="elbStatus">—</strong></article><article><small>Revenue · 4h</small><strong id="elbRevenue">$0</strong></article><article><small>Live events</small><strong id="elbEvents">0</strong></article></div><div class="v432-grid"><div><small>Executive risks</small><div id="elbRisks" class="v432-list"></div></div><div><small>Trust controls</small><div id="elbControls" class="v432-list"></div></div></div></section>
+ <section class="v432-center" id="executiveRiskQueueCenter" aria-labelledby="erqTitle"><header><div><small>V43.1 · Executive Risk Queue</small><strong id="erqTitle">Rank restaurant locations by live operational risk and surface the next management action.</strong><span>Coverage, cutover, freshness, incidents, and support issues are combined into one portfolio priority queue.</span></div><button type="button" id="erqRefresh">Refresh risk queue</button></header><div class="v432-kpis"><article><small>Locations</small><strong id="erqLocations">0</strong></article><article><small>Critical</small><strong id="erqCritical">0</strong></article><article><small>Watch</small><strong id="erqWatch">0</strong></article><article><small>Top risk</small><strong id="erqTop">—</strong></article></div><div id="erqList" class="v432-list"></div></section>
+ <section class="v432-center v432-cert" id="executiveDecisionGateCenter" aria-labelledby="edgTitle"><header><div><small>V43.2 · Executive Decision Gate</small><strong id="edgTitle">Allow executive recommendations to advance only when production evidence and location risk are controlled.</strong><span id="edgPriority">Evaluating executive priority…</span></div><div class="v432-actions"><button type="button" id="edgRefresh">Evaluate decision</button><button type="button" id="edgCertify">Persist decision gate</button></div></header><div class="v432-kpis"><article><small>Decision score</small><strong id="edgScore">0%</strong></article><article><small>Status</small><strong id="edgStatus">—</strong></article><article><small>Trusted</small><strong id="edgTrusted">NO</strong></article><article><small>Blockers</small><strong id="edgBlockers">0</strong></article><article><small>Gate</small><strong id="edgId">—</strong></article></div><div id="edgList" class="v432-list"></div></section>
++<section class="v432-center v435-center" id="executiveInsightCenter" aria-labelledby="exiTitle"><header><div><small>V43.3 · Executive Insight Engine</small><strong id="exiTitle">Convert trusted operating evidence into ranked executive insights.</strong><span>Risks, opportunities, and operating leverage are synthesized from live production evidence.</span></div><button type="button" id="exiRefresh">Refresh insights</button></header><div class="v432-kpis"><article><small>Insights</small><strong id="exiCount">0</strong></article><article><small>Critical</small><strong id="exiCritical">0</strong></article><article><small>High priority</small><strong id="exiHigh">0</strong></article><article><small>Top insight</small><strong id="exiTop">—</strong></article></div><div id="exiList" class="v432-list"></div></section>
++<section class="v432-center v435-center" id="executiveRecommendationCenterV43" aria-labelledby="exrTitle"><header><div><small>V43.4 · Executive Recommendation Engine</small><strong id="exrTitle">Turn executive insights into governed operating recommendations.</strong><span>Each recommendation exposes confidence, expected impact, approval requirements, and supporting evidence.</span></div><button type="button" id="exrRefresh">Refresh recommendations</button></header><div class="v432-kpis"><article><small>Recommendations</small><strong id="exrCount">0</strong></article><article><small>Need approval</small><strong id="exrApproval">0</strong></article><article><small>Decision gate</small><strong id="exrGate">—</strong></article><article><small>Decision ready</small><strong id="exrReady">NO</strong></article></div><div id="exrList" class="v432-list"></div></section>
++<section class="v432-center v432-cert v435-workspace" id="executiveDecisionWorkspaceV43Center" aria-labelledby="edw43Title"><header><div><small>V43.5 · Executive Decision Workspace</small><strong id="edw43Title">Bring live evidence, risk, insights, recommendations, and governance into one decision surface.</strong><span id="edw43Headline">Building executive decision workspace…</span></div><div class="v432-actions"><button type="button" id="edw43Refresh">Refresh workspace</button><button type="button" id="edw43Persist">Persist decision package</button></div></header><div class="v432-kpis"><article><small>Workspace score</small><strong id="edw43Score">0%</strong></article><article><small>Status</small><strong id="edw43Status">—</strong></article><article><small>Trusted</small><strong id="edw43Trusted">NO</strong></article><article><small>Insights</small><strong id="edw43Insights">0</strong></article><article><small>Recommendations</small><strong id="edw43Recommendations">0</strong></article><article><small>Package</small><strong id="edw43Id">—</strong></article></div><div class="v435-action-card"><small>Recommended executive action</small><strong id="edw43Action">No recommendation available</strong></div><div id="edw43Checks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveLiveBriefCenter" data-src="js/modules/executiveLiveBriefEngine.js?v=43.2.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveLiveBriefCenter" data-src="js/modules/executiveLiveBriefCenter.js?v=43.2.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveRiskQueueCenter" data-src="js/modules/executiveRiskQueueEngine.js?v=43.2.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveRiskQueueCenter" data-src="js/modules/executiveRiskQueueCenter.js?v=43.2.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionGateCenter" data-src="js/modules/executiveDecisionGateEngine.js?v=43.2.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionGateCenter" data-src="js/modules/executiveDecisionGateCenter.js?v=43.2.0"></script>
+-
+-  <script src="js/startup-loader.js?v=43.2.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveInsightCenter" data-src="js/modules/executiveInsightEngine.js?v=43.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveInsightCenter" data-src="js/modules/executiveInsightCenter.js?v=43.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveRecommendationCenterV43" data-src="js/modules/executiveRecommendationEngineV43.js?v=43.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveRecommendationCenterV43" data-src="js/modules/executiveRecommendationCenterV43.js?v=43.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionWorkspaceV43Center" data-src="js/modules/executiveDecisionWorkspaceV43Engine.js?v=43.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionWorkspaceV43Center" data-src="js/modules/executiveDecisionWorkspaceV43Center.js?v=43.5.0"></script>
++
++  <script src="js/startup-loader.js?v=43.5.0"></script>
+ </body>
+ </html>
+--- a/client/styles.css
++++ b/client/styles.css
+@@ -13262,3 +13262,6 @@
+ .v4250-center{margin:24px 0;padding:22px;border:1px solid rgba(125,206,241,.28);border-radius:18px;background:rgba(7,24,38,.9)}.v4250-center header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap}.v4250-center header>div:first-child{display:grid;gap:5px}.v4250-center header strong{font-size:1.08rem}.v4250-center header span{opacity:.8;max-width:880px}.v4250-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px;margin:16px 0}.v4250-kpis article{padding:13px 14px;border-radius:13px;border:1px solid rgba(125,206,241,.18);background:rgba(255,255,255,.04);display:grid;gap:5px}.v4250-kpis strong{font-size:1.2rem}.v4250-actions{display:flex;gap:9px;flex-wrap:wrap;margin:13px 0}.v4250-actions input,.v4250-actions select{min-width:160px;padding:9px 11px;border-radius:10px;border:1px solid rgba(255,255,255,.16);background:rgba(0,0,0,.22);color:inherit}.v4250-list{display:grid;gap:9px;margin-top:14px}.v4250-list article{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 14px;border-radius:13px;border:1px solid rgba(125,206,241,.16);background:rgba(255,255,255,.035)}.v4250-list article div{display:grid;gap:3px}.v4250-list article span{font-size:.88rem;opacity:.76}.v4250-list b.pass{color:#8fe7b4}.v4250-list b.block{color:#ffa5a5}.v4250-list button{padding:8px 11px;border-radius:10px}.v4250-cert{border-color:rgba(149,224,255,.45);background:linear-gradient(135deg,rgba(7,28,43,.97),rgba(8,63,80,.9))}@media(max-width:720px){.v4250-list article{align-items:flex-start;flex-direction:column}.v4250-actions{display:grid}.v4250-actions input,.v4250-actions select{width:100%}}
+ 
+ .v432-center{margin:24px 0;padding:22px;border:1px solid rgba(125,206,241,.28);border-radius:18px;background:rgba(7,24,38,.92)}.v432-center header{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;flex-wrap:wrap}.v432-center header>div:first-child{display:grid;gap:5px}.v432-center header strong{font-size:1.1rem}.v432-center header span{opacity:.82;max-width:900px}.v432-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px;margin:16px 0}.v432-kpis article{padding:13px 14px;border-radius:13px;border:1px solid rgba(125,206,241,.18);background:rgba(255,255,255,.04);display:grid;gap:5px}.v432-kpis strong{font-size:1.2rem}.v432-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.v432-list{display:grid;gap:9px;margin-top:10px}.v432-list article{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 14px;border-radius:13px;border:1px solid rgba(125,206,241,.16);background:rgba(255,255,255,.035)}.v432-list article div{display:grid;gap:3px}.v432-list article span{font-size:.88rem;opacity:.78}.v432-list b.pass{color:#8fe7b4}.v432-list b.block{color:#ffa5a5}.v432-actions{display:flex;gap:9px;flex-wrap:wrap}.v432-cert{border-color:rgba(149,224,255,.46);background:linear-gradient(135deg,rgba(7,28,43,.97),rgba(8,63,80,.9))}@media(max-width:820px){.v432-grid{grid-template-columns:1fr}.v432-list article{align-items:flex-start;flex-direction:column}}
++
++/* V43.5 Executive Decision Intelligence */
++.v435-center{border-color:rgba(232,188,95,.30)}.v435-workspace{box-shadow:0 18px 55px rgba(2,15,25,.22)}.v435-action-card{display:grid;gap:7px;margin:14px 0;padding:16px 18px;border-radius:14px;border:1px solid rgba(232,188,95,.30);background:rgba(232,188,95,.07)}.v435-action-card strong{font-size:1.05rem;line-height:1.45}.v435-center .v432-list article span+span{margin-top:3px;opacity:.66}
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V43.2.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V43.5.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "43.2.0",
++        version: "43.5.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -466,6 +466,10 @@
+     if (url.pathname === "/api/executive/risk-queue" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveRiskQueue(organizationId));
+     if (url.pathname === "/api/executive/decision-gate" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveDecisionGate(organizationId));
+     if (url.pathname === "/api/executive/decision-gate" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveDecisionGate(organizationId, auth.user.name, true));
++    if (url.pathname === "/api/executive/insights" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveInsights(organizationId));
++    if (url.pathname === "/api/executive/recommendations" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveRecommendations(organizationId));
++    if (url.pathname === "/api/executive/workspace-v43" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveDecisionWorkspaceV43(organizationId));
++    if (url.pathname === "/api/executive/workspace-v43" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveDecisionWorkspaceV43(organizationId, auth.user.name, true));
+ 
+ 
+     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
+--- a/server/services/liveIntegrationService.js
++++ b/server/services/liveIntegrationService.js
+@@ -1636,7 +1636,7 @@
+         {id:"continuity",label:"Provider continuity",score:continuity.score||0,status:continuity.status||"unknown",trusted:(continuity.score||0)>=80}
+       ],
+       generatedAt:new Date().toISOString(),
+-      build:"43.2.0-executive-live-intelligence"
++      build:"43.5.0-executive-decision-intelligence"
+     };
+   }
+ 
+@@ -1646,7 +1646,7 @@
+       this.liveCoverageMatrix(organizationId),
+       this.locationCutoverControl(organizationId),
+       this.status(organizationId),
+-      this.providerIncidents(organizationId),
++      this.providerIncidentLedger(organizationId),
+       this.pilotSupport(organizationId)
+     ]);
+     const openIncidents = (incidents.items || incidents.incidents || []).filter(item => item.status !== "resolved" && item.status !== "closed");
+@@ -1700,11 +1700,92 @@
+       trusted:score===100,
+       blockers,controls,
+       priority:top?{locationId:top.locationId,locationName:top.locationName,risk:top.risk,severity:top.severity,recommendedAction:top.recommendedAction}:null,
+-      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.2.0-executive-live-intelligence"
++      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"
+     };
+     if(persist) {
+       await this.database.mutate(db=>{db.executiveDecisionGate||={};db.executiveDecisionGate[organizationId]=result;return result;});
+       await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision gate persisted: ${result.status}`,category:"executive-intelligence"});
++    }
++    return result;
++  }
++
++
++  async executiveInsights(organizationId) {
++    const [brief, queue, snapshot, health] = await Promise.all([
++      this.executiveLiveBrief(organizationId),
++      this.executiveRiskQueue(organizationId),
++      this.operatingSnapshot(organizationId),
++      this.productionHealthTelemetry(organizationId)
++    ]);
++    const insights=[];
++    const top=queue.topRisk;
++    if(top){
++      insights.push({id:`INS-RISK-${top.locationId||"portfolio"}`,kind:"risk",priority:top.severity==="critical"?"critical":top.severity==="watch"?"high":"normal",title:`${top.locationName||"Portfolio"} carries the highest current operating risk`,summary:top.recommendedAction||"Review the highest-risk location before the next service period.",confidence:Math.max(55,Math.min(98,Math.round(100-(top.risk||0)/3))),locationId:top.locationId||null,evidence:[...(top.reasons||[]),`Executive live score ${brief.score||0}%`],recommendedReview:"Open the location evidence chain and confirm ownership before changing operating policy."});
++    }
++    if((snapshot.openKitchenTickets||0)>8){
++      insights.push({id:"INS-KITCHEN-PRESSURE",kind:"risk",priority:(snapshot.openKitchenTickets||0)>15?"critical":"high",title:"Kitchen throughput pressure is building",summary:`${snapshot.openKitchenTickets||0} live tickets remain open in the current operating window.`,confidence:90,evidence:[`${snapshot.openKitchenTickets||0} open kitchen tickets`,`${snapshot.recentEvents||0} live events in the operating window`],recommendedReview:"Review seating pace and kitchen capacity before adding demand."});
++    }
++    if((snapshot.revenue||0)>0 && (health.score||0)>=80){
++      insights.push({id:"INS-CONTROLLED-REVENUE",kind:"opportunity",priority:"normal",title:"Live revenue is flowing through a controlled operating path",summary:`$${Number(snapshot.revenue||0).toLocaleString()} recorded in the current four-hour window with production health at ${health.score||0}%.`,confidence:92,evidence:[`Production health ${health.score||0}%`,`Live evidence ${brief.controls?.find(c=>c.id==='evidence')?.score||0}%`],recommendedReview:"Use this controlled baseline for shift-to-shift comparison and optimization."});
++    }
++    if((snapshot.employeesOnClock||0)>0 && (snapshot.seatedCovers||0)>0){
++      const coversPerEmployee=(snapshot.seatedCovers||0)/Math.max(1,snapshot.employeesOnClock||0);
++      insights.push({id:"INS-LABOR-LEVERAGE",kind:"efficiency",priority:coversPerEmployee<2?"high":"normal",title:"Labor leverage can be evaluated against live covers",summary:`${snapshot.seatedCovers||0} seated covers across ${snapshot.employeesOnClock||0} employees on clock (${coversPerEmployee.toFixed(1)} covers per employee in-window).`,confidence:84,evidence:[`${snapshot.seatedCovers||0} seated covers`,`${snapshot.employeesOnClock||0} employees on clock`],recommendedReview:coversPerEmployee<2?"Review deployment before adding labor.":"Maintain deployment and monitor guest wait and kitchen pressure."});
++    }
++    if(!insights.length){
++      insights.push({id:"INS-EVIDENCE-BUILDING",kind:"readiness",priority:"high",title:"Executive evidence is still building",summary:brief.headline||"Live operating evidence is not yet sufficient for a high-confidence executive insight.",confidence:60,evidence:brief.risks||[],recommendedReview:"Complete the live evidence and production controls before relying on automated recommendations."});
++    }
++    const priorityOrder={critical:0,high:1,normal:2,low:3};
++    insights.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
++    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
++  }
++
++  async executiveRecommendations(organizationId) {
++    const [insights, gate, brief, snapshot] = await Promise.all([
++      this.executiveInsights(organizationId),
++      this.executiveDecisionGate(organizationId),
++      this.executiveLiveBrief(organizationId),
++      this.operatingSnapshot(organizationId)
++    ]);
++    const recs=[];
++    for(const insight of insights.items||[]){
++      let category="operations", action=insight.recommendedReview, impact="Protect operating control", approval=true;
++      if(insight.id==="INS-KITCHEN-PRESSURE"){category="kitchen";action="Reduce seating pressure or add kitchen capacity before accepting additional demand.";impact="Lower ticket accumulation and protect guest pacing";}
++      else if(insight.id==="INS-LABOR-LEVERAGE"){category="staffing";action=insight.recommendedReview;impact="Improve labor deployment against live covers";}
++      else if(insight.kind==="opportunity"){category="portfolio";action="Use the current controlled window as the benchmark for the next comparable service period.";impact="Create a trusted performance baseline";approval=false;}
++      else if(insight.kind==="readiness"){category="governance";action="Resolve live-evidence blockers before approving operating changes.";impact="Prevent decisions from being made on untrusted data";}
++      recs.push({id:`REC-${insight.id}`,category,priority:insight.priority,title:insight.title,action,expectedImpact:impact,confidence:insight.confidence,approvalRequired:approval,decisionGateStatus:gate.status||"unknown",locationId:insight.locationId||null,evidence:insight.evidence||[]});
++    }
++    if((snapshot.freshnessSeconds??0)>300){
++      recs.unshift({id:"REC-FRESHNESS",category:"governance",priority:"critical",title:"Pause executive action until live evidence is fresh",action:"Restore live source freshness and rerun the Executive Decision Gate.",expectedImpact:"Avoid acting on stale operating conditions",confidence:99,approvalRequired:true,decisionGateStatus:gate.status||"unknown",locationId:null,evidence:[`Evidence age ${snapshot.freshnessSeconds}s`,brief.headline||""]});
++    }
++    const priorityOrder={critical:0,high:1,normal:2,low:3};
++    recs.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
++    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
++  }
++
++  async executiveDecisionWorkspaceV43(organizationId, actor = null, persist = false) {
++    const [brief, queue, insights, recommendations, gate] = await Promise.all([
++      this.executiveLiveBrief(organizationId),
++      this.executiveRiskQueue(organizationId),
++      this.executiveInsights(organizationId),
++      this.executiveRecommendations(organizationId),
++      this.executiveDecisionGate(organizationId)
++    ]);
++    const checks=[
++      {id:"live-brief",label:"Executive live brief",pass:(brief.score||0)>=80,detail:`${brief.score||0}% · ${brief.status||"unknown"}`},
++      {id:"insights",label:"Evidence-backed insights",pass:(insights.count||0)>0,detail:`${insights.count||0} insight(s)`},
++      {id:"recommendations",label:"Actionable recommendations",pass:(recommendations.count||0)>0,detail:`${recommendations.count||0} recommendation(s)`},
++      {id:"decision-gate",label:"Executive decision gate",pass:gate.trusted===true,detail:`${gate.score||0}% · ${gate.status||"unknown"}`},
++      {id:"critical-risk",label:"Critical portfolio risk controlled",pass:(queue.critical||0)===0,detail:`${queue.critical||0} critical · ${queue.watch||0} watch`}
++    ];
++    const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length);
++    const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
++    const top=recommendations.topRecommendation||null;
++    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"};
++    if(persist){
++      await this.database.mutate(db=>{db.executiveDecisionWorkspaceV43||={};db.executiveDecisionWorkspaceV43[organizationId]=result;return result;});
++      await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision workspace persisted: ${result.status}`,category:"executive-intelligence"});
+     }
+     return result;
+   }
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -4,7 +4,7 @@
+   const params = new URLSearchParams(window.location.search);
+   const fullStartup = params.get("full") === "1";
+   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
+-  const appSource = `js/app-v15.1.3.js?v=43.2.0`;
++  const appSource = `js/app-v15.1.3.js?v=43.5.0`;
+   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
+   const startedAt = performance.now();
+   const storageKey = "bluecurrent:last-good-startup";
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V43.2.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V43.5.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1057,7 +1057,7 @@
+ document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
+ window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
+ 
+-const platform = window.BlueCurrentPlatform.create({ build: "43.2.0-executive-live-intelligence", eventBus });
++const platform = window.BlueCurrentPlatform.create({ build: "43.5.0-executive-decision-intelligence", eventBus });
+ const startupRegistry = platform.registry;
+ window.BlueCurrentStartupRegistry = startupRegistry;
+ window.BlueCurrentPlatformRuntime = platform;
+@@ -2415,6 +2415,9 @@
+ const executiveLiveBriefCenterModule = startupRegistry.register("executiveLiveBriefCenter",shouldInitializeCenter("executiveLiveBriefCenter") ? window.createBlueCurrentExecutiveLiveBriefCenterModule?.(eventBus, appState) : null,["eventBus","appState","v42ClosureCenter"]);
+ const executiveRiskQueueCenterModule = startupRegistry.register("executiveRiskQueueCenter",shouldInitializeCenter("executiveRiskQueueCenter") ? window.createBlueCurrentExecutiveRiskQueueCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveLiveBriefCenter"]);
+ const executiveDecisionGateCenterModule = startupRegistry.register("executiveDecisionGateCenter",shouldInitializeCenter("executiveDecisionGateCenter") ? window.createBlueCurrentExecutiveDecisionGateCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveLiveBriefCenter","executiveRiskQueueCenter"]);
++const executiveInsightCenterModule = startupRegistry.register("executiveInsightCenter",shouldInitializeCenter("executiveInsightCenter") ? window.createBlueCurrentExecutiveInsightCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveLiveBriefCenter","executiveRiskQueueCenter"]);
++const executiveRecommendationCenterV43Module = startupRegistry.register("executiveRecommendationCenterV43",shouldInitializeCenter("executiveRecommendationCenterV43") ? window.createBlueCurrentExecutiveRecommendationCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveDecisionGateCenter"]);
++const executiveDecisionWorkspaceV43CenterModule = startupRegistry.register("executiveDecisionWorkspaceV43Center",shouldInitializeCenter("executiveDecisionWorkspaceV43Center") ? window.createBlueCurrentExecutiveDecisionWorkspaceV43CenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveRecommendationCenterV43","executiveDecisionGateCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- a/client/js/modules/executiveInsightCenter.js
++++ b/client/js/modules/executiveInsightCenter.js
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveInsightCenterModule(eventBus,appState){const root=document.getElementById("executiveInsightCenter");if(!root||!window.BlueCurrentExecutiveInsightEngine)return null;const e=new window.BlueCurrentExecutiveInsightEngine(eventBus,appState),$=id=>document.getElementById(id);function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}function draw(x){$("exiCount").textContent=x.count||0;$("exiCritical").textContent=x.critical||0;$("exiHigh").textContent=x.high||0;$("exiTop").textContent=x.topInsight?.title||"—";$("exiList").innerHTML=(x.items||[]).map(i=>`<article><div><strong>${esc(i.title)}</strong><span>${esc(i.summary)} · ${esc(i.confidence)}% confidence</span><span>${esc((i.evidence||[]).join(" · "))}</span></div><b class="${i.priority==='critical'?'block':'pass'}">${esc(i.priority)}</b></article>`).join("");}async function refresh(){try{draw(await e.refresh());}catch(err){$("exiTop").textContent=err.message;}}$("exiRefresh")?.addEventListener("click",refresh);refresh();return{engine:e,refresh};}window.createBlueCurrentExecutiveInsightCenterModule=createBlueCurrentExecutiveInsightCenterModule;})();--- a/client/js/modules/executiveRecommendationCenterV43.js
++++ b/client/js/modules/executiveRecommendationCenterV43.js
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveRecommendationCenterV43Module(eventBus,appState){const root=document.getElementById("executiveRecommendationCenterV43");if(!root||!window.BlueCurrentExecutiveRecommendationEngineV43)return null;const e=new window.BlueCurrentExecutiveRecommendationEngineV43(eventBus,appState),$=id=>document.getElementById(id);function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}function draw(x){$("exrCount").textContent=x.count||0;$("exrApproval").textContent=x.approvalRequired||0;$("exrGate").textContent=x.decisionGate||"—";$("exrReady").textContent=x.decisionReady?"YES":"NO";$("exrList").innerHTML=(x.items||[]).map(r=>`<article><div><strong>${esc(r.title)}</strong><span>${esc(r.action)}</span><span>${esc(r.expectedImpact)} · ${esc(r.confidence)}% confidence</span></div><b class="${r.priority==='critical'?'block':'pass'}">${esc(r.category)}</b></article>`).join("");}async function refresh(){try{draw(await e.refresh());}catch(err){$("exrGate").textContent=err.message;}}$("exrRefresh")?.addEventListener("click",refresh);refresh();return{engine:e,refresh};}window.createBlueCurrentExecutiveRecommendationCenterV43Module=createBlueCurrentExecutiveRecommendationCenterV43Module;})();--- a/client/js/modules/executiveRecommendationEngineV43.js
++++ b/client/js/modules/executiveRecommendationEngineV43.js
+@@ -0,0 +1 @@
++(function(){"use strict";function request(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async p=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{headers:h});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class BlueCurrentExecutiveRecommendationEngineV43{constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.request=request();}async refresh(){const x=await this.request("/api/executive/recommendations");this.appState?.update?.({executiveRecommendationsV43:x});this.eventBus?.emit?.("executive:recommendations-v43",x);return x;}}window.BlueCurrentExecutiveRecommendationEngineV43=BlueCurrentExecutiveRecommendationEngineV43;})();--- a/client/js/modules/executiveDecisionWorkspaceV43Engine.js
++++ b/client/js/modules/executiveDecisionWorkspaceV43Engine.js
+@@ -0,0 +1 @@
++(function(){"use strict";function request(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:h});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class BlueCurrentExecutiveDecisionWorkspaceV43Engine{constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.request=request();}async run(persist=false){const x=await this.request("/api/executive/workspace-v43",persist?{method:"POST",body:"{}"}:{});this.appState?.update?.({executiveDecisionWorkspaceV43:x,executiveWorkspaceDecisionReady:!!x.trusted});this.eventBus?.emit?.("executive:workspace-v43",x);return x;}}window.BlueCurrentExecutiveDecisionWorkspaceV43Engine=BlueCurrentExecutiveDecisionWorkspaceV43Engine;})();--- a/client/js/modules/executiveDecisionWorkspaceV43Center.js
++++ b/client/js/modules/executiveDecisionWorkspaceV43Center.js
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveDecisionWorkspaceV43CenterModule(eventBus,appState){const root=document.getElementById("executiveDecisionWorkspaceV43Center");if(!root||!window.BlueCurrentExecutiveDecisionWorkspaceV43Engine)return null;const e=new window.BlueCurrentExecutiveDecisionWorkspaceV43Engine(eventBus,appState),$=id=>document.getElementById(id);function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}function draw(x){$("edw43Score").textContent=`${x.score||0}%`;$("edw43Status").textContent=x.status||"—";$("edw43Trusted").textContent=x.trusted?"YES":"NO";$("edw43Insights").textContent=x.insightCount||0;$("edw43Recommendations").textContent=x.recommendationCount||0;$("edw43Id").textContent=x.id||"—";$("edw43Headline").textContent=x.headline||"Executive decision workspace";$("edw43Action").textContent=x.recommendedAction?`${x.recommendedAction.title}: ${x.recommendedAction.action}`:"No recommendation available";$("edw43Checks").innerHTML=(x.checks||[]).map(c=>`<article><div><strong>${esc(c.label)}</strong><span>${esc(c.detail)}</span></div><b class="${c.pass?'pass':'block'}">${c.pass?'PASS':'BLOCK'}</b></article>`).join("");}async function refresh(p=false){try{draw(await e.run(p));}catch(err){$("edw43Status").textContent=err.message;}}$("edw43Refresh")?.addEventListener("click",()=>refresh(false));$("edw43Persist")?.addEventListener("click",()=>refresh(true));refresh(false);return{engine:e,refresh};}window.createBlueCurrentExecutiveDecisionWorkspaceV43CenterModule=createBlueCurrentExecutiveDecisionWorkspaceV43CenterModule;})();--- a/client/js/modules/executiveInsightEngine.js
++++ b/client/js/modules/executiveInsightEngine.js
+@@ -0,0 +1 @@
++(function(){"use strict";function request(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async p=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{headers:h});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class BlueCurrentExecutiveInsightEngine{constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.request=request();}async refresh(){const x=await this.request("/api/executive/insights");this.appState?.update?.({executiveInsights:x});this.eventBus?.emit?.("executive:insights",x);return x;}}window.BlueCurrentExecutiveInsightEngine=BlueCurrentExecutiveInsightEngine;})();
