@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "47.10.0",
+        version: "47.15.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -207,6 +207,15 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const opportunity=performance.opportunities.find(x=>x.id===body.opportunityId);
       if(!opportunity)return sendJson(response,404,{error:"Performance opportunity not found or no longer active."});
       return sendJson(response,201,await hospitalityActionWorkspaceService.createFromOpportunity(auth.membership.organizationId,locationId,opportunity,body,auth.user.name));
+    }
+
+    if (url.pathname.startsWith("/api/hospitality-actions/") && url.pathname.endsWith("/remeasure") && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Hospitality outcome permission required."});
+      const workspaceId=decodeURIComponent(url.pathname.split("/")[3]||"");
+      const body=await readJson(request);
+      const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      try{return sendJson(response,200,await hospitalityActionWorkspaceService.remeasure(auth.membership.organizationId,locationId,workspaceId,auth.user.name));}
+      catch(error){return sendJson(response,/required|not found/i.test(error.message)?400:500,{error:error.message});}
     }
 
     if (url.pathname.startsWith("/api/hospitality-actions/") && request.method === "PATCH") {

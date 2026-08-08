@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "47.10.0",
+  "version": "47.15.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 owned hospitality action workspaces",
+  "description": "Blue Current Hospitality OS \u2014 action outcome measurement and realized impact",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
