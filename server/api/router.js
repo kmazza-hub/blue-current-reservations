@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "46.70.0",
+        version: "47.5.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -193,6 +193,19 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     const auth = await authService.authenticate(bearerToken(request));
     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
+
+    if (url.pathname === "/api/hospitality-performance" && request.method === "GET") {
+      const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      return sendJson(response,200,await hospitalityPerformanceService.snapshot(auth.membership.organizationId,locationId));
+    }
+
+    if (url.pathname.startsWith("/api/hospitality-performance/opportunities/") && url.pathname.endsWith("/decision") && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Performance decision permission required."});
+      const opportunityId = decodeURIComponent(url.pathname.split("/")[4] || "");
+      const body = await readJson(request);
+      const locationId = body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      return sendJson(response,201,await hospitalityPerformanceService.decide(auth.membership.organizationId,locationId,opportunityId,body,auth.user.name));
+    }
 
     const organizationId = auth.membership.organizationId;
     const allowedLocations = auth.membership.locationIds || [];

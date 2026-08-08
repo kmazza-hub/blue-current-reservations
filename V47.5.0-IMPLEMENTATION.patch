@@ -1,0 +1,603 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.70.0",
++  "version": "47.5.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V46 full release certification and closeout",
++  "description": "Blue Current Hospitality OS \u2014 Hospitality Performance Command opportunity queue",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -36,6 +36,7 @@
+ const RetirementAssuranceService = require("./services/retirementAssuranceService");
+ const RetirementCandidateImpactService = require("./services/retirementCandidateImpactService");
+ const V46ReleaseCertificationService = require("./services/v46ReleaseCertificationService");
++const HospitalityPerformanceService = require("./services/hospitalityPerformanceService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -75,7 +76,8 @@
+ const retirementAssuranceService = new RetirementAssuranceService(ROOT, repositoryImpactService);
+ const retirementCandidateImpactService = new RetirementCandidateImpactService(repositoryImpactService, retirementAssuranceService);
+ const v46ReleaseCertificationService = new V46ReleaseCertificationService(ROOT, retirementAssuranceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService });
++const hospitalityPerformanceService = new HospitalityPerformanceService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, inventoryIntelligenceService, guestIntelligenceService, executiveCommandCenterService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -162,7 +164,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.70.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V47.5.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.70.0",
++        version: "47.5.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -193,6 +193,19 @@
+ 
+     const auth = await authService.authenticate(bearerToken(request));
+     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
++
++    if (url.pathname === "/api/hospitality-performance" && request.method === "GET") {
++      const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
++      return sendJson(response,200,await hospitalityPerformanceService.snapshot(auth.membership.organizationId,locationId));
++    }
++
++    if (url.pathname.startsWith("/api/hospitality-performance/opportunities/") && url.pathname.endsWith("/decision") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Performance decision permission required."});
++      const opportunityId = decodeURIComponent(url.pathname.split("/")[4] || "");
++      const body = await readJson(request);
++      const locationId = body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
++      return sendJson(response,201,await hospitalityPerformanceService.decide(auth.membership.organizationId,locationId,opportunityId,body,auth.user.name));
++    }
+ 
+     const organizationId = auth.membership.organizationId;
+     const allowedLocations = auth.membership.locationIds || [];
+--- a/server/services/hospitalityPerformanceService.js
++++ b/server/services/hospitalityPerformanceService.js
+@@ -0,0 +1,93 @@
++"use strict";
++
++class HospitalityPerformanceService {
++  constructor(database,auditService,realtimeHub,commandCenterService,workforceIntelligenceService,inventoryIntelligenceService,guestIntelligenceService,executiveCommandCenterService){
++    Object.assign(this,{database,auditService,realtimeHub,commandCenterService,workforceIntelligenceService,inventoryIntelligenceService,guestIntelligenceService,executiveCommandCenterService});
++  }
++  clamp(n,min=0,max=100){return Math.max(min,Math.min(max,Number(n)||0));}
++  severityWeight(severity){return ({critical:100,high:82,medium:62,normal:48,low:30}[String(severity||"").toLowerCase()]||50);}
++  money(value){return Math.max(0,Math.round(Number(value)||0));}
++  opportunity({id,category,title,why,nextAction,owner="Manager",severity="medium",impactDollars=0,impactLabel="",confidence=80,source,locationId,metadata={}}){
++    const urgency=this.severityWeight(severity),impactScore=this.clamp(impactDollars>1000?95:impactDollars>500?82:impactDollars>200?68:impactDollars>50?52:impactDollars>0?40:30);
++    const score=Math.round(urgency*.40+impactScore*.35+this.clamp(confidence)*.25);
++    return {id,category,title,why,nextAction,owner,severity,score,estimatedImpactDollars:this.money(impactDollars),impactLabel:impactLabel|| (impactDollars?`≈ $${this.money(impactDollars).toLocaleString()} opportunity`:"Operational protection"),confidence:this.clamp(confidence),source,locationId,metadata,status:"open"};
++  }
++  kitchenOpportunities(db,organizationId,locationId){
++    const now=Date.now(),tickets=(db.kitchenTickets||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["served","cancelled"].includes(x.status));
++    if(!tickets.length)return [];
++    const aged=tickets.map(t=>({...t,ageMinutes:Math.max(0,Math.round((now-new Date(t.createdAt||now).getTime())/60000))})).filter(t=>t.ageMinutes>Number(t.targetMinutes||18));
++    if(!aged.length)return [];
++    const worst=[...aged].sort((a,b)=>b.ageMinutes-a.ageMinutes)[0],avg=Math.round(aged.reduce((s,x)=>s+x.ageMinutes,0)/aged.length);
++    return [this.opportunity({id:`perf_kitchen_${locationId}`,category:"kitchen",title:`Recover ${aged.length} delayed kitchen ticket${aged.length===1?"":"s"}`,why:`${aged.length} active ticket${aged.length===1?" is":"s are"} beyond target; the oldest is ${worst.ageMinutes} minutes.`,nextAction:"Open Kitchen Command, rebalance station load, and expedite the oldest ticket first.",owner:"Kitchen Manager",severity:worst.ageMinutes>=30?"critical":"high",impactDollars:aged.length*45,impactLabel:`Protect ${aged.length} guest experience${aged.length===1?"":"s"} · avg delay ${avg} min`,confidence:94,source:"kitchenTickets",locationId,metadata:{agedTickets:aged.length,oldestMinutes:worst.ageMinutes,averageAgeMinutes:avg}})];
++  }
++  reservationOpportunities(db,organizationId,locationId){
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["cancelled","completed","no_show"].includes(x.status)),waitlist=(db.waitlist||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["seated","cancelled"].includes(x.status)),unassigned=reservations.filter(x=>["confirmed","booked","pending"].includes(x.status)&&!x.tableId),longWait=waitlist.filter(x=>Number(x.quotedMinutes||0)>=25),out=[];
++    if(unassigned.length)out.push(this.opportunity({id:`perf_res_assignment_${locationId}`,category:"reservations",title:`Pre-assign ${unassigned.length} reservation${unassigned.length===1?"":"s"} before arrival`,why:`${unassigned.length} active reservation${unassigned.length===1?" has":"s have"} no table assignment.`,nextAction:"Open Reservations, match parties to tables, and protect high-value/VIP requests first.",owner:"Host Lead",severity:unassigned.length>=4?"high":"medium",impactDollars:unassigned.reduce((s,x)=>s+Number(x.partySize||0)*18,0),impactLabel:`Protect ${unassigned.reduce((s,x)=>s+Number(x.partySize||0),0)} booked covers`,confidence:92,source:"reservations",locationId,metadata:{unassignedReservations:unassigned.length}}));
++    if(longWait.length)out.push(this.opportunity({id:`perf_wait_${locationId}`,category:"reservations",title:`Reduce ${longWait.length} long waitlist quote${longWait.length===1?"":"s"}`,why:`${longWait.length} waiting part${longWait.length===1?"y is":"ies are"} quoted at least 25 minutes.`,nextAction:"Review table turns and available inventory; seat the longest-waiting flexible party first.",owner:"Host Lead",severity:"high",impactDollars:longWait.reduce((s,x)=>s+Number(x.partySize||0)*22,0),impactLabel:"Protect walk-in conversion and guest sentiment",confidence:88,source:"waitlist",locationId,metadata:{longWaits:longWait.length}}));
++    return out;
++  }
++  guestOpportunities(guest,locationId){
++    const recoverable=Number(guest?.summary?.recoverableRevenue||0),atRisk=Number(guest?.summary?.atRiskGuests||0);
++    if(!atRisk||!recoverable)return [];
++    return [this.opportunity({id:`perf_guest_recovery_${locationId}`,category:"guests",title:`Recover ${atRisk} at-risk guest relationship${atRisk===1?"":"s"}`,why:`Guest Intelligence estimates $${recoverable.toLocaleString()} in recoverable revenue.`,nextAction:"Open Guest Intelligence, prioritize the highest-value at-risk guest, and assign a personal recovery touch.",owner:"General Manager",severity:recoverable>=1000?"high":"medium",impactDollars:recoverable,impactLabel:`≈ $${recoverable.toLocaleString()} recoverable revenue`,confidence:82,source:"guestIntelligence",locationId,metadata:{atRiskGuests:atRisk,recoverableRevenue:recoverable}})];
++  }
++  workforceOpportunities(workforce,locationId){
++    return (workforce?.recommendations||[]).filter(x=>x.id!=="wf_hold_plan").slice(0,3).map((x,i)=>{
++      const save=(String(x.impact||"").match(/\$(\d[\d,]*)/)||[])[1],impact=save?Number(save.replace(/,/g,"")):(x.severity==="high"?350:150);
++      return this.opportunity({id:`perf_workforce_${x.id}`,category:"labor",title:x.title,why:x.reason,nextAction:x.action,owner:"General Manager",severity:x.severity||"medium",impactDollars:impact,impactLabel:x.impact||"Protect labor efficiency",confidence:86-i*3,source:"workforceIntelligence",locationId,metadata:{recommendationId:x.id}});
++    });
++  }
++  inventoryOpportunities(inventory,locationId){
++    return (inventory?.recommendations||[]).filter(x=>x.id!=="inv_hold").slice(0,3).map((x,i)=>{
++      const recover=(String(x.impact||"").match(/\$(\d[\d,]*)/)||[])[1],impact=recover?Number(recover.replace(/,/g,"")):(x.severity==="critical"?500:180);
++      return this.opportunity({id:`perf_inventory_${x.id}`,category:"inventory",title:x.title,why:x.reason,nextAction:x.type==="reorder"?"Open Inventory and approve the draft replenishment quantity.":"Open Inventory Intelligence and resolve the flagged cost/waste variance.",owner:"Kitchen Manager",severity:x.severity||"medium",impactDollars:impact,impactLabel:x.impact||"Protect product availability and margin",confidence:90-i*3,source:"inventoryIntelligence",locationId,metadata:{recommendationId:x.id}});
++    });
++  }
++  revenueOpportunities(command,executiveLocation,locationId){
++    const out=[],forecast=Number(command?.business?.forecastRevenue||0),trend=Number(executiveLocation?.revenueTrend||0),occupancy=Number(executiveLocation?.occupancy||0);
++    if(trend<0){const gap=Math.max(100,Math.round(Number(executiveLocation?.yesterdayRevenue||0)-Number(executiveLocation?.revenue||0)));out.push(this.opportunity({id:`perf_revenue_pace_${locationId}`,category:"revenue",title:"Close the revenue pacing gap",why:`Current modeled revenue is pacing ${Math.abs(trend).toFixed(1)}% below yesterday.`,nextAction:"Review open reservation inventory, call capture, and high-value guest opportunities before the next demand window.",owner:"General Manager",severity:trend<=-7?"high":"medium",impactDollars:gap,impactLabel:`≈ $${gap.toLocaleString()} pacing gap`,confidence:84,source:"executiveCommand",locationId,metadata:{revenueTrend:trend,occupancy}}));}
++    else if(occupancy<70&&forecast>0)out.push(this.opportunity({id:`perf_revenue_capacity_${locationId}`,category:"revenue",title:"Use available capacity to capture incremental demand",why:`Modeled occupancy is ${occupancy}% with revenue forecast at $${forecast.toLocaleString()}.`,nextAction:"Review reservation availability and activate the highest-fit guest/demand channel for the next open window.",owner:"General Manager",severity:"medium",impactDollars:Math.round(forecast*.03),impactLabel:"Target 3% incremental revenue capture",confidence:76,source:"commandCenter",locationId,metadata:{occupancy,forecastRevenue:forecast}}));
++    return out;
++  }
++  async snapshot(organizationId,locationId="loc_marina"){
++    const [db,command,workforce,inventory,guest,executive]=await Promise.all([
++      this.database.read(),
++      this.commandCenterService.snapshot(organizationId,locationId),
++      this.workforceIntelligenceService.snapshot(organizationId,locationId),
++      this.inventoryIntelligenceService.snapshot(organizationId,locationId),
++      this.guestIntelligenceService.snapshot(organizationId),
++      this.executiveCommandCenterService.snapshot(organizationId)
++    ]);
++    const executiveLocation=(executive.locations||[]).find(x=>x.locationId===locationId)||null;
++    const opportunities=[
++      ...this.kitchenOpportunities(db,organizationId,locationId),
++      ...this.reservationOpportunities(db,organizationId,locationId),
++      ...this.workforceOpportunities(workforce,locationId),
++      ...this.inventoryOpportunities(inventory,locationId),
++      ...this.guestOpportunities(guest,locationId),
++      ...this.revenueOpportunities(command,executiveLocation,locationId)
++    ].sort((a,b)=>b.score-a.score||b.estimatedImpactDollars-a.estimatedImpactDollars);
++    const decisions=(db.hospitalityPerformanceDecisions||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId).slice(-50).reverse();
++    const decisionMap=new Map(decisions.map(x=>[x.opportunityId,x]));
++    const ranked=opportunities.map((x,i)=>({...x,rank:i+1,lastDecision:decisionMap.get(x.id)||null}));
++    const totalImpact=ranked.filter(x=>!["dismissed","completed"].includes(x.lastDecision?.decision)).reduce((s,x)=>s+x.estimatedImpactDollars,0);
++    const categories={};for(const x of ranked)categories[x.category]=(categories[x.category]||0)+1;
++    return {
++      version:"47.5.0",generatedAt:new Date().toISOString(),organizationId,locationId,
++      headline:ranked[0]?`#1 opportunity: ${ranked[0].title}`:"No material performance opportunities are active.",
++      summary:{openOpportunities:ranked.length,totalEstimatedImpactDollars:totalImpact,highPriority:ranked.filter(x=>["critical","high"].includes(x.severity)).length,categories,readinessScore:command?.readiness?.score||null,portfolioRevenueTrend:executive?.portfolio?.revenueTrend||0},
++      opportunities:ranked.slice(0,12),decisions,
++      sourceHealth:{commandCenter:Boolean(command),workforce:Boolean(workforce),inventory:Boolean(inventory),guest:Boolean(guest),executive:Boolean(executive)},
++      policy:{rankBy:"urgency + estimated impact + confidence",humanDecisionRequired:true,automaticExecution:false}
++    };
++  }
++  async decide(organizationId,locationId,opportunityId,input,actor){
++    const allowed=new Set(["accepted","snoozed","dismissed","completed"]);
++    const decision=allowed.has(input.decision)?input.decision:"accepted",record={id:`hpd_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,opportunityId,decision,owner:String(input.owner||actor||"Manager").slice(0,120),note:String(input.note||"").slice(0,500),actor,createdAt:new Date().toISOString()};
++    await this.database.mutate(db=>{db.hospitalityPerformanceDecisions||=[];db.hospitalityPerformanceDecisions.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Hospitality performance opportunity ${decision}: ${opportunityId}`,category:"hospitality_performance"});
++    this.realtimeHub.publish("hospitality-performance:decision",record);
++    return record;
++  }
++}
++module.exports=HospitalityPerformanceService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.70.0">
++  <meta name="blue-current-build" content="47.5.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -201,6 +201,31 @@
+   </header>
+ 
+   <main id="main">
++
++    <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
++      <header>
++        <div>
++          <small>V47.01–V47.05 · Hospitality Performance Command</small>
++          <strong>One prioritized action queue for the decisions that move service, revenue, labor, guest experience, and margin.</strong>
++          <span>Blue Current ranks existing operating signals by urgency, estimated impact, and confidence. Managers stay in control of every action.</span>
++        </div>
++        <button id="hpcRefresh" type="button">Refresh opportunities</button>
++      </header>
++      <div class="v432-kpis">
++        <article><small>Open opportunities</small><strong id="hpcOpen">0</strong></article>
++        <article><small>Estimated impact</small><strong id="hpcImpact">$0</strong></article>
++        <article><small>High priority</small><strong id="hpcHigh">0</strong></article>
++        <article><small>Readiness</small><strong id="hpcReadiness">—</strong></article>
++        <article><small>Portfolio trend</small><strong id="hpcTrend">0.0%</strong></article>
++      </div>
++      <div class="v4316-answer" id="hpcHeadline">Building the highest-value operating queue…</div>
++      <div class="v4316-actions">
++        <input id="hpcOwner" class="v4312-input" placeholder="Action owner">
++        <input id="hpcNote" class="v4312-input" placeholder="Decision note">
++      </div>
++      <div id="hpcQueue" class="v432-list"></div>
++      <p><strong>Live sources:</strong> <span id="hpcSources">Loading…</span> · <strong>Updated:</strong> <span id="hpcUpdated">—</span></p>
++    </section>
+ 
+     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
+       <div class="container">
+@@ -8623,6 +8648,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="selectedCandidatePreviewCenter" data-src="js/modules/selectedCandidatePreviewCenter.js?v=46.65.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationEngine.js?v=46.70.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationCenter.js?v=46.70.0"></script>
+-<script src="js/startup-loader.js?v=46.70.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceEngine.js?v=47.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceCenter.js?v=47.5.0"></script>
++<script src="js/startup-loader.js?v=47.5.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1222,6 +1222,7 @@
+ const retirementCandidateSelectionCenterModule = startupRegistry.register("retirementCandidateSelectionCenter", shouldInitializeCenter("retirementCandidateSelectionCenter") ? window.createBlueCurrentRetirementCandidateSelectionCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementAssuranceCenter"]);
+ const selectedCandidatePreviewCenterModule = startupRegistry.register("selectedCandidatePreviewCenter", shouldInitializeCenter("selectedCandidatePreviewCenter") ? window.createBlueCurrentSelectedCandidatePreviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementCandidateSelectionCenter"]);
+ const v46ReleaseCertificationCenterModule = startupRegistry.register("v46ReleaseCertificationCenter", shouldInitializeCenter("v46ReleaseCertificationCenter") ? window.createBlueCurrentV46ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "selectedCandidatePreviewCenter"]);
++const hospitalityPerformanceCommandModule = startupRegistry.register("hospitalityPerformanceCommand", shouldInitializeCenter("hospitalityPerformanceCommand") ? window.createBlueCurrentHospitalityPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.70.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V47.5.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/hospitalityPerformanceEngine.js
++++ b/client/js/modules/hospitalityPerformanceEngine.js
+@@ -0,0 +1,11 @@
++(function(global){"use strict";
++class BlueCurrentHospitalityPerformanceEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  locationId(){const s=this.appState?.getState?.()||{};return s.activeLocationId||s.selectedLocationId||s.auth?.locationId||"loc_marina";}
++  async snapshot(){const r=await fetch(`/api/hospitality-performance?locationId=${encodeURIComponent(this.locationId())}`,{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Hospitality Performance failed (${r.status})`);this.appState?.update?.({hospitalityPerformance:d});this.eventBus?.emit?.("hospitality-performance:updated",structuredClone(d));return d;}
++  async decide(opportunityId,decision,owner="",note=""){const r=await fetch(`/api/hospitality-performance/opportunities/${encodeURIComponent(opportunityId)}/decision`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),decision,owner,note})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Performance decision failed (${r.status})`);this.eventBus?.emit?.("hospitality-performance:decision",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentHospitalityPerformanceEngine;
++if(global)global.BlueCurrentHospitalityPerformanceEngine=BlueCurrentHospitalityPerformanceEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/hospitalityPerformanceCenter.js
++++ b/client/js/modules/hospitalityPerformanceCenter.js
+@@ -0,0 +1,11 @@
++(function(){"use strict";
++function createBlueCurrentHospitalityPerformanceCenterModule(eventBus,appState){const root=document.getElementById("hospitalityPerformanceCommand");if(!root||!window.BlueCurrentHospitalityPerformanceEngine)return null;const e=new window.BlueCurrentHospitalityPerformanceEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));let snapshot=null;
++function categoryLabel(x){return ({reservations:"Reservations",labor:"Labor",kitchen:"Kitchen",guests:"Guest",inventory:"Inventory",revenue:"Revenue"})[x]||x;}
++function money(n){return `$${Number(n||0).toLocaleString()}`;}
++function render(s){snapshot=s;$("hpcOpen").textContent=s.summary?.openOpportunities||0;$("hpcImpact").textContent=money(s.summary?.totalEstimatedImpactDollars||0);$("hpcHigh").textContent=s.summary?.highPriority||0;$("hpcReadiness").textContent=s.summary?.readinessScore==null?"—":`${s.summary.readinessScore}%`;$("hpcTrend").textContent=`${Number(s.summary?.portfolioRevenueTrend||0)>=0?"+":""}${Number(s.summary?.portfolioRevenueTrend||0).toFixed(1)}%`;$("hpcHeadline").textContent=s.headline||"No material performance opportunities are active.";$("hpcUpdated").textContent=new Date(s.generatedAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
++$("hpcQueue").innerHTML=(s.opportunities||[]).map(x=>`<article class="hpc-opportunity" data-opportunity="${esc(x.id)}"><div class="hpc-rank">#${x.rank}</div><div class="hpc-copy"><div><span>${esc(categoryLabel(x.category))}</span><b>${esc(x.severity)}</b><small>${x.confidence}% confidence</small></div><strong>${esc(x.title)}</strong><p>${esc(x.why)}</p><p><b>Next:</b> ${esc(x.nextAction)}</p><div class="hpc-meta"><span>${esc(x.owner)}</span><span>Score ${x.score}</span><span>${esc(x.impactLabel)}</span></div>${x.lastDecision?`<small>Last decision: ${esc(x.lastDecision.decision)} · ${esc(x.lastDecision.owner||x.lastDecision.actor)}</small>`:""}</div><div class="hpc-impact"><strong>${money(x.estimatedImpactDollars)}</strong><span>estimated impact</span><button type="button" data-hpc-decision="accepted">Own action</button><button type="button" data-hpc-decision="snoozed">Snooze</button><button type="button" data-hpc-decision="completed">Complete</button></div></article>`).join("")||"<article><strong>Operation is clear.</strong><span>No material opportunities are active right now.</span></article>";
++$("hpcSources").textContent=Object.entries(s.sourceHealth||{}).filter(([,ok])=>ok).map(([name])=>name.replace(/([A-Z])/g," $1")).join(" · ");}
++async function load(){try{$("hpcHeadline").textContent="Building the highest-value operating queue…";render(await e.snapshot());}catch(err){$("hpcHeadline").textContent=err.message;}}
++root.addEventListener("click",async ev=>{const btn=ev.target.closest("[data-hpc-decision]"),card=ev.target.closest("[data-opportunity]");if(!btn||!card)return;try{btn.disabled=true;await e.decide(card.dataset.opportunity,btn.dataset.hpcDecision,$("hpcOwner").value||"Manager",$("hpcNote").value||"");await load();}catch(err){$("hpcHeadline").textContent=err.message;}finally{btn.disabled=false;}});
++$("hpcRefresh")?.addEventListener("click",load);window.addEventListener?.("online",load);eventBus?.on?.("auth:restored",load);eventBus?.on?.("reservation:updated",load);eventBus?.on?.("inventory:action-recorded",load);eventBus?.on?.("workforce:action-recorded",load);load();return{engine:e,load};}
++window.createBlueCurrentHospitalityPerformanceCenterModule=createBlueCurrentHospitalityPerformanceCenterModule;})();--- a/scripts/maintenance/test-v47.05-hospitality-performance.js
++++ b/scripts/maintenance/test-v47.05-hospitality-performance.js
+@@ -0,0 +1,66 @@
++"use strict";
++const assert=require("assert");
++const HospitalityPerformanceService=require("../../server/services/hospitalityPerformanceService");
++
++(async()=>{
++  const now=Date.now(),dbState={
++    reservations:[
++      {id:"r1",organizationId:"org",locationId:"loc",partySize:4,status:"confirmed",tableId:null},
++      {id:"r2",organizationId:"org",locationId:"loc",partySize:2,status:"confirmed",tableId:null}
++    ],
++    waitlist:[{id:"w1",organizationId:"org",locationId:"loc",partySize:3,quotedMinutes:30,status:"waiting"}],
++    kitchenTickets:[{id:"k1",organizationId:"org",locationId:"loc",status:"open",createdAt:new Date(now-35*60000).toISOString(),targetMinutes:18}],
++    hospitalityPerformanceDecisions:[]
++  };
++  const database={
++    read:async()=>dbState,
++    mutate:async fn=>fn(dbState)
++  };
++  const audit=[];
++  const service=new HospitalityPerformanceService(
++    database,
++    {record:async x=>audit.push(x)},
++    {publish:()=>{}},
++    {snapshot:async()=>({readiness:{score:88},business:{forecastRevenue:20000}})},
++    {snapshot:async()=>({summary:{laborPercent:20},recommendations:[{id:"wf_trim_labor",severity:"medium",title:"Trim late labor",action:"Release one closer",reason:"Projected labor is above target.",impact:"Save $210"}]})},
++    {snapshot:async()=>({recommendations:[{id:"inv_food_cost_gap",severity:"high",type:"margin",title:"Close the food-cost variance",reason:"Food cost is above target.",impact:"Recover about $448 per $22.4k sales day."}]})},
++    {snapshot:async()=>({summary:{atRiskGuests:3,recoverableRevenue:900}})},
++    {snapshot:async()=>({portfolio:{revenueTrend:-2.4},locations:[{locationId:"loc",occupancy:62,revenueTrend:-6,yesterdayRevenue:12000,revenue:11200}]})}
++  );
++
++  const snap=await service.snapshot("org","loc");
++  assert.equal(snap.version,"47.5.0");
++  assert.equal(snap.policy.humanDecisionRequired,true);
++  assert.equal(snap.policy.automaticExecution,false);
++  assert.ok(snap.opportunities.length>=6);
++  assert.equal(snap.opportunities[0].rank,1);
++  assert.ok(snap.opportunities.every((x,i)=>x.rank===i+1));
++  assert.ok(snap.opportunities.some(x=>x.category==="kitchen"));
++  assert.ok(snap.opportunities.some(x=>x.category==="reservations"));
++  assert.ok(snap.opportunities.some(x=>x.category==="labor"));
++  assert.ok(snap.opportunities.some(x=>x.category==="inventory"));
++  assert.ok(snap.opportunities.some(x=>x.category==="guests"));
++  assert.ok(snap.opportunities.some(x=>x.category==="revenue"));
++  assert.ok(snap.summary.totalEstimatedImpactDollars>0);
++
++  const chosen=snap.opportunities[0];
++  const decision=await service.decide("org","loc",chosen.id,{decision:"accepted",owner:"GM","note":"Own before service"},"Tester");
++  assert.equal(decision.decision,"accepted");
++  assert.equal(decision.owner,"GM");
++  assert.equal(dbState.hospitalityPerformanceDecisions.length,1);
++  assert.equal(audit.length,1);
++
++  const after=await service.snapshot("org","loc");
++  assert.equal(after.opportunities.find(x=>x.id===chosen.id).lastDecision.decision,"accepted");
++
++  console.log(JSON.stringify({
++    ok:true,version:snap.version,
++    opportunities:snap.opportunities.length,
++    categories:[...new Set(snap.opportunities.map(x=>x.category))],
++    topOpportunity:snap.opportunities[0].title,
++    totalEstimatedImpactDollars:snap.summary.totalEstimatedImpactDollars,
++    decisionTrailPersisted:after.opportunities.find(x=>x.id===chosen.id).lastDecision.decision,
++    humanDecisionRequired:snap.policy.humanDecisionRequired,
++    automaticExecution:snap.policy.automaticExecution
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V47.5.0.md
++++ b/README-APPLY-V47.5.0.md
+@@ -0,0 +1,56 @@
++# APPLY BLUE CURRENT V47.5.0
++
++## Baseline
++
++Apply over the exact Blue Current V46.70.0 repository.
++
++This is a normal overlay patch. No files are deleted.
++
++## Apply
++
++Extract `BLUE-CURRENT-V47.5.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v47.05-hospitality-performance.js
++npm run start
++```
++
++Wait for:
++
++```text
++Blue Current Cloud V47.5.0 running at http://localhost:8787
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "47.5.0"
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++Press `Ctrl+F5`.
++
++The new **Hospitality Performance Command** section appears immediately before the existing Restaurant Command Center.
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V47.5.0 add hospitality performance command"
++git push origin live-service-timeline
++```
+--- a/V47.5.0-RELEASE.md
++++ b/V47.5.0-RELEASE.md
+@@ -0,0 +1,194 @@
++# BLUE CURRENT V47.5.0 — HOSPITALITY PERFORMANCE COMMAND
++
++## V47 direction
++
++V46 closed the fine-comb and retirement-control program.
++
++V47 returns primary attention to the operating product: helping restaurant teams identify the highest-value decision, understand why it matters, assign ownership, and act before service performance or margin is lost.
++
++## V47.01 — Cross-Domain Operating Signals
++
++Adds `HospitalityPerformanceService`.
++
++The service composes existing Blue Current intelligence from:
++- Restaurant Command Center
++- Workforce Intelligence
++- Inventory Intelligence
++- Guest Intelligence
++- Executive Command Center
++- reservations / waitlist
++- kitchen tickets
++
++No separate synthetic data store is introduced for the opportunity queue.
++
++## V47.02 — Opportunity Generation
++
++Blue Current converts live operating conditions into actionable opportunities across:
++
++- Reservations
++- Kitchen
++- Labor
++- Inventory
++- Guests
++- Revenue
++
++Examples include:
++- pre-assigning booked parties without tables
++- reducing long waitlist quotes
++- recovering delayed kitchen tickets
++- correcting labor coverage / labor-cost gaps
++- replenishing critical inventory
++- closing food-cost variance
++- recovering at-risk guest revenue
++- closing revenue pacing gaps
++
++Each opportunity includes:
++- category
++- title
++- why it matters
++- next action
++- default owner
++- severity
++- confidence
++- estimated dollar impact
++- operating-impact label
++- source system
++- location
++- supporting metadata
++
++## V47.03 — Business-Impact Ranking
++
++Opportunities receive an explicit score built from:
++- 40% urgency
++- 35% estimated impact
++- 25% confidence
++
++The queue is sorted from highest to lowest expected operating value.
++
++The score is transparent and advisory; it does not execute the action.
++
++## V47.04 — Human Ownership + Decision Trail
++
++Adds:
++
++`POST /api/hospitality-performance/opportunities/:id/decision`
++
++Supported decisions:
++- accepted
++- snoozed
++- dismissed
++- completed
++
++Each decision records:
++- organization
++- location
++- opportunity
++- decision
++- owner
++- note
++- actor
++- timestamp
++
++The decision is written to the audit ledger and emitted through realtime events.
++
++Policy remains:
++
++- `humanDecisionRequired: true`
++- `automaticExecution: false`
++
++## V47.05 — Hospitality Performance Command UI
++
++Adds the new Hospitality Performance Command surface at the top of the operating application.
++
++It shows:
++- open opportunity count
++- aggregate estimated impact
++- high-priority count
++- restaurant readiness
++- portfolio revenue trend
++- ranked opportunity cards
++- reason / next action
++- owner
++- confidence
++- estimated impact
++- decision history
++- action owner / decision note
++- Own Action
++- Snooze
++- Complete
++
++The UI refreshes when:
++- authentication is restored
++- connectivity returns
++- reservation events occur
++- inventory decisions occur
++- workforce decisions occur
++
++## Current real repository result
++
++The V47 integration test ran the new service against the existing Chefs demo operating data.
++
++Current Marina Grille result at validation time:
++
++- 8 open opportunities
++- approximately $3,637 combined modeled impact
++- 4 high-priority opportunities
++- 83 readiness score
++- 6 active opportunity categories
++
++Current top opportunities included:
++1. Close the food-cost variance — estimated $1,523
++2. Recover 4 delayed kitchen tickets
++3. Add one service shift
++4. Increase line coverage
++5. Close the revenue pacing gap — estimated $570
++
++These values are generated from the current Blue Current demo/runtime data and will change as the operating state changes.
++
++## API
++
++### GET
++`/api/hospitality-performance?locationId=<location>`
++
++Returns the ranked operating opportunity queue.
++
++### POST
++`/api/hospitality-performance/opportunities/:id/decision`
++
++Records an operator decision.
++
++Both endpoints require authentication. Decision writes require write/admin permission.
++
++## Validation
++
++- `node scripts/maintenance/test-v47.05-hospitality-performance.js` passed.
++- Six operating categories validated.
++- Opportunity ranking validated.
++- Estimated-impact aggregation validated.
++- Decision trail persistence validated.
++- Human-decision policy validated.
++- Automatic execution remained false.
++- Real authenticated login + Hospitality Performance GET passed.
++- Real authenticated opportunity-decision POST passed against an isolated database copy.
++- `npm run check` passed:
++  - 848 JavaScript files
++  - 724 client scripts
++  - 5,387 unique HTML IDs
++- Server startup passed as V47.5.0.
++- `/api/health` returned HTTP 200.
++- Database connected/auth enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Next V47 milestone
++
++The next V47 wave should turn accepted opportunities into measurable operating outcomes:
++
++- create an action workspace for each accepted opportunity
++- define expected outcome / target metric
++- capture before / after operating state
++- calculate realized vs estimated impact
++- measure time-to-resolution
++- surface actions that are stalled or not producing the expected result
++- feed realized outcomes back into opportunity ranking confidence
++
++That is the next step toward Blue Current not only identifying what matters, but proving what improved.

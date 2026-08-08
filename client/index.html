@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="46.70.0">
+  <meta name="blue-current-build" content="47.5.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -201,6 +201,31 @@
   </header>
 
   <main id="main">
+
+    <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+      <header>
+        <div>
+          <small>V47.01–V47.05 · Hospitality Performance Command</small>
+          <strong>One prioritized action queue for the decisions that move service, revenue, labor, guest experience, and margin.</strong>
+          <span>Blue Current ranks existing operating signals by urgency, estimated impact, and confidence. Managers stay in control of every action.</span>
+        </div>
+        <button id="hpcRefresh" type="button">Refresh opportunities</button>
+      </header>
+      <div class="v432-kpis">
+        <article><small>Open opportunities</small><strong id="hpcOpen">0</strong></article>
+        <article><small>Estimated impact</small><strong id="hpcImpact">$0</strong></article>
+        <article><small>High priority</small><strong id="hpcHigh">0</strong></article>
+        <article><small>Readiness</small><strong id="hpcReadiness">—</strong></article>
+        <article><small>Portfolio trend</small><strong id="hpcTrend">0.0%</strong></article>
+      </div>
+      <div class="v4316-answer" id="hpcHeadline">Building the highest-value operating queue…</div>
+      <div class="v4316-actions">
+        <input id="hpcOwner" class="v4312-input" placeholder="Action owner">
+        <input id="hpcNote" class="v4312-input" placeholder="Decision note">
+      </div>
+      <div id="hpcQueue" class="v432-list"></div>
+      <p><strong>Live sources:</strong> <span id="hpcSources">Loading…</span> · <strong>Updated:</strong> <span id="hpcUpdated">—</span></p>
+    </section>
 
     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
       <div class="container">
@@ -8623,6 +8648,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="selectedCandidatePreviewCenter" data-src="js/modules/selectedCandidatePreviewCenter.js?v=46.65.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationEngine.js?v=46.70.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationCenter.js?v=46.70.0"></script>
-<script src="js/startup-loader.js?v=46.70.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceEngine.js?v=47.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceCenter.js?v=47.5.0"></script>
+<script src="js/startup-loader.js?v=47.5.0"></script>
 </body>
 </html>
