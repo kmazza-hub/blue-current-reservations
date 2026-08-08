@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "43.20.0-executive-ai-orchestration", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "44.3.0-aip-runtime-foundation", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2433,6 +2433,10 @@ const executiveIntentRouterCenterModule = startupRegistry.register("executiveInt
 const executiveApprovalQueueCenterModule = startupRegistry.register("executiveApprovalQueueCenter",shouldInitializeCenter("executiveApprovalQueueCenter") ? window.createBlueCurrentExecutiveApprovalQueueCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveActionDraftCenter"]);
 const executiveWorkflowComposerCenterModule = startupRegistry.register("executiveWorkflowComposerCenter",shouldInitializeCenter("executiveWorkflowComposerCenter") ? window.createBlueCurrentExecutiveWorkflowComposerCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveIntentRouterCenter","executiveApprovalQueueCenter"]);
 const v43ClosureCenterModule = startupRegistry.register("v43ClosureCenter",shouldInitializeCenter("v43ClosureCenter") ? window.createBlueCurrentV43ClosureCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveAiReadinessCenter","executiveWorkflowComposerCenter"]);
+const aipCapabilityRegistryCenterModule = startupRegistry.register("aipCapabilityRegistryCenter",shouldInitializeCenter("aipCapabilityRegistryCenter") ? window.createBlueCurrentAipCapabilityRegistryCenterV44Module?.(eventBus, appState) : null,["eventBus","appState"]);
+const aipAutomationCompilerCenterModule = startupRegistry.register("aipAutomationCompilerCenter",shouldInitializeCenter("aipAutomationCompilerCenter") ? window.createBlueCurrentAipAutomationCompilerCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipCapabilityRegistryCenter"]);
+const aipExecutionSandboxCenterModule = startupRegistry.register("aipExecutionSandboxCenter",shouldInitializeCenter("aipExecutionSandboxCenter") ? window.createBlueCurrentAipExecutionSandboxCenterV44Module?.(eventBus, appState) : null,["eventBus","appState","aipAutomationCompilerCenter"]);
+const aipRuntimeReadinessCenterModule = startupRegistry.register("aipRuntimeReadinessCenter",shouldInitializeCenter("aipRuntimeReadinessCenter") ? window.createBlueCurrentAipRuntimeReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipCapabilityRegistryCenter","aipAutomationCompilerCenter","aipExecutionSandboxCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(

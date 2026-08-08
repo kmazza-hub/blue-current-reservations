@@ -2061,6 +2061,67 @@ class LiveIntegrationService {
     return cert;
   }
 
+  async aipCapabilityRegistry(organizationId) {
+    const capabilities = [
+      { id:"executive.live-brief", name:"Executive Live Brief", domain:"executive", mode:"read", risk:"low", approvalRequired:false, endpoint:"/api/executive/live-brief" },
+      { id:"executive.risk-queue", name:"Executive Risk Queue", domain:"executive", mode:"read", risk:"low", approvalRequired:false, endpoint:"/api/executive/risk-queue" },
+      { id:"executive.reasoning", name:"Executive Reasoning", domain:"intelligence", mode:"read", risk:"medium", approvalRequired:false, endpoint:"/api/executive/reasoning" },
+      { id:"executive.simulate", name:"Decision Simulator", domain:"intelligence", mode:"simulate", risk:"medium", approvalRequired:false, endpoint:"/api/executive/simulate" },
+      { id:"executive.action-draft", name:"Governed Action Draft", domain:"governance", mode:"write-draft", risk:"high", approvalRequired:true, endpoint:"/api/executive/action-drafts" },
+      { id:"executive.workflow", name:"Executive Workflow Composer", domain:"governance", mode:"write-draft", risk:"high", approvalRequired:true, endpoint:"/api/executive/workflows" },
+      { id:"live.operating-snapshot", name:"Live Operating Snapshot", domain:"live", mode:"read", risk:"low", approvalRequired:false, endpoint:"/api/live/operating-snapshot" },
+      { id:"live.reasoning-feed", name:"Reasoning Feed Gate", domain:"live", mode:"read", risk:"medium", approvalRequired:false, endpoint:"/api/live/reasoning-feed" }
+    ];
+    return { organizationId, count:capabilities.length, writeCapable:capabilities.filter(x=>x.mode.startsWith("write")).length, approvalGated:capabilities.filter(x=>x.approvalRequired).length, capabilities, generatedAt:new Date().toISOString(), build:"44.3.0-aip-runtime-foundation" };
+  }
+
+  async aipAutomationCompiler(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    if (!input) return { organizationId, items:db.aipAutomationDrafts?.[organizationId] || [], build:"44.3.0-aip-runtime-foundation" };
+    const instruction = String(input.instruction || "").trim().slice(0,700);
+    if (!instruction) throw new Error("Instruction is required.");
+    const [route, capabilities, reasoning] = await Promise.all([this.executiveIntentRouter(organizationId,{instruction}), this.aipCapabilityRegistry(organizationId), this.executiveReasoning(organizationId)]);
+    const chosen = capabilities.capabilities.filter(cap => {
+      if (route.intent === "simulate") return cap.id === "executive.simulate" || cap.id === "executive.reasoning";
+      if (route.intent === "action") return ["executive.reasoning","executive.action-draft","executive.workflow"].includes(cap.id);
+      if (route.intent === "risk") return ["executive.risk-queue","executive.reasoning"].includes(cap.id);
+      return ["executive.live-brief","executive.reasoning"].includes(cap.id);
+    });
+    const approvalRequired = route.approvalRequired || chosen.some(x=>x.approvalRequired);
+    const draft = { id:`AIP-${Date.now().toString(36).toUpperCase()}`, organizationId, instruction, intent:route.intent, owner:actor||"Operator", status:"draft", approvalRequired, confidence:Math.min(route.confidence||0, reasoning.confidence||0), capabilityIds:chosen.map(x=>x.id), steps:chosen.map((x,i)=>({order:i+1,capabilityId:x.id,mode:x.mode,risk:x.risk,approvalRequired:x.approvalRequired})), createdAt:new Date().toISOString() };
+    await this.database.mutate(data=>{data.aipAutomationDrafts ||= {}; const list=data.aipAutomationDrafts[organizationId] ||= []; list.unshift(draft); data.aipAutomationDrafts[organizationId]=list.slice(0,50); return draft;});
+    return { organizationId, draft, build:"44.3.0-aip-runtime-foundation" };
+  }
+
+  async aipExecutionSandbox(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const runs = db.aipSandboxRuns?.[organizationId] || [];
+    if (!input) return { organizationId, count:runs.length, items:runs.slice(0,50), build:"44.3.0-aip-runtime-foundation" };
+    const drafts = db.aipAutomationDrafts?.[organizationId] || [];
+    const draft = drafts.find(x=>x.id===input.draftId) || drafts[0];
+    if (!draft) throw new Error("Compile an AIP automation before running the sandbox.");
+    const blockedSteps = (draft.steps||[]).filter(step=>step.risk==="high" && step.approvalRequired).length;
+    const run = { id:`SBX-${Date.now().toString(36).toUpperCase()}`, organizationId, draftId:draft.id, owner:actor||"Operator", status:blockedSteps?"approval-required":"simulated", approvalRequired:blockedSteps>0, blockedSteps, simulatedSteps:(draft.steps||[]).map(step=>({...step,result:step.approvalRequired?"held-for-approval":"simulated"})), liveStateChanged:false, createdAt:new Date().toISOString() };
+    await this.database.mutate(data=>{data.aipSandboxRuns ||= {}; const list=data.aipSandboxRuns[organizationId] ||= []; list.unshift(run); data.aipSandboxRuns[organizationId]=list.slice(0,50); return run;});
+    return { organizationId, run, build:"44.3.0-aip-runtime-foundation" };
+  }
+
+  async aipRuntimeReadiness(organizationId) {
+    const db = await this.database.read();
+    const [v43, registry] = await Promise.all([this.v43ClosureCertification(organizationId), this.aipCapabilityRegistry(organizationId)]);
+    const drafts = db.aipAutomationDrafts?.[organizationId] || [];
+    const runs = db.aipSandboxRuns?.[organizationId] || [];
+    const checks = [
+      {id:"v43",label:"V43 executive AI closure",pass:(v43.score||0)>=75,detail:`${v43.score||0}% · ${v43.status||"unknown"}`},
+      {id:"registry",label:"AIP capability registry",pass:(registry.count||0)>=6,detail:`${registry.count||0} capabilities`},
+      {id:"compiler",label:"Natural-language automation compiler",pass:drafts.length>0,detail:`${drafts.length} compiled draft(s)`},
+      {id:"sandbox",label:"Governed execution sandbox",pass:runs.length>0,detail:`${runs.length} sandbox run(s)`},
+      {id:"live-safety",label:"No automatic live execution",pass:runs.every(x=>x.liveStateChanged===false),detail:"Sandbox runs remain isolated from live state"}
+    ];
+    const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length); const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    return { organizationId, score, status:score===100?"aip-runtime-ready":score>=60?"conditional":"blocked", trusted:score===100, blockers, checks, generatedAt:new Date().toISOString(), build:"44.3.0-aip-runtime-foundation" };
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;

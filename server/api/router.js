@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "43.20.0",
+        version: "44.3.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -491,6 +491,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/executive/workflows" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveWorkflowComposer(organizationId, auth.user.name, await readJson(request)));
     if (url.pathname === "/api/executive/v43-closure" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.v43ClosureCertification(organizationId));
     if (url.pathname === "/api/executive/v43-closure" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.v43ClosureCertification(organizationId, auth.user.name, true));
+    if (url.pathname === "/api/aip/capabilities" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipCapabilityRegistry(organizationId));
+    if (url.pathname === "/api/aip/automations" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipAutomationCompiler(organizationId));
+    if (url.pathname === "/api/aip/automations" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipAutomationCompiler(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/aip/sandbox" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipExecutionSandbox(organizationId));
+    if (url.pathname === "/api/aip/sandbox" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipExecutionSandbox(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/aip/runtime-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipRuntimeReadiness(organizationId));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
