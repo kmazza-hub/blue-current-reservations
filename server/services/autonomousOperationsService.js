@@ -294,6 +294,132 @@ class AutonomousOperationsService {
     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
     return {organizationId:org,version:"45.10.0",score,status:score===100?"v45-intervention-planning-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestRehearsalId:latest?.id||null,safety:{stage:"governed-intervention-planning",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.10.0-governed-intervention-planning"};
   }
+  hashV45AuthorizationPayload(value){
+    const crypto=require("crypto");
+    return crypto.createHash("sha256").update(JSON.stringify(value)).digest("hex");
+  }
+  v45ApprovalRoleRank(role){
+    const rank={"manager":1,"general-manager":2,"regional-operator":3,"executive":4};
+    return rank[String(role||"").toLowerCase()]||0;
+  }
+  buildV45ApprovalPacket(rehearsal,proposals,actor="Operator"){
+    if(!rehearsal)throw new Error("A conflict-free intervention rehearsal is required.");
+    if(rehearsal.status!=="ready-for-approval-review"||Number(rehearsal.blockingConflicts||0)>0)
+      throw new Error("Only a conflict-free rehearsal can enter approval review.");
+    const proposalIds=new Set(rehearsal.proposalIds||[]);
+    const scoped=proposals.filter(p=>proposalIds.has(p.id));
+    if(!scoped.length)throw new Error("Rehearsal proposals are unavailable.");
+    const highestRole=scoped.reduce((best,p)=>this.v45ApprovalRoleRank(p.policy?.approvalRole)>this.v45ApprovalRoleRank(best)?p.policy.approvalRole:best,"manager");
+    const evidenceDigest=this.hashV45AuthorizationPayload(scoped.map(p=>({id:p.id,cycleId:p.cycleId,recommendationId:p.recommendationId,simulationId:p.simulationId,domain:p.domain,risk:p.risk,confidence:p.confidence,evidence:p.evidence,simulation:p.simulation,policy:p.policy})));
+    const now=Date.now(),expiresAt=new Date(now+15*60*1000).toISOString();
+    return {
+      id:`V45-APR-${now.toString(36).toUpperCase()}`,organizationId:rehearsal.organizationId,rehearsalId:rehearsal.id,cycleId:rehearsal.cycleId,
+      proposalIds:[...proposalIds],proposalCount:scoped.length,requiredApprovalRole:highestRole,
+      status:"pending",scope:"command-draft-only",evidenceDigest,rehearsalSnapshot:{status:rehearsal.status,blockingConflicts:rehearsal.blockingConflicts,proposalIds:[...proposalIds]},
+      approvalRequired:true,revalidationRequired:true,revocable:true,expiresAt,createdBy:actor,createdAt:new Date(now).toISOString(),
+      liveExecutionAllowed:false,liveStateChanged:false
+    };
+  }
+  async v45ApprovalPackets(org,actor=null,input=null){
+    const db=await this.database.read(),stored=db.v45ApprovalPackets?.[org]||[];
+    if(!input)return {organizationId:org,count:stored.length,pending:stored.filter(x=>x.status==="pending").length,approved:stored.filter(x=>x.status==="approved").length,items:stored.slice(0,100),build:"45.15.0-intervention-authorization"};
+    const rehearsalId=String(input.rehearsalId||"").trim();
+    const rehearsals=db.v45InterventionRehearsals?.[org]||[];
+    const rehearsal=(rehearsalId?rehearsals.find(x=>x.id===rehearsalId):rehearsals[0])||null;
+    const proposals=db.v45InterventionProposals?.[org]||[];
+    const packet=this.buildV45ApprovalPacket(rehearsal,proposals,actor||"Operator");
+    await this.database.mutate(data=>{data.v45ApprovalPackets||={};const list=data.v45ApprovalPackets[org]||[];list.unshift(packet);data.v45ApprovalPackets[org]=list.slice(0,300);return packet;});
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 approval packet prepared: ${packet.id}`,category:"v45-intervention-authorization"});
+    this.realtimeHub.publish("v45-approval-packet-prepared",{organizationId:org,id:packet.id,scope:packet.scope,liveExecutionAllowed:false});
+    return {organizationId:org,packet,build:"45.15.0-intervention-authorization"};
+  }
+  async v45RevalidateApprovalPacket(org,packetId){
+    const db=await this.database.read();
+    const packet=(db.v45ApprovalPackets?.[org]||[]).find(x=>x.id===packetId);
+    if(!packet)throw new Error("V45 approval packet not found.");
+    const rehearsal=(db.v45InterventionRehearsals?.[org]||[]).find(x=>x.id===packet.rehearsalId);
+    const proposals=(db.v45InterventionProposals?.[org]||[]).filter(x=>packet.proposalIds.includes(x.id));
+    const now=Date.now(),expired=new Date(packet.expiresAt).getTime()<=now;
+    const digest=this.hashV45AuthorizationPayload(proposals.map(p=>({id:p.id,cycleId:p.cycleId,recommendationId:p.recommendationId,simulationId:p.simulationId,domain:p.domain,risk:p.risk,confidence:p.confidence,evidence:p.evidence,simulation:p.simulation,policy:p.policy})));
+    const checks=[
+      {id:"expiry",pass:!expired,detail:expired?"Approval packet expired":"Approval packet is within its authorization window"},
+      {id:"rehearsal",pass:Boolean(rehearsal)&&rehearsal.status==="ready-for-approval-review"&&Number(rehearsal.blockingConflicts||0)===0,detail:rehearsal?`${rehearsal.status} · ${rehearsal.blockingConflicts||0} blocking conflict(s)`:"Rehearsal missing"},
+      {id:"proposal-set",pass:proposals.length===packet.proposalIds.length,detail:`${proposals.length}/${packet.proposalIds.length} scoped proposal(s) available`},
+      {id:"evidence-digest",pass:digest===packet.evidenceDigest,detail:digest===packet.evidenceDigest?"Evidence/policy digest unchanged":"Evidence or policy payload changed"},
+      {id:"proposal-safety",pass:proposals.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false&&x.approvalRequired===true),detail:"All proposals remain governed and approval-required"},
+      {id:"scope",pass:packet.scope==="command-draft-only"&&packet.liveExecutionAllowed===false,detail:"Authorization scope cannot execute live actions"}
+    ];
+    const valid=checks.every(x=>x.pass);
+    return {organizationId:org,packetId,valid,expired,digest,checks,revalidatedAt:this.now(),liveExecutionAllowed:false,build:"45.15.0-intervention-authorization"};
+  }
+  async v45ApprovalDecision(org,actor,input={}){
+    const packetId=String(input.packetId||"").trim(),decision=String(input.decision||"").trim().toLowerCase(),actorRole=String(input.actorRole||"manager").trim().toLowerCase();
+    if(!packetId)throw new Error("packetId is required.");
+    if(!["approve","reject","revoke"].includes(decision))throw new Error("decision must be approve, reject, or revoke.");
+    const revalidation=await this.v45RevalidateApprovalPacket(org,packetId);
+    const now=this.now();
+    const result=await this.database.mutate(db=>{
+      db.v45ApprovalPackets||={};const list=db.v45ApprovalPackets[org]||[];const packet=list.find(x=>x.id===packetId);if(!packet)throw new Error("V45 approval packet not found.");
+      if(decision==="approve"){
+        if(packet.status!=="pending")throw new Error(`Approval packet cannot be approved from status ${packet.status}.`);
+        if(!revalidation.valid)throw new Error("Approval packet failed evidence/state revalidation.");
+        if(this.v45ApprovalRoleRank(actorRole)<this.v45ApprovalRoleRank(packet.requiredApprovalRole))throw new Error(`Approval requires role ${packet.requiredApprovalRole} or higher.`);
+        packet.status="approved";packet.approvedBy=actor||"Operator";packet.approvedRole=actorRole;packet.approvedAt=now;packet.revalidatedAt=revalidation.revalidatedAt;
+      }else if(decision==="reject"){
+        if(packet.status!=="pending")throw new Error(`Approval packet cannot be rejected from status ${packet.status}.`);
+        packet.status="rejected";packet.rejectedBy=actor||"Operator";packet.rejectedAt=now;
+      }else{
+        if(packet.status!=="approved")throw new Error("Only an approved packet can be revoked.");
+        packet.status="revoked";packet.revokedBy=actor||"Operator";packet.revokedAt=now;
+      }
+      packet.decisionNote=String(input.note||"").slice(0,500);packet.liveExecutionAllowed=false;packet.liveStateChanged=false;
+      db.v45ApprovalDecisions||={};const decisions=db.v45ApprovalDecisions[org]||[];
+      const record={id:`V45-APD-${Date.now().toString(36).toUpperCase()}`,organizationId:org,packetId,decision,actor:actor||"Operator",actorRole,note:packet.decisionNote,scope:"command-draft-only",liveExecutionAllowed:false,liveStateChanged:false,createdAt:now};
+      decisions.unshift(record);db.v45ApprovalDecisions[org]=decisions.slice(0,500);return {packet:{...packet},decisionRecord:record};
+    });
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 approval ${decision}: ${packetId}`,category:"v45-intervention-authorization"});
+    this.realtimeHub.publish("v45-approval-decided",{organizationId:org,packetId,decision,status:result.packet.status,liveExecutionAllowed:false});
+    return {organizationId:org,...result,revalidation,build:"45.15.0-intervention-authorization"};
+  }
+  async v45CommandDrafts(org,actor=null,input=null){
+    const db=await this.database.read(),stored=db.v45CommandDrafts?.[org]||[];
+    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,build:"45.15.0-intervention-authorization"};
+    const packetId=String(input.packetId||"").trim();
+    const packet=(db.v45ApprovalPackets?.[org]||[]).find(x=>x.id===packetId);
+    if(!packet)throw new Error("V45 approval packet not found.");
+    if(packet.status!=="approved")throw new Error("Command drafting requires an approved packet.");
+    const revalidation=await this.v45RevalidateApprovalPacket(org,packetId);
+    if(!revalidation.valid)throw new Error("Approved packet is stale or no longer valid; re-approval is required.");
+    const proposals=(db.v45InterventionProposals?.[org]||[]).filter(x=>packet.proposalIds.includes(x.id));
+    const commands=proposals.map((p,index)=>({
+      id:`V45-CMD-${Date.now().toString(36).toUpperCase()}-${index+1}`,proposalId:p.id,locationId:p.locationId,domain:p.domain,
+      commandType:p.proposalType,description:p.proposedAction,policyId:p.policy?.policyId,limits:p.policy?.limits,
+      status:"draft-only",requiresSeparateExecutionCertification:true,executionEndpoint:null,
+      executionMode:"command-draft-only",liveExecutionAllowed:false,liveStateChanged:false
+    }));
+    const draft={id:`V45-CDR-${Date.now().toString(36).toUpperCase()}`,organizationId:org,packetId,approvalScope:packet.scope,approvalExpiresAt:packet.expiresAt,revalidationDigest:revalidation.digest,commands,status:"drafted",executionCertified:false,liveExecutionAllowed:false,liveStateChanged:false,createdBy:actor||"Operator",createdAt:this.now()};
+    await this.database.mutate(data=>{data.v45CommandDrafts||={};const list=data.v45CommandDrafts[org]||[];list.unshift(draft);data.v45CommandDrafts[org]=list.slice(0,200);return draft;});
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 non-executable command draft prepared: ${draft.id}`,category:"v45-command-draft"});
+    this.realtimeHub.publish("v45-command-draft-prepared",{organizationId:org,id:draft.id,commands:commands.length,liveExecutionAllowed:false});
+    return {organizationId:org,draft,revalidation,build:"45.15.0-intervention-authorization"};
+  }
+  async v45AuthorizationReadiness(org){
+    const db=await this.database.read(),packets=db.v45ApprovalPackets?.[org]||[],decisions=db.v45ApprovalDecisions?.[org]||[],drafts=db.v45CommandDrafts?.[org]||[];
+    const latestPacket=packets[0]||null,latestDraft=drafts[0]||null;
+    let revalidation=null;if(latestPacket){try{revalidation=await this.v45RevalidateApprovalPacket(org,latestPacket.id);}catch{}}
+    const checks=[
+      {id:"packet",label:"Policy-aware approval packet",pass:Boolean(latestPacket)&&latestPacket.scope==="command-draft-only"&&Boolean(latestPacket.evidenceDigest),detail:latestPacket?`${latestPacket.id} · ${latestPacket.requiredApprovalRole}`:"No approval packet"},
+      {id:"expiry",label:"Scoped approval expiry",pass:Boolean(latestPacket?.expiresAt),detail:latestPacket?.expiresAt||"No expiry"},
+      {id:"revalidation",label:"Evidence and rehearsal revalidation",pass:Boolean(revalidation?.valid),detail:revalidation?`${revalidation.checks.filter(x=>x.pass).length}/${revalidation.checks.length} checks pass`:"No packet to revalidate"},
+      {id:"role",label:"Approval role boundary",pass:Boolean(latestPacket?.requiredApprovalRole),detail:latestPacket?.requiredApprovalRole||"No role"},
+      {id:"revocation",label:"Approval revocation architecture",pass:decisions.some(x=>x.decision==="revoke")||Boolean(latestPacket?.revocable),detail:"Approved authorization can be revoked before execution"},
+      {id:"draft",label:"Command drafting separated from execution",pass:Boolean(latestDraft)&&latestDraft.executionCertified===false&&latestDraft.commands.every(x=>x.executionEndpoint===null&&x.liveExecutionAllowed===false),detail:`${latestDraft?.commands?.length||0} non-executable command draft(s)`},
+      {id:"scope",label:"Authorization scope cannot grant live execution",pass:packets.every(x=>x.scope==="command-draft-only"&&x.liveExecutionAllowed===false)&&decisions.every(x=>x.liveExecutionAllowed===false)&&drafts.every(x=>x.liveExecutionAllowed===false),detail:"Authorization ends at command drafting"},
+      {id:"live-safety",label:"No V45 authorization artifact mutates restaurant state",pass:packets.every(x=>x.liveStateChanged===false)&&decisions.every(x=>x.liveStateChanged===false)&&drafts.every(x=>x.liveStateChanged===false),detail:"Approval, revocation, revalidation, and command drafting remain isolated"}
+    ];
+    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+    return {organizationId:org,version:"45.15.0",score,status:score===100?"v45-authorization-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestPacketId:latestPacket?.id||null,latestDraftId:latestDraft?.id||null,safety:{stage:"approval-and-command-draft",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.15.0-intervention-authorization"};
+  }
   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
 }
 module.exports=AutonomousOperationsService;

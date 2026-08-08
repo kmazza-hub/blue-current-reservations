@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "45.10.0",
+        version: "45.15.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -967,6 +967,24 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response,200,await autonomousOperationsService.v45InterventionRehearsals(organizationId,auth.user.name,await readJson(request)));
     }
     if (url.pathname === "/api/autonomous-assistance/intervention-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionReadiness(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/approval-packets" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ApprovalPackets(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/approval-packets" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45ApprovalPackets(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/approval-revalidate" && request.method === "POST") {
+      const body=await readJson(request);return sendJson(response,200,await autonomousOperationsService.v45RevalidateApprovalPacket(organizationId,body.packetId));
+    }
+    if (url.pathname === "/api/autonomous-assistance/approval-decisions" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Approval permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45ApprovalDecision(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/command-drafts" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45CommandDrafts(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/command-drafts" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Command draft permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45CommandDrafts(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/authorization-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45AuthorizationReadiness(organizationId));
     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));

@@ -1,0 +1,497 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "45.10.0",
++  "version": "45.15.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V45 governed intervention planning and rehearsal",
++  "description": "Blue Current Hospitality OS \u2014 V45 governed intervention authorization and command drafting",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V45.10.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V45.15.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "45.10.0",
++        version: "45.15.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -967,6 +967,24 @@
+       return sendJson(response,200,await autonomousOperationsService.v45InterventionRehearsals(organizationId,auth.user.name,await readJson(request)));
+     }
+     if (url.pathname === "/api/autonomous-assistance/intervention-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45InterventionReadiness(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/approval-packets" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ApprovalPackets(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/approval-packets" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45ApprovalPackets(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/approval-revalidate" && request.method === "POST") {
++      const body=await readJson(request);return sendJson(response,200,await autonomousOperationsService.v45RevalidateApprovalPacket(organizationId,body.packetId));
++    }
++    if (url.pathname === "/api/autonomous-assistance/approval-decisions" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Approval permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45ApprovalDecision(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/command-drafts" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45CommandDrafts(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/command-drafts" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Command draft permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45CommandDrafts(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/authorization-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45AuthorizationReadiness(organizationId));
+     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
+       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
+--- a/server/services/autonomousOperationsService.js
++++ b/server/services/autonomousOperationsService.js
+@@ -294,6 +294,132 @@
+     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+     return {organizationId:org,version:"45.10.0",score,status:score===100?"v45-intervention-planning-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestRehearsalId:latest?.id||null,safety:{stage:"governed-intervention-planning",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.10.0-governed-intervention-planning"};
+   }
++  hashV45AuthorizationPayload(value){
++    const crypto=require("crypto");
++    return crypto.createHash("sha256").update(JSON.stringify(value)).digest("hex");
++  }
++  v45ApprovalRoleRank(role){
++    const rank={"manager":1,"general-manager":2,"regional-operator":3,"executive":4};
++    return rank[String(role||"").toLowerCase()]||0;
++  }
++  buildV45ApprovalPacket(rehearsal,proposals,actor="Operator"){
++    if(!rehearsal)throw new Error("A conflict-free intervention rehearsal is required.");
++    if(rehearsal.status!=="ready-for-approval-review"||Number(rehearsal.blockingConflicts||0)>0)
++      throw new Error("Only a conflict-free rehearsal can enter approval review.");
++    const proposalIds=new Set(rehearsal.proposalIds||[]);
++    const scoped=proposals.filter(p=>proposalIds.has(p.id));
++    if(!scoped.length)throw new Error("Rehearsal proposals are unavailable.");
++    const highestRole=scoped.reduce((best,p)=>this.v45ApprovalRoleRank(p.policy?.approvalRole)>this.v45ApprovalRoleRank(best)?p.policy.approvalRole:best,"manager");
++    const evidenceDigest=this.hashV45AuthorizationPayload(scoped.map(p=>({id:p.id,cycleId:p.cycleId,recommendationId:p.recommendationId,simulationId:p.simulationId,domain:p.domain,risk:p.risk,confidence:p.confidence,evidence:p.evidence,simulation:p.simulation,policy:p.policy})));
++    const now=Date.now(),expiresAt=new Date(now+15*60*1000).toISOString();
++    return {
++      id:`V45-APR-${now.toString(36).toUpperCase()}`,organizationId:rehearsal.organizationId,rehearsalId:rehearsal.id,cycleId:rehearsal.cycleId,
++      proposalIds:[...proposalIds],proposalCount:scoped.length,requiredApprovalRole:highestRole,
++      status:"pending",scope:"command-draft-only",evidenceDigest,rehearsalSnapshot:{status:rehearsal.status,blockingConflicts:rehearsal.blockingConflicts,proposalIds:[...proposalIds]},
++      approvalRequired:true,revalidationRequired:true,revocable:true,expiresAt,createdBy:actor,createdAt:new Date(now).toISOString(),
++      liveExecutionAllowed:false,liveStateChanged:false
++    };
++  }
++  async v45ApprovalPackets(org,actor=null,input=null){
++    const db=await this.database.read(),stored=db.v45ApprovalPackets?.[org]||[];
++    if(!input)return {organizationId:org,count:stored.length,pending:stored.filter(x=>x.status==="pending").length,approved:stored.filter(x=>x.status==="approved").length,items:stored.slice(0,100),build:"45.15.0-intervention-authorization"};
++    const rehearsalId=String(input.rehearsalId||"").trim();
++    const rehearsals=db.v45InterventionRehearsals?.[org]||[];
++    const rehearsal=(rehearsalId?rehearsals.find(x=>x.id===rehearsalId):rehearsals[0])||null;
++    const proposals=db.v45InterventionProposals?.[org]||[];
++    const packet=this.buildV45ApprovalPacket(rehearsal,proposals,actor||"Operator");
++    await this.database.mutate(data=>{data.v45ApprovalPackets||={};const list=data.v45ApprovalPackets[org]||[];list.unshift(packet);data.v45ApprovalPackets[org]=list.slice(0,300);return packet;});
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 approval packet prepared: ${packet.id}`,category:"v45-intervention-authorization"});
++    this.realtimeHub.publish("v45-approval-packet-prepared",{organizationId:org,id:packet.id,scope:packet.scope,liveExecutionAllowed:false});
++    return {organizationId:org,packet,build:"45.15.0-intervention-authorization"};
++  }
++  async v45RevalidateApprovalPacket(org,packetId){
++    const db=await this.database.read();
++    const packet=(db.v45ApprovalPackets?.[org]||[]).find(x=>x.id===packetId);
++    if(!packet)throw new Error("V45 approval packet not found.");
++    const rehearsal=(db.v45InterventionRehearsals?.[org]||[]).find(x=>x.id===packet.rehearsalId);
++    const proposals=(db.v45InterventionProposals?.[org]||[]).filter(x=>packet.proposalIds.includes(x.id));
++    const now=Date.now(),expired=new Date(packet.expiresAt).getTime()<=now;
++    const digest=this.hashV45AuthorizationPayload(proposals.map(p=>({id:p.id,cycleId:p.cycleId,recommendationId:p.recommendationId,simulationId:p.simulationId,domain:p.domain,risk:p.risk,confidence:p.confidence,evidence:p.evidence,simulation:p.simulation,policy:p.policy})));
++    const checks=[
++      {id:"expiry",pass:!expired,detail:expired?"Approval packet expired":"Approval packet is within its authorization window"},
++      {id:"rehearsal",pass:Boolean(rehearsal)&&rehearsal.status==="ready-for-approval-review"&&Number(rehearsal.blockingConflicts||0)===0,detail:rehearsal?`${rehearsal.status} · ${rehearsal.blockingConflicts||0} blocking conflict(s)`:"Rehearsal missing"},
++      {id:"proposal-set",pass:proposals.length===packet.proposalIds.length,detail:`${proposals.length}/${packet.proposalIds.length} scoped proposal(s) available`},
++      {id:"evidence-digest",pass:digest===packet.evidenceDigest,detail:digest===packet.evidenceDigest?"Evidence/policy digest unchanged":"Evidence or policy payload changed"},
++      {id:"proposal-safety",pass:proposals.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged===false&&x.approvalRequired===true),detail:"All proposals remain governed and approval-required"},
++      {id:"scope",pass:packet.scope==="command-draft-only"&&packet.liveExecutionAllowed===false,detail:"Authorization scope cannot execute live actions"}
++    ];
++    const valid=checks.every(x=>x.pass);
++    return {organizationId:org,packetId,valid,expired,digest,checks,revalidatedAt:this.now(),liveExecutionAllowed:false,build:"45.15.0-intervention-authorization"};
++  }
++  async v45ApprovalDecision(org,actor,input={}){
++    const packetId=String(input.packetId||"").trim(),decision=String(input.decision||"").trim().toLowerCase(),actorRole=String(input.actorRole||"manager").trim().toLowerCase();
++    if(!packetId)throw new Error("packetId is required.");
++    if(!["approve","reject","revoke"].includes(decision))throw new Error("decision must be approve, reject, or revoke.");
++    const revalidation=await this.v45RevalidateApprovalPacket(org,packetId);
++    const now=this.now();
++    const result=await this.database.mutate(db=>{
++      db.v45ApprovalPackets||={};const list=db.v45ApprovalPackets[org]||[];const packet=list.find(x=>x.id===packetId);if(!packet)throw new Error("V45 approval packet not found.");
++      if(decision==="approve"){
++        if(packet.status!=="pending")throw new Error(`Approval packet cannot be approved from status ${packet.status}.`);
++        if(!revalidation.valid)throw new Error("Approval packet failed evidence/state revalidation.");
++        if(this.v45ApprovalRoleRank(actorRole)<this.v45ApprovalRoleRank(packet.requiredApprovalRole))throw new Error(`Approval requires role ${packet.requiredApprovalRole} or higher.`);
++        packet.status="approved";packet.approvedBy=actor||"Operator";packet.approvedRole=actorRole;packet.approvedAt=now;packet.revalidatedAt=revalidation.revalidatedAt;
++      }else if(decision==="reject"){
++        if(packet.status!=="pending")throw new Error(`Approval packet cannot be rejected from status ${packet.status}.`);
++        packet.status="rejected";packet.rejectedBy=actor||"Operator";packet.rejectedAt=now;
++      }else{
++        if(packet.status!=="approved")throw new Error("Only an approved packet can be revoked.");
++        packet.status="revoked";packet.revokedBy=actor||"Operator";packet.revokedAt=now;
++      }
++      packet.decisionNote=String(input.note||"").slice(0,500);packet.liveExecutionAllowed=false;packet.liveStateChanged=false;
++      db.v45ApprovalDecisions||={};const decisions=db.v45ApprovalDecisions[org]||[];
++      const record={id:`V45-APD-${Date.now().toString(36).toUpperCase()}`,organizationId:org,packetId,decision,actor:actor||"Operator",actorRole,note:packet.decisionNote,scope:"command-draft-only",liveExecutionAllowed:false,liveStateChanged:false,createdAt:now};
++      decisions.unshift(record);db.v45ApprovalDecisions[org]=decisions.slice(0,500);return {packet:{...packet},decisionRecord:record};
++    });
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 approval ${decision}: ${packetId}`,category:"v45-intervention-authorization"});
++    this.realtimeHub.publish("v45-approval-decided",{organizationId:org,packetId,decision,status:result.packet.status,liveExecutionAllowed:false});
++    return {organizationId:org,...result,revalidation,build:"45.15.0-intervention-authorization"};
++  }
++  async v45CommandDrafts(org,actor=null,input=null){
++    const db=await this.database.read(),stored=db.v45CommandDrafts?.[org]||[];
++    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,build:"45.15.0-intervention-authorization"};
++    const packetId=String(input.packetId||"").trim();
++    const packet=(db.v45ApprovalPackets?.[org]||[]).find(x=>x.id===packetId);
++    if(!packet)throw new Error("V45 approval packet not found.");
++    if(packet.status!=="approved")throw new Error("Command drafting requires an approved packet.");
++    const revalidation=await this.v45RevalidateApprovalPacket(org,packetId);
++    if(!revalidation.valid)throw new Error("Approved packet is stale or no longer valid; re-approval is required.");
++    const proposals=(db.v45InterventionProposals?.[org]||[]).filter(x=>packet.proposalIds.includes(x.id));
++    const commands=proposals.map((p,index)=>({
++      id:`V45-CMD-${Date.now().toString(36).toUpperCase()}-${index+1}`,proposalId:p.id,locationId:p.locationId,domain:p.domain,
++      commandType:p.proposalType,description:p.proposedAction,policyId:p.policy?.policyId,limits:p.policy?.limits,
++      status:"draft-only",requiresSeparateExecutionCertification:true,executionEndpoint:null,
++      executionMode:"command-draft-only",liveExecutionAllowed:false,liveStateChanged:false
++    }));
++    const draft={id:`V45-CDR-${Date.now().toString(36).toUpperCase()}`,organizationId:org,packetId,approvalScope:packet.scope,approvalExpiresAt:packet.expiresAt,revalidationDigest:revalidation.digest,commands,status:"drafted",executionCertified:false,liveExecutionAllowed:false,liveStateChanged:false,createdBy:actor||"Operator",createdAt:this.now()};
++    await this.database.mutate(data=>{data.v45CommandDrafts||={};const list=data.v45CommandDrafts[org]||[];list.unshift(draft);data.v45CommandDrafts[org]=list.slice(0,200);return draft;});
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 non-executable command draft prepared: ${draft.id}`,category:"v45-command-draft"});
++    this.realtimeHub.publish("v45-command-draft-prepared",{organizationId:org,id:draft.id,commands:commands.length,liveExecutionAllowed:false});
++    return {organizationId:org,draft,revalidation,build:"45.15.0-intervention-authorization"};
++  }
++  async v45AuthorizationReadiness(org){
++    const db=await this.database.read(),packets=db.v45ApprovalPackets?.[org]||[],decisions=db.v45ApprovalDecisions?.[org]||[],drafts=db.v45CommandDrafts?.[org]||[];
++    const latestPacket=packets[0]||null,latestDraft=drafts[0]||null;
++    let revalidation=null;if(latestPacket){try{revalidation=await this.v45RevalidateApprovalPacket(org,latestPacket.id);}catch{}}
++    const checks=[
++      {id:"packet",label:"Policy-aware approval packet",pass:Boolean(latestPacket)&&latestPacket.scope==="command-draft-only"&&Boolean(latestPacket.evidenceDigest),detail:latestPacket?`${latestPacket.id} · ${latestPacket.requiredApprovalRole}`:"No approval packet"},
++      {id:"expiry",label:"Scoped approval expiry",pass:Boolean(latestPacket?.expiresAt),detail:latestPacket?.expiresAt||"No expiry"},
++      {id:"revalidation",label:"Evidence and rehearsal revalidation",pass:Boolean(revalidation?.valid),detail:revalidation?`${revalidation.checks.filter(x=>x.pass).length}/${revalidation.checks.length} checks pass`:"No packet to revalidate"},
++      {id:"role",label:"Approval role boundary",pass:Boolean(latestPacket?.requiredApprovalRole),detail:latestPacket?.requiredApprovalRole||"No role"},
++      {id:"revocation",label:"Approval revocation architecture",pass:decisions.some(x=>x.decision==="revoke")||Boolean(latestPacket?.revocable),detail:"Approved authorization can be revoked before execution"},
++      {id:"draft",label:"Command drafting separated from execution",pass:Boolean(latestDraft)&&latestDraft.executionCertified===false&&latestDraft.commands.every(x=>x.executionEndpoint===null&&x.liveExecutionAllowed===false),detail:`${latestDraft?.commands?.length||0} non-executable command draft(s)`},
++      {id:"scope",label:"Authorization scope cannot grant live execution",pass:packets.every(x=>x.scope==="command-draft-only"&&x.liveExecutionAllowed===false)&&decisions.every(x=>x.liveExecutionAllowed===false)&&drafts.every(x=>x.liveExecutionAllowed===false),detail:"Authorization ends at command drafting"},
++      {id:"live-safety",label:"No V45 authorization artifact mutates restaurant state",pass:packets.every(x=>x.liveStateChanged===false)&&decisions.every(x=>x.liveStateChanged===false)&&drafts.every(x=>x.liveStateChanged===false),detail:"Approval, revocation, revalidation, and command drafting remain isolated"}
++    ];
++    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {organizationId:org,version:"45.15.0",score,status:score===100?"v45-authorization-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,latestPacketId:latestPacket?.id||null,latestDraftId:latestDraft?.id||null,safety:{stage:"approval-and-command-draft",liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.15.0-intervention-authorization"};
++  }
+   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
+ }
+ module.exports=AutonomousOperationsService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="45.10.0">
++  <meta name="blue-current-build" content="45.15.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8580,6 +8580,7 @@
+ <section class="v432-center v438-center v4316-center" id="aipWorkflowSupervisorCenter"><header><div><small>V44.18–V44.22 · Workflow Supervision + V44 Closure</small><strong>Resolve cross-agent dependencies, bound retries, escalate failures, and certify the V44 AI platform architecture.</strong><span>Supervision never promotes a workflow beyond governed dry-run scope. Retry limits and human escalation are explicit and auditable.</span></div><button id="awsRefresh" type="button">Refresh supervision</button></header><input id="awsReason" class="v4312-input" placeholder="Failure or escalation reason"><div class="v432-kpis"><article><small>Instances</small><strong id="awsInstances">0</strong></article><article><small>Retry pending</small><strong id="awsRetry">0</strong></article><article><small>Attention</small><strong id="awsAttention">0</strong></article><article><small>Escalations</small><strong id="awsEscalations">0</strong></article><article><small>Closure</small><strong id="awsScore">0%</strong></article><article><small>Status</small><strong id="awsStatus">—</strong></article><article><small>Trusted</small><strong id="awsTrusted">NO</strong></article></div><div class="v4316-answer" id="awsMessage">Select a durable workflow to exercise supervised failure handling.</div><div class="v4316-actions"><button type="button" data-supervisor-action="fail">Record failure</button><button type="button" data-supervisor-action="retry">Retry now</button><button type="button" data-supervisor-action="escalate">Escalate</button></div><div id="awsList" class="v432-list"></div><div id="awsChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="autonomousAssistanceCenter"><header><div><small>V45.1–V45.5 · Autonomous Operations Foundation</small><strong>Turn live operating evidence into anomalies, agent-scoped recommendations, and intervention simulations.</strong><span>V45 begins with governed assistance: observe → detect → recommend → simulate. No live restaurant mutation is authorized.</span></div><div class="v4316-actions"><button id="vaaRefresh" type="button">Refresh</button><button id="vaaRun" type="button">Run governed cycle</button></div></header><div class="v432-kpis"><article><small>Cycles</small><strong id="vaaCycles">0</strong></article><article><small>Locations</small><strong id="vaaLocations">0</strong></article><article><small>Anomalies</small><strong id="vaaAnomalies">0</strong></article><article><small>Critical</small><strong id="vaaCritical">0</strong></article><article><small>Recommendations</small><strong id="vaaRecommendations">0</strong></article><article><small>Simulations</small><strong id="vaaSimulations">0</strong></article><article><small>Readiness</small><strong id="vaaScore">0%</strong></article><article><small>Status</small><strong id="vaaStatus">—</strong></article><article><small>Trusted</small><strong id="vaaTrusted">NO</strong></article></div><div class="v4316-answer" id="vaaMessage">Run a governed observation cycle to establish the V45 operating picture.</div><div id="vaaList" class="v432-list"></div><div id="vaaChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="interventionPlanningCenter"><header><div><small>V45.6–V45.10 · Governed Intervention Planning</small><strong>Convert autonomous recommendations into policy-bounded proposals, detect conflicts, and rehearse coordinated interventions.</strong><span>Plans stop at approval review. No intervention proposal, rehearsal, or conflict resolution mutates live restaurant state.</span></div><div class="v4316-actions"><button id="vipRefresh" type="button">Refresh</button><button id="vipPrepare" type="button">Prepare proposals</button><button id="vipRehearse" type="button">Rehearse plan</button></div></header><div class="v432-kpis"><article><small>Proposals</small><strong id="vipProposals">0</strong></article><article><small>Rehearsals</small><strong id="vipRehearsals">0</strong></article><article><small>Conflicts</small><strong id="vipConflicts">0</strong></article><article><small>Blocking</small><strong id="vipBlocking">0</strong></article><article><small>Readiness</small><strong id="vipScore">0%</strong></article><article><small>Status</small><strong id="vipStatus">—</strong></article><article><small>Trusted</small><strong id="vipTrusted">NO</strong></article></div><div class="v4316-answer" id="vipMessage">Prepare intervention proposals from the latest V45 assistance cycle.</div><div id="vipList" class="v432-list"></div><div id="vipChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="interventionAuthorizationCenter"><header><div><small>V45.11–V45.15 · Governed Intervention Authorization</small><strong>Package evidence for approval, revalidate state, enforce scoped expiry/revocation, and draft non-executable commands.</strong><span>Approval authorizes command drafting only. No command in this release has an execution endpoint.</span></div><div class="v4316-actions"><button id="viaRefresh" type="button">Refresh</button><button id="viaPrepare" type="button">Prepare approval packet</button></div></header><div class="v4316-actions"><select id="viaRole"><option value="manager">Manager</option><option value="general-manager">General manager</option><option value="regional-operator">Regional operator</option><option value="executive">Executive</option></select><input id="viaNote" class="v4312-input" placeholder="Approval / rejection note"><button type="button" data-auth-action="approve">Approve</button><button type="button" data-auth-action="reject">Reject</button><button type="button" data-auth-action="revoke">Revoke</button><button type="button" data-auth-action="draft">Draft commands</button></div><div class="v432-kpis"><article><small>Packets</small><strong id="viaPackets">0</strong></article><article><small>Pending</small><strong id="viaPending">0</strong></article><article><small>Approved</small><strong id="viaApproved">0</strong></article><article><small>Drafts</small><strong id="viaDrafts">0</strong></article><article><small>Readiness</small><strong id="viaScore">0%</strong></article><article><small>Status</small><strong id="viaStatus">—</strong></article><article><small>Trusted</small><strong id="viaTrusted">NO</strong></article></div><div class="v4316-answer" id="viaMessage">Prepare an approval packet from a conflict-free rehearsal.</div><div id="viaList" class="v432-list"></div><div id="viaChecks" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · Persistent Runtime Readiness</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryEngineV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryCenterV44.js?v=44.3.0"></script>
+@@ -8605,6 +8606,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="autonomousAssistanceCenter" data-src="js/modules/autonomousAssistanceCenter.js?v=45.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionPlanningCenter" data-src="js/modules/interventionPlanningEngine.js?v=45.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionPlanningCenter" data-src="js/modules/interventionPlanningCenter.js?v=45.10.0"></script>
+-<script src="js/startup-loader.js?v=45.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionAuthorizationCenter" data-src="js/modules/interventionAuthorizationEngine.js?v=45.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="interventionAuthorizationCenter" data-src="js/modules/interventionAuthorizationCenter.js?v=45.15.0"></script>
++<script src="js/startup-loader.js?v=45.15.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -2445,6 +2445,7 @@
+ const aipWorkflowSupervisorCenterModule = startupRegistry.register("aipWorkflowSupervisorCenter",shouldInitializeCenter("aipWorkflowSupervisorCenter") ? window.createBlueCurrentAipWorkflowSupervisorCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipDurableWorkflowCenter"]);
+ const autonomousAssistanceCenterModule = startupRegistry.register("autonomousAssistanceCenter",shouldInitializeCenter("autonomousAssistanceCenter") ? window.createBlueCurrentAutonomousAssistanceCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipWorkflowSupervisorCenter","autonomousPolicyCenter","predictiveOptimizationCenter"]);
+ const interventionPlanningCenterModule = startupRegistry.register("interventionPlanningCenter",shouldInitializeCenter("interventionPlanningCenter") ? window.createBlueCurrentInterventionPlanningCenterModule?.(eventBus, appState) : null,["eventBus","appState","autonomousAssistanceCenter"]);
++const interventionAuthorizationCenterModule = startupRegistry.register("interventionAuthorizationCenter",shouldInitializeCenter("interventionAuthorizationCenter") ? window.createBlueCurrentInterventionAuthorizationCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionPlanningCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V45.10.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V45.15.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/interventionAuthorizationEngine.js
++++ b/client/js/modules/interventionAuthorizationEngine.js
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentInterventionAuthorizationEngine{constructor(){this.r=api();}packets(){return this.r('/api/autonomous-assistance/approval-packets');}prepare(rehearsalId){return this.r('/api/autonomous-assistance/approval-packets',{method:'POST',body:JSON.stringify({rehearsalId})});}decide(packetId,decision,actorRole,note){return this.r('/api/autonomous-assistance/approval-decisions',{method:'POST',body:JSON.stringify({packetId,decision,actorRole,note})});}drafts(){return this.r('/api/autonomous-assistance/command-drafts');}draft(packetId){return this.r('/api/autonomous-assistance/command-drafts',{method:'POST',body:JSON.stringify({packetId})});}readiness(){return this.r('/api/autonomous-assistance/authorization-readiness');}}
++window.BlueCurrentInterventionAuthorizationEngine=BlueCurrentInterventionAuthorizationEngine;})();--- a/client/js/modules/interventionAuthorizationCenter.js
++++ b/client/js/modules/interventionAuthorizationCenter.js
+@@ -0,0 +1,8 @@
++(function(){"use strict";
++function createBlueCurrentInterventionAuthorizationCenterModule(){const root=document.getElementById('interventionAuthorizationCenter');if(!root||!window.BlueCurrentInterventionAuthorizationEngine)return null;const e=new window.BlueCurrentInterventionAuthorizationEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));let packet=null;
++async function load(){try{const [p,d,r]=await Promise.all([e.packets(),e.drafts(),e.readiness()]);packet=p.items?.[0]||null;$('viaPackets').textContent=p.count||0;$('viaPending').textContent=p.pending||0;$('viaApproved').textContent=p.approved||0;$('viaDrafts').textContent=d.count||0;$('viaScore').textContent=`${r.score||0}%`;$('viaStatus').textContent=r.status||'—';$('viaTrusted').textContent=r.trusted?'YES':'NO';$('viaMessage').textContent=packet?`${packet.id} · ${packet.status} · ${packet.scope} · expires ${packet.expiresAt}`:'Prepare an approval packet from a conflict-free rehearsal.';$('viaList').innerHTML=(p.items||[]).slice(0,10).map(x=>`<article><div><strong>${esc(x.status)} · ${esc(x.id)}</strong><span>${x.proposalCount||0} proposal(s) · role ${esc(x.requiredApprovalRole)} · ${esc(x.scope)}</span></div></article>`).join('')||'<p>No authorization packets yet.</p>';$('viaChecks').innerHTML=(r.checks||[]).map(x=>`<article><div><strong>${x.pass?'PASS':'BLOCK'} · ${esc(x.label)}</strong><span>${esc(x.detail)}</span></div></article>`).join('');}catch(err){$('viaMessage').textContent=err.message;}}
++async function latestRehearsal(){const t=localStorage.getItem("blueCurrentV3230Token")||"",r=await fetch('/api/autonomous-assistance/intervention-rehearsals',{headers:{Authorization:`Bearer ${t}`}}),d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to load rehearsals');return (d.items||[]).find(x=>x.status==='ready-for-approval-review')||null;}
++$('viaPrepare')?.addEventListener('click',async()=>{try{const r=await latestRehearsal();if(!r)throw new Error('Create a conflict-free intervention rehearsal first.');await e.prepare(r.id);await load();}catch(err){$('viaMessage').textContent=err.message;}});
++root.addEventListener('click',async ev=>{const action=ev.target.closest('[data-auth-action]')?.dataset.authAction;if(!action)return;if(!packet){$('viaMessage').textContent='Prepare an approval packet first.';return;}try{const role=$('viaRole').value||'manager',note=$('viaNote').value||'';if(action==='draft')await e.draft(packet.id);else await e.decide(packet.id,action,role,note);await load();}catch(err){$('viaMessage').textContent=err.message;}});
++$('viaRefresh')?.addEventListener('click',load);load();return{engine:e,load};}
++window.createBlueCurrentInterventionAuthorizationCenterModule=createBlueCurrentInterventionAuthorizationCenterModule;})();--- a/scripts/maintenance/test-v45-intervention-authorization.js
++++ b/scripts/maintenance/test-v45-intervention-authorization.js
+@@ -0,0 +1,43 @@
++"use strict";
++const assert=require("assert"),AutonomousOperationsService=require("../../server/services/autonomousOperationsService");
++class MemoryDatabase{constructor(seed){this.data=structuredClone(seed);}async read(){return structuredClone(this.data);}async mutate(fn){return structuredClone(fn(this.data));}}
++(async()=>{
++ const org="org-test";
++ const proposals=[
++  {id:"P1",organizationId:org,cycleId:"C1",recommendationId:"R1",simulationId:"S1",locationId:"L1",domain:"staffing",proposalType:"contingency-coverage-plan",title:"Staffing",proposedAction:"Model coverage",agentType:"staffing-advisor",risk:"medium",confidence:88,policy:{policyId:"V45-POL-STAFFING",approvalRole:"manager",limits:{maxAdditionalStaff:3},prohibited:["publish-shift"]},evidence:[{metric:"need",value:2}],simulation:{modeled:{serviceCapacityPercentDelta:12},confidence:82,assumptions:["dry-run"]},approvalRequired:true,rehearsalRequired:true,liveExecutionAllowed:false,liveStateChanged:false},
++  {id:"P2",organizationId:org,cycleId:"C1",recommendationId:"R2",simulationId:"S2",locationId:"L2",domain:"revenue-opportunity",proposalType:"revenue-recovery-plan",title:"Revenue",proposedAction:"Model demand option",agentType:"revenue-planner",risk:"high",confidence:81,policy:{policyId:"V45-POL-REVENUE",approvalRole:"general-manager",limits:{maxModeledDiscountPercent:10},prohibited:["publish-offer"]},evidence:[{metric:"trend",value:-7}],simulation:{modeled:{revenueOpportunity:"modeled-only"},confidence:76,assumptions:["dry-run"]},approvalRequired:true,rehearsalRequired:true,liveExecutionAllowed:false,liveStateChanged:false}
++ ];
++ const rehearsal={id:"REH1",organizationId:org,cycleId:"C1",proposalIds:["P1","P2"],status:"ready-for-approval-review",blockingConflicts:0,conflicts:[],locationPlans:[{locationId:"L1"},{locationId:"L2"}],governance:{approvalRequired:true,liveExecutionAllowed:false,liveStateChanged:false}};
++ const db=new MemoryDatabase({v45InterventionProposals:{[org]:proposals},v45InterventionRehearsals:{[org]:[rehearsal]}}),audits=[],events=[];
++ const svc=new AutonomousOperationsService(db,{record:async x=>audits.push(x)},{publish:(t,p)=>events.push({t,p})},{snapshot:async()=>({})});
++ const made=await svc.v45ApprovalPackets(org,"Tester",{rehearsalId:"REH1"}),packet=made.packet;
++ assert.equal(packet.status,"pending");
++ assert.equal(packet.scope,"command-draft-only");
++ assert.equal(packet.requiredApprovalRole,"general-manager");
++ assert.equal(packet.liveExecutionAllowed,false);
++ assert.ok(packet.evidenceDigest);
++ assert.ok(new Date(packet.expiresAt)>new Date(packet.createdAt));
++ const rv=await svc.v45RevalidateApprovalPacket(org,packet.id);
++ assert.equal(rv.valid,true);
++ let lowRoleFailed=false;
++ try{await svc.v45ApprovalDecision(org,"Tester",{packetId:packet.id,decision:"approve",actorRole:"manager"});}catch(e){lowRoleFailed=/requires role/.test(e.message);}
++ assert.equal(lowRoleFailed,true);
++ const approved=await svc.v45ApprovalDecision(org,"GM",{packetId:packet.id,decision:"approve",actorRole:"general-manager",note:"Reviewed"});
++ assert.equal(approved.packet.status,"approved");
++ assert.equal(approved.packet.liveExecutionAllowed,false);
++ const drafted=await svc.v45CommandDrafts(org,"GM",{packetId:packet.id});
++ assert.equal(drafted.draft.commands.length,2);
++ assert.equal(drafted.draft.executionCertified,false);
++ assert.equal(drafted.draft.liveExecutionAllowed,false);
++ assert.ok(drafted.draft.commands.every(c=>c.status==="draft-only"&&c.executionEndpoint===null&&c.liveExecutionAllowed===false));
++ const ready=await svc.v45AuthorizationReadiness(org);
++ assert.equal(ready.score,100);
++ assert.equal(ready.trusted,true);
++ assert.equal(ready.status,"v45-authorization-ready");
++ const revoked=await svc.v45ApprovalDecision(org,"GM",{packetId:packet.id,decision:"revoke",actorRole:"general-manager",note:"Conditions changed"});
++ assert.equal(revoked.packet.status,"revoked");
++ let revokedDraftFailed=false;
++ try{await svc.v45CommandDrafts(org,"GM",{packetId:packet.id});}catch(e){revokedDraftFailed=/requires an approved packet/.test(e.message);}
++ assert.equal(revokedDraftFailed,true);
++ console.log(JSON.stringify({ok:true,version:ready.version,packetId:packet.id,requiredRole:packet.requiredApprovalRole,revalidation:rv.valid,lowRoleBlocked:lowRoleFailed,commands:drafted.draft.commands.length,executionEndpoint:drafted.draft.commands[0].executionEndpoint,readiness:ready.score,revoked:revoked.packet.status,liveExecutionAllowed:false,audits:audits.length,events:events.length},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V45.15.0.md
++++ b/README-APPLY-V45.15.0.md
+@@ -0,0 +1,70 @@
++# APPLY BLUE CURRENT V45.15.0
++
++## Baseline
++Apply over the authoritative repository containing V45.10.0.
++
++## Important
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++Extract `BLUE-CURRENT-V45.15.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v45-intervention-authorization.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "45.15.0"
++```
++
++## Recommended Git staging
++
++Do not use `git add .` while runtime database artifacts may exist.
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/autonomousOperationsService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/interventionAuthorizationEngine.js
++git add client/js/modules/interventionAuthorizationCenter.js
++git add scripts/maintenance/test-v45-intervention-authorization.js
++git add README-APPLY-V45.15.0.md
++git add V45.15.0-RELEASE.md
++git add V45.15.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V45.15.0 governed intervention authorization"
++git push origin live-service-timeline
++```
++
++## Safety
++V45.15.0 ends at non-executable command drafting. It does not contain a live execution endpoint.
+--- a/V45.15.0-RELEASE.md
++++ b/V45.15.0-RELEASE.md
+@@ -0,0 +1,114 @@
++# BLUE CURRENT V45.15.0 — GOVERNED INTERVENTION AUTHORIZATION
++
++## Release scope
++
++V45.11–V45.15 advances Autonomous Operations from intervention rehearsal into scoped authorization and non-executable command drafting.
++
++This release still does not introduce a live execution boundary.
++
++### V45.11 — Approval Packet Builder
++A conflict-free rehearsal can now be converted into a policy-aware approval packet.
++
++Each packet retains:
++- rehearsal ID
++- exact proposal scope
++- required approval role
++- evidence/policy SHA-256 digest
++- approval scope
++- expiration
++- revocability
++- live-state isolation markers
++
++Approval packet scope is explicitly:
++
++`command-draft-only`
++
++### V45.12 — Evidence / State Revalidation
++Before approval and before command drafting, Blue Current revalidates:
++- packet expiry
++- rehearsal status
++- blocking conflicts
++- proposal-set completeness
++- evidence/policy digest
++- proposal safety boundary
++- authorization scope
++
++A stale or changed packet cannot progress without a new approval cycle.
++
++### V45.13 — Scoped Approval, Expiry, and Role Enforcement
++Approvals:
++- expire after 15 minutes
++- require a role at or above the packet's required approval role
++- remain limited to command drafting
++- never grant live execution
++
++Current role hierarchy:
++Manager → General Manager → Regional Operator → Executive
++
++### V45.14 — Revocation
++Approved authorization can be revoked.
++
++Revocation is persistent, auditable, realtime-published, and immediately blocks creation of additional command drafts.
++
++### V45.15 — Non-Executable Command Drafting + Authorization Readiness
++Approved and freshly revalidated packets can produce command drafts.
++
++Every command draft has:
++- `status: draft-only`
++- `executionEndpoint: null`
++- `requiresSeparateExecutionCertification: true`
++- `liveExecutionAllowed: false`
++- `liveStateChanged: false`
++
++Authorization readiness certifies:
++- approval packet construction
++- scoped expiry
++- evidence/state revalidation
++- role boundaries
++- revocation architecture
++- command/execution separation
++- authorization scope
++- live-state isolation
++
++## New APIs
++- `GET/POST /api/autonomous-assistance/approval-packets`
++- `POST /api/autonomous-assistance/approval-revalidate`
++- `POST /api/autonomous-assistance/approval-decisions`
++- `GET/POST /api/autonomous-assistance/command-drafts`
++- `GET /api/autonomous-assistance/authorization-readiness`
++
++## UI
++Adds the Governed Intervention Authorization center:
++- prepare approval packet
++- approval role selection
++- approve
++- reject
++- revoke
++- draft commands
++- authorization/readiness visibility
++
++## Safety boundary
++This release deliberately has no command execution endpoint.
++
++Approval grants permission only to produce a command draft. Draft commands are inert architecture records and cannot mutate restaurant operations.
++
++## Validation
++- `node scripts/maintenance/test-v45-intervention-authorization.js` passed.
++- General-manager approval boundary was enforced.
++- Lower-role approval was rejected.
++- Evidence/rehearsal revalidation passed.
++- Approved packet produced two non-executable command drafts.
++- Draft command execution endpoints were `null`.
++- Authorization readiness scored 100%.
++- Revocation succeeded.
++- A revoked packet could not produce another command draft.
++- `npm run check` passed:
++  - 810 JavaScript files
++  - 692 client scripts
++  - 5,170 unique HTML IDs
++- Server startup passed as V45.15.0.
++- `/api/health` returned HTTP 200 with database connected and auth enabled.
++- Authoritative runtime database SHA-256 remained unchanged during validation.
++
++## Operation V position
++The next V45 milestone should define the separately certified execution boundary: action adapters, command validation, preflight checks, idempotency, rollback/compensation contracts, emergency stop, bounded domain allowlists, and shadow/canary execution. Live execution should remain disabled until those controls pass dedicated certification.
