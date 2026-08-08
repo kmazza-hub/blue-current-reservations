@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="47.25.0">
+  <meta name="blue-current-build" content="47.30.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -257,6 +257,15 @@
       <div class="v4316-actions"><input id="pshiftOwner" class="v4312-input" placeholder="Intervention owner"><input id="pshiftNote" class="v4312-input" placeholder="Manager decision note"></div>
       <div id="pshiftInterventions" class="v432-list"></div>
       <p id="pshiftMethod"></p>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="managerOperatingRhythm">
+      <header><div><small>V47.26–V47.30 · Manager Operating Rhythm</small><strong>Run the entire shift from one continuous management rhythm: plan, execute, anticipate, protect profit, hand off, and close.</strong><span>Blue Current assembles the current priorities and operating evidence into a single shift narrative. Managers remain responsible for every commitment and closeout.</span></div><button id="morRefresh" type="button">Refresh rhythm</button></header>
+      <div class="v432-kpis"><article><small>Rhythm completion</small><strong id="morScore">0%</strong></article><article><small>Readiness</small><strong id="morReadiness">0</strong></article><article><small>Priorities</small><strong id="morPriorities">0</strong></article><article><small>Active actions</small><strong id="morActions">0</strong></article><article><small>Controllable contribution</small><strong id="morProfit">$0</strong></article><article><small>Realized impact</small><strong id="morRealized">$0</strong></article><article><small>Latest handoff</small><strong id="morHandoff">NONE</strong></article><article><small>Latest closeout</small><strong id="morCloseout">NONE</strong></article></div>
+      <div class="v4316-answer" id="morHeadline">Building the shift operating rhythm…</div>
+      <div class="v4316-actions"><select id="morShift"><option value="opening">Opening</option><option value="lunch">Lunch</option><option value="dinner" selected>Dinner</option><option value="closing">Closing</option></select><input id="morManager" class="v4312-input" placeholder="Manager"><input id="morNote" class="v4312-input" placeholder="Operating intent / handoff / closeout note"><button id="morPlan" type="button">Commit shift plan</button><button id="morHandoffBtn" type="button">Post handoff</button><button id="morCloseoutBtn" type="button">Close shift</button></div>
+      <div id="morStages" class="v432-list"></div>
+      <div id="morPriorityList" class="v432-list"></div>
+      <div id="morTimeline" class="v432-list"></div>
     </section>
 
     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
@@ -8688,6 +8697,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityCenter.js?v=47.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlEngine.js?v=47.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlCenter.js?v=47.25.0"></script>
-<script src="js/startup-loader.js?v=47.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmEngine.js?v=47.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmCenter.js?v=47.30.0"></script>
+<script src="js/startup-loader.js?v=47.30.0"></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "47.25.0",
+  "version": "47.30.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 predictive shift control and preemptive interventions",
+  "description": "Blue Current Hospitality OS \u2014 continuous manager operating rhythm from pre-shift through closeout",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

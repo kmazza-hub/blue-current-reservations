@@ -1,0 +1,710 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "47.25.0",
++  "version": "47.30.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 predictive shift control and preemptive interventions",
++  "description": "Blue Current Hospitality OS \u2014 continuous manager operating rhythm from pre-shift through closeout",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -40,6 +40,7 @@
+ const HospitalityActionWorkspaceService = require("./services/hospitalityActionWorkspaceService");
+ const ServiceProfitabilityIntelligenceService = require("./services/serviceProfitabilityIntelligenceService");
+ const PredictiveShiftControlService = require("./services/predictiveShiftControlService");
++const ManagerOperatingRhythmService = require("./services/managerOperatingRhythmService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -83,7 +84,8 @@
+ const hospitalityActionWorkspaceService = new HospitalityActionWorkspaceService(database, auditService, realtimeHub, hospitalityPerformanceService);
+ const serviceProfitabilityIntelligenceService = new ServiceProfitabilityIntelligenceService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, inventoryIntelligenceService, guestIntelligenceService, executiveCommandCenterService);
+ const predictiveShiftControlService = new PredictiveShiftControlService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, serviceProfitabilityIntelligenceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService });
++const managerOperatingRhythmService = new ManagerOperatingRhythmService(database, auditService, realtimeHub, commandCenterService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -170,7 +172,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V47.25.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V47.30.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "47.25.0",
++        version: "47.30.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -193,6 +193,30 @@
+ 
+     const auth = await authService.authenticate(bearerToken(request));
+     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
++
++    if (url.pathname === "/api/manager-operating-rhythm" && request.method === "GET") {
++      const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
++      return sendJson(response,200,await managerOperatingRhythmService.snapshot(auth.membership.organizationId,locationId));
++    }
++
++    if (url.pathname === "/api/manager-operating-rhythm/plan" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Shift plan permission required."});
++      const body=await readJson(request); const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
++      try{return sendJson(response,201,await managerOperatingRhythmService.createPlan(auth.membership.organizationId,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname === "/api/manager-operating-rhythm/handoff" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Shift handoff permission required."});
++      const body=await readJson(request); const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
++      return sendJson(response,201,await managerOperatingRhythmService.createHandoff(auth.membership.organizationId,locationId,body,auth.user.name));
++    }
++
++    if (url.pathname === "/api/manager-operating-rhythm/closeout" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Shift closeout permission required."});
++      const body=await readJson(request); const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
++      return sendJson(response,201,await managerOperatingRhythmService.closeout(auth.membership.organizationId,locationId,body,auth.user.name));
++    }
+ 
+     if (url.pathname === "/api/predictive-shift-control" && request.method === "GET") {
+       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+--- a/server/services/managerOperatingRhythmService.js
++++ b/server/services/managerOperatingRhythmService.js
+@@ -0,0 +1,139 @@
++"use strict";
++
++class ManagerOperatingRhythmService {
++  constructor(database,auditService,realtimeHub,commandCenterService,hospitalityPerformanceService,hospitalityActionWorkspaceService,serviceProfitabilityIntelligenceService,predictiveShiftControlService){
++    Object.assign(this,{database,auditService,realtimeHub,commandCenterService,hospitalityPerformanceService,hospitalityActionWorkspaceService,serviceProfitabilityIntelligenceService,predictiveShiftControlService});
++  }
++  now(){return new Date().toISOString();}
++  async snapshot(organizationId,locationId="loc_marina"){
++    const [db,command,performance,actions,profit,predictive]=await Promise.all([
++      this.database.read(),
++      this.commandCenterService.snapshot(organizationId,locationId),
++      this.hospitalityPerformanceService.snapshot(organizationId,locationId),
++      this.hospitalityActionWorkspaceService.list(organizationId,locationId),
++      this.serviceProfitabilityIntelligenceService.snapshot(organizationId,locationId),
++      this.predictiveShiftControlService.snapshot(organizationId,locationId)
++    ]);
++
++    const plans=(db.managerShiftPlans||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++    const latestPlan=plans[0]||null;
++    const handoffs=(db.shiftHandoffs||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++    const latestHandoff=handoffs[0]||null;
++    const closeouts=(db.managerShiftCloseouts||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++    const latestCloseout=closeouts[0]||null;
++
++    const priorities=(performance.opportunities||[]).slice(0,5).map((x,i)=>({
++      rank:i+1,id:x.id,title:x.title,category:x.category,owner:x.owner,severity:x.severity,estimatedImpactDollars:x.estimatedImpactDollars,nextAction:x.nextAction
++    }));
++    const activeActions=(actions.workspaces||[]).filter(x=>!["completed","cancelled"].includes(x.status)).slice(0,8);
++    const completedActions=(actions.workspaces||[]).filter(x=>x.status==="completed").slice(0,8);
++    const predictiveInterventions=(predictive.interventions||[]).slice(0,6);
++
++    const stages=[
++      {id:"pre_shift",label:"Pre-shift",complete:Boolean(latestPlan),detail:latestPlan?`${latestPlan.priorities.length} priorities planned`:"Shift plan not yet committed"},
++      {id:"live_service",label:"Live service",complete:activeActions.length>0||predictiveInterventions.length>0,detail:`${activeActions.length} active action(s) · ${predictiveInterventions.length} predictive intervention(s)`},
++      {id:"profit_control",label:"Profit control",complete:Boolean(profit?.summary),detail:`${profit.summary?.modeledControllableMarginPercent||0}% modeled controllable margin`},
++      {id:"handoff",label:"Handoff",complete:Boolean(latestHandoff),detail:latestHandoff?`${latestHandoff.shift} handoff by ${latestHandoff.authorName}`:"No handoff posted"},
++      {id:"closeout",label:"Post-shift",complete:Boolean(latestCloseout),detail:latestCloseout?`${latestCloseout.resultStatus} · ${latestCloseout.completedActions} completed action(s)`:"Closeout not yet posted"}
++    ];
++
++    const rhythmScore=Math.round(stages.filter(x=>x.complete).length/stages.length*100);
++    const narrative=[];
++    narrative.push(`Readiness ${command?.readiness?.score??"—"} · ${priorities.length} prioritized operating opportunities.`);
++    if(predictive.summary?.timeToConstraintMinutes!=null)narrative.push(`${predictive.summary.firstConstraint} pressure is forecast to cross threshold in ${predictive.summary.timeToConstraintMinutes} minutes.`);
++    if(activeActions.length)narrative.push(`${activeActions.length} manager-owned action${activeActions.length===1?" is":"s are"} active.`);
++    narrative.push(`Modeled controllable contribution is $${Number(profit.summary?.modeledControllableContributionDollars||0).toLocaleString()} at ${profit.summary?.modeledControllableMarginPercent||0}% margin.`);
++    if(actions.summary?.measuredOutcomes)narrative.push(`${actions.summary.measuredOutcomes} completed action outcome${actions.summary.measuredOutcomes===1?" has":"s have"} been measured at ${actions.summary.realizationRatePercent||0}% realization.`);
++
++    return {
++      version:"47.30.0",generatedAt:this.now(),organizationId,locationId,
++      headline:latestPlan?`The shift is operating against ${latestPlan.priorities.length} committed priorities.`:"Build the shift plan before service so every manager starts from the same priorities.",
++      summary:{
++        rhythmScore,readinessScore:command?.readiness?.score||0,
++        priorityCount:priorities.length,activeActions:activeActions.length,
++        completedActions:completedActions.length,predictiveInterventions:predictiveInterventions.length,
++        modeledControllableContributionDollars:profit.summary?.modeledControllableContributionDollars||0,
++        modeledControllableMarginPercent:profit.summary?.modeledControllableMarginPercent||0,
++        realizedImpactDollars:actions.summary?.realizedImpactDollars||0,
++        realizationRatePercent:actions.summary?.realizationRatePercent||0
++      },
++      stages,priorities,latestPlan,activeActions,completedActions,predictiveInterventions,
++      profitability:{summary:profit.summary,topConstraint:profit.constraints?.[0]||null},
++      latestHandoff,latestCloseout,narrative,
++      policy:{humanOwned:true,automaticExecution:false,continuousShiftRecord:true}
++    };
++  }
++
++  async createPlan(organizationId,locationId,input,actor){
++    const snapshot=await this.snapshot(organizationId,locationId);
++    const selected=(Array.isArray(input.priorityIds)&&input.priorityIds.length?input.priorityIds:snapshot.priorities.slice(0,3).map(x=>x.id));
++    const priorityMap=new Map(snapshot.priorities.map(x=>[x.id,x]));
++    const priorities=selected.map(id=>priorityMap.get(id)).filter(Boolean).slice(0,5);
++    if(!priorities.length)throw new Error("At least one current operating priority is required.");
++    const now=this.now();
++    const record={
++      id:`msp_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,
++      shift:String(input.shift||"dinner").slice(0,40),
++      manager:String(input.manager||actor||"Manager").slice(0,120),
++      priorities,
++      operatingIntent:String(input.operatingIntent||"Protect service execution, guest experience, and controllable contribution.").slice(0,800),
++      readinessAtPlan:snapshot.summary.readinessScore,
++      profitAtPlan:snapshot.profitability.summary,
++      predictiveAtPlan:snapshot.predictiveInterventions.slice(0,3),
++      createdBy:actor,createdAt:now
++    };
++    await this.database.mutate(db=>{db.managerShiftPlans||=[];db.managerShiftPlans.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Manager shift plan created: ${record.shift} · ${record.id}`,category:"manager_operating_rhythm"});
++    this.realtimeHub.publish("manager-rhythm:plan-created",record);
++    return record;
++  }
++
++  async createHandoff(organizationId,locationId,input,actor){
++    const snapshot=await this.snapshot(organizationId,locationId),now=this.now();
++    const highlights=[
++      ...snapshot.completedActions.slice(0,3).map(x=>`${x.title} · ${x.outcomeMeasurement?.outcomeStatus||"completed"}`),
++      ...(snapshot.profitability.topConstraint?[`Top remaining profit constraint: ${snapshot.profitability.topConstraint.label}`]:[])
++    ].slice(0,5);
++    const needsAttention=[
++      ...snapshot.activeActions.slice(0,3).map(x=>`${x.title} · ${x.status}`),
++      ...snapshot.predictiveInterventions.slice(0,2).map(x=>`${x.type} in ${x.etaMinutes}m`)
++    ].slice(0,5);
++    const summary=String(input.summary||snapshot.narrative.join(" ")).slice(0,1200);
++    const record={
++      id:`handoff_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,
++      shift:String(input.shift||"closing").slice(0,40),summary,highlights,needsAttention,
++      authorName:String(input.manager||actor||"Manager").slice(0,120),createdAt:now,updatedAt:now,acknowledgements:[]
++    };
++    await this.database.mutate(db=>{db.shiftHandoffs||=[];db.shiftHandoffs.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Manager rhythm handoff posted: ${record.shift}`,category:"manager_operating_rhythm"});
++    this.realtimeHub.publish("manager-rhythm:handoff-created",record);
++    return record;
++  }
++
++  async closeout(organizationId,locationId,input,actor){
++    const snapshot=await this.snapshot(organizationId,locationId),now=this.now();
++    const incomplete=snapshot.activeActions.length;
++    const resultStatus=incomplete===0?"closed-clean":incomplete<=2?"closed-with-carryover":"carryover-required";
++    const record={
++      id:`msc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,
++      shift:String(input.shift||snapshot.latestPlan?.shift||"dinner").slice(0,40),
++      manager:String(input.manager||actor||"Manager").slice(0,120),
++      resultStatus,
++      priorityCount:snapshot.summary.priorityCount,
++      completedActions:snapshot.summary.completedActions,
++      activeCarryoverActions:snapshot.summary.activeActions,
++      realizedImpactDollars:snapshot.summary.realizedImpactDollars,
++      realizationRatePercent:snapshot.summary.realizationRatePercent,
++      endingControllableContributionDollars:snapshot.summary.modeledControllableContributionDollars,
++      endingControllableMarginPercent:snapshot.summary.modeledControllableMarginPercent,
++      remainingTopConstraint:snapshot.profitability.topConstraint||null,
++      note:String(input.note||"").slice(0,1000),
++      createdBy:actor,createdAt:now
++    };
++    await this.database.mutate(db=>{db.managerShiftCloseouts||=[];db.managerShiftCloseouts.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Manager shift closeout: ${record.resultStatus} · ${record.id}`,category:"manager_operating_rhythm"});
++    this.realtimeHub.publish("manager-rhythm:closeout-created",record);
++    return record;
++  }
++}
++module.exports=ManagerOperatingRhythmService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="47.25.0">
++  <meta name="blue-current-build" content="47.30.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -257,6 +257,15 @@
+       <div class="v4316-actions"><input id="pshiftOwner" class="v4312-input" placeholder="Intervention owner"><input id="pshiftNote" class="v4312-input" placeholder="Manager decision note"></div>
+       <div id="pshiftInterventions" class="v432-list"></div>
+       <p id="pshiftMethod"></p>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="managerOperatingRhythm">
++      <header><div><small>V47.26–V47.30 · Manager Operating Rhythm</small><strong>Run the entire shift from one continuous management rhythm: plan, execute, anticipate, protect profit, hand off, and close.</strong><span>Blue Current assembles the current priorities and operating evidence into a single shift narrative. Managers remain responsible for every commitment and closeout.</span></div><button id="morRefresh" type="button">Refresh rhythm</button></header>
++      <div class="v432-kpis"><article><small>Rhythm completion</small><strong id="morScore">0%</strong></article><article><small>Readiness</small><strong id="morReadiness">0</strong></article><article><small>Priorities</small><strong id="morPriorities">0</strong></article><article><small>Active actions</small><strong id="morActions">0</strong></article><article><small>Controllable contribution</small><strong id="morProfit">$0</strong></article><article><small>Realized impact</small><strong id="morRealized">$0</strong></article><article><small>Latest handoff</small><strong id="morHandoff">NONE</strong></article><article><small>Latest closeout</small><strong id="morCloseout">NONE</strong></article></div>
++      <div class="v4316-answer" id="morHeadline">Building the shift operating rhythm…</div>
++      <div class="v4316-actions"><select id="morShift"><option value="opening">Opening</option><option value="lunch">Lunch</option><option value="dinner" selected>Dinner</option><option value="closing">Closing</option></select><input id="morManager" class="v4312-input" placeholder="Manager"><input id="morNote" class="v4312-input" placeholder="Operating intent / handoff / closeout note"><button id="morPlan" type="button">Commit shift plan</button><button id="morHandoffBtn" type="button">Post handoff</button><button id="morCloseoutBtn" type="button">Close shift</button></div>
++      <div id="morStages" class="v432-list"></div>
++      <div id="morPriorityList" class="v432-list"></div>
++      <div id="morTimeline" class="v432-list"></div>
+     </section>
+ 
+     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
+@@ -8688,6 +8697,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="serviceProfitabilityIntelligence" data-src="js/modules/serviceProfitabilityCenter.js?v=47.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlEngine.js?v=47.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlCenter.js?v=47.25.0"></script>
+-<script src="js/startup-loader.js?v=47.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmEngine.js?v=47.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmCenter.js?v=47.30.0"></script>
++<script src="js/startup-loader.js?v=47.30.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1227,6 +1227,7 @@
+ const hospitalityOutcomeMeasurementModule = startupRegistry.register("hospitalityOutcomeMeasurement", shouldInitializeCenter("hospitalityOutcomeMeasurement") ? window.createBlueCurrentHospitalityOutcomeMeasurementModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityActionWorkspace"]);
+ const serviceProfitabilityIntelligenceModule = startupRegistry.register("serviceProfitabilityIntelligence", shouldInitializeCenter("serviceProfitabilityIntelligence") ? window.createBlueCurrentServiceProfitabilityCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityOutcomeMeasurement"]);
+ const predictiveShiftControlModule = startupRegistry.register("predictiveShiftControl", shouldInitializeCenter("predictiveShiftControl") ? window.createBlueCurrentPredictiveShiftControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "serviceProfitabilityIntelligence"]);
++const managerOperatingRhythmModule = startupRegistry.register("managerOperatingRhythm", shouldInitializeCenter("managerOperatingRhythm") ? window.createBlueCurrentManagerOperatingRhythmCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "predictiveShiftControl"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V47.25.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V47.30.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/managerOperatingRhythmEngine.js
++++ b/client/js/modules/managerOperatingRhythmEngine.js
+@@ -0,0 +1,15 @@
++(function(global){"use strict";
++class BlueCurrentManagerOperatingRhythmEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  locationId(){const s=this.appState?.getState?.()||{};return s.activeLocationId||s.selectedLocationId||s.auth?.locationId||"loc_marina";}
++  headers(){return {"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch(`/api/manager-operating-rhythm?locationId=${encodeURIComponent(this.locationId())}`,{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Manager rhythm failed (${r.status})`);this.appState?.update?.({managerOperatingRhythm:d});this.eventBus?.emit?.("manager-rhythm:updated",structuredClone(d));return d;}
++  async post(path,payload={}){const r=await fetch(`/api/manager-operating-rhythm/${path}`,{method:"POST",headers:this.headers(),body:JSON.stringify({locationId:this.locationId(),...payload})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Manager rhythm ${path} failed (${r.status})`);this.eventBus?.emit?.(`manager-rhythm:${path}`,structuredClone(d));return d;}
++  plan(payload){return this.post("plan",payload);}
++  handoff(payload){return this.post("handoff",payload);}
++  closeout(payload){return this.post("closeout",payload);}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentManagerOperatingRhythmEngine;
++if(global)global.BlueCurrentManagerOperatingRhythmEngine=BlueCurrentManagerOperatingRhythmEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/managerOperatingRhythmCenter.js
++++ b/client/js/modules/managerOperatingRhythmCenter.js
+@@ -0,0 +1,14 @@
++(function(){"use strict";
++function createBlueCurrentManagerOperatingRhythmCenterModule(eventBus,appState){const root=document.getElementById("managerOperatingRhythm");if(!root||!window.BlueCurrentManagerOperatingRhythmEngine)return null;const e=new window.BlueCurrentManagerOperatingRhythmEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c])),money=n=>`$${Number(n||0).toLocaleString()}`;let snap=null;
++function render(s){snap=s;const m=s.summary||{};$("morScore").textContent=`${m.rhythmScore||0}%`;$("morReadiness").textContent=m.readinessScore||0;$("morPriorities").textContent=m.priorityCount||0;$("morActions").textContent=m.activeActions||0;$("morProfit").textContent=money(m.modeledControllableContributionDollars||0);$("morRealized").textContent=money(m.realizedImpactDollars||0);$("morHeadline").textContent=s.headline||"Build the shift plan before service.";
++$("morStages").innerHTML=(s.stages||[]).map(x=>`<article><strong>${x.complete?"PASS":"OPEN"} · ${esc(x.label)}</strong><span>${esc(x.detail)}</span></article>`).join("");
++$("morPriorityList").innerHTML=(s.priorities||[]).map(x=>`<article><strong>#${x.rank} · ${esc(x.title)}</strong><span>${esc(x.category)} · ${esc(x.owner)} · ${money(x.estimatedImpactDollars)} modeled impact</span><p>${esc(x.nextAction)}</p></article>`).join("")||"<article><span>No operating priorities available.</span></article>";
++$("morTimeline").innerHTML=(s.narrative||[]).map(x=>`<article><span>${esc(x)}</span></article>`).join("");
++const h=s.latestHandoff,c=s.latestCloseout;$("morHandoff").textContent=h?`${h.shift} · ${h.authorName}`:"NONE";$("morCloseout").textContent=c?c.resultStatus:"NONE";}
++async function load(){try{$("morHeadline").textContent="Building the shift operating rhythm…";render(await e.snapshot());}catch(err){$("morHeadline").textContent=err.message;}}
++$("morRefresh")?.addEventListener("click",load);
++$("morPlan")?.addEventListener("click",async()=>{try{await e.plan({shift:$("morShift").value||"dinner",manager:$("morManager").value||"Manager",operatingIntent:$("morNote").value||""});await load();}catch(err){$("morHeadline").textContent=err.message;}});
++$("morHandoffBtn")?.addEventListener("click",async()=>{try{await e.handoff({shift:$("morShift").value||"closing",manager:$("morManager").value||"Manager",summary:$("morNote").value||""});await load();}catch(err){$("morHeadline").textContent=err.message;}});
++$("morCloseoutBtn")?.addEventListener("click",async()=>{try{await e.closeout({shift:$("morShift").value||"dinner",manager:$("morManager").value||"Manager",note:$("morNote").value||""});await load();}catch(err){$("morHeadline").textContent=err.message;}});
++["hospitality-action:updated","predictive-shift:decision","service-profitability:snapshot","auth:restored"].forEach(evt=>eventBus?.on?.(evt,load));window.addEventListener?.("online",load);load();return{engine:e,load};}
++window.createBlueCurrentManagerOperatingRhythmCenterModule=createBlueCurrentManagerOperatingRhythmCenterModule;})();--- a/scripts/maintenance/test-v47.30-manager-operating-rhythm.js
++++ b/scripts/maintenance/test-v47.30-manager-operating-rhythm.js
+@@ -0,0 +1,65 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/managerOperatingRhythmService");
++
++(async()=>{
++  const state={managerShiftPlans:[],shiftHandoffs:[],managerShiftCloseouts:[]},audit=[],events=[];
++  const db={read:async()=>state,mutate:async fn=>fn(state)};
++  const svc=new Service(
++    db,
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>({readiness:{score:86}})},
++    {snapshot:async()=>({opportunities:[
++      {id:"o1",title:"Recover kitchen",category:"kitchen",owner:"KM",severity:"high",estimatedImpactDollars:500,nextAction:"Rebalance expo"},
++      {id:"o2",title:"Assign tables",category:"reservations",owner:"Host",severity:"medium",estimatedImpactDollars:200,nextAction:"Pre-assign"}
++    ]})},
++    {list:async()=>({summary:{measuredOutcomes:1,realizationRatePercent:75,realizedImpactDollars:450},workspaces:[
++      {id:"a1",title:"Recover kitchen",status:"in_progress"},
++      {id:"a2",title:"Fix cost",status:"completed",outcomeMeasurement:{outcomeStatus:"improved"}}
++    ]})},
++    {snapshot:async()=>({summary:{modeledControllableContributionDollars:9000,modeledControllableMarginPercent:52},constraints:[{label:"Food-cost variance"}]})},
++    {snapshot:async()=>({summary:{timeToConstraintMinutes:30,firstConstraint:"kitchen"},interventions:[{id:"i1",type:"kitchen-throughput",etaMinutes:30}]})}
++  );
++
++  let snap=await svc.snapshot("org","loc");
++  assert.equal(snap.version,"47.30.0");
++  assert.equal(snap.summary.rhythmScore,40);
++  assert.equal(snap.policy.automaticExecution,false);
++
++  const plan=await svc.createPlan("org","loc",{shift:"dinner",manager:"Keith"},"Tester");
++  assert.equal(plan.priorities.length,2);
++  assert.equal(state.managerShiftPlans.length,1);
++
++  const handoff=await svc.createHandoff("org","loc",{shift:"closing",manager:"Keith"},"Tester");
++  assert.equal(state.shiftHandoffs.length,1);
++  assert.ok(handoff.needsAttention.length>=1);
++
++  const closeout=await svc.closeout("org","loc",{shift:"dinner",manager:"Keith",note:"Good shift"},"Tester");
++  assert.equal(state.managerShiftCloseouts.length,1);
++  assert.equal(closeout.resultStatus,"closed-with-carryover");
++  assert.equal(closeout.realizedImpactDollars,450);
++
++  snap=await svc.snapshot("org","loc");
++  assert.equal(snap.summary.rhythmScore,100);
++  assert.equal(snap.latestPlan.id,plan.id);
++  assert.equal(snap.latestHandoff.id,handoff.id);
++  assert.equal(snap.latestCloseout.id,closeout.id);
++  assert.ok(audit.length>=3);
++  assert.ok(events.some(x=>x[0]==="manager-rhythm:plan-created"));
++  assert.ok(events.some(x=>x[0]==="manager-rhythm:handoff-created"));
++  assert.ok(events.some(x=>x[0]==="manager-rhythm:closeout-created"));
++
++  console.log(JSON.stringify({
++    ok:true,version:"47.30.0",
++    planCreated:true,
++    handoffCreated:true,
++    closeoutCreated:true,
++    finalRhythmScore:snap.summary.rhythmScore,
++    closeoutStatus:closeout.resultStatus,
++    realizedImpactDollars:closeout.realizedImpactDollars,
++    continuousShiftRecord:snap.policy.continuousShiftRecord,
++    humanOwned:snap.policy.humanOwned,
++    automaticExecution:snap.policy.automaticExecution
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V47.30.0.md
++++ b/README-APPLY-V47.30.0.md
+@@ -0,0 +1,68 @@
++# APPLY BLUE CURRENT V47.30.0
++
++## Baseline
++
++Apply over the exact Blue Current V47.25.0 repository.
++
++This is a normal overlay patch. No files are deleted.
++
++## Apply
++
++Extract `BLUE-CURRENT-V47.30.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v47.30-manager-operating-rhythm.js
++npm run start
++```
++
++Wait for:
++
++```text
++Blue Current Cloud V47.30.0 running at http://localhost:8787
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "47.30.0"
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++Press:
++
++```text
++Ctrl+F5
++```
++
++The top operating flow is now:
++
++1. Hospitality Performance Command
++2. Action Workspace
++3. Outcome Measurement
++4. Service Profitability Intelligence
++5. Predictive Shift Control
++6. Manager Operating Rhythm
++7. Restaurant Command Center
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V47.30.0 add manager operating rhythm"
++git push origin live-service-timeline
++```
+--- a/V47.30.0-RELEASE.md
++++ b/V47.30.0-RELEASE.md
+@@ -0,0 +1,242 @@
++# BLUE CURRENT V47.30.0 — MANAGER OPERATING RHYTHM
++
++## Scope
++
++V47.26–V47.30 unifies the V47 operating layers into one continuous manager workflow.
++
++The goal is to make Blue Current useful across the entire shift, not only as a collection of individual dashboards.
++
++The operating rhythm is:
++
++Pre-shift priorities
++→ committed shift plan
++→ predictive warnings
++→ live owned actions
++→ profitability control
++→ shift handoff
++→ post-shift closeout
++
++## V47.26 — Unified Shift Snapshot
++
++Adds `ManagerOperatingRhythmService`.
++
++It composes current information from:
++
++- Restaurant Command Center
++- Hospitality Performance Command
++- Action Workspace
++- Outcome Measurement
++- Service Profitability Intelligence
++- Predictive Shift Control
++- existing shift handoffs
++
++The snapshot builds one current management narrative instead of forcing the manager to reconstruct the shift state manually.
++
++## V47.27 — Pre-Shift Plan
++
++Adds:
++
++`POST /api/manager-operating-rhythm/plan`
++
++The manager commits the current highest-value priorities before service.
++
++The plan captures:
++
++- shift
++- manager
++- operating intent
++- selected current priorities
++- readiness score at plan time
++- profitability state at plan time
++- predictive interventions visible at plan time
++- creation timestamp
++
++If explicit priorities are not supplied, Blue Current proposes the current top three Hospitality Performance opportunities.
++
++The manager still creates the plan.
++
++## V47.28 — Live Shift Rhythm
++
++The operating-rhythm snapshot continuously connects:
++
++- committed priorities
++- active owned actions
++- completed actions
++- predictive interventions
++- current controllable contribution
++- modeled controllable margin
++- realized action impact
++- current highest profit constraint
++
++A five-stage rhythm score tracks whether the complete management cycle is being executed:
++
++1. Pre-shift
++2. Live service
++3. Profit control
++4. Handoff
++5. Post-shift
++
++## V47.29 — Manager Handoff
++
++Adds:
++
++`POST /api/manager-operating-rhythm/handoff`
++
++Blue Current can draft the handoff from the current shift state.
++
++It carries forward:
++
++- completed action outcomes
++- top remaining profit constraint
++- unresolved active actions
++- near-term predictive interventions
++- operating narrative
++
++The manager can supply or override the handoff summary.
++
++The result is stored in the existing `shiftHandoffs` collection so it remains compatible with the Restaurant Command Center handoff model.
++
++## V47.30 — Post-Shift Closeout
++
++Adds:
++
++`POST /api/manager-operating-rhythm/closeout`
++
++The closeout captures:
++
++- priority count
++- completed actions
++- carryover actions
++- realized impact
++- realization rate
++- ending controllable contribution
++- ending controllable margin
++- remaining top constraint
++- manager closeout note
++
++Closeout states:
++
++- `closed-clean`
++- `closed-with-carryover`
++- `carryover-required`
++
++This creates a durable shift result rather than ending the operating story when service stops.
++
++## Manager Operating Rhythm UI
++
++Adds a new **Manager Operating Rhythm** section after Predictive Shift Control.
++
++It shows:
++
++- rhythm completion score
++- readiness
++- current priority count
++- active actions
++- controllable contribution
++- realized impact
++- latest handoff
++- latest closeout
++- five-stage rhythm status
++- current prioritized opportunities
++- continuous operating narrative
++
++Manager controls:
++
++- Commit Shift Plan
++- Post Handoff
++- Close Shift
++
++## Current authenticated integration result
++
++Against the current Marina Grille runtime/demo state:
++
++Initial operating rhythm:
++
++- Rhythm completion: 40%
++- Readiness: 83
++- Priorities: 5
++- Active actions: 0
++- Predictive interventions: 2
++- Modeled controllable contribution: $10,898
++- Modeled controllable margin: 55.1%
++
++The authenticated integration test then:
++
++1. created a dinner shift plan with the current top three priorities
++2. posted a closing handoff
++3. completed the shift closeout
++4. reloaded the operating rhythm
++
++Final rhythm completion:
++
++`100%`
++
++The closeout correctly reported:
++
++`closed-clean`
++
++for the isolated integration state because there were no active carryover actions.
++
++## API
++
++### GET
++`/api/manager-operating-rhythm?locationId=<location>`
++
++### POST
++`/api/manager-operating-rhythm/plan`
++
++### POST
++`/api/manager-operating-rhythm/handoff`
++
++### POST
++`/api/manager-operating-rhythm/closeout`
++
++All endpoints require authentication. Writes require write/admin permission.
++
++## Safety
++
++Policy remains:
++
++- `humanOwned: true`
++- `automaticExecution: false`
++- `continuousShiftRecord: true`
++
++Blue Current assembles, recommends, and measures the shift. Managers still make the operating commitments and closeout decisions.
++
++## Validation
++
++- `node scripts/maintenance/test-v47.30-manager-operating-rhythm.js` passed.
++- Shift plan creation passed.
++- Priority binding passed.
++- Handoff generation passed.
++- Carryover detection passed.
++- Closeout generation passed.
++- Final rhythm score reached 100% in the focused lifecycle test.
++- Audit events passed.
++- Realtime events passed.
++- Authenticated GET manager-rhythm passed.
++- Authenticated plan POST passed.
++- Authenticated handoff POST passed.
++- Authenticated closeout POST passed.
++- Undefined module exports remained 0 across all three maintained app copies.
++- Duplicate HTML IDs remained 0.
++- `npm run check` passed:
++  - 860 JavaScript files
++  - 732 client scripts
++  - 5,457 unique HTML IDs
++- Server startup passed as V47.30.0.
++- `/api/health` returned HTTP 200.
++- Database connected/auth enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Next milestone
++
++V47.31–V47.35 should build Multi-Location Performance:
++
++- one portfolio-level view of current operating opportunity
++- location ranking by controllable contribution and active leakage
++- cross-location predictive constraints
++- action accountability by location
++- realized impact by restaurant
++- district/area-manager exception queue
++- identify which location needs leadership attention first

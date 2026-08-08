@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "47.25.0",
+        version: "47.30.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -193,6 +193,30 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     const auth = await authService.authenticate(bearerToken(request));
     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
+
+    if (url.pathname === "/api/manager-operating-rhythm" && request.method === "GET") {
+      const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      return sendJson(response,200,await managerOperatingRhythmService.snapshot(auth.membership.organizationId,locationId));
+    }
+
+    if (url.pathname === "/api/manager-operating-rhythm/plan" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Shift plan permission required."});
+      const body=await readJson(request); const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      try{return sendJson(response,201,await managerOperatingRhythmService.createPlan(auth.membership.organizationId,locationId,body,auth.user.name));}
+      catch(error){return sendJson(response,400,{error:error.message});}
+    }
+
+    if (url.pathname === "/api/manager-operating-rhythm/handoff" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Shift handoff permission required."});
+      const body=await readJson(request); const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      return sendJson(response,201,await managerOperatingRhythmService.createHandoff(auth.membership.organizationId,locationId,body,auth.user.name));
+    }
+
+    if (url.pathname === "/api/manager-operating-rhythm/closeout" && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Shift closeout permission required."});
+      const body=await readJson(request); const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      return sendJson(response,201,await managerOperatingRhythmService.closeout(auth.membership.organizationId,locationId,body,auth.user.name));
+    }
 
     if (url.pathname === "/api/predictive-shift-control" && request.method === "GET") {
       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
