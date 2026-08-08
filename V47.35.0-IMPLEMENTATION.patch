@@ -1,0 +1,450 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "47.30.0",
++  "version": "47.35.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 continuous manager operating rhythm from pre-shift through closeout",
++  "description": "Blue Current Hospitality OS \u2014 multi-location performance and leadership exception queue",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -41,6 +41,7 @@
+ const ServiceProfitabilityIntelligenceService = require("./services/serviceProfitabilityIntelligenceService");
+ const PredictiveShiftControlService = require("./services/predictiveShiftControlService");
+ const ManagerOperatingRhythmService = require("./services/managerOperatingRhythmService");
++const MultiLocationPerformanceService = require("./services/multiLocationPerformanceService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -85,7 +86,8 @@
+ const serviceProfitabilityIntelligenceService = new ServiceProfitabilityIntelligenceService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, inventoryIntelligenceService, guestIntelligenceService, executiveCommandCenterService);
+ const predictiveShiftControlService = new PredictiveShiftControlService(database, auditService, realtimeHub, commandCenterService, workforceIntelligenceService, serviceProfitabilityIntelligenceService);
+ const managerOperatingRhythmService = new ManagerOperatingRhythmService(database, auditService, realtimeHub, commandCenterService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService });
++const multiLocationPerformanceService = new MultiLocationPerformanceService(database, auditService, realtimeHub, managerOperatingRhythmService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -172,7 +174,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V47.30.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V47.35.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "47.30.0",
++        version: "47.35.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -193,6 +193,20 @@
+ 
+     const auth = await authService.authenticate(bearerToken(request));
+     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
++
++    if (url.pathname === "/api/multi-location-performance" && request.method === "GET") {
++      const allowed=auth.membership.locationIds||[];
++      return sendJson(response,200,await multiLocationPerformanceService.snapshot(auth.membership.organizationId,allowed));
++    }
++
++    if (url.pathname.startsWith("/api/multi-location-performance/locations/") && url.pathname.endsWith("/acknowledge") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Leadership acknowledgement permission required."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      return sendJson(response,201,await multiLocationPerformanceService.acknowledge(auth.membership.organizationId,locationId,body,auth.user.name));
++    }
+ 
+     if (url.pathname === "/api/manager-operating-rhythm" && request.method === "GET") {
+       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+--- a/server/services/multiLocationPerformanceService.js
++++ b/server/services/multiLocationPerformanceService.js
+@@ -0,0 +1,108 @@
++"use strict";
++
++class MultiLocationPerformanceService {
++  constructor(database,auditService,realtimeHub,managerOperatingRhythmService){
++    Object.assign(this,{database,auditService,realtimeHub,managerOperatingRhythmService});
++  }
++  now(){return new Date().toISOString();}
++  clamp(n,min=0,max=100){return Math.max(min,Math.min(max,Number(n)||0));}
++  async snapshot(organizationId,allowedLocationIds=["*"]){
++    const db=await this.database.read();
++    const wildcard=allowedLocationIds.includes("*");
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId&&(wildcard||allowedLocationIds.includes(x.id)));
++    const rows=[];
++    for(const location of locations){
++      const rhythm=await this.managerOperatingRhythmService.snapshot(organizationId,location.id);
++      const s=rhythm.summary||{},p=rhythm.profitability?.summary||{},top=rhythm.profitability?.topConstraint||null;
++      const predicted=rhythm.predictiveInterventions||[];
++      const urgent=predicted.filter(x=>Number(x.etaMinutes)<=30).length;
++      const carryover=(rhythm.activeActions||[]).filter(x=>["blocked","accepted","in_progress"].includes(x.status)).length;
++      const readiness=Number(s.readinessScore||0),margin=Number(s.modeledControllableMarginPercent||0),leakage=Number(p.modeledLeakageDollars||0);
++      const predictivePenalty=Math.min(30,predicted.reduce((sum,x)=>sum+(x.severity==="critical"?12:x.severity==="high"?8:4),0));
++      const leakagePenalty=Math.min(28,leakage/250);
++      const actionPenalty=Math.min(18,carryover*5);
++      const readinessPenalty=Math.max(0,(90-readiness)*.65);
++      const realizationBonus=Math.min(8,Number(s.realizationRatePercent||0)*.08);
++      const attentionScore=Math.round(this.clamp(predictivePenalty+leakagePenalty+actionPenalty+readinessPenalty-realizationBonus,0,100));
++      rows.push({
++        locationId:location.id,
++        locationName:location.name||location.id,
++        attentionScore,
++        attentionLevel:attentionScore>=70?"critical":attentionScore>=50?"high":attentionScore>=30?"watch":"healthy",
++        readinessScore:readiness,
++        rhythmScore:Number(s.rhythmScore||0),
++        modeledControllableContributionDollars:Number(s.modeledControllableContributionDollars||0),
++        modeledControllableMarginPercent:margin,
++        modeledLeakageDollars:leakage,
++        activeActions:Number(s.activeActions||0),
++        completedActions:Number(s.completedActions||0),
++        realizedImpactDollars:Number(s.realizedImpactDollars||0),
++        realizationRatePercent:Number(s.realizationRatePercent||0),
++        predictiveInterventions:predicted.length,
++        urgentPredictiveInterventions:urgent,
++        nextConstraint:predicted[0]?{type:predicted[0].type,etaMinutes:predicted[0].etaMinutes,pressure:predicted[0].pressure}:null,
++        topProfitConstraint:top?{label:top.label,modeledLeakageDollars:top.modeledLeakageDollars,category:top.category}:null,
++        latestHandoff:rhythm.latestHandoff?{shift:rhythm.latestHandoff.shift,authorName:rhythm.latestHandoff.authorName,createdAt:rhythm.latestHandoff.createdAt}:null,
++        latestCloseout:rhythm.latestCloseout?{resultStatus:rhythm.latestCloseout.resultStatus,createdAt:rhythm.latestCloseout.createdAt}:null,
++        reason:this.reason({readiness,leakage,carryover,predicted,top})
++      });
++    }
++    rows.sort((a,b)=>b.attentionScore-a.attentionScore||b.modeledLeakageDollars-a.modeledLeakageDollars);
++    rows.forEach((x,i)=>x.rank=i+1);
++    const portfolio={
++      locations:rows.length,
++      critical:rows.filter(x=>x.attentionLevel==="critical").length,
++      high:rows.filter(x=>x.attentionLevel==="high").length,
++      watch:rows.filter(x=>x.attentionLevel==="watch").length,
++      totalControllableContributionDollars:rows.reduce((s,x)=>s+x.modeledControllableContributionDollars,0),
++      totalModeledLeakageDollars:rows.reduce((s,x)=>s+x.modeledLeakageDollars,0),
++      totalRealizedImpactDollars:rows.reduce((s,x)=>s+x.realizedImpactDollars,0),
++      activeActions:rows.reduce((s,x)=>s+x.activeActions,0),
++      urgentPredictiveInterventions:rows.reduce((s,x)=>s+x.urgentPredictiveInterventions,0),
++      averageReadiness:rows.length?Math.round(rows.reduce((s,x)=>s+x.readinessScore,0)/rows.length):0,
++      averageRhythmScore:rows.length?Math.round(rows.reduce((s,x)=>s+x.rhythmScore,0)/rows.length):0
++    };
++    const first=rows[0]||null;
++    return {
++      version:"47.35.0",generatedAt:this.now(),organizationId,
++      headline:first?`${first.locationName} needs leadership attention first: ${first.reason}`:"No authorized locations are available.",
++      portfolio,
++      locations:rows,
++      exceptionQueue:rows.filter(x=>x.attentionScore>=30).slice(0,10).map(x=>({
++        rank:x.rank,locationId:x.locationId,locationName:x.locationName,attentionScore:x.attentionScore,attentionLevel:x.attentionLevel,
++        reason:x.reason,nextAction:this.nextAction(x)
++      })),
++      policy:{rankBy:"predictive risk + modeled leakage + action carryover + readiness - realized outcome credit",humanLeadershipRequired:true,automaticCrossLocationExecution:false}
++    };
++  }
++  reason({readiness,leakage,carryover,predicted,top}){
++    const parts=[];
++    if(predicted.length)parts.push(`${predicted.length} predictive intervention${predicted.length===1?"":"s"} active`);
++    if(leakage>0)parts.push(`$${Math.round(leakage).toLocaleString()} modeled leakage`);
++    if(carryover>0)parts.push(`${carryover} unresolved action${carryover===1?"":"s"}`);
++    if(readiness<85)parts.push(`readiness ${Math.round(readiness)}`);
++    if(top?.label)parts.push(`top constraint: ${top.label}`);
++    return parts.slice(0,3).join(" · ")||"operating signals are currently within expected range";
++  }
++  nextAction(row){
++    if(row.nextConstraint&&row.nextConstraint.etaMinutes<=30)return `Escalate ${row.nextConstraint.type} now; forecast threshold in ${row.nextConstraint.etaMinutes} minutes.`;
++    if(row.topProfitConstraint)return `Review ${row.topProfitConstraint.label} and assign the location GM to the highest-value corrective action.`;
++    if(row.activeActions>0)return `Review ${row.activeActions} active action${row.activeActions===1?"":"s"} for ownership and blockers.`;
++    return "Maintain current operating cadence and monitor exceptions.";
++  }
++  async acknowledge(organizationId,locationId,input,actor){
++    const record={
++      id:`mla_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,
++      owner:String(input.owner||actor||"Area Leader").slice(0,120),
++      note:String(input.note||"Leadership review acknowledged.").slice(0,600),
++      status:"acknowledged",
++      actor,createdAt:this.now()
++    };
++    await this.database.mutate(db=>{db.multiLocationLeadershipActions||=[];db.multiLocationLeadershipActions.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Multi-location leadership attention acknowledged: ${locationId}`,category:"multi_location_performance"});
++    this.realtimeHub.publish("multi-location-performance:acknowledged",record);
++    return record;
++  }
++}
++module.exports=MultiLocationPerformanceService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="47.30.0">
++  <meta name="blue-current-build" content="47.35.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -266,6 +266,14 @@
+       <div id="morStages" class="v432-list"></div>
+       <div id="morPriorityList" class="v432-list"></div>
+       <div id="morTimeline" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="multiLocationPerformance">
++      <header><div><small>V47.31–V47.35 · Multi-Location Performance</small><strong>Know which restaurant needs leadership attention first—and why—without opening five separate operating views.</strong><span>Blue Current ranks only locations inside the signed-in leader's authorized scope using predictive risk, modeled leakage, action carryover, readiness, and realized outcomes.</span></div><button id="mlpRefresh" type="button">Refresh portfolio</button></header>
++      <div class="v432-kpis"><article><small>Locations</small><strong id="mlpLocations">0</strong></article><article><small>High / critical</small><strong id="mlpCritical">0</strong></article><article><small>Controllable contribution</small><strong id="mlpContribution">$0</strong></article><article><small>Modeled leakage</small><strong id="mlpLeakage">$0</strong></article><article><small>Realized impact</small><strong id="mlpRealized">$0</strong></article><article><small>Avg readiness</small><strong id="mlpReadiness">0</strong></article></div>
++      <div class="v4316-answer" id="mlpHeadline">Ranking locations by leadership attention…</div>
++      <div class="v4316-actions"><input id="mlpOwner" class="v4312-input" placeholder="Area leader / owner"><input id="mlpNote" class="v4312-input" placeholder="Leadership review note"></div>
++      <div id="mlpRanks" class="v432-list"></div>
++      <div id="mlpExceptions" class="v432-list"></div>
+     </section>
+ 
+     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
+@@ -8699,6 +8707,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlCenter.js?v=47.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmEngine.js?v=47.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmCenter.js?v=47.30.0"></script>
+-<script src="js/startup-loader.js?v=47.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceEngine.js?v=47.35.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceCenter.js?v=47.35.0"></script>
++<script src="js/startup-loader.js?v=47.35.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1228,6 +1228,7 @@
+ const serviceProfitabilityIntelligenceModule = startupRegistry.register("serviceProfitabilityIntelligence", shouldInitializeCenter("serviceProfitabilityIntelligence") ? window.createBlueCurrentServiceProfitabilityCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityOutcomeMeasurement"]);
+ const predictiveShiftControlModule = startupRegistry.register("predictiveShiftControl", shouldInitializeCenter("predictiveShiftControl") ? window.createBlueCurrentPredictiveShiftControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "serviceProfitabilityIntelligence"]);
+ const managerOperatingRhythmModule = startupRegistry.register("managerOperatingRhythm", shouldInitializeCenter("managerOperatingRhythm") ? window.createBlueCurrentManagerOperatingRhythmCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "predictiveShiftControl"]);
++const multiLocationPerformanceModule = startupRegistry.register("multiLocationPerformance", shouldInitializeCenter("multiLocationPerformance") ? window.createBlueCurrentMultiLocationPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managerOperatingRhythm"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V47.30.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V47.35.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/multiLocationPerformanceEngine.js
++++ b/client/js/modules/multiLocationPerformanceEngine.js
+@@ -0,0 +1,10 @@
++(function(global){"use strict";
++class BlueCurrentMultiLocationPerformanceEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  async snapshot(){const r=await fetch("/api/multi-location-performance",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Multi-location performance failed (${r.status})`);this.appState?.update?.({multiLocationPerformance:d});this.eventBus?.emit?.("multi-location-performance:updated",structuredClone(d));return d;}
++  async acknowledge(locationId,owner="",note=""){const r=await fetch(`/api/multi-location-performance/locations/${encodeURIComponent(locationId)}/acknowledge`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({owner,note})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Leadership acknowledgement failed (${r.status})`);this.eventBus?.emit?.("multi-location-performance:acknowledged",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentMultiLocationPerformanceEngine;
++if(global)global.BlueCurrentMultiLocationPerformanceEngine=BlueCurrentMultiLocationPerformanceEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/multiLocationPerformanceCenter.js
++++ b/client/js/modules/multiLocationPerformanceCenter.js
+@@ -0,0 +1,9 @@
++(function(){"use strict";
++function createBlueCurrentMultiLocationPerformanceCenterModule(eventBus,appState){const root=document.getElementById("multiLocationPerformance");if(!root||!window.BlueCurrentMultiLocationPerformanceEngine)return null;const e=new window.BlueCurrentMultiLocationPerformanceEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c])),money=n=>`$${Number(n||0).toLocaleString()}`;
++function render(s){const p=s.portfolio||{};$("mlpLocations").textContent=p.locations||0;$("mlpCritical").textContent=(p.critical||0)+(p.high||0);$("mlpContribution").textContent=money(p.totalControllableContributionDollars||0);$("mlpLeakage").textContent=money(p.totalModeledLeakageDollars||0);$("mlpRealized").textContent=money(p.totalRealizedImpactDollars||0);$("mlpReadiness").textContent=p.averageReadiness||0;$("mlpHeadline").textContent=s.headline||"No authorized locations are available.";
++$("mlpRanks").innerHTML=(s.locations||[]).map(x=>`<article data-mlp-location="${esc(x.locationId)}"><div><strong>#${x.rank} · ${esc(x.locationName)}</strong><span>${esc(x.attentionLevel)} · attention ${x.attentionScore}</span></div><p>${esc(x.reason)}</p><div class="hpc-meta"><span>Readiness ${x.readinessScore}</span><span>Rhythm ${x.rhythmScore}%</span><span>${money(x.modeledControllableContributionDollars)} contribution</span><span>${money(x.modeledLeakageDollars)} leakage</span><span>${x.activeActions} active actions</span><span>${x.urgentPredictiveInterventions} urgent predictive</span></div><small>${x.topProfitConstraint?`Top constraint: ${esc(x.topProfitConstraint.label)} · ${money(x.topProfitConstraint.modeledLeakageDollars)}`:"No material profit constraint"}</small></article>`).join("")||"<article><span>No location data available.</span></article>";
++$("mlpExceptions").innerHTML=(s.exceptionQueue||[]).map(x=>`<article data-mlp-location="${esc(x.locationId)}"><strong>${esc(x.locationName)} · ${esc(x.attentionLevel)}</strong><p>${esc(x.reason)}</p><p><b>Leadership action:</b> ${esc(x.nextAction)}</p><div class="v4316-actions"><button type="button" data-mlp-ack="true">Acknowledge leadership review</button></div></article>`).join("")||"<article><strong>No portfolio exceptions.</strong><span>Current locations are within the watch threshold.</span></article>";}
++async function load(){try{$("mlpHeadline").textContent="Ranking locations by leadership attention…";render(await e.snapshot());}catch(err){$("mlpHeadline").textContent=err.message;}}
++root.addEventListener("click",async ev=>{const btn=ev.target.closest("[data-mlp-ack]"),card=ev.target.closest("[data-mlp-location]");if(!btn||!card)return;try{btn.disabled=true;await e.acknowledge(card.dataset.mlpLocation,$("mlpOwner").value||"Area Leader",$("mlpNote").value||"");await load();}catch(err){$("mlpHeadline").textContent=err.message;}finally{btn.disabled=false;}});
++$("mlpRefresh")?.addEventListener("click",load);["hospitality-action:updated","predictive-shift:decision","manager-rhythm:closeout","service-profitability:snapshot","auth:restored"].forEach(evt=>eventBus?.on?.(evt,load));window.addEventListener?.("online",load);load();return{engine:e,load};}
++window.createBlueCurrentMultiLocationPerformanceCenterModule=createBlueCurrentMultiLocationPerformanceCenterModule;})();--- a/scripts/maintenance/test-v47.35-multi-location-performance.js
++++ b/scripts/maintenance/test-v47.35-multi-location-performance.js
+@@ -0,0 +1,65 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/multiLocationPerformanceService");
++
++(async()=>{
++  const state={
++    locations:[
++      {id:"loc_a",name:"A",organizationId:"org"},
++      {id:"loc_b",name:"B",organizationId:"org"},
++      {id:"loc_c",name:"C",organizationId:"other"}
++    ],
++    multiLocationLeadershipActions:[]
++  };
++  const rhythm={
++    loc_a:{
++      summary:{readinessScore:72,rhythmScore:60,activeActions:3,completedActions:1,modeledControllableContributionDollars:8000,modeledControllableMarginPercent:42,realizedImpactDollars:200,realizationRatePercent:40},
++      profitability:{summary:{modeledLeakageDollars:3500},topConstraint:{label:"Food-cost variance",modeledLeakageDollars:1800,category:"food-cost"}},
++      predictiveInterventions:[{type:"kitchen-throughput",etaMinutes:15,pressure:85,severity:"high"}],
++      activeActions:[{status:"blocked"},{status:"in_progress"},{status:"accepted"}],
++      latestHandoff:null,latestCloseout:null
++    },
++    loc_b:{
++      summary:{readinessScore:94,rhythmScore:100,activeActions:0,completedActions:3,modeledControllableContributionDollars:12000,modeledControllableMarginPercent:58,realizedImpactDollars:900,realizationRatePercent:90},
++      profitability:{summary:{modeledLeakageDollars:300},topConstraint:{label:"Minor waste",modeledLeakageDollars:200,category:"food-cost"}},
++      predictiveInterventions:[],
++      activeActions:[],
++      latestHandoff:{shift:"closing",authorName:"GM",createdAt:new Date().toISOString()},
++      latestCloseout:{resultStatus:"closed-clean",createdAt:new Date().toISOString()}
++    }
++  };
++  const audit=[],events=[];
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async(_org,loc)=>rhythm[loc]}
++  );
++  const snap=await svc.snapshot("org",["*"]);
++  assert.equal(snap.version,"47.35.0");
++  assert.equal(snap.portfolio.locations,2);
++  assert.equal(snap.locations[0].locationId,"loc_a");
++  assert.ok(snap.locations[0].attentionScore>snap.locations[1].attentionScore);
++  assert.equal(snap.exceptionQueue[0].locationId,"loc_a");
++  assert.equal(snap.policy.automaticCrossLocationExecution,false);
++
++  const scoped=await svc.snapshot("org",["loc_b"]);
++  assert.equal(scoped.portfolio.locations,1);
++  assert.equal(scoped.locations[0].locationId,"loc_b");
++
++  const ack=await svc.acknowledge("org","loc_a",{owner:"Area Director",note:"Calling GM now"},"Tester");
++  assert.equal(ack.status,"acknowledged");
++  assert.equal(state.multiLocationLeadershipActions.length,1);
++  assert.equal(audit.length,1);
++  assert.equal(events[0][0],"multi-location-performance:acknowledged");
++
++  console.log(JSON.stringify({
++    ok:true,version:"47.35.0",
++    rankedLocations:snap.locations.map(x=>({id:x.locationId,score:x.attentionScore,level:x.attentionLevel})),
++    firstLeadershipException:snap.exceptionQueue[0].locationId,
++    authorizationScopeRespected:scoped.portfolio.locations===1,
++    acknowledgementPersisted:true,
++    humanLeadershipRequired:snap.policy.humanLeadershipRequired,
++    automaticCrossLocationExecution:snap.policy.automaticCrossLocationExecution
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V47.35.0.md
++++ b/README-APPLY-V47.35.0.md
+@@ -0,0 +1,36 @@
++# APPLY BLUE CURRENT V47.35.0
++
++Apply over the exact V47.30.0 repository.
++
++Extract `BLUE-CURRENT-V47.35.0-PATCH.zip` into the repository root, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v47.35-multi-location-performance.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "47.35.0"
++```
++
++Then `Ctrl+F5`.
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V47.35.0 add multi-location performance"
++git push origin live-service-timeline
++```
+--- a/V47.35.0-RELEASE.md
++++ b/V47.35.0-RELEASE.md
+@@ -0,0 +1,66 @@
++# BLUE CURRENT V47.35.0 — MULTI-LOCATION PERFORMANCE
++
++V47.31–V47.35 extends the V47 operating system across the authenticated portfolio.
++
++Blue Current now ranks authorized restaurants by leadership-attention need using predictive risk, modeled leakage, action carryover, readiness weakness, and realized-outcome credit.
++
++## Capabilities
++
++- Portfolio composition from Manager Operating Rhythm
++- Per-location attention score and health state
++- Cross-location ranking
++- Leadership exception queue
++- Location-scope authorization enforcement
++- Leadership acknowledgement persistence
++- Audit + realtime events
++- No automatic cross-location execution
++
++## Current authenticated portfolio validation
++
++Chefs organization owner scope returned 5 restaurants.
++
++1. Marina Grille — Watch, attention 45, readiness 83, $6,023 modeled leakage, 1 urgent predictive intervention
++2. Harbor House — Healthy, attention 4, readiness 86, $286 modeled leakage
++3. River & Rail — Healthy, attention 4
++4. The Cabin — Healthy, attention 4
++5. Garden Social — Healthy, attention 4
++
++Portfolio totals at validation:
++- controllable contribution: $82,586
++- modeled leakage: $7,167
++- realized impact: $0
++- average readiness: 85
++- average rhythm score: 24%
++- urgent predictive interventions: 1
++
++The leadership exception queue correctly identifies Marina Grille first.
++
++## API
++
++GET `/api/multi-location-performance`
++
++POST `/api/multi-location-performance/locations/:locationId/acknowledge`
++
++## Policy
++
++- `humanLeadershipRequired: true`
++- `automaticCrossLocationExecution: false`
++
++## Validation
++
++- focused V47.35 test passed
++- authenticated portfolio GET passed
++- authenticated acknowledgement POST passed
++- location authorization scope passed
++- undefined module exports: 0
++- duplicate HTML ids: 0
++- npm validation passed:
++  - 863 JavaScript files
++  - 734 client scripts
++  - 5,470 unique HTML ids
++- server V47.35.0 health passed
++- authoritative database hash remained unchanged
++
++## Next
++
++V47.36–V47.40 is the final V47 hardening and certification wave.

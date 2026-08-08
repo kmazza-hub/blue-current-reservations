@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "47.30.0",
+        version: "47.35.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -193,6 +193,20 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     const auth = await authService.authenticate(bearerToken(request));
     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
+
+    if (url.pathname === "/api/multi-location-performance" && request.method === "GET") {
+      const allowed=auth.membership.locationIds||[];
+      return sendJson(response,200,await multiLocationPerformanceService.snapshot(auth.membership.organizationId,allowed));
+    }
+
+    if (url.pathname.startsWith("/api/multi-location-performance/locations/") && url.pathname.endsWith("/acknowledge") && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Leadership acknowledgement permission required."});
+      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
+      const allowed=auth.membership.locationIds||[];
+      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
+      const body=await readJson(request);
+      return sendJson(response,201,await multiLocationPerformanceService.acknowledge(auth.membership.organizationId,locationId,body,auth.user.name));
+    }
 
     if (url.pathname === "/api/manager-operating-rhythm" && request.method === "GET") {
       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";

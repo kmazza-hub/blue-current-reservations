@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="47.30.0">
+  <meta name="blue-current-build" content="47.35.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -266,6 +266,14 @@
       <div id="morStages" class="v432-list"></div>
       <div id="morPriorityList" class="v432-list"></div>
       <div id="morTimeline" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="multiLocationPerformance">
+      <header><div><small>V47.31–V47.35 · Multi-Location Performance</small><strong>Know which restaurant needs leadership attention first—and why—without opening five separate operating views.</strong><span>Blue Current ranks only locations inside the signed-in leader's authorized scope using predictive risk, modeled leakage, action carryover, readiness, and realized outcomes.</span></div><button id="mlpRefresh" type="button">Refresh portfolio</button></header>
+      <div class="v432-kpis"><article><small>Locations</small><strong id="mlpLocations">0</strong></article><article><small>High / critical</small><strong id="mlpCritical">0</strong></article><article><small>Controllable contribution</small><strong id="mlpContribution">$0</strong></article><article><small>Modeled leakage</small><strong id="mlpLeakage">$0</strong></article><article><small>Realized impact</small><strong id="mlpRealized">$0</strong></article><article><small>Avg readiness</small><strong id="mlpReadiness">0</strong></article></div>
+      <div class="v4316-answer" id="mlpHeadline">Ranking locations by leadership attention…</div>
+      <div class="v4316-actions"><input id="mlpOwner" class="v4312-input" placeholder="Area leader / owner"><input id="mlpNote" class="v4312-input" placeholder="Leadership review note"></div>
+      <div id="mlpRanks" class="v432-list"></div>
+      <div id="mlpExceptions" class="v432-list"></div>
     </section>
 
     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
@@ -8699,6 +8707,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="predictiveShiftControl" data-src="js/modules/predictiveShiftControlCenter.js?v=47.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmEngine.js?v=47.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmCenter.js?v=47.30.0"></script>
-<script src="js/startup-loader.js?v=47.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceEngine.js?v=47.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceCenter.js?v=47.35.0"></script>
+<script src="js/startup-loader.js?v=47.35.0"></script>
 </body>
 </html>
