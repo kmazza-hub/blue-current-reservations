@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "44.7.0",
+        version: "44.12.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -502,6 +502,13 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/aip/execution-context" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipExecutionContext(organizationId, url.searchParams.get("runId")));
     if (url.pathname === "/api/aip/runtime-control" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipRuntimeLifecycle(organizationId, url.searchParams.get("runId")));
     if (url.pathname === "/api/aip/runtime-control" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipAgentRunControl(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/aip/orchestrations" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipMultiAgentOrchestrations(organizationId));
+    if (url.pathname === "/api/aip/orchestrations" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipMultiAgentOrchestrations(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/aip/orchestration-context" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipOrchestrationContext(organizationId, url.searchParams.get("orchestrationId")));
+    if (url.pathname === "/api/aip/orchestration-control" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipOrchestrationControl(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/aip/approvals" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipApprovalOrchestration(organizationId));
+    if (url.pathname === "/api/aip/approvals" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipApprovalOrchestration(organizationId, auth.user.name, await readJson(request)));
+    if (url.pathname === "/api/aip/coordination-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipCoordinationReadiness(organizationId));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

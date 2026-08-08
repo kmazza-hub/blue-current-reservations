@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "44.7.0-aip-persistent-agent-runtime", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "44.12.0-aip-multi-agent-orchestration", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2439,6 +2439,8 @@ const aipExecutionSandboxCenterModule = startupRegistry.register("aipExecutionSa
 const aipPersistentAgentRuntimeCenterModule = startupRegistry.register("aipPersistentAgentRuntimeCenter",shouldInitializeCenter("aipPersistentAgentRuntimeCenter") ? window.createBlueCurrentAipPersistentAgentRuntimeCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipAutomationCompilerCenter","aipExecutionSandboxCenter"]);
 const aipRuntimeLifecycleCenterModule = startupRegistry.register("aipRuntimeLifecycleCenter",shouldInitializeCenter("aipRuntimeLifecycleCenter") ? window.createBlueCurrentAipRuntimeLifecycleCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipPersistentAgentRuntimeCenter"]);
 const aipRuntimeReadinessCenterModule = startupRegistry.register("aipRuntimeReadinessCenter",shouldInitializeCenter("aipRuntimeReadinessCenter") ? window.createBlueCurrentAipRuntimeReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipCapabilityRegistryCenter","aipAutomationCompilerCenter","aipExecutionSandboxCenter","aipPersistentAgentRuntimeCenter","aipRuntimeLifecycleCenter"]);
+const aipMultiAgentOrchestrationCenterModule = startupRegistry.register("aipMultiAgentOrchestrationCenter",shouldInitializeCenter("aipMultiAgentOrchestrationCenter") ? window.createBlueCurrentAipMultiAgentOrchestrationCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipPersistentAgentRuntimeCenter","aipRuntimeLifecycleCenter"]);
+const aipApprovalOrchestrationCenterModule = startupRegistry.register("aipApprovalOrchestrationCenter",shouldInitializeCenter("aipApprovalOrchestrationCenter") ? window.createBlueCurrentAipApprovalOrchestrationCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipMultiAgentOrchestrationCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
