@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "46.30.0",
+  "version": "46.35.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 multi-day retirement certification and owner sign-off",
+  "description": "Blue Current Hospitality OS \u2014 repository impact certification and deletion-plan authorization",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

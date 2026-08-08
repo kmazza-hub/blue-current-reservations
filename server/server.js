@@ -31,6 +31,7 @@ const EmployeePortalService = require("./services/employeePortalService");
 const CommandCenterService = require("./services/commandCenterService");
 const OperationsFeedService = require("./services/operationsFeedService");
 const LiveIntegrationService = require("./services/liveIntegrationService");
+const RepositoryImpactService = require("./services/repositoryImpactService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -65,7 +66,8 @@ const employeePortalService = new EmployeePortalService(database, auditService, 
 const operationsFeedService = new OperationsFeedService(database);
 const liveIntegrationService = new LiveIntegrationService(database, auditService, realtimeHub);
 const commandCenterService = new CommandCenterService(database, operationsFeedService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService });
+const repositoryImpactService = new RepositoryImpactService(ROOT);
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -152,7 +154,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V46.30.0 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V46.35.0 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);
