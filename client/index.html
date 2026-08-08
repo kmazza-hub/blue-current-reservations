@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="46.5.0">
+  <meta name="blue-current-build" content="46.10.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -4163,6 +4163,7 @@
 
 
 <section class="v393-center" id="operatorServiceFlowCenter" aria-labelledby="osfTitle"><header><div><small>V46.1–V46.5 · Operator Fine-Comb I</small><strong id="osfTitle">Run the shift through one service flow instead of hunting across the platform.</strong><span id="osfHeadline">Consolidating reservation, floor, kitchen, staffing, guest recovery, and profit signals.</span></div><div class="v393-actions"><button id="osfRefresh" type="button">Refresh flow</button><button id="osfOperatorMode" type="button">Operator mode</button><button id="osfFullMode" type="button">Full platform</button></div></header><div class="v393-kpis"><article><small>Flow score</small><strong id="osfScore">0%</strong></article><article><small>Live stages</small><strong id="osfLive">0/6</strong></article><article><small>Needs attention</small><strong id="osfAttention">0</strong></article><article><small>Total surfaces</small><strong id="osfSurfaces">0</strong></article><article><small>Technical surfaces</small><strong id="osfTechnical">0</strong></article><article><small>View</small><strong id="osfMode">FULL</strong></article></div><div id="osfStages" class="v393-grid"></div><div id="osfAudit" class="v393-list"></div></section>
+<section class="v432-center v438-center v4316-center" id="operatorSurfaceRationalizationCenter"><header><div><small>V46.6–V46.10 · Operator Surface Rationalization</small><strong>Classify the platform into primary, merge, diagnostics, and evidence-gated deprecation candidates.</strong><span>No modules are deleted in this wave. The classification creates an evidence-based cut/merge map and makes cross-stage handoffs explicit.</span></div><button id="osrRefresh" type="button">Refresh rationalization</button></header><div class="v4316-actions"><button type="button" data-osr-view="all">All surfaces</button><button type="button" data-osr-view="merge">Merge review</button><button type="button" data-osr-view="diagnostics-admin">Diagnostics/admin</button><button type="button" data-osr-view="deprecation-candidate">Deprecation review</button></div><div class="v432-kpis"><article><small>Total surfaces</small><strong id="osrTotal">0</strong></article><article><small>Keep primary</small><strong id="osrPrimary">0</strong></article><article><small>Merge</small><strong id="osrMerge">0</strong></article><article><small>Diagnostics</small><strong id="osrDiagnostics">0</strong></article><article><small>Deprecation candidates</small><strong id="osrCandidates">0</strong></article><article><small>Attention handoffs</small><strong id="osrHandoffs">0</strong></article></div><div class="v4316-answer" id="osrHeadline">Classifying operator surfaces…</div><div id="osrGroups" class="v432-list"></div><div id="osrHandoffList" class="v432-list"></div></section>
 <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
             <header class="guided-shift-header">
               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
@@ -8620,6 +8621,8 @@
 <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v45ClosureCenter" data-src="js/modules/v45ClosureCenter.js?v=45.30.0"></script>
 <script src="js/modules/operatorServiceFlowEngine.js?v=46.5.0"></script>
 <script src="js/modules/operatorServiceFlowCenter.js?v=46.5.0"></script>
-<script src="js/startup-loader.js?v=46.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSurfaceRationalizationCenter" data-src="js/modules/operatorSurfaceRationalizationEngine.js?v=46.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSurfaceRationalizationCenter" data-src="js/modules/operatorSurfaceRationalizationCenter.js?v=46.10.0"></script>
+<script src="js/startup-loader.js?v=46.10.0"></script>
 </body>
 </html>

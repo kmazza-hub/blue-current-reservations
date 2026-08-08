@@ -1,0 +1,316 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.5.0",
++  "version": "46.10.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 operator fine-comb service flow and surface simplification",
++  "description": "Blue Current Hospitality OS \u2014 operator surface rationalization and cross-stage handoffs",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.5.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.10.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.5.0",
++        version: "46.10.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.5.0">
++  <meta name="blue-current-build" content="46.10.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -4163,6 +4163,7 @@
+ 
+ 
+ <section class="v393-center" id="operatorServiceFlowCenter" aria-labelledby="osfTitle"><header><div><small>V46.1–V46.5 · Operator Fine-Comb I</small><strong id="osfTitle">Run the shift through one service flow instead of hunting across the platform.</strong><span id="osfHeadline">Consolidating reservation, floor, kitchen, staffing, guest recovery, and profit signals.</span></div><div class="v393-actions"><button id="osfRefresh" type="button">Refresh flow</button><button id="osfOperatorMode" type="button">Operator mode</button><button id="osfFullMode" type="button">Full platform</button></div></header><div class="v393-kpis"><article><small>Flow score</small><strong id="osfScore">0%</strong></article><article><small>Live stages</small><strong id="osfLive">0/6</strong></article><article><small>Needs attention</small><strong id="osfAttention">0</strong></article><article><small>Total surfaces</small><strong id="osfSurfaces">0</strong></article><article><small>Technical surfaces</small><strong id="osfTechnical">0</strong></article><article><small>View</small><strong id="osfMode">FULL</strong></article></div><div id="osfStages" class="v393-grid"></div><div id="osfAudit" class="v393-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="operatorSurfaceRationalizationCenter"><header><div><small>V46.6–V46.10 · Operator Surface Rationalization</small><strong>Classify the platform into primary, merge, diagnostics, and evidence-gated deprecation candidates.</strong><span>No modules are deleted in this wave. The classification creates an evidence-based cut/merge map and makes cross-stage handoffs explicit.</span></div><button id="osrRefresh" type="button">Refresh rationalization</button></header><div class="v4316-actions"><button type="button" data-osr-view="all">All surfaces</button><button type="button" data-osr-view="merge">Merge review</button><button type="button" data-osr-view="diagnostics-admin">Diagnostics/admin</button><button type="button" data-osr-view="deprecation-candidate">Deprecation review</button></div><div class="v432-kpis"><article><small>Total surfaces</small><strong id="osrTotal">0</strong></article><article><small>Keep primary</small><strong id="osrPrimary">0</strong></article><article><small>Merge</small><strong id="osrMerge">0</strong></article><article><small>Diagnostics</small><strong id="osrDiagnostics">0</strong></article><article><small>Deprecation candidates</small><strong id="osrCandidates">0</strong></article><article><small>Attention handoffs</small><strong id="osrHandoffs">0</strong></article></div><div class="v4316-answer" id="osrHeadline">Classifying operator surfaces…</div><div id="osrGroups" class="v432-list"></div><div id="osrHandoffList" class="v432-list"></div></section>
+ <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+             <header class="guided-shift-header">
+               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
+@@ -8620,6 +8621,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v45ClosureCenter" data-src="js/modules/v45ClosureCenter.js?v=45.30.0"></script>
+ <script src="js/modules/operatorServiceFlowEngine.js?v=46.5.0"></script>
+ <script src="js/modules/operatorServiceFlowCenter.js?v=46.5.0"></script>
+-<script src="js/startup-loader.js?v=46.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSurfaceRationalizationCenter" data-src="js/modules/operatorSurfaceRationalizationEngine.js?v=46.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSurfaceRationalizationCenter" data-src="js/modules/operatorSurfaceRationalizationCenter.js?v=46.10.0"></script>
++<script src="js/startup-loader.js?v=46.10.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1210,6 +1210,7 @@
+ );
+ 
+ const operatorServiceFlowCenterModule = startupRegistry.register("operatorServiceFlowCenter", shouldInitializeCenter("operatorServiceFlowCenter") ? window.createBlueCurrentOperatorServiceFlowCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "guidedShiftCenter"]);
++const operatorSurfaceRationalizationCenterModule = startupRegistry.register("operatorSurfaceRationalizationCenter", shouldInitializeCenter("operatorSurfaceRationalizationCenter") ? window.createBlueCurrentOperatorSurfaceRationalizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorServiceFlowCenter"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.5.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.10.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/operatorServiceFlowEngine.js
++++ b/client/js/modules/operatorServiceFlowEngine.js
+@@ -20,7 +20,8 @@
+     if(stage.id==="profit"){const x=state.shiftProfitPulse||state.costVariance||{};summary=x.headline||`${Number(x.margin||x.marginPercent||0)}% margin · $${Math.round(Number(x.profitAtRisk||0))} at risk`; if(Number(x.profitAtRisk||0)>0)status="attention";}
+     return {...stage,status,signalKey:signal?.key||null,centerPresent:Boolean(center),summary};}
+   surfaceAudit(){if(typeof document==="undefined")return {total:0,primary:0,supporting:0,hidden:0,items:[]};const centers=[...document.querySelectorAll('section[id$="Center"],section[id$="center"]')].filter(x=>x.id);const items=centers.map(el=>({id:el.id,primary:this.primaryCenters.has(el.id),hidden:Boolean(el.hidden),technical:/readiness|certification|registry|reconciliation|telemetry|governance|sandbox|runtime|observability|integration|contract|lineage|replay|audit|benchmark/i.test(el.id)}));return {total:items.length,primary:items.filter(x=>x.primary).length,supporting:items.filter(x=>!x.primary).length,hidden:items.filter(x=>x.hidden).length,technical:items.filter(x=>x.technical).length,items};}
+-  snapshot(){const state=this.state(),stages=this.stages().map(x=>this.stageSnapshot(x,state)),live=stages.filter(x=>x.status==="live"||x.status==="attention").length,attention=stages.filter(x=>x.status==="attention").length,audit=this.surfaceAudit();const guided=state.guidedShift||{},inbox=state.commandActionInbox||{},profit=state.shiftProfitPulse||{};return {capturedAt:new Date().toISOString(),stages,liveStages:live,attentionStages:attention,flowScore:Math.round(stages.reduce((s,x)=>s+(x.status==="live"?100:x.status==="attention"?75:x.status==="ready"?50:0),0)/stages.length),surfaceAudit:audit,operator:{phase:guided.phase?.label||"Shift",openActions:Number(inbox.open||inbox.pending||guided.unacknowledged||0),focusScore:Number(guided.focusScore||0),profitSignal:profit.headline||null},operatorMode:typeof document!=="undefined"?document.documentElement.dataset.operatorMode==="true":false};}
++  handoffs(stages){return stages.slice(0,-1).map((stage,index)=>{const next=stages[index+1],needsAttention=stage.status==="attention"||next.status==="attention";return {id:`${stage.id}-to-${next.id}`,from:stage.id,to:next.id,fromLabel:stage.label,toLabel:next.label,status:needsAttention?"attention":"clear",reason:needsAttention?`${stage.label} → ${next.label} requires operator review.`:`${stage.label} → ${next.label} handoff is clear.`,targetCenter:next.center};});}
++  snapshot(){const state=this.state(),stages=this.stages().map(x=>this.stageSnapshot(x,state)),live=stages.filter(x=>x.status==="live"||x.status==="attention").length,attention=stages.filter(x=>x.status==="attention").length,audit=this.surfaceAudit(),handoffs=this.handoffs(stages);const guided=state.guidedShift||{},inbox=state.commandActionInbox||{},profit=state.shiftProfitPulse||{};return {capturedAt:new Date().toISOString(),stages,handoffs,attentionHandoffs:handoffs.filter(x=>x.status==="attention").length,liveStages:live,attentionStages:attention,flowScore:Math.round(stages.reduce((s,x)=>s+(x.status==="live"?100:x.status==="attention"?75:x.status==="ready"?50:0),0)/stages.length),surfaceAudit:audit,operator:{phase:guided.phase?.label||"Shift",openActions:Number(inbox.open||inbox.pending||guided.unacknowledged||0),focusScore:Number(guided.focusScore||0),profitSignal:profit.headline||null},operatorMode:typeof document!=="undefined"?document.documentElement.dataset.operatorMode==="true":false};}
+   setOperatorMode(enabled){if(typeof document==="undefined")return this.snapshot();const on=Boolean(enabled),centers=[...document.querySelectorAll('section[id$="Center"],section[id$="center"]')].filter(x=>x.id);if(on){this.previousVisibility.clear();centers.forEach(el=>{this.previousVisibility.set(el.id,{hidden:el.hidden,aria:el.getAttribute("aria-hidden"),inert:el.hasAttribute("inert")});if(!this.primaryCenters.has(el.id)){el.hidden=true;el.setAttribute("aria-hidden","true");el.setAttribute("inert","");}});document.documentElement.dataset.operatorMode="true";}else{centers.forEach(el=>{const prev=this.previousVisibility.get(el.id);if(!prev)return;el.hidden=prev.hidden;if(prev.aria==null)el.removeAttribute("aria-hidden");else el.setAttribute("aria-hidden",prev.aria);if(prev.inert)el.setAttribute("inert","");else el.removeAttribute("inert");});document.documentElement.dataset.operatorMode="false";this.previousVisibility.clear();}const snap=this.snapshot();this.eventBus?.emit?.("operator-service-flow:mode-changed",{enabled:on,snapshot:snap});return snap;}
+   refresh(reason="manual"){const snap=this.snapshot();snap.reason=reason;this.appState?.update?.({operatorServiceFlow:snap});this.eventBus?.emit?.("operator-service-flow:updated",structuredClone(snap));return snap;}
+   destroy(){this.off.forEach(fn=>fn?.());}
+--- a/client/js/modules/operatorSurfaceRationalizationEngine.js
++++ b/client/js/modules/operatorSurfaceRationalizationEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentOperatorSurfaceRationalizationEngine{
++  constructor({eventBus,appState,flowEngine}={}){this.eventBus=eventBus;this.appState=appState;this.flowEngine=flowEngine||null;this.primary=new Set(["unifiedCommandCenter","guidedShiftCenter","operatorServiceFlowCenter","operatorCopilotCenter","commandActionInboxCenter","shiftProfitPulseCenter","operationsWorkspaceCenter","reservationOperationsCenter","liveFloorOperationsCenter","kitchenThroughputCenter","laborDeploymentCenter","guestRecoveryCenter"]);this.mergeTargets=this.buildMergeTargets();}
++  buildMergeTargets(){return {reservationYieldCenter:"reservationOperationsCenter",operationalDigitalTwinCenter:"liveFloorOperationsCenter",kitchenOperationsCenter:"kitchenThroughputCenter",predictiveServiceCenter:"kitchenThroughputCenter",staffOperationsCenter:"laborDeploymentCenter",workforceIntelligenceCenter:"laborDeploymentCenter",serviceRecoveryCenter:"guestRecoveryCenter",serviceRecoveryPlaybooksCenter:"guestRecoveryCenter",marginIntelligenceCenter:"shiftProfitPulseCenter",costVarianceCenter:"shiftProfitPulseCenter",priorityFocusCenter:"guidedShiftCenter",actionOwnershipCenter:"commandActionInboxCenter",shiftHandoffSnapshotCenter:"guidedShiftCenter",decisionExecutionLedgerCenter:"commandActionInboxCenter",outcomeCaptureCenter:"shiftProfitPulseCenter",shiftCloseBriefCenter:"guidedShiftCenter",openingReadinessCenter:"guidedShiftCenter",shiftCheckpointCenter:"guidedShiftCenter",dailyValueReportCenter:"shiftProfitPulseCenter",serviceExceptionQueueCenter:"commandActionInboxCenter"};}
++  centerIds(){if(typeof document==="undefined")return [];return [...document.querySelectorAll('section[id$="Center"],section[id$="center"]')].map(x=>x.id).filter(Boolean);}
++  classify(id){if(this.primary.has(id))return {disposition:"keep-primary",target:id,score:100,reason:"Directly supports the primary manager shift path."};if(this.mergeTargets[id])return {disposition:"merge",target:this.mergeTargets[id],score:80,reason:`Useful operator capability overlaps ${this.mergeTargets[id]}.`};if(/readiness|certification|registry|reconciliation|telemetry|governance|sandbox|runtime|observability|integration|contract|lineage|replay|audit|benchmark|deployment|release|rollback|environment|acceptance|connector|ingestion|source|provider|sync|migration|diagnostic|health|performance|budget|policy|aip|v4[0-9]|v3[0-9]/i.test(id))return {disposition:"diagnostics-admin",target:null,score:35,reason:"Technical, governance, integration, release, or certification surface."};if(/innovation|experiment|learning|scenario|strategy|tradeoff|portfolio|executive|enterprise|district|briefing|expansion|market|forecast|planning/i.test(id))return {disposition:"deprecation-candidate",target:null,score:20,reason:"Outside the core shift workflow; requires operator evidence before retention."};return {disposition:"supporting",target:null,score:50,reason:"Supporting workflow; requires operator evidence before merge or removal."};}
++  snapshot(ids=null){const centerIds=Array.isArray(ids)?ids:this.centerIds(),items=centerIds.map(id=>({id,...this.classify(id)}));const counts={};items.forEach(x=>counts[x.disposition]=(counts[x.disposition]||0)+1);const duplicateGroups={};items.filter(x=>x.disposition==="merge").forEach(x=>{(duplicateGroups[x.target] ||= []).push(x.id);});const flow=this.flowEngine?.snapshot?.()||this.appState?.get?.("operatorServiceFlow")||null;const handoffs=flow?.handoffs||[];return {capturedAt:new Date().toISOString(),total:items.length,counts,items,duplicateGroups,handoffs,attentionHandoffs:handoffs.filter(x=>x.status==="attention").length,recommendations:["Keep the 12 primary operator surfaces as the default manager path.","Merge overlapping operator capabilities into mapped primary surfaces before deleting code.","Keep diagnostics/admin surfaces outside Operator Mode for implementation/support roles.","Require real operator evidence before permanently removing deprecation candidates."],deletionPolicy:"no-permanent-deletion-without-operator-evidence",version:"46.10.0"};}
++  applyDispositionView(disposition){if(typeof document==="undefined")return this.snapshot();const snap=this.snapshot();for(const item of snap.items){const el=document.getElementById(item.id);if(!el)continue;const show=disposition==="all"||item.disposition===disposition||this.primary.has(item.id);el.hidden=!show;if(show){el.removeAttribute("aria-hidden");el.removeAttribute("inert");}else{el.setAttribute("aria-hidden","true");el.setAttribute("inert","");}}document.documentElement.dataset.surfaceDisposition=disposition;this.eventBus?.emit?.("operator-surface-rationalization:view-changed",{disposition});return this.snapshot();}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentOperatorSurfaceRationalizationEngine;
++if(global)global.BlueCurrentOperatorSurfaceRationalizationEngine=BlueCurrentOperatorSurfaceRationalizationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/operatorSurfaceRationalizationCenter.js
++++ b/client/js/modules/operatorSurfaceRationalizationCenter.js
+@@ -0,0 +1,2 @@
++(function(){"use strict";
++function createBlueCurrentOperatorSurfaceRationalizationCenterModule(eventBus,appState){const root=document.getElementById("operatorSurfaceRationalizationCenter");if(!root||!window.BlueCurrentOperatorSurfaceRationalizationEngine)return null;const flow=window.BlueCurrentOperatorServiceFlowEngine?new window.BlueCurrentOperatorServiceFlowEngine({eventBus,appState}):null,e=new window.BlueCurrentOperatorSurfaceRationalizationEngine({eventBus,appState,flowEngine:flow}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));function render(s){$("osrTotal").textContent=s.total;$("osrPrimary").textContent=s.counts["keep-primary"]||0;$("osrMerge").textContent=s.counts.merge||0;$("osrDiagnostics").textContent=s.counts["diagnostics-admin"]||0;$("osrCandidates").textContent=s.counts["deprecation-candidate"]||0;$("osrHandoffs").textContent=s.attentionHandoffs||0;$("osrHeadline").textContent=`${s.counts["keep-primary"]||0} primary · ${s.counts.merge||0} merge · ${s.counts["diagnostics-admin"]||0} diagnostics · ${s.counts["deprecation-candidate"]||0} deprecation candidates.`;$("osrGroups").innerHTML=Object.entries(s.duplicateGroups).map(([target,ids])=>`<article><strong>${esc(target)}</strong><span>Merge candidates: ${ids.map(esc).join(", ")}</span></article>`).join("")||"<p>No mapped merge groups found.</p>";$("osrHandoffList").innerHTML=(s.handoffs||[]).map(x=>`<article><strong>${esc(x.fromLabel)} → ${esc(x.toLabel)} · ${esc(x.status.toUpperCase())}</strong><span>${esc(x.reason)}</span><button type="button" data-osr-center="${esc(x.targetCenter)}">Open ${esc(x.toLabel)}</button></article>`).join("")||"<p>No handoff data available.</p>";}function load(){render(e.snapshot());}root.addEventListener("click",ev=>{const centerId=ev.target.closest("[data-osr-center]")?.dataset.osrCenter;if(centerId){const el=document.getElementById(centerId);if(el){el.hidden=false;el.removeAttribute("aria-hidden");el.removeAttribute("inert");el.scrollIntoView({behavior:"smooth",block:"start"});}return;}const disposition=ev.target.closest("[data-osr-view]")?.dataset.osrView;if(disposition)render(e.applyDispositionView(disposition));});$("osrRefresh")?.addEventListener("click",load);load();return{engine:e,load};}window.createBlueCurrentOperatorSurfaceRationalizationCenterModule=createBlueCurrentOperatorSurfaceRationalizationCenterModule;})();--- a/scripts/maintenance/test-operator-surface-rationalization.js
++++ b/scripts/maintenance/test-operator-surface-rationalization.js
+@@ -0,0 +1,14 @@
++"use strict";
++const assert=require("assert");
++global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
++const Flow=require("../../client/js/modules/operatorServiceFlowEngine");
++const Rational=require("../../client/js/modules/operatorSurfaceRationalizationEngine");
++const state={guidedShift:{phase:{label:"Dinner rush"},focusScore:81,unacknowledged:1},reservationYield:{headline:"Arrivals paced",waitlist:2,covers:104},operationalDigitalTwin:{occupancy:88,guestWait:8},occupancyPercent:88,kitchenThroughput:{headline:"Expo pressure",throughput:49,wait:15},laborDeployment:{headline:"Labor aligned",laborPercent:29},guestRecovery:{headline:"1 recovery moment",open:1},shiftProfitPulse:{headline:"Margin protected",margin:19.1,profitAtRisk:0}};
++const appState={getState:()=>state,update:()=>{},get:k=>state[k]},eventBus={on:()=>()=>{},emit:()=>{}};
++const flow=new Flow({eventBus,appState}),fs=flow.snapshot();
++assert.equal(fs.stages.length,6);assert.equal(fs.handoffs.length,5);assert.equal(fs.attentionHandoffs,4);assert.equal(fs.handoffs[1].id,"floor-to-kitchen");assert.equal(fs.handoffs[1].status,"attention");assert.equal(fs.handoffs[3].id,"staffing-to-guest");assert.equal(fs.handoffs[3].status,"attention");
++const r=new Rational({eventBus,appState,flowEngine:flow});
++const ids=["unifiedCommandCenter","guidedShiftCenter","operatorServiceFlowCenter","operatorCopilotCenter","commandActionInboxCenter","shiftProfitPulseCenter","operationsWorkspaceCenter","reservationOperationsCenter","liveFloorOperationsCenter","kitchenThroughputCenter","laborDeploymentCenter","guestRecoveryCenter","reservationYieldCenter","operationalDigitalTwinCenter","kitchenOperationsCenter","staffOperationsCenter","serviceRecoveryCenter","costVarianceCenter","aipRuntimeReadinessCenter","connectorConfigurationCenter","releaseCertificationCenter","enterpriseValuePlanCenter","executiveBriefingCenter","innovationCenter","someSupportingCenter"];
++const snap=r.snapshot(ids);
++assert.equal(snap.counts["keep-primary"],12);assert.equal(snap.counts.merge,6);assert.equal(snap.counts["diagnostics-admin"],3);assert.equal(snap.counts["deprecation-candidate"],3);assert.equal(snap.counts.supporting,1);assert.equal(snap.duplicateGroups.reservationOperationsCenter.includes("reservationYieldCenter"),true);assert.equal(snap.duplicateGroups.liveFloorOperationsCenter.includes("operationalDigitalTwinCenter"),true);assert.equal(r.classify("aipRuntimeReadinessCenter").disposition,"diagnostics-admin");assert.equal(r.classify("executiveBriefingCenter").disposition,"deprecation-candidate");assert.equal(snap.deletionPolicy,"no-permanent-deletion-without-operator-evidence");
++console.log(JSON.stringify({ok:true,version:snap.version,primary:snap.counts["keep-primary"],merge:snap.counts.merge,diagnostics:snap.counts["diagnostics-admin"],deprecationCandidates:snap.counts["deprecation-candidate"],supporting:snap.counts.supporting,handoffs:fs.handoffs.length,attentionHandoffs:fs.attentionHandoffs,deletionPolicy:snap.deletionPolicy},null,2));
+--- a/README-APPLY-V46.10.0.md
++++ b/README-APPLY-V46.10.0.md
+@@ -0,0 +1,69 @@
++# APPLY BLUE CURRENT V46.10.0
++
++## Baseline
++
++Apply over the authoritative repository containing V46.5.0.
++
++## Important
++
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++
++Extract `BLUE-CURRENT-V46.10.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-operator-surface-rationalization.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.10.0"
++```
++
++## Recommended Git staging
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/operatorServiceFlowEngine.js
++git add client/js/modules/operatorSurfaceRationalizationEngine.js
++git add client/js/modules/operatorSurfaceRationalizationCenter.js
++git add scripts/maintenance/test-operator-surface-rationalization.js
++git add README-APPLY-V46.10.0.md
++git add V46.10.0-RELEASE.md
++git add V46.10.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V46.10.0 operator surface rationalization"
++git push origin live-service-timeline
++```
+--- a/V46.10.0-RELEASE.md
++++ b/V46.10.0-RELEASE.md
+@@ -0,0 +1,109 @@
++# BLUE CURRENT V46.10.0 — OPERATOR SURFACE RATIONALIZATION
++
++## Release scope
++
++V46.6–V46.10 continues the operator fine-comb phase by classifying the existing platform rather than expanding it.
++
++No working module is deleted in this release.
++
++### V46.6 — Cross-Stage Handoff Map
++
++The six-stage operator flow now creates explicit handoffs:
++
++1. Reservations → Floor
++2. Floor → Kitchen
++3. Kitchen → Staffing
++4. Staffing → Guest Recovery
++5. Guest Recovery → Profit
++
++A handoff becomes `attention` when either side of the transition requires attention.
++
++### V46.7 — Surface Disposition Registry
++
++Existing centers are classified into:
++
++- `keep-primary`
++- `merge`
++- `diagnostics-admin`
++- `deprecation-candidate`
++- `supporting`
++
++The primary manager path remains 12 surfaces.
++
++### V46.8 — Merge Map
++
++Known overlapping operator capabilities are mapped into their intended primary surfaces before any code deletion.
++
++Examples:
++- Reservation Yield → Reservation Operations
++- Operational Digital Twin → Live Floor Operations
++- Kitchen Operations / Predictive Service → Kitchen Throughput
++- Staff Operations / Workforce Intelligence → Labor Deployment
++- Service Recovery → Guest Recovery
++- Margin Intelligence / Cost Variance → Shift Profit Pulse
++- Priority Focus / Shift Checkpoint / Opening Readiness → Guided Shift
++- Action Ownership / Decision Execution Ledger / Service Exception Queue → Command Action Inbox
++
++### V46.9 — Diagnostics / Deprecation Review Views
++
++The new Operator Surface Rationalization center can filter the interface by:
++- merge review
++- diagnostics/admin
++- deprecation candidates
++- all surfaces
++
++Primary operator surfaces remain visible while reviewing a disposition.
++
++The deletion policy is explicit:
++
++`no-permanent-deletion-without-operator-evidence`
++
++### V46.10 — Rationalization Validation
++
++Adds focused validation for:
++- six-stage flow
++- five cross-stage handoffs
++- attention propagation across handoffs
++- primary-surface classification
++- merge mapping
++- diagnostics classification
++- deprecation candidate classification
++- deletion policy
++
++## Safety
++
++- No live execution behavior changed.
++- No V44/V45 governance boundary was removed.
++- No module was permanently deleted.
++- Rationalization views change presentation only.
++- Runtime database is not included in the patch.
++
++## Validation
++
++- `node scripts/maintenance/test-operator-surface-rationalization.js` passed.
++- Focused harness validated:
++  - 12 primary surfaces
++  - 6 merge examples
++  - 3 diagnostics examples
++  - 3 deprecation-candidate examples
++  - 1 supporting example
++  - 5 service-flow handoffs
++  - 4 attention handoffs from Kitchen + Guest Recovery pressure
++- `npm run check` passed:
++  - 820 JavaScript files
++  - 702 client scripts
++  - 5,239 unique HTML IDs
++- Server startup passed as V46.10.0.
++- `/api/health` returned HTTP 200 with database connected and auth enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Next fine-comb milestone
++
++The next wave should begin actual consolidation without broad deletion:
++- merge duplicated summaries/actions into the primary surfaces
++- remove duplicate navigation entry points
++- create role-based default navigation
++- capture operator-use evidence
++- produce the first evidence-backed deprecation list
++
++Permanent deletion should still wait until the operator evidence shows a surface is redundant or unused.
