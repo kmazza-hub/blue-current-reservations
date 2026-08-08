@@ -36,8 +36,10 @@ class RepositoryImpactService {
         while((m=scriptRe.exec(text)))scriptOwnership.push({file:m[1].replace(/^\/+/,""),declaredIn:rel});
       }
       if(rel.startsWith("scripts/")&&count)tests.push({file:rel,count});
-      const apiMatches=[...text.matchAll(/["'`](\/api\/[^"'`\s?]+)/g)].map(m=>m[1]);
-      if(count&&apiMatches.length)api.push(...[...new Set(apiMatches)].map(endpoint=>({file:rel,endpoint})));
+      if(count&&[".js",".html"].includes(path.extname(rel).toLowerCase())){
+        const idRe=new RegExp(id.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"g");let hit;
+        while((hit=idRe.exec(text))){const near=text.slice(Math.max(0,hit.index-1200),Math.min(text.length,hit.index+id.length+1200)),apiMatches=[...near.matchAll(/["'`](\/api\/[^"'`\s?]+)/g)].map(m=>m[1]);api.push(...[...new Set(apiMatches)].map(endpoint=>({file:rel,endpoint})));}
+      }
     }
     return {surfaceId:id,exact,startup,htmlOwnership,scriptOwnership:[...new Map(scriptOwnership.map(x=>[x.file,x])).values()],tests,api:[...new Map(api.map(x=>[`${x.file}|${x.endpoint}`,x])).values()]};
   }
@@ -54,7 +56,7 @@ class RepositoryImpactService {
   }
   dependencyGraph(surfaceId){
     const refs=this.references(surfaceId),owned=this.ownership(surfaceId,refs),ownedSet=new Set(owned);
-    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":"reference"}));
+    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":x.file.endsWith(".md")?"documentation":"reference"}));
     return {surfaceId,ownedFiles:owned,inboundReferences:inbound,referenceCount:refs.exact.reduce((s,x)=>s+x.count,0),startupDependencies:refs.startup,apiUsage:refs.api,testCoverage:refs.tests,htmlOwnership:refs.htmlOwnership,scriptOwnership:refs.scriptOwnership};
   }
   rollbackPlan(surfaceId,graph){
@@ -67,7 +69,7 @@ class RepositoryImpactService {
     const blockers=[];
     if(graph.startupDependencies.length)blockers.push("Startup registry references remain.");
     if(graph.apiUsage.length)blockers.push("API usage references require review.");
-    if(graph.inboundReferences.some(x=>x.type==="reference"))blockers.push("Non-owned inbound references require review.");
+    if(graph.inboundReferences.some(x=>["reference","html-registration"].includes(x.type)))blockers.push("Non-owned inbound references require review.");
     if(graph.testCoverage.length===0)blockers.push("No direct retirement-candidate test coverage found.");
     return {surfaceId,version:"46.35.0",graph,rollback,impact:{ownedFiles:graph.ownedFiles.length,inboundReferences:graph.inboundReferences.length,startupDependencies:graph.startupDependencies.length,apiReferences:graph.apiUsage.length,testReferences:graph.testCoverage.length},status:blockers.length?"impact-review-required":"impact-clear-for-deletion-plan",blockers,deletionExecuted:false,deleteEndpointPresent:false,generatedAt:new Date().toISOString()};
   }

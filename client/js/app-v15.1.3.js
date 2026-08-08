@@ -1216,6 +1216,7 @@ const operatorConsolidationScorecardCenterModule = startupRegistry.register("ope
 const deprecationManifestCenterModule = startupRegistry.register("deprecationManifestCenter", shouldInitializeCenter("deprecationManifestCenter") ? window.createBlueCurrentDeprecationManifestCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorConsolidationScorecardCenter"]);
 const retirementCertificationCenterModule = startupRegistry.register("retirementCertificationCenter", shouldInitializeCenter("retirementCertificationCenter") ? window.createBlueCurrentRetirementCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "deprecationManifestCenter"]);
 const repositoryImpactCertificationCenterModule = startupRegistry.register("repositoryImpactCertificationCenter", shouldInitializeCenter("repositoryImpactCertificationCenter") ? window.createBlueCurrentRepositoryImpactCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementCertificationCenter"]);
+const retirementRehearsalCenterModule = startupRegistry.register("retirementRehearsalCenter", shouldInitializeCenter("retirementRehearsalCenter") ? window.createBlueCurrentRetirementRehearsalCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "repositoryImpactCertificationCenter"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

@@ -1,0 +1,583 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.35.0",
++  "version": "46.40.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 repository impact certification and deletion-plan authorization",
++  "description": "Blue Current Hospitality OS \u2014 disposable retirement rehearsal and rollback archive certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -32,6 +32,7 @@
+ const OperationsFeedService = require("./services/operationsFeedService");
+ const LiveIntegrationService = require("./services/liveIntegrationService");
+ const RepositoryImpactService = require("./services/repositoryImpactService");
++const RepositoryRetirementRehearsalService = require("./services/repositoryRetirementRehearsalService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -67,7 +68,8 @@
+ const liveIntegrationService = new LiveIntegrationService(database, auditService, realtimeHub);
+ const commandCenterService = new CommandCenterService(database, operationsFeedService);
+ const repositoryImpactService = new RepositoryImpactService(ROOT);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService });
++const repositoryRetirementRehearsalService = new RepositoryRetirementRehearsalService(ROOT, repositoryImpactService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -154,7 +156,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.35.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.40.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.35.0",
++        version: "46.40.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -88,6 +88,14 @@
+       if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Repository impact review permission required."});
+       const surfaceId = url.searchParams.get("surfaceId") || "";
+       return sendJson(response,200,repositoryImpactService.analyze(surfaceId));
++    }
++
++    if (url.pathname === "/api/operator-fine-comb/retirement-rehearsal" && request.method === "POST") {
++      const auth = await authService.authenticate(bearerToken(request));
++      if (!auth) return sendJson(response,401,{error:"Authentication required."});
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Admin permission required for retirement rehearsal."});
++      const body=await readJson(request);
++      return sendJson(response,200,repositoryRetirementRehearsalService.rehearse(String(body.surfaceId||"")));
+     }
+ 
+     if (url.pathname === "/api/employee-portal/login" && request.method === "POST") {
+--- a/server/services/repositoryImpactService.js
++++ b/server/services/repositoryImpactService.js
+@@ -36,8 +36,10 @@
+         while((m=scriptRe.exec(text)))scriptOwnership.push({file:m[1].replace(/^\/+/,""),declaredIn:rel});
+       }
+       if(rel.startsWith("scripts/")&&count)tests.push({file:rel,count});
+-      const apiMatches=[...text.matchAll(/["'`](\/api\/[^"'`\s?]+)/g)].map(m=>m[1]);
+-      if(count&&apiMatches.length)api.push(...[...new Set(apiMatches)].map(endpoint=>({file:rel,endpoint})));
++      if(count&&[".js",".html"].includes(path.extname(rel).toLowerCase())){
++        const idRe=new RegExp(id.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"g");let hit;
++        while((hit=idRe.exec(text))){const near=text.slice(Math.max(0,hit.index-1200),Math.min(text.length,hit.index+id.length+1200)),apiMatches=[...near.matchAll(/["'`](\/api\/[^"'`\s?]+)/g)].map(m=>m[1]);api.push(...[...new Set(apiMatches)].map(endpoint=>({file:rel,endpoint})));}
++      }
+     }
+     return {surfaceId:id,exact,startup,htmlOwnership,scriptOwnership:[...new Map(scriptOwnership.map(x=>[x.file,x])).values()],tests,api:[...new Map(api.map(x=>[`${x.file}|${x.endpoint}`,x])).values()]};
+   }
+@@ -54,7 +56,7 @@
+   }
+   dependencyGraph(surfaceId){
+     const refs=this.references(surfaceId),owned=this.ownership(surfaceId,refs),ownedSet=new Set(owned);
+-    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":"reference"}));
++    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":x.file.endsWith(".md")?"documentation":"reference"}));
+     return {surfaceId,ownedFiles:owned,inboundReferences:inbound,referenceCount:refs.exact.reduce((s,x)=>s+x.count,0),startupDependencies:refs.startup,apiUsage:refs.api,testCoverage:refs.tests,htmlOwnership:refs.htmlOwnership,scriptOwnership:refs.scriptOwnership};
+   }
+   rollbackPlan(surfaceId,graph){
+@@ -67,7 +69,7 @@
+     const blockers=[];
+     if(graph.startupDependencies.length)blockers.push("Startup registry references remain.");
+     if(graph.apiUsage.length)blockers.push("API usage references require review.");
+-    if(graph.inboundReferences.some(x=>x.type==="reference"))blockers.push("Non-owned inbound references require review.");
++    if(graph.inboundReferences.some(x=>["reference","html-registration"].includes(x.type)))blockers.push("Non-owned inbound references require review.");
+     if(graph.testCoverage.length===0)blockers.push("No direct retirement-candidate test coverage found.");
+     return {surfaceId,version:"46.35.0",graph,rollback,impact:{ownedFiles:graph.ownedFiles.length,inboundReferences:graph.inboundReferences.length,startupDependencies:graph.startupDependencies.length,apiReferences:graph.apiUsage.length,testReferences:graph.testCoverage.length},status:blockers.length?"impact-review-required":"impact-clear-for-deletion-plan",blockers,deletionExecuted:false,deleteEndpointPresent:false,generatedAt:new Date().toISOString()};
+   }
+--- a/server/services/repositoryRetirementRehearsalService.js
++++ b/server/services/repositoryRetirementRehearsalService.js
+@@ -0,0 +1,92 @@
++"use strict";
++
++const fs=require("fs");
++const path=require("path");
++const os=require("os");
++const crypto=require("crypto");
++const {spawnSync}=require("child_process");
++
++class RepositoryRetirementRehearsalService{
++  constructor(rootPath,impactService){this.rootPath=rootPath;this.impactService=impactService;}
++  rel(p){return path.relative(this.rootPath,p).replace(/\\/g,"/");}
++  excluded(name){return [".git","node_modules","coverage","dist","build"].includes(name);}
++  copyTree(src,dst){
++    fs.mkdirSync(dst,{recursive:true});
++    for(const entry of fs.readdirSync(src,{withFileTypes:true})){
++      if(this.excluded(entry.name))continue;
++      const s=path.join(src,entry.name),d=path.join(dst,entry.name);
++      if(entry.isDirectory())this.copyTree(s,d);else fs.copyFileSync(s,d);
++    }
++  }
++  hashFile(file){return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");}
++  repositoryDigest(){const files=this.impactService.walk().sort(),hash=crypto.createHash("sha256");for(const file of files){hash.update(this.impactService.rel(file));hash.update("\0");hash.update(fs.readFileSync(file));hash.update("\0");}return {sha256:hash.digest("hex"),fileCount:files.length};}
++  removeHtmlElementById(text,id){
++    const esc=id.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),startRe=new RegExp(`<section\\b[^>]*\\bid=["']${esc}["'][^>]*>`,"i"),m=startRe.exec(text);
++    if(!m)return {text,removed:false};
++    let depth=1,pos=m.index+m[0].length;
++    const tagRe=/<\/?section\b[^>]*>/gi;tagRe.lastIndex=pos;let end=-1,x;
++    while((x=tagRe.exec(text))){if(/^<\//.test(x[0]))depth--;else depth++;if(depth===0){end=x.index+x[0].length;break;}}
++    if(end<0)return {text,removed:false};
++    return {text:text.slice(0,m.index)+text.slice(end),removed:true};
++  }
++  cleanStartupFile(text,id){
++    const esc=id.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),moduleName=`${id}Module`;let out=text,removed=[];
++    const registration=new RegExp(`(?:const\\s+\\w+\\s*=\\s*)?startupRegistry\\.register\\([\\s\\S]*?["']${esc}["'][\\s\\S]*?\\);\\s*`,`g`);
++    out=out.replace(registration,m=>{if(!m.includes(id))return m;removed.push(m);return "";});
++    const depQuoted=new RegExp(`,?\\s*["']${esc}["']\\s*,?`,`g`);
++    out=out.replace(depQuoted,m=>m.includes(",")?", ":"");
++    const exportLine=new RegExp(`^.*\\b${moduleName.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}\\b.*(?:\\r?\\n|$)`,`gm`);
++    out=out.replace(exportLine,m=>{if(/startupRegistry/.test(m))return m;removed.push(m);return "";});
++    return {text:out,removed};
++  }
++  removeCenterScripts(text,id,ownedFiles=[]){
++    const names=ownedFiles.filter(x=>x.startsWith("client/js/")).map(x=>path.basename(x)),removed=[];
++    let out=text;
++    const centerRe=new RegExp(`<script\\b[^>]*data-center=["']${id.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}["'][^>]*>\\s*</script>\\s*`,"gi");
++    out=out.replace(centerRe,m=>{removed.push(m);return "";});
++    for(const name of names){const esc=name.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),re=new RegExp(`<script\\b[^>]*(?:src|data-src)=["'][^"']*${esc}(?:\\?[^"']*)?["'][^>]*>\\s*</script>\\s*`,"gi");out=out.replace(re,m=>{removed.push(m);return "";});}
++    return {text:out,removed};
++  }
++  removeQuotedToken(text,id){const esc=id.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");let out=text;out=out.replace(new RegExp(`,\\s*["']${esc}["']`,"g"),"");out=out.replace(new RegExp(`["']${esc}["']\\s*,`,"g"),"");out=out.replace(new RegExp(`["']${esc}["']`,"g"),"");return out;}
++  snapshotFiles(files){const records=[];for(const rel of files){const full=path.join(this.rootPath,rel);if(!fs.existsSync(full)||!fs.statSync(full).isFile())continue;records.push({file:rel,sha256:this.hashFile(full),base64:fs.readFileSync(full).toString("base64")});}return records;}
++  makeRollbackArchive(surfaceId,files,dir){const payload={format:"blue-current-rollback-v1",surfaceId,createdAt:new Date().toISOString(),authoritativeRootHash:null,files:this.snapshotFiles(files)};payload.digest=crypto.createHash("sha256").update(JSON.stringify(payload.files.map(x=>({file:x.file,sha256:x.sha256})))).digest("hex");const file=path.join(dir,`${surfaceId}-rollback.json`);fs.writeFileSync(file,JSON.stringify(payload,null,2));return {file:path.basename(file),path:file,digest:payload.digest,fileCount:payload.files.length,size:fs.statSync(file).size,format:payload.format};}
++  textDiff(before,after,file){if(before===after)return "";const a=before.split(/\r?\n/),b=after.split(/\r?\n/);let first=0;while(first<a.length&&first<b.length&&a[first]===b[first])first++;let lastA=a.length-1,lastB=b.length-1;while(lastA>=first&&lastB>=first&&a[lastA]===b[lastB]){lastA--;lastB--;}return [`--- a/${file}`,`+++ b/${file}`,`@@ simulated removal @@`,...a.slice(Math.max(0,first-2),Math.min(a.length,lastA+3)).map(x=>`-${x}`),...b.slice(Math.max(0,first-2),Math.min(b.length,lastB+3)).map(x=>`+${x}`)].join("\n");}
++  applySimulation(surfaceId,simRoot,impact){
++    const changes=[],backups=new Set();
++    const indexRel="client/index.html",indexFile=path.join(simRoot,indexRel);
++    if(fs.existsSync(indexFile)){const before=fs.readFileSync(indexFile,"utf8");let after=this.removeHtmlElementById(before,surfaceId).text;after=this.removeCenterScripts(after,surfaceId,impact.graph.ownedFiles||[]).text;if(after!==before){fs.writeFileSync(indexFile,after);changes.push({file:indexRel,action:"modify",diff:this.textDiff(before,after,indexRel)});backups.add(indexRel);}}
++    for(const rel of ["client/js/app-v15.1.3.js","client/app-v15.1.3.js","app-v15.1.3.js"]){
++      const file=path.join(simRoot,rel);if(!fs.existsSync(file))continue;const before=fs.readFileSync(file,"utf8"),result=this.cleanStartupFile(before,surfaceId);if(result.text!==before){fs.writeFileSync(file,result.text);changes.push({file:rel,action:"modify",diff:this.textDiff(before,result.text,rel)});backups.add(rel);}
++    }
++    for(const rel of ["client/js/modules/operatorConsolidationEngine.js","client/js/modules/operatorSurfaceRationalizationEngine.js"]){
++      const file=path.join(simRoot,rel);if(!fs.existsSync(file))continue;const before=fs.readFileSync(file,"utf8"),after=this.removeQuotedToken(before,surfaceId);if(after!==before){fs.writeFileSync(file,after);changes.push({file:rel,action:"modify",diff:this.textDiff(before,after,rel)});backups.add(rel);}
++    }
++    for(const rel of impact.graph.ownedFiles||[]){
++      if(rel==="client/index.html"||/app-v15\.1\.3\.js$/.test(rel))continue;
++      const file=path.join(simRoot,rel);if(fs.existsSync(file)&&fs.statSync(file).isFile()){fs.unlinkSync(file);changes.push({file:rel,action:"delete-in-simulation"});backups.add(rel);}
++    }
++    return {changes,backupFiles:[...backups].sort()};
++  }
++  validate(simRoot){
++    const result=spawnSync(process.execPath,["scripts/validate.js"],{cwd:simRoot,encoding:"utf8",timeout:180000});
++    const healthCheck=spawnSync(process.execPath,["--check","client/js/app-v15.1.3.js"],{cwd:simRoot,encoding:"utf8",timeout:30000});
++    return {passed:result.status===0&&healthCheck.status===0,validator:{status:result.status,stdout:(result.stdout||"").slice(-4000),stderr:(result.stderr||"").slice(-4000)},startupSyntax:{status:healthCheck.status,stderr:(healthCheck.stderr||"").slice(-2000)}};
++  }
++  rehearse(surfaceId){
++    const authoritativeBefore=this.repositoryDigest(),before=this.impactService.analyze(surfaceId),tempBase=fs.mkdtempSync(path.join(os.tmpdir(),"blue-current-retirement-")),simRoot=path.join(tempBase,"repo"),artifactDir=path.join(tempBase,"artifacts");
++    fs.mkdirSync(artifactDir,{recursive:true});this.copyTree(this.rootPath,simRoot);
++    const applied=this.applySimulation(surfaceId,simRoot,before);
++    const rollback=this.makeRollbackArchive(surfaceId,applied.backupFiles,artifactDir);
++    const simImpactService=new (this.impactService.constructor)(simRoot),after=simImpactService.analyze(surfaceId),validation=this.validate(simRoot);
++    const changeSet={surfaceId,mode:"simulated-only",changes:applied.changes.map(x=>({file:x.file,action:x.action})),patchText:applied.changes.filter(x=>x.diff).map(x=>x.diff).join("\n\n"),authoritativeMutation:false,generatedAt:new Date().toISOString()};
++    const changeSetPath=path.join(artifactDir,`${surfaceId}-simulated-change-set.json`);fs.writeFileSync(changeSetPath,JSON.stringify(changeSet,null,2));
++    const authoritativeAfter=this.repositoryDigest(),authoritativeSafe=authoritativeBefore.sha256===authoritativeAfter.sha256&&authoritativeBefore.fileCount===authoritativeAfter.fileCount;
++    const blockers=[];
++    if(!validation.passed)blockers.push("Disposable-copy validation failed.");
++    if((after.graph.startupDependencies||[]).length)blockers.push("Startup registry dependency remains after simulated removal.");
++    if((after.graph.apiUsage||[]).length)blockers.push("API usage remains after simulated removal.");
++    if((after.graph.inboundReferences||[]).some(x=>["reference","html-registration"].includes(x.type)))blockers.push("Operational inbound references remain after simulated removal.");
++    return {surfaceId,version:"46.40.0",mode:"disposable-copy-rehearsal",before,after,validation,rollback:{...rollback,path:undefined,archiveGenerated:true},changeSet:{file:path.basename(changeSetPath),changeCount:changeSet.changes.length,patchCharacters:changeSet.patchText.length,generated:true},readiness:{status:blockers.length?"rehearsal-blocked":"final-change-set-ready-for-human-review",blockers},safety:{authoritativeMutation:false,authoritativeSafe,authoritativeBefore,authoritativeAfter,codeDeletionAllowed:false,deletionExecuted:false,deleteEndpointPresent:false,tempCopyUsed:true},generatedAt:new Date().toISOString()};
++  }
++}
++module.exports=RepositoryRetirementRehearsalService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.35.0">
++  <meta name="blue-current-build" content="46.40.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -4164,6 +4164,7 @@
+ <section class="v432-center v438-center v4316-center" id="deprecationManifestCenter"><header><div><small>V46.21–V46.25 · Human-Approved Deprecation Preview</small><strong>Use evidence thresholds to create a review manifest, require human approval, then hide candidates reversibly behind a feature flag.</strong><span>Approved preview hiding is not code deletion. Full capability remains present and can be restored immediately.</span></div><button id="odmRefresh" type="button">Refresh</button></header><div class="v4316-actions"><button id="odmDraft" type="button">Build draft manifest</button><input id="odmApprover" class="v4312-input" placeholder="Approver name"><button id="odmApprove" type="button">Approve manifest</button><button id="odmEnable" type="button">Enable hide preview</button><button id="odmDisable" type="button">Disable preview</button></div><div class="v432-kpis"><article><small>Status</small><strong id="odmStatus">draft</strong></article><article><small>Items</small><strong id="odmItems">0</strong></article><article><small>Approved</small><strong id="odmApproved">0</strong></article><article><small>Hidden preview</small><strong id="odmHidden">0</strong></article><article><small>Feature flag</small><strong id="odmFlag">OFF</strong></article></div><div class="v4316-answer" id="odmHeadline">Build a draft manifest from evidence-backed candidates.</div><p id="odmThresholds"></p><div id="odmList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="retirementCertificationCenter"><header><div><small>V46.26–V46.30 · Retirement Certification</small><strong>Require multi-day preview evidence, task-quality thresholds, manifest revalidation, and owner sign-off before a surface can become a retirement candidate.</strong><span>Certification does not delete code. A certified candidate remains reversible and requires a later explicit deletion decision.</span></div><button id="orcRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="orcSurface"></select><input id="orcOwner" class="v4312-input" placeholder="Surface owner / certifier"><input id="orcNote" class="v4312-input" placeholder="Observation or sign-off note"><button id="orcObserve" type="button">Record preview observation</button><button id="orcSignoff" type="button">Owner sign-off</button><button id="orcRevalidate" type="button">Revalidate manifest</button><button id="orcCertify" type="button">Certify candidate</button></div><div class="v432-kpis"><article><small>Eligible candidates</small><strong id="orcEligible">0</strong></article><article><small>Certified</small><strong id="orcCertified">0</strong></article><article><small>Task success</small><strong id="orcTaskSuccess">100%</strong></article><article><small>Avg resolution</small><strong id="orcResolution">—</strong></article></div><div class="v4316-answer" id="orcHeadline">Retirement certification requires an approved, revalidated hide preview.</div><div id="orcList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="repositoryImpactCertificationCenter"><header><div><small>V46.31–V46.35 · Repository Impact Certification</small><strong>Trace dependencies, ownership, API/test impact, and rollback scope before a retirement candidate can receive human deletion-plan authorization.</strong><span>This wave generates and authorizes plans only. There is no delete endpoint and code deletion remains disabled.</span></div><button id="oricRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="oricSurface"></select><button id="oricAnalyze" type="button">Analyze repository impact</button><button id="oricPlan" type="button">Build deletion plan</button><input id="oricAuthorizer" class="v4312-input" placeholder="Deletion-plan authorizer"><input id="oricNote" class="v4312-input" placeholder="Authorization note"><button id="oricAuthorize" type="button">Authorize plan</button></div><div class="v432-kpis"><article><small>Plans</small><strong id="oricPlans">0</strong></article><article><small>Owned files</small><strong id="oricOwned">0</strong></article><article><small>Inbound refs</small><strong id="oricInbound">0</strong></article><article><small>Startup deps</small><strong id="oricStartup">0</strong></article><article><small>API refs</small><strong id="oricApi">0</strong></article><article><small>Test refs</small><strong id="oricTests">0</strong></article><article><small>Readiness</small><strong id="oricScore">0%</strong></article><article><small>Status</small><strong id="oricStatus">—</strong></article></div><div class="v4316-answer" id="oricHeadline">Select a certified retirement candidate and analyze repository impact.</div><div id="oricImpact" class="v432-list"></div><div id="oricChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="retirementRehearsalCenter"><header><div><small>V46.36–V46.40 · Disposable Retirement Rehearsal</small><strong>Apply the proposed retirement only to an isolated repository copy, validate the result, and generate rollback/change-set artifacts for human review.</strong><span>The authoritative repository is read-only to this workflow. No delete endpoint is introduced.</span></div><button id="orrRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="orrSurface"></select><button id="orrRun" type="button">Run disposable-copy rehearsal</button></div><div class="v432-kpis"><article><small>Rehearsals</small><strong id="orrRuns">0</strong></article><article><small>Simulated changes</small><strong id="orrChanges">0</strong></article><article><small>Rollback files</small><strong id="orrRollback">0</strong></article><article><small>Validation</small><strong id="orrValidation">—</strong></article><article><small>Readiness</small><strong id="orrScore">0%</strong></article><article><small>Status</small><strong id="orrStatus">—</strong></article></div><div class="v4316-answer" id="orrHeadline">Select a human-authorized deletion plan and run the disposable-copy rehearsal.</div><div id="orrArtifacts" class="v432-list"></div><div id="orrChecks" class="v432-list"></div></section>
+ <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+             <header class="guided-shift-header">
+               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
+@@ -8633,6 +8634,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementCertificationCenter" data-src="js/modules/retirementCertificationCenter.js?v=46.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="repositoryImpactCertificationCenter" data-src="js/modules/repositoryImpactCertificationEngine.js?v=46.35.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="repositoryImpactCertificationCenter" data-src="js/modules/repositoryImpactCertificationCenter.js?v=46.35.0"></script>
+-<script src="js/startup-loader.js?v=46.35.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementRehearsalCenter" data-src="js/modules/retirementRehearsalEngine.js?v=46.40.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementRehearsalCenter" data-src="js/modules/retirementRehearsalCenter.js?v=46.40.0"></script>
++<script src="js/startup-loader.js?v=46.40.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1216,6 +1216,7 @@
+ const deprecationManifestCenterModule = startupRegistry.register("deprecationManifestCenter", shouldInitializeCenter("deprecationManifestCenter") ? window.createBlueCurrentDeprecationManifestCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorConsolidationScorecardCenter"]);
+ const retirementCertificationCenterModule = startupRegistry.register("retirementCertificationCenter", shouldInitializeCenter("retirementCertificationCenter") ? window.createBlueCurrentRetirementCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "deprecationManifestCenter"]);
+ const repositoryImpactCertificationCenterModule = startupRegistry.register("repositoryImpactCertificationCenter", shouldInitializeCenter("repositoryImpactCertificationCenter") ? window.createBlueCurrentRepositoryImpactCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementCertificationCenter"]);
++const retirementRehearsalCenterModule = startupRegistry.register("retirementRehearsalCenter", shouldInitializeCenter("retirementRehearsalCenter") ? window.createBlueCurrentRetirementRehearsalCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "repositoryImpactCertificationCenter"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.35.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.40.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/retirementRehearsalEngine.js
++++ b/client/js/modules/retirementRehearsalEngine.js
+@@ -0,0 +1,22 @@
++(function(global){"use strict";
++class BlueCurrentRetirementRehearsalEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  plans(){try{return this.appState?.getState?.().operatorDeletionPlans||[];}catch{return [];}}
++  eligiblePlans(){return this.plans().filter(x=>x.status==="human-authorized-plan"&&x.codeDeletionAllowed===false&&x.deletionExecuted===false);}
++  async rehearse(surfaceId){const r=await fetch("/api/operator-fine-comb/retirement-rehearsal",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({surfaceId})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Retirement rehearsal failed (${r.status})`);const current=this.appState?.getState?.().operatorRetirementRehearsals||[],next=[d,...current.filter(x=>x.surfaceId!==d.surfaceId)].slice(0,50);this.appState?.update?.({operatorRetirementRehearsals:next});this.eventBus?.emit?.("operator-retirement-rehearsal:completed",structuredClone(d));return d;}
++  readiness(result){const checks=[
++    {id:"disposable-copy",pass:result?.safety?.tempCopyUsed===true,detail:result?.mode||"not run"},
++    {id:"authoritative-safety",pass:result?.safety?.authoritativeMutation===false&&result?.safety?.authoritativeSafe===true,detail:"Authoritative repository unchanged"},
++    {id:"validator",pass:result?.validation?.passed===true,detail:result?.validation?.validator?.stdout?.trim().split("\n").slice(-1)[0]||"not run"},
++    {id:"startup-cleanup",pass:(result?.after?.graph?.startupDependencies||[]).length===0,detail:`${result?.after?.graph?.startupDependencies?.length||0} remaining`},
++    {id:"api-cleanup",pass:(result?.after?.graph?.apiUsage||[]).length===0,detail:`${result?.after?.graph?.apiUsage?.length||0} remaining`},
++    {id:"rollback-archive",pass:Boolean(result?.rollback?.digest)&&result?.rollback?.fileCount>0,detail:result?.rollback?.file||"missing"},
++    {id:"change-set",pass:(result?.changeSet?.changeCount||0)>0,detail:`${result?.changeSet?.changeCount||0} simulated change(s)`},
++    {id:"no-delete-capability",pass:result?.safety?.codeDeletionAllowed===false&&result?.safety?.deletionExecuted===false&&result?.safety?.deleteEndpointPresent===false,detail:"No authoritative delete capability"}
++  ];const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length);return {score,status:score===100&&result?.readiness?.blockers?.length===0?"retirement-rehearsal-certified":score>=63?"conditional":"blocked",checks,blockers:result?.readiness?.blockers||[],codeDeletionAllowed:false,deletionExecuted:false,version:"46.40.0"};}
++  snapshot(){const items=this.appState?.getState?.().operatorRetirementRehearsals||[],latest=items[0]||null;return {eligiblePlans:this.eligiblePlans(),rehearsals:items,latest,readiness:latest?this.readiness(latest):null,policy:"simulate-on-disposable-copy-before-any-authoritative-change",codeDeletionAllowed:false,deletionExecuted:false,version:"46.40.0"};}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentRetirementRehearsalEngine;
++if(global)global.BlueCurrentRetirementRehearsalEngine=BlueCurrentRetirementRehearsalEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/retirementRehearsalCenter.js
++++ b/client/js/modules/retirementRehearsalCenter.js
+@@ -0,0 +1,6 @@
++(function(){"use strict";
++function createBlueCurrentRetirementRehearsalCenterModule(eventBus,appState){const root=document.getElementById("retirementRehearsalCenter");if(!root||!window.BlueCurrentRetirementRehearsalEngine)return null;const e=new window.BlueCurrentRetirementRehearsalEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++function options(){const plans=e.eligiblePlans(),cur=$("orrSurface").value;$("orrSurface").innerHTML=plans.map(x=>`<option value="${esc(x.surfaceId)}">${esc(x.surfaceId)} · ${esc(x.status)}</option>`).join("");if(plans.some(x=>x.surfaceId===cur))$("orrSurface").value=cur;}
++function render(){const s=e.snapshot(),r=s.readiness,x=s.latest;options();$("orrRuns").textContent=s.rehearsals.length;$("orrChanges").textContent=x?.changeSet?.changeCount||0;$("orrRollback").textContent=x?.rollback?.fileCount||0;$("orrValidation").textContent=x?.validation?.passed?"PASS":"—";$("orrScore").textContent=`${r?.score||0}%`;$("orrStatus").textContent=r?.status||"—";$("orrHeadline").textContent=x?`${x.surfaceId} · ${x.readiness?.status} · ${(x.readiness?.blockers||[]).length} blocker(s) · authoritative repo unchanged`:"Select a human-authorized deletion plan and run the disposable-copy rehearsal.";$("orrArtifacts").innerHTML=x?`<article><strong>Rollback archive</strong><span>${esc(x.rollback?.file||"—")} · ${x.rollback?.fileCount||0} file(s) · ${esc(x.rollback?.digest?.slice(0,12)||"—")}</span></article><article><strong>Simulated change set</strong><span>${esc(x.changeSet?.file||"—")} · ${x.changeSet?.changeCount||0} change(s) · ${x.changeSet?.patchCharacters||0} patch characters</span></article><article><strong>After-impact</strong><span>${x.after?.impact?.startupDependencies||0} startup · ${x.after?.impact?.apiReferences||0} API · ${x.after?.impact?.inboundReferences||0} inbound reference(s)</span></article>`:"";$("orrChecks").innerHTML=(r?.checks||[]).map(c=>`<article><strong>${c.pass?"PASS":"BLOCK"} · ${esc(c.id)}</strong><span>${esc(c.detail)}</span></article>`).join("");}
++$("orrRun")?.addEventListener("click",async()=>{try{const id=$("orrSurface").value;if(!id)throw new Error("A human-authorized deletion plan is required.");$("orrHeadline").textContent="Running disposable-copy rehearsal…";await e.rehearse(id);render();}catch(err){$("orrHeadline").textContent=err.message;}});$("orrRefresh")?.addEventListener("click",render);render();return{engine:e,render};}
++window.createBlueCurrentRetirementRehearsalCenterModule=createBlueCurrentRetirementRehearsalCenterModule;})();--- a/scripts/maintenance/test-retirement-rehearsal.js
++++ b/scripts/maintenance/test-retirement-rehearsal.js
+@@ -0,0 +1,49 @@
++"use strict";
++const assert=require("assert");
++const path=require("path");
++const Impact=require("../../server/services/repositoryImpactService");
++const Rehearsal=require("../../server/services/repositoryRetirementRehearsalService");
++
++const root=path.resolve(__dirname,"../..");
++const impact=new Impact(root),service=new Rehearsal(root,impact);
++const before=service.repositoryDigest();
++const result=service.rehearse("enterpriseValuePlanCenter");
++const after=service.repositoryDigest();
++
++assert.equal(result.version,"46.40.0");
++assert.equal(result.mode,"disposable-copy-rehearsal");
++assert.equal(result.validation.passed,true);
++assert.equal(result.readiness.status,"final-change-set-ready-for-human-review");
++assert.equal(result.readiness.blockers.length,0);
++assert.equal(result.before.impact.startupDependencies>=1,true);
++assert.equal(result.after.impact.startupDependencies,0);
++assert.equal(result.after.impact.apiReferences,0);
++assert.equal(result.rollback.archiveGenerated,true);
++assert.equal(result.rollback.fileCount>=3,true);
++assert.ok(result.rollback.digest);
++assert.equal(result.changeSet.generated,true);
++assert.equal(result.changeSet.changeCount>=3,true);
++assert.equal(result.safety.tempCopyUsed,true);
++assert.equal(result.safety.authoritativeMutation,false);
++assert.equal(result.safety.authoritativeSafe,true);
++assert.equal(result.safety.codeDeletionAllowed,false);
++assert.equal(result.safety.deletionExecuted,false);
++assert.equal(result.safety.deleteEndpointPresent,false);
++assert.equal(before.sha256,after.sha256);
++assert.equal(before.fileCount,after.fileCount);
++
++console.log(JSON.stringify({
++  ok:true,
++  version:result.version,
++  candidate:result.surfaceId,
++  beforeStartupDependencies:result.before.impact.startupDependencies,
++  afterStartupDependencies:result.after.impact.startupDependencies,
++  validation:result.validation.passed,
++  rollbackFiles:result.rollback.fileCount,
++  rollbackDigest:result.rollback.digest.slice(0,12),
++  simulatedChanges:result.changeSet.changeCount,
++  authoritativeDigestStable:before.sha256===after.sha256,
++  readiness:result.readiness.status,
++  codeDeletionAllowed:false,
++  deletionExecuted:false
++},null,2));
+--- a/README-APPLY-V46.40.0.md
++++ b/README-APPLY-V46.40.0.md
+@@ -0,0 +1,72 @@
++# APPLY BLUE CURRENT V46.40.0
++
++## Baseline
++
++Apply over the authoritative repository containing V46.35.0.
++
++## Important
++
++This patch does NOT:
++- delete any existing module
++- modify `database/data/blue-current.json`
++- add an authoritative deletion endpoint
++
++The retirement-rehearsal workflow modifies only temporary disposable repository copies.
++
++## Apply
++
++Extract `BLUE-CURRENT-V46.40.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-retirement-rehearsal.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.40.0"
++```
++
++## Recommended Git staging
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/repositoryImpactService.js
++git add server/services/repositoryRetirementRehearsalService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/retirementRehearsalEngine.js
++git add client/js/modules/retirementRehearsalCenter.js
++git add scripts/maintenance/test-retirement-rehearsal.js
++git add README-APPLY-V46.40.0.md
++git add V46.40.0-RELEASE.md
++git add V46.40.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V46.40.0 disposable retirement rehearsal"
++git push origin live-service-timeline
++```
+--- a/V46.40.0-RELEASE.md
++++ b/V46.40.0-RELEASE.md
+@@ -0,0 +1,166 @@
++# BLUE CURRENT V46.40.0 — DISPOSABLE RETIREMENT REHEARSAL
++
++## Release scope
++
++V46.36–V46.40 adds the final non-destructive rehearsal layer before any future authoritative code removal.
++
++A proposed retirement is applied only to an isolated temporary repository copy.
++
++### V46.36 — Disposable Repository Copy
++
++The rehearsal service creates an isolated temporary copy of the Blue Current repository.
++
++The authoritative repository is never used as the mutation target.
++
++The temporary copy retains the files needed by the validator, including database migrations and a copied runtime fixture database.
++
++### V46.37 — Simulated Dependency Removal
++
++Inside the disposable copy only, the rehearsal can:
++- remove the candidate HTML section
++- remove candidate script registrations
++- remove candidate module files
++- remove the candidate startup-registry registration
++- remove dependency references from other startup registrations
++- remove known operator rationalization/navigation references
++
++The authoritative source remains untouched.
++
++### V46.38 — Real Rollback Archive + Proposed Change Set
++
++Every rehearsal creates an actual temporary rollback archive in Blue Current rollback JSON format.
++
++The archive contains:
++- exact source file paths
++- SHA-256 hash per backed-up file
++- base64 file content
++- archive scope digest
++
++The rehearsal also generates a proposed simulated change-set artifact.
++
++These artifacts are generated in the temporary rehearsal workspace and are not applied to the authoritative repository.
++
++### V46.39 — Disposable Full Validation
++
++The rehearsal runs the real repository validator on the disposable modified copy.
++
++It also performs a startup syntax check.
++
++Readiness is blocked if:
++- validation fails
++- startup dependencies remain
++- candidate-related API usage remains
++- operational/non-test inbound references remain
++
++Documentation and test references are reported but do not themselves prevent a rehearsal from proving runtime removal safety.
++
++### V46.40 — Authoritative Integrity Certification
++
++Before and after every rehearsal, Blue Current computes a SHA-256 digest over the authoritative source tree.
++
++A successful rehearsal requires identical:
++- source-tree SHA-256
++- source-file count
++
++The resulting safety state remains:
++
++- `authoritativeMutation: false`
++- `authoritativeSafe: true`
++- `codeDeletionAllowed: false`
++- `deletionExecuted: false`
++- `deleteEndpointPresent: false`
++- `tempCopyUsed: true`
++
++A successful rehearsal can reach:
++
++`final-change-set-ready-for-human-review`
++
++This is still not deletion permission.
++
++## New API
++
++- `POST /api/operator-fine-comb/retirement-rehearsal`
++
++The endpoint:
++- requires authentication
++- requires admin permission
++- operates only on an isolated temporary repository copy
++- provides no authoritative delete operation
++
++## UI
++
++Adds the Disposable Retirement Rehearsal center with:
++- human-authorized deletion-plan selector
++- rehearsal trigger
++- simulated change count
++- rollback file count
++- validation result
++- readiness score
++- artifact summary
++- post-removal dependency status
++- explicit no-delete safety checks
++
++## Real Blue Current rehearsal
++
++The focused validation rehearsed retirement of:
++
++`enterpriseValuePlanCenter`
++
++Before simulation:
++- 3 owned files
++- 1 startup-registry dependency
++- 0 proximate API references after scan refinement
++
++After simulated removal:
++- 0 owned files
++- 0 startup-registry dependencies
++- 0 API references
++- remaining references limited to documentation/tests
++
++The disposable copy passed the full validator.
++
++Generated rehearsal artifacts:
++- 7-file rollback archive
++- rollback SHA-256 scope digest
++- 7 simulated changes
++- proposed change set
++
++The authoritative source-tree SHA-256 remained identical before and after.
++
++## Validation
++
++- `node scripts/maintenance/test-retirement-rehearsal.js` passed.
++- Real `enterpriseValuePlanCenter` retirement rehearsal passed in a disposable copy.
++- Startup dependency reduced from 1 to 0 in the simulated copy.
++- Disposable full validation passed.
++- Rollback archive generation passed.
++- Proposed change-set generation passed.
++- Authoritative source-tree digest remained unchanged.
++- `codeDeletionAllowed` remained false.
++- `deletionExecuted` remained false.
++- delete endpoint remained absent.
++- `npm run check` passed:
++  - 834 JavaScript files
++  - 714 client scripts
++  - 5,326 unique HTML IDs
++- Server startup passed as V46.40.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Fine-comb policy
++
++`simulate-on-disposable-copy-before-any-authoritative-change`
++
++## Next milestone
++
++The next wave should create the final **retirement authorization packet**:
++- bind the human-authorized deletion plan
++- bind the successful rehearsal result
++- bind the rollback digest
++- bind the exact proposed change-set digest
++- require a fresh second human authorization
++- define a short authorization expiry
++- produce a pre-deletion repository tag/checkpoint instruction
++- still stop immediately before authoritative deletion
++
++Only after that explicit gate should Blue Current be considered ready for the first deliberate permanent code retirement.
