@@ -1,6 +1,6 @@
 {
   "name": "blue-current-cloud",
-  "version": "44.12.0",
+  "version": "44.17.0",
   "private": true,
   "description": "Blue Current Hospitality OS \u2014 SLO Alerting & Automated Runbooks",
   "scripts": {

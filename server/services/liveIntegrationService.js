@@ -2372,6 +2372,102 @@ class LiveIntegrationService {
     return {organizationId,score,status:score===100?"aip-coordination-ready":score>=62?"conditional":"blocked",trusted:score===100,blockers,checks,generatedAt:new Date().toISOString(),build:"44.12.0-aip-multi-agent-orchestration"};
   }
 
+  async aipWorkflowDefinitions(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const definitions = db.aipWorkflowDefinitions?.[organizationId] || [];
+    if (!input) {
+      const lineages = new Map();
+      definitions.forEach(item => { if (!lineages.has(item.lineageId)) lineages.set(item.lineageId, item); });
+      return { organizationId, count:definitions.length, lineages:lineages.size, items:definitions.slice(0,100), build:"44.17.0-aip-durable-workflows" };
+    }
+    const orchestrationId=String(input.orchestrationId||"").trim();
+    if(!orchestrationId) throw new Error("orchestrationId is required to publish a workflow definition.");
+    const orchestration=(db.aipOrchestrations?.[organizationId]||[]).find(x=>x.id===orchestrationId);
+    if(!orchestration) throw new Error("AIP orchestration not found.");
+    if(orchestration.liveExecutionAllowed!==false || orchestration.liveStateChanged===true) throw new Error("Only isolated governed-dry-run orchestrations can be versioned.");
+    const lineageId=String(input.lineageId||orchestration.workflowLineageId||`AIP-WF-${crypto.createHash("sha256").update(String(orchestration.instruction||orchestration.id)).digest("hex").slice(0,12).toUpperCase()}`);
+    const lineage=definitions.filter(x=>x.lineageId===lineageId);
+    const version=(lineage.reduce((m,x)=>Math.max(m,Number(x.version)||0),0)||0)+1;
+    const taskBlueprint=(orchestration.tasks||[]).map((task,index)=>({order:index+1,capabilityId:task.capabilityId,mode:task.mode,risk:task.risk,approvalRequired:Boolean(task.approvalRequired),agentType:task.agentType,dependsOnOrder:index===0?[]:[index]}));
+    const canonical=JSON.stringify({instruction:orchestration.instruction,intent:orchestration.intent,approvalRequired:Boolean(orchestration.approvalRequired),tasks:taskBlueprint,executionMode:"governed-dry-run"});
+    const now=new Date().toISOString();
+    const definition={id:`${lineageId}-V${version}`,lineageId,version,organizationId,name:String(input.name||orchestration.instruction||"AIP workflow").slice(0,140),sourceOrchestrationId:orchestration.id,instruction:orchestration.instruction,intent:orchestration.intent,approvalRequired:Boolean(orchestration.approvalRequired),executionMode:"governed-dry-run",liveExecutionAllowed:false,taskBlueprint,contentHash:crypto.createHash("sha256").update(canonical).digest("hex"),publishedBy:actor||"Operator",publishedAt:now,immutable:true};
+    await this.database.mutate(data=>{data.aipWorkflowDefinitions ||= {};const list=data.aipWorkflowDefinitions[organizationId] ||= [];list.unshift(definition);data.aipWorkflowDefinitions[organizationId]=list.slice(0,200);return definition;});
+    await this.auditService.record({organizationId,actor:actor||"Operator",action:`AIP workflow definition published: ${definition.id}`,category:"aip-workflow-definition"});
+    this.realtimeHub.publish("aip-workflow-definition-published",definition);
+    return {organizationId,definition,build:"44.17.0-aip-durable-workflows"};
+  }
+
+  async aipWorkflowInstances(organizationId, actor = null, input = null) {
+    const db=await this.database.read();
+    const instances=db.aipWorkflowInstances?.[organizationId]||[];
+    if(!input) return {organizationId,count:instances.length,active:instances.filter(x=>["ready","running","paused","stale","recovered"].includes(x.status)).length,items:instances.slice(0,100),build:"44.17.0-aip-durable-workflows"};
+    const definitions=db.aipWorkflowDefinitions?.[organizationId]||[];
+    const definition=(input.definitionId?definitions.find(x=>x.id===input.definitionId):definitions[0])||null;
+    if(!definition) throw new Error("Publish a workflow definition before creating a durable workflow instance.");
+    if(definition.liveExecutionAllowed!==false || definition.executionMode!=="governed-dry-run") throw new Error("Workflow definition is outside the governed dry-run boundary.");
+    const now=new Date().toISOString();const id=`AIP-WFI-${Date.now().toString(36).toUpperCase()}`;
+    const tasks=(definition.taskBlueprint||[]).map((t,index)=>({id:`${id}-T${index+1}`,...t,status:index===0?"ready":"blocked",attempts:0,liveStateChanged:false}));
+    const instance={id,organizationId,definitionId:definition.id,lineageId:definition.lineageId,definitionVersion:definition.version,instruction:definition.instruction,intent:definition.intent,owner:actor||"Operator",status:"ready",executionMode:"governed-dry-run",liveExecutionAllowed:false,liveStateChanged:false,currentTaskIndex:0,completedTaskCount:0,taskCount:tasks.length,tasks,lease:null,checkpointCount:0,journalCount:0,createdAt:now,updatedAt:now};
+    await this.database.mutate(data=>{data.aipWorkflowInstances ||= {};const list=data.aipWorkflowInstances[organizationId] ||= [];list.unshift(instance);data.aipWorkflowInstances[organizationId]=list.slice(0,150);return instance;});
+    await this.auditService.record({organizationId,actor:actor||"Operator",action:`Durable AIP workflow instance created: ${instance.id} @ ${definition.id}`,category:"aip-workflow-runtime"});
+    this.realtimeHub.publish("aip-workflow-instance-updated",instance);
+    return {organizationId,instance,build:"44.17.0-aip-durable-workflows"};
+  }
+
+  async aipWorkflowControl(organizationId, actor, input={}) {
+    const instanceId=String(input.instanceId||"").trim(),action=String(input.action||"").trim().toLowerCase(),operationKey=String(input.operationKey||"").trim();
+    if(!instanceId) throw new Error("instanceId is required.");
+    if(!["start","heartbeat","advance","checkpoint","pause","resume","recover","complete","cancel"].includes(action)) throw new Error("Unsupported durable workflow action.");
+    const now=new Date(),nowIso=now.toISOString();
+    const result=await this.database.mutate(db=>{
+      db.aipWorkflowInstances ||= {};const list=db.aipWorkflowInstances[organizationId] ||= [];const w=list.find(x=>x.id===instanceId);if(!w) throw new Error("Durable AIP workflow instance not found.");
+      if(w.liveExecutionAllowed!==false || w.executionMode!=="governed-dry-run") throw new Error("Workflow runtime safety boundary violated.");
+      db.aipWorkflowCheckpoints ||= {};const cps=db.aipWorkflowCheckpoints[organizationId] ||= [];
+      db.aipWorkflowExecutionJournal ||= {};const journal=db.aipWorkflowExecutionJournal[organizationId] ||= [];
+      const existing=operationKey?journal.find(x=>x.instanceId===w.id&&x.operationKey===operationKey):null;
+      if(existing) return {instance:w,entry:existing,replayed:true};
+      const lease=()=>({token:crypto.randomBytes(16).toString("hex"),holder:actor||"Operator",acquiredAt:nowIso,heartbeatAt:nowIso,expiresAt:new Date(now.getTime()+5*60*1000).toISOString()});
+      const expired=()=>w.lease?.expiresAt && new Date(w.lease.expiresAt).getTime()<=now.getTime();
+      if(expired() && w.status==="running") w.status="stale";
+      let detail="";
+      if(action==="start") {if(!["ready","recovered"].includes(w.status)) throw new Error(`Workflow cannot start from status ${w.status}.`);w.status="running";w.lease=lease();detail="lease-acquired";}
+      else if(action==="heartbeat") {if(w.status!=="running"||!w.lease) throw new Error("Only a leased running workflow can heartbeat.");w.lease={...w.lease,heartbeatAt:nowIso,expiresAt:new Date(now.getTime()+5*60*1000).toISOString()};detail="lease-renewed";}
+      else if(action==="advance") {if(w.status!=="running") throw new Error("Only a running workflow can advance.");if(!w.lease||expired()) {w.status="stale";throw new Error("Workflow lease expired; recover from a checkpoint before continuing.");}const idx=Math.max(0,Number(w.currentTaskIndex)||0),task=(w.tasks||[])[idx];if(!task){w.status="completed";w.completedAt=nowIso;detail="already-complete";}else{task.status="completed";task.completedAt=nowIso;task.attempts=(task.attempts||0)+1;task.liveStateChanged=false;w.completedTaskCount=(w.completedTaskCount||0)+1;const next=w.tasks[idx+1];if(next){next.status="ready";w.currentTaskIndex=idx+1;detail=`advanced-to-${next.id}`;}else{w.status="completed";w.completedAt=nowIso;w.lease=null;detail="completed-final-task";}}}
+      else if(action==="checkpoint") {if(["completed","cancelled"].includes(w.status)) throw new Error(`Checkpoint unavailable from status ${w.status}.`);const cp={id:`AIP-WFCP-${Date.now().toString(36).toUpperCase()}`,organizationId,instanceId:w.id,definitionId:w.definitionId,definitionVersion:w.definitionVersion,status:w.status,currentTaskIndex:w.currentTaskIndex||0,completedTaskCount:w.completedTaskCount||0,taskStatuses:(w.tasks||[]).map(x=>({id:x.id,status:x.status,attempts:x.attempts||0})),executionMode:"governed-dry-run",liveStateChanged:false,createdBy:actor||"Operator",createdAt:nowIso};cps.unshift(cp);db.aipWorkflowCheckpoints[organizationId]=cps.slice(0,500);w.checkpointCount=(w.checkpointCount||0)+1;w.lastCheckpointId=cp.id;w.lastCheckpointAt=nowIso;detail=cp.id;}
+      else if(action==="pause") {if(w.status!=="running") throw new Error("Only a running workflow can be paused.");w.status="paused";w.lease=null;detail="lease-released";}
+      else if(action==="resume") {if(w.status!=="paused") throw new Error("Only a paused workflow can resume.");w.status="running";w.lease=lease();detail="lease-reacquired";}
+      else if(action==="recover") {const cp=cps.find(x=>x.instanceId===w.id);if(!cp) throw new Error("Create a durable workflow checkpoint before recovery.");if(!["paused","stale","running","ready"].includes(w.status)) throw new Error(`Workflow cannot recover from status ${w.status}.`);w.currentTaskIndex=cp.currentTaskIndex||0;w.completedTaskCount=cp.completedTaskCount||0;(w.tasks||[]).forEach(t=>{const st=cp.taskStatuses.find(x=>x.id===t.id);if(st){t.status=st.status;t.attempts=st.attempts||0;}});w.status="recovered";w.lease=null;w.recoveredFromCheckpointId=cp.id;detail=cp.id;}
+      else if(action==="complete") {if(w.status!=="running") throw new Error("Only a running workflow can be completed.");w.status="completed";w.completedAt=nowIso;w.lease=null;detail="operator-completed";}
+      else if(action==="cancel") {if(["completed","cancelled"].includes(w.status)) throw new Error(`Workflow is already ${w.status}.`);w.status="cancelled";w.cancelledAt=nowIso;w.lease=null;detail="cancelled";}
+      w.updatedAt=nowIso;w.liveStateChanged=false;
+      const entry={id:`AIP-WFJ-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString("hex")}`,organizationId,instanceId:w.id,definitionId:w.definitionId,definitionVersion:w.definitionVersion,operationKey:operationKey||null,action,status:w.status,detail,actor:actor||"Operator",executionMode:"governed-dry-run",liveStateChanged:false,createdAt:nowIso};journal.unshift(entry);db.aipWorkflowExecutionJournal[organizationId]=journal.slice(0,2000);w.journalCount=(w.journalCount||0)+1;return {instance:w,entry,replayed:false};
+    });
+    if(!result.replayed){await this.auditService.record({organizationId,actor:actor||"Operator",action:`Durable AIP workflow ${action}: ${instanceId}`,category:"aip-workflow-runtime"});this.realtimeHub.publish("aip-workflow-instance-updated",result.instance);}
+    return {organizationId,...result,build:"44.17.0-aip-durable-workflows"};
+  }
+
+  async aipWorkflowHistory(organizationId, instanceId = null) {
+    const db=await this.database.read();const instances=db.aipWorkflowInstances?.[organizationId]||[];const instance=(instanceId?instances.find(x=>x.id===instanceId):instances[0])||null;
+    const journal=(db.aipWorkflowExecutionJournal?.[organizationId]||[]).filter(x=>!instance||x.instanceId===instance.id).slice(0,250);const checkpoints=(db.aipWorkflowCheckpoints?.[organizationId]||[]).filter(x=>!instance||x.instanceId===instance.id).slice(0,100);
+    return {organizationId,instance,journalCount:journal.length,checkpointCount:checkpoints.length,journal,checkpoints,safety:{liveExecutionAllowed:false,isolated:journal.every(x=>x.liveStateChanged===false)&&checkpoints.every(x=>x.liveStateChanged===false)},build:"44.17.0-aip-durable-workflows"};
+  }
+
+  async aipWorkflowReadiness(organizationId) {
+    const db=await this.database.read();const coordination=await this.aipCoordinationReadiness(organizationId);const definitions=db.aipWorkflowDefinitions?.[organizationId]||[],instances=db.aipWorkflowInstances?.[organizationId]||[],journal=db.aipWorkflowExecutionJournal?.[organizationId]||[],checkpoints=db.aipWorkflowCheckpoints?.[organizationId]||[];
+    const checks=[
+      {id:"coordination",label:"Multi-agent coordination foundation",pass:(coordination.score||0)>=80,detail:`${coordination.score||0}% · ${coordination.status||"unknown"}`},
+      {id:"immutable-definitions",label:"Immutable workflow definitions",pass:definitions.length>0&&definitions.every(x=>x.immutable===true&&Boolean(x.contentHash)),detail:`${definitions.length} published definition(s)`},
+      {id:"versioning",label:"Workflow version lineage",pass:definitions.every(x=>Number(x.version)>=1&&Boolean(x.lineageId)),detail:`${new Set(definitions.map(x=>x.lineageId)).size} lineage(s)`},
+      {id:"durable-instance",label:"Long-running workflow instances",pass:instances.length>0,detail:`${instances.length} durable instance(s)`},
+      {id:"leases",label:"Lease and heartbeat runtime",pass:journal.some(x=>["start","heartbeat","resume"].includes(x.action)),detail:"Lease acquisition/renewal journaled"},
+      {id:"checkpoint-recovery",label:"Version-bound checkpoint recovery",pass:checkpoints.length>0&&checkpoints.every(x=>Boolean(x.definitionVersion)),detail:`${checkpoints.length} durable checkpoint(s)`},
+      {id:"execution-history",label:"Replayable execution history",pass:journal.length>0&&journal.every(x=>Boolean(x.definitionId)&&Boolean(x.action)),detail:`${journal.length} journal event(s)`},
+      {id:"live-safety",label:"Durable workflows remain isolated",pass:definitions.every(x=>x.liveExecutionAllowed===false)&&instances.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged!==true)&&journal.every(x=>x.liveStateChanged===false)&&checkpoints.every(x=>x.liveStateChanged===false),detail:"No workflow version/runtime path authorizes live restaurant mutation"}
+    ];const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length),blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    return {organizationId,score,status:score===100?"aip-durable-workflow-ready":score>=63?"conditional":"blocked",trusted:score===100,blockers,checks,generatedAt:new Date().toISOString(),build:"44.17.0-aip-durable-workflows"};
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;
