@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="48.5.0">
+  <meta name="blue-current-build" content="48.10.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -211,6 +211,17 @@
       <div id="pvsScores" class="v432-kpis"></div>
       <div id="pvsPortfolio" class="v432-kpis"></div>
       <div id="pvsEvidence" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="pilotProofProgram">
+      <header><div><small>V48.06–V48.10 · Pilot Proof Program</small><strong>Turn pilot telemetry into a committed executive success plan—and a defensible continue, intervene, or expand decision.</strong><span>Success gates are committed before the decision. Verified value remains limited to measured action outcomes; observed operating movement remains separately labeled.</span></div><button id="pppRefresh" type="button">Refresh proof program</button></header>
+      <div class="v432-kpis"><article><small>Recommendation</small><strong id="pppDecision">CONFIGURE</strong></article><article><small>Overall score</small><strong id="pppOverall">—</strong></article><article><small>Verified value</small><strong id="pppValue">$0</strong></article><article><small>Exceptions</small><strong id="pppExceptions">0</strong></article></div>
+      <div class="v4316-answer" id="pppHeadline">Commit executive success criteria before evaluating the pilot.</div>
+      <div class="v4316-actions"><input id="pppOwner" class="v4312-input" placeholder="Default location objective owner"><input id="pppMinOverall" class="v4312-input" type="number" min="0" max="100" value="65" placeholder="Minimum overall score"><button id="pppConfigure" type="button">Commit success criteria</button></div>
+      <p><strong id="pppProgram">Pilot baseline required.</strong></p>
+      <div id="pppGates" class="v432-kpis"></div>
+      <div id="pppLocations" class="v432-list"></div>
+      <div id="pppTrend" class="v432-list"></div>
+      <div id="pppExceptionList" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8721,6 +8732,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceCenter.js?v=47.35.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardEngine.js?v=48.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardCenter.js?v=48.5.0"></script>
-<script src="js/startup-loader.js?v=48.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramEngine.js?v=48.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramCenter.js?v=48.10.0"></script>
+<script src="js/startup-loader.js?v=48.10.0"></script>
 </body>
 </html>
