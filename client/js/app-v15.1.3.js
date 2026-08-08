@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "43.5.0-executive-decision-intelligence", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "43.8.0-executive-performance-control", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2418,6 +2418,9 @@ const executiveDecisionGateCenterModule = startupRegistry.register("executiveDec
 const executiveInsightCenterModule = startupRegistry.register("executiveInsightCenter",shouldInitializeCenter("executiveInsightCenter") ? window.createBlueCurrentExecutiveInsightCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveLiveBriefCenter","executiveRiskQueueCenter"]);
 const executiveRecommendationCenterV43Module = startupRegistry.register("executiveRecommendationCenterV43",shouldInitializeCenter("executiveRecommendationCenterV43") ? window.createBlueCurrentExecutiveRecommendationCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveDecisionGateCenter"]);
 const executiveDecisionWorkspaceV43CenterModule = startupRegistry.register("executiveDecisionWorkspaceV43Center",shouldInitializeCenter("executiveDecisionWorkspaceV43Center") ? window.createBlueCurrentExecutiveDecisionWorkspaceV43CenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveRecommendationCenterV43","executiveDecisionGateCenter"]);
+const executiveKpiStudioCenterModule = startupRegistry.register("executiveKpiStudioCenter",shouldInitializeCenter("executiveKpiStudioCenter") ? window.createBlueCurrentExecutiveKpiStudioCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveDecisionWorkspaceV43Center"]);
+const executiveTimelineCenterV43Module = startupRegistry.register("executiveTimelineCenterV43",shouldInitializeCenter("executiveTimelineCenterV43") ? window.createBlueCurrentExecutiveTimelineCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveRecommendationCenterV43"]);
+const executivePortfolioHealthCenterModule = startupRegistry.register("executivePortfolioHealthCenter",shouldInitializeCenter("executivePortfolioHealthCenter") ? window.createBlueCurrentExecutivePortfolioHealthCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveKpiStudioCenter","executiveTimelineCenterV43"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(

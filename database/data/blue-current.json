@@ -2654,7 +2654,7 @@
   ],
   "providerLaunchCertification": {
     "org_chefs": {
-      "id": "PLC-MSJOB371",
+      "id": "PLC-MSJQBAZI",
       "organizationId": "org_chefs",
       "score": 50,
       "status": "blocked",
@@ -2701,7 +2701,7 @@
           "detail": "controlled"
         }
       ],
-      "issuedAt": "2026-08-08T01:06:41.005Z",
+      "issuedAt": "2026-08-08T02:02:50.334Z",
       "issuedBy": "Keith Mazza",
       "build": "42.23.0-provider-launch-control"
     }

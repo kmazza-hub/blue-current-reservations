@@ -1636,7 +1636,7 @@ class LiveIntegrationService {
         {id:"continuity",label:"Provider continuity",score:continuity.score||0,status:continuity.status||"unknown",trusted:(continuity.score||0)>=80}
       ],
       generatedAt:new Date().toISOString(),
-      build:"43.5.0-executive-decision-intelligence"
+      build:"43.8.0-executive-performance-control"
     };
   }
 
@@ -1700,7 +1700,7 @@ class LiveIntegrationService {
       trusted:score===100,
       blockers,controls,
       priority:top?{locationId:top.locationId,locationName:top.locationName,risk:top.risk,severity:top.severity,recommendedAction:top.recommendedAction}:null,
-      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"
+      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.8.0-executive-performance-control"
     };
     if(persist) {
       await this.database.mutate(db=>{db.executiveDecisionGate||={};db.executiveDecisionGate[organizationId]=result;return result;});
@@ -1737,7 +1737,7 @@ class LiveIntegrationService {
     }
     const priorityOrder={critical:0,high:1,normal:2,low:3};
     insights.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
-    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
+    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
   }
 
   async executiveRecommendations(organizationId) {
@@ -1761,7 +1761,7 @@ class LiveIntegrationService {
     }
     const priorityOrder={critical:0,high:1,normal:2,low:3};
     recs.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
-    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
+    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
   }
 
   async executiveDecisionWorkspaceV43(organizationId, actor = null, persist = false) {
@@ -1782,12 +1782,73 @@ class LiveIntegrationService {
     const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length);
     const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
     const top=recommendations.topRecommendation||null;
-    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"};
+    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.8.0-executive-performance-control"};
     if(persist){
       await this.database.mutate(db=>{db.executiveDecisionWorkspaceV43||={};db.executiveDecisionWorkspaceV43[organizationId]=result;return result;});
       await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision workspace persisted: ${result.status}`,category:"executive-intelligence"});
     }
     return result;
+  }
+
+
+  async executiveKpiStudio(organizationId, actor = null, input = null) {
+    const db = await this.database.read();
+    const saved = db.executiveKpiStudio?.[organizationId] || {};
+    if (input && typeof input === "object") {
+      const definition = {
+        name: String(input.name || saved.name || "Executive Operating Scorecard").slice(0, 120),
+        targets: {
+          productionHealth: Math.max(0, Math.min(100, Number(input.targets?.productionHealth ?? saved.targets?.productionHealth ?? 80))),
+          maxKitchenTickets: Math.max(0, Number(input.targets?.maxKitchenTickets ?? saved.targets?.maxKitchenTickets ?? 8)),
+          minRevenue4h: Math.max(0, Number(input.targets?.minRevenue4h ?? saved.targets?.minRevenue4h ?? 0)),
+          maxCriticalLocations: Math.max(0, Number(input.targets?.maxCriticalLocations ?? saved.targets?.maxCriticalLocations ?? 0))
+        },
+        updatedAt: new Date().toISOString(), updatedBy: actor || "system"
+      };
+      await this.database.mutate(data => { data.executiveKpiStudio ||= {}; data.executiveKpiStudio[organizationId] = definition; return definition; });
+      await this.auditService.record({organizationId, actor:actor||"system", action:`Executive KPI scorecard saved: ${definition.name}`, category:"executive-intelligence"});
+    }
+    const currentDb = input ? await this.database.read() : db;
+    const definition = currentDb.executiveKpiStudio?.[organizationId] || {name:"Executive Operating Scorecard",targets:{productionHealth:80,maxKitchenTickets:8,minRevenue4h:0,maxCriticalLocations:0}};
+    const [snapshot, health, queue] = await Promise.all([this.operatingSnapshot(organizationId), this.productionHealthTelemetry(organizationId), this.executiveRiskQueue(organizationId)]);
+    const rows = [
+      {id:"production-health",label:"Production health",value:Number(health.score||0),unit:"%",target:Number(definition.targets?.productionHealth??80),direction:"min"},
+      {id:"revenue-4h",label:"Revenue · 4h",value:Number(snapshot.revenue||0),unit:"$",target:Number(definition.targets?.minRevenue4h??0),direction:"min"},
+      {id:"open-kitchen",label:"Open kitchen tickets",value:Number(snapshot.openKitchenTickets||0),unit:"",target:Number(definition.targets?.maxKitchenTickets??8),direction:"max"},
+      {id:"critical-locations",label:"Critical locations",value:Number(queue.critical||0),unit:"",target:Number(definition.targets?.maxCriticalLocations??0),direction:"max"},
+      {id:"event-freshness",label:"Live event freshness",value:Number(snapshot.freshnessSeconds??999999),unit:"s",target:300,direction:"max"}
+    ].map(row => ({...row, pass: row.direction === "min" ? row.value >= row.target : row.value <= row.target}));
+    const score = Math.round(rows.reduce((sum,row)=>sum+(row.pass?100:0),0)/rows.length);
+    return {organizationId,name:definition.name,score,status:score===100?"on-target":score>=60?"watch":"off-target",targets:definition.targets,passing:rows.filter(x=>x.pass).length,total:rows.length,items:rows,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+  }
+
+  async executiveTimeline(organizationId) {
+    const [events, db] = await Promise.all([this.events(organizationId, 80), this.database.read()]);
+    const timeline = (events||[]).slice(0,30).map(event => ({id:event.id||`EV-${event.receivedAt}`,at:event.receivedAt||event.occurredAt||new Date().toISOString(),kind:"live-event",title:String(event.type||"Live event").replace(/[._-]/g," "),detail:event.source?`Source ${event.source}`:"Canonical operating event",source:event.source||null}));
+    const persisted = [
+      ["decision-gate", db.executiveDecisionGate?.[organizationId], "Executive decision gate"],
+      ["decision-workspace", db.executiveDecisionWorkspaceV43?.[organizationId], "Executive decision workspace"],
+      ["v42-closure", db.v42ClosureCertification?.[organizationId], "V42 production closure"]
+    ];
+    persisted.forEach(([kind,item,label])=>{if(item) timeline.push({id:`TL-${kind}`,at:item.issuedAt||item.generatedAt||new Date().toISOString(),kind,title:label,detail:`${item.status||"recorded"} · ${item.score||0}%`,priority:item.trusted?"controlled":"watch"});});
+    const incidents=(db.providerIncidents||[]).filter(x=>x.organizationId===organizationId).slice(-5);
+    incidents.forEach(item=>timeline.push({id:`TL-INC-${item.id}`,at:item.openedAt||item.createdAt||new Date().toISOString(),kind:"incident",title:item.title||"Provider incident",detail:item.note||item.reason||item.status||"Incident recorded",priority:item.severity||"watch"}));
+    timeline.sort((a,b)=>new Date(b.at)-new Date(a.at));
+    const latest=timeline[0]||null;
+    return {organizationId,count:timeline.length,latestAt:latest?.at||null,liveEvents:timeline.filter(x=>x.kind==="live-event").length,decisions:timeline.filter(x=>x.kind.includes("decision")).length,incidents:timeline.filter(x=>x.kind==="incident").length,items:timeline.slice(0,40),generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+  }
+
+  async executivePortfolioHealth(organizationId) {
+    const [coverage, portfolio, queue] = await Promise.all([this.liveCoverageMatrix(organizationId), this.portfolioLiveTelemetry(organizationId), this.executiveRiskQueue(organizationId)]);
+    const coverageMap=new Map((coverage.locations||[]).map(x=>[x.locationId,x]));
+    const riskMap=new Map((queue.items||[]).map(x=>[x.locationId,x]));
+    const locations=(portfolio.locations||[]).map(location=>{
+      const cov=coverageMap.get(location.locationId)||{}; const risk=riskMap.get(location.locationId)||{};
+      const score=Math.max(0,Math.min(100,Math.round(((location.score||0)+(cov.score||0)+(100-(risk.risk||0)))/3)));
+      return {locationId:location.locationId,locationName:location.locationName,score,status:score>=85?"healthy":score>=65?"watch":"attention",coverage:Number(cov.score||0),risk:Number(risk.risk||0),cutover:location.cutoverStage||location.stage||"sandbox",recommendedAction:risk.recommendedAction||"Continue monitoring current operating controls."};
+    }).sort((a,b)=>a.score-b.score);
+    const score=locations.length?Math.round(locations.reduce((sum,x)=>sum+x.score,0)/locations.length):0;
+    return {organizationId,score,status:score>=85?"portfolio-healthy":score>=65?"watch":"attention",healthy:locations.filter(x=>x.status==="healthy").length,watch:locations.filter(x=>x.status==="watch").length,attention:locations.filter(x=>x.status==="attention").length,lowest:locations[0]||null,locations,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
   }
 
   async operatingSnapshot(organizationId) {
