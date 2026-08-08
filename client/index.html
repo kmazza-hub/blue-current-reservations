@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="47.40.0">
+  <meta name="blue-current-build" content="48.5.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -202,7 +202,17 @@
 
   <main id="main">
 
-    <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+        <section class="v432-center v438-center v4316-center" id="pilotValueScorecard">
+      <header><div><small>V48.01–V48.05 · Pilot Value Scorecard</small><strong>Prove whether the Blue Current pilot is creating measurable operating value—without overstating what the data can attribute.</strong><span>Verified value counts only realized impact from measured completed actions. Readiness, contribution, rhythm, and leakage movement are shown separately as observed pilot evidence.</span></div><button id="pvsRefresh" type="button">Refresh scorecard</button></header>
+      <div class="v432-kpis"><article><small>Pilot status</small><strong id="pvsStatus">BASELINE</strong></article><article><small>Overall score</small><strong id="pvsOverall">—</strong></article><article><small>Verified realized value</small><strong id="pvsVerified">$0</strong></article><article><small>Leakage reduction</small><strong id="pvsLeakage">—</strong></article><article><small>Readiness lift</small><strong id="pvsReadiness">—</strong></article><article><small>Rhythm lift</small><strong id="pvsRhythm">—</strong></article></div>
+      <div class="v4316-answer" id="pvsHeadline">Capture the pilot baseline before claiming value.</div>
+      <div class="v4316-actions"><input id="pvsName" class="v4312-input" placeholder="Pilot name"><input id="pvsSponsor" class="v4312-input" placeholder="Executive sponsor"><input id="pvsDays" class="v4312-input" type="number" min="7" max="180" value="30" placeholder="Pilot days"><input id="pvsNote" class="v4312-input" placeholder="Checkpoint note"><button id="pvsBaseline" type="button">Capture pilot baseline</button><button id="pvsCheckpoint" type="button">Capture checkpoint</button></div>
+      <p><strong id="pvsProgram">No active pilot baseline.</strong></p>
+      <div id="pvsScores" class="v432-kpis"></div>
+      <div id="pvsPortfolio" class="v432-kpis"></div>
+      <div id="pvsEvidence" class="v432-list"></div>
+    </section>
+<section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
         <div>
           <small>V47.01–V47.05 · Hospitality Performance Command</small>
@@ -8709,6 +8719,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerOperatingRhythm" data-src="js/modules/managerOperatingRhythmCenter.js?v=47.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceEngine.js?v=47.35.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceCenter.js?v=47.35.0"></script>
-<script src="js/startup-loader.js?v=47.40.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardEngine.js?v=48.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardCenter.js?v=48.5.0"></script>
+<script src="js/startup-loader.js?v=48.5.0"></script>
 </body>
 </html>

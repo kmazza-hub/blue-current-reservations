@@ -1229,6 +1229,7 @@ const serviceProfitabilityIntelligenceModule = startupRegistry.register("service
 const predictiveShiftControlModule = startupRegistry.register("predictiveShiftControl", shouldInitializeCenter("predictiveShiftControl") ? window.createBlueCurrentPredictiveShiftControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "serviceProfitabilityIntelligence"]);
 const managerOperatingRhythmModule = startupRegistry.register("managerOperatingRhythm", shouldInitializeCenter("managerOperatingRhythm") ? window.createBlueCurrentManagerOperatingRhythmCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "predictiveShiftControl"]);
 const multiLocationPerformanceModule = startupRegistry.register("multiLocationPerformance", shouldInitializeCenter("multiLocationPerformance") ? window.createBlueCurrentMultiLocationPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managerOperatingRhythm"]);
+const pilotValueScorecardModule = startupRegistry.register("pilotValueScorecard", shouldInitializeCenter("pilotValueScorecard") ? window.createBlueCurrentPilotValueScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "multiLocationPerformance"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
