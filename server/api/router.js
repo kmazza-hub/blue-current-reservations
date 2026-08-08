@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.50.0",
+        version: "43.2.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -462,6 +462,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/live/production-health" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.productionHealthTelemetry(organizationId));
     if (url.pathname === "/api/live/v42-closure-certification" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.v42ClosureCertification(organizationId));
     if (url.pathname === "/api/live/v42-closure-certification" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.v42ClosureCertification(organizationId, auth.user.name, true));
+    if (url.pathname === "/api/executive/live-brief" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveLiveBrief(organizationId));
+    if (url.pathname === "/api/executive/risk-queue" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveRiskQueue(organizationId));
+    if (url.pathname === "/api/executive/decision-gate" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveDecisionGate(organizationId));
+    if (url.pathname === "/api/executive/decision-gate" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveDecisionGate(organizationId, auth.user.name, true));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

@@ -1589,6 +1589,126 @@ class LiveIntegrationService {
     return cert;
   }
 
+
+  async executiveLiveBrief(organizationId) {
+    const [closure, health, snapshot, portfolio, evidence, continuity] = await Promise.all([
+      this.v42ClosureCertification(organizationId),
+      this.productionHealthTelemetry(organizationId),
+      this.operatingSnapshot(organizationId),
+      this.portfolioLiveTelemetry(organizationId),
+      this.liveEvidenceCertification(organizationId),
+      this.providerContinuityTelemetry(organizationId)
+    ]);
+    const risks = [];
+    if (!closure.trusted) risks.push(`V42 closure is ${closure.status || "not complete"}.`);
+    if ((health.score || 0) < 80) risks.push(`Production health is ${health.score || 0}%.`);
+    if (!evidence.trusted) risks.push(`Live evidence is ${evidence.status || "not trusted"}.`);
+    if ((continuity.score || 0) < 80) risks.push(`Provider continuity is ${continuity.score || 0}%.`);
+    if ((snapshot.freshnessSeconds ?? 999999) > 300) risks.push("Operating evidence is stale.");
+    const score = Math.round([
+      closure.trusted ? 100 : closure.score || 0,
+      health.score || 0,
+      portfolio.score || 0,
+      evidence.score || 0,
+      continuity.score || 0
+    ].reduce((a,b)=>a+b,0) / 5);
+    const headline = risks[0] || `Live operations are controlled with ${snapshot.recentEvents || 0} events in the current operating window.`;
+    return {
+      organizationId,
+      score,
+      status: score >= 90 && risks.length === 0 ? "executive-ready" : score >= 70 ? "watch" : "attention",
+      headline,
+      risks,
+      snapshot: {
+        revenue: snapshot.revenue || 0,
+        closedChecks: snapshot.closedChecks || 0,
+        seatedCovers: snapshot.seatedCovers || 0,
+        openKitchenTickets: snapshot.openKitchenTickets || 0,
+        employeesOnClock: snapshot.employeesOnClock || 0,
+        recentEvents: snapshot.recentEvents || 0,
+        lastEventAt: snapshot.lastEventAt || null
+      },
+      controls: [
+        {id:"v42-closure",label:"V42 production closure",score:closure.score||0,status:closure.status||"unknown",trusted:!!closure.trusted},
+        {id:"production-health",label:"Production health",score:health.score||0,status:health.status||"unknown",trusted:!!health.trusted},
+        {id:"portfolio",label:"Portfolio live telemetry",score:portfolio.score||0,status:portfolio.status||"unknown",trusted:!!portfolio.enterpriseTrusted},
+        {id:"evidence",label:"Live evidence",score:evidence.score||0,status:evidence.status||"unknown",trusted:!!evidence.trusted},
+        {id:"continuity",label:"Provider continuity",score:continuity.score||0,status:continuity.status||"unknown",trusted:(continuity.score||0)>=80}
+      ],
+      generatedAt:new Date().toISOString(),
+      build:"43.2.0-executive-live-intelligence"
+    };
+  }
+
+  async executiveRiskQueue(organizationId) {
+    const [portfolio, coverage, cutover, status, incidents, support] = await Promise.all([
+      this.portfolioLiveTelemetry(organizationId),
+      this.liveCoverageMatrix(organizationId),
+      this.locationCutoverControl(organizationId),
+      this.status(organizationId),
+      this.providerIncidents(organizationId),
+      this.pilotSupport(organizationId)
+    ]);
+    const openIncidents = (incidents.items || incidents.incidents || []).filter(item => item.status !== "resolved" && item.status !== "closed");
+    const openSupport = (support.items || support.issues || []).filter(item => item.status !== "resolved" && item.status !== "closed");
+    const rows = (portfolio.locations || []).map(location => {
+      const coverageRow=(coverage.locations||[]).find(x=>x.locationId===location.locationId)||{};
+      const cutoverRow=(cutover.locations||[]).find(x=>x.locationId===location.locationId)||{};
+      let risk = Math.max(0, 100 - (location.score || 0));
+      const reasons=[];
+      if ((coverageRow.score||0) < 100) { risk += 20; reasons.push(`Source coverage ${coverageRow.score||0}%`); }
+      if (!['pilot','live'].includes(cutoverRow.stage)) { risk += 10; reasons.push(`Cutover ${cutoverRow.stage||'sandbox'}`); }
+      if ((status.staleConnectors||0) > 0) { risk += Math.min(20, (status.staleConnectors||0)*5); reasons.push(`${status.staleConnectors} stale source(s)`); }
+      const relatedIncidents=openIncidents.filter(x=>!x.locationId || x.locationId===location.locationId);
+      if (relatedIncidents.length) { risk += Math.min(25, relatedIncidents.length*8); reasons.push(`${relatedIncidents.length} open provider incident(s)`); }
+      const relatedSupport=openSupport.filter(x=>!x.locationId || x.locationId===location.locationId);
+      if (relatedSupport.length) { risk += Math.min(20, relatedSupport.length*6); reasons.push(`${relatedSupport.length} open support issue(s)`); }
+      risk=Math.min(100,Math.round(risk));
+      return {
+        locationId:location.locationId,
+        locationName:location.locationName,
+        risk,
+        severity:risk>=70?"critical":risk>=40?"watch":"controlled",
+        reasons:reasons.length?reasons:["No material live-data exception detected"],
+        recommendedAction:risk>=70?"Escalate location and validate provider continuity before further automated reasoning.":risk>=40?"Review source freshness, coverage, and open issues before the next service period.":"Continue monitoring under current controls."
+      };
+    }).sort((a,b)=>b.risk-a.risk);
+    return {organizationId,total:rows.length,critical:rows.filter(x=>x.severity==='critical').length,watch:rows.filter(x=>x.severity==='watch').length,topRisk:rows[0]||null,items:rows,generatedAt:new Date().toISOString()};
+  }
+
+  async executiveDecisionGate(organizationId, actor = null, persist = false) {
+    const [brief, queue, closure, evidence] = await Promise.all([
+      this.executiveLiveBrief(organizationId),
+      this.executiveRiskQueue(organizationId),
+      this.v42ClosureCertification(organizationId),
+      this.liveEvidenceCertification(organizationId)
+    ]);
+    const top=queue.topRisk;
+    const controls=[
+      {id:"production-closure",label:"V42 production closure",pass:closure.trusted===true,detail:`${closure.score||0}% · ${closure.status||"unknown"}`},
+      {id:"executive-brief",label:"Executive live brief",pass:(brief.score||0)>=80,detail:`${brief.score||0}% · ${brief.status||"unknown"}`},
+      {id:"live-evidence",label:"Trusted live evidence",pass:evidence.trusted===true,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`},
+      {id:"risk-control",label:"No uncontrolled critical location risk",pass:(queue.critical||0)===0,detail:`${queue.critical||0} critical · ${queue.watch||0} watch`},
+      {id:"human-owner",label:"Human decision ownership",pass:!!actor,detail:actor||"Owner assigned when persisted"}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const result={
+      id:`EDG-${Date.now().toString(36).toUpperCase()}`,
+      organizationId,score,
+      status:score===100?"decision-ready":score>=60?"conditional":"blocked",
+      trusted:score===100,
+      blockers,controls,
+      priority:top?{locationId:top.locationId,locationName:top.locationName,risk:top.risk,severity:top.severity,recommendedAction:top.recommendedAction}:null,
+      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.2.0-executive-live-intelligence"
+    };
+    if(persist) {
+      await this.database.mutate(db=>{db.executiveDecisionGate||={};db.executiveDecisionGate[organizationId]=result;return result;});
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision gate persisted: ${result.status}`,category:"executive-intelligence"});
+    }
+    return result;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;

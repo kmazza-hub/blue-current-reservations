@@ -1057,7 +1057,7 @@ function shouldInitializeCenter(id) {
 document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
 window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
 
-const platform = window.BlueCurrentPlatform.create({ build: "42.17.0-live-evidence-certification", eventBus });
+const platform = window.BlueCurrentPlatform.create({ build: "43.2.0-executive-live-intelligence", eventBus });
 const startupRegistry = platform.registry;
 window.BlueCurrentStartupRegistry = startupRegistry;
 window.BlueCurrentPlatformRuntime = platform;
@@ -2412,6 +2412,9 @@ const productionReleaseCenterModule = startupRegistry.register("productionReleas
 const productionObservationCenterModule = startupRegistry.register("productionObservationCenter",shouldInitializeCenter("productionObservationCenter") ? window.createBlueCurrentProductionObservationCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionReleaseCenter"]);
 const productionHealthCenterModule = startupRegistry.register("productionHealthCenter",shouldInitializeCenter("productionHealthCenter") ? window.createBlueCurrentProductionHealthCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionObservationCenter"]);
 const v42ClosureCenterModule = startupRegistry.register("v42ClosureCenter",shouldInitializeCenter("v42ClosureCenter") ? window.createBlueCurrentV42ClosureCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionHealthCenter","productionReleaseCenter"]);
+const executiveLiveBriefCenterModule = startupRegistry.register("executiveLiveBriefCenter",shouldInitializeCenter("executiveLiveBriefCenter") ? window.createBlueCurrentExecutiveLiveBriefCenterModule?.(eventBus, appState) : null,["eventBus","appState","v42ClosureCenter"]);
+const executiveRiskQueueCenterModule = startupRegistry.register("executiveRiskQueueCenter",shouldInitializeCenter("executiveRiskQueueCenter") ? window.createBlueCurrentExecutiveRiskQueueCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveLiveBriefCenter"]);
+const executiveDecisionGateCenterModule = startupRegistry.register("executiveDecisionGateCenter",shouldInitializeCenter("executiveDecisionGateCenter") ? window.createBlueCurrentExecutiveDecisionGateCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveLiveBriefCenter","executiveRiskQueueCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
