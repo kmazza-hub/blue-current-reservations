@@ -1219,6 +1219,7 @@ const repositoryImpactCertificationCenterModule = startupRegistry.register("repo
 const retirementRehearsalCenterModule = startupRegistry.register("retirementRehearsalCenter", shouldInitializeCenter("retirementRehearsalCenter") ? window.createBlueCurrentRetirementRehearsalCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "repositoryImpactCertificationCenter"]);
 const finalRetirementAuthorizationCenterModule = startupRegistry.register("finalRetirementAuthorizationCenter", shouldInitializeCenter("finalRetirementAuthorizationCenter") ? window.createBlueCurrentFinalRetirementAuthorizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementRehearsalCenter"]);
 const retirementAssuranceCenterModule = startupRegistry.register("retirementAssuranceCenter", shouldInitializeCenter("retirementAssuranceCenter") ? window.createBlueCurrentRetirementAssuranceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "finalRetirementAuthorizationCenter"]);
+const retirementCandidateSelectionCenterModule = startupRegistry.register("retirementCandidateSelectionCenter", shouldInitializeCenter("retirementCandidateSelectionCenter") ? window.createBlueCurrentRetirementCandidateSelectionCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementAssuranceCenter"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
