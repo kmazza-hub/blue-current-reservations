@@ -712,6 +712,155 @@ class AutonomousOperationsService {
     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
     return {organizationId:org,version:"45.25.0",score,status:score===100?"v45-controlled-execution-certification-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestCertificationId:latest?.id||null,policyHash:policy.contentHash,safety:{certificationOnly:true,liveExecutionEnabled:false,liveHandlers:0,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.25.0-controlled-execution-certification"};
   }
+  v45FailureScenarioCatalog(){
+    return {
+      version:"45.30.0",
+      executionMode:"certification-only",
+      liveExecutionEnabled:false,
+      scenarios:{
+        "adapter-timeout":{
+          severity:"high",description:"Shadow adapter exceeds the execution time budget.",
+          expectedDetection:"timeout",expectedResponse:"trip-circuit-breaker-and-compensate",rollbackRequired:true
+        },
+        "partial-command-failure":{
+          severity:"critical",description:"A multi-command shadow batch completes only a subset of commands.",
+          expectedDetection:"partial-failure",expectedResponse:"halt-batch-and-compensate-completed-steps",rollbackRequired:true
+        },
+        "evidence-drift":{
+          severity:"high",description:"Approval/certification evidence digest changes before release.",
+          expectedDetection:"evidence-drift",expectedResponse:"invalidate-certification-and-require-reapproval",rollbackRequired:false
+        },
+        "compensation-failure":{
+          severity:"critical",description:"A compensation contract fails its recovery rehearsal.",
+          expectedDetection:"compensation-failure",expectedResponse:"trip-circuit-breaker-and-block-promotion",rollbackRequired:true
+        },
+        "emergency-stop":{
+          severity:"critical",description:"Operator emergency stop is engaged during a release rehearsal.",
+          expectedDetection:"emergency-stop",expectedResponse:"halt-immediately-and-preserve-state",rollbackRequired:false
+        }
+      }
+    };
+  }
+  buildV45FailureRecoveryRecord(certification,scenarioKey,actor="Operator"){
+    const catalog=this.v45FailureScenarioCatalog(),scenario=catalog.scenarios[scenarioKey];
+    if(!scenario)throw new Error("Unsupported V45 failure scenario.");
+    const now=this.now();
+    const adapters=this.v45ExecutionAdapterRegistry().adapters;
+    const commandTypes=certification?.commandTypes||[];
+    const compensationPlan=commandTypes.map(commandType=>{
+      const adapter=adapters[commandType];
+      return {commandType,adapterId:adapter?.adapterId||null,compensationType:adapter?.compensation?.type||null,supported:Boolean(adapter?.compensation?.supported),status:"planned"};
+    });
+    return {
+      id:`V45-FR-${Date.now().toString(36).toUpperCase()}`,organizationId:certification.organizationId,certificationId:certification.id,
+      scenarioKey,severity:scenario.severity,description:scenario.description,expectedDetection:scenario.expectedDetection,expectedResponse:scenario.expectedResponse,
+      rollbackRequired:scenario.rollbackRequired,status:"prepared",detected:false,circuitBreakerTripped:false,rollback:{required:scenario.rollbackRequired,status:"not-run",steps:compensationPlan},
+      recovery:{status:"not-run",evidence:[],recoveredAt:null},observation:{state:"pre-failure",liveStateChanged:false},
+      executionMode:"failure-rehearsal",liveExecutionEnabled:false,liveExecutionAllowed:false,liveStateChanged:false,
+      createdBy:actor,createdAt:now,updatedAt:now
+    };
+  }
+  async v45FailureRecoveryRehearsals(org,actor=null,input=null){
+    const db=await this.database.read(),stored=db.v45FailureRecoveryRehearsals?.[org]||[];
+    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,catalog:this.v45FailureScenarioCatalog(),build:"45.30.0-v45-failure-recovery-closure"};
+    const certificationId=String(input.certificationId||"").trim(),scenarioKey=String(input.scenarioKey||"").trim();
+    if(!certificationId)throw new Error("certificationId is required.");
+    const certification=(db.v45ExecutionCertifications?.[org]||[]).find(x=>x.id===certificationId);
+    if(!certification)throw new Error("Execution certification not found.");
+    const rehearsal=this.buildV45FailureRecoveryRecord(certification,scenarioKey,actor||"Operator");
+    await this.database.mutate(data=>{data.v45FailureRecoveryRehearsals||={};const list=data.v45FailureRecoveryRehearsals[org]||[];list.unshift(rehearsal);data.v45FailureRecoveryRehearsals[org]=list.slice(0,300);return rehearsal;});
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 failure/recovery rehearsal prepared: ${rehearsal.scenarioKey}`,category:"v45-failure-recovery"});
+    this.realtimeHub.publish("v45-failure-rehearsal-prepared",{organizationId:org,id:rehearsal.id,scenarioKey,liveExecutionEnabled:false});
+    return {organizationId:org,rehearsal,build:"45.30.0-v45-failure-recovery-closure"};
+  }
+  async v45FailureRecoveryControl(org,actor,input={}){
+    const rehearsalId=String(input.rehearsalId||"").trim(),action=String(input.action||"").trim().toLowerCase();
+    if(!rehearsalId)throw new Error("rehearsalId is required.");
+    if(!["inject","rollback","recover","verify"].includes(action))throw new Error("Unsupported failure/recovery rehearsal action.");
+    const now=this.now();
+    const result=await this.database.mutate(db=>{
+      db.v45FailureRecoveryRehearsals||={};const list=db.v45FailureRecoveryRehearsals[org]||[];const r=list.find(x=>x.id===rehearsalId);if(!r)throw new Error("Failure/recovery rehearsal not found.");
+      const event=(type,detail={})=>{r.history||=[];r.history.push({type,actor:actor||"Operator",at:now,...detail});r.history=r.history.slice(-150);};
+      if(action==="inject"){
+        if(r.status!=="prepared")throw new Error(`Failure injection unavailable from status ${r.status}.`);
+        r.detected=true;r.status="failure-detected";r.observation={state:"degraded",failure:r.expectedDetection,liveStateChanged:false};
+        if(["adapter-timeout","partial-command-failure","compensation-failure"].includes(r.scenarioKey)){
+          r.circuitBreakerTripped=true;
+        }
+        if(r.scenarioKey==="evidence-drift")r.authorizationInvalidated=true;
+        if(r.scenarioKey==="emergency-stop")r.emergencyStopObserved=true;
+        event("failure-injected",{scenarioKey:r.scenarioKey});
+      }else if(action==="rollback"){
+        if(!r.detected)throw new Error("Inject the failure before rollback.");
+        if(!r.rollback.required){r.rollback.status="not-required";event("rollback-not-required");}
+        else{
+          const failDrill=Boolean(input.failDrill);
+          r.rollback.steps=(r.rollback.steps||[]).map(step=>({...step,status:failDrill?"failed":"compensated",simulated:true,liveStateChanged:false}));
+          r.rollback.status=failDrill?"failed":"completed";
+          if(failDrill){r.circuitBreakerTripped=true;r.status="rollback-failed";}else r.status="rolled-back";
+          event(failDrill?"rollback-failed":"rollback-completed");
+        }
+      }else if(action==="recover"){
+        if(!r.detected)throw new Error("Inject the failure before recovery.");
+        if(r.rollback.required&&r.rollback.status!=="completed")throw new Error("Required rollback must complete before recovery.");
+        r.recovery={status:"completed",evidence:[
+          {type:"failure-detected",pass:r.detected===true},
+          {type:"live-state-isolated",pass:r.liveStateChanged===false},
+          {type:"rollback",pass:!r.rollback.required||r.rollback.status==="completed"},
+          {type:"response",pass:Boolean(r.expectedResponse)}
+        ],recoveredAt:now};
+        r.status="recovered";r.observation={state:"recovered-shadow",liveStateChanged:false};event("recovery-completed");
+      }else if(action==="verify"){
+        const evidence=r.recovery?.evidence||[];
+        const recoveryPass=r.recovery?.status==="completed"&&evidence.length>0&&evidence.every(x=>x.pass);
+        r.status=recoveryPass?"verified":"verification-failed";r.verifiedAt=now;r.verification={pass:recoveryPass,evidence,liveStateChanged:false};event("recovery-verified",{pass:recoveryPass});
+      }
+      r.liveExecutionEnabled=false;r.liveExecutionAllowed=false;r.liveStateChanged=false;r.updatedAt=now;
+      return {...r};
+    });
+    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 failure/recovery ${action}: ${rehearsalId}`,category:"v45-failure-recovery"});
+    this.realtimeHub.publish("v45-failure-recovery-updated",{organizationId:org,id:rehearsalId,status:result.status,liveExecutionEnabled:false});
+    return {organizationId:org,rehearsal:result,build:"45.30.0-v45-failure-recovery-closure"};
+  }
+  async v45FailureRecoveryReadiness(org){
+    const db=await this.database.read(),items=db.v45FailureRecoveryRehearsals?.[org]||[],catalog=this.v45FailureScenarioCatalog();
+    const scenarios=Object.keys(catalog.scenarios),verified=new Set(items.filter(x=>x.status==="verified"&&x.verification?.pass).map(x=>x.scenarioKey));
+    const rollbackItems=items.filter(x=>x.rollback?.required);
+    const checks=[
+      {id:"scenario-coverage",label:"Production-like degraded-state scenario coverage",pass:scenarios.every(x=>verified.has(x)),detail:`${verified.size}/${scenarios.length} scenario(s) verified`},
+      {id:"timeout",label:"Timeout detection and recovery",pass:verified.has("adapter-timeout"),detail:verified.has("adapter-timeout")?"verified":"not verified"},
+      {id:"partial-failure",label:"Partial failure rollback",pass:verified.has("partial-command-failure"),detail:verified.has("partial-command-failure")?"verified":"not verified"},
+      {id:"evidence-drift",label:"Evidence drift invalidation",pass:verified.has("evidence-drift"),detail:verified.has("evidence-drift")?"verified":"not verified"},
+      {id:"compensation-failure",label:"Compensation failure degradation gate",pass:verified.has("compensation-failure"),detail:verified.has("compensation-failure")?"verified":"not verified"},
+      {id:"emergency-stop",label:"Emergency stop recovery evidence",pass:verified.has("emergency-stop"),detail:verified.has("emergency-stop")?"verified":"not verified"},
+      {id:"rollback-evidence",label:"Rollback/compensation evidence retained",pass:rollbackItems.length>0&&rollbackItems.filter(x=>x.status==="verified").every(x=>x.rollback.status==="completed"),detail:`${rollbackItems.filter(x=>x.rollback.status==="completed").length}/${rollbackItems.length} rollback-required rehearsal(s) compensated`},
+      {id:"history",label:"Failure and recovery history persisted",pass:items.length>0&&items.every(x=>Array.isArray(x.history)&&x.history.length>=2),detail:`${items.length} persistent rehearsal record(s)`},
+      {id:"live-safety",label:"Failure certification remains isolated",pass:items.every(x=>x.liveExecutionEnabled===false&&x.liveExecutionAllowed===false&&x.liveStateChanged===false),detail:"No failure/recovery rehearsal mutates restaurant state"}
+    ];
+    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+    return {organizationId:org,version:"45.30.0",score,status:score===100?"v45-failure-recovery-ready":score>=56?"conditional":"blocked",trusted:score===100,blockers,checks,verifiedScenarios:[...verified],generatedAt:this.now(),safety:{liveExecutionEnabled:false,liveExecutionAllowed:false,liveStateChanged:false},build:"45.30.0-v45-failure-recovery-closure"};
+  }
+  async v45ClosureReadiness(org){
+    const db=await this.database.read();
+    const assistance=db.v45AutonomousDecisionCycles?.[org]||[],proposals=db.v45InterventionProposals?.[org]||[],rehearsals=db.v45InterventionRehearsals?.[org]||[];
+    const packets=db.v45ApprovalPackets?.[org]||[],drafts=db.v45CommandDrafts?.[org]||[],shadows=db.v45ShadowExecutions?.[org]||[],certs=db.v45ExecutionCertifications?.[org]||[];
+    const failure=await this.v45FailureRecoveryReadiness(org);
+    const latestCert=certs[0]||null;
+    const checks=[
+      {id:"decision-cycle",label:"Autonomous observation/recommendation/simulation",pass:assistance.length>0&&assistance.every(x=>x.governance?.liveExecutionAllowed===false),detail:`${assistance.length} governed decision cycle(s)`},
+      {id:"intervention-planning",label:"Policy-bounded intervention planning",pass:proposals.length>0&&rehearsals.length>0,detail:`${proposals.length} proposal(s) · ${rehearsals.length} rehearsal(s)`},
+      {id:"authorization",label:"Scoped human authorization",pass:packets.length>0&&packets.every(x=>x.scope==="command-draft-only"&&x.liveExecutionAllowed===false),detail:`${packets.length} approval packet(s)`},
+      {id:"command-separation",label:"Command drafting separated from execution",pass:drafts.length>0&&drafts.every(x=>x.executionCertified===false&&x.liveExecutionAllowed===false),detail:`${drafts.length} non-executable draft(s)`},
+      {id:"shadow-boundary",label:"Shadow execution boundary",pass:shadows.length>0&&shadows.every(x=>x.mode==="shadow-only"&&x.liveStateChanged===false),detail:`${shadows.length} shadow execution(s)`},
+      {id:"controlled-certification",label:"Controlled execution certification",pass:Boolean(latestCert)&&latestCert.promotion?.eligible===true&&latestCert.liveExecutionEnabled===false,detail:latestCert?`${latestCert.status} · eligible=${latestCert.promotion?.eligible}`:"No certification"},
+      {id:"failure-recovery",label:"Production-like failure/recovery certification",pass:failure.score===100,detail:`${failure.score}% · ${failure.status}`},
+      {id:"zero-live-canary",label:"Live canary remains zero",pass:certs.every(x=>x.canary?.currentPercent===0&&x.canary?.liveTraffic===false),detail:"0% live traffic across certifications"},
+      {id:"no-live-handlers",label:"No production mutation handlers introduced",pass:Object.values(this.v45ExecutionAdapterRegistry().adapters).every(x=>x.liveHandler===null),detail:"All live handlers remain null"},
+      {id:"operation-v-safety",label:"V45 closes without live restaurant mutation",pass:[...assistance,...proposals,...rehearsals,...packets,...drafts,...shadows,...certs].every(x=>x.liveStateChanged!==true)&&failure.safety.liveStateChanged===false,detail:"Entire V45 path remains governed/shadow-only"}
+    ];
+    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+    return {organizationId:org,version:"45.30.0",score,status:score===100?"v45-architecture-closed":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,operationVPhase:"V45 Autonomous Operations",nextPhase:"operator fine-comb / operational validation before any live-execution release",safety:{liveExecutionEnabled:false,liveHandlers:0,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.30.0-v45-failure-recovery-closure"};
+  }
   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
 }
 module.exports=AutonomousOperationsService;

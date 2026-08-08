@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "45.25.0",
+        version: "45.30.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -1006,6 +1006,17 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertificationControl(organizationId,auth.user.name,await readJson(request)));
     }
     if (url.pathname === "/api/autonomous-assistance/controlled-execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ControlledExecutionReadiness(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/failure-recovery-rehearsals" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryRehearsals(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/failure-recovery-rehearsals" && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Failure/recovery certification permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryRehearsals(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/failure-recovery-control" && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Failure/recovery certification permission required."});
+      return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryControl(organizationId,auth.user.name,await readJson(request)));
+    }
+    if (url.pathname === "/api/autonomous-assistance/failure-recovery-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryReadiness(organizationId));
+    if (url.pathname === "/api/autonomous-assistance/v45-closure-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ClosureReadiness(organizationId));
     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));

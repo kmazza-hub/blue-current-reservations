@@ -2448,6 +2448,7 @@ const interventionPlanningCenterModule = startupRegistry.register("interventionP
 const interventionAuthorizationCenterModule = startupRegistry.register("interventionAuthorizationCenter",shouldInitializeCenter("interventionAuthorizationCenter") ? window.createBlueCurrentInterventionAuthorizationCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionPlanningCenter"]);
 const shadowExecutionBoundaryCenterModule = startupRegistry.register("shadowExecutionBoundaryCenter",shouldInitializeCenter("shadowExecutionBoundaryCenter") ? window.createBlueCurrentShadowExecutionBoundaryCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionAuthorizationCenter"]);
 const executionCertificationCenterModule = startupRegistry.register("executionCertificationCenter",shouldInitializeCenter("executionCertificationCenter") ? window.createBlueCurrentExecutionCertificationCenterModule?.(eventBus, appState) : null,["eventBus","appState","shadowExecutionBoundaryCenter"]);
+const v45ClosureCenterModule = startupRegistry.register("v45ClosureCenter",shouldInitializeCenter("v45ClosureCenter") ? window.createBlueCurrentV45ClosureCenterModule?.(eventBus, appState) : null,["eventBus","appState","executionCertificationCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
