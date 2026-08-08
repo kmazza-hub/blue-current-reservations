@@ -1512,6 +1512,83 @@ class LiveIntegrationService {
     return cert;
   }
 
+
+  async productionObservationSessions(organizationId, actor = null, input = null) {
+    if (input && input.action === "start") {
+      const release = await this.productionReleaseCertification(organizationId);
+      if (!release.trusted) throw new Error("Controlled production release must be trusted before starting production observation.");
+      const rollout = await this.productionRolloutPlan(organizationId);
+      const locationId = String(input.locationId || "").trim();
+      const approved = (rollout.items || []).find(item => item.status === "approved" && (!locationId || item.locationId === locationId));
+      if (!approved) throw new Error("An approved production rollout plan is required.");
+      const evidence = await this.liveEvidenceCertification(organizationId);
+      const snapshot = await this.operatingSnapshot(organizationId);
+      const session = {
+        id:`POS-${Date.now().toString(36).toUpperCase()}`, organizationId,
+        locationId:approved.locationId, locationName:approved.locationName || approved.locationId,
+        rolloutPlanId:approved.id, owner:actor || "system", status:"active",
+        startedAt:new Date().toISOString(), completedAt:null, abortedAt:null,
+        baseline:{evidenceScore:evidence.score||0,evidenceTrusted:!!evidence.trusted,recentEvents:snapshot.recentEvents||0,lastEventAt:snapshot.lastEventAt||null},
+        note:String(input.note || "").trim().slice(0,800)
+      };
+      await this.database.mutate(db => { db.productionObservationSessions ||= []; db.productionObservationSessions.unshift(session); db.productionObservationSessions=db.productionObservationSessions.slice(0,500); return session; });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Production observation started: ${session.id}`,category:"live-integration"});
+    }
+    if (input && ["complete","abort"].includes(input.action)) {
+      const id=String(input.id||"").trim(); if(!id) throw new Error("Observation session ID is required.");
+      await this.database.mutate(db => {
+        const item=(db.productionObservationSessions||[]).find(x=>x.organizationId===organizationId&&x.id===id);
+        if(!item) throw new Error("Production observation session not found.");
+        if(input.action==="complete"){item.status="completed";item.completedAt=new Date().toISOString();item.completedBy=actor||"system";}
+        if(input.action==="abort"){item.status="aborted";item.abortedAt=new Date().toISOString();item.abortedBy=actor||"system";}
+        item.closeNote=String(input.note||"").trim().slice(0,800); return item;
+      });
+      await this.auditService.record({organizationId,actor:actor||"system",action:`Production observation ${input.action}: ${id}`,category:"live-integration"});
+    }
+    const db=await this.database.read();
+    const items=(db.productionObservationSessions||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
+    return {organizationId,total:items.length,active:items.filter(x=>x.status==="active").length,completed:items.filter(x=>x.status==="completed").length,aborted:items.filter(x=>x.status==="aborted").length,items,generatedAt:new Date().toISOString()};
+  }
+
+  async productionHealthTelemetry(organizationId) {
+    const [sessions, evidence, continuity, reconciliation, status] = await Promise.all([
+      this.productionObservationSessions(organizationId), this.liveEvidenceCertification(organizationId),
+      this.providerContinuityTelemetry(organizationId), this.streamReconciliation(organizationId), this.status(organizationId)
+    ]);
+    const active=(sessions.items||[]).filter(x=>x.status==="active");
+    const completed=(sessions.items||[]).filter(x=>x.status==="completed");
+    const controls=[
+      {id:"production-session",label:"Production observation evidence",pass:active.length>0||completed.length>0,detail:`${active.length} active · ${completed.length} completed`},
+      {id:"live-evidence",label:"Live evidence trust",pass:evidence.trusted===true,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`},
+      {id:"continuity",label:"Provider continuity",pass:(continuity.score||0)>=80,detail:`${continuity.score||0}% · ${continuity.status||"unknown"}`},
+      {id:"reconciliation",label:"Stream reconciliation",pass:(reconciliation.score||0)>=90,detail:`${reconciliation.score||0}% · ${reconciliation.status||"unknown"}`},
+      {id:"freshness",label:"Recent live source activity",pass:(status.events15m||0)>0,detail:`${status.events15m||0} events in 15m · ${status.staleConnectors||0} stale sources`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const violations=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    return {organizationId,score,status:score===100?"healthy":score>=60?"watch":"breach",trusted:score===100,activeSessions:active.length,completedSessions:completed.length,violations,controls,generatedAt:new Date().toISOString()};
+  }
+
+  async v42ClosureCertification(organizationId, actor = null, persist = false) {
+    const [release, sessions, telemetry, evidence, reconciliation] = await Promise.all([
+      this.productionReleaseCertification(organizationId), this.productionObservationSessions(organizationId),
+      this.productionHealthTelemetry(organizationId), this.liveEvidenceCertification(organizationId), this.streamReconciliation(organizationId)
+    ]);
+    const completed=(sessions.items||[]).filter(x=>x.status==="completed").length;
+    const controls=[
+      {id:"production-release",label:"Controlled production release",pass:release.trusted===true,detail:`${release.score||0}% · ${release.status||"unknown"}`},
+      {id:"production-evidence",label:"Completed production observation",pass:completed>0,detail:`${completed} completed sessions`},
+      {id:"production-health",label:"Production health telemetry",pass:telemetry.score>=80&&telemetry.status!=="breach",detail:`${telemetry.score||0}% · ${telemetry.status||"unknown"}`},
+      {id:"live-evidence",label:"Trusted live evidence",pass:evidence.trusted===true,detail:`${evidence.score||0}% · ${evidence.status||"unknown"}`},
+      {id:"reconciliation",label:"Reconciled live stream",pass:(reconciliation.score||0)>=90,detail:`${reconciliation.score||0}% · ${reconciliation.status||"unknown"}`}
+    ];
+    const score=Math.round(controls.reduce((sum,c)=>sum+(c.pass?100:0),0)/controls.length);
+    const blockers=controls.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+    const cert={id:`V42C-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"v42-complete":score>=60?"conditional":"blocked",trusted:score===100,blockers,controls,issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"42.50.0-production-closure"};
+    if(persist) await this.database.mutate(db=>{db.v42ClosureCertification||={};db.v42ClosureCertification[organizationId]=cert;return cert;});
+    return cert;
+  }
+
   async operatingSnapshot(organizationId) {
     const events = await this.events(organizationId, 200);
     const cutoff = Date.now() - 4 * 60 * 60 * 1000;

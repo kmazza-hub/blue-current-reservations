@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "42.47.0",
+        version: "42.50.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -456,6 +456,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/live/rollback-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.rollbackReadiness(organizationId));
     if (url.pathname === "/api/live/production-release-certification" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.productionReleaseCertification(organizationId));
     if (url.pathname === "/api/live/production-release-certification" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.productionReleaseCertification(organizationId, auth.user.name, true));
+
+    if (url.pathname === "/api/live/production-observation" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.productionObservationSessions(organizationId));
+    if (url.pathname === "/api/live/production-observation" && request.method === "POST") { try { return sendJson(response, 200, await liveIntegrationService.productionObservationSessions(organizationId, auth.user.name, await readJson(request))); } catch (error) { return sendJson(response, 400, { error:error.message }); } }
+    if (url.pathname === "/api/live/production-health" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.productionHealthTelemetry(organizationId));
+    if (url.pathname === "/api/live/v42-closure-certification" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.v42ClosureCertification(organizationId));
+    if (url.pathname === "/api/live/v42-closure-certification" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.v42ClosureCertification(organizationId, auth.user.name, true));
 
 
     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {

@@ -2409,6 +2409,9 @@ const mvpGoLiveCenterModule = startupRegistry.register("mvpGoLiveCenter",shouldI
 const productionRolloutCenterModule = startupRegistry.register("productionRolloutCenter",shouldInitializeCenter("productionRolloutCenter") ? window.createBlueCurrentProductionRolloutCenterModule?.(eventBus, appState) : null,["eventBus","appState","mvpGoLiveCenter"]);
 const rollbackReadinessCenterModule = startupRegistry.register("rollbackReadinessCenter",shouldInitializeCenter("rollbackReadinessCenter") ? window.createBlueCurrentRollbackReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionRolloutCenter"]);
 const productionReleaseCenterModule = startupRegistry.register("productionReleaseCenter",shouldInitializeCenter("productionReleaseCenter") ? window.createBlueCurrentProductionReleaseCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionRolloutCenter","rollbackReadinessCenter"]);
+const productionObservationCenterModule = startupRegistry.register("productionObservationCenter",shouldInitializeCenter("productionObservationCenter") ? window.createBlueCurrentProductionObservationCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionReleaseCenter"]);
+const productionHealthCenterModule = startupRegistry.register("productionHealthCenter",shouldInitializeCenter("productionHealthCenter") ? window.createBlueCurrentProductionHealthCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionObservationCenter"]);
+const v42ClosureCenterModule = startupRegistry.register("v42ClosureCenter",shouldInitializeCenter("v42ClosureCenter") ? window.createBlueCurrentV42ClosureCenterModule?.(eventBus, appState) : null,["eventBus","appState","productionHealthCenter","productionReleaseCenter"]);
 
 
 const operationsWorkspaceCenterModule = startupRegistry.register(
