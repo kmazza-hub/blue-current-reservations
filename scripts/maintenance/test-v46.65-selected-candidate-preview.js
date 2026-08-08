@@ -1,0 +1,18 @@
+"use strict";
+const assert=require("assert");
+global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
+const Preview=require("../../client/js/modules/selectedCandidatePreviewEngine");
+const state={operatorNextRetirementSelection:{id:"NRCS-TEST",surfaceId:"innovationCenter",rank:1,score:91,status:"selected-for-preview-pipeline-only",previewStarted:false,codeDeletionAllowed:false,deletionExecuted:false},operatorUseEvidence:[]};
+const appState={getState:()=>state,update:o=>Object.assign(state,o)},eventBus={emit:()=>{}};
+const consolidation={taskMetrics:()=>[{role:"manager",total:4,succeeded:4,failed:0,successRate:100,averageResolutionMs:60000}],evidenceSummary:ids=>ids.map(id=>({surfaceId:id,uses:0,lastUsedAt:null,roles:[],hasEvidence:false}))};
+const scorecard={workflowCoverage:()=>({required:6,covered:6,percent:100,coveredCenters:["a","b","c","d","e","f"],missingCenters:[]})};
+const e=new Preview({eventBus,appState,consolidationEngine:consolidation,scorecardEngine:scorecard});
+const started=e.begin();assert.equal(started.status,"reversible-preview-active");assert.equal(started.codeDeletionAllowed,false);
+e.recordObservation({at:"2026-08-05T20:00:00Z",workflowCoverage:100});e.recordObservation({at:"2026-08-06T20:00:00Z",workflowCoverage:100});e.recordObservation({at:"2026-08-07T20:00:00Z",workflowCoverage:100});
+e.ownerSignoff("Product Owner","approve","Preview stable");
+state.operatorSelectedCandidatePreview={...state.operatorSelectedCandidatePreview,impact:{surfaceId:"innovationCenter",impact:{ownedFiles:2,startupDependencies:1,apiReferences:0,operationalInboundReferences:2}}};
+const ready=e.readiness();assert.equal(ready.observations,3);assert.equal(ready.observedDays,3);assert.equal(ready.eligibleForCertification,true);assert.equal(ready.codeDeletionAllowed,false);
+e.recordObservation({at:"2026-08-08T20:00:00Z",workflowCoverage:100,regressions:1});
+const degraded=e.readiness();assert.equal(degraded.eligibleForCertification,false);assert.equal(degraded.checks.find(x=>x.id==="preview-regressions").pass,false);
+const restored=e.stop("test restore");assert.equal(restored.status,"preview-restored");assert.equal(restored.deletionExecuted,false);
+console.log(JSON.stringify({ok:true,version:"46.65.0",candidate:started.surfaceId,observations:ready.observations,observedDays:ready.observedDays,workflowCoverage:ready.currentWorkflow.percent,taskSuccess:ready.taskQuality.successRate,evidenceComplete:ready.eligibleForCertification,regressionBlocksCertification:!degraded.eligibleForCertification,reversibleRestore:restored.status,automaticCertification:false,automaticDeletion:false},null,2));
