@@ -47,6 +47,7 @@ const PilotProofProgramService = require("./services/pilotProofProgramService");
 const ExecutivePilotReviewService = require("./services/executivePilotReviewService");
 const PilotDecisionLedgerService = require("./services/pilotDecisionLedgerService");
 const ExpansionReadinessService = require("./services/expansionReadinessService");
+const V48ReleaseCertificationService = require("./services/v48ReleaseCertificationService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -97,7 +98,8 @@ const pilotProofProgramService = new PilotProofProgramService(database, auditSer
 const executivePilotReviewService = new ExecutivePilotReviewService(database, auditService, realtimeHub, pilotProofProgramService);
 const pilotDecisionLedgerService = new PilotDecisionLedgerService(database, auditService, realtimeHub, executivePilotReviewService);
 const expansionReadinessService = new ExpansionReadinessService(database, auditService, realtimeHub, pilotDecisionLedgerService, executivePilotReviewService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService });
+const v48ReleaseCertificationService = new V48ReleaseCertificationService(database, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService);
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -184,7 +186,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V48.25.0 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V48.30.0 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);

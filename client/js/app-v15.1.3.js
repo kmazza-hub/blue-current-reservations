@@ -1234,6 +1234,7 @@ const pilotProofProgramModule = startupRegistry.register("pilotProofProgram", sh
 const executivePilotReviewModule = startupRegistry.register("executivePilotReview", shouldInitializeCenter("executivePilotReview") ? window.createBlueCurrentExecutivePilotReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotProofProgram"]);
 const pilotDecisionLedgerModule = startupRegistry.register("pilotDecisionLedger", shouldInitializeCenter("pilotDecisionLedger") ? window.createBlueCurrentPilotDecisionLedgerCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "executivePilotReview"]);
 const expansionReadinessModule = startupRegistry.register("expansionReadiness", shouldInitializeCenter("expansionReadiness") ? window.createBlueCurrentExpansionReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDecisionLedger"]);
+const v48ReleaseCertificationModule = startupRegistry.register("v48ReleaseCertification", shouldInitializeCenter("v48ReleaseCertification") ? window.createBlueCurrentV48ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "expansionReadiness"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

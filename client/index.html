@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="48.25.0">
+  <meta name="blue-current-build" content="48.30.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -245,6 +245,13 @@
       <div class="v4316-answer" id="v4825Headline">A signed human EXPAND decision is required before rollout planning.</div>
       <div class="v4316-actions"><input id="v4825Owner" class="v4312-input" placeholder="Rollout owner"><input id="v4825WaveSize" class="v4312-input" type="number" min="1" value="1" placeholder="Locations per wave"><input id="v4825Cadence" class="v4312-input" type="number" min="1" value="7" placeholder="Days between waves"><input id="v4825Floor" class="v4312-input" type="number" min="0" max="100" value="70" placeholder="Readiness floor"><input id="v4825Conditions" class="v4312-input" placeholder="Rollout conditions"><button id="v4825Draft" type="button">Draft rollout plan</button></div>
       <p><strong>Signed rollout scope</strong></p><div id="v4825Locations" class="v432-list"></div><p><strong>Planned waves — activation remains off</strong></p><div id="v4825Waves" class="v432-list"></div><p><strong>Plan history</strong></p><div id="v4825History" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v48ReleaseCertification">
+      <header><div><small>V48.26–V48.30 · Release Closure & Certification</small><strong>V48 Commercial Proof Chain Certification</strong><span>One read-only certification surface verifies the complete baseline → proof → review → human decision → rollout-plan chain and its non-automation safety boundaries.</span></div><button id="v48certRefresh" type="button">Run V48 certification</button></header>
+      <div class="v432-kpis"><article><small>Release status</small><strong id="v48certStatus">—</strong></article><article><small>Contracts</small><strong id="v48certContracts">0/0</strong></article><article><small>Verified value</small><strong id="v48certValue">$0</strong></article><article><small>Locations reviewed</small><strong id="v48certLocations">0</strong></article></div>
+      <div class="v4316-answer" id="v48certHeadline">Running V48 certification…</div>
+      <p><strong>Commercial proof chain</strong></p><div id="v48certChain" class="v432-list"></div>
+      <p><strong>Certification contracts</strong></p><div id="v48certChecks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8763,6 +8770,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerCenter.js?v=48.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessEngine.js?v=48.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessCenter.js?v=48.25.0"></script>
-<script src="js/startup-loader.js?v=48.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationEngine.js?v=48.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationCenter.js?v=48.30.0"></script>
+<script src="js/startup-loader.js?v=48.30.0"></script>
 </body>
 </html>
