@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "47.35.0",
+        version: "47.40.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -194,6 +194,11 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const auth = await authService.authenticate(bearerToken(request));
     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
 
+    const v47AllowedLocations = auth.membership.locationIds || [];
+    const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+    const v47RejectLocation = (response, locationId) =>
+      v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
+
     if (url.pathname === "/api/multi-location-performance" && request.method === "GET") {
       const allowed=auth.membership.locationIds||[];
       return sendJson(response,200,await multiLocationPerformanceService.snapshot(auth.membership.organizationId,allowed));
@@ -210,6 +215,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/manager-operating-rhythm" && request.method === "GET") {
       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       return sendJson(response,200,await managerOperatingRhythmService.snapshot(auth.membership.organizationId,locationId));
     }
 
@@ -234,6 +240,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/predictive-shift-control" && request.method === "GET") {
       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       return sendJson(response,200,await predictiveShiftControlService.snapshot(auth.membership.organizationId,locationId));
     }
 
@@ -242,12 +249,14 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const interventionId=decodeURIComponent(url.pathname.split("/")[4]||"");
       const body=await readJson(request);
       const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       try{return sendJson(response,201,await predictiveShiftControlService.decide(auth.membership.organizationId,locationId,interventionId,body,auth.user.name));}
       catch(error){return sendJson(response,/no longer active/i.test(error.message)?409:400,{error:error.message});}
     }
 
     if (url.pathname === "/api/service-profitability" && request.method === "GET") {
       const locationId=url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       return sendJson(response,200,await serviceProfitabilityIntelligenceService.snapshot(auth.membership.organizationId,locationId));
     }
 
@@ -255,11 +264,13 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Profitability snapshot permission required."});
       const body=await readJson(request);
       const locationId=body.locationId || (auth.membership.locationIds || []).find(id=>id!=="*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       return sendJson(response,201,await serviceProfitabilityIntelligenceService.capture(auth.membership.organizationId,locationId,auth.user.name));
     }
 
     if (url.pathname === "/api/hospitality-actions" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       return sendJson(response,200,await hospitalityActionWorkspaceService.list(auth.membership.organizationId,locationId));
     }
 
@@ -267,6 +278,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Hospitality action permission required."});
       const body=await readJson(request);
       const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       const performance=await hospitalityPerformanceService.snapshot(auth.membership.organizationId,locationId);
       const opportunity=performance.opportunities.find(x=>x.id===body.opportunityId);
       if(!opportunity)return sendJson(response,404,{error:"Performance opportunity not found or no longer active."});
@@ -278,6 +290,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const workspaceId=decodeURIComponent(url.pathname.split("/")[3]||"");
       const body=await readJson(request);
       const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       try{return sendJson(response,200,await hospitalityActionWorkspaceService.remeasure(auth.membership.organizationId,locationId,workspaceId,auth.user.name));}
       catch(error){return sendJson(response,/required|not found/i.test(error.message)?400:500,{error:error.message});}
     }
@@ -287,12 +300,14 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const workspaceId=decodeURIComponent(url.pathname.split("/")[3]||"");
       const body=await readJson(request);
       const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       try{return sendJson(response,200,await hospitalityActionWorkspaceService.update(auth.membership.organizationId,locationId,workspaceId,body,auth.user.name));}
       catch(error){return sendJson(response,/not found/i.test(error.message)?404:400,{error:error.message});}
     }
 
     if (url.pathname === "/api/hospitality-performance" && request.method === "GET") {
       const locationId = url.searchParams.get("locationId") || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       return sendJson(response,200,await hospitalityPerformanceService.snapshot(auth.membership.organizationId,locationId));
     }
 
@@ -301,6 +316,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const opportunityId = decodeURIComponent(url.pathname.split("/")[4] || "");
       const body = await readJson(request);
       const locationId = body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
+      if(v47RejectLocation(response,locationId)) return;
       return sendJson(response,201,await hospitalityPerformanceService.decide(auth.membership.organizationId,locationId,opportunityId,body,auth.user.name));
     }
 

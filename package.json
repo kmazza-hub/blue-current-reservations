@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "47.35.0",
+  "version": "47.40.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 multi-location performance and leadership exception queue",
+  "description": "Blue Current Hospitality OS \u2014 V47 certified hospitality performance operating system",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
