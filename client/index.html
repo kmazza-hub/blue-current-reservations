@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="50.30.0">
+  <meta name="blue-current-build" content="51.05.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -356,6 +356,15 @@
       <p><strong>Production operations chain</strong></p><div id="v50certChain" class="v432-list"></div>
       <p><strong>Architecture / human-control contracts</strong></p><div id="v50certArchitectureChecks" class="v432-list"></div>
       <p><strong>Current production evidence</strong></p><div id="v50certLiveChecks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="pilotOperationalReadiness">
+      <header><div><small>V51.01–V51.05 · Restaurant Pilot Readiness Baseline</small><strong>Turn Blue Current from a certified platform into a restaurant-pilot operating system.</strong><span>This read-only gate inspects each in-scope restaurant for the floor, reservation, workforce, kitchen, identity, technical, production, and pilot-success prerequisites required before real operational testing begins. Missing evidence stays a blocker—Blue Current does not manufacture readiness.</span></div><button id="porRefresh" type="button">Run pilot baseline</button></header>
+      <div class="v432-kpis"><article><small>Baseline status</small><strong id="porStatus">—</strong></article><article><small>Readiness</small><strong id="porReadiness">0%</strong></article><article><small>Required gates</small><strong id="porGates">0/0</strong></article><article><small>Blockers</small><strong id="porBlockers">0</strong></article></div>
+      <div class="v4316-answer" id="porHeadline">Building the restaurant pilot baseline…</div>
+      <p><strong>Human go/no-go:</strong> <span id="porDecision">—</span></p>
+      <p id="porUpstream">Loading upstream certification state…</p>
+      <p><strong>Restaurant readiness</strong></p><div id="porLocations" class="v432-list"></div>
+      <p><strong>Required blockers</strong></p><div id="porBlockerList" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8900,6 +8909,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceCenter.js?v=50.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationEngine.js?v=50.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationCenter.js?v=50.30.0"></script>
-<script src="js/startup-loader.js?v=50.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessEngine.js?v=51.05.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessCenter.js?v=51.05.0"></script>
+<script src="js/startup-loader.js?v=51.05.0"></script>
 </body>
 </html>

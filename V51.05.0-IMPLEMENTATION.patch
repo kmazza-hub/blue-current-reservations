@@ -1,0 +1,494 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "50.30.0",
++  "version": "51.05.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V50 production operations release certification",
++  "description": "Blue Current Hospitality OS \u2014 restaurant pilot readiness baseline",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -60,6 +60,7 @@
+ const ProductionRecoveryReviewService = require("./services/productionRecoveryReviewService");
+ const ProductionCorrectiveActionGovernanceService = require("./services/productionCorrectiveActionGovernanceService");
+ const V50ReleaseCertificationService = require("./services/v50ReleaseCertificationService");
++const PilotOperationalReadinessService = require("./services/pilotOperationalReadinessService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -123,7 +124,8 @@
+ const productionRecoveryReviewService = new ProductionRecoveryReviewService(database, auditService, realtimeHub, productionIncidentCommandService, productionHealthSupportService, reliabilityAutomationService);
+ const productionCorrectiveActionGovernanceService = new ProductionCorrectiveActionGovernanceService(database, auditService, realtimeHub, productionRecoveryReviewService, productionIncidentCommandService);
+ const v50ReleaseCertificationService = new V50ReleaseCertificationService(database, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService });
++const pilotOperationalReadinessService = new PilotOperationalReadinessService(database, v49ReleaseCertificationService, v50ReleaseCertificationService, technicalActivationReadinessService, pilotProofProgramService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -210,7 +212,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V50.30.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.05.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "50.30.0",
++        version: "51.05.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,10 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/pilot-operational-readiness" && request.method === "GET") {
++      return sendJson(response,200,await pilotOperationalReadinessService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
+ 
+     if (url.pathname === "/api/v50-release-certification" && request.method === "GET") {
+       return sendJson(response,200,await v50ReleaseCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/pilotOperationalReadinessService.js
++++ b/server/services/pilotOperationalReadinessService.js
+@@ -0,0 +1,109 @@
++"use strict";
++
++class PilotOperationalReadinessService {
++  constructor(database,v49ReleaseCertificationService,v50ReleaseCertificationService,technicalActivationReadinessService,pilotProofProgramService){
++    Object.assign(this,{database,v49ReleaseCertificationService,v50ReleaseCertificationService,technicalActivationReadinessService,pilotProofProgramService});
++  }
++  now(){return new Date().toISOString();}
++  allowed(locationId,allowedLocationIds=[]){return allowedLocationIds.includes("*")||allowedLocationIds.includes(locationId);}
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,v49,v50,technical,pilotProof]=await Promise.all([
++      this.database.read(),
++      this.v49ReleaseCertificationService.snapshot(organizationId,allowedLocationIds),
++      this.v50ReleaseCertificationService.snapshot(organizationId,allowedLocationIds),
++      this.technicalActivationReadinessService.snapshot(organizationId,allowedLocationIds),
++      this.pilotProofProgramService.snapshot(organizationId,allowedLocationIds)
++    ]);
++
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId&&this.allowed(x.id,allowedLocationIds));
++    const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId);
++    const sections=(db.sections||[]).filter(x=>x.organizationId===organizationId);
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId);
++    const staff=(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.status==="active");
++    const employees=(db.employees||[]).filter(x=>x.organizationId===organizationId&&x.status==="active");
++    const kitchenStations=(db.kitchenStations||[]).filter(x=>x.organizationId===organizationId);
++    const memberships=(db.memberships||[]).filter(x=>x.organizationId===organizationId);
++    const connectors=(db.liveConnectors||[]).filter(x=>x.organizationId===organizationId);
++    const technicalByLocation=new Map((technical.locations||[]).map(x=>[x.locationId,x]));
++
++    const rows=locations.map(loc=>{
++      const id=loc.id,tech=technicalByLocation.get(id)||null;
++      const locationTables=tables.filter(x=>x.locationId===id);
++      const locationSections=sections.filter(x=>x.locationId===id);
++      const locationReservations=reservations.filter(x=>x.locationId===id);
++      const locationPeople=[...staff.filter(x=>x.locationId===id),...employees.filter(x=>x.locationId===id)];
++      const locationKitchen=kitchenStations.filter(x=>x.locationId===id);
++      const access=memberships.filter(x=>(x.locationIds||[]).includes("*")||(x.locationIds||[]).includes(id));
++      const locationConnectors=connectors.filter(x=>!x.locationId||x.locationId===id);
++      const configuredConnectors=locationConnectors.filter(x=>String(x.status||"").toLowerCase()!=="not-configured");
++      const connectedConnectors=locationConnectors.filter(x=>["connected","active","ready"].includes(String(x.status||"").toLowerCase()));
++
++      const checks=[
++        {id:"location-record",category:"foundation",label:"Restaurant/location record exists",required:true,passed:true,actual:id},
++        {id:"floor-model",category:"floor",label:"Floor model has tables and sections",required:true,passed:locationTables.length>0&&locationSections.length>0,actual:`${locationTables.length} tables · ${locationSections.length} sections`},
++        {id:"reservation-path",category:"reservations",label:"Reservation operating path has data or a configured connector",required:true,passed:locationReservations.length>0||configuredConnectors.some(x=>x.type==="reservations"),actual:`${locationReservations.length} reservations · ${configuredConnectors.filter(x=>x.type==="reservations").length} configured reservation connector(s)`},
++        {id:"workforce-roster",category:"staff",label:"Active workforce roster exists",required:true,passed:locationPeople.length>0||configuredConnectors.some(x=>x.type==="labor"),actual:`${locationPeople.length} active people`},
++        {id:"kitchen-model",category:"kitchen",label:"Kitchen operating model or connector exists",required:true,passed:locationKitchen.length>0||configuredConnectors.some(x=>x.type==="kitchen"),actual:`${locationKitchen.length} kitchen stations`},
++        {id:"authorized-access",category:"identity",label:"At least one authorized membership can access the restaurant",required:true,passed:access.length>0,actual:`${access.length} authorized membership(s)`},
++        {id:"technical-preflight",category:"deployment",label:"Technical activation preflight is complete",required:true,passed:tech?.technicallyReady===true,actual:tech?`${tech.requiredPassed}/${tech.requiredTotal} required checks`:"not in technical activation review"},
++        {id:"production-architecture",category:"production",label:"V50 production architecture is certified",required:true,passed:v50.architecturePassed===v50.architectureTotal&&v50.architectureTotal>0,actual:`${v50.architecturePassed}/${v50.architectureTotal} architecture contracts`},
++        {id:"pilot-success-contract",category:"pilot",label:"Pilot baseline and success criteria are configured",required:true,passed:!!pilotProof.program&&!!pilotProof.successCriteria,actual:!pilotProof.program?"pilot baseline missing":pilotProof.successCriteria?"configured":"success criteria missing"},
++        {id:"external-connectivity",category:"integrations",label:"At least one production-capable external connector is live",required:false,passed:connectedConnectors.length>0,actual:`${connectedConnectors.length} connected connector(s)`}
++      ];
++      const required=checks.filter(x=>x.required),passed=required.filter(x=>x.passed).length;
++      const blockers=required.filter(x=>!x.passed);
++      const warnings=checks.filter(x=>!x.required&&!x.passed);
++      const percent=required.length?Math.round(passed/required.length*100):0;
++      return {
++        locationId:id,locationName:loc.name||loc.displayName||id,
++        readinessPercent:percent,requiredPassed:passed,requiredTotal:required.length,
++        pilotReady:passed===required.length,
++        decision:passed===required.length?"GO":percent>=75?"CONDITIONAL":"NO-GO",
++        checks,blockers,warnings,
++        dependencies:{
++          tables:locationTables.length,sections:locationSections.length,reservations:locationReservations.length,
++          activePeople:locationPeople.length,kitchenStations:locationKitchen.length,authorizedMemberships:access.length,
++          configuredConnectors:configuredConnectors.length,connectedConnectors:connectedConnectors.length
++        }
++      };
++    });
++
++    const requiredChecks=rows.reduce((n,x)=>n+x.requiredTotal,0);
++    const passedChecks=rows.reduce((n,x)=>n+x.requiredPassed,0);
++    const blockers=rows.flatMap(x=>x.blockers.map(b=>({locationId:x.locationId,locationName:x.locationName,...b})));
++    const warnings=rows.flatMap(x=>x.warnings.map(w=>({locationId:x.locationId,locationName:x.locationName,...w})));
++    const ready=rows.filter(x=>x.pilotReady).length;
++    const portfolioPercent=requiredChecks?Math.round(passedChecks/requiredChecks*100):0;
++
++    return {
++      version:"51.05.0",generatedAt:this.now(),
++      status:rows.length===0?"pilot-location-required":ready===rows.length?"PILOT-BASELINE-GO":portfolioPercent>=75?"PILOT-BASELINE-CONDITIONAL":"PILOT-BASELINE-NO-GO",
++      headline:rows.length===0?"No authorized restaurant locations are available for pilot readiness review.":`${ready}/${rows.length} restaurant location(s) satisfy every required V51 pilot baseline gate.`,
++      readinessPercent:portfolioPercent,requiredPassed:passedChecks,requiredTotal:requiredChecks,
++      blockerCount:blockers.length,warningCount:warnings.length,
++      locations:rows,blockers,warnings,
++      upstream:{
++        v49Status:v49.status,v49Architecture:`${v49.architecturePassed}/${v49.architectureTotal}`,
++        v50Status:v50.status,v50Architecture:`${v50.architecturePassed}/${v50.architectureTotal}`,
++        pilotProgramStatus:pilotProof.status,
++        technicalStatus:technical.status
++      },
++      goNoGo:{
++        decision:rows.length>0&&ready===rows.length?"GO":portfolioPercent>=75?"CONDITIONAL":"NO-GO",
++        rule:"GO requires every required pilot baseline check to pass for every in-scope restaurant. Warnings do not block GO.",
++        humanApprovalRequired:true
++      },
++      policy:{
++        assessmentReadOnly:true,
++        noSyntheticReadiness:true,
++        warningsDoNotBecomePasses:true,
++        humanGoNoGoRequired:true,
++        automaticConfiguration:false,
++        automaticDeployment:false,
++        automaticGoLive:false,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++}
++module.exports=PilotOperationalReadinessService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="50.30.0">
++  <meta name="blue-current-build" content="51.05.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -356,6 +356,15 @@
+       <p><strong>Production operations chain</strong></p><div id="v50certChain" class="v432-list"></div>
+       <p><strong>Architecture / human-control contracts</strong></p><div id="v50certArchitectureChecks" class="v432-list"></div>
+       <p><strong>Current production evidence</strong></p><div id="v50certLiveChecks" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="pilotOperationalReadiness">
++      <header><div><small>V51.01–V51.05 · Restaurant Pilot Readiness Baseline</small><strong>Turn Blue Current from a certified platform into a restaurant-pilot operating system.</strong><span>This read-only gate inspects each in-scope restaurant for the floor, reservation, workforce, kitchen, identity, technical, production, and pilot-success prerequisites required before real operational testing begins. Missing evidence stays a blocker—Blue Current does not manufacture readiness.</span></div><button id="porRefresh" type="button">Run pilot baseline</button></header>
++      <div class="v432-kpis"><article><small>Baseline status</small><strong id="porStatus">—</strong></article><article><small>Readiness</small><strong id="porReadiness">0%</strong></article><article><small>Required gates</small><strong id="porGates">0/0</strong></article><article><small>Blockers</small><strong id="porBlockers">0</strong></article></div>
++      <div class="v4316-answer" id="porHeadline">Building the restaurant pilot baseline…</div>
++      <p><strong>Human go/no-go:</strong> <span id="porDecision">—</span></p>
++      <p id="porUpstream">Loading upstream certification state…</p>
++      <p><strong>Restaurant readiness</strong></p><div id="porLocations" class="v432-list"></div>
++      <p><strong>Required blockers</strong></p><div id="porBlockerList" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8900,6 +8909,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceCenter.js?v=50.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationEngine.js?v=50.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationCenter.js?v=50.30.0"></script>
+-<script src="js/startup-loader.js?v=50.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessEngine.js?v=51.05.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessCenter.js?v=51.05.0"></script>
++<script src="js/startup-loader.js?v=51.05.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1247,6 +1247,7 @@
+ const productionRecoveryReviewModule = startupRegistry.register("productionRecoveryReview", shouldInitializeCenter("productionRecoveryReview") ? window.createBlueCurrentProductionRecoveryReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionIncidentCommand"]);
+ const productionCorrectiveActionGovernanceModule = startupRegistry.register("productionCorrectiveActionGovernance", shouldInitializeCenter("productionCorrectiveActionGovernance") ? window.createBlueCurrentProductionCorrectiveActionGovernanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionRecoveryReview"]);
+ const v50ReleaseCertificationModule = startupRegistry.register("v50ReleaseCertification", shouldInitializeCenter("v50ReleaseCertification") ? window.createBlueCurrentV50ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionCorrectiveActionGovernance"]);
++const pilotOperationalReadinessModule = startupRegistry.register("pilotOperationalReadiness", shouldInitializeCenter("pilotOperationalReadiness") ? window.createBlueCurrentPilotOperationalReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v50ReleaseCertification"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V50.30.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.05.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/pilotOperationalReadinessEngine.js
++++ b/client/js/modules/pilotOperationalReadinessEngine.js
+@@ -0,0 +1,9 @@
++(function(global){"use strict";
++class BlueCurrentPilotOperationalReadinessEngine{
++  constructor({appState}={}){this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  async snapshot(){const r=await fetch("/api/pilot-operational-readiness",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot readiness failed (${r.status})`);this.appState?.update?.({pilotOperationalReadiness:d});return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotOperationalReadinessEngine;
++if(global)global.BlueCurrentPilotOperationalReadinessEngine=BlueCurrentPilotOperationalReadinessEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/pilotOperationalReadinessCenter.js
++++ b/client/js/modules/pilotOperationalReadinessCenter.js
+@@ -0,0 +1,24 @@
++(function(){"use strict";
++function createBlueCurrentPilotOperationalReadinessCenterModule(eventBus,appState){
++  const root=document.getElementById("pilotOperationalReadiness");
++  if(!root||!window.BlueCurrentPilotOperationalReadinessEngine)return null;
++  const e=new window.BlueCurrentPilotOperationalReadinessEngine({appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("porStatus").textContent=s.status||"—";
++    $("porReadiness").textContent=`${s.readinessPercent||0}%`;
++    $("porGates").textContent=`${s.requiredPassed||0}/${s.requiredTotal||0}`;
++    $("porBlockers").textContent=s.blockerCount||0;
++    $("porHeadline").textContent=s.headline||"Pilot readiness unavailable.";
++    $("porDecision").textContent=s.goNoGo?.decision||"—";
++    $("porUpstream").textContent=`V49 ${s.upstream?.v49Status||"—"} · V50 ${s.upstream?.v50Status||"—"} · Pilot ${s.upstream?.pilotProgramStatus||"—"} · Technical ${s.upstream?.technicalStatus||"—"}`;
++    $("porLocations").innerHTML=(s.locations||[]).map(x=>`<article><div><strong>${esc(x.decision)} · ${esc(x.locationName)}</strong><span>${x.requiredPassed}/${x.requiredTotal} required gates · ${x.readinessPercent}%</span></div><p>${x.blockers.length?`<strong>Blockers:</strong> ${x.blockers.map(b=>esc(b.label)).join(" · ")}`:"All required baseline gates pass."}</p><p>Floor ${x.dependencies.tables} tables/${x.dependencies.sections} sections · Reservations ${x.dependencies.reservations} · People ${x.dependencies.activePeople} · Kitchen ${x.dependencies.kitchenStations} · Access ${x.dependencies.authorizedMemberships} · Connectors ${x.dependencies.connectedConnectors} live</p></article>`).join("")||"<article><strong>No in-scope restaurant locations.</strong></article>";
++    $("porBlockerList").innerHTML=(s.blockers||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.category)}</strong><span>${esc(x.label)} · ${esc(x.actual)}</span></article>`).join("")||"<article><strong>No required pilot blockers.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("porHeadline").textContent=err.message;}}
++  $("porRefresh")?.addEventListener("click",load);
++  ["auth:restored","production-operations:accepted","technical-activation:authorized","pilot-proof:configured"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentPilotOperationalReadinessCenterModule=createBlueCurrentPilotOperationalReadinessCenterModule;
++})();--- a/scripts/maintenance/test-v51.05-pilot-operational-readiness.js
++++ b/scripts/maintenance/test-v51.05-pilot-operational-readiness.js
+@@ -0,0 +1,59 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/pilotOperationalReadinessService");
++
++(async()=>{
++  const db={
++    locations:[{id:"loc1",organizationId:"org",name:"Pilot Restaurant"}],
++    tables:[{id:"t1",organizationId:"org",locationId:"loc1"}],
++    sections:[{id:"s1",organizationId:"org",locationId:"loc1"}],
++    reservations:[{id:"r1",organizationId:"org",locationId:"loc1"}],
++    staff:[{id:"st1",organizationId:"org",locationId:"loc1",status:"active"}],
++    employees:[],
++    kitchenStations:[{id:"k1",organizationId:"org",locationId:"loc1"}],
++    memberships:[{id:"m1",organizationId:"org",locationIds:["loc1"]}],
++    liveConnectors:[{id:"c1",organizationId:"org",locationId:"loc1",type:"reservations",status:"connected"}]
++  };
++  const svc=new Service(
++    {read:async()=>db},
++    {snapshot:async()=>({status:"V49-ARCHITECTURE-CERTIFIED",architecturePassed:5,architectureTotal:5})},
++    {snapshot:async()=>({status:"V50-ARCHITECTURE-CERTIFIED",architecturePassed:5,architectureTotal:5})},
++    {snapshot:async()=>({status:"technical-readiness-complete",locations:[{locationId:"loc1",technicallyReady:true,requiredPassed:8,requiredTotal:8}]})},
++    {snapshot:async()=>({status:"proof-program-active",program:{id:"p1"},successCriteria:{minimumOverallScore:65}})}
++  );
++  const snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.05.0");
++  assert.equal(snap.status,"PILOT-BASELINE-GO");
++  assert.equal(snap.goNoGo.decision,"GO");
++  assert.equal(snap.locations.length,1);
++  assert.equal(snap.locations[0].pilotReady,true);
++  assert.equal(snap.blockerCount,0);
++  assert.equal(snap.requiredPassed,snap.requiredTotal);
++  assert.equal(snap.policy.assessmentReadOnly,true);
++  assert.equal(snap.policy.noSyntheticReadiness,true);
++  assert.equal(snap.policy.humanGoNoGoRequired,true);
++  assert.equal(snap.policy.automaticConfiguration,false);
++  assert.equal(snap.policy.automaticDeployment,false);
++  assert.equal(snap.policy.automaticGoLive,false);
++  assert.equal(snap.policy.autonomousProductionChanges,false);
++
++  db.kitchenStations=[];
++  db.liveConnectors=[];
++  const blocked=await svc.snapshot("org",["loc1"]);
++  assert.equal(blocked.goNoGo.decision,"CONDITIONAL");
++  assert.equal(blocked.locations[0].pilotReady,false);
++  assert(blocked.locations[0].blockers.some(x=>x.id==="kitchen-model"));
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.05.0",
++    pilotReadinessBaseline:true,
++    restaurantDependencyInventory:true,
++    measurableGoNoGoGates:true,
++    missingEvidenceRemainsBlocker:true,
++    humanGoNoGoRequired:true,
++    automaticConfiguration:false,
++    automaticDeployment:false,
++    automaticGoLive:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.05.0-RELEASE.md
++++ b/V51.05.0-RELEASE.md
+@@ -0,0 +1,105 @@
++# BLUE CURRENT V51.05.0 — RESTAURANT PILOT READINESS BASELINE
++
++V51 begins the operationalization phase.
++
++The objective is no longer to expand Blue Current horizontally. V51 proves that the platform can operate safely and coherently in a real restaurant.
++
++## V51.01–V51.05
++
++Adds a read-only Restaurant Pilot Readiness Baseline.
++
++For every authorized restaurant, Blue Current now evaluates required pilot prerequisites across:
++
++- restaurant/location foundation
++- floor tables and sections
++- reservation operating path
++- workforce roster
++- kitchen operating model
++- authorized access
++- technical activation preflight
++- V50 production architecture certification
++- pilot baseline and committed success criteria
++
++External live connectivity is surfaced as a warning rather than silently converted into readiness.
++
++## Go / conditional / no-go
++
++`GO`
++- every required pilot baseline gate passes for every in-scope restaurant
++
++`CONDITIONAL`
++- portfolio readiness is at least 75%, but one or more required gates remain open
++
++`NO-GO`
++- portfolio readiness is below 75%
++
++A system assessment is not permission to operate a pilot. Human go/no-go approval remains required.
++
++## Current authenticated Chefs baseline
++
++The untouched authoritative data reports:
++
++- status: `PILOT-BASELINE-NO-GO`
++- decision: `NO-GO`
++- portfolio readiness: 42%
++- required gates: 19/45
++- blockers: 26
++
++Location baseline:
++
++- Marina Grille — CONDITIONAL — 78%
++  - technical preflight open
++  - pilot success contract open
++
++- Harbor House — NO-GO — 33%
++- River & Rail — NO-GO — 33%
++- The Cabin — NO-GO — 33%
++- Garden Social — NO-GO — 33%
++
++The four 33% locations currently lack the floor, reservation, workforce, kitchen, technical-preflight, and pilot-success evidence required by the baseline.
++
++Upstream architecture remains certified:
++
++- V49 architecture: 5/5
++- V50 architecture: 5/5
++
++Current upstream execution state:
++
++- V49: `V49-ARCHITECTURE-CERTIFIED`
++- V50: `V50-ARCHITECTURE-CERTIFIED`
++- pilot proof: `baseline-required`
++- technical activation: `activation-plan-required`
++
++This is exactly the purpose of V51: expose the real operational gaps rather than calling architecture completion pilot readiness.
++
++## Safety
++
++- assessment read-only
++- no synthetic readiness
++- warnings never become passes
++- human go/no-go required
++- automatic configuration false
++- automatic deployment false
++- automatic go-live false
++- autonomous production changes false
++
++## Validation
++
++- V51.05 focused lifecycle PASS
++- V50.30 regression PASS
++- authenticated pilot readiness endpoint PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 920 JavaScript files
++- 772 client scripts
++- 5,758 unique HTML IDs
++
++## Next
++
++V51.06–V51.10 — Restaurant Day Lifecycle:
++
++OPENING → PRE-SHIFT → RESERVATIONS → SEATING → ACTIVE SERVICE → KITCHEN COORDINATION → GUEST RECOVERY → CLOSING
++
++The next wave will evaluate whether Blue Current's existing operating surfaces form one coherent restaurant-day workflow.
+--- a/README-APPLY-V51.05.0.md
++++ b/README-APPLY-V51.05.0.md
+@@ -0,0 +1,41 @@
++# APPLY BLUE CURRENT V51.05.0
++
++Baseline: exact V50.30.0 repository.
++
++Extract `BLUE-CURRENT-V51.05.0-PILOT-READINESS.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.05-pilot-operational-readiness.js
++node scripts/maintenance/test-v50.30-release-certification.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.05.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Restaurant Pilot Readiness Baseline** surface appears after V50 Release Certification.
++
++Do not expect a GO result yet. The current authoritative Chefs data correctly exposes real operational prerequisites that have not been executed/configured.
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.05.0 add restaurant pilot readiness baseline"
++git push origin live-service-timeline
++```
