@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.35.0">
+  <meta name="blue-current-build" content="51.40.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -417,6 +417,14 @@
       <div class="v4316-actions"><input id="rgjGuest" class="v4312-input" placeholder="Pilot guest name"><input id="rgjPhone" class="v4312-input" placeholder="Guest phone"><input id="rgjOccasion" class="v4312-input" placeholder="Special occasion"><input id="rgjNote" class="v4312-input" placeholder="Journey rehearsal note"></div>
       <div class="v4316-actions"><input id="rgjEvidence" class="v4312-input" placeholder="Human checkpoint evidence"><input id="rgjOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="rgjCertificationEvidence" class="v4312-input" placeholder="End-to-end journey certification evidence"><input id="rgjCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
       <p><strong>Restaurant guest journeys</strong></p><div id="rgjLocations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="liveFloorServiceCertification">
+      <header><div><small>V51.36–V51.40 · Live Floor & Service Certification</small><strong>Prove Blue Current's live dining-room state stays coherent from seating pressure through service progression and table reset.</strong><span>Ten ordered checkpoints certify table state, occupancy, section/server assignment, reservation and waitlist linkage, turns/reset, timing, guest movement, seating pressure, and live service-event continuity. System evidence stays separate from human proof.</span></div><button id="lfscRefresh" type="button">Refresh floor/service</button></header>
+      <div class="v432-kpis"><article><small>Floor/service status</small><strong id="lfscStatus">—</strong></article><article><small>System evidence</small><strong id="lfscSystemEvidence">0/0</strong></article><article><small>Human checkpoints</small><strong id="lfscHumanEvidence">0/0</strong></article><article><small>Certified locations</small><strong id="lfscCertified">0</strong></article></div>
+      <div class="v4316-answer" id="lfscHeadline">Live floor and service ready for rehearsal.</div>
+      <div class="v4316-actions"><input id="lfscShift" class="v4312-input" value="Dinner" placeholder="Shift label"><input id="lfscManager" class="v4312-input" placeholder="Manager / rehearsal lead"><input id="lfscTargetOccupancy" class="v4312-input" type="number" min="0" max="100" value="85" placeholder="Target occupancy %"><input id="lfscNote" class="v4312-input" placeholder="Floor/service rehearsal note"></div>
+      <div class="v4316-actions"><input id="lfscEvidence" class="v4312-input" placeholder="Human floor/service checkpoint evidence"><input id="lfscOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="lfscCertificationEvidence" class="v4312-input" placeholder="End-to-end floor/service certification evidence"><input id="lfscCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
+      <p><strong>Restaurant floor/service journeys</strong></p><div id="lfscLocations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8975,6 +8983,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningCenter.js?v=51.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyEngine.js?v=51.35.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyCenter.js?v=51.35.0"></script>
-<script src="js/startup-loader.js?v=51.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationEngine.js?v=51.40.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationCenter.js?v=51.40.0"></script>
+<script src="js/startup-loader.js?v=51.40.0"></script>
 </body>
 </html>

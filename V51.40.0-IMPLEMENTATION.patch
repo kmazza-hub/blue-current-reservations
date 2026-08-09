@@ -1,0 +1,484 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.35.0",
++  "version": "51.40.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 reservation and guest journey certification",
++  "description": "Blue Current Hospitality OS \u2014 live floor and service certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -67,6 +67,7 @@
+ const RolePermissionCertificationService = require("./services/rolePermissionCertificationService");
+ const OperatorUxHardeningService = require("./services/operatorUxHardeningService");
+ const ReservationGuestJourneyCertificationService = require("./services/reservationGuestJourneyCertificationService");
++const LiveFloorServiceCertificationService = require("./services/liveFloorServiceCertificationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -137,7 +138,8 @@
+ const rolePermissionCertificationService = new RolePermissionCertificationService(database, auditService, realtimeHub, authService, dataIntegrityRecoveryService);
+ const operatorUxHardeningService = new OperatorUxHardeningService(database, auditService, realtimeHub, rolePermissionCertificationService);
+ const reservationGuestJourneyCertificationService = new ReservationGuestJourneyCertificationService(database, auditService, realtimeHub, guestIntelligenceService, operatorUxHardeningService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService });
++const liveFloorServiceCertificationService = new LiveFloorServiceCertificationService(database, auditService, realtimeHub, reservationGuestJourneyCertificationService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -224,7 +226,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.35.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.40.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.35.0",
++        version: "51.40.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,31 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/live-floor-service-certification" && request.method === "GET") {
++      return sendJson(response,200,await liveFloorServiceCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/live-floor-service-certification/locations/") && url.pathname.endsWith("/start") && request.method === "POST") {
++      if (!authService.can(auth,"write_operations") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Operations write permission required to start a floor/service rehearsal."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await liveFloorServiceCertificationService.start(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/live-floor-service-certification/sessions/") && url.pathname.endsWith("/checkpoint") && request.method === "POST") {
++      if (!authService.can(auth,"write_operations") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Operations write permission required to record a floor/service checkpoint."});
++      const sessionId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await liveFloorServiceCertificationService.checkpoint(auth.membership.organizationId,auth.membership.locationIds||[],sessionId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/live-floor-service-certification/locations/") && url.pathname.endsWith("/certify") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for live floor/service certification."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await liveFloorServiceCertificationService.certify(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/reservation-guest-journey" && request.method === "GET") {
+       return sendJson(response,200,await reservationGuestJourneyCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/liveFloorServiceCertificationService.js
++++ b/server/services/liveFloorServiceCertificationService.js
+@@ -0,0 +1,82 @@
++"use strict";
++class LiveFloorServiceCertificationService {
++  constructor(database,auditService,realtimeHub,reservationGuestJourneyCertificationService){Object.assign(this,{database,auditService,realtimeHub,reservationGuestJourneyCertificationService});this.stageOrder=["TABLE_STATE","OCCUPANCY","SECTION_SERVER_ASSIGNMENT","RESERVATION_TABLE_LINKAGE","WAITLIST_TABLE_LINKAGE","TABLE_TURNS_RESET","SERVICE_TIMING","GUEST_MOVEMENT","SEATING_PRESSURE","SERVICE_EVENT_CONTINUITY"];}
++  now(){return new Date().toISOString();}
++  allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
++  async sessions(organizationId){const db=await this.database.read();return (db.liveFloorServiceCertificationSessions||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));}
++  async certifications(organizationId){const db=await this.database.read();return (db.liveFloorServiceCertifications||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.certifiedAt)-new Date(a.certifiedAt));}
++  model(db,organizationId,locationId){
++    const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const sections=(db.sections||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const staff=(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const waitlist=(db.waitlist||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const seatingEvents=(db.seatingEvents||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const serviceFlows=(db.serviceFlows||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const serviceEvents=(db.serviceEvents||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const occupied=tables.filter(x=>["seated","occupied"].includes(String(x.status||"").toLowerCase()));
++    const available=tables.filter(x=>["available","open"].includes(String(x.status||"").toLowerCase()));
++    const resetting=tables.filter(x=>["dirty","cleaning","resetting"].includes(String(x.status||"").toLowerCase()));
++    const linkedReservations=reservations.filter(r=>r.tableId&&tables.some(t=>t.id===r.tableId));
++    const seatedWaitlist=waitlist.filter(w=>w.status==="seated"&&w.tableId&&tables.some(t=>t.id===w.tableId));
++    const assignedTables=tables.filter(t=>String(t.section||t.sectionId||"").trim()&&String(t.server||t.serverId||"").trim());
++    const timedFlows=serviceFlows.filter(f=>f.seatedAt||f.readyAt||f.deliveredAt||f.updatedAt);
++    return {tables,sections,staff,reservations,waitlist,seatingEvents,serviceFlows,serviceEvents,occupied,available,resetting,linkedReservations,seatedWaitlist,assignedTables,timedFlows};
++  }
++  stageChecks(m,stage){
++    const capacity=m.tables.reduce((n,t)=>n+Number(t.seats||0),0),occupiedSeats=m.occupied.reduce((n,t)=>n+Number(t.partySize||0),0),occupancyPct=capacity?Math.round(occupiedSeats/capacity*100):0;
++    const tableStates=new Set(m.tables.map(t=>String(t.status||"").toLowerCase()).filter(Boolean));
++    const movementEvents=[...m.seatingEvents,...m.serviceEvents].filter(e=>/seat|table|guest|flow|deliver|course/i.test(`${e.type||""} ${e.summary||""}`));
++    const turnEvidence=[...m.seatingEvents,...m.serviceEvents].filter(e=>/clear|clean|reset|turn|available/i.test(`${e.type||""} ${e.summary||""}`));
++    const pressureEvidence=m.waitlist.some(w=>w.status==="waiting")||occupancyPct>=70;
++    const map={
++      TABLE_STATE:[{id:"tables",label:"Floor has authoritative table records",passed:m.tables.length>0,actual:`${m.tables.length} tables`},{id:"states",label:"Table status values are present",passed:tableStates.size>0,actual:`${tableStates.size} distinct state(s)`}],
++      OCCUPANCY:[{id:"capacity",label:"Seat capacity can be calculated",passed:capacity>0,actual:`${capacity} seats`},{id:"occupancy",label:"Occupancy can be calculated from current table state",passed:m.tables.length>0,actual:`${occupiedSeats}/${capacity||0} occupied seats · ${occupancyPct}%`}],
++      SECTION_SERVER_ASSIGNMENT:[{id:"sections",label:"Section structure exists",passed:m.sections.length>0,actual:`${m.sections.length} section(s)`},{id:"assignments",label:"Tables carry section/server assignment context",passed:m.assignedTables.length>0,actual:`${m.assignedTables.length}/${m.tables.length} assigned table(s)`}],
++      RESERVATION_TABLE_LINKAGE:[{id:"reservation-link",label:"Reservation-to-table linkage exists",passed:m.linkedReservations.length>0,actual:`${m.linkedReservations.length}/${m.reservations.length} linked reservation(s)`}],
++      WAITLIST_TABLE_LINKAGE:[{id:"waitlist",label:"Waitlist operating context exists",passed:m.waitlist.length>0,actual:`${m.waitlist.length} waitlist record(s)`},{id:"waitlist-seat",label:"Waitlist-to-table seating linkage exists",passed:m.seatedWaitlist.length>0||m.seatingEvents.some(e=>e.type==="waitlist.seated"),actual:`${m.seatedWaitlist.length} linked seated waitlist · ${m.seatingEvents.filter(e=>e.type==="waitlist.seated").length} seating event(s)`}],
++      TABLE_TURNS_RESET:[{id:"reset-context",label:"Table reset/turn evidence exists",passed:m.resetting.length>0||turnEvidence.length>0||m.available.length>0,actual:`${m.resetting.length} resetting · ${m.available.length} available · ${turnEvidence.length} reset/turn event(s)`}],
++      SERVICE_TIMING:[{id:"service-flow",label:"Service flow records exist",passed:m.serviceFlows.length>0,actual:`${m.serviceFlows.length} service flow(s)`},{id:"timing",label:"Service timing timestamps exist",passed:m.timedFlows.length>0,actual:`${m.timedFlows.length} timed flow(s)`}],
++      GUEST_MOVEMENT:[{id:"movement",label:"Guest/table movement event continuity exists",passed:movementEvents.length>0,actual:`${movementEvents.length} movement-related event(s)`}],
++      SEATING_PRESSURE:[{id:"pressure",label:"Seating-pressure context can be observed",passed:pressureEvidence,actual:`${m.waitlist.filter(w=>w.status==="waiting").length} waiting · ${occupancyPct}% occupancy`}],
++      SERVICE_EVENT_CONTINUITY:[{id:"events",label:"Live service event history exists",passed:m.serviceEvents.length>0,actual:`${m.serviceEvents.length} service event(s)`}]
++    };return map[stage]||[];
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,guestJourney,sessions,certs]=await Promise.all([this.database.read(),this.reservationGuestJourneyCertificationService.snapshot(organizationId,allowedLocationIds),this.sessions(organizationId),this.certifications(organizationId)]);
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId&&this.allowed(x.id,allowedLocationIds)).map(loc=>{
++      const m=this.model(db,organizationId,loc.id),session=sessions.find(x=>x.locationId===loc.id&&x.status==="ACTIVE")||sessions.find(x=>x.locationId===loc.id)||null,certification=certs.find(x=>x.locationId===loc.id)||null;
++      const completed=new Set((session?.checkpoints||[]).filter(x=>x.status==="COMPLETED").map(x=>x.stage));
++      const stages=this.stageOrder.map((stage,index)=>{const checks=this.stageChecks(m,stage),systemEvidence=checks.every(x=>x.passed),previous=index===0||completed.has(this.stageOrder[index-1]),checkpoint=(session?.checkpoints||[]).filter(x=>x.stage===stage).slice(-1)[0]||null,complete=checkpoint?.status==="COMPLETED";return{stage,index:index+1,label:stage.replaceAll("_"," "),checks,systemEvidence,previousComplete:previous,checkpoint,state:complete?"COMPLETED":!session?"SESSION_REQUIRED":!previous?"WAITING_FOR_PRIOR_STAGE":systemEvidence?"READY_FOR_CHECKPOINT":"EVIDENCE_GAP"};});
++      const systemEvidencePassed=stages.filter(x=>x.systemEvidence).length,completedStages=stages.filter(x=>x.state==="COMPLETED").length,capacity=m.tables.reduce((n,t)=>n+Number(t.seats||0),0),occupiedSeats=m.occupied.reduce((n,t)=>n+Number(t.partySize||0),0);
++      return{locationId:loc.id,locationName:loc.name||loc.displayName||loc.id,session,certification,stages,systemEvidencePassed,completedStages,totalStages:this.stageOrder.length,floorSummary:{tables:m.tables.length,sections:m.sections.length,staff:m.staff.length,capacity,occupiedTables:m.occupied.length,occupiedSeats,occupancyPercent:capacity?Math.round(occupiedSeats/capacity*100):0,reservations:m.reservations.length,linkedReservations:m.linkedReservations.length,waitlist:m.waitlist.length,serviceFlows:m.serviceFlows.length,serviceEvents:m.serviceEvents.length},floorServiceState:certification?.status==="LIVE_FLOOR_SERVICE_CERTIFIED"?"FLOOR_SERVICE_CERTIFIED":completedStages===this.stageOrder.length?"READY_FOR_CERTIFICATION":session?.status==="ACTIVE"?"FLOOR_SERVICE_REHEARSAL_ACTIVE":"FLOOR_SERVICE_REHEARSAL_NOT_STARTED"};
++    });
++    const total=locations.length*this.stageOrder.length;
++    return{version:"51.40.0",generatedAt:this.now(),status:locations.length===0?"restaurant-required":locations.every(x=>x.floorServiceState==="FLOOR_SERVICE_CERTIFIED")?"live-floor-service-certified":locations.some(x=>x.floorServiceState==="FLOOR_SERVICE_REHEARSAL_ACTIVE")?"live-floor-service-in-progress":"live-floor-service-ready",headline:`${locations.reduce((n,x)=>n+x.systemEvidencePassed,0)}/${total} floor/service stages have supporting system evidence; ${locations.reduce((n,x)=>n+x.completedStages,0)}/${total} have human checkpoint evidence.`,stageOrder:this.stageOrder,locations,guestJourneyStatus:guestJourney.status,policy:{existingFloorServiceReused:true,tableStateReadOnlyForCertification:true,occupancyDerivedFromAuthoritativeState:true,humanCheckpointEvidenceRequired:true,evidenceGapOverrideRequiresReason:true,stageOrderEnforced:true,certificationHumanRequired:true,noSyntheticFloorPass:true,noAutomaticTableMutation:true,noAutomaticGuestMovement:true,autonomousProductionChanges:false}};
++  }
++  async start(organizationId,allowedLocationIds,locationId,input,actor){
++    if(!this.allowed(locationId,allowedLocationIds))throw new Error("Location is outside your authorized scope.");
++    const snap=await this.snapshot(organizationId,allowedLocationIds),loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Restaurant location not found.");if(loc.session?.status==="ACTIVE")throw new Error("An active live-floor/service rehearsal already exists.");
++    const now=this.now(),record={id:`lfsc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,locationName:loc.locationName,status:"ACTIVE",mode:"CONTROLLED_FLOOR_SERVICE_REHEARSAL",startedAt:now,startedBy:actor,shiftLabel:String(input.shiftLabel||"Dinner").trim().slice(0,80),manager:String(input.manager||actor||"").trim().slice(0,160),targetOccupancyPercent:Math.max(0,Math.min(Number(input.targetOccupancyPercent)||85,100)),note:String(input.note||"").trim().slice(0,1200),checkpoints:[]};
++    await this.database.mutate(db=>{db.liveFloorServiceCertificationSessions||=[];db.liveFloorServiceCertificationSessions.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Live floor/service rehearsal started for ${locationId}`,category:"pilot_floor_service"});this.realtimeHub.publish("live-floor-service:started",{organizationId,locationId,id:record.id});return record;
++  }
++  async checkpoint(organizationId,allowedLocationIds,sessionId,input,actor){
++    const stage=String(input.stage||"").toUpperCase();if(!this.stageOrder.includes(stage))throw new Error("Invalid live floor/service stage.");
++    const snap=await this.snapshot(organizationId,allowedLocationIds),loc=snap.locations.find(x=>x.session?.id===sessionId);if(!loc||loc.session.status!=="ACTIVE")throw new Error("Active live floor/service rehearsal not found.");
++    const state=loc.stages.find(x=>x.stage===stage);if(state.state==="COMPLETED")throw new Error(`${stage} is already complete.`);if(!state.previousComplete)throw new Error(`${stage} cannot be completed before the prior floor/service stage.`);
++    const evidence=String(input.evidence||"").trim().slice(0,2400);if(!evidence)throw new Error("Human floor/service checkpoint evidence is required.");
++    const overrideReason=String(input.overrideReason||"").trim().slice(0,1800);if(!state.systemEvidence&&!overrideReason)throw new Error(`${stage} lacks supporting system evidence. A documented rehearsal override reason is required.`);
++    const now=this.now(),record={id:`lfscp_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,stage,status:"COMPLETED",completedAt:now,completedBy:actor,evidence,systemEvidencePresent:state.systemEvidence,overrideUsed:!state.systemEvidence,overrideReason,systemCheckSnapshot:state.checks,tableMutationPerformed:false,guestMovementPerformed:false};
++    const updated=await this.database.mutate(db=>{const session=(db.liveFloorServiceCertificationSessions||[]).find(x=>x.id===sessionId&&x.organizationId===organizationId);if(!session)return null;session.checkpoints||=[];session.checkpoints.push(record);if(stage==="SERVICE_EVENT_CONTINUITY"){session.status="COMPLETED";session.completedAt=now;session.completedBy=actor;}return{...session};});
++    if(!updated)throw new Error("Live floor/service rehearsal not found.");await this.auditService.record({organizationId,actor,action:`Floor/service checkpoint ${stage} completed for ${updated.locationId}${record.overrideUsed?" with documented evidence-gap override":""}`,category:"pilot_floor_service"});this.realtimeHub.publish("live-floor-service:checkpoint",{organizationId,locationId:updated.locationId,sessionId,stage,overrideUsed:record.overrideUsed});return record;
++  }
++  async certify(organizationId,allowedLocationIds,locationId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds),loc=snap.locations.find(x=>x.locationId===locationId);if(!loc)throw new Error("Restaurant location not found.");if(loc.completedStages!==this.stageOrder.length)throw new Error("All live floor/service checkpoints must be completed before certification.");
++    const evidence=String(input.evidence||"").trim().slice(0,3000),note=String(input.note||"").trim().slice(0,1800);if(!evidence)throw new Error("Human live-floor/service certification evidence is required.");if(!note)throw new Error("Human floor/service certification note is required.");
++    const record={id:`lfscert_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,locationName:loc.locationName,status:"LIVE_FLOOR_SERVICE_CERTIFIED",certifiedAt:this.now(),certifiedBy:actor,evidence,note,completedStages:loc.completedStages,totalStages:this.stageOrder.length,systemEvidencePassed:loc.systemEvidencePassed,sessionId:loc.session?.id||null,tableMutationPerformedByCertification:false,guestMovementPerformedByCertification:false,autonomousProductionChanges:false};
++    await this.database.mutate(db=>{db.liveFloorServiceCertifications||=[];db.liveFloorServiceCertifications.push(record);return record;});await this.auditService.record({organizationId,actor,action:`Live floor and service certified for ${locationId}`,category:"pilot_floor_service"});this.realtimeHub.publish("live-floor-service:certified",{organizationId,locationId,id:record.id});return record;
++  }
++}
++module.exports=LiveFloorServiceCertificationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.35.0">
++  <meta name="blue-current-build" content="51.40.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -417,6 +417,14 @@
+       <div class="v4316-actions"><input id="rgjGuest" class="v4312-input" placeholder="Pilot guest name"><input id="rgjPhone" class="v4312-input" placeholder="Guest phone"><input id="rgjOccasion" class="v4312-input" placeholder="Special occasion"><input id="rgjNote" class="v4312-input" placeholder="Journey rehearsal note"></div>
+       <div class="v4316-actions"><input id="rgjEvidence" class="v4312-input" placeholder="Human checkpoint evidence"><input id="rgjOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="rgjCertificationEvidence" class="v4312-input" placeholder="End-to-end journey certification evidence"><input id="rgjCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
+       <p><strong>Restaurant guest journeys</strong></p><div id="rgjLocations" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="liveFloorServiceCertification">
++      <header><div><small>V51.36–V51.40 · Live Floor & Service Certification</small><strong>Prove Blue Current's live dining-room state stays coherent from seating pressure through service progression and table reset.</strong><span>Ten ordered checkpoints certify table state, occupancy, section/server assignment, reservation and waitlist linkage, turns/reset, timing, guest movement, seating pressure, and live service-event continuity. System evidence stays separate from human proof.</span></div><button id="lfscRefresh" type="button">Refresh floor/service</button></header>
++      <div class="v432-kpis"><article><small>Floor/service status</small><strong id="lfscStatus">—</strong></article><article><small>System evidence</small><strong id="lfscSystemEvidence">0/0</strong></article><article><small>Human checkpoints</small><strong id="lfscHumanEvidence">0/0</strong></article><article><small>Certified locations</small><strong id="lfscCertified">0</strong></article></div>
++      <div class="v4316-answer" id="lfscHeadline">Live floor and service ready for rehearsal.</div>
++      <div class="v4316-actions"><input id="lfscShift" class="v4312-input" value="Dinner" placeholder="Shift label"><input id="lfscManager" class="v4312-input" placeholder="Manager / rehearsal lead"><input id="lfscTargetOccupancy" class="v4312-input" type="number" min="0" max="100" value="85" placeholder="Target occupancy %"><input id="lfscNote" class="v4312-input" placeholder="Floor/service rehearsal note"></div>
++      <div class="v4316-actions"><input id="lfscEvidence" class="v4312-input" placeholder="Human floor/service checkpoint evidence"><input id="lfscOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="lfscCertificationEvidence" class="v4312-input" placeholder="End-to-end floor/service certification evidence"><input id="lfscCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
++      <p><strong>Restaurant floor/service journeys</strong></p><div id="lfscLocations" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8975,6 +8983,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningCenter.js?v=51.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyEngine.js?v=51.35.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyCenter.js?v=51.35.0"></script>
+-<script src="js/startup-loader.js?v=51.35.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationEngine.js?v=51.40.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationCenter.js?v=51.40.0"></script>
++<script src="js/startup-loader.js?v=51.40.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1254,6 +1254,7 @@
+ const rolePermissionCertificationModule = startupRegistry.register("rolePermissionCertification", shouldInitializeCenter("rolePermissionCertification") ? window.createBlueCurrentRolePermissionCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "dataIntegrityRecovery"]);
+ const operatorUxHardeningModule = startupRegistry.register("operatorUxHardening", shouldInitializeCenter("operatorUxHardening") ? window.createBlueCurrentOperatorUxHardeningCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolePermissionCertification"]);
+ const reservationGuestJourneyModule = startupRegistry.register("reservationGuestJourney", shouldInitializeCenter("reservationGuestJourney") ? window.createBlueCurrentReservationGuestJourneyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorUxHardening"]);
++const liveFloorServiceCertificationModule = startupRegistry.register("liveFloorServiceCertification", shouldInitializeCenter("liveFloorServiceCertification") ? window.createBlueCurrentLiveFloorServiceCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "reservationGuestJourney"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.35.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.40.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/liveFloorServiceCertificationEngine.js
++++ b/client/js/modules/liveFloorServiceCertificationEngine.js
+@@ -0,0 +1 @@
++(function(global){"use strict";class BlueCurrentLiveFloorServiceCertificationEngine{constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}token(){return localStorage.getItem("blueCurrentV3230Token")||"";}headers(){return{Authorization:`Bearer ${this.token()}`};}async snapshot(){const r=await fetch("/api/live-floor-service-certification",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Live floor/service certification failed (${r.status})`);this.appState?.update?.({liveFloorServiceCertification:d});return d;}async start(locationId,payload={}){const r=await fetch(`/api/live-floor-service-certification/locations/${encodeURIComponent(locationId)}/start`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Floor/service rehearsal start failed (${r.status})`);this.eventBus?.emit?.("live-floor-service:started",structuredClone(d));return d;}async checkpoint(sessionId,payload={}){const r=await fetch(`/api/live-floor-service-certification/sessions/${encodeURIComponent(sessionId)}/checkpoint`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Floor/service checkpoint failed (${r.status})`);this.eventBus?.emit?.("live-floor-service:checkpoint",structuredClone(d));return d;}async certify(locationId,payload={}){const r=await fetch(`/api/live-floor-service-certification/locations/${encodeURIComponent(locationId)}/certify`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Floor/service certification failed (${r.status})`);this.eventBus?.emit?.("live-floor-service:certified",structuredClone(d));return d;}}if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentLiveFloorServiceCertificationEngine;if(global)global.BlueCurrentLiveFloorServiceCertificationEngine=BlueCurrentLiveFloorServiceCertificationEngine;})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/liveFloorServiceCertificationCenter.js
++++ b/client/js/modules/liveFloorServiceCertificationCenter.js
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentLiveFloorServiceCertificationCenterModule(eventBus,appState){const root=document.getElementById("liveFloorServiceCertification");if(!root||!window.BlueCurrentLiveFloorServiceCertificationEngine)return null;const e=new window.BlueCurrentLiveFloorServiceCertificationEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));function render(s){const locs=s.locations||[];$("lfscStatus").textContent=s.status||"—";$("lfscSystemEvidence").textContent=`${locs.reduce((n,x)=>n+x.systemEvidencePassed,0)}/${locs.reduce((n,x)=>n+x.totalStages,0)}`;$("lfscHumanEvidence").textContent=`${locs.reduce((n,x)=>n+x.completedStages,0)}/${locs.reduce((n,x)=>n+x.totalStages,0)}`;$("lfscCertified").textContent=locs.filter(x=>x.floorServiceState==="FLOOR_SERVICE_CERTIFIED").length;$("lfscHeadline").textContent=s.headline||"Live floor/service certification unavailable.";$("lfscLocations").innerHTML=locs.map(x=>`<article data-lfsc-location="${esc(x.locationId)}"${x.session?` data-lfsc-session="${esc(x.session.id)}"`:""}><div><strong>${esc(x.locationName)}</strong><span>${esc(x.floorServiceState)} · ${x.completedStages}/${x.totalStages} human checkpoints · ${x.systemEvidencePassed}/${x.totalStages} system evidence</span></div><p>${x.floorSummary.tables} tables · ${x.floorSummary.sections} sections · ${x.floorSummary.occupiedTables} occupied · ${x.floorSummary.occupancyPercent}% occupancy · ${x.floorSummary.linkedReservations}/${x.floorSummary.reservations} reservation links · ${x.floorSummary.serviceFlows} service flows · ${x.floorSummary.serviceEvents} service events</p>${!x.session||x.session.status!=="ACTIVE"?'<div class="v4316-actions"><button type="button" data-lfsc-start="true">Start floor/service rehearsal</button></div>':""}<div class="v432-list">${x.stages.map(st=>`<article data-lfsc-stage="${esc(st.stage)}"><strong>${esc(st.state)} · ${esc(st.label)}</strong><span>${st.systemEvidence?"system evidence present":"system evidence gap"}</span>${x.session?.status==="ACTIVE"&&(st.state==="READY_FOR_CHECKPOINT"||st.state==="EVIDENCE_GAP")?'<button type="button" data-lfsc-checkpoint="true">Record checkpoint</button>':""}</article>`).join("")}</div>${x.completedStages===x.totalStages&&x.floorServiceState!=="FLOOR_SERVICE_CERTIFIED"?'<div class="v4316-actions"><button type="button" data-lfsc-certify="true">Certify floor & service</button></div>':""}</article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";}async function load(){try{render(await e.snapshot());}catch(err){$("lfscHeadline").textContent=err.message;}}root.addEventListener("click",async ev=>{const loc=ev.target.closest("[data-lfsc-location]");if(!loc)return;try{if(ev.target.closest("[data-lfsc-start]"))await e.start(loc.dataset.lfscLocation,{shiftLabel:$("lfscShift").value,manager:$("lfscManager").value,targetOccupancyPercent:Number($("lfscTargetOccupancy").value||85),note:$("lfscNote").value});else if(ev.target.closest("[data-lfsc-certify]"))await e.certify(loc.dataset.lfscLocation,{evidence:$("lfscCertificationEvidence").value,note:$("lfscCertificationNote").value});else{const st=ev.target.closest("[data-lfsc-stage]");if(st&&ev.target.closest("[data-lfsc-checkpoint]")&&loc.dataset.lfscSession)await e.checkpoint(loc.dataset.lfscSession,{stage:st.dataset.lfscStage,evidence:$("lfscEvidence").value,overrideReason:$("lfscOverride").value});}await load();}catch(err){$("lfscHeadline").textContent=err.message;}});$("lfscRefresh")?.addEventListener("click",load);["live-floor-service:started","live-floor-service:checkpoint","live-floor-service:certified","floor:table-updated","floor:guest-seated","reservation:seated","service:flow-updated","service:guest-seated","auth:restored"].forEach(x=>eventBus?.on?.(x,load));load();return{engine:e,load};}window.createBlueCurrentLiveFloorServiceCertificationCenterModule=createBlueCurrentLiveFloorServiceCertificationCenterModule;})();--- a/scripts/maintenance/test-v51.40-live-floor-service-certification.js
++++ b/scripts/maintenance/test-v51.40-live-floor-service-certification.js
+@@ -0,0 +1,29 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/liveFloorServiceCertificationService");
++(async()=>{
++ const state={
++  locations:[{id:"loc1",organizationId:"org",name:"Pilot Restaurant"}],
++  tables:[{id:"t1",organizationId:"org",locationId:"loc1",name:"T1",seats:4,status:"seated",partySize:4,section:"Main",server:"Sam"},{id:"t2",organizationId:"org",locationId:"loc1",name:"T2",seats:4,status:"available",partySize:0,section:"Main",server:"Sam"}],
++  sections:[{id:"s1",organizationId:"org",locationId:"loc1",name:"Main"}],staff:[{id:"st1",organizationId:"org",locationId:"loc1",status:"active",name:"Sam"}],
++  reservations:[{id:"r1",organizationId:"org",locationId:"loc1",status:"seated",partySize:4,tableId:"t1"}],
++  waitlist:[{id:"w1",organizationId:"org",locationId:"loc1",status:"seated",partySize:2,tableId:"t2"},{id:"w2",organizationId:"org",locationId:"loc1",status:"waiting",partySize:3}],
++  seatingEvents:[{id:"se1",organizationId:"org",locationId:"loc1",type:"waitlist.seated",summary:"Guest seated at T2"},{id:"se2",organizationId:"org",locationId:"loc1",type:"table.reset",summary:"T2 reset and available"}],
++  serviceFlows:[{id:"sf1",organizationId:"org",locationId:"loc1",tableId:"t1",tableName:"T1",seatedAt:"2026-08-09T21:00:00Z",readyAt:"2026-08-09T21:20:00Z",deliveredAt:"2026-08-09T21:23:00Z",updatedAt:"2026-08-09T21:23:00Z"}],
++  serviceEvents:[{id:"sv1",organizationId:"org",locationId:"loc1",type:"service:flow-updated",summary:"T1 food delivered"},{id:"sv2",organizationId:"org",locationId:"loc1",type:"table.available",summary:"T2 turned available"}],
++  liveFloorServiceCertificationSessions:[],liveFloorServiceCertifications:[]
++ };
++ const audits=[],events=[],svc=new Service({read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)},{record:async x=>audits.push(x)},{publish:(n,p)=>events.push([n,p])},{snapshot:async()=>({status:"reservation-guest-journey-ready"})});
++ let snap=await svc.snapshot("org",["loc1"]);assert.equal(snap.version,"51.40.0");assert.equal(snap.status,"live-floor-service-ready");assert.equal(snap.locations[0].stages.length,10);assert.equal(snap.locations[0].systemEvidencePassed,10);assert.equal(snap.locations[0].floorSummary.occupancyPercent,50);assert.equal(snap.policy.noSyntheticFloorPass,true);
++ const session=await svc.start("org",["loc1"],"loc1",{shiftLabel:"Dinner",manager:"GM",targetOccupancyPercent:90,note:"Full floor rehearsal"},"Tester");assert.equal(session.status,"ACTIVE");
++ let orderBlocked=false;try{await svc.checkpoint("org",["loc1"],session.id,{stage:"SEATING_PRESSURE",evidence:"Pressure reviewed"},"Tester");}catch(e){orderBlocked=/prior floor\/service stage/i.test(e.message);}assert(orderBlocked);
++ for(const stage of svc.stageOrder){const cp=await svc.checkpoint("org",["loc1"],session.id,{stage,evidence:`${stage} exercised and verified on the live-floor model.`},"Tester");assert.equal(cp.status,"COMPLETED");assert.equal(cp.overrideUsed,false);assert.equal(cp.tableMutationPerformed,false);assert.equal(cp.guestMovementPerformed,false);}
++ snap=await svc.snapshot("org",["loc1"]);assert.equal(snap.locations[0].completedStages,10);assert.equal(snap.locations[0].floorServiceState,"READY_FOR_CERTIFICATION");
++ const cert=await svc.certify("org",["loc1"],"loc1",{evidence:"Table state, occupancy, seating linkages, service timing, turns, pressure, and event continuity were exercised in one shift rehearsal.",note:"Live floor and service flow accepted for pilot."},"Tester");assert.equal(cert.status,"LIVE_FLOOR_SERVICE_CERTIFIED");assert.equal(cert.tableMutationPerformedByCertification,false);
++ snap=await svc.snapshot("org",["loc1"]);assert.equal(snap.status,"live-floor-service-certified");
++ state.serviceEvents=[];state.serviceFlows=[];state.liveFloorServiceCertificationSessions=[];state.liveFloorServiceCertifications=[];
++ const session2=await svc.start("org",["loc1"],"loc1",{},"Tester");for(const stage of svc.stageOrder.slice(0,6))await svc.checkpoint("org",["loc1"],session2.id,{stage,evidence:`${stage} verified.`},"Tester");
++ let gapBlocked=false;try{await svc.checkpoint("org",["loc1"],session2.id,{stage:"SERVICE_TIMING",evidence:"Timing reviewed."},"Tester");}catch(e){gapBlocked=/override reason/i.test(e.message);}assert(gapBlocked);
++ const overridden=await svc.checkpoint("org",["loc1"],session2.id,{stage:"SERVICE_TIMING",evidence:"Timing workflow reviewed using the known missing service-flow evidence state.",overrideReason:"Controlled pilot rehearsal of service-timing evidence gap."},"Tester");assert.equal(overridden.overrideUsed,true);
++ console.log(JSON.stringify({ok:true,version:"51.40.0",stages:10,tableStateContinuity:true,occupancyAccuracy:true,sectionServerAssignment:true,reservationTableLinkage:true,waitlistTableLinkage:true,tableTurnReset:true,serviceTiming:true,guestMovement:true,seatingPressure:true,serviceEventContinuity:true,stageOrderEnforced:true,evidenceGapOverrideGuard:true,humanCertification:true,noSyntheticFloorPass:true,noAutomaticTableMutation:true,noAutomaticGuestMovement:true,autonomousProductionChanges:false},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.40.0-RELEASE.md
++++ b/V51.40.0-RELEASE.md
+@@ -0,0 +1,157 @@
++# BLUE CURRENT V51.40.0 — LIVE FLOOR & SERVICE CERTIFICATION
++
++V51.36–V51.40 certifies Blue Current's live dining-room and service continuity using the existing floor, reservation, waitlist, staffing, service-flow, and event models.
++
++## Ordered floor/service certification
++
++1. TABLE_STATE
++2. OCCUPANCY
++3. SECTION_SERVER_ASSIGNMENT
++4. RESERVATION_TABLE_LINKAGE
++5. WAITLIST_TABLE_LINKAGE
++6. TABLE_TURNS_RESET
++7. SERVICE_TIMING
++8. GUEST_MOVEMENT
++9. SEATING_PRESSURE
++10. SERVICE_EVENT_CONTINUITY
++
++The sequence is enforced.
++
++## System evidence versus human proof
++
++Each stage separates:
++
++- existing system evidence
++- human rehearsal/checkpoint evidence
++- final human certification
++
++A system-evidence gap does not become a pass.
++
++A controlled rehearsal may continue through a known evidence gap only with a documented override reason.
++
++## Existing operating systems are reused
++
++V51.40 reads from the existing:
++
++- FloorService
++- reservation/table links
++- waitlist/table links
++- sections
++- staff/server assignments
++- ServiceCoordinationService
++- seating events
++- live service events
++
++Certification itself does not mutate table state or move guests.
++
++## Occupancy model
++
++Occupancy is derived from authoritative table state:
++
++- current table status
++- party size
++- configured seat count
++
++The certification surface displays:
++
++- tables
++- sections
++- occupied tables
++- occupied seats
++- seat capacity
++- occupancy %
++- reservation/table linkage
++- waitlist count
++- service-flow count
++- service-event count
++
++## Current authenticated Chefs runtime
++
++Current state:
++
++`live-floor-service-ready`
++
++Across five in-scope restaurants:
++
++- 50 total floor/service stages
++- 7 have supporting system evidence
++- 0 have human checkpoint evidence
++- 0 are certified
++
++Marina Grille:
++
++- system evidence: 7/10
++- current derived occupancy: 18%
++- current evidence gaps:
++  - WAITLIST_TABLE_LINKAGE
++  - GUEST_MOVEMENT
++  - SERVICE_EVENT_CONTINUITY
++
++Harbor House, River & Rail, The Cabin, and Garden Social currently have 0/10 supporting floor/service stages because their authoritative live operating data has not yet been populated.
++
++## Validation edge case caught before release
++
++The first synthetic regression fixture produced 9/10 instead of 10/10.
++
++The certification service was correct: the fixture had historical seated-waitlist evidence, but no guest still waiting and only 50% occupancy, so there was no actual seating-pressure evidence.
++
++The fixture was corrected to include both:
++
++- seated waitlist-to-table continuity
++- an active waiting guest
++
++The complete clean regression was then rerun successfully.
++
++## Safety policy
++
++- existing floor/service workflow reused
++- table state read-only for certification
++- occupancy derived from authoritative state
++- human checkpoint evidence required
++- evidence-gap override requires reason
++- stage order enforced
++- certification human required
++- no synthetic floor pass
++- no automatic table mutation
++- no automatic guest movement
++- autonomous production changes false
++
++## Validation
++
++- V51.40 focused floor/service lifecycle PASS
++- all 10 ordered floor/service stages exercised PASS
++- table-state continuity PASS
++- occupancy accuracy PASS
++- section/server assignment PASS
++- reservation-table linkage PASS
++- waitlist-table linkage PASS
++- table turns/reset PASS
++- service timing PASS
++- guest movement PASS
++- seating pressure PASS
++- service-event continuity PASS
++- stage-order guard PASS
++- evidence-gap override guard PASS
++- V51.35 regression PASS
++- authenticated floor/service endpoint PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 941 JavaScript files
++- 786 client scripts
++- 5,870 unique HTML IDs
++
++## Next
++
++V51.41–V51.45 — Management & Executive Accuracy
++
++- operational KPI source tracing
++- dashboard-to-source reconciliation
++- occupancy / covers / wait accuracy
++- labor / service / kitchen signal integrity
++- profitability signal provenance
++- portfolio/location rollup accuracy
++- stale-data detection
++- metric discrepancy reporting
++- executive view trust certification
+--- a/README-APPLY-V51.40.0.md
++++ b/README-APPLY-V51.40.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V51.40.0
++
++Baseline: exact V51.35.0 repository.
++
++Extract `BLUE-CURRENT-V51.40.0-LIVE-FLOOR-SERVICE.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.40-live-floor-service-certification.js
++node scripts/maintenance/test-v51.35-reservation-guest-journey.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.40.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Live Floor & Service Certification** surface appears after Reservation & Guest Journey Certification.
++
++Important:
++
++- the certification layer reads existing floor/service state
++- occupancy is derived from authoritative table/party-size data
++- checkpoints must be recorded in order
++- missing system evidence requires a documented rehearsal reason
++- certification does not change table state or move guests
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.40.0 certify live floor and service"
++git push origin live-service-timeline
++```

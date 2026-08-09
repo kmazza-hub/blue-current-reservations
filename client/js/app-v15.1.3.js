@@ -1254,6 +1254,7 @@ const dataIntegrityRecoveryModule = startupRegistry.register("dataIntegrityRecov
 const rolePermissionCertificationModule = startupRegistry.register("rolePermissionCertification", shouldInitializeCenter("rolePermissionCertification") ? window.createBlueCurrentRolePermissionCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "dataIntegrityRecovery"]);
 const operatorUxHardeningModule = startupRegistry.register("operatorUxHardening", shouldInitializeCenter("operatorUxHardening") ? window.createBlueCurrentOperatorUxHardeningCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolePermissionCertification"]);
 const reservationGuestJourneyModule = startupRegistry.register("reservationGuestJourney", shouldInitializeCenter("reservationGuestJourney") ? window.createBlueCurrentReservationGuestJourneyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorUxHardening"]);
+const liveFloorServiceCertificationModule = startupRegistry.register("liveFloorServiceCertification", shouldInitializeCenter("liveFloorServiceCertification") ? window.createBlueCurrentLiveFloorServiceCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "reservationGuestJourney"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
