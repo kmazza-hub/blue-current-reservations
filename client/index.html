@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.05.0">
+  <meta name="blue-current-build" content="51.10.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -365,6 +365,14 @@
       <p id="porUpstream">Loading upstream certification state…</p>
       <p><strong>Restaurant readiness</strong></p><div id="porLocations" class="v432-list"></div>
       <p><strong>Required blockers</strong></p><div id="porBlockerList" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="restaurantDayLifecycle">
+      <header><div><small>V51.06–V51.10 · Restaurant Day Lifecycle</small><strong>Operate one restaurant day as a controlled sequence instead of disconnected screens.</strong><span>Opening, pre-shift, reservations, seating, active service, kitchen coordination, guest recovery, and closing now form one rehearsal/certification workflow. Each checkpoint requires human evidence. Open prerequisites stay visible and require an explicit rehearsal override rather than being silently ignored.</span></div><button id="rdlRefresh" type="button">Refresh day lifecycle</button></header>
+      <div class="v432-kpis"><article><small>Lifecycle status</small><strong id="rdlStatus">—</strong></article><article><small>Active rehearsals</small><strong id="rdlActive">0</strong></article><article><small>Completed days</small><strong id="rdlComplete">0</strong></article><article><small>Stages completed</small><strong id="rdlStages">0/0</strong></article></div>
+      <div class="v4316-answer" id="rdlHeadline">Restaurant day lifecycle ready for rehearsal.</div>
+      <div class="v4316-actions"><input id="rdlServiceDate" class="v4312-input" type="date"><input id="rdlShift" class="v4312-input" value="Dinner" placeholder="Shift label"><input id="rdlManager" class="v4312-input" placeholder="Manager / rehearsal lead"><input id="rdlNote" class="v4312-input" placeholder="Session note"></div>
+      <div class="v4316-actions"><input id="rdlEvidence" class="v4312-input" placeholder="Human checkpoint evidence"><input id="rdlOverride" class="v4312-input" placeholder="Rehearsal override reason (only if prerequisites are open)"></div>
+      <p><strong>Restaurant-day operating sequence</strong></p><div id="rdlLocations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8911,6 +8919,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationCenter.js?v=50.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessEngine.js?v=51.05.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessCenter.js?v=51.05.0"></script>
-<script src="js/startup-loader.js?v=51.05.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantDayLifecycle" data-src="js/modules/restaurantDayLifecycleEngine.js?v=51.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantDayLifecycle" data-src="js/modules/restaurantDayLifecycleCenter.js?v=51.10.0"></script>
+<script src="js/startup-loader.js?v=51.10.0"></script>
 </body>
 </html>
