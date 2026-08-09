@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="54.75.0">
+  <meta name="blue-current-build" content="55.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -597,6 +597,12 @@
       <div class="v432-kpis"><article><small>Status</small><strong id="v5475Status">—</strong></article><article><small>Ergonomic ready</small><strong id="v5475Ready">0/0</strong></article></div><div class="v4316-answer" id="v5475Headline">Role-based service ergonomics ready for review.</div>
       <div class="v4316-actions"><input id="v5475Scan" class="v4312-input" type="number" min="0" value="5" placeholder="Scan seconds"><input id="v5475Actions" class="v4312-input" type="number" min="0" value="5" placeholder="Primary actions visible"><input id="v5475MaxScan" class="v4312-input" type="number" min="1" value="8" placeholder="Max scan seconds"><input id="v5475MaxActions" class="v4312-input" type="number" min="1" value="7" placeholder="Max primary actions"><select id="v5475Density" class="v4312-input"><option value="PASS">Information density PASS</option><option value="FAIL">Information density FAIL</option></select><select id="v5475Hierarchy" class="v4312-input"><option value="PASS">Visual hierarchy PASS</option><option value="FAIL">Visual hierarchy FAIL</option></select><select id="v5475Readability" class="v4312-input"><option value="PASS">Readability PASS</option><option value="FAIL">Readability FAIL</option></select><select id="v5475Touch" class="v4312-input"><option value="PASS">Touch targets PASS</option><option value="FAIL">Touch targets FAIL</option></select></div>
       <div class="v4316-actions"><input id="v5475Evidence" class="v4312-input" placeholder="Role ergonomics evidence"><input id="v5475Note" class="v4312-input" placeholder="Observation note"><input id="v5475CertEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5475Reason" class="v4312-input" placeholder="Decision reason / override"></div><div id="v5475Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5500OperatorExperienceCertification">
+      <header><div><small>V54.76–V55.00 · V54 Service UX Closure & Operator Experience Certification</small><strong>Close V54 only when Blue Current is fast, readable, manageable, and usable through a real restaurant shift.</strong><span>Reconcile operator speed, manager intervention, role ergonomics, live-service usability, training burden, shift handoff, readability/accessibility, and explicit operator/manager acceptance before V55 entry.</span></div><button id="v5500Refresh" type="button">Refresh V54 closure</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5500Status">—</strong></article><article><small>V54 closure</small><strong id="v5500Ready">OPEN</strong></article></div><div class="v4316-answer" id="v5500Headline">V54 operator-experience certification ready.</div>
+      <div class="v4316-actions"><select id="v5500Live" class="v4312-input"><option value="PASS">Live service PASS</option><option value="FAIL">Live service FAIL</option></select><select id="v5500Training" class="v4312-input"><option value="PASS">Training burden PASS</option><option value="FAIL">Training burden FAIL</option></select><select id="v5500Handoff" class="v4312-input"><option value="PASS">Shift handoff PASS</option><option value="FAIL">Shift handoff FAIL</option></select><select id="v5500Readability" class="v4312-input"><option value="PASS">Readability/accessibility PASS</option><option value="FAIL">Readability/accessibility FAIL</option></select><input id="v5500Operator" class="v4312-input" placeholder="Operator acceptance"><input id="v5500Manager" class="v4312-input" placeholder="Manager acceptance"><select id="v5500Entry" class="v4312-input"><option value="APPROVED">V55 entry APPROVED</option><option value="HOLD">V55 entry HOLD</option></select><input id="v5500Note" class="v4312-input" placeholder="Closure note"><button id="v5500Review" type="button">Record V54 closure review</button></div>
+      <div class="v4316-actions"><input id="v5500Evidence" class="v4312-input" placeholder="V54 certification evidence"><input id="v5500Acceptance" class="v4312-input" placeholder="Executive acceptance"><button id="v5500Certify" type="button">Certify V54 / enter V55</button></div><div id="v5500Certification" class="v4316-answer">V54 has not been operator-experience certified.</div><div id="v5500Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9197,6 +9203,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerInterventionDecisionSpeedV5450" data-src="js/modules/managerInterventionDecisionSpeedCenter.js?v=54.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="roleBasedServiceErgonomicsV5475" data-src="js/modules/roleBasedServiceErgonomicsEngine.js?v=54.75.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="roleBasedServiceErgonomicsV5475" data-src="js/modules/roleBasedServiceErgonomicsCenter.js?v=54.75.0"></script>
-<script src="js/startup-loader.js?v=54.75.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v54OperatorExperienceCertificationV5500" data-src="js/modules/v54OperatorExperienceCertificationEngine.js?v=55.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v54OperatorExperienceCertificationV5500" data-src="js/modules/v54OperatorExperienceCertificationCenter.js?v=55.0.0"></script>
+<script src="js/startup-loader.js?v=55.0.0"></script>
 </body>
 </html>
