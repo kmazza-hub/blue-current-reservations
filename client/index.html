@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="49.25.0">
+  <meta name="blue-current-build" content="49.30.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -297,6 +297,14 @@
       <div class="v4316-actions"><select id="lsDecision" class="v4312-input"><option value="STABLE">STABLE</option><option value="EXTEND">EXTEND</option><option value="ROLLBACK">ROLLBACK</option></select><input id="lsApprover" class="v4312-input" placeholder="Stabilization approver"><input id="lsReason" class="v4312-input" placeholder="Decision reason / override rationale"></div>
       <p><strong>Launch stabilization locations</strong></p><div id="lsLocations" class="v432-list"></div>
       <p><strong>Observation and decision history</strong></p><div id="lsHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v49ReleaseCertification">
+      <header><div><small>V49.26–V49.30 · Release Closure & Certification</small><strong>Certify the complete controlled rollout chain before V49 is closed.</strong><span>This read-only certification verifies activation approval, technical readiness, deployment packaging, manual cutover, stabilization, and every human-control safety boundary. Live rollout state is reported separately from architecture certification.</span></div><button id="v49certRefresh" type="button">Run V49 certification</button></header>
+      <div class="v432-kpis"><article><small>Release status</small><strong id="v49certStatus">—</strong></article><article><small>Architecture contracts</small><strong id="v49certArchitecture">0/0</strong></article><article><small>Live-state contracts</small><strong id="v49certLive">0/0</strong></article><article><small>Stable locations</small><strong id="v49certStable">0</strong></article></div>
+      <div class="v4316-answer" id="v49certHeadline">Running V49 certification…</div>
+      <p><strong>Controlled rollout chain</strong></p><div id="v49certChain" class="v432-list"></div>
+      <p><strong>Architecture / human-control contracts</strong></p><div id="v49certArchitectureChecks" class="v432-list"></div>
+      <p><strong>Current live rollout state</strong></p><div id="v49certLiveChecks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8827,6 +8835,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandCenter.js?v=49.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationEngine.js?v=49.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationCenter.js?v=49.25.0"></script>
-<script src="js/startup-loader.js?v=49.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationEngine.js?v=49.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationCenter.js?v=49.30.0"></script>
+<script src="js/startup-loader.js?v=49.30.0"></script>
 </body>
 </html>
