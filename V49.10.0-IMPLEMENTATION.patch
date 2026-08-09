@@ -1,0 +1,632 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "49.5.0",
++  "version": "49.10.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 rollout activation control and live preflight gating",
++  "description": "Blue Current Hospitality OS \u2014 technical activation readiness and human go-live authorization",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -49,6 +49,7 @@
+ const ExpansionReadinessService = require("./services/expansionReadinessService");
+ const V48ReleaseCertificationService = require("./services/v48ReleaseCertificationService");
+ const RolloutActivationControlService = require("./services/rolloutActivationControlService");
++const TechnicalActivationReadinessService = require("./services/technicalActivationReadinessService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -101,7 +102,8 @@
+ const expansionReadinessService = new ExpansionReadinessService(database, auditService, realtimeHub, pilotDecisionLedgerService, executivePilotReviewService);
+ const v48ReleaseCertificationService = new V48ReleaseCertificationService(database, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService);
+ const rolloutActivationControlService = new RolloutActivationControlService(database, auditService, realtimeHub, expansionReadinessService, multiLocationPerformanceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService });
++const technicalActivationReadinessService = new TechnicalActivationReadinessService(database, auditService, realtimeHub, rolloutActivationControlService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -188,7 +190,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V49.5.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V49.10.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "49.5.0",
++        version: "49.10.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,30 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/technical-activation-readiness" && request.method === "GET") {
++      return sendJson(response,200,await technicalActivationReadinessService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/technical-activation-readiness/locations/") && url.pathname.endsWith("/packet") && request.method === "GET") {
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      try{
++        const snapshot=await technicalActivationReadinessService.snapshot(auth.membership.organizationId,allowed);
++        return sendJson(response,200,technicalActivationReadinessService.packet(snapshot,locationId));
++      }catch(error){return sendJson(response,404,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/technical-activation-readiness/locations/") && url.pathname.endsWith("/authorize-go-live") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for go-live authorization."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await technicalActivationReadinessService.authorize(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/rollout-activation-control" && request.method === "GET") {
+       return sendJson(response,200,await rolloutActivationControlService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/technicalActivationReadinessService.js
++++ b/server/services/technicalActivationReadinessService.js
+@@ -0,0 +1,147 @@
++"use strict";
++
++class TechnicalActivationReadinessService {
++  constructor(database,auditService,realtimeHub,rolloutActivationControlService){
++    Object.assign(this,{database,auditService,realtimeHub,rolloutActivationControlService});
++  }
++  now(){return new Date().toISOString();}
++  async authorizations(organizationId){
++    const db=await this.database.read();
++    return (db.technicalGoLiveAuthorizations||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.authorizedAt)-new Date(a.authorizedAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,activation,authorizations]=await Promise.all([
++      this.database.read(),
++      this.rolloutActivationControlService.snapshot(organizationId,allowedLocationIds),
++      this.authorizations(organizationId)
++    ]);
++    const connectors=(db.liveConnectors||[]).filter(x=>x.organizationId===organizationId);
++    const users=(db.users||[]).filter(x=>x.organizationId===organizationId&&x.status==="active");
++    const memberships=(db.memberships||[]).filter(x=>x.organizationId===organizationId);
++    const latestAuth=new Map();
++    for(const x of authorizations)if(!latestAuth.has(x.locationId))latestAuth.set(x.locationId,x);
++
++    const locations=(activation.locations||[]).map(loc=>{
++      const locationId=loc.locationId;
++      const configuration=(db.configurations||[]).find(x=>x.locationId===locationId)||null;
++      const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++      const sections=(db.sections||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++      const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++      const staff=(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.status==="active");
++      const employees=(db.employees||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.status==="active");
++      const kitchenStations=(db.kitchenStations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++      const memberUsers=memberships.filter(m=>(m.locationIds||[]).includes("*")||(m.locationIds||[]).includes(locationId));
++      const roleUsers=memberUsers.map(m=>users.find(u=>u.id===m.userId)).filter(Boolean);
++      const connectedTypes=new Set(connectors.filter(x=>["connected","active","ready"].includes(String(x.status||"").toLowerCase())).map(x=>x.type));
++      const configuredTypes=new Set(connectors.filter(x=>x.status!=="not-configured").map(x=>x.type));
++
++      const checks=[
++        {id:"activation-approval",category:"governance",label:"Human activation approval recorded",required:true,passed:loc.approval?.status==="APPROVED_FOR_ACTIVATION",actual:loc.activationControlState},
++        {id:"location-config",category:"configuration",label:"Location operating configuration exists",required:true,passed:!!configuration,actual:configuration?.id||"missing"},
++        {id:"auth-users",category:"identity",label:"At least one authorized user can access this location",required:true,passed:roleUsers.length>0,actual:roleUsers.length},
++        {id:"floor-model",category:"floor",label:"Floor/table model is configured",required:true,passed:tables.length>0&&sections.length>0,actual:`${tables.length} tables · ${sections.length} sections`},
++        {id:"reservation-model",category:"reservations",label:"Reservation data path has a configured operating model",required:true,passed:reservations.length>0||configuredTypes.has("reservations"),actual:`${reservations.length} local reservations · connector ${configuredTypes.has("reservations")?"configured":"not configured"}`},
++        {id:"kitchen-model",category:"kitchen",label:"Kitchen operating model or connector is configured",required:true,passed:kitchenStations.length>0||configuredTypes.has("kitchen"),actual:`${kitchenStations.length} stations · connector ${configuredTypes.has("kitchen")?"configured":"not configured"}`},
++        {id:"workforce-model",category:"workforce",label:"Workforce roster or labor connector is configured",required:true,passed:(staff.length+employees.length)>0||configuredTypes.has("labor"),actual:`${staff.length+employees.length} active people · connector ${configuredTypes.has("labor")?"configured":"not configured"}`},
++        {id:"external-connectivity",category:"integrations",label:"At least one production-capable external connector is connected",required:false,passed:connectedTypes.size>0,actual:connectedTypes.size?Array.from(connectedTypes).join(", "):"none connected"},
++        {id:"preflight",category:"operations",label:"V49 rollout activation preflight passed or was explicitly overridden",required:true,passed:loc.preflightPassed||loc.approval?.overrideUsed===true,actual:loc.preflightPassed?"passed":loc.approval?.overrideUsed?"executive override":"open"}
++      ];
++      const required=checks.filter(x=>x.required),passed=required.filter(x=>x.passed).length;
++      const blockers=required.filter(x=>!x.passed).map(x=>({id:x.id,category:x.category,label:x.label,actual:x.actual}));
++      const warningChecks=checks.filter(x=>!x.required&&!x.passed);
++      const authorization=latestAuth.get(locationId)||null;
++      return {
++        locationId,locationName:loc.locationName,wave:loc.wave,
++        requiredPassed:passed,requiredTotal:required.length,
++        technicalReadinessPercent:required.length?Math.round(passed/required.length*100):0,
++        technicallyReady:passed===required.length,
++        checks,blockers,warnings:warningChecks,
++        goLiveAuthorization:authorization,
++        goLiveState:authorization?.status==="AUTHORIZED_FOR_GO_LIVE"?"AUTHORIZED_NOT_CUT_OVER":"NOT_AUTHORIZED",
++        productionCutoverState:"NOT_PERFORMED"
++      };
++    });
++
++    return {
++      version:"49.10.0",generatedAt:this.now(),
++      status:!activation.plan?"activation-plan-required":locations.length&&locations.every(x=>x.technicallyReady)?"technical-readiness-complete":"technical-readiness-review",
++      headline:!activation.plan?"Rollout activation plan is required before technical readiness review.":`${locations.filter(x=>x.technicallyReady).length}/${locations.length} rollout location(s) currently satisfy all required technical readiness checks.`,
++      activationPlan:activation.plan,
++      locations,
++      blockerCount:locations.reduce((s,x)=>s+x.blockers.length,0),
++      warningCount:locations.reduce((s,x)=>s+x.warnings.length,0),
++      authorizationHistory:authorizations,
++      policy:{
++        technicalReadinessDoesNotCutOver:true,
++        humanGoLiveAuthorizationRequired:true,
++        adminAuthorizationRequired:true,
++        blockerOverrideRequiresReason:true,
++        authorizationDoesNotDeploy:true,
++        automaticProvisioning:false,
++        automaticCutover:false,
++        automaticGoLive:false
++      }
++    };
++  }
++
++  async authorize(organizationId,allowedLocationIds,locationId,input,actor){
++    const snapshot=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snapshot.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location is not in the current rollout activation plan.");
++    const approver=String(input.approver||actor||"").trim().slice(0,160);
++    if(!approver)throw new Error("Go-live approver is required.");
++    const overrideReason=String(input.overrideReason||"").trim().slice(0,1500);
++    if(!loc.technicallyReady&&!overrideReason)throw new Error("Technical readiness has open blockers. A documented executive override reason is required.");
++    const now=this.now();
++    const record={
++      id:`tgl_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,wave:loc.wave,
++      status:"AUTHORIZED_FOR_GO_LIVE",
++      productionCutoverState:"NOT_PERFORMED",
++      approver,authorizedBy:actor,authorizedAt:now,
++      overrideUsed:!loc.technicallyReady,overrideReason,
++      technicalReadinessAtAuthorization:{
++        percent:loc.technicalReadinessPercent,
++        requiredPassed:loc.requiredPassed,
++        requiredTotal:loc.requiredTotal,
++        blockers:loc.blockers,
++        checks:loc.checks
++      },
++      launchWindow:String(input.launchWindow||"").slice(0,160),
++      rollbackOwner:String(input.rollbackOwner||"").slice(0,160),
++      note:String(input.note||"").slice(0,1000)
++    };
++    await this.database.mutate(db=>{
++      db.technicalGoLiveAuthorizations||=[];
++      db.technicalGoLiveAuthorizations.push(record);
++      return record;
++    });
++    await this.auditService.record({organizationId,actor,action:`Technical go-live authorized for ${locationId} by ${approver}; production cutover NOT performed${record.overrideUsed?" with documented override":""}`,category:"technical_activation"});
++    this.realtimeHub.publish("technical-activation:authorized",{id:record.id,organizationId,locationId,approver,overrideUsed:record.overrideUsed});
++    return record;
++  }
++
++  packet(snapshot,locationId){
++    const loc=snapshot.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location is not in technical activation review.");
++    return {
++      version:"49.10.0",
++      generatedAt:this.now(),
++      locationId:loc.locationId,
++      locationName:loc.locationName,
++      wave:loc.wave,
++      readiness:`${loc.requiredPassed}/${loc.requiredTotal}`,
++      technicalReadinessPercent:loc.technicalReadinessPercent,
++      technicallyReady:loc.technicallyReady,
++      blockers:loc.blockers,
++      warnings:loc.warnings,
++      checks:loc.checks,
++      goLiveState:loc.goLiveState,
++      productionCutoverState:"NOT_PERFORMED",
++      policy:snapshot.policy
++    };
++  }
++}
++module.exports=TechnicalActivationReadinessService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="49.5.0">
++  <meta name="blue-current-build" content="49.10.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -260,6 +260,15 @@
+       <div class="v4316-actions"><input id="racApprover" class="v4312-input" placeholder="Activation approver"><input id="racOverride" class="v4312-input" placeholder="Executive override reason (required if a gate is open)"><input id="racNote" class="v4312-input" placeholder="Activation approval note"></div>
+       <p><strong>Location preflight</strong></p><div id="racLocations" class="v432-list"></div>
+       <p><strong>Activation approval ledger</strong></p><div id="racHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="technicalActivationReadiness">
++      <header><div><small>V49.06–V49.10 · Technical Activation Readiness</small><strong>Verify the restaurant is technically ready for go-live before any production cutover is authorized.</strong><span>Blue Current checks human activation approval, location configuration, authorized users, floor, reservations, kitchen, workforce, external connectivity, and live operating preflight. Go-live authorization is human/admin-only and never performs production cutover.</span></div><button id="tarRefresh" type="button">Refresh technical readiness</button></header>
++      <div class="v432-kpis"><article><small>Technical status</small><strong id="tarStatus">—</strong></article><article><small>Technically ready</small><strong id="tarReady">0/0</strong></article><article><small>Required blockers</small><strong id="tarBlockers">0</strong></article><article><small>Go-live authorized</small><strong id="tarAuthorized">0</strong></article></div>
++      <div class="v4316-answer" id="tarHeadline">Rollout activation approval is required before technical readiness review.</div>
++      <div class="v4316-actions"><input id="tarApprover" class="v4312-input" placeholder="Go-live approver"><input id="tarOverride" class="v4312-input" placeholder="Executive override reason (required with blockers)"><input id="tarWindow" class="v4312-input" placeholder="Planned launch window"><input id="tarRollbackOwner" class="v4312-input" placeholder="Rollback owner"><input id="tarNote" class="v4312-input" placeholder="Go-live authorization note"></div>
++      <p><strong>Technical activation locations</strong></p><div id="tarLocations" class="v432-list"></div>
++      <p><strong>Technical activation packet</strong></p><pre id="tarPacket" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre>
++      <p><strong>Go-live authorization ledger</strong></p><div id="tarHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8782,6 +8791,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationCenter.js?v=48.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlEngine.js?v=49.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlCenter.js?v=49.5.0"></script>
+-<script src="js/startup-loader.js?v=49.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessEngine.js?v=49.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessCenter.js?v=49.10.0"></script>
++<script src="js/startup-loader.js?v=49.10.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1236,6 +1236,7 @@
+ const expansionReadinessModule = startupRegistry.register("expansionReadiness", shouldInitializeCenter("expansionReadiness") ? window.createBlueCurrentExpansionReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDecisionLedger"]);
+ const v48ReleaseCertificationModule = startupRegistry.register("v48ReleaseCertification", shouldInitializeCenter("v48ReleaseCertification") ? window.createBlueCurrentV48ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "expansionReadiness"]);
+ const rolloutActivationControlModule = startupRegistry.register("rolloutActivationControl", shouldInitializeCenter("rolloutActivationControl") ? window.createBlueCurrentRolloutActivationControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v48ReleaseCertification"]);
++const technicalActivationReadinessModule = startupRegistry.register("technicalActivationReadiness", shouldInitializeCenter("technicalActivationReadiness") ? window.createBlueCurrentTechnicalActivationReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolloutActivationControl"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V49.5.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V49.10.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/technicalActivationReadinessEngine.js
++++ b/client/js/modules/technicalActivationReadinessEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentTechnicalActivationReadinessEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/technical-activation-readiness",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Technical activation readiness failed (${r.status})`);this.appState?.update?.({technicalActivationReadiness:d});return d;}
++  async packet(locationId){const r=await fetch(`/api/technical-activation-readiness/locations/${encodeURIComponent(locationId)}/packet`,{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Technical activation packet failed (${r.status})`);return d;}
++  async authorize(locationId,payload={}){const r=await fetch(`/api/technical-activation-readiness/locations/${encodeURIComponent(locationId)}/authorize-go-live`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Go-live authorization failed (${r.status})`);this.eventBus?.emit?.("technical-activation:authorized",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentTechnicalActivationReadinessEngine;
++if(global)global.BlueCurrentTechnicalActivationReadinessEngine=BlueCurrentTechnicalActivationReadinessEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/technicalActivationReadinessCenter.js
++++ b/client/js/modules/technicalActivationReadinessCenter.js
+@@ -0,0 +1,38 @@
++(function(){"use strict";
++function createBlueCurrentTechnicalActivationReadinessCenterModule(eventBus,appState){
++  const root=document.getElementById("technicalActivationReadiness");
++  if(!root||!window.BlueCurrentTechnicalActivationReadinessEngine)return null;
++  const e=new window.BlueCurrentTechnicalActivationReadinessEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("tarStatus").textContent=s.status||"—";
++    $("tarReady").textContent=`${locs.filter(x=>x.technicallyReady).length}/${locs.length}`;
++    $("tarBlockers").textContent=s.blockerCount||0;
++    $("tarAuthorized").textContent=locs.filter(x=>x.goLiveAuthorization?.status==="AUTHORIZED_FOR_GO_LIVE").length;
++    $("tarHeadline").textContent=s.headline||"Technical activation readiness unavailable.";
++    $("tarLocations").innerHTML=locs.map(x=>`<article data-tar-location="${esc(x.locationId)}"><div><strong>Wave ${x.wave} · ${esc(x.locationName)}</strong><span>${x.technicalReadinessPercent}% ready · ${esc(x.goLiveState)} · cutover ${esc(x.productionCutoverState)}</span></div><div class="v432-list">${(x.checks||[]).map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.label)}</strong><span>${esc(c.category)}${c.required?" · required":" · advisory"}${c.actual!==undefined?` · ${esc(c.actual)}`:""}</span></article>`).join("")}</div>${x.blockers?.length?`<p><strong>Launch blockers:</strong> ${x.blockers.map(b=>esc(b.label)).join(" · ")}</p>`:"<p><strong>No required technical blockers.</strong></p>"}${x.goLiveAuthorization?`<p><strong>Authorized by ${esc(x.goLiveAuthorization.approver)}</strong> · cutover remains ${esc(x.goLiveAuthorization.productionCutoverState)}</p>`:`<div class="v4316-actions"><button type="button" data-tar-packet="true">Review technical packet</button><button type="button" data-tar-authorize="true">Authorize go-live</button></div>`}</article>`).join("")||"<article><strong>No rollout locations are in technical activation review.</strong></article>";
++    $("tarHistory").innerHTML=(s.authorizationHistory||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.status)}</strong><span>${esc(x.approver)} · ${new Date(x.authorizedAt).toLocaleString()} · cutover ${esc(x.productionCutoverState)}${x.overrideUsed?" · override used":""}</span></article>`).join("")||"<article><strong>No technical go-live authorizations recorded.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("tarHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-tar-location]"); if(!card)return;
++    const locationId=card.dataset.tarLocation;
++    if(ev.target.closest("[data-tar-packet]")){
++      try{const p=await e.packet(locationId);$("tarPacket").textContent=JSON.stringify(p,null,2);}catch(err){$("tarHeadline").textContent=err.message;}
++      return;
++    }
++    const btn=ev.target.closest("[data-tar-authorize]"); if(!btn)return;
++    try{
++      btn.disabled=true;
++      await e.authorize(locationId,{approver:$("tarApprover").value,overrideReason:$("tarOverride").value,launchWindow:$("tarWindow").value,rollbackOwner:$("tarRollbackOwner").value,note:$("tarNote").value});
++      await load();
++    }catch(err){$("tarHeadline").textContent=err.message;}finally{btn.disabled=false;}
++  });
++  $("tarRefresh")?.addEventListener("click",load);
++  ["rollout-activation:approved","technical-activation:authorized","expansion-readiness:drafted","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentTechnicalActivationReadinessCenterModule=createBlueCurrentTechnicalActivationReadinessCenterModule;
++})();--- a/scripts/maintenance/test-v49.10-technical-activation-readiness.js
++++ b/scripts/maintenance/test-v49.10-technical-activation-readiness.js
+@@ -0,0 +1,86 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/technicalActivationReadinessService");
++
++(async()=>{
++  const state={
++    users:[{id:"u1",organizationId:"org",status:"active"}],
++    memberships:[{organizationId:"org",userId:"u1",locationIds:["a","b"]}],
++    configurations:[{id:"cfg_a",locationId:"a"}],
++    tables:[{organizationId:"org",locationId:"a"}],
++    sections:[{organizationId:"org",locationId:"a"}],
++    reservations:[{organizationId:"org",locationId:"a"}],
++    staff:[{organizationId:"org",locationId:"a",status:"active"}],
++    employees:[],
++    kitchenStations:[{organizationId:"org",locationId:"a"}],
++    liveConnectors:[
++      {organizationId:"org",type:"reservations",status:"not-configured"},
++      {organizationId:"org",type:"kitchen",status:"not-configured"},
++      {organizationId:"org",type:"labor",status:"not-configured"}
++    ],
++    technicalGoLiveAuthorizations:[]
++  };
++  const audit=[],events=[];
++  const activation={
++    plan:{id:"plan1",readinessFloor:75},
++    locations:[
++      {locationId:"a",locationName:"A",wave:1,preflightPassed:true,activationControlState:"APPROVED_NOT_DEPLOYED",approval:{status:"APPROVED_FOR_ACTIVATION",overrideUsed:false}},
++      {locationId:"b",locationName:"B",wave:2,preflightPassed:false,activationControlState:"APPROVED_NOT_DEPLOYED",approval:{status:"APPROVED_FOR_ACTIVATION",overrideUsed:true}}
++    ]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>activation}
++  );
++
++  let snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.version,"49.10.0");
++  const a=snap.locations.find(x=>x.locationId==="a");
++  const b=snap.locations.find(x=>x.locationId==="b");
++  assert.equal(a.technicallyReady,true);
++  assert.equal(a.requiredPassed,a.requiredTotal);
++  assert.equal(a.productionCutoverState,"NOT_PERFORMED");
++  assert.equal(b.technicallyReady,false);
++  assert.ok(b.blockers.length>=4);
++  assert.equal(snap.policy.automaticCutover,false);
++  assert.equal(snap.policy.authorizationDoesNotDeploy,true);
++
++  const authA=await svc.authorize("org",["a","b"],"a",{approver:"CTO",launchWindow:"Monday 09:00",rollbackOwner:"Ops"},"Tester");
++  assert.equal(authA.status,"AUTHORIZED_FOR_GO_LIVE");
++  assert.equal(authA.productionCutoverState,"NOT_PERFORMED");
++  assert.equal(authA.overrideUsed,false);
++
++  let blocked=false;
++  try{await svc.authorize("org",["a","b"],"b",{approver:"CTO"},"Tester");}
++  catch(e){blocked=/override reason/i.test(e.message);}
++  assert(blocked);
++
++  const authB=await svc.authorize("org",["a","b"],"b",{approver:"CTO",overrideReason:"Executive accepts missing demo configuration for staged technical rehearsal."},"Tester");
++  assert.equal(authB.overrideUsed,true);
++  assert.equal(authB.productionCutoverState,"NOT_PERFORMED");
++
++  snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.authorizationHistory.length,2);
++  assert.equal(snap.locations.find(x=>x.locationId==="a").goLiveState,"AUTHORIZED_NOT_CUT_OVER");
++
++  const packet=svc.packet(snap,"a");
++  assert.equal(packet.productionCutoverState,"NOT_PERFORMED");
++  assert.equal(packet.technicallyReady,true);
++  assert.equal(audit.length,2);
++  assert.equal(events.length,2);
++
++  console.log(JSON.stringify({
++    ok:true,version:"49.10.0",
++    technicalChecks:true,
++    blockerDetection:true,
++    technicalPacket:true,
++    goLiveAuthorization:true,
++    blockerOverrideGuard:true,
++    productionCutoverState:"NOT_PERFORMED",
++    automaticProvisioning:false,
++    automaticCutover:false,
++    automaticGoLive:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V49.10.0-RELEASE.md
++++ b/V49.10.0-RELEASE.md
+@@ -0,0 +1,135 @@
++# BLUE CURRENT V49.10.0 — TECHNICAL ACTIVATION READINESS
++
++V49.06–V49.10 adds the technical gate between rollout approval and production go-live.
++
++## Technical readiness checks
++
++Each rollout location is evaluated against:
++
++1. Human activation approval exists.
++2. Location operating configuration exists.
++3. At least one authorized user can access the location.
++4. Floor/table model exists.
++5. Reservation data path is configured.
++6. Kitchen operating model or connector is configured.
++7. Workforce roster or labor connector is configured.
++8. External production-capable connector state is surfaced as an advisory readiness signal.
++9. V49 rollout activation preflight passed or was explicitly overridden.
++
++Required checks produce launch blockers. External connector connectivity is currently advisory because Blue Current must not claim a production connector is connected when the runtime only contains sandbox/not-configured connector records.
++
++## Technical activation packet
++
++Adds:
++
++`GET /api/technical-activation-readiness/locations/:locationId/packet`
++
++The packet records:
++
++- readiness percent
++- required checks passed / total
++- blockers
++- advisory warnings
++- complete check results
++- go-live authorization state
++- production cutover state
++- safety policy
++
++## Human go-live authorization
++
++Adds:
++
++`POST /api/technical-activation-readiness/locations/:locationId/authorize-go-live`
++
++Authorization requires:
++
++- authenticated admin permission
++- location inside authorized scope
++- explicit go-live approver
++- current rollout-plan membership
++
++If technical blockers remain, authorization is blocked unless a documented executive override reason is supplied.
++
++The authorization records:
++
++- organization/location/wave
++- approver
++- authenticated actor
++- timestamp
++- technical readiness snapshot
++- blockers at authorization time
++- override status and reason
++- planned launch window
++- rollback owner
++- note
++
++## Critical separation
++
++Go-live authorization does not perform production cutover.
++
++Every authorization is stored as:
++
++- `status: AUTHORIZED_FOR_GO_LIVE`
++- `productionCutoverState: NOT_PERFORMED`
++
++Policy:
++
++- `technicalReadinessDoesNotCutOver: true`
++- `humanGoLiveAuthorizationRequired: true`
++- `adminAuthorizationRequired: true`
++- `blockerOverrideRequiresReason: true`
++- `authorizationDoesNotDeploy: true`
++- `automaticProvisioning: false`
++- `automaticCutover: false`
++- `automaticGoLive: false`
++
++## Current authenticated runtime
++
++The untouched Chefs runtime does not yet have an active signed rollout/activation plan, so V49.10 correctly reports:
++
++- status: `activation-plan-required`
++- locations in technical review: 0
++- production cutover: not performed
++- automatic provisioning: false
++- automatic cutover: false
++- automatic go-live: false
++
++The current demo owner account does not hold the `admin` permission used for production go-live authorization. Its authorization attempt correctly returns HTTP 403.
++
++## Focused lifecycle validation
++
++The focused test verifies:
++
++- a fully configured location reaches 100% required technical readiness
++- missing location configuration/data produces launch blockers
++- go-live authorization succeeds for a ready location
++- authorization remains `NOT_PERFORMED` for production cutover
++- a blocked location cannot be authorized without an override
++- documented executive override is persisted
++- technical packet is generated
++- audit and realtime events are emitted
++
++## Validation
++
++- V49.10 technical readiness test PASS
++- V49.5 rollout activation regression PASS
++- authenticated technical readiness GET PASS
++- admin-only go-live authorization boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 887 JavaScript files
++- 750 client scripts
++- 5,585 unique HTML IDs
++
++## Next
++
++V49.11–V49.15 should build the Location Deployment Package:
++- location-specific deployment manifest
++- configuration requirements
++- user/access provisioning plan
++- connector/integration requirements
++- module enablement matrix
++- launch-window and rollback runbook
++- deployment ownership
++- explicit deployment execution state
++- no automatic production deployment
+--- a/README-APPLY-V49.10.0.md
++++ b/README-APPLY-V49.10.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V49.10.0
++
++Baseline: exact V49.5.0 repository.
++
++Extract `BLUE-CURRENT-V49.10.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v49.10-technical-activation-readiness.js
++node scripts/maintenance/test-v49.05-rollout-activation-control.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "49.10.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Technical Activation Readiness** surface appears in the V49 rollout stack.
++
++Important:
++
++- go-live authorization is admin-only
++- open technical blockers require a documented executive override
++- authorization does not provision infrastructure
++- authorization does not deploy code
++- authorization does not perform production cutover
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V49.10.0 add technical activation readiness"
++git push origin live-service-timeline
++```

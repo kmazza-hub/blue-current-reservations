@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "49.5.0",
+  "version": "49.10.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 rollout activation control and live preflight gating",
+  "description": "Blue Current Hospitality OS \u2014 technical activation readiness and human go-live authorization",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

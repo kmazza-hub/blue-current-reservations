@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="49.5.0">
+  <meta name="blue-current-build" content="49.10.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -260,6 +260,15 @@
       <div class="v4316-actions"><input id="racApprover" class="v4312-input" placeholder="Activation approver"><input id="racOverride" class="v4312-input" placeholder="Executive override reason (required if a gate is open)"><input id="racNote" class="v4312-input" placeholder="Activation approval note"></div>
       <p><strong>Location preflight</strong></p><div id="racLocations" class="v432-list"></div>
       <p><strong>Activation approval ledger</strong></p><div id="racHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="technicalActivationReadiness">
+      <header><div><small>V49.06–V49.10 · Technical Activation Readiness</small><strong>Verify the restaurant is technically ready for go-live before any production cutover is authorized.</strong><span>Blue Current checks human activation approval, location configuration, authorized users, floor, reservations, kitchen, workforce, external connectivity, and live operating preflight. Go-live authorization is human/admin-only and never performs production cutover.</span></div><button id="tarRefresh" type="button">Refresh technical readiness</button></header>
+      <div class="v432-kpis"><article><small>Technical status</small><strong id="tarStatus">—</strong></article><article><small>Technically ready</small><strong id="tarReady">0/0</strong></article><article><small>Required blockers</small><strong id="tarBlockers">0</strong></article><article><small>Go-live authorized</small><strong id="tarAuthorized">0</strong></article></div>
+      <div class="v4316-answer" id="tarHeadline">Rollout activation approval is required before technical readiness review.</div>
+      <div class="v4316-actions"><input id="tarApprover" class="v4312-input" placeholder="Go-live approver"><input id="tarOverride" class="v4312-input" placeholder="Executive override reason (required with blockers)"><input id="tarWindow" class="v4312-input" placeholder="Planned launch window"><input id="tarRollbackOwner" class="v4312-input" placeholder="Rollback owner"><input id="tarNote" class="v4312-input" placeholder="Go-live authorization note"></div>
+      <p><strong>Technical activation locations</strong></p><div id="tarLocations" class="v432-list"></div>
+      <p><strong>Technical activation packet</strong></p><pre id="tarPacket" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre>
+      <p><strong>Go-live authorization ledger</strong></p><div id="tarHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8782,6 +8791,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationCenter.js?v=48.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlEngine.js?v=49.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlCenter.js?v=49.5.0"></script>
-<script src="js/startup-loader.js?v=49.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessEngine.js?v=49.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessCenter.js?v=49.10.0"></script>
+<script src="js/startup-loader.js?v=49.10.0"></script>
 </body>
 </html>
