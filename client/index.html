@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="52.30.0">
+  <meta name="blue-current-build" content="52.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -514,6 +514,17 @@
       <div class="v4316-actions"><input id="v5230Confidence" class="v4312-input" type="number" min="1" max="5" value="4"><input id="v5230Outcome" class="v4312-input" placeholder="Portfolio outcome evidence"><input id="v5230Support" class="v4312-input" placeholder="Support-burden review"><input id="v5230Lessons" class="v4312-input" placeholder="Replication lessons"><input id="v5230WindowStart" class="v4312-input" placeholder="Stabilization window start"><input id="v5230WindowEnd" class="v4312-input" placeholder="Stabilization window end"><input id="v5230Note" class="v4312-input" placeholder="Assessment note"><button id="v5230Assess" type="button">Record portfolio assessment</button></div>
       <div class="v4316-actions"><input id="v5230DecisionEvidence" class="v4312-input" placeholder="REPEAT / HOLD / ROLLBACK evidence"><input id="v5230DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"><button data-v5230-decision="REPEAT" type="button">REPEAT</button><button data-v5230-decision="HOLD" type="button">HOLD</button><button data-v5230-decision="ROLLBACK" type="button">ROLLBACK</button></div>
       <p><strong>Portfolio-proof gates</strong></p><div id="v5230Checks" class="v432-list"></div><p><strong>Current decision</strong></p><div id="v5230Decision" class="v4316-answer">No portfolio decision recorded.</div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5250ExpansionRepeatability">
+      <header><div><small>V52.31–V52.50 · Expansion Playbook & Repeatability Certification</small><strong>Convert the proven pilot-to-expansion path into a reusable operating standard.</strong><span>This consolidated wave captures the full rollout playbook, named ownership, concurrency limits, success/failure criteria, evidence standards, pause authority, reusable rollout template, and explicit human repeatability certification. Certification never starts a rollout.</span></div><button id="v5250Refresh" type="button">Refresh certification</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5250Status">—</strong></article><article><small>Certification gates</small><strong id="v5250Ready">OPEN</strong></article><article><small>Portfolio proof</small><strong id="v5250Proof">—</strong></article></div>
+      <div class="v4316-answer" id="v5250Headline">Repeatability certification ready.</div>
+      <div class="v4316-actions"><input id="v5250Name" class="v4312-input" value="Blue Current Expansion Playbook" placeholder="Playbook name"><input id="v5250Executive" class="v4312-input" placeholder="Executive owner"><input id="v5250Operations" class="v4312-input" placeholder="Operations owner"><input id="v5250Technical" class="v4312-input" placeholder="Technical owner"><input id="v5250Pause" class="v4312-input" placeholder="Pause authority"><input id="v5250Max" class="v4312-input" type="number" min="1" value="1" placeholder="Max concurrent"></div>
+      <div class="v4316-actions"><input id="v5250_preflight" class="v4312-input" placeholder="Preflight standard"><input id="v5250_configuration" class="v4312-input" placeholder="Configuration standard"><input id="v5250_connectors" class="v4312-input" placeholder="Connector standard"><input id="v5250_training" class="v4312-input" placeholder="Training standard"><input id="v5250_activation" class="v4312-input" placeholder="Activation standard"></div>
+      <div class="v4316-actions"><input id="v5250_observation" class="v4312-input" placeholder="Observation standard"><input id="v5250_support" class="v4312-input" placeholder="Support standard"><input id="v5250_incidentResponse" class="v4312-input" placeholder="Incident-response standard"><input id="v5250_pauseRollback" class="v4312-input" placeholder="Pause / rollback standard"><input id="v5250_closeout" class="v4312-input" placeholder="Closeout standard"></div>
+      <div class="v4316-actions"><input id="v5250Success" class="v4312-input" placeholder="Success criteria"><input id="v5250Failure" class="v4312-input" placeholder="Failure criteria"><input id="v5250EvidenceStandard" class="v4312-input" placeholder="Evidence standard"><input id="v5250Note" class="v4312-input" placeholder="Playbook note"><button id="v5250Generate" type="button">Generate playbook</button></div>
+      <div class="v4316-actions"><input id="v5250CertificationEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5250CertificationNote" class="v4312-input" placeholder="Certification note"><button id="v5250Certify" type="button">Certify repeatability</button></div>
+      <p><strong>Certification gates</strong></p><div id="v5250Checks" class="v432-list"></div><div id="v5250Template" class="v4316-answer">No rollout template certified.</div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9094,6 +9105,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionCohortObservationV5225" data-src="js/modules/expansionCohortObservationCenter.js?v=52.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionPortfolioProofV5230" data-src="js/modules/expansionPortfolioProofEngine.js?v=52.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionPortfolioProofV5230" data-src="js/modules/expansionPortfolioProofCenter.js?v=52.30.0"></script>
-<script src="js/startup-loader.js?v=52.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionRepeatabilityV5250" data-src="js/modules/expansionRepeatabilityCertificationEngine.js?v=52.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionRepeatabilityV5250" data-src="js/modules/expansionRepeatabilityCertificationCenter.js?v=52.50.0"></script>
+<script src="js/startup-loader.js?v=52.50.0"></script>
 </body>
 </html>

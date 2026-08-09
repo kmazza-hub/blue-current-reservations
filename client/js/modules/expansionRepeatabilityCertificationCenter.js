@@ -1,0 +1,12 @@
+(function(){"use strict";
+function createBlueCurrentExpansionRepeatabilityCertificationCenterModule(eventBus,appState){
+ const root=document.getElementById("v5250ExpansionRepeatability");if(!root||!window.BlueCurrentExpansionRepeatabilityCertificationEngine)return null;
+ const e=new window.BlueCurrentExpansionRepeatabilityCertificationEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
+ const keys=["preflight","configuration","connectors","training","activation","observation","support","incidentResponse","pauseRollback","closeout"];
+ function render(s){$("v5250Status").textContent=s.status||"—";$("v5250Ready").textContent=s.certificationReady?"READY":"OPEN";$("v5250Proof").textContent=s.repeatApproved?"REPEAT APPROVED":"AWAITING REPEAT";$("v5250Headline").textContent=s.headline||"Repeatability review unavailable.";$("v5250Checks").innerHTML=(s.checks||[]).map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.id)}</strong><span>${esc(c.actual)}</span></article>`).join("");$("v5250Template").textContent=s.rolloutTemplate?`Template ready · max concurrent ${s.rolloutTemplate.maxConcurrentLocations} · human activation required`:"No rollout template certified.";}
+ async function load(){try{render(await e.snapshot());}catch(err){$("v5250Headline").textContent=err.message;}}
+ $("v5250Generate")?.addEventListener("click",async()=>{try{const sections={};keys.forEach(k=>sections[k]=$(`v5250_${k}`).value);await e.playbook({name:$("v5250Name").value,sections,executiveOwner:$("v5250Executive").value,operationsOwner:$("v5250Operations").value,technicalOwner:$("v5250Technical").value,pauseAuthority:$("v5250Pause").value,maxConcurrentLocations:Number($("v5250Max").value||1),successCriteria:$("v5250Success").value,failureCriteria:$("v5250Failure").value,evidenceStandard:$("v5250EvidenceStandard").value,note:$("v5250Note").value});await load();}catch(err){$("v5250Headline").textContent=err.message;}});
+ $("v5250Certify")?.addEventListener("click",async()=>{try{await e.certify({evidence:$("v5250CertificationEvidence").value,note:$("v5250CertificationNote").value});await load();}catch(err){$("v5250Headline").textContent=err.message;}});
+ $("v5250Refresh")?.addEventListener("click",load);load();return{engine:e,load};
+}
+window.createBlueCurrentExpansionRepeatabilityCertificationCenterModule=createBlueCurrentExpansionRepeatabilityCertificationCenterModule;} )();
