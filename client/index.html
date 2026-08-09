@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.65.0">
+  <meta name="blue-current-build" content="52.10.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -462,15 +462,23 @@
       <div class="v4316-actions"><input id="v5160Incident" class="v4312-input" placeholder="Incident description if needed"><input id="v5160ObservationNote" class="v4312-input" placeholder="Health observation note"><input id="v5160DecisionEvidence" class="v4312-input" placeholder="Human CONTINUE / HOLD / ROLLBACK evidence"><input id="v5160DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
       <p><strong>Pilot execution locations</strong></p><div id="v5160Locations" class="v432-list"></div>
     </section>
-    <section class="v432-center v438-center v4316-center" id="v5165PilotStabilizationExit">
-      <header><div><small>V51.61–V51.65 · Pilot Stabilization & Exit Criteria</small><strong>Require repeated healthy operation and explicit human exit evidence before calling the restaurant pilot stable.</strong><span>Blue Current combines repeated live-health observations, incident trend, operator confidence, workflow stability, guest impact, support load, data-integrity recheck, executive-KPI trust, and a defined stabilization window. Final STABLE / EXTEND / ROLLBACK decisions are human records only—they do not expand rollout or execute rollback.</span></div><button id="v5165Refresh" type="button">Refresh stabilization</button></header>
-      <div class="v432-kpis"><article><small>Stabilization status</small><strong id="v5165Status">—</strong></article><article><small>Ready locations</small><strong id="v5165Ready">0/0</strong></article><article><small>Assessments</small><strong id="v5165Assessments">0</strong></article><article><small>Exit decisions</small><strong id="v5165Decisions">0</strong></article></div>
-      <div class="v4316-answer" id="v5165Headline">Pilot stabilization assessment ready.</div>
-      <p id="v5165Dependencies">Loading dependency status…</p>
-      <div class="v4316-actions"><input id="v5165Confidence" class="v4312-input" type="number" min="1" max="5" value="4" placeholder="Operator confidence 1–5"><select id="v5165Workflow" class="v4312-input"><option value="STABLE">Workflow stable</option><option value="MIXED">Workflow mixed</option><option value="UNSTABLE">Workflow unstable</option></select><select id="v5165GuestImpact" class="v4312-input"><option value="NONE">No guest impact</option><option value="LOW">Low guest impact</option><option value="MEDIUM">Medium guest impact</option><option value="HIGH">High guest impact</option></select><select id="v5165SupportLoad" class="v4312-input"><option value="LOW">Low support load</option><option value="MANAGEABLE">Manageable support load</option><option value="HIGH">High support load</option><option value="CRITICAL">Critical support load</option></select></div>
-      <div class="v4316-actions"><input id="v5165WindowStart" class="v4312-input" placeholder="Stabilization window start"><input id="v5165WindowEnd" class="v4312-input" placeholder="Stabilization window end"><input id="v5165Evidence" class="v4312-input" placeholder="Human stabilization assessment evidence"><input id="v5165Note" class="v4312-input" placeholder="Assessment note"></div>
-      <div class="v4316-actions"><input id="v5165DecisionEvidence" class="v4312-input" placeholder="Human STABLE / EXTEND / ROLLBACK evidence"><input id="v5165DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
-      <p><strong>Pilot stabilization locations</strong></p><div id="v5165Locations" class="v432-list"></div>
+<section class="v432-center v438-center v4316-center" id="v5205PilotStabilizationExit">
+      <header><div><small>V52.1–V52.5 · Pilot Stabilization & Exit Criteria</small><strong>Require repeated healthy operation and human evidence before calling a restaurant pilot stable.</strong><span>Blue Current combines repeated live-health observations, incident trend, operator confidence, workflow stability, guest impact, support load, data-integrity recheck, executive-KPI trust, and a defined stabilization window. STABLE / EXTEND / ROLLBACK remain human decisions only.</span></div><button id="v5205Refresh" type="button">Refresh stabilization</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5205Status">—</strong></article><article><small>Ready locations</small><strong id="v5205Ready">0/0</strong></article><article><small>Assessments</small><strong id="v5205Assessments">0</strong></article><article><small>Exit decisions</small><strong id="v5205Decisions">0</strong></article></div>
+      <div class="v4316-answer" id="v5205Headline">Pilot stabilization assessment ready.</div><p id="v5205Dependencies">Loading dependency status…</p>
+      <div class="v4316-actions"><input id="v5205Confidence" class="v4312-input" type="number" min="1" max="5" value="4"><select id="v5205Workflow" class="v4312-input"><option value="STABLE">Workflow stable</option><option value="MIXED">Workflow mixed</option><option value="UNSTABLE">Workflow unstable</option></select><select id="v5205GuestImpact" class="v4312-input"><option value="NONE">No guest impact</option><option value="LOW">Low guest impact</option><option value="MEDIUM">Medium guest impact</option><option value="HIGH">High guest impact</option></select><select id="v5205SupportLoad" class="v4312-input"><option value="LOW">Low support load</option><option value="MANAGEABLE">Manageable</option><option value="HIGH">High</option><option value="CRITICAL">Critical</option></select></div>
+      <div class="v4316-actions"><input id="v5205WindowStart" class="v4312-input" placeholder="Stabilization window start"><input id="v5205WindowEnd" class="v4312-input" placeholder="Stabilization window end"><input id="v5205Evidence" class="v4312-input" placeholder="Assessment evidence"><input id="v5205Note" class="v4312-input" placeholder="Assessment note"></div>
+      <div class="v4316-actions"><input id="v5205DecisionEvidence" class="v4312-input" placeholder="STABLE / EXTEND / ROLLBACK evidence"><input id="v5205DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
+      <div id="v5205Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5210PilotCloseoutOutcome">
+      <header><div><small>V52.6–V52.10 · Pilot Closeout & Outcome Review</small><strong>Close the pilot with evidence before Blue Current earns the right to expand.</strong><span>Review objectives and outcomes, operator feedback, guest impact, incident closeout, support burden, data/KPI confidence, unresolved debt, lessons learned, and explicit expansion prerequisites. EXPAND / HOLD / RETIRE are human decisions only and never trigger deployment.</span></div><button id="v5210Refresh" type="button">Refresh closeout</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5210Status">—</strong></article><article><small>Expansion ready</small><strong id="v5210Ready">0/0</strong></article><article><small>Closeout reviews</small><strong id="v5210Reviews">0</strong></article><article><small>Decisions</small><strong id="v5210Decisions">0</strong></article></div>
+      <div class="v4316-answer" id="v5210Headline">Pilot closeout review ready.</div>
+      <div class="v4316-actions"><input id="v5210Objectives" class="v4312-input" placeholder="Objective/outcome summary"><input id="v5210Operators" class="v4312-input" placeholder="Operator feedback"><input id="v5210Guests" class="v4312-input" placeholder="Guest-impact summary"><input id="v5210Support" class="v4312-input" placeholder="Support-burden summary"><input id="v5210Data" class="v4312-input" placeholder="Data/KPI confidence summary"><input id="v5210Lessons" class="v4312-input" placeholder="Lessons learned"></div>
+      <div class="v4316-actions"><textarea id="v5210Incidents" class="v4312-input" placeholder="Closed incidents, one per line"></textarea><textarea id="v5210Debt" class="v4312-input" placeholder="Unresolved debt, one per line"></textarea><textarea id="v5210Prereqs" class="v4312-input" placeholder="Expansion prerequisites met, one per line"></textarea></div>
+      <div class="v4316-actions"><input id="v5210DecisionEvidence" class="v4312-input" placeholder="EXPAND / HOLD / RETIRE evidence"><input id="v5210DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
+      <div id="v5210Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9039,8 +9047,10 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLaunchControlV5155" data-src="js/modules/pilotLaunchControlCenter.js?v=51.55.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotExecutionObservationV5160" data-src="js/modules/pilotExecutionObservationEngine.js?v=51.60.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotExecutionObservationV5160" data-src="js/modules/pilotExecutionObservationCenter.js?v=51.60.0"></script>
-<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5165" data-src="js/modules/pilotStabilizationExitEngine.js?v=51.65.0"></script>
-<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5165" data-src="js/modules/pilotStabilizationExitCenter.js?v=51.65.0"></script>
-<script src="js/startup-loader.js?v=51.65.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5205" data-src="js/modules/pilotStabilizationExitEngine.js?v=52.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5205" data-src="js/modules/pilotStabilizationExitCenter.js?v=52.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotCloseoutOutcomeV5210" data-src="js/modules/pilotCloseoutOutcomeEngine.js?v=52.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotCloseoutOutcomeV5210" data-src="js/modules/pilotCloseoutOutcomeCenter.js?v=52.10.0"></script>
+<script src="js/startup-loader.js?v=52.10.0"></script>
 </body>
 </html>

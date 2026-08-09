@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "51.65.0",
+        version: "52.10.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -199,6 +199,20 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const v47RejectLocation = (response, locationId) =>
       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
 
+    if (url.pathname === "/api/pilot-closeout-outcome" && request.method === "GET") {
+      return sendJson(response,200,await pilotCloseoutOutcomeService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+    }
+    if (url.pathname.startsWith("/api/pilot-closeout-outcome/locations/") && url.pathname.endsWith("/review") && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Management permission required for pilot closeout review."});
+      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
+      try{return sendJson(response,201,await pilotCloseoutOutcomeService.review(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
+    }
+    if (url.pathname.startsWith("/api/pilot-closeout-outcome/locations/") && url.pathname.endsWith("/decision") && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for EXPAND/HOLD/RETIRE decisions."});
+      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
+      try{return sendJson(response,201,await pilotCloseoutOutcomeService.decide(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
+    }
+
     if (url.pathname === "/api/pilot-stabilization-exit" && request.method === "GET") {
       return sendJson(response,200,await pilotStabilizationExitService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
     }
@@ -208,7 +222,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       try{return sendJson(response,201,await pilotStabilizationExitService.assess(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
     }
     if (url.pathname.startsWith("/api/pilot-stabilization-exit/locations/") && url.pathname.endsWith("/decision") && request.method === "POST") {
-      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for STABLE/EXTEND/ROLLBACK exit decisions."});
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for STABLE/EXTEND/ROLLBACK decisions."});
       const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
       try{return sendJson(response,201,await pilotStabilizationExitService.decide(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
     }
