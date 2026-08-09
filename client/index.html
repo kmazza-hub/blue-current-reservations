@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="54.0.0">
+  <meta name="blue-current-build" content="54.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -577,6 +577,14 @@
       <div class="v4316-actions"><input id="v5400Operator" class="v4312-input" placeholder="Operator acceptance"><input id="v5400Leadership" class="v4312-input" placeholder="Service leadership acceptance"><input id="v5400Pilot" class="v4312-input" placeholder="Pilot operating model"><input id="v5400Support" class="v4312-input" placeholder="Support escalation model"><select id="v5400Entry" class="v4312-input"><option value="APPROVED">V54 entry APPROVED</option><option value="HOLD">V54 entry HOLD</option></select><input id="v5400Note" class="v4312-input" placeholder="Closure note"><button id="v5400Review" type="button">Record V53 closure review</button></div>
       <div class="v4316-actions"><input id="v5400Evidence" class="v4312-input" placeholder="Operational certification evidence"><input id="v5400Acceptance" class="v4312-input" placeholder="Executive acceptance"><button id="v5400Certify" type="button">Certify V53 / enter V54</button></div>
       <div id="v5400Certification" class="v4316-answer">V53 has not been operationally certified.</div><div id="v5400Checks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5425OperatorSpeedWorkflow">
+      <header><div><small>V54.01–V54.25 · Operator Speed, Workflow Simplification & Service UX</small><strong>Make Blue Current faster and clearer when the restaurant is busy.</strong><span>Measure the eight core workflows for click efficiency, action latency, handoff clarity, priority visibility, exception visibility, and unresolved operator friction. READY / REVISE / HOLD remain human decisions and do not redesign workflows automatically.</span></div><button id="v5425Refresh" type="button">Refresh service UX</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5425Status">—</strong></article><article><small>Usability ready</small><strong id="v5425Ready">0/0</strong></article></div>
+      <div class="v4316-answer" id="v5425Headline">Operator-speed and service-UX review ready.</div>
+      <div class="v4316-actions"><input id="v5425Clicks" class="v4312-input" type="number" min="0" value="3" placeholder="Observed clicks"><input id="v5425Seconds" class="v4312-input" type="number" min="0" value="8" placeholder="Observed seconds"><input id="v5425MaxClicks" class="v4312-input" type="number" min="1" value="4" placeholder="Max clicks"><input id="v5425MaxSeconds" class="v4312-input" type="number" min="1" value="12" placeholder="Max seconds"><select id="v5425Handoff" class="v4312-input"><option value="PASS">Handoff clarity PASS</option><option value="FAIL">Handoff clarity FAIL</option></select><select id="v5425Priority" class="v4312-input"><option value="PASS">Priority visibility PASS</option><option value="FAIL">Priority visibility FAIL</option></select><select id="v5425Exception" class="v4312-input"><option value="PASS">Exception visibility PASS</option><option value="FAIL">Exception visibility FAIL</option></select></div>
+      <div class="v4316-actions"><input id="v5425Evidence" class="v4312-input" placeholder="Operator usability evidence"><input id="v5425Note" class="v4312-input" placeholder="Observation note"><input id="v5425DecisionEvidence" class="v4312-input" placeholder="READY / REVISE / HOLD evidence"><input id="v5425DecisionReason" class="v4312-input" placeholder="Decision reason / override"></div>
+      <div id="v5425Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9171,6 +9179,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="failureRecoveryShiftContinuityV5375" data-src="js/modules/failureRecoveryShiftContinuityCenter.js?v=53.75.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v53RestaurantOperationalCertificationV5400" data-src="js/modules/v53RestaurantOperationalCertificationEngine.js?v=54.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v53RestaurantOperationalCertificationV5400" data-src="js/modules/v53RestaurantOperationalCertificationCenter.js?v=54.0.0"></script>
-<script src="js/startup-loader.js?v=54.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSpeedWorkflowV5425" data-src="js/modules/operatorSpeedWorkflowSimplificationEngine.js?v=54.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSpeedWorkflowV5425" data-src="js/modules/operatorSpeedWorkflowSimplificationCenter.js?v=54.25.0"></script>
+<script src="js/startup-loader.js?v=54.25.0"></script>
 </body>
 </html>
