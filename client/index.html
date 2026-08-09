@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.25.0">
+  <meta name="blue-current-build" content="51.30.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -398,6 +398,17 @@
       <p><strong>System authorization gates</strong></p><div id="rpcSystemChecks" class="v432-list"></div>
       <p><strong>Role permission matrix</strong></p><div id="rpcRolesList" class="v432-list"></div>
       <p><strong>Membership / location scopes</strong></p><div id="rpcMemberships" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="operatorUxHardening">
+      <header><div><small>V51.26–V51.30 · Operator UX Hardening</small><strong>Make the pilot faster to operate under restaurant pressure without redesigning proven workflows.</strong><span>Primary restaurant workflows now have one quick-navigation target and keyboard shortcut, operator friction can be recorded with click-count evidence, terminology is normalized around restaurant language, and high/critical usability findings block human UX certification.</span></div><button id="ouxRefresh" type="button">Refresh operator UX</button></header>
+      <div class="v432-kpis"><article><small>UX status</small><strong id="ouxStatus">—</strong></article><article><small>Hardening gates</small><strong id="ouxChecks">0/0</strong></article><article><small>Open findings</small><strong id="ouxOpen">0</strong></article><article><small>High/Critical</small><strong id="ouxHigh">0</strong></article></div>
+      <div class="v4316-answer" id="ouxHeadline">Operator UX hardening ready.</div>
+      <p><strong>Fast workflow navigation</strong> · Alt+1 through Alt+8</p><div id="ouxQuickActions" class="oux-quick-actions"></div>
+      <div class="v4316-actions"><select id="ouxWorkflow" class="v4312-input"><option value="OPENING">Opening</option><option value="RESERVATIONS">Reservations</option><option value="SEATING">Seating / Floor</option><option value="ACTIVE_SERVICE">Active Service</option><option value="KITCHEN">Kitchen</option><option value="GUEST_RECOVERY">Guest Recovery</option><option value="CLOSEOUT">Shift Closeout</option><option value="PILOT_READINESS">Pilot Readiness</option></select><select id="ouxSeverity" class="v4312-input"><option value="low">low</option><option value="medium" selected>medium</option><option value="high">high</option><option value="critical">critical</option></select><input id="ouxIssue" class="v4312-input" placeholder="Operator friction observed"><input id="ouxObservedClicks" class="v4312-input" type="number" min="0" placeholder="Observed clicks"><input id="ouxExpectedClicks" class="v4312-input" type="number" min="0" placeholder="Target clicks"><input id="ouxTerminologyIssue" class="v4312-input" placeholder="Terminology issue"><button id="ouxRecord" type="button">Record friction</button></div>
+      <div class="v4316-actions"><input id="ouxResolution" class="v4312-input" placeholder="Human resolution evidence"><input id="ouxEvidence" class="v4312-input" placeholder="Operator usability certification evidence"><input id="ouxNote" class="v4312-input" placeholder="UX certification note"><button id="ouxCertify" type="button">Certify operator UX</button></div>
+      <p><strong>Hardening gates</strong></p><div id="ouxChecksList" class="v432-list"></div>
+      <p><strong>Canonical restaurant terminology</strong></p><div id="ouxTerms" class="v432-list"></div>
+      <p><strong>Operator-friction register</strong></p><div id="ouxFindings" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8952,6 +8963,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryCenter.js?v=51.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationEngine.js?v=51.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationCenter.js?v=51.25.0"></script>
-<script src="js/startup-loader.js?v=51.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningEngine.js?v=51.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningCenter.js?v=51.30.0"></script>
+<script src="js/startup-loader.js?v=51.30.0"></script>
 </body>
 </html>

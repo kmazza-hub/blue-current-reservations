@@ -13285,3 +13285,33 @@ html[data-boot-complete="true"] .startup-loading, html[data-boot-complete="true"
 
 /* V43.20 executive AI orchestration */
 .v4316-center textarea.v4312-input{width:100%;min-height:92px;resize:vertical;margin:14px 0;padding:14px 16px;border-radius:14px;border:1px solid rgba(148,163,184,.28);background:rgba(15,23,42,.72);color:#f8fafc;font:inherit}.v4316-actions{display:flex;gap:10px;flex-wrap:wrap}.v4316-actions button,.v4316-center header>button{font-weight:700}.v432-list article .pass{color:#86efac}.v432-list article .block{color:#fca5a5}
+
+
+/* V51.26–V51.30 Operator UX Hardening — additive pilot usability rules */
+html[data-v51-operator-ux="hardened"] main section[id]{scroll-margin-top:96px}
+html[data-v51-operator-ux="hardened"] button,
+html[data-v51-operator-ux="hardened"] input,
+html[data-v51-operator-ux="hardened"] select,
+html[data-v51-operator-ux="hardened"] textarea{min-height:44px}
+html[data-v51-operator-ux="hardened"] button:focus-visible,
+html[data-v51-operator-ux="hardened"] input:focus-visible,
+html[data-v51-operator-ux="hardened"] select:focus-visible,
+html[data-v51-operator-ux="hardened"] textarea:focus-visible,
+html[data-v51-operator-ux="hardened"] a:focus-visible{
+  outline:3px solid currentColor;outline-offset:3px
+}
+html[data-v51-operator-ux="hardened"] .v432-center,
+html[data-v51-operator-ux="hardened"] .v438-center,
+html[data-v51-operator-ux="hardened"] .v4316-center{line-height:1.5}
+html[data-v51-operator-ux="hardened"] .v432-center header strong,
+html[data-v51-operator-ux="hardened"] .v438-center header strong,
+html[data-v51-operator-ux="hardened"] .v4316-center header strong{font-weight:800}
+html[data-v51-operator-ux="hardened"] .v432-list article strong{font-weight:800}
+.oux-quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0 18px}
+.oux-quick-action{min-height:58px;padding:10px 14px;border-radius:12px;text-align:left}
+.oux-quick-action strong,.oux-quick-action small{display:block}
+.oux-quick-action small{margin-top:4px;opacity:.78}
+@media (max-width:760px){
+  .oux-quick-actions{grid-template-columns:1fr 1fr}
+  html[data-v51-operator-ux="hardened"] .v4316-actions{align-items:stretch}
+}
