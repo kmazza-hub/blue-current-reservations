@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="53.0.0">
+  <meta name="blue-current-build" content="53.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -545,6 +545,14 @@
       <div class="v4316-actions"><input id="v5300Observability" class="v4312-input" placeholder="Observability / support review"><input id="v5300Operator" class="v4312-input" placeholder="Operator workflow review"><input id="v5300Debt" class="v4312-input" placeholder="Open debt register"><input id="v5300EntryCriteria" class="v4312-input" placeholder="V53 entry criteria"><input id="v5300Note" class="v4312-input" placeholder="Closure note"><button id="v5300Review" type="button">Record closure review</button></div>
       <div class="v4316-actions"><input id="v5300Evidence" class="v4312-input" placeholder="Certification evidence"><input id="v5300Acceptance" class="v4312-input" placeholder="Executive acceptance"><button id="v5300Certify" type="button">Close V52 / certify V53 entry</button></div>
       <div id="v5300Certification" class="v4316-answer">V52 has not been certified closed.</div><div id="v5300Checks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5325RestaurantWorkflowIntegration">
+      <header><div><small>V53.01–V53.25 · Restaurant Workflow Integration & Service Hardening</small><strong>Prove the restaurant operating chain works end to end under one operator-facing workflow.</strong><span>This accelerated V53 wave connects opening, reservation, arrival, seating, active service, kitchen, guest recovery, and closeout. It checks handoff continuity, operator friction, failure/recovery evidence, and shift completion without automatically changing restaurant state.</span></div><button id="v5325Refresh" type="button">Refresh workflow integration</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5325Status">—</strong></article><article><small>Workflow ready</small><strong id="v5325Ready">0/0</strong></article><article><small>High/Critical friction</small><strong id="v5325Findings">0</strong></article></div>
+      <div class="v4316-answer" id="v5325Headline">Restaurant workflow integration ready.</div>
+      <div class="v4316-actions"><select id="v5325Handoff" class="v4312-input"><option value="PASS">Handoff continuity PASS</option><option value="FAIL">Handoff continuity FAIL</option></select><select id="v5325Completion" class="v4312-input"><option value="PASS">Shift completion PASS</option><option value="FAIL">Shift completion FAIL</option></select><input id="v5325Recovery" class="v4312-input" placeholder="Failure / recovery evidence"><input id="v5325Operator" class="v4312-input" placeholder="Operator evidence"><input id="v5325Note" class="v4312-input" placeholder="Observation note"></div>
+      <div class="v4316-actions"><input id="v5325CertEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5325CertNote" class="v4312-input" placeholder="Certification note"></div>
+      <div id="v5325Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9131,6 +9139,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operationalExpansionOrchestrationV5275" data-src="js/modules/operationalExpansionOrchestrationCenter.js?v=52.75.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v52OperationalReadinessV5300" data-src="js/modules/v52OperationalReadinessEngine.js?v=53.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v52OperationalReadinessV5300" data-src="js/modules/v52OperationalReadinessCenter.js?v=53.0.0"></script>
-<script src="js/startup-loader.js?v=53.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantWorkflowIntegrationV5325" data-src="js/modules/restaurantWorkflowIntegrationEngine.js?v=53.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantWorkflowIntegrationV5325" data-src="js/modules/restaurantWorkflowIntegrationCenter.js?v=53.25.0"></script>
+<script src="js/startup-loader.js?v=53.25.0"></script>
 </body>
 </html>
