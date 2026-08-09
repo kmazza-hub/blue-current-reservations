@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="54.50.0">
+  <meta name="blue-current-build" content="54.75.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -591,6 +591,12 @@
       <div class="v432-kpis"><article><small>Status</small><strong id="v5450Status">—</strong></article><article><small>Decision ready</small><strong id="v5450Ready">0/0</strong></article></div><div class="v4316-answer" id="v5450Headline">Manager intervention review ready.</div>
       <div class="v4316-actions"><input id="v5450Ack" class="v4312-input" type="number" min="0" value="8" placeholder="Acknowledge seconds"><input id="v5450Decision" class="v4312-input" type="number" min="0" value="30" placeholder="Decision seconds"><input id="v5450MaxAck" class="v4312-input" type="number" min="1" value="15" placeholder="Max acknowledge"><input id="v5450MaxDecision" class="v4312-input" type="number" min="1" value="60" placeholder="Max decision"><input id="v5450Owner" class="v4312-input" placeholder="Manager / owner"><input id="v5450Action" class="v4312-input" placeholder="Next operator action"></div>
       <div class="v4316-actions"><select id="v5450OwnerClarity" class="v4312-input"><option value="PASS">Owner clarity PASS</option><option value="FAIL">Owner clarity FAIL</option></select><select id="v5450ActionClarity" class="v4312-input"><option value="PASS">Next action PASS</option><option value="FAIL">Next action FAIL</option></select><select id="v5450Escalation" class="v4312-input"><option value="PASS">Escalation PASS</option><option value="FAIL">Escalation FAIL</option></select><input id="v5450Evidence" class="v4312-input" placeholder="Manager drill evidence"><input id="v5450Note" class="v4312-input" placeholder="Observation note"><input id="v5450CertEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5450Reason" class="v4312-input" placeholder="Decision reason / override"></div><div id="v5450Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5475RoleErgonomics">
+      <header><div><small>V54.51–V54.75 · Role-Based Service Views, Information Density & Shift Ergonomics</small><strong>Put the right information in front of each restaurant role without drowning the shift in controls.</strong><span>Observe host, server, bartender, kitchen, manager, and general-manager views for role relevance, information density, visual hierarchy, readability, touch targets, scan speed, and primary-action density.</span></div><button id="v5475Refresh" type="button">Refresh shift ergonomics</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5475Status">—</strong></article><article><small>Ergonomic ready</small><strong id="v5475Ready">0/0</strong></article></div><div class="v4316-answer" id="v5475Headline">Role-based service ergonomics ready for review.</div>
+      <div class="v4316-actions"><input id="v5475Scan" class="v4312-input" type="number" min="0" value="5" placeholder="Scan seconds"><input id="v5475Actions" class="v4312-input" type="number" min="0" value="5" placeholder="Primary actions visible"><input id="v5475MaxScan" class="v4312-input" type="number" min="1" value="8" placeholder="Max scan seconds"><input id="v5475MaxActions" class="v4312-input" type="number" min="1" value="7" placeholder="Max primary actions"><select id="v5475Density" class="v4312-input"><option value="PASS">Information density PASS</option><option value="FAIL">Information density FAIL</option></select><select id="v5475Hierarchy" class="v4312-input"><option value="PASS">Visual hierarchy PASS</option><option value="FAIL">Visual hierarchy FAIL</option></select><select id="v5475Readability" class="v4312-input"><option value="PASS">Readability PASS</option><option value="FAIL">Readability FAIL</option></select><select id="v5475Touch" class="v4312-input"><option value="PASS">Touch targets PASS</option><option value="FAIL">Touch targets FAIL</option></select></div>
+      <div class="v4316-actions"><input id="v5475Evidence" class="v4312-input" placeholder="Role ergonomics evidence"><input id="v5475Note" class="v4312-input" placeholder="Observation note"><input id="v5475CertEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5475Reason" class="v4312-input" placeholder="Decision reason / override"></div><div id="v5475Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9189,6 +9195,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSpeedWorkflowV5425" data-src="js/modules/operatorSpeedWorkflowSimplificationCenter.js?v=54.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerInterventionDecisionSpeedV5450" data-src="js/modules/managerInterventionDecisionSpeedEngine.js?v=54.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerInterventionDecisionSpeedV5450" data-src="js/modules/managerInterventionDecisionSpeedCenter.js?v=54.50.0"></script>
-<script src="js/startup-loader.js?v=54.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="roleBasedServiceErgonomicsV5475" data-src="js/modules/roleBasedServiceErgonomicsEngine.js?v=54.75.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="roleBasedServiceErgonomicsV5475" data-src="js/modules/roleBasedServiceErgonomicsCenter.js?v=54.75.0"></script>
+<script src="js/startup-loader.js?v=54.75.0"></script>
 </body>
 </html>

@@ -1274,6 +1274,7 @@ const failureRecoveryShiftContinuityV5375Module = startupRegistry.register("fail
 const v53RestaurantOperationalCertificationV5400Module = startupRegistry.register("v53RestaurantOperationalCertificationV5400", shouldInitializeCenter("v53RestaurantOperationalCertificationV5400") ? window.createBlueCurrentV53RestaurantOperationalCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "failureRecoveryShiftContinuityV5375"]);
 const operatorSpeedWorkflowV5425Module = startupRegistry.register("operatorSpeedWorkflowV5425", shouldInitializeCenter("operatorSpeedWorkflowV5425") ? window.createBlueCurrentOperatorSpeedWorkflowSimplificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v53RestaurantOperationalCertificationV5400"]);
 const managerInterventionDecisionSpeedV5450Module = startupRegistry.register("managerInterventionDecisionSpeedV5450", shouldInitializeCenter("managerInterventionDecisionSpeedV5450") ? window.createBlueCurrentManagerInterventionDecisionSpeedCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorSpeedWorkflowV5425"]);
+const roleBasedServiceErgonomicsV5475Module = startupRegistry.register("roleBasedServiceErgonomicsV5475", shouldInitializeCenter("roleBasedServiceErgonomicsV5475") ? window.createBlueCurrentRoleBasedServiceErgonomicsCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managerInterventionDecisionSpeedV5450"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
