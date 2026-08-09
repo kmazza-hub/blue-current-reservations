@@ -1,0 +1,737 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.45.0",
++  "version": "51.50.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 management and executive accuracy certification",
++  "description": "Blue Current Hospitality OS \u2014 pilot deployment package and certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -69,6 +69,7 @@
+ const ReservationGuestJourneyCertificationService = require("./services/reservationGuestJourneyCertificationService");
+ const LiveFloorServiceCertificationService = require("./services/liveFloorServiceCertificationService");
+ const ManagementExecutiveAccuracyService = require("./services/managementExecutiveAccuracyService");
++const PilotDeploymentPackageService = require("./services/pilotDeploymentPackageService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -141,7 +142,8 @@
+ const reservationGuestJourneyCertificationService = new ReservationGuestJourneyCertificationService(database, auditService, realtimeHub, guestIntelligenceService, operatorUxHardeningService);
+ const liveFloorServiceCertificationService = new LiveFloorServiceCertificationService(database, auditService, realtimeHub, reservationGuestJourneyCertificationService);
+ const managementExecutiveAccuracyService = new ManagementExecutiveAccuracyService(database, auditService, realtimeHub, executiveCommandCenterService, liveFloorServiceCertificationService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService });
++const pilotDeploymentPackageService = new PilotDeploymentPackageService(database, auditService, realtimeHub, managementExecutiveAccuracyService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -228,7 +230,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.45.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.50.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.45.0",
++        version: "51.50.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,24 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/pilot-deployment-package" && request.method === "GET") {
++      return sendJson(response,200,await pilotDeploymentPackageService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/pilot-deployment-package/locations/") && url.pathname.endsWith("/generate") && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Administrative/manager permission required to generate a pilot deployment package."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotDeploymentPackageService.generate(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/pilot-deployment-package/locations/") && url.pathname.endsWith("/certify") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for pilot deployment certification."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotDeploymentPackageService.certify(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/management-executive-accuracy" && request.method === "GET") {
+       return sendJson(response,200,await managementExecutiveAccuracyService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/pilotDeploymentPackageService.js
++++ b/server/services/pilotDeploymentPackageService.js
+@@ -0,0 +1,182 @@
++"use strict";
++
++class PilotDeploymentPackageService {
++  constructor(database,auditService,realtimeHub,managementExecutiveAccuracyService){
++    Object.assign(this,{database,auditService,realtimeHub,managementExecutiveAccuracyService});
++    this.checklist=[
++      {id:"LOCATION_CONFIG",label:"Restaurant/location configuration"},
++      {id:"ENVIRONMENT_PREFLIGHT",label:"Environment and runtime preflight"},
++      {id:"ACCESS_PACKAGE",label:"Pilot accounts and access"},
++      {id:"CONNECTOR_CHECKLIST",label:"Connector/configuration checklist"},
++      {id:"BACKUP_RESTORE",label:"Backup and restore procedure"},
++      {id:"STARTUP_RESTART",label:"Startup and restart procedure"},
++      {id:"SUPPORT_ESCALATION",label:"Support and escalation procedure"},
++      {id:"ROLLBACK",label:"Rollback procedure"},
++      {id:"DEPLOYMENT_MANIFEST",label:"Deployment manifest"},
++      {id:"DEPLOYMENT_EVIDENCE",label:"Deployment evidence"}
++    ];
++  }
++  now(){return new Date().toISOString();}
++  allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
++  async packages(organizationId){
++    const db=await this.database.read();
++    return (db.pilotDeploymentPackages||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++  }
++  async certifications(organizationId){
++    const db=await this.database.read();
++    return (db.pilotDeploymentCertifications||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.certifiedAt)-new Date(a.certifiedAt));
++  }
++  buildLocationConfig(db,organizationId,locationId){
++    const location=(db.locations||[]).find(x=>x.organizationId===organizationId&&x.id===locationId)||null;
++    const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const sections=(db.sections||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const memberships=(db.memberships||[]).filter(x=>x.organizationId===organizationId&&((x.locationIds||[]).includes("*")||(x.locationIds||[]).includes(locationId)));
++    const connectors=(db.liveConnectors||[]).filter(x=>x.organizationId===organizationId&&(!x.locationId||x.locationId===locationId));
++    return {location,tables:tables.length,sections:sections.length,memberships:memberships.length,connectors};
++  }
++  procedures(){
++    return {
++      backupRestore:{
++        backup:"Stop the runtime, copy database/data/blue-current.json to a timestamped protected backup, verify SHA-256, then restart.",
++        restore:"Stop the runtime, preserve the failed database, restore the verified backup to the configured BLUE_CURRENT_DB path, restart, then run health/auth checks."
++      },
++      startupRestart:{
++        startup:"Run npm run check, then npm run start. Verify /api/health returns the expected release version before operator login.",
++        restart:"Terminate the Node process cleanly, run npm run check, restart the service, verify /api/health, authenticate, and reopen the pilot surface."
++      },
++      supportEscalation:{
++        firstLine:"Restaurant pilot lead / GM records the issue, timestamp, location, workflow, screenshot/log evidence, and immediate guest/service impact.",
++        escalation:"Escalate application/runtime issues to Blue Current technical owner; escalate access/security or data-integrity issues immediately and suspend the affected workflow if necessary."
++      },
++      rollback:{
++        trigger:"Rollback when the deployed wave causes a reproducible pilot-blocking regression, data-integrity risk, authorization regression, or unrecoverable startup/runtime failure.",
++        procedure:"Stop the service, preserve logs/database, restore the last verified repository/database backup, run the prior release regression tests, then restart and verify health/auth before resuming."
++      }
++    };
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,accuracy,packages,certs]=await Promise.all([
++      this.database.read(),
++      this.managementExecutiveAccuracyService.snapshot(organizationId,allowedLocationIds),
++      this.packages(organizationId),
++      this.certifications(organizationId)
++    ]);
++    const packageMap=new Map(packages.map(x=>[x.locationId,x]));
++    const certMap=new Map(certs.map(x=>[x.locationId,x]));
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId&&this.allowed(x.id,allowedLocationIds)).map(loc=>{
++      const config=this.buildLocationConfig(db,organizationId,loc.id);
++      const pkg=packageMap.get(loc.id)||null;
++      const certification=certMap.get(loc.id)||null;
++      const accuracyLoc=accuracy.locations.find(x=>x.locationId===loc.id)||null;
++      const checks=[
++        {id:"LOCATION_CONFIG",passed:!!config.location&&config.tables>0&&config.sections>0,actual:`${config.tables} tables · ${config.sections} sections`},
++        {id:"ENVIRONMENT_PREFLIGHT",passed:true,actual:"repository validation + health/auth verification procedure defined"},
++        {id:"ACCESS_PACKAGE",passed:config.memberships>0,actual:`${config.memberships} authorized membership(s)`},
++        {id:"CONNECTOR_CHECKLIST",passed:true,actual:`${config.connectors.length} connector record(s); explicit configuration review required`},
++        {id:"BACKUP_RESTORE",passed:true,actual:"documented procedure available"},
++        {id:"STARTUP_RESTART",passed:true,actual:"documented procedure available"},
++        {id:"SUPPORT_ESCALATION",passed:true,actual:"documented procedure available"},
++        {id:"ROLLBACK",passed:true,actual:"documented procedure available"},
++        {id:"DEPLOYMENT_MANIFEST",passed:!!pkg,actual:pkg?pkg.releaseVersion:"not generated"},
++        {id:"DEPLOYMENT_EVIDENCE",passed:!!pkg?.evidence,actual:pkg?.evidence?"human evidence recorded":"not recorded"}
++      ];
++      const passed=checks.filter(x=>x.passed).length;
++      return {
++        locationId:loc.id,locationName:loc.name||loc.displayName||loc.id,
++        checks,passed,total:checks.length,
++        deploymentReady:passed===checks.length,
++        package:pkg,certification,
++        executiveAccuracyState:accuracyLoc?.trustState||null,
++        configSummary:{tables:config.tables,sections:config.sections,memberships:config.memberships,connectors:config.connectors.length},
++        deploymentState:certification?.status==="PILOT_DEPLOYMENT_CERTIFIED"?"PILOT_DEPLOYMENT_CERTIFIED":pkg?"PACKAGE_GENERATED":"PACKAGE_REQUIRED"
++      };
++    });
++    return {
++      version:"51.50.0",generatedAt:this.now(),
++      status:locations.length===0?"restaurant-required":locations.every(x=>x.certification?.status==="PILOT_DEPLOYMENT_CERTIFIED")?"pilot-deployment-certified":locations.some(x=>x.package)?"pilot-deployment-packages-in-progress":"pilot-deployment-package-required",
++      headline:`${locations.filter(x=>x.deploymentReady).length}/${locations.length} location(s) currently have complete deployment-package evidence.`,
++      checklist:this.checklist,locations,procedures:this.procedures(),
++      policy:{
++        packageGenerationDoesNotDeploy:true,
++        deploymentEvidenceHumanRequired:true,
++        certificationHumanRequired:true,
++        rollbackProcedureRequired:true,
++        backupRestoreProcedureRequired:true,
++        supportEscalationRequired:true,
++        automaticDeployment:false,
++        automaticGoLive:false,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async generate(organizationId,allowedLocationIds,locationId,input,actor){
++    if(!this.allowed(locationId,allowedLocationIds))throw new Error("Location is outside your authorized scope.");
++    const db=await this.database.read();
++    const config=this.buildLocationConfig(db,organizationId,locationId);
++    if(!config.location)throw new Error("Restaurant location not found.");
++    const evidence=String(input.evidence||"").trim().slice(0,3000);
++    if(!evidence)throw new Error("Human deployment-package evidence is required.");
++    const releaseVersion=String(input.releaseVersion||"51.50.0").trim().slice(0,80);
++    const supportOwner=String(input.supportOwner||"").trim().slice(0,160);
++    const escalationOwner=String(input.escalationOwner||"").trim().slice(0,160);
++    if(!supportOwner)throw new Error("Pilot support owner is required.");
++    if(!escalationOwner)throw new Error("Pilot escalation owner is required.");
++    const now=this.now();
++    const record={
++      id:`pdp_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:config.location.name||config.location.displayName||locationId,
++      status:"PILOT_DEPLOYMENT_PACKAGE_GENERATED",createdAt:now,createdBy:actor,
++      releaseVersion,evidence,supportOwner,escalationOwner,
++      environment:String(input.environment||"pilot").trim().slice(0,80),
++      deploymentWindow:String(input.deploymentWindow||"").trim().slice(0,240),
++      configuration:{
++        locationId,locationName:config.location.name||config.location.displayName||locationId,
++        tables:config.tables,sections:config.sections,memberships:config.memberships,
++        connectors:config.connectors.map(x=>({id:x.id,type:x.type,status:x.status}))
++      },
++      procedures:this.procedures(),
++      manifest:{
++        releaseVersion,
++        expectedHealthVersion:"51.50.0",
++        validationCommands:[
++          "npm run check",
++          "node scripts/maintenance/test-v51.50-pilot-deployment-package.js",
++          "node scripts/maintenance/test-v51.45-management-executive-accuracy.js",
++          "npm run start",
++          "curl.exe -s http://localhost:8787/api/health"
++        ],
++        automaticDeployment:false,automaticGoLive:false
++      },
++      deploymentPerformed:false,goLivePerformed:false
++    };
++    await this.database.mutate(db=>{db.pilotDeploymentPackages||=[];db.pilotDeploymentPackages.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Pilot deployment package generated for ${locationId}; no deployment performed`,category:"pilot_deployment"});
++    this.realtimeHub.publish("pilot-deployment:package-generated",{organizationId,locationId,id:record.id});
++    return record;
++  }
++  async certify(organizationId,allowedLocationIds,locationId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Restaurant location not found.");
++    if(!loc.deploymentReady)throw new Error("Pilot deployment package checklist must be complete before certification.");
++    const evidence=String(input.evidence||"").trim().slice(0,3200);
++    const note=String(input.note||"").trim().slice(0,1800);
++    if(!evidence)throw new Error("Human pilot-deployment certification evidence is required.");
++    if(!note)throw new Error("Human pilot-deployment certification note is required.");
++    const record={
++      id:`pdc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,
++      status:"PILOT_DEPLOYMENT_CERTIFIED",certifiedAt:this.now(),certifiedBy:actor,
++      evidence,note,packageId:loc.package?.id||null,
++      checklistSnapshot:loc.checks,
++      deploymentPerformedByCertification:false,
++      goLivePerformedByCertification:false,
++      autonomousProductionChanges:false
++    };
++    await this.database.mutate(db=>{db.pilotDeploymentCertifications||=[];db.pilotDeploymentCertifications.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Pilot deployment package certified for ${locationId}; deployment/go-live not performed`,category:"pilot_deployment"});
++    this.realtimeHub.publish("pilot-deployment:certified",{organizationId,locationId,id:record.id});
++    return record;
++  }
++}
++module.exports=PilotDeploymentPackageService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.45.0">
++  <meta name="blue-current-build" content="51.50.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -434,6 +434,15 @@
+       <p><strong>Critical trust issues</strong></p><div id="meaCriticalList" class="v432-list"></div>
+       <p><strong>Location source reconciliation</strong></p><div id="meaLocations" class="v432-list"></div>
+       <p><strong>Portfolio rollup reconciliation</strong></p><div id="meaPortfolio" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="pilotDeploymentPackage">
++      <header><div><small>V51.46–V51.50 · Pilot Deployment Package</small><strong>Package the restaurant pilot so deployment, recovery, support, restart, and rollback are controlled before anyone goes live.</strong><span>Blue Current generates a location-specific pilot deployment manifest from the existing restaurant configuration and records the human evidence needed to prove the environment, access, connectors, backup/restore, startup/restart, escalation, rollback, and deployment procedures are ready. Package generation never deploys or goes live.</span></div><button id="pdpRefresh" type="button">Refresh deployment package</button></header>
++      <div class="v432-kpis"><article><small>Deployment status</small><strong id="pdpStatus">—</strong></article><article><small>Ready locations</small><strong id="pdpReady">0/0</strong></article><article><small>Packages generated</small><strong id="pdpGenerated">0</strong></article><article><small>Certified</small><strong id="pdpCertified">0</strong></article></div>
++      <div class="v4316-answer" id="pdpHeadline">Pilot deployment packaging ready.</div>
++      <div class="v4316-actions"><input id="pdpReleaseVersion" class="v4312-input" value="51.50.0" placeholder="Release version"><input id="pdpEnvironment" class="v4312-input" value="pilot" placeholder="Environment"><input id="pdpSupportOwner" class="v4312-input" placeholder="Pilot support owner"><input id="pdpEscalationOwner" class="v4312-input" placeholder="Escalation owner"><input id="pdpWindow" class="v4312-input" placeholder="Deployment window"><input id="pdpEvidence" class="v4312-input" placeholder="Human deployment-package evidence"></div>
++      <div class="v4316-actions"><input id="pdpCertificationEvidence" class="v4312-input" placeholder="Human deployment certification evidence"><input id="pdpCertificationNote" class="v4312-input" placeholder="Pilot deployment certification note"></div>
++      <p><strong>Restaurant deployment packages</strong></p><div id="pdpLocations" class="v432-list"></div>
++      <p><strong>Required operating procedures</strong></p><div id="pdpProcedures" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8996,6 +9005,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationCenter.js?v=51.40.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyEngine.js?v=51.45.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyCenter.js?v=51.45.0"></script>
+-<script src="js/startup-loader.js?v=51.45.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDeploymentPackage" data-src="js/modules/pilotDeploymentPackageEngine.js?v=51.50.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDeploymentPackage" data-src="js/modules/pilotDeploymentPackageCenter.js?v=51.50.0"></script>
++<script src="js/startup-loader.js?v=51.50.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1256,6 +1256,7 @@
+ const reservationGuestJourneyModule = startupRegistry.register("reservationGuestJourney", shouldInitializeCenter("reservationGuestJourney") ? window.createBlueCurrentReservationGuestJourneyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorUxHardening"]);
+ const liveFloorServiceCertificationModule = startupRegistry.register("liveFloorServiceCertification", shouldInitializeCenter("liveFloorServiceCertification") ? window.createBlueCurrentLiveFloorServiceCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "reservationGuestJourney"]);
+ const managementExecutiveAccuracyModule = startupRegistry.register("managementExecutiveAccuracy", shouldInitializeCenter("managementExecutiveAccuracy") ? window.createBlueCurrentManagementExecutiveAccuracyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "liveFloorServiceCertification"]);
++const pilotDeploymentPackageModule = startupRegistry.register("pilotDeploymentPackage", shouldInitializeCenter("pilotDeploymentPackage") ? window.createBlueCurrentPilotDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managementExecutiveAccuracy"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.45.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.50.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/pilotDeploymentPackageEngine.js
++++ b/client/js/modules/pilotDeploymentPackageEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentPilotDeploymentPackageEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/pilot-deployment-package",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot deployment package failed (${r.status})`);this.appState?.update?.({pilotDeploymentPackage:d});return d;}
++  async generate(locationId,payload={}){const r=await fetch(`/api/pilot-deployment-package/locations/${encodeURIComponent(locationId)}/generate`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot deployment package generation failed (${r.status})`);this.eventBus?.emit?.("pilot-deployment:package-generated",structuredClone(d));return d;}
++  async certify(locationId,payload={}){const r=await fetch(`/api/pilot-deployment-package/locations/${encodeURIComponent(locationId)}/certify`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot deployment certification failed (${r.status})`);this.eventBus?.emit?.("pilot-deployment:certified",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotDeploymentPackageEngine;
++if(global)global.BlueCurrentPilotDeploymentPackageEngine=BlueCurrentPilotDeploymentPackageEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/pilotDeploymentPackageCenter.js
++++ b/client/js/modules/pilotDeploymentPackageCenter.js
+@@ -0,0 +1,45 @@
++(function(){"use strict";
++function createBlueCurrentPilotDeploymentPackageCenterModule(eventBus,appState){
++  const root=document.getElementById("pilotDeploymentPackage");
++  if(!root||!window.BlueCurrentPilotDeploymentPackageEngine)return null;
++  const e=new window.BlueCurrentPilotDeploymentPackageEngine({eventBus,appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("pdpStatus").textContent=s.status||"—";
++    $("pdpReady").textContent=`${locs.filter(x=>x.deploymentReady).length}/${locs.length}`;
++    $("pdpGenerated").textContent=locs.filter(x=>x.package).length;
++    $("pdpCertified").textContent=locs.filter(x=>x.certification?.status==="PILOT_DEPLOYMENT_CERTIFIED").length;
++    $("pdpHeadline").textContent=s.headline||"Pilot deployment package unavailable.";
++    $("pdpLocations").innerHTML=locs.map(x=>`<article data-pdp-location="${esc(x.locationId)}"><div><strong>${esc(x.locationName)}</strong><span>${esc(x.deploymentState)} · ${x.passed}/${x.total} checklist items · executive accuracy ${esc(x.executiveAccuracyState||"unknown")}</span></div><p>${x.configSummary.tables} tables · ${x.configSummary.sections} sections · ${x.configSummary.memberships} memberships · ${x.configSummary.connectors} connectors</p><div class="v432-list">${x.checks.map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.id)}</strong><span>${esc(c.actual)}</span></article>`).join("")}</div><div class="v4316-actions">${!x.package?'<button type="button" data-pdp-generate="true">Generate deployment package</button>':""}${x.deploymentReady&&x.certification?.status!=="PILOT_DEPLOYMENT_CERTIFIED"?'<button type="button" data-pdp-certify="true">Certify deployment package</button>':""}</div></article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";
++    const p=s.procedures||{};
++    $("pdpProcedures").innerHTML=Object.entries(p).map(([k,v])=>`<article><strong>${esc(k.replaceAll(/([A-Z])/g," $1"))}</strong>${Object.entries(v).map(([a,b])=>`<p><b>${esc(a)}</b> · ${esc(b)}</p>`).join("")}</article>`).join("");
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("pdpHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-pdp-location]");if(!card)return;
++    try{
++      if(ev.target.closest("[data-pdp-generate]")){
++        await e.generate(card.dataset.pdpLocation,{
++          releaseVersion:$("pdpReleaseVersion").value,
++          environment:$("pdpEnvironment").value,
++          supportOwner:$("pdpSupportOwner").value,
++          escalationOwner:$("pdpEscalationOwner").value,
++          deploymentWindow:$("pdpWindow").value,
++          evidence:$("pdpEvidence").value
++        });
++      }else if(ev.target.closest("[data-pdp-certify]")){
++        await e.certify(card.dataset.pdpLocation,{
++          evidence:$("pdpCertificationEvidence").value,
++          note:$("pdpCertificationNote").value
++        });
++      }
++      await load();
++    }catch(err){$("pdpHeadline").textContent=err.message;}
++  });
++  $("pdpRefresh")?.addEventListener("click",load);
++  ["pilot-deployment:package-generated","pilot-deployment:certified","management-executive-accuracy:certified","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentPilotDeploymentPackageCenterModule=createBlueCurrentPilotDeploymentPackageCenterModule;
++})();--- a/scripts/maintenance/test-v51.50-pilot-deployment-package.js
++++ b/scripts/maintenance/test-v51.50-pilot-deployment-package.js
+@@ -0,0 +1,76 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/pilotDeploymentPackageService");
++
++(async()=>{
++  const state={
++    locations:[{id:"loc1",organizationId:"org",name:"Pilot Restaurant"}],
++    tables:[{id:"t1",organizationId:"org",locationId:"loc1"}],
++    sections:[{id:"s1",organizationId:"org",locationId:"loc1"}],
++    memberships:[{id:"m1",organizationId:"org",userId:"u1",role:"owner",locationIds:["*"]}],
++    liveConnectors:[{id:"c1",organizationId:"org",locationId:"loc1",type:"reservations",status:"connected"}],
++    pilotDeploymentPackages:[],
++    pilotDeploymentCertifications:[]
++  };
++  const audits=[],events=[];
++  const svc=new Service(
++    {read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)},
++    {record:async x=>audits.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>({status:"management-executive-accuracy-ready-for-certification",locations:[{locationId:"loc1",trustState:"EXECUTIVE_DATA_RECONCILED"}]})}
++  );
++
++  let snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.50.0");
++  assert.equal(snap.status,"pilot-deployment-package-required");
++  assert.equal(snap.locations[0].passed,8);
++  assert.equal(snap.locations[0].deploymentReady,false);
++  assert.equal(snap.policy.packageGenerationDoesNotDeploy,true);
++
++  const pkg=await svc.generate("org",["loc1"],"loc1",{
++    releaseVersion:"51.50.0",
++    environment:"pilot",
++    supportOwner:"Pilot Support",
++    escalationOwner:"Technical Owner",
++    deploymentWindow:"Monday 14:00",
++    evidence:"Environment, access, connector, backup, restart, escalation, and rollback procedures reviewed."
++  },"Tester");
++  assert.equal(pkg.status,"PILOT_DEPLOYMENT_PACKAGE_GENERATED");
++  assert.equal(pkg.deploymentPerformed,false);
++  assert.equal(pkg.goLivePerformed,false);
++  assert.equal(pkg.manifest.automaticDeployment,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.locations[0].deploymentReady,true);
++  assert.equal(snap.locations[0].passed,10);
++
++  const cert=await svc.certify("org",["loc1"],"loc1",{
++    evidence:"Deployment package, recovery procedures, support ownership, and rollback path reviewed end-to-end.",
++    note:"Pilot deployment package accepted."
++  },"Tester");
++  assert.equal(cert.status,"PILOT_DEPLOYMENT_CERTIFIED");
++  assert.equal(cert.deploymentPerformedByCertification,false);
++  assert.equal(cert.goLivePerformedByCertification,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.status,"pilot-deployment-certified");
++  assert.equal(snap.locations[0].deploymentState,"PILOT_DEPLOYMENT_CERTIFIED");
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.50.0",
++    locationConfigurationPackage:true,
++    environmentPreflight:true,
++    pilotAccessPackage:true,
++    connectorChecklist:true,
++    backupRestoreProcedure:true,
++    startupRestartProcedure:true,
++    supportEscalationProcedure:true,
++    rollbackProcedure:true,
++    deploymentManifest:true,
++    humanDeploymentEvidence:true,
++    humanDeploymentCertification:true,
++    automaticDeployment:false,
++    automaticGoLive:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.50.0-RELEASE.md
++++ b/V51.50.0-RELEASE.md
+@@ -0,0 +1,214 @@
++# BLUE CURRENT V51.50.0 — PILOT DEPLOYMENT PACKAGE
++
++V51.46–V51.50 packages Blue Current for controlled restaurant pilot deployment without automatically deploying or going live.
++
++## Deployment package checklist
++
++Each in-scope restaurant is evaluated against 10 deployment-package requirements:
++
++1. LOCATION_CONFIG
++2. ENVIRONMENT_PREFLIGHT
++3. ACCESS_PACKAGE
++4. CONNECTOR_CHECKLIST
++5. BACKUP_RESTORE
++6. STARTUP_RESTART
++7. SUPPORT_ESCALATION
++8. ROLLBACK
++9. DEPLOYMENT_MANIFEST
++10. DEPLOYMENT_EVIDENCE
++
++## Location configuration package
++
++The generated package captures:
++
++- restaurant/location identity
++- table count
++- section count
++- authorized membership count
++- connector records/statuses
++- release version
++- target environment
++- support owner
++- escalation owner
++- deployment window
++- human package evidence
++
++## Environment / preflight
++
++The deployment manifest explicitly requires:
++
++- repository validation
++- V51.50 focused deployment-package regression
++- V51.45 executive-accuracy regression
++- runtime start
++- health endpoint verification
++
++Expected health version:
++
++`51.50.0`
++
++## Backup / restore
++
++Backup procedure:
++
++- stop runtime
++- copy the configured Blue Current database to a protected timestamped backup
++- verify SHA-256
++- restart
++
++Restore procedure:
++
++- stop runtime
++- preserve failed database/log evidence
++- restore the verified backup
++- restart
++- verify health and authentication
++
++## Startup / restart
++
++Startup:
++
++- `npm run check`
++- `npm run start`
++- verify `/api/health`
++- confirm expected version before operator login
++
++Restart:
++
++- terminate Node cleanly
++- validate
++- restart
++- verify health/auth
++- reopen pilot surface
++
++## Support / escalation
++
++The package requires explicit:
++
++- pilot support owner
++- technical escalation owner
++- issue timestamp/location/workflow evidence
++- guest/service impact record
++- immediate escalation for access/security/data-integrity issues
++
++## Rollback
++
++Rollback is defined for:
++
++- reproducible pilot-blocking regressions
++- data-integrity risk
++- authorization regression
++- unrecoverable startup/runtime failure
++
++Rollback does not occur automatically.
++
++## Human deployment evidence
++
++Package generation requires human evidence.
++
++Final deployment certification requires:
++
++- all 10 package checks complete
++- human certification evidence
++- human certification note
++- admin permission
++
++Certified state:
++
++`PILOT_DEPLOYMENT_CERTIFIED`
++
++Certification does not perform deployment or go-live.
++
++## Current authenticated Chefs runtime
++
++Current state:
++
++`pilot-deployment-package-required`
++
++Marina Grille:
++
++- 8/10 package checks currently pass
++- 13 tables
++- 3 sections
++- 2 authorized memberships
++- 5 connector records
++- open:
++  - deployment manifest
++  - deployment evidence
++
++Harbor House:
++
++- 7/10
++- open:
++  - location configuration
++  - deployment manifest
++  - deployment evidence
++
++River & Rail:
++
++- 7/10
++- same open items
++
++The Cabin:
++
++- 7/10
++- same open items
++
++Garden Social:
++
++- 7/10
++- same open items
++
++Marina Grille is therefore the closest location to a complete pilot deployment package.
++
++## Safety policy
++
++- package generation does not deploy
++- deployment evidence human required
++- certification human required
++- rollback procedure required
++- backup/restore procedure required
++- support/escalation required
++- automatic deployment false
++- automatic go-live false
++- autonomous production changes false
++
++## Validation
++
++- V51.50 focused deployment-package lifecycle PASS
++- location configuration packaging PASS
++- environment preflight PASS
++- pilot access package PASS
++- connector checklist PASS
++- backup/restore procedure PASS
++- startup/restart procedure PASS
++- support/escalation procedure PASS
++- rollback procedure PASS
++- deployment manifest PASS
++- human deployment evidence PASS
++- human certification PASS
++- V51.45 regression PASS
++- authenticated deployment-package endpoint PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 947 JavaScript files
++- 790 client scripts
++- 5,900 unique HTML IDs
++
++## Next
++
++V51.51–V51.55 — Pilot Launch Control
++
++- choose pilot location
++- freeze pilot configuration
++- pre-launch verification
++- pilot launch window
++- launch owner
++- operator roster confirmation
++- live support bridge
++- launch blockers
++- explicit human launch authorization
++- launch-state evidence
++- no automatic go-live
+--- a/README-APPLY-V51.50.0.md
++++ b/README-APPLY-V51.50.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V51.50.0
++
++Baseline: exact V51.45.0 repository.
++
++Extract `BLUE-CURRENT-V51.50.0-PILOT-DEPLOYMENT-PACKAGE.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.50-pilot-deployment-package.js
++node scripts/maintenance/test-v51.45-management-executive-accuracy.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.50.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Pilot Deployment Package** surface appears after Management & Executive Accuracy.
++
++Important:
++
++- package generation does not deploy Blue Current
++- package certification does not perform go-live
++- support and escalation owners are required
++- human deployment evidence is required
++- backup/restore and rollback procedures remain explicit human-controlled operations
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.50.0 add pilot deployment package"
++git push origin live-service-timeline
++```

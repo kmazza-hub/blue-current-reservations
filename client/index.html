@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.45.0">
+  <meta name="blue-current-build" content="51.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -434,6 +434,15 @@
       <p><strong>Critical trust issues</strong></p><div id="meaCriticalList" class="v432-list"></div>
       <p><strong>Location source reconciliation</strong></p><div id="meaLocations" class="v432-list"></div>
       <p><strong>Portfolio rollup reconciliation</strong></p><div id="meaPortfolio" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="pilotDeploymentPackage">
+      <header><div><small>V51.46–V51.50 · Pilot Deployment Package</small><strong>Package the restaurant pilot so deployment, recovery, support, restart, and rollback are controlled before anyone goes live.</strong><span>Blue Current generates a location-specific pilot deployment manifest from the existing restaurant configuration and records the human evidence needed to prove the environment, access, connectors, backup/restore, startup/restart, escalation, rollback, and deployment procedures are ready. Package generation never deploys or goes live.</span></div><button id="pdpRefresh" type="button">Refresh deployment package</button></header>
+      <div class="v432-kpis"><article><small>Deployment status</small><strong id="pdpStatus">—</strong></article><article><small>Ready locations</small><strong id="pdpReady">0/0</strong></article><article><small>Packages generated</small><strong id="pdpGenerated">0</strong></article><article><small>Certified</small><strong id="pdpCertified">0</strong></article></div>
+      <div class="v4316-answer" id="pdpHeadline">Pilot deployment packaging ready.</div>
+      <div class="v4316-actions"><input id="pdpReleaseVersion" class="v4312-input" value="51.50.0" placeholder="Release version"><input id="pdpEnvironment" class="v4312-input" value="pilot" placeholder="Environment"><input id="pdpSupportOwner" class="v4312-input" placeholder="Pilot support owner"><input id="pdpEscalationOwner" class="v4312-input" placeholder="Escalation owner"><input id="pdpWindow" class="v4312-input" placeholder="Deployment window"><input id="pdpEvidence" class="v4312-input" placeholder="Human deployment-package evidence"></div>
+      <div class="v4316-actions"><input id="pdpCertificationEvidence" class="v4312-input" placeholder="Human deployment certification evidence"><input id="pdpCertificationNote" class="v4312-input" placeholder="Pilot deployment certification note"></div>
+      <p><strong>Restaurant deployment packages</strong></p><div id="pdpLocations" class="v432-list"></div>
+      <p><strong>Required operating procedures</strong></p><div id="pdpProcedures" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8996,6 +9005,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationCenter.js?v=51.40.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyEngine.js?v=51.45.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyCenter.js?v=51.45.0"></script>
-<script src="js/startup-loader.js?v=51.45.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDeploymentPackage" data-src="js/modules/pilotDeploymentPackageEngine.js?v=51.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDeploymentPackage" data-src="js/modules/pilotDeploymentPackageCenter.js?v=51.50.0"></script>
+<script src="js/startup-loader.js?v=51.50.0"></script>
 </body>
 </html>
