@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="52.50.0">
+  <meta name="blue-current-build" content="52.75.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -525,6 +525,17 @@
       <div class="v4316-actions"><input id="v5250Success" class="v4312-input" placeholder="Success criteria"><input id="v5250Failure" class="v4312-input" placeholder="Failure criteria"><input id="v5250EvidenceStandard" class="v4312-input" placeholder="Evidence standard"><input id="v5250Note" class="v4312-input" placeholder="Playbook note"><button id="v5250Generate" type="button">Generate playbook</button></div>
       <div class="v4316-actions"><input id="v5250CertificationEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5250CertificationNote" class="v4312-input" placeholder="Certification note"><button id="v5250Certify" type="button">Certify repeatability</button></div>
       <p><strong>Certification gates</strong></p><div id="v5250Checks" class="v432-list"></div><div id="v5250Template" class="v4316-answer">No rollout template certified.</div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5275OperationalExpansionOrchestration">
+      <header><div><small>V52.51–V52.75 · Operational Integration & Expansion Orchestration</small><strong>Turn repeatability certification into a staged operating plan without automatically touching a restaurant.</strong><span>This accelerated wave integrates the certified rollout template with approved targets, staged sequencing, ownership, concurrency limits, dependency controls, operating handoffs, escalation, observation, and change-freeze rules. READY / PAUSE / HOLD are human governance decisions only.</span></div><button id="v5275Refresh" type="button">Refresh orchestration</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5275Status">—</strong></article><article><small>Approved targets</small><strong id="v5275Targets">0</strong></article><article><small>Stages</small><strong id="v5275Stages">0</strong></article></div>
+      <div class="v4316-answer" id="v5275Headline">Operational expansion orchestration ready.</div>
+      <div class="v4316-actions"><input id="v5275Name" class="v4312-input" value="Operational Expansion Orchestration" placeholder="Plan name"><input id="v5275Executive" class="v4312-input" placeholder="Executive owner"><input id="v5275Operations" class="v4312-input" placeholder="Operations owner"><input id="v5275Technical" class="v4312-input" placeholder="Technical owner"><input id="v5275SupportOwner" class="v4312-input" placeholder="Support owner"><input id="v5275MaxLocations" class="v4312-input" type="number" min="1" value="1"><input id="v5275MaxIncidents" class="v4312-input" type="number" min="0" value="1"></div>
+      <div class="v4316-actions"><textarea id="v5275LocationIds" class="v4312-input" placeholder="Approved target location IDs"></textarea><input id="v5275Entry" class="v4312-input" placeholder="Stage entry criteria"><input id="v5275Exit" class="v4312-input" placeholder="Stage exit criteria"><input id="v5275Window" class="v4312-input" placeholder="Observation window"></div>
+      <div class="v4316-actions"><input id="v5275Config" class="v4312-input" placeholder="Configuration dependency"><input id="v5275Connectors" class="v4312-input" placeholder="Connector dependency"><input id="v5275Training" class="v4312-input" placeholder="Training dependency"><input id="v5275SupportDep" class="v4312-input" placeholder="Support dependency"><input id="v5275Rollback" class="v4312-input" placeholder="Rollback dependency"></div>
+      <div class="v4316-actions"><input id="v5275Handoff" class="v4312-input" placeholder="Operating handoff"><input id="v5275Escalation" class="v4312-input" placeholder="Escalation model"><input id="v5275Observation" class="v4312-input" placeholder="Observation model"><input id="v5275Freeze" class="v4312-input" placeholder="Change-freeze rule"><input id="v5275Evidence" class="v4312-input" placeholder="Human plan evidence"><input id="v5275Note" class="v4312-input" placeholder="Plan note"><button id="v5275Create" type="button">Create orchestration plan</button></div>
+      <div class="v4316-actions"><input id="v5275DecisionEvidence" class="v4312-input" placeholder="READY / PAUSE / HOLD evidence"><input id="v5275DecisionReason" class="v4312-input" placeholder="Decision reason / override"><button data-v5275-decision="READY" type="button">READY</button><button data-v5275-decision="PAUSE" type="button">PAUSE</button><button data-v5275-decision="HOLD" type="button">HOLD</button></div>
+      <div id="v5275Plan" class="v4316-answer">No orchestration plan.</div><div id="v5275Decision" class="v4316-answer">No orchestration decision.</div><div id="v5275Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9107,6 +9118,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionPortfolioProofV5230" data-src="js/modules/expansionPortfolioProofCenter.js?v=52.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionRepeatabilityV5250" data-src="js/modules/expansionRepeatabilityCertificationEngine.js?v=52.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionRepeatabilityV5250" data-src="js/modules/expansionRepeatabilityCertificationCenter.js?v=52.50.0"></script>
-<script src="js/startup-loader.js?v=52.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operationalExpansionOrchestrationV5275" data-src="js/modules/operationalExpansionOrchestrationEngine.js?v=52.75.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operationalExpansionOrchestrationV5275" data-src="js/modules/operationalExpansionOrchestrationCenter.js?v=52.75.0"></script>
+<script src="js/startup-loader.js?v=52.75.0"></script>
 </body>
 </html>
