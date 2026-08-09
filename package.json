@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "51.60.0",
+  "version": "51.65.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 pilot execution and observation control",
+  "description": "Blue Current Hospitality OS \u2014 pilot stabilization and exit criteria",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
