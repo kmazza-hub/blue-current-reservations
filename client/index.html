@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="49.30.0">
+  <meta name="blue-current-build" content="50.5.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -305,6 +305,14 @@
       <p><strong>Controlled rollout chain</strong></p><div id="v49certChain" class="v432-list"></div>
       <p><strong>Architecture / human-control contracts</strong></p><div id="v49certArchitectureChecks" class="v432-list"></div>
       <p><strong>Current live rollout state</strong></p><div id="v49certLiveChecks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="productionOperationsHandoff">
+      <header><div><small>V50.01–V50.05 · Production Operations Handoff</small><strong>Move a stabilized restaurant into supported steady-state production operations.</strong><span>Blue Current reuses the existing reliability/SLO engine and combines it with restaurant readiness, leadership attention, predictive pressure, and the human STABLE declaration. A named support owner and escalation owner must accept the location; acceptance does not change production runtime.</span></div><button id="pohRefresh" type="button">Refresh production handoff</button></header>
+      <div class="v432-kpis"><article><small>Handoff status</small><strong id="pohStatus">—</strong></article><article><small>Production-ready</small><strong id="pohReady">0/0</strong></article><article><small>Accepted</small><strong id="pohAccepted">0</strong></article><article><small>Platform reliability</small><strong id="pohReliability">—</strong></article></div>
+      <div class="v4316-answer" id="pohHeadline">A human STABLE launch declaration is required before production handoff.</div>
+      <div class="v4316-actions"><input id="pohSupportOwner" class="v4312-input" placeholder="Production support owner"><input id="pohEscalationOwner" class="v4312-input" placeholder="Escalation owner"><input id="pohSupportHours" class="v4312-input" placeholder="Support coverage / hours"><input id="pohMaintenanceWindow" class="v4312-input" placeholder="Maintenance window"><input id="pohOverride" class="v4312-input" placeholder="Executive override reason (required with open gates)"><input id="pohNote" class="v4312-input" placeholder="Production handoff note"></div>
+      <p><strong>Stabilized locations</strong></p><div id="pohLocations" class="v432-list"></div>
+      <p><strong>Production handoff ledger</strong></p><div id="pohHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8837,6 +8845,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationCenter.js?v=49.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationEngine.js?v=49.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationCenter.js?v=49.30.0"></script>
-<script src="js/startup-loader.js?v=49.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffEngine.js?v=50.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffCenter.js?v=50.5.0"></script>
+<script src="js/startup-loader.js?v=50.5.0"></script>
 </body>
 </html>

@@ -1241,6 +1241,7 @@ const locationDeploymentPackageModule = startupRegistry.register("locationDeploy
 const goLiveCommandModule = startupRegistry.register("goLiveCommand", shouldInitializeCenter("goLiveCommand") ? window.createBlueCurrentGoLiveCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "locationDeploymentPackage"]);
 const launchStabilizationModule = startupRegistry.register("launchStabilization", shouldInitializeCenter("launchStabilization") ? window.createBlueCurrentLaunchStabilizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "goLiveCommand"]);
 const v49ReleaseCertificationModule = startupRegistry.register("v49ReleaseCertification", shouldInitializeCenter("v49ReleaseCertification") ? window.createBlueCurrentV49ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "launchStabilization"]);
+const productionOperationsHandoffModule = startupRegistry.register("productionOperationsHandoff", shouldInitializeCenter("productionOperationsHandoff") ? window.createBlueCurrentProductionOperationsHandoffCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v49ReleaseCertification"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
