@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "49.15.0",
+  "version": "49.20.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 per-location deployment package and rollout runbook",
+  "description": "Blue Current Hospitality OS \u2014 human-controlled go-live command and manual cutover result ledger",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

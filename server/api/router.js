@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "49.15.0",
+        version: "49.20.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -198,6 +198,30 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
     const v47RejectLocation = (response, locationId) =>
       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
+
+    if (url.pathname === "/api/go-live-command" && request.method === "GET") {
+      return sendJson(response,200,await goLiveCommandService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+    }
+
+    if (url.pathname.startsWith("/api/go-live-command/locations/") && url.pathname.endsWith("/authorize-execution") && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to authorize manual production cutover."});
+      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
+      const allowed=auth.membership.locationIds||[];
+      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
+      const body=await readJson(request);
+      try{return sendJson(response,201,await goLiveCommandService.authorizeExecution(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
+      catch(error){return sendJson(response,400,{error:error.message});}
+    }
+
+    if (url.pathname.startsWith("/api/go-live-command/locations/") && url.pathname.endsWith("/record-result") && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to record a production cutover result."});
+      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
+      const allowed=auth.membership.locationIds||[];
+      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
+      const body=await readJson(request);
+      try{return sendJson(response,201,await goLiveCommandService.recordResult(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
+      catch(error){return sendJson(response,400,{error:error.message});}
+    }
 
     if (url.pathname === "/api/location-deployment-package" && request.method === "GET") {
       return sendJson(response,200,await locationDeploymentPackageService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));

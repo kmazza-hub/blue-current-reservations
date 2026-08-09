@@ -1238,6 +1238,7 @@ const v48ReleaseCertificationModule = startupRegistry.register("v48ReleaseCertif
 const rolloutActivationControlModule = startupRegistry.register("rolloutActivationControl", shouldInitializeCenter("rolloutActivationControl") ? window.createBlueCurrentRolloutActivationControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v48ReleaseCertification"]);
 const technicalActivationReadinessModule = startupRegistry.register("technicalActivationReadiness", shouldInitializeCenter("technicalActivationReadiness") ? window.createBlueCurrentTechnicalActivationReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolloutActivationControl"]);
 const locationDeploymentPackageModule = startupRegistry.register("locationDeploymentPackage", shouldInitializeCenter("locationDeploymentPackage") ? window.createBlueCurrentLocationDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "technicalActivationReadiness"]);
+const goLiveCommandModule = startupRegistry.register("goLiveCommand", shouldInitializeCenter("goLiveCommand") ? window.createBlueCurrentGoLiveCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "locationDeploymentPackage"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

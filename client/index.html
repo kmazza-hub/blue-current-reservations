@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="49.15.0">
+  <meta name="blue-current-build" content="49.20.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -278,6 +278,15 @@
       <p><strong>Location deployment packages</strong></p><div id="ldpLocations" class="v432-list"></div>
       <p><strong>Deployment manifest</strong></p><pre id="ldpPacket" style="white-space:pre-wrap;overflow:auto;max-height:420px"></pre>
       <p><strong>Package history</strong></p><div id="ldpHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="goLiveCommand">
+      <header><div><small>V49.16–V49.20 · Go-Live Command</small><strong>Control the final launch window without allowing Blue Current to deploy itself.</strong><span>Final pre-cutover checks, deployment and rollback operators, manual execution authorization, post-cutover health verification, incident recording, and human-entered cutover results live here. Blue Current records the command state; it does not execute production deployment.</span></div><button id="glcRefresh" type="button">Refresh Go-Live Command</button></header>
+      <div class="v432-kpis"><article><small>Command status</small><strong id="glcStatus">—</strong></article><article><small>Final checks passed</small><strong id="glcReady">0/0</strong></article><article><small>Cutovers authorized</small><strong id="glcAuthorized">0</strong></article><article><small>Results recorded</small><strong id="glcResults">0</strong></article></div>
+      <div class="v4316-answer" id="glcHeadline">A prepared location deployment package is required before Go-Live Command.</div>
+      <div class="v4316-actions"><input id="glcOperator" class="v4312-input" placeholder="Deployment operator"><input id="glcRollbackOperator" class="v4312-input" placeholder="Rollback operator"><input id="glcWindow" class="v4312-input" placeholder="Launch window"><input id="glcOverride" class="v4312-input" placeholder="Executive override reason (required with open gates)"><input id="glcIncident" class="v4312-input" placeholder="Launch incident description"><input id="glcNote" class="v4312-input" placeholder="Go-live command note"></div>
+      <div class="v4316-actions"><select id="glcResultStatus" class="v4312-input"><option value="CUTOVER_SUCCEEDED">CUTOVER_SUCCEEDED</option><option value="CUTOVER_FAILED">CUTOVER_FAILED</option><option value="ROLLED_BACK">ROLLED_BACK</option></select><label><input id="glcApi" type="checkbox"> API healthy</label><label><input id="glcAuth" type="checkbox"> Auth healthy</label><label><input id="glcReservations" type="checkbox"> Reservations intact</label><label><input id="glcFloor" type="checkbox"> Floor intact</label><label><input id="glcKitchen" type="checkbox"> Kitchen intact</label><label><input id="glcWorkforce" type="checkbox"> Workforce intact</label></div>
+      <p><strong>Launch locations</strong></p><div id="glcLocations" class="v432-list"></div>
+      <p><strong>Command and result ledger</strong></p><div id="glcHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8804,6 +8813,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessCenter.js?v=49.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageEngine.js?v=49.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageCenter.js?v=49.15.0"></script>
-<script src="js/startup-loader.js?v=49.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandEngine.js?v=49.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandCenter.js?v=49.20.0"></script>
+<script src="js/startup-loader.js?v=49.20.0"></script>
 </body>
 </html>

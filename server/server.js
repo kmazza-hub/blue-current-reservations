@@ -51,6 +51,7 @@ const V48ReleaseCertificationService = require("./services/v48ReleaseCertificati
 const RolloutActivationControlService = require("./services/rolloutActivationControlService");
 const TechnicalActivationReadinessService = require("./services/technicalActivationReadinessService");
 const LocationDeploymentPackageService = require("./services/locationDeploymentPackageService");
+const GoLiveCommandService = require("./services/goLiveCommandService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -105,7 +106,8 @@ const v48ReleaseCertificationService = new V48ReleaseCertificationService(databa
 const rolloutActivationControlService = new RolloutActivationControlService(database, auditService, realtimeHub, expansionReadinessService, multiLocationPerformanceService);
 const technicalActivationReadinessService = new TechnicalActivationReadinessService(database, auditService, realtimeHub, rolloutActivationControlService);
 const locationDeploymentPackageService = new LocationDeploymentPackageService(database, auditService, realtimeHub, technicalActivationReadinessService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService });
+const goLiveCommandService = new GoLiveCommandService(database, auditService, realtimeHub, locationDeploymentPackageService, technicalActivationReadinessService);
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -192,7 +194,7 @@ const server = http.createServer(async (request, response) => {
 });
 
 authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V49.15.0 running at http://localhost:${PORT}`);
+  console.log(`Blue Current Cloud V49.20.0 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
 })).catch(error => {
   console.error(error);
