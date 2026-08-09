@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="52.15.0">
+  <meta name="blue-current-build" content="52.20.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -487,6 +487,15 @@
       <div class="v4316-actions"><input id="v5215Connectors" class="v4312-input" placeholder="Connector review"><input id="v5215Delta" class="v4312-input" placeholder="Configuration delta review"><input id="v5215Training" class="v4312-input" placeholder="Training/rehearsal plan"><input id="v5215SupportRollback" class="v4312-input" placeholder="Support/rollback plan"><input id="v5215Evidence" class="v4312-input" placeholder="Replication evidence"><input id="v5215Note" class="v4312-input" placeholder="Package note"></div>
       <div class="v4316-actions"><input id="v5215ApprovalEvidence" class="v4312-input" placeholder="Approval evidence"><input id="v5215ApprovalNote" class="v4312-input" placeholder="Approval note"></div>
       <div id="v5215Targets" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5220MultiLocationExpansion">
+      <header><div><small>V52.16–V52.20 · Multi-Location Expansion Control</small><strong>Sequence approved restaurant expansion without letting rollout outrun support capacity.</strong><span>Blue Current requires replication-approved targets, rollout cohorts, activation windows, a maximum-concurrent-location limit, dependency evidence, manageable support load, zero blockers, human plan approval, and a named pause authority. Approval never deploys or activates a restaurant.</span></div><button id="v5220Refresh" type="button">Refresh expansion control</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5220Status">—</strong></article><article><small>Approved targets</small><strong id="v5220Targets">0</strong></article><article><small>Cohorts ready</small><strong id="v5220Cohorts">0/0</strong></article></div>
+      <div class="v4316-answer" id="v5220Headline">Multi-location expansion control ready.</div>
+      <div class="v4316-actions"><input id="v5220Name" class="v4312-input" value="Expansion Cohort Plan" placeholder="Plan name"><input id="v5220Max" class="v4312-input" type="number" min="1" value="1" placeholder="Max concurrent locations"><input id="v5220SupportOwner" class="v4312-input" placeholder="Support owner"><input id="v5220PauseAuthority" class="v4312-input" placeholder="Pause authority"><input id="v5220Evidence" class="v4312-input" placeholder="Human plan evidence"><input id="v5220Note" class="v4312-input" placeholder="Plan note"></div>
+      <div class="v4316-actions"><textarea id="v5220LocationIds" class="v4312-input" placeholder="Replication-approved target location IDs"></textarea><input id="v5220WindowStart" class="v4312-input" placeholder="Cohort window start"><input id="v5220WindowEnd" class="v4312-input" placeholder="Cohort window end"><select id="v5220SupportLoad" class="v4312-input"><option value="MANAGEABLE">Manageable support load</option><option value="LOW">Low support load</option><option value="HIGH">High support load</option><option value="CRITICAL">Critical support load</option></select><input id="v5220Dependency" class="v4312-input" placeholder="Dependency evidence"><button id="v5220Create" type="button">Create expansion plan</button></div>
+      <div class="v4316-actions"><input id="v5220ApprovalEvidence" class="v4312-input" placeholder="Human approval evidence"><input id="v5220ApprovalNote" class="v4312-input" placeholder="Approval note"></div>
+      <p><strong>Expansion plan</strong></p><div id="v5220Plan" class="v432-list"></div><p><strong>Rollout cohorts</strong></p><div id="v5220CohortList" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9061,6 +9070,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotCloseoutOutcomeV5210" data-src="js/modules/pilotCloseoutOutcomeCenter.js?v=52.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReplicationV5215" data-src="js/modules/expansionReplicationEngine.js?v=52.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReplicationV5215" data-src="js/modules/expansionReplicationCenter.js?v=52.15.0"></script>
-<script src="js/startup-loader.js?v=52.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationExpansionV5220" data-src="js/modules/multiLocationExpansionControlEngine.js?v=52.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationExpansionV5220" data-src="js/modules/multiLocationExpansionControlCenter.js?v=52.20.0"></script>
+<script src="js/startup-loader.js?v=52.20.0"></script>
 </body>
 </html>

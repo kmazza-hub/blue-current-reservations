@@ -1262,6 +1262,7 @@ const pilotExecutionObservationV5160Module = startupRegistry.register("pilotExec
 const pilotStabilizationExitV5205Module = startupRegistry.register("pilotStabilizationExitV5205", shouldInitializeCenter("pilotStabilizationExitV5205") ? window.createBlueCurrentPilotStabilizationExitCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotExecutionObservationV5160"]);
 const pilotCloseoutOutcomeV5210Module = startupRegistry.register("pilotCloseoutOutcomeV5210", shouldInitializeCenter("pilotCloseoutOutcomeV5210") ? window.createBlueCurrentPilotCloseoutOutcomeCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotStabilizationExitV5205"]);
 const expansionReplicationV5215Module = startupRegistry.register("expansionReplicationV5215", shouldInitializeCenter("expansionReplicationV5215") ? window.createBlueCurrentExpansionReplicationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotCloseoutOutcomeV5210"]);
+const multiLocationExpansionV5220Module = startupRegistry.register("multiLocationExpansionV5220", shouldInitializeCenter("multiLocationExpansionV5220") ? window.createBlueCurrentMultiLocationExpansionControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "expansionReplicationV5215"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
