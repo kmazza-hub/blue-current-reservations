@@ -1249,6 +1249,7 @@ const productionCorrectiveActionGovernanceModule = startupRegistry.register("pro
 const v50ReleaseCertificationModule = startupRegistry.register("v50ReleaseCertification", shouldInitializeCenter("v50ReleaseCertification") ? window.createBlueCurrentV50ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionCorrectiveActionGovernance"]);
 const pilotOperationalReadinessModule = startupRegistry.register("pilotOperationalReadiness", shouldInitializeCenter("pilotOperationalReadiness") ? window.createBlueCurrentPilotOperationalReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v50ReleaseCertification"]);
 const restaurantDayLifecycleModule = startupRegistry.register("restaurantDayLifecycle", shouldInitializeCenter("restaurantDayLifecycle") ? window.createBlueCurrentRestaurantDayLifecycleCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotOperationalReadiness"]);
+const peakServiceStressModule = startupRegistry.register("peakServiceStress", shouldInitializeCenter("peakServiceStress") ? window.createBlueCurrentPeakServiceStressCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "restaurantDayLifecycle"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
