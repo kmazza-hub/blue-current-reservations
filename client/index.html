@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="53.75.0">
+  <meta name="blue-current-build" content="54.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -569,6 +569,14 @@
       <div class="v4316-actions"><input id="v5375Runbook" class="v4312-input" placeholder="Fallback runbook"><input id="v5375Owner" class="v4312-input" placeholder="Escalation owner"><input id="v5375Recovery" class="v4312-input" type="number" min="0" value="5" placeholder="Recovery minutes"><input id="v5375MaxRecovery" class="v4312-input" type="number" min="1" value="15" placeholder="Max recovery minutes"><select id="v5375Continuity" class="v4312-input"><option value="PASS">Shift continuity PASS</option><option value="FAIL">Shift continuity FAIL</option></select><input id="v5375Evidence" class="v4312-input" placeholder="Recovery rehearsal evidence"><input id="v5375Note" class="v4312-input" placeholder="Rehearsal note"></div>
       <div class="v4316-actions"><input id="v5375DecisionEvidence" class="v4312-input" placeholder="RECOVER / DEGRADED / HOLD evidence"><input id="v5375DecisionReason" class="v4312-input" placeholder="Decision reason / override"></div>
       <div id="v5375Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5400RestaurantOperationalCertification">
+      <header><div><small>V53.76–V54.00 · V53 Closure & Restaurant Operational Certification</small><strong>Certify the complete restaurant operating chain before V54 hardening begins.</strong><span>Reconcile end-to-end workflow evidence, peak-service resilience, failure recovery, operator acceptance, service-leadership acceptance, pilot operating model, support escalation, and explicit V54 entry criteria.</span></div><button id="v5400Refresh" type="button">Refresh V53 closure</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5400Status">—</strong></article><article><small>Closure gates</small><strong id="v5400Ready">OPEN</strong></article></div>
+      <div class="v4316-answer" id="v5400Headline">V53 restaurant operational certification ready.</div>
+      <div class="v4316-actions"><input id="v5400Operator" class="v4312-input" placeholder="Operator acceptance"><input id="v5400Leadership" class="v4312-input" placeholder="Service leadership acceptance"><input id="v5400Pilot" class="v4312-input" placeholder="Pilot operating model"><input id="v5400Support" class="v4312-input" placeholder="Support escalation model"><select id="v5400Entry" class="v4312-input"><option value="APPROVED">V54 entry APPROVED</option><option value="HOLD">V54 entry HOLD</option></select><input id="v5400Note" class="v4312-input" placeholder="Closure note"><button id="v5400Review" type="button">Record V53 closure review</button></div>
+      <div class="v4316-actions"><input id="v5400Evidence" class="v4312-input" placeholder="Operational certification evidence"><input id="v5400Acceptance" class="v4312-input" placeholder="Executive acceptance"><button id="v5400Certify" type="button">Certify V53 / enter V54</button></div>
+      <div id="v5400Certification" class="v4316-answer">V53 has not been operationally certified.</div><div id="v5400Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9161,6 +9169,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceWorkflowResilienceV5350" data-src="js/modules/peakServiceWorkflowResilienceCenter.js?v=53.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="failureRecoveryShiftContinuityV5375" data-src="js/modules/failureRecoveryShiftContinuityEngine.js?v=53.75.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="failureRecoveryShiftContinuityV5375" data-src="js/modules/failureRecoveryShiftContinuityCenter.js?v=53.75.0"></script>
-<script src="js/startup-loader.js?v=53.75.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v53RestaurantOperationalCertificationV5400" data-src="js/modules/v53RestaurantOperationalCertificationEngine.js?v=54.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v53RestaurantOperationalCertificationV5400" data-src="js/modules/v53RestaurantOperationalCertificationCenter.js?v=54.0.0"></script>
+<script src="js/startup-loader.js?v=54.0.0"></script>
 </body>
 </html>
