@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="52.10.0">
+  <meta name="blue-current-build" content="52.15.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -479,6 +479,14 @@
       <div class="v4316-actions"><textarea id="v5210Incidents" class="v4312-input" placeholder="Closed incidents, one per line"></textarea><textarea id="v5210Debt" class="v4312-input" placeholder="Unresolved debt, one per line"></textarea><textarea id="v5210Prereqs" class="v4312-input" placeholder="Expansion prerequisites met, one per line"></textarea></div>
       <div class="v4316-actions"><input id="v5210DecisionEvidence" class="v4312-input" placeholder="EXPAND / HOLD / RETIRE evidence"><input id="v5210DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
       <div id="v5210Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5215ExpansionReplication">
+      <header><div><small>V52.11–V52.15 · Expansion Readiness & Replication Package</small><strong>Turn one successful pilot into a controlled package for the next restaurant.</strong><span>Replication requires a human EXPAND decision, target configuration/access review, connector review, configuration-delta review, training/rehearsal plan, support/rollback plan, evidence, and explicit human approval. Approval never deploys or goes live.</span></div><button id="v5215Refresh" type="button">Refresh replication</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5215Status">—</strong></article><article><small>Source pilot</small><strong id="v5215Source">—</strong></article><article><small>Replication ready</small><strong id="v5215Ready">0/0</strong></article></div>
+      <div class="v4316-answer" id="v5215Headline">Expansion replication review ready.</div>
+      <div class="v4316-actions"><input id="v5215Connectors" class="v4312-input" placeholder="Connector review"><input id="v5215Delta" class="v4312-input" placeholder="Configuration delta review"><input id="v5215Training" class="v4312-input" placeholder="Training/rehearsal plan"><input id="v5215SupportRollback" class="v4312-input" placeholder="Support/rollback plan"><input id="v5215Evidence" class="v4312-input" placeholder="Replication evidence"><input id="v5215Note" class="v4312-input" placeholder="Package note"></div>
+      <div class="v4316-actions"><input id="v5215ApprovalEvidence" class="v4312-input" placeholder="Approval evidence"><input id="v5215ApprovalNote" class="v4312-input" placeholder="Approval note"></div>
+      <div id="v5215Targets" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9051,6 +9059,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5205" data-src="js/modules/pilotStabilizationExitCenter.js?v=52.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotCloseoutOutcomeV5210" data-src="js/modules/pilotCloseoutOutcomeEngine.js?v=52.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotCloseoutOutcomeV5210" data-src="js/modules/pilotCloseoutOutcomeCenter.js?v=52.10.0"></script>
-<script src="js/startup-loader.js?v=52.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReplicationV5215" data-src="js/modules/expansionReplicationEngine.js?v=52.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReplicationV5215" data-src="js/modules/expansionReplicationCenter.js?v=52.15.0"></script>
+<script src="js/startup-loader.js?v=52.15.0"></script>
 </body>
 </html>
