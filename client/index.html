@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="50.5.0">
+  <meta name="blue-current-build" content="50.10.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -313,6 +313,14 @@
       <div class="v4316-actions"><input id="pohSupportOwner" class="v4312-input" placeholder="Production support owner"><input id="pohEscalationOwner" class="v4312-input" placeholder="Escalation owner"><input id="pohSupportHours" class="v4312-input" placeholder="Support coverage / hours"><input id="pohMaintenanceWindow" class="v4312-input" placeholder="Maintenance window"><input id="pohOverride" class="v4312-input" placeholder="Executive override reason (required with open gates)"><input id="pohNote" class="v4312-input" placeholder="Production handoff note"></div>
       <p><strong>Stabilized locations</strong></p><div id="pohLocations" class="v432-list"></div>
       <p><strong>Production handoff ledger</strong></p><div id="pohHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="productionHealthSupport">
+      <header><div><small>V50.06–V50.10 · Production Health & Support Command</small><strong>Operate accepted restaurants with one production health and support picture.</strong><span>Blue Current combines existing platform SLO/telemetry signals with restaurant readiness, operating attention, support ownership, maintenance context, and human-managed support events. It surfaces degradation and escalation needs but never remediates production automatically.</span></div><button id="phsRefresh" type="button">Refresh production health</button></header>
+      <div class="v432-kpis"><article><small>Support status</small><strong id="phsStatus">—</strong></article><article><small>Healthy locations</small><strong id="phsHealthy">0/0</strong></article><article><small>Open support events</small><strong id="phsOpen">0</strong></article><article><small>Platform reliability</small><strong id="phsReliability">—</strong></article></div>
+      <div class="v4316-answer" id="phsHeadline">Production-operations acceptance is required before support command begins.</div>
+      <div class="v4316-actions"><select id="phsSeverity" class="v4312-input"><option value="info">info</option><option value="warning">warning</option><option value="critical">critical</option></select><input id="phsTitle" class="v4312-input" placeholder="Support event title"><input id="phsDescription" class="v4312-input" placeholder="Support event description"><input id="phsIncident" class="v4312-input" placeholder="Linked observability incident ID"><input id="phsNote" class="v4312-input" placeholder="Acknowledgment / escalation note"></div>
+      <p><strong>Accepted production locations</strong></p><div id="phsLocations" class="v432-list"></div>
+      <p><strong>Production support timeline</strong></p><div id="phsHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8847,6 +8855,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationCenter.js?v=49.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffEngine.js?v=50.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffCenter.js?v=50.5.0"></script>
-<script src="js/startup-loader.js?v=50.5.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportEngine.js?v=50.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportCenter.js?v=50.10.0"></script>
+<script src="js/startup-loader.js?v=50.10.0"></script>
 </body>
 </html>

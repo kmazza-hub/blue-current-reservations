@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "50.5.0",
+  "version": "50.10.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 production operations handoff and support ownership",
+  "description": "Blue Current Hospitality OS \u2014 production health and support command",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
