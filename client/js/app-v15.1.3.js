@@ -1269,6 +1269,7 @@ const expansionRepeatabilityV5250Module = startupRegistry.register("expansionRep
 const operationalExpansionOrchestrationV5275Module = startupRegistry.register("operationalExpansionOrchestrationV5275", shouldInitializeCenter("operationalExpansionOrchestrationV5275") ? window.createBlueCurrentOperationalExpansionOrchestrationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "expansionRepeatabilityV5250"]);
 const v52OperationalReadinessV5300Module = startupRegistry.register("v52OperationalReadinessV5300", shouldInitializeCenter("v52OperationalReadinessV5300") ? window.createBlueCurrentV52OperationalReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operationalExpansionOrchestrationV5275"]);
 const restaurantWorkflowIntegrationV5325Module = startupRegistry.register("restaurantWorkflowIntegrationV5325", shouldInitializeCenter("restaurantWorkflowIntegrationV5325") ? window.createBlueCurrentRestaurantWorkflowIntegrationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v52OperationalReadinessV5300"]);
+const peakServiceWorkflowResilienceV5350Module = startupRegistry.register("peakServiceWorkflowResilienceV5350", shouldInitializeCenter("peakServiceWorkflowResilienceV5350") ? window.createBlueCurrentPeakServiceWorkflowResilienceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "restaurantWorkflowIntegrationV5325"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

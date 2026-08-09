@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="53.25.0">
+  <meta name="blue-current-build" content="53.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -553,6 +553,14 @@
       <div class="v4316-actions"><select id="v5325Handoff" class="v4312-input"><option value="PASS">Handoff continuity PASS</option><option value="FAIL">Handoff continuity FAIL</option></select><select id="v5325Completion" class="v4312-input"><option value="PASS">Shift completion PASS</option><option value="FAIL">Shift completion FAIL</option></select><input id="v5325Recovery" class="v4312-input" placeholder="Failure / recovery evidence"><input id="v5325Operator" class="v4312-input" placeholder="Operator evidence"><input id="v5325Note" class="v4312-input" placeholder="Observation note"></div>
       <div class="v4316-actions"><input id="v5325CertEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5325CertNote" class="v4312-input" placeholder="Certification note"></div>
       <div id="v5325Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5350PeakServiceWorkflowResilience">
+      <header><div><small>V53.26–V53.50 · Peak-Service Workflow Resilience & Operator Performance</small><strong>Stress the integrated restaurant workflow under the conditions that expose operational weakness.</strong><span>Track handoff latency, operator workload, kitchen/floor congestion, recovery time, service completion, high-risk findings, and peak-stress evidence. READY / DEGRADED / HOLD remain human decisions and never change restaurant state automatically.</span></div><button id="v5350Refresh" type="button">Refresh peak-service resilience</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5350Status">—</strong></article><article><small>Resilience ready</small><strong id="v5350Ready">0/0</strong></article></div>
+      <div class="v4316-answer" id="v5350Headline">Peak-service resilience review ready.</div>
+      <div class="v4316-actions"><input id="v5350Handoff" class="v4312-input" type="number" min="0" value="45" placeholder="Handoff latency seconds"><input id="v5350Workload" class="v4312-input" type="number" min="1" max="5" value="3" placeholder="Operator workload 1–5"><input id="v5350Kitchen" class="v4312-input" type="number" min="1" max="5" value="3" placeholder="Kitchen congestion 1–5"><input id="v5350Floor" class="v4312-input" type="number" min="1" max="5" value="3" placeholder="Floor congestion 1–5"><input id="v5350Recovery" class="v4312-input" type="number" min="0" value="5" placeholder="Recovery minutes"><select id="v5350Completion" class="v4312-input"><option value="PASS">Service completion PASS</option><option value="FAIL">Service completion FAIL</option></select></div>
+      <div class="v4316-actions"><input id="v5350Evidence" class="v4312-input" placeholder="Peak-service observation evidence"><input id="v5350Note" class="v4312-input" placeholder="Observation note"><input id="v5350DecisionEvidence" class="v4312-input" placeholder="READY / DEGRADED / HOLD evidence"><input id="v5350DecisionReason" class="v4312-input" placeholder="Decision reason / override"></div>
+      <div id="v5350Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9141,6 +9149,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v52OperationalReadinessV5300" data-src="js/modules/v52OperationalReadinessCenter.js?v=53.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantWorkflowIntegrationV5325" data-src="js/modules/restaurantWorkflowIntegrationEngine.js?v=53.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantWorkflowIntegrationV5325" data-src="js/modules/restaurantWorkflowIntegrationCenter.js?v=53.25.0"></script>
-<script src="js/startup-loader.js?v=53.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceWorkflowResilienceV5350" data-src="js/modules/peakServiceWorkflowResilienceEngine.js?v=53.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceWorkflowResilienceV5350" data-src="js/modules/peakServiceWorkflowResilienceCenter.js?v=53.50.0"></script>
+<script src="js/startup-loader.js?v=53.50.0"></script>
 </body>
 </html>
