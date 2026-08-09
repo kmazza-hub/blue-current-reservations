@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "55.25.0",
+  "version": "55.75.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 restaurant intelligence, profitability signals, and operator decision support",
+  "description": "Blue Current Hospitality OS \u2014 profitability trend, intervention impact, decision accountability, and executive value reporting",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
