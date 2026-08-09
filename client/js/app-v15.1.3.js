@@ -1245,6 +1245,7 @@ const productionOperationsHandoffModule = startupRegistry.register("productionOp
 const productionHealthSupportModule = startupRegistry.register("productionHealthSupport", shouldInitializeCenter("productionHealthSupport") ? window.createBlueCurrentProductionHealthSupportCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionOperationsHandoff"]);
 const productionIncidentCommandModule = startupRegistry.register("productionIncidentCommand", shouldInitializeCenter("productionIncidentCommand") ? window.createBlueCurrentProductionIncidentCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionHealthSupport"]);
 const productionRecoveryReviewModule = startupRegistry.register("productionRecoveryReview", shouldInitializeCenter("productionRecoveryReview") ? window.createBlueCurrentProductionRecoveryReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionIncidentCommand"]);
+const productionCorrectiveActionGovernanceModule = startupRegistry.register("productionCorrectiveActionGovernance", shouldInitializeCenter("productionCorrectiveActionGovernance") ? window.createBlueCurrentProductionCorrectiveActionGovernanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionRecoveryReview"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

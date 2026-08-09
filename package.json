@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "50.20.0",
+  "version": "50.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 production recovery verification and post-incident review",
+  "description": "Blue Current Hospitality OS \u2014 production learning and corrective action governance",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

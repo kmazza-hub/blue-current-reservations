@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="50.20.0">
+  <meta name="blue-current-build" content="50.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -340,6 +340,14 @@
       <div class="v4316-actions"><input id="prrAction" class="v4312-input" placeholder="Corrective action"><input id="prrActionOwner" class="v4312-input" placeholder="Corrective action owner"><input id="prrActionDue" class="v4312-input" placeholder="Due date"><input id="prrApprover" class="v4312-input" placeholder="Lessons approver"><input id="prrClosure" class="v4312-input" placeholder="Closure / lessons accepted note"></div>
       <p><strong>Resolved incidents & recovery state</strong></p><div id="prrIncidents" class="v432-list"></div>
       <p><strong>Post-incident review history</strong></p><div id="prrHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="productionCorrectiveActionGovernance">
+      <header><div><small>V50.21–V50.25 · Production Learning & Corrective Action Governance</small><strong>Turn post-incident lessons into an accountable corrective-action register without letting Blue Current execute the work.</strong><span>Blue Current rolls corrective actions across incidents into one owner/due-date view, flags overdue and high-repeat-risk work, links later incidents sharing affected domains, stores human risk-reduction evidence, and requires executive acceptance before completion.</span></div><button id="pcagRefresh" type="button">Refresh corrective governance</button></header>
+      <div class="v432-kpis"><article><small>Governance status</small><strong id="pcagStatus">—</strong></article><article><small>Open actions</small><strong id="pcagOpen">0</strong></article><article><small>Overdue</small><strong id="pcagOverdue">0</strong></article><article><small>High-risk open</small><strong id="pcagHighRisk">0</strong></article></div>
+      <div class="v4316-answer" id="pcagHeadline">Accepted post-incident corrective actions are required before governance begins.</div>
+      <div class="v4316-actions"><input id="pcagEvidence" class="v4312-input" placeholder="Risk-reduction evidence"><input id="pcagVerification" class="v4312-input" placeholder="Verification method / result"><input id="pcagApprover" class="v4312-input" placeholder="Completion approver"><input id="pcagCompletionNote" class="v4312-input" placeholder="Human completion acceptance note"></div>
+      <p><strong>Executive owner accountability</strong></p><div id="pcagOwners" class="v432-list"></div>
+      <p><strong>Corrective-action register</strong></p><div id="pcagActions" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8880,6 +8888,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandCenter.js?v=50.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewEngine.js?v=50.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewCenter.js?v=50.20.0"></script>
-<script src="js/startup-loader.js?v=50.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceEngine.js?v=50.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceCenter.js?v=50.25.0"></script>
+<script src="js/startup-loader.js?v=50.25.0"></script>
 </body>
 </html>
