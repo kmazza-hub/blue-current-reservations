@@ -58,7 +58,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -74,7 +74,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "52.20.0",
+        version: "52.25.0",
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -198,6 +198,25 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
     const v47RejectLocation = (response, locationId) =>
       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
+
+    if (url.pathname === "/api/expansion-cohort-observation" && request.method === "GET") {
+      return sendJson(response,200,await expansionCohortObservationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+    }
+    if (url.pathname.startsWith("/api/expansion-cohort-observation/cohorts/") && url.pathname.endsWith("/activate") && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to record cohort activation."});
+      const cohortId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
+      try{return sendJson(response,201,await expansionCohortObservationService.activate(auth.membership.organizationId,auth.membership.locationIds||[],cohortId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
+    }
+    if (url.pathname.startsWith("/api/expansion-cohort-observation/activations/") && url.pathname.endsWith("/observe") && request.method === "POST") {
+      if (!authService.can(auth,"write") && !authService.can(auth,"write_operations") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required to record cohort observations."});
+      const activationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
+      try{return sendJson(response,201,await expansionCohortObservationService.observe(auth.membership.organizationId,auth.membership.locationIds||[],activationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
+    }
+    if (url.pathname.startsWith("/api/expansion-cohort-observation/activations/") && url.pathname.endsWith("/decision") && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for CONTINUE/PAUSE/HOLD decisions."});
+      const activationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
+      try{return sendJson(response,201,await expansionCohortObservationService.decide(auth.membership.organizationId,auth.membership.locationIds||[],activationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
+    }
 
     if (url.pathname === "/api/multi-location-expansion" && request.method === "GET") {
       return sendJson(response,200,await multiLocationExpansionControlService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));

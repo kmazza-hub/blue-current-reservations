@@ -1,0 +1,18 @@
+(function(){"use strict";
+function createBlueCurrentExpansionCohortObservationCenterModule(eventBus,appState){
+ const root=document.getElementById("v5225ExpansionCohortObservation");if(!root||!window.BlueCurrentExpansionCohortObservationEngine)return null;
+ const e=new window.BlueCurrentExpansionCohortObservationEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
+ function render(s){$("v5225Status").textContent=s.status||"—";$("v5225Active").textContent=(s.cohorts||[]).filter(x=>x.activation).length;$("v5225Incidents").textContent=(s.cohorts||[]).reduce((n,x)=>n+x.highCriticalIncidents,0);$("v5225Headline").textContent=s.headline||"Cohort observation unavailable.";$("v5225Cohorts").innerHTML=(s.cohorts||[]).map(c=>`<article data-v5225-cohort="${esc(c.cohortId)}"${c.activation?` data-v5225-activation="${esc(c.activation.id)}"`:""}><strong>${esc(c.cohortName)} · Sequence ${c.sequence}</strong><span>${esc(c.state)} · ${c.passed}/${c.total} gates · incidents ${c.highCriticalIncidents}</span><div class="v432-list">${c.checks.map(x=>`<article><strong>${x.passed?"PASS":"OPEN"} · ${esc(x.id)}</strong><span>${esc(x.actual)}</span></article>`).join("")}</div><div class="v4316-actions">${!c.activation?'<button data-v5225-activate="true">Record cohort activation</button>':""}${c.activation?'<button data-v5225-observe="true">Record observation</button><button data-v5225-continue="true">CONTINUE</button><button data-v5225-pause="true">PAUSE</button><button data-v5225-hold="true">HOLD</button>':""}</div></article>`).join("");}
+ async function load(){try{render(await e.snapshot());}catch(err){$("v5225Headline").textContent=err.message;}}
+ root.addEventListener("click",async ev=>{const card=ev.target.closest("[data-v5225-cohort]");if(!card)return;try{
+   if(ev.target.closest("[data-v5225-activate]"))await e.activate(card.dataset.v5225Cohort,{activationOwner:$("v5225Owner").value,evidence:$("v5225ActivationEvidence").value,note:$("v5225Note").value});
+   else if(ev.target.closest("[data-v5225-observe]"))await e.observe(card.dataset.v5225Activation,{severity:$("v5225Severity").value,supportLoad:$("v5225SupportLoad").value,apiHealthy:$("v5225Api").checked,authenticationHealthy:$("v5225Auth").checked,reservationHealthy:$("v5225Reservations").checked,floorHealthy:$("v5225Floor").checked,kitchenHealthy:$("v5225Kitchen").checked,supportBridgeHealthy:$("v5225Support").checked,incident:$("v5225Incident").value,note:$("v5225ObservationNote").value});
+   else if(ev.target.closest("[data-v5225-continue]"))await e.decide(card.dataset.v5225Activation,{decision:"CONTINUE",evidence:$("v5225DecisionEvidence").value,reason:$("v5225DecisionReason").value});
+   else if(ev.target.closest("[data-v5225-pause]"))await e.decide(card.dataset.v5225Activation,{decision:"PAUSE",evidence:$("v5225DecisionEvidence").value,reason:$("v5225DecisionReason").value});
+   else if(ev.target.closest("[data-v5225-hold]"))await e.decide(card.dataset.v5225Activation,{decision:"HOLD",evidence:$("v5225DecisionEvidence").value,reason:$("v5225DecisionReason").value});
+   await load();
+ }catch(err){$("v5225Headline").textContent=err.message;}});
+ $("v5225Refresh")?.addEventListener("click",load);load();return{engine:e,load};
+}
+window.createBlueCurrentExpansionCohortObservationCenterModule=createBlueCurrentExpansionCohortObservationCenterModule;
+})();

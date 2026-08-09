@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="52.20.0">
+  <meta name="blue-current-build" content="52.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -496,6 +496,15 @@
       <div class="v4316-actions"><textarea id="v5220LocationIds" class="v4312-input" placeholder="Replication-approved target location IDs"></textarea><input id="v5220WindowStart" class="v4312-input" placeholder="Cohort window start"><input id="v5220WindowEnd" class="v4312-input" placeholder="Cohort window end"><select id="v5220SupportLoad" class="v4312-input"><option value="MANAGEABLE">Manageable support load</option><option value="LOW">Low support load</option><option value="HIGH">High support load</option><option value="CRITICAL">Critical support load</option></select><input id="v5220Dependency" class="v4312-input" placeholder="Dependency evidence"><button id="v5220Create" type="button">Create expansion plan</button></div>
       <div class="v4316-actions"><input id="v5220ApprovalEvidence" class="v4312-input" placeholder="Human approval evidence"><input id="v5220ApprovalNote" class="v4312-input" placeholder="Approval note"></div>
       <p><strong>Expansion plan</strong></p><div id="v5220Plan" class="v432-list"></div><p><strong>Rollout cohorts</strong></p><div id="v5220CohortList" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5225ExpansionCohortObservation">
+      <header><div><small>V52.21–V52.25 · Expansion Activation & Cohort Observation</small><strong>Observe each approved expansion cohort before allowing the rollout sequence to continue.</strong><span>Blue Current records explicit human cohort activation, location confirmation, live health, support load, incidents, and human CONTINUE / PAUSE / HOLD decisions. CONTINUE never activates the next cohort automatically.</span></div><button id="v5225Refresh" type="button">Refresh cohort observation</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5225Status">—</strong></article><article><small>Activated cohorts</small><strong id="v5225Active">0</strong></article><article><small>High/Critical incidents</small><strong id="v5225Incidents">0</strong></article></div>
+      <div class="v4316-answer" id="v5225Headline">Expansion cohort observation ready.</div>
+      <div class="v4316-actions"><input id="v5225Owner" class="v4312-input" placeholder="Activation owner"><input id="v5225ActivationEvidence" class="v4312-input" placeholder="Human activation evidence"><input id="v5225Note" class="v4312-input" placeholder="Activation note"></div>
+      <div class="v4316-actions"><select id="v5225Severity" class="v4312-input"><option value="none">No incident</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select><select id="v5225SupportLoad" class="v4312-input"><option value="MANAGEABLE">Manageable support</option><option value="LOW">Low support</option><option value="HIGH">High support</option><option value="CRITICAL">Critical support</option></select><label><input id="v5225Api" type="checkbox" checked> API</label><label><input id="v5225Auth" type="checkbox" checked> Auth</label><label><input id="v5225Reservations" type="checkbox" checked> Reservations</label><label><input id="v5225Floor" type="checkbox" checked> Floor</label><label><input id="v5225Kitchen" type="checkbox" checked> Kitchen</label><label><input id="v5225Support" type="checkbox" checked> Support bridge</label></div>
+      <div class="v4316-actions"><input id="v5225Incident" class="v4312-input" placeholder="Incident description"><input id="v5225ObservationNote" class="v4312-input" placeholder="Observation note"><input id="v5225DecisionEvidence" class="v4312-input" placeholder="CONTINUE / PAUSE / HOLD evidence"><input id="v5225DecisionReason" class="v4312-input" placeholder="Decision reason / override"></div>
+      <div id="v5225Cohorts" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9072,6 +9081,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReplicationV5215" data-src="js/modules/expansionReplicationCenter.js?v=52.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationExpansionV5220" data-src="js/modules/multiLocationExpansionControlEngine.js?v=52.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationExpansionV5220" data-src="js/modules/multiLocationExpansionControlCenter.js?v=52.20.0"></script>
-<script src="js/startup-loader.js?v=52.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionCohortObservationV5225" data-src="js/modules/expansionCohortObservationEngine.js?v=52.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionCohortObservationV5225" data-src="js/modules/expansionCohortObservationCenter.js?v=52.25.0"></script>
+<script src="js/startup-loader.js?v=52.25.0"></script>
 </body>
 </html>
