@@ -1253,6 +1253,7 @@ const peakServiceStressModule = startupRegistry.register("peakServiceStress", sh
 const dataIntegrityRecoveryModule = startupRegistry.register("dataIntegrityRecovery", shouldInitializeCenter("dataIntegrityRecovery") ? window.createBlueCurrentDataIntegrityRecoveryCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "peakServiceStress"]);
 const rolePermissionCertificationModule = startupRegistry.register("rolePermissionCertification", shouldInitializeCenter("rolePermissionCertification") ? window.createBlueCurrentRolePermissionCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "dataIntegrityRecovery"]);
 const operatorUxHardeningModule = startupRegistry.register("operatorUxHardening", shouldInitializeCenter("operatorUxHardening") ? window.createBlueCurrentOperatorUxHardeningCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolePermissionCertification"]);
+const reservationGuestJourneyModule = startupRegistry.register("reservationGuestJourney", shouldInitializeCenter("reservationGuestJourney") ? window.createBlueCurrentReservationGuestJourneyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorUxHardening"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

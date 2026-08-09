@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.30.0">
+  <meta name="blue-current-build" content="51.35.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -409,6 +409,14 @@
       <p><strong>Hardening gates</strong></p><div id="ouxChecksList" class="v432-list"></div>
       <p><strong>Canonical restaurant terminology</strong></p><div id="ouxTerms" class="v432-list"></div>
       <p><strong>Operator-friction register</strong></p><div id="ouxFindings" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="reservationGuestJourney">
+      <header><div><small>V51.31–V51.35 · Reservation & Guest Journey Certification</small><strong>Prove the guest experience stays connected from first availability question through reservation history and recovery.</strong><span>Blue Current reuses the existing reservation, floor, waitlist, guest-intelligence, and recovery workflows. Nine ordered checkpoints separate supporting system evidence from human end-to-end proof so missing history never becomes a synthetic pass.</span></div><button id="rgjRefresh" type="button">Refresh guest journey</button></header>
+      <div class="v432-kpis"><article><small>Journey status</small><strong id="rgjStatus">—</strong></article><article><small>System evidence</small><strong id="rgjSystemEvidence">0/0</strong></article><article><small>Human checkpoints</small><strong id="rgjHumanEvidence">0/0</strong></article><article><small>Certified locations</small><strong id="rgjCertified">0</strong></article></div>
+      <div class="v4316-answer" id="rgjHeadline">Reservation and guest journey ready for rehearsal.</div>
+      <div class="v4316-actions"><input id="rgjGuest" class="v4312-input" placeholder="Pilot guest name"><input id="rgjPhone" class="v4312-input" placeholder="Guest phone"><input id="rgjOccasion" class="v4312-input" placeholder="Special occasion"><input id="rgjNote" class="v4312-input" placeholder="Journey rehearsal note"></div>
+      <div class="v4316-actions"><input id="rgjEvidence" class="v4312-input" placeholder="Human checkpoint evidence"><input id="rgjOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="rgjCertificationEvidence" class="v4312-input" placeholder="End-to-end journey certification evidence"><input id="rgjCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
+      <p><strong>Restaurant guest journeys</strong></p><div id="rgjLocations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8965,6 +8973,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationCenter.js?v=51.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningEngine.js?v=51.30.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningCenter.js?v=51.30.0"></script>
-<script src="js/startup-loader.js?v=51.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyEngine.js?v=51.35.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyCenter.js?v=51.35.0"></script>
+<script src="js/startup-loader.js?v=51.35.0"></script>
 </body>
 </html>

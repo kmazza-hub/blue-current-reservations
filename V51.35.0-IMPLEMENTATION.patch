@@ -1,0 +1,804 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.30.0",
++  "version": "51.35.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 operator UX hardening and usability certification",
++  "description": "Blue Current Hospitality OS \u2014 reservation and guest journey certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -66,6 +66,7 @@
+ const DataIntegrityRecoveryService = require("./services/dataIntegrityRecoveryService");
+ const RolePermissionCertificationService = require("./services/rolePermissionCertificationService");
+ const OperatorUxHardeningService = require("./services/operatorUxHardeningService");
++const ReservationGuestJourneyCertificationService = require("./services/reservationGuestJourneyCertificationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -135,7 +136,8 @@
+ const dataIntegrityRecoveryService = new DataIntegrityRecoveryService(database, auditService, realtimeHub, idempotencyService, syncReconciliationService, peakServiceStressTestService);
+ const rolePermissionCertificationService = new RolePermissionCertificationService(database, auditService, realtimeHub, authService, dataIntegrityRecoveryService);
+ const operatorUxHardeningService = new OperatorUxHardeningService(database, auditService, realtimeHub, rolePermissionCertificationService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService });
++const reservationGuestJourneyCertificationService = new ReservationGuestJourneyCertificationService(database, auditService, realtimeHub, guestIntelligenceService, operatorUxHardeningService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -222,7 +224,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.30.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.35.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.30.0",
++        version: "51.35.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,31 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/reservation-guest-journey" && request.method === "GET") {
++      return sendJson(response,200,await reservationGuestJourneyCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/reservation-guest-journey/locations/") && url.pathname.endsWith("/start") && request.method === "POST") {
++      if (!authService.can(auth,"write_reservations") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Reservation write permission required to start a guest-journey rehearsal."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await reservationGuestJourneyCertificationService.start(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/reservation-guest-journey/sessions/") && url.pathname.endsWith("/checkpoint") && request.method === "POST") {
++      if (!authService.can(auth,"write_reservations") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Reservation write permission required to record a guest-journey checkpoint."});
++      const sessionId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await reservationGuestJourneyCertificationService.checkpoint(auth.membership.organizationId,auth.membership.locationIds||[],sessionId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/reservation-guest-journey/locations/") && url.pathname.endsWith("/certify") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for reservation/guest journey certification."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await reservationGuestJourneyCertificationService.certify(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/operator-ux-hardening" && request.method === "GET") {
+       return sendJson(response,200,await operatorUxHardeningService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/reservationGuestJourneyCertificationService.js
++++ b/server/services/reservationGuestJourneyCertificationService.js
+@@ -0,0 +1,239 @@
++"use strict";
++
++class ReservationGuestJourneyCertificationService {
++  constructor(database,auditService,realtimeHub,guestIntelligenceService,operatorUxHardeningService){
++    Object.assign(this,{database,auditService,realtimeHub,guestIntelligenceService,operatorUxHardeningService});
++    this.stageOrder=[
++      "INQUIRY_AVAILABILITY",
++      "RESERVATION",
++      "CONFIRMATION",
++      "MODIFICATION_CANCELLATION",
++      "ARRIVAL_WAITLIST",
++      "SEATING",
++      "GUEST_CONTEXT",
++      "GUEST_RECOVERY",
++      "HISTORY_CONTINUITY"
++    ];
++  }
++  now(){return new Date().toISOString();}
++  allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
++  async sessions(organizationId){
++    const db=await this.database.read();
++    return (db.reservationGuestJourneySessions||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
++  }
++  async certifications(organizationId){
++    const db=await this.database.read();
++    return (db.reservationGuestJourneyCertifications||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.certifiedAt)-new Date(a.certifiedAt));
++  }
++  guestKey(x){return String(x?.phone||x?.guestName||x?.name||"").trim().toLowerCase();}
++  evidenceModel(db,organizationId,locationId,guestSnapshot){
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const reservationEvents=(db.reservationEvents||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const waitlist=(db.waitlist||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const seatingEvents=(db.seatingEvents||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const guestEngagements=(db.guestEngagements||[]).filter(x=>x.organizationId===organizationId);
++    const profiles=(guestSnapshot?.profiles||[]).filter(x=>!x.locations?.length||x.locations.includes(locationId));
++    const guestVisits=new Map();
++    for(const r of reservations){const key=this.guestKey(r);if(key)guestVisits.set(key,(guestVisits.get(key)||0)+1);}
++    const repeatGuests=[...guestVisits.values()].filter(x=>x>1).length;
++    return {reservations,reservationEvents,waitlist,seatingEvents,tables,guestEngagements,profiles,repeatGuests};
++  }
++  stageChecks(model,stage){
++    const confirmed=model.reservations.filter(x=>x.status==="confirmed").length;
++    const arrived=model.reservations.filter(x=>x.status==="arrived").length;
++    const seated=model.reservations.filter(x=>x.status==="seated").length;
++    const modified=model.reservationEvents.filter(x=>x.type==="reservation.updated").length;
++    const cancelled=model.reservations.filter(x=>x.status==="cancelled"||x.status==="canceled").length;
++    const seatedEvents=model.reservationEvents.filter(x=>x.type==="reservation.seated").length+model.seatingEvents.filter(x=>/seated/i.test(x.type||"")).length;
++    const notes=model.reservations.filter(x=>String(x.notes||"").trim()||x.vip||String(x.accessibility||"").trim()).length;
++    const recovery=model.guestEngagements.filter(x=>x.type==="recovery_completed").length;
++    const map={
++      INQUIRY_AVAILABILITY:[
++        {id:"floor-capacity",label:"Table inventory exists to answer availability",passed:model.tables.length>0,actual:`${model.tables.length} tables`},
++        {id:"reservation-context",label:"Reservation operating context exists",passed:model.reservations.length>0,actual:`${model.reservations.length} reservation(s)`}
++      ],
++      RESERVATION:[
++        {id:"reservation-record",label:"Reservation creation path has authoritative records",passed:model.reservations.length>0,actual:`${model.reservations.length} reservation(s)`}
++      ],
++      CONFIRMATION:[
++        {id:"confirmed-state",label:"Confirmed reservation state exists",passed:confirmed>0,actual:`${confirmed} confirmed`}
++      ],
++      MODIFICATION_CANCELLATION:[
++        {id:"change-history",label:"Reservation modification/cancellation evidence exists",passed:modified>0||cancelled>0,actual:`${modified} update event(s) · ${cancelled} cancelled`}
++      ],
++      ARRIVAL_WAITLIST:[
++        {id:"arrival-wait-context",label:"Arrival or waitlist state exists",passed:arrived>0||model.waitlist.length>0,actual:`${arrived} arrived · ${model.waitlist.length} waitlist`}
++      ],
++      SEATING:[
++        {id:"seating-continuity",label:"Seating state/event evidence exists",passed:seated>0||seatedEvents>0||model.tables.some(x=>x.status==="seated"),actual:`${seated} seated reservations · ${seatedEvents} seating events`}
++      ],
++      GUEST_CONTEXT:[
++        {id:"guest-context",label:"Guest notes, VIP/accessibility, or guest profile context exists",passed:notes>0||model.profiles.length>0,actual:`${notes} contextual reservations · ${model.profiles.length} guest profiles`}
++      ],
++      GUEST_RECOVERY:[
++        {id:"recovery-linkage",label:"Guest recovery engagement evidence exists",passed:recovery>0,actual:`${recovery} recovery engagement(s)`}
++      ],
++      HISTORY_CONTINUITY:[
++        {id:"history",label:"Guest/reservation history continuity exists",passed:model.reservationEvents.length>0||model.repeatGuests>0,actual:`${model.reservationEvents.length} reservation events · ${model.repeatGuests} repeat guest key(s)`}
++      ]
++    };
++    return map[stage]||[];
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,guestSnapshot,ux,sessions,certs]=await Promise.all([
++      this.database.read(),
++      this.guestIntelligenceService.snapshot(organizationId),
++      this.operatorUxHardeningService.snapshot(organizationId,allowedLocationIds),
++      this.sessions(organizationId),
++      this.certifications(organizationId)
++    ]);
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId&&this.allowed(x.id,allowedLocationIds)).map(loc=>{
++      const model=this.evidenceModel(db,organizationId,loc.id,guestSnapshot);
++      const session=sessions.find(x=>x.locationId===loc.id&&x.status==="ACTIVE")||sessions.find(x=>x.locationId===loc.id)||null;
++      const certification=certs.find(x=>x.locationId===loc.id)||null;
++      const completed=new Set((session?.checkpoints||[]).filter(x=>x.status==="COMPLETED").map(x=>x.stage));
++      const stages=this.stageOrder.map((stage,index)=>{
++        const checks=this.stageChecks(model,stage);
++        const systemEvidence=checks.every(x=>x.passed);
++        const previous=index===0||completed.has(this.stageOrder[index-1]);
++        const checkpoint=(session?.checkpoints||[]).filter(x=>x.stage===stage).slice(-1)[0]||null;
++        const complete=checkpoint?.status==="COMPLETED";
++        return {
++          stage,index:index+1,label:stage.replaceAll("_"," "),
++          systemEvidence,previousComplete:previous,checks,checkpoint,
++          state:complete?"COMPLETED":!session?"SESSION_REQUIRED":!previous?"WAITING_FOR_PRIOR_STAGE":systemEvidence?"READY_FOR_CHECKPOINT":"EVIDENCE_GAP"
++        };
++      });
++      const systemEvidencePassed=stages.filter(x=>x.systemEvidence).length;
++      const completedStages=stages.filter(x=>x.state==="COMPLETED").length;
++      return {
++        locationId:loc.id,locationName:loc.name||loc.displayName||loc.id,
++        modelSummary:{
++          reservations:model.reservations.length,reservationEvents:model.reservationEvents.length,
++          waitlist:model.waitlist.length,seatingEvents:model.seatingEvents.length,
++          tables:model.tables.length,guestProfiles:model.profiles.length,
++          recoveryEngagements:model.guestEngagements.filter(x=>x.type==="recovery_completed").length,
++          repeatGuests:model.repeatGuests
++        },
++        session,certification,stages,
++        systemEvidencePassed,totalStages:this.stageOrder.length,
++        completedStages,
++        journeyPercent:Math.round(completedStages/this.stageOrder.length*100),
++        journeyState:certification?.status==="RESERVATION_GUEST_JOURNEY_CERTIFIED"?"JOURNEY_CERTIFIED":completedStages===this.stageOrder.length?"READY_FOR_CERTIFICATION":session?.status==="ACTIVE"?"JOURNEY_REHEARSAL_ACTIVE":"JOURNEY_REHEARSAL_NOT_STARTED"
++      };
++    });
++    const total=locations.length*this.stageOrder.length;
++    const evidencePassed=locations.reduce((n,x)=>n+x.systemEvidencePassed,0);
++    const completed=locations.reduce((n,x)=>n+x.completedStages,0);
++    return {
++      version:"51.35.0",generatedAt:this.now(),
++      status:locations.length===0?"restaurant-required":locations.every(x=>x.journeyState==="JOURNEY_CERTIFIED")?"reservation-guest-journey-certified":locations.some(x=>x.journeyState==="JOURNEY_REHEARSAL_ACTIVE")?"reservation-guest-journey-in-progress":"reservation-guest-journey-ready",
++      headline:`${evidencePassed}/${total} journey stages have supporting system evidence; ${completed}/${total} have human checkpoint evidence.`,
++      stageOrder:this.stageOrder,locations,
++      uxStatus:ux.status,
++      policy:{
++        existingReservationWorkflowReused:true,
++        existingFloorWorkflowReused:true,
++        existingGuestIntelligenceReused:true,
++        humanCheckpointEvidenceRequired:true,
++        evidenceGapOverrideRequiresReason:true,
++        stageOrderEnforced:true,
++        certificationHumanRequired:true,
++        noSyntheticJourneyPass:true,
++        noAutomaticGuestContact:true,
++        noAutomaticReservationMutation:true,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async start(organizationId,allowedLocationIds,locationId,input,actor){
++    if(!this.allowed(locationId,allowedLocationIds))throw new Error("Location is outside your authorized scope.");
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Restaurant location not found.");
++    if(loc.session?.status==="ACTIVE")throw new Error("An active reservation/guest journey rehearsal already exists.");
++    const now=this.now();
++    const record={
++      id:`rgj_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,status:"ACTIVE",
++      mode:"CONTROLLED_GUEST_JOURNEY_REHEARSAL",
++      startedAt:now,startedBy:actor,
++      guestName:String(input.guestName||"Pilot Guest").trim().slice(0,160),
++      phone:String(input.phone||"").trim().slice(0,80),
++      occasion:String(input.occasion||"").trim().slice(0,160),
++      note:String(input.note||"").trim().slice(0,1200),
++      checkpoints:[]
++    };
++    await this.database.mutate(db=>{db.reservationGuestJourneySessions||=[];db.reservationGuestJourneySessions.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Reservation/guest journey rehearsal started for ${locationId}`,category:"pilot_guest_journey"});
++    this.realtimeHub.publish("reservation-guest-journey:started",{organizationId,locationId,id:record.id});
++    return record;
++  }
++  async checkpoint(organizationId,allowedLocationIds,sessionId,input,actor){
++    const stage=String(input.stage||"").toUpperCase();
++    if(!this.stageOrder.includes(stage))throw new Error("Invalid reservation/guest journey stage.");
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.session?.id===sessionId);
++    if(!loc||loc.session.status!=="ACTIVE")throw new Error("Active reservation/guest journey rehearsal not found.");
++    const state=loc.stages.find(x=>x.stage===stage);
++    if(state.state==="COMPLETED")throw new Error(`${stage} is already complete.`);
++    if(!state.previousComplete)throw new Error(`${stage} cannot be completed before the prior journey stage.`);
++    const evidence=String(input.evidence||"").trim().slice(0,2200);
++    if(!evidence)throw new Error("Human journey checkpoint evidence is required.");
++    const overrideReason=String(input.overrideReason||"").trim().slice(0,1800);
++    if(!state.systemEvidence&&!overrideReason)throw new Error(`${stage} lacks supporting system evidence. A documented rehearsal override reason is required.`);
++    const now=this.now();
++    const record={
++      id:`rgjc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      stage,status:"COMPLETED",completedAt:now,completedBy:actor,evidence,
++      systemEvidencePresent:state.systemEvidence,
++      overrideUsed:!state.systemEvidence,overrideReason,
++      systemCheckSnapshot:state.checks,
++      reservationMutationPerformed:false,
++      guestContactPerformed:false
++    };
++    const updated=await this.database.mutate(db=>{
++      const session=(db.reservationGuestJourneySessions||[]).find(x=>x.id===sessionId&&x.organizationId===organizationId);
++      if(!session)return null;
++      session.checkpoints||=[];session.checkpoints.push(record);
++      if(stage==="HISTORY_CONTINUITY"){session.status="COMPLETED";session.completedAt=now;session.completedBy=actor;}
++      return {...session};
++    });
++    if(!updated)throw new Error("Reservation/guest journey rehearsal not found.");
++    await this.auditService.record({organizationId,actor,action:`Guest journey checkpoint ${stage} completed for ${updated.locationId}${record.overrideUsed?" with documented evidence-gap override":""}`,category:"pilot_guest_journey"});
++    this.realtimeHub.publish("reservation-guest-journey:checkpoint",{organizationId,locationId:updated.locationId,sessionId,stage,overrideUsed:record.overrideUsed});
++    return record;
++  }
++  async certify(organizationId,allowedLocationIds,locationId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Restaurant location not found.");
++    if(loc.completedStages!==this.stageOrder.length)throw new Error("All reservation/guest journey checkpoints must be completed before certification.");
++    const evidence=String(input.evidence||"").trim().slice(0,2800);
++    const note=String(input.note||"").trim().slice(0,1800);
++    if(!evidence)throw new Error("Human end-to-end guest journey evidence is required.");
++    if(!note)throw new Error("Human journey certification note is required.");
++    const record={
++      id:`rgjc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,
++      status:"RESERVATION_GUEST_JOURNEY_CERTIFIED",
++      certifiedAt:this.now(),certifiedBy:actor,evidence,note,
++      completedStages:loc.completedStages,totalStages:this.stageOrder.length,
++      systemEvidencePassed:loc.systemEvidencePassed,
++      sessionId:loc.session?.id||null,
++      reservationMutationPerformedByCertification:false,
++      guestContactPerformedByCertification:false,
++      autonomousProductionChanges:false
++    };
++    await this.database.mutate(db=>{db.reservationGuestJourneyCertifications||=[];db.reservationGuestJourneyCertifications.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Reservation and guest journey certified for ${locationId}`,category:"pilot_guest_journey"});
++    this.realtimeHub.publish("reservation-guest-journey:certified",{organizationId,locationId,id:record.id});
++    return record;
++  }
++}
++module.exports=ReservationGuestJourneyCertificationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.30.0">
++  <meta name="blue-current-build" content="51.35.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -409,6 +409,14 @@
+       <p><strong>Hardening gates</strong></p><div id="ouxChecksList" class="v432-list"></div>
+       <p><strong>Canonical restaurant terminology</strong></p><div id="ouxTerms" class="v432-list"></div>
+       <p><strong>Operator-friction register</strong></p><div id="ouxFindings" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="reservationGuestJourney">
++      <header><div><small>V51.31–V51.35 · Reservation & Guest Journey Certification</small><strong>Prove the guest experience stays connected from first availability question through reservation history and recovery.</strong><span>Blue Current reuses the existing reservation, floor, waitlist, guest-intelligence, and recovery workflows. Nine ordered checkpoints separate supporting system evidence from human end-to-end proof so missing history never becomes a synthetic pass.</span></div><button id="rgjRefresh" type="button">Refresh guest journey</button></header>
++      <div class="v432-kpis"><article><small>Journey status</small><strong id="rgjStatus">—</strong></article><article><small>System evidence</small><strong id="rgjSystemEvidence">0/0</strong></article><article><small>Human checkpoints</small><strong id="rgjHumanEvidence">0/0</strong></article><article><small>Certified locations</small><strong id="rgjCertified">0</strong></article></div>
++      <div class="v4316-answer" id="rgjHeadline">Reservation and guest journey ready for rehearsal.</div>
++      <div class="v4316-actions"><input id="rgjGuest" class="v4312-input" placeholder="Pilot guest name"><input id="rgjPhone" class="v4312-input" placeholder="Guest phone"><input id="rgjOccasion" class="v4312-input" placeholder="Special occasion"><input id="rgjNote" class="v4312-input" placeholder="Journey rehearsal note"></div>
++      <div class="v4316-actions"><input id="rgjEvidence" class="v4312-input" placeholder="Human checkpoint evidence"><input id="rgjOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="rgjCertificationEvidence" class="v4312-input" placeholder="End-to-end journey certification evidence"><input id="rgjCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
++      <p><strong>Restaurant guest journeys</strong></p><div id="rgjLocations" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8965,6 +8973,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationCenter.js?v=51.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningEngine.js?v=51.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorUxHardening" data-src="js/modules/operatorUxHardeningCenter.js?v=51.30.0"></script>
+-<script src="js/startup-loader.js?v=51.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyEngine.js?v=51.35.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyCenter.js?v=51.35.0"></script>
++<script src="js/startup-loader.js?v=51.35.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1253,6 +1253,7 @@
+ const dataIntegrityRecoveryModule = startupRegistry.register("dataIntegrityRecovery", shouldInitializeCenter("dataIntegrityRecovery") ? window.createBlueCurrentDataIntegrityRecoveryCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "peakServiceStress"]);
+ const rolePermissionCertificationModule = startupRegistry.register("rolePermissionCertification", shouldInitializeCenter("rolePermissionCertification") ? window.createBlueCurrentRolePermissionCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "dataIntegrityRecovery"]);
+ const operatorUxHardeningModule = startupRegistry.register("operatorUxHardening", shouldInitializeCenter("operatorUxHardening") ? window.createBlueCurrentOperatorUxHardeningCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolePermissionCertification"]);
++const reservationGuestJourneyModule = startupRegistry.register("reservationGuestJourney", shouldInitializeCenter("reservationGuestJourney") ? window.createBlueCurrentReservationGuestJourneyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorUxHardening"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.30.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.35.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/reservationGuestJourneyEngine.js
++++ b/client/js/modules/reservationGuestJourneyEngine.js
+@@ -0,0 +1,13 @@
++(function(global){"use strict";
++class BlueCurrentReservationGuestJourneyEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/reservation-guest-journey",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Reservation guest journey failed (${r.status})`);this.appState?.update?.({reservationGuestJourney:d});return d;}
++  async start(locationId,payload={}){const r=await fetch(`/api/reservation-guest-journey/locations/${encodeURIComponent(locationId)}/start`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Guest journey start failed (${r.status})`);this.eventBus?.emit?.("reservation-guest-journey:started",structuredClone(d));return d;}
++  async checkpoint(sessionId,payload={}){const r=await fetch(`/api/reservation-guest-journey/sessions/${encodeURIComponent(sessionId)}/checkpoint`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Guest journey checkpoint failed (${r.status})`);this.eventBus?.emit?.("reservation-guest-journey:checkpoint",structuredClone(d));return d;}
++  async certify(locationId,payload={}){const r=await fetch(`/api/reservation-guest-journey/locations/${encodeURIComponent(locationId)}/certify`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Guest journey certification failed (${r.status})`);this.eventBus?.emit?.("reservation-guest-journey:certified",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentReservationGuestJourneyEngine;
++if(global)global.BlueCurrentReservationGuestJourneyEngine=BlueCurrentReservationGuestJourneyEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/reservationGuestJourneyCenter.js
++++ b/client/js/modules/reservationGuestJourneyCenter.js
+@@ -0,0 +1,38 @@
++(function(){"use strict";
++function createBlueCurrentReservationGuestJourneyCenterModule(eventBus,appState){
++  const root=document.getElementById("reservationGuestJourney");
++  if(!root||!window.BlueCurrentReservationGuestJourneyEngine)return null;
++  const e=new window.BlueCurrentReservationGuestJourneyEngine({eventBus,appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("rgjStatus").textContent=s.status||"—";
++    $("rgjSystemEvidence").textContent=`${locs.reduce((n,x)=>n+x.systemEvidencePassed,0)}/${locs.reduce((n,x)=>n+x.totalStages,0)}`;
++    $("rgjHumanEvidence").textContent=`${locs.reduce((n,x)=>n+x.completedStages,0)}/${locs.reduce((n,x)=>n+x.totalStages,0)}`;
++    $("rgjCertified").textContent=locs.filter(x=>x.journeyState==="JOURNEY_CERTIFIED").length;
++    $("rgjHeadline").textContent=s.headline||"Reservation/guest journey unavailable.";
++    $("rgjLocations").innerHTML=locs.map(x=>`<article data-rgj-location="${esc(x.locationId)}"${x.session?` data-rgj-session="${esc(x.session.id)}"`:""}><div><strong>${esc(x.locationName)}</strong><span>${esc(x.journeyState)} · ${x.completedStages}/${x.totalStages} human checkpoints · ${x.systemEvidencePassed}/${x.totalStages} system evidence</span></div><p>Reservations ${x.modelSummary.reservations} · Events ${x.modelSummary.reservationEvents} · Waitlist ${x.modelSummary.waitlist} · Seating events ${x.modelSummary.seatingEvents} · Guest profiles ${x.modelSummary.guestProfiles} · Recovery ${x.modelSummary.recoveryEngagements}</p>${!x.session||x.session.status!=="ACTIVE"?'<div class="v4316-actions"><button type="button" data-rgj-start="true">Start guest journey rehearsal</button></div>':""}<div class="v432-list">${x.stages.map(st=>`<article data-rgj-stage="${esc(st.stage)}"><strong>${esc(st.state)} · ${esc(st.label)}</strong><span>${st.systemEvidence?"system evidence present":"system evidence gap"}</span>${x.session?.status==="ACTIVE"&&(st.state==="READY_FOR_CHECKPOINT"||st.state==="EVIDENCE_GAP")?'<button type="button" data-rgj-checkpoint="true">Record checkpoint</button>':""}</article>`).join("")}</div>${x.completedStages===x.totalStages&&x.journeyState!=="JOURNEY_CERTIFIED"?'<div class="v4316-actions"><button type="button" data-rgj-certify="true">Certify end-to-end journey</button></div>':""}</article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("rgjHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const loc=ev.target.closest("[data-rgj-location]");if(!loc)return;
++    try{
++      if(ev.target.closest("[data-rgj-start]")){
++        await e.start(loc.dataset.rgjLocation,{guestName:$("rgjGuest").value,phone:$("rgjPhone").value,occasion:$("rgjOccasion").value,note:$("rgjNote").value});
++      }else if(ev.target.closest("[data-rgj-certify]")){
++        await e.certify(loc.dataset.rgjLocation,{evidence:$("rgjCertificationEvidence").value,note:$("rgjCertificationNote").value});
++      }else{
++        const st=ev.target.closest("[data-rgj-stage]");
++        if(st&&ev.target.closest("[data-rgj-checkpoint]")&&loc.dataset.rgjSession){
++          await e.checkpoint(loc.dataset.rgjSession,{stage:st.dataset.rgjStage,evidence:$("rgjEvidence").value,overrideReason:$("rgjOverride").value});
++        }
++      }
++      await load();
++    }catch(err){$("rgjHeadline").textContent=err.message;}
++  });
++  $("rgjRefresh")?.addEventListener("click",load);
++  ["reservation-guest-journey:started","reservation-guest-journey:checkpoint","reservation-guest-journey:certified","reservation:created","reservation:updated","reservation:seated","guest:recovery-completed","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentReservationGuestJourneyCenterModule=createBlueCurrentReservationGuestJourneyCenterModule;
++})();--- a/scripts/maintenance/test-v51.35-reservation-guest-journey.js
++++ b/scripts/maintenance/test-v51.35-reservation-guest-journey.js
+@@ -0,0 +1,117 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/reservationGuestJourneyCertificationService");
++
++(async()=>{
++  const state={
++    locations:[{id:"loc1",organizationId:"org",name:"Pilot Restaurant"}],
++    reservations:[
++      {id:"r1",organizationId:"org",locationId:"loc1",guestName:"Alex Guest",phone:"555-1000",status:"confirmed",notes:"Anniversary",createdAt:"2026-08-01T10:00:00Z"},
++      {id:"r2",organizationId:"org",locationId:"loc1",guestName:"Alex Guest",phone:"555-1000",status:"seated",createdAt:"2026-08-08T10:00:00Z"}
++    ],
++    reservationEvents:[
++      {id:"e1",organizationId:"org",locationId:"loc1",reservationId:"r1",type:"reservation.updated"},
++      {id:"e2",organizationId:"org",locationId:"loc1",reservationId:"r2",type:"reservation.seated"}
++    ],
++    waitlist:[{id:"w1",organizationId:"org",locationId:"loc1",guestName:"Walk In",status:"waiting"}],
++    seatingEvents:[],
++    tables:[{id:"t1",organizationId:"org",locationId:"loc1",status:"seated"}],
++    guestEngagements:[{id:"g1",organizationId:"org",type:"recovery_completed"}],
++    reservationGuestJourneySessions:[],
++    reservationGuestJourneyCertifications:[]
++  };
++  const audits=[],events=[];
++  const svc=new Service(
++    {read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)},
++    {record:async x=>audits.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>({profiles:[{id:"gp1",locations:["loc1"],name:"Alex Guest"}]})},
++    {snapshot:async()=>({status:"operator-ux-ready-for-certification"})}
++  );
++
++  let snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.35.0");
++  assert.equal(snap.status,"reservation-guest-journey-ready");
++  assert.equal(snap.locations[0].systemEvidencePassed,9);
++  assert.equal(snap.locations[0].stages.length,9);
++  assert.equal(snap.policy.noSyntheticJourneyPass,true);
++
++  const session=await svc.start("org",["loc1"],"loc1",{
++    guestName:"Alex Guest",phone:"555-1000",occasion:"Anniversary",note:"End-to-end rehearsal"
++  },"Tester");
++  assert.equal(session.status,"ACTIVE");
++  assert.equal(session.mode,"CONTROLLED_GUEST_JOURNEY_REHEARSAL");
++
++  let orderBlocked=false;
++  try{
++    await svc.checkpoint("org",["loc1"],session.id,{stage:"SEATING",evidence:"Seat verified"},"Tester");
++  }catch(e){orderBlocked=/prior journey stage/i.test(e.message);}
++  assert(orderBlocked);
++
++  for(const stage of svc.stageOrder){
++    const cp=await svc.checkpoint("org",["loc1"],session.id,{
++      stage,evidence:`${stage} exercised end-to-end by operator.`
++    },"Tester");
++    assert.equal(cp.status,"COMPLETED");
++    assert.equal(cp.overrideUsed,false);
++    assert.equal(cp.reservationMutationPerformed,false);
++    assert.equal(cp.guestContactPerformed,false);
++  }
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.locations[0].completedStages,9);
++  assert.equal(snap.locations[0].journeyState,"READY_FOR_CERTIFICATION");
++
++  const cert=await svc.certify("org",["loc1"],"loc1",{
++    evidence:"Availability through historical continuity exercised in one coherent guest journey.",
++    note:"Reservation and guest journey accepted for pilot."
++  },"Tester");
++  assert.equal(cert.status,"RESERVATION_GUEST_JOURNEY_CERTIFIED");
++  assert.equal(cert.reservationMutationPerformedByCertification,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.status,"reservation-guest-journey-certified");
++
++  // A genuine evidence gap must require a documented rehearsal reason.
++  state.guestEngagements=[];
++  state.reservationGuestJourneySessions=[];
++  state.reservationGuestJourneyCertifications=[];
++  const session2=await svc.start("org",["loc1"],"loc1",{guestName:"Gap Test"},"Tester");
++  for(const stage of svc.stageOrder.slice(0,7)){
++    await svc.checkpoint("org",["loc1"],session2.id,{stage,evidence:`${stage} verified.`},"Tester");
++  }
++  let gapBlocked=false;
++  try{
++    await svc.checkpoint("org",["loc1"],session2.id,{stage:"GUEST_RECOVERY",evidence:"Recovery workflow reviewed."},"Tester");
++  }catch(e){gapBlocked=/override reason/i.test(e.message);}
++  assert(gapBlocked);
++
++  const overridden=await svc.checkpoint("org",["loc1"],session2.id,{
++    stage:"GUEST_RECOVERY",
++    evidence:"Recovery workflow exercised without contacting a real guest.",
++    overrideReason:"Controlled pilot rehearsal because no historical recovery engagement exists."
++  },"Tester");
++  assert.equal(overridden.overrideUsed,true);
++  assert.equal(overridden.guestContactPerformed,false);
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.35.0",
++    stages:9,
++    inquiryAvailability:true,
++    reservation:true,
++    confirmation:true,
++    modificationCancellation:true,
++    arrivalWaitlist:true,
++    seating:true,
++    guestContextOccasionNotes:true,
++    guestRecoveryLinkage:true,
++    historyContinuity:true,
++    stageOrderEnforced:true,
++    evidenceGapOverrideGuard:true,
++    humanEndToEndCertification:true,
++    noSyntheticJourneyPass:true,
++    noAutomaticGuestContact:true,
++    noAutomaticReservationMutation:true,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.35.0-RELEASE.md
++++ b/V51.35.0-RELEASE.md
+@@ -0,0 +1,183 @@
++# BLUE CURRENT V51.35.0 — RESERVATION & GUEST JOURNEY CERTIFICATION
++
++V51.31–V51.35 certifies the complete guest journey across Blue Current's existing reservation, floor, waitlist, guest-intelligence, and recovery capabilities.
++
++## Ordered journey
++
++1. INQUIRY_AVAILABILITY
++2. RESERVATION
++3. CONFIRMATION
++4. MODIFICATION_CANCELLATION
++5. ARRIVAL_WAITLIST
++6. SEATING
++7. GUEST_CONTEXT
++8. GUEST_RECOVERY
++9. HISTORY_CONTINUITY
++
++The stage order is enforced.
++
++## System evidence versus human proof
++
++Blue Current now separates:
++
++- supporting system evidence
++- human checkpoint evidence
++- final human certification
++
++A stage can have real system evidence without being certified.
++
++A human can rehearse an evidence gap only with a documented override reason.
++
++No missing event/history is silently converted into a pass.
++
++## Existing workflows are reused
++
++V51.35 does not create parallel reservation or floor operations.
++
++It reads and certifies continuity from the existing:
++
++- ReservationService
++- ReservationOperationsService
++- FloorService
++- waitlist / seating events
++- GuestIntelligenceService
++- guest recovery engagements
++
++Journey certification itself does not create, modify, cancel, seat, or contact a guest.
++
++## Stage evidence
++
++### Inquiry / availability
++- table inventory
++- reservation context
++
++### Reservation
++- authoritative reservation record
++
++### Confirmation
++- confirmed reservation state
++
++### Modification / cancellation
++- reservation update event or cancelled reservation state
++
++### Arrival / waitlist
++- arrived reservation or waitlist evidence
++
++### Seating
++- seated reservation, seating event, or seated table context
++
++### Guest context
++- notes
++- VIP state
++- accessibility
++- derived guest profile context
++
++### Guest recovery
++- existing recovery-completed engagement
++
++### History continuity
++- reservation event history or repeat guest-key evidence
++
++## Controlled rehearsal
++
++A location can start:
++
++`CONTROLLED_GUEST_JOURNEY_REHEARSAL`
++
++Every completed checkpoint records:
++
++- actor
++- timestamp
++- human evidence
++- system-evidence state
++- system check snapshot
++- override state/reason
++- `reservationMutationPerformed: false`
++- `guestContactPerformed: false`
++
++## Human certification
++
++Final state:
++
++`RESERVATION_GUEST_JOURNEY_CERTIFIED`
++
++Certification requires all nine ordered human checkpoints plus:
++
++- human end-to-end evidence
++- human certification note
++- admin permission
++
++## Current authenticated Chefs runtime
++
++Current untouched state:
++
++`reservation-guest-journey-ready`
++
++Across five in-scope restaurants:
++
++- 45 total journey stages
++- 6 have supporting system evidence
++- 0 have human checkpoint evidence
++- 0 are certified
++
++Marina Grille:
++
++- system evidence: 6/9
++- current evidence gaps:
++  - modification/cancellation history
++  - guest recovery linkage
++  - history continuity
++
++Harbor House, River & Rail, The Cabin, and Garden Social currently have 0/9 system-evidence stages because their authoritative restaurant operating data has not yet been populated for these guest-journey workflows.
++
++This is useful pilot evidence rather than a synthetic failure/pass.
++
++## Safety policy
++
++- existing reservation workflow reused
++- existing floor workflow reused
++- existing guest intelligence reused
++- human checkpoint evidence required
++- evidence-gap override requires reason
++- stage order enforced
++- human certification required
++- no synthetic journey pass
++- no automatic guest contact
++- no automatic reservation mutation
++- autonomous production changes false
++
++## Validation
++
++- V51.35 focused journey lifecycle PASS
++- all 9 ordered journey stages exercised PASS
++- stage-order guard PASS
++- evidence-gap override guard PASS
++- human end-to-end certification PASS
++- no automatic guest contact PASS
++- no automatic reservation mutation PASS
++- V51.30 regression PASS
++- authenticated guest-journey GET PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 938 JavaScript files
++- 784 client scripts
++- 5,854 unique HTML IDs
++
++## Next
++
++V51.36–V51.40 — Live Floor & Service Certification
++
++- table-state continuity
++- occupancy accuracy
++- section/server assignment
++- reservation-to-table linkage
++- waitlist-to-table linkage
++- table turns
++- cleaning/reset
++- service timing
++- guest movement
++- seating pressure
++- live service event continuity
++- human floor/service certification
+--- a/README-APPLY-V51.35.0.md
++++ b/README-APPLY-V51.35.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V51.35.0
++
++Baseline: exact V51.30.0 repository.
++
++Extract `BLUE-CURRENT-V51.35.0-RESERVATION-GUEST-JOURNEY.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.35-reservation-guest-journey.js
++node scripts/maintenance/test-v51.30-operator-ux-hardening.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.35.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Reservation & Guest Journey Certification** surface appears after Operator UX Hardening.
++
++Important:
++
++- the certification layer reuses existing reservation/floor/guest workflows
++- journey stages must be recorded in order
++- missing system evidence requires a documented rehearsal reason
++- journey checkpoints do not mutate reservations or contact guests
++- certification is admin/human controlled
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.35.0 certify reservation and guest journey"
++git push origin live-service-timeline
++```
