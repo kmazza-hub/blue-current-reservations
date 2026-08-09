@@ -1257,6 +1257,7 @@ const reservationGuestJourneyModule = startupRegistry.register("reservationGuest
 const liveFloorServiceCertificationModule = startupRegistry.register("liveFloorServiceCertification", shouldInitializeCenter("liveFloorServiceCertification") ? window.createBlueCurrentLiveFloorServiceCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "reservationGuestJourney"]);
 const managementExecutiveAccuracyModule = startupRegistry.register("managementExecutiveAccuracy", shouldInitializeCenter("managementExecutiveAccuracy") ? window.createBlueCurrentManagementExecutiveAccuracyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "liveFloorServiceCertification"]);
 const pilotDeploymentPackageModule = startupRegistry.register("pilotDeploymentPackage", shouldInitializeCenter("pilotDeploymentPackage") ? window.createBlueCurrentPilotDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managementExecutiveAccuracy"]);
+const pilotLaunchControlV5155Module = startupRegistry.register("pilotLaunchControlV5155", shouldInitializeCenter("pilotLaunchControlV5155") ? window.createBlueCurrentPilotLaunchControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDeploymentPackage"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.50.0">
+  <meta name="blue-current-build" content="51.55.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -443,6 +443,15 @@
       <div class="v4316-actions"><input id="pdpCertificationEvidence" class="v4312-input" placeholder="Human deployment certification evidence"><input id="pdpCertificationNote" class="v4312-input" placeholder="Pilot deployment certification note"></div>
       <p><strong>Restaurant deployment packages</strong></p><div id="pdpLocations" class="v432-list"></div>
       <p><strong>Required operating procedures</strong></p><div id="pdpProcedures" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5155PilotLaunchControl">
+      <header><div><small>V51.51–V51.55 · Pilot Launch Control</small><strong>Freeze one pilot restaurant configuration and require explicit human authorization before launch.</strong><span>Blue Current records the pilot location, configuration SHA-256, launch window/owner, confirmed operator roster, live support bridge, blockers, and pre-launch evidence. Configuration drift reopens the launch gate. Authorization records permission to proceed but does not start the runtime or perform go-live.</span></div><button id="v5155Refresh" type="button">Refresh launch control</button></header>
+      <div class="v432-kpis"><article><small>Launch-control status</small><strong id="v5155Status">—</strong></article><article><small>Ready locations</small><strong id="v5155Ready">0/0</strong></article><article><small>Authorized</small><strong id="v5155Authorized">0</strong></article><article><small>Open blockers</small><strong id="v5155Blockers">0</strong></article></div>
+      <div class="v4316-answer" id="v5155Headline">Pilot launch control ready.</div>
+      <div class="v4316-actions"><input id="v5155LaunchOwner" class="v4312-input" placeholder="Launch owner"><input id="v5155WindowStart" class="v4312-input" placeholder="Launch window start"><input id="v5155WindowEnd" class="v4312-input" placeholder="Launch window end"><input id="v5155SupportChannel" class="v4312-input" placeholder="Support bridge/channel"><input id="v5155SupportOwner" class="v4312-input" placeholder="Support owner"><input id="v5155EscalationOwner" class="v4312-input" placeholder="Escalation owner"></div>
+      <div class="v4316-actions"><textarea id="v5155Roster" class="v4312-input" placeholder="Confirmed pilot operators, comma or line separated"></textarea><textarea id="v5155BlockerInput" class="v4312-input" placeholder="Optional launch blockers, one per line"></textarea><input id="v5155PrelaunchEvidence" class="v4312-input" placeholder="Human pre-launch verification evidence"><input id="v5155Note" class="v4312-input" placeholder="Launch-control note"></div>
+      <div class="v4316-actions"><input id="v5155Resolution" class="v4312-input" placeholder="Human blocker-resolution evidence"><input id="v5155AuthorizationEvidence" class="v4312-input" placeholder="Human launch-authorization evidence"><input id="v5155AuthorizationNote" class="v4312-input" placeholder="Launch-authorization note"></div>
+      <p><strong>Pilot launch locations</strong></p><div id="v5155Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9007,6 +9016,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyCenter.js?v=51.45.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDeploymentPackage" data-src="js/modules/pilotDeploymentPackageEngine.js?v=51.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDeploymentPackage" data-src="js/modules/pilotDeploymentPackageCenter.js?v=51.50.0"></script>
-<script src="js/startup-loader.js?v=51.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLaunchControlV5155" data-src="js/modules/pilotLaunchControlEngine.js?v=51.55.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLaunchControlV5155" data-src="js/modules/pilotLaunchControlCenter.js?v=51.55.0"></script>
+<script src="js/startup-loader.js?v=51.55.0"></script>
 </body>
 </html>
