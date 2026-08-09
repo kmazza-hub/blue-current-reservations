@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.40.0">
+  <meta name="blue-current-build" content="51.45.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -425,6 +425,15 @@
       <div class="v4316-actions"><input id="lfscShift" class="v4312-input" value="Dinner" placeholder="Shift label"><input id="lfscManager" class="v4312-input" placeholder="Manager / rehearsal lead"><input id="lfscTargetOccupancy" class="v4312-input" type="number" min="0" max="100" value="85" placeholder="Target occupancy %"><input id="lfscNote" class="v4312-input" placeholder="Floor/service rehearsal note"></div>
       <div class="v4316-actions"><input id="lfscEvidence" class="v4312-input" placeholder="Human floor/service checkpoint evidence"><input id="lfscOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="lfscCertificationEvidence" class="v4312-input" placeholder="End-to-end floor/service certification evidence"><input id="lfscCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
       <p><strong>Restaurant floor/service journeys</strong></p><div id="lfscLocations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="managementExecutiveAccuracy">
+      <header><div><small>V51.41–V51.45 · Management & Executive Accuracy</small><strong>Trace every pilot-critical management KPI back to authoritative restaurant data before an executive trusts the dashboard.</strong><span>Blue Current reconciles executive occupancy, reservations, waitlist, staff, kitchen-ticket, guest-count, and revenue signals against source records. Modeled or deterministic values are never counted as authoritative financial truth, and critical discrepancies block certification.</span></div><button id="meaRefresh" type="button">Refresh executive accuracy</button></header>
+      <div class="v432-kpis"><article><small>Trust status</small><strong id="meaStatus">—</strong></article><article><small>Metrics matching</small><strong id="meaMatched">0/0</strong></article><article><small>Discrepancies</small><strong id="meaDiscrepancies">0</strong></article><article><small>Critical issues</small><strong id="meaCritical">0</strong></article></div>
+      <div class="v4316-answer" id="meaHeadline">Management and executive accuracy review ready.</div>
+      <div class="v4316-actions"><input id="meaEvidence" class="v4312-input" placeholder="Human management/executive accuracy evidence"><input id="meaNote" class="v4312-input" placeholder="Executive trust certification note"><button id="meaCertify" type="button">Certify executive accuracy</button></div>
+      <p><strong>Critical trust issues</strong></p><div id="meaCriticalList" class="v432-list"></div>
+      <p><strong>Location source reconciliation</strong></p><div id="meaLocations" class="v432-list"></div>
+      <p><strong>Portfolio rollup reconciliation</strong></p><div id="meaPortfolio" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8985,6 +8994,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyCenter.js?v=51.35.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationEngine.js?v=51.40.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationCenter.js?v=51.40.0"></script>
-<script src="js/startup-loader.js?v=51.40.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyEngine.js?v=51.45.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyCenter.js?v=51.45.0"></script>
+<script src="js/startup-loader.js?v=51.45.0"></script>
 </body>
 </html>
