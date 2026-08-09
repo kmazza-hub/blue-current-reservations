@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="56.50.0">
+  <meta name="blue-current-build" content="57.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -636,6 +636,15 @@
       <div class="v4316-actions"><select id="v5650Support" class="v4312-input"><option value="PASS">Support/escalation PASS</option><option value="FAIL">Support/escalation FAIL</option></select><select id="v5650Rollback" class="v4312-input"><option value="PASS">Rollback/recovery PASS</option><option value="FAIL">Rollback/recovery FAIL</option></select><input id="v5650Runbook" class="v4312-input" placeholder="Pilot runbook / operating procedure"><select id="v5650GoNoGo" class="v4312-input"><option value="GO">Review recommendation GO</option><option value="HOLD">Review recommendation HOLD</option></select><input id="v5650Note" class="v4312-input" placeholder="Readiness note"><button id="v5650Review" type="button">Record environment review</button></div>
       <div class="v4316-actions"><input id="v5650Evidence" class="v4312-input" placeholder="GO / HOLD certification evidence"><input id="v5650Reason" class="v4312-input" placeholder="Override / hold reason"><button id="v5650Go" type="button">GO</button><button id="v5650Hold" type="button">HOLD</button></div>
       <div id="v5650Certification" class="v4316-answer">No production/pilot environment certification.</div><div id="v5650Checks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5700PilotReleaseCandidate">
+      <header><div><small>V56.51–V57.00 · Production Readiness Closure & Pilot Release Candidate Certification</small><strong>Freeze and certify a traceable pilot release candidate before any deployment or restaurant activation.</strong><span>This checkpoint ties environment readiness, technical readiness, deployment packages, pilot launch controls, immutable build identification, regression evidence, security, backup/restore, observability, support, rollback, known issues, and pilot success criteria into one human-controlled RC gate.</span></div><button id="v5700Refresh" type="button">Refresh RC readiness</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5700Status">—</strong></article><article><small>RC readiness</small><strong id="v5700Ready">OPEN</strong></article><article><small>Release version</small><strong id="v5700Version">—</strong></article></div>
+      <div class="v4316-answer" id="v5700Headline">Pilot Release Candidate review ready.</div>
+      <div class="v4316-actions"><input id="v5700ReleaseVersion" class="v4312-input" value="57.0.0-rc1" placeholder="Release version"><input id="v5700BuildHash" class="v4312-input" placeholder="Immutable build / commit hash"><select id="v5700Freeze" class="v4312-input"><option value="PASS">Change freeze PASS</option><option value="FAIL">Change freeze FAIL</option></select><select id="v5700Regression" class="v4312-input"><option value="PASS">Regression evidence PASS</option><option value="FAIL">Regression evidence FAIL</option></select><select id="v5700Security" class="v4312-input"><option value="PASS">Security signoff PASS</option><option value="FAIL">Security signoff FAIL</option></select><select id="v5700Backup" class="v4312-input"><option value="PASS">Backup/restore PASS</option><option value="FAIL">Backup/restore FAIL</option></select></div>
+      <div class="v4316-actions"><select id="v5700Observability" class="v4312-input"><option value="PASS">Observability PASS</option><option value="FAIL">Observability FAIL</option></select><select id="v5700Support" class="v4312-input"><option value="PASS">Support signoff PASS</option><option value="FAIL">Support signoff FAIL</option></select><select id="v5700Rollback" class="v4312-input"><option value="PASS">Rollback signoff PASS</option><option value="FAIL">Rollback signoff FAIL</option></select><input id="v5700KnownIssues" class="v4312-input" placeholder="Known issues register"><input id="v5700Success" class="v4312-input" placeholder="Pilot success criteria"><select id="v5700Recommendation" class="v4312-input"><option value="APPROVE">RC recommendation APPROVE</option><option value="HOLD">RC recommendation HOLD</option></select><input id="v5700Note" class="v4312-input" placeholder="RC review note"><button id="v5700Review" type="button">Record RC review</button></div>
+      <div class="v4316-actions"><input id="v5700Evidence" class="v4312-input" placeholder="RC certification evidence"><input id="v5700Reason" class="v4312-input" placeholder="Override / hold reason"><button id="v5700Approve" type="button">RC APPROVE</button><button id="v5700Hold" type="button">HOLD</button></div>
+      <div id="v5700Certification" class="v4316-answer">No pilot release-candidate certification.</div><div id="v5700Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9246,6 +9255,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v55DecisionValueCertificationV5600" data-src="js/modules/v55DecisionValueCertificationCenter.js?v=56.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionPilotEnvironmentReadinessV5650" data-src="js/modules/productionPilotEnvironmentReadinessEngine.js?v=56.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionPilotEnvironmentReadinessV5650" data-src="js/modules/productionPilotEnvironmentReadinessCenter.js?v=56.50.0"></script>
-<script src="js/startup-loader.js?v=56.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotReleaseCandidateCertificationV5700" data-src="js/modules/pilotReleaseCandidateCertificationEngine.js?v=57.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotReleaseCandidateCertificationV5700" data-src="js/modules/pilotReleaseCandidateCertificationCenter.js?v=57.0.0"></script>
+<script src="js/startup-loader.js?v=57.0.0"></script>
 </body>
 </html>
