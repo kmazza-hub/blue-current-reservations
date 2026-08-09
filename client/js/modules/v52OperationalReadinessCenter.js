@@ -1,0 +1,11 @@
+(function(){"use strict";
+function createBlueCurrentV52OperationalReadinessCenterModule(eventBus,appState){
+ const root=document.getElementById("v5300OperationalReadiness");if(!root||!window.BlueCurrentV52OperationalReadinessEngine)return null;
+ const e=new window.BlueCurrentV52OperationalReadinessEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
+ function render(s){$("v5300Status").textContent=s.status||"—";$("v5300Ready").textContent=s.certificationReady?"READY":"OPEN";$("v5300Entry").textContent=s.v53Entry?.approved?"V53 APPROVED":"PENDING";$("v5300Headline").textContent=s.headline||"V52 closure review unavailable.";$("v5300Checks").innerHTML=(s.checks||[]).map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.id)}</strong><span>${esc(c.actual)}</span></article>`).join("");$("v5300Certification").textContent=s.certification?`${s.certification.status} · ${s.certification.certifiedAt}`:"V52 has not been certified closed.";}
+ async function load(){try{render(await e.snapshot());}catch(err){$("v5300Headline").textContent=err.message;}}
+ $("v5300Review")?.addEventListener("click",async()=>{try{await e.review({scopeReview:$("v5300Scope").value,regressionEvidence:$("v5300Regression").value,securityAuthReview:$("v5300Security").value,dataIntegrityReview:$("v5300Data").value,recoveryRollbackReview:$("v5300Recovery").value,observabilitySupportReview:$("v5300Observability").value,operatorWorkflowReview:$("v5300Operator").value,openDebtRegister:$("v5300Debt").value,v53EntryCriteria:$("v5300EntryCriteria").value,note:$("v5300Note").value});await load();}catch(err){$("v5300Headline").textContent=err.message;}});
+ $("v5300Certify")?.addEventListener("click",async()=>{try{await e.certify({evidence:$("v5300Evidence").value,acceptance:$("v5300Acceptance").value});await load();}catch(err){$("v5300Headline").textContent=err.message;}});
+ $("v5300Refresh")?.addEventListener("click",load);load();return{engine:e,load};
+}
+window.createBlueCurrentV52OperationalReadinessCenterModule=createBlueCurrentV52OperationalReadinessCenterModule;})();
