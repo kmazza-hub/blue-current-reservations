@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "51.20.0",
+  "version": "51.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 data integrity and recovery certification",
+  "description": "Blue Current Hospitality OS \u2014 role and permission certification for restaurant pilot",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

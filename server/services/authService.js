@@ -159,15 +159,20 @@ class AuthService {
     };
   }
 
-  can(auth, permission) {
+  permissionsForRole(role) {
     const rolePermissions = {
-      owner: ["read", "write", "invite", "switch_org", "manage_users", "manage_settings"],
-      administrator: ["read", "write", "invite", "manage_users", "manage_settings"],
-      general_manager: ["read", "write", "invite"],
+      owner: ["read", "write", "admin", "write_operations", "write_reservations", "invite", "switch_org", "manage_users", "manage_settings"],
+      administrator: ["read", "write", "admin", "write_operations", "write_reservations", "invite", "manage_users", "manage_settings"],
+      general_manager: ["read", "write", "write_operations", "write_reservations", "invite"],
       host: ["read", "write_reservations"],
-      kitchen_manager: ["read", "write_operations"]
+      kitchen_manager: ["read", "write_operations"],
+      staff: ["read"]
     };
-    return (rolePermissions[auth.membership.role] || []).includes(permission);
+    return [...(rolePermissions[role] || [])];
+  }
+
+  can(auth, permission) {
+    return this.permissionsForRole(auth?.membership?.role).includes(permission);
   }
 }
 

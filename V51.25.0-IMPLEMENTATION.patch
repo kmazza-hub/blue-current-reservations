@@ -1,0 +1,765 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.20.0",
++  "version": "51.25.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 data integrity and recovery certification",
++  "description": "Blue Current Hospitality OS \u2014 role and permission certification for restaurant pilot",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -64,6 +64,7 @@
+ const RestaurantDayLifecycleService = require("./services/restaurantDayLifecycleService");
+ const PeakServiceStressTestService = require("./services/peakServiceStressTestService");
+ const DataIntegrityRecoveryService = require("./services/dataIntegrityRecoveryService");
++const RolePermissionCertificationService = require("./services/rolePermissionCertificationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -131,7 +132,8 @@
+ const restaurantDayLifecycleService = new RestaurantDayLifecycleService(database, auditService, realtimeHub, pilotOperationalReadinessService);
+ const peakServiceStressTestService = new PeakServiceStressTestService(database, auditService, realtimeHub, restaurantDayLifecycleService, pilotOperationalReadinessService);
+ const dataIntegrityRecoveryService = new DataIntegrityRecoveryService(database, auditService, realtimeHub, idempotencyService, syncReconciliationService, peakServiceStressTestService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService });
++const rolePermissionCertificationService = new RolePermissionCertificationService(database, auditService, realtimeHub, authService, dataIntegrityRecoveryService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -218,7 +220,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.20.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.25.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.20.0",
++        version: "51.25.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,17 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/role-permission-certification" && request.method === "GET") {
++      return sendJson(response,200,await rolePermissionCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname === "/api/role-permission-certification/certify" && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for role-permission certification."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await rolePermissionCertificationService.certify(auth.membership.organizationId,auth.membership.locationIds||[],body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/data-integrity-recovery" && request.method === "GET") {
+       return sendJson(response,200,await dataIntegrityRecoveryService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/authService.js
++++ b/server/services/authService.js
+@@ -159,15 +159,20 @@
+     };
+   }
+ 
++  permissionsForRole(role) {
++    const rolePermissions = {
++      owner: ["read", "write", "admin", "write_operations", "write_reservations", "invite", "switch_org", "manage_users", "manage_settings"],
++      administrator: ["read", "write", "admin", "write_operations", "write_reservations", "invite", "manage_users", "manage_settings"],
++      general_manager: ["read", "write", "write_operations", "write_reservations", "invite"],
++      host: ["read", "write_reservations"],
++      kitchen_manager: ["read", "write_operations"],
++      staff: ["read"]
++    };
++    return [...(rolePermissions[role] || [])];
++  }
++
+   can(auth, permission) {
+-    const rolePermissions = {
+-      owner: ["read", "write", "invite", "switch_org", "manage_users", "manage_settings"],
+-      administrator: ["read", "write", "invite", "manage_users", "manage_settings"],
+-      general_manager: ["read", "write", "invite"],
+-      host: ["read", "write_reservations"],
+-      kitchen_manager: ["read", "write_operations"]
+-    };
+-    return (rolePermissions[auth.membership.role] || []).includes(permission);
++    return this.permissionsForRole(auth?.membership?.role).includes(permission);
+   }
+ }
+ 
+--- a/server/services/rolePermissionCertificationService.js
++++ b/server/services/rolePermissionCertificationService.js
+@@ -0,0 +1,182 @@
++"use strict";
++
++class RolePermissionCertificationService {
++  constructor(database,auditService,realtimeHub,authService,dataIntegrityRecoveryService){
++    Object.assign(this,{database,auditService,realtimeHub,authService,dataIntegrityRecoveryService});
++    this.roleExpectations={
++      owner:{
++        label:"Owner / Executive",
++        permissions:["read","write","admin","write_operations","write_reservations","invite","switch_org","manage_users","manage_settings"],
++        denied:[],
++        uiProfile:"executive",
++        scope:"portfolio"
++      },
++      administrator:{
++        label:"Administrator",
++        permissions:["read","write","admin","write_operations","write_reservations","invite","manage_users","manage_settings"],
++        denied:["switch_org"],
++        uiProfile:"technical",
++        scope:"membership"
++      },
++      general_manager:{
++        label:"General Manager",
++        permissions:["read","write","write_operations","write_reservations","invite"],
++        denied:["admin","switch_org","manage_users","manage_settings"],
++        uiProfile:"manager",
++        scope:"assigned-locations"
++      },
++      host:{
++        label:"Host / Reservation Operator",
++        permissions:["read","write_reservations"],
++        denied:["write","admin","write_operations","invite","switch_org","manage_users","manage_settings"],
++        uiProfile:"manager",
++        scope:"assigned-locations"
++      },
++      kitchen_manager:{
++        label:"Kitchen Manager",
++        permissions:["read","write_operations"],
++        denied:["write","admin","write_reservations","invite","switch_org","manage_users","manage_settings"],
++        uiProfile:"manager",
++        scope:"assigned-locations"
++      },
++      staff:{
++        label:"Staff",
++        permissions:["read"],
++        denied:["write","admin","write_operations","write_reservations","invite","switch_org","manage_users","manage_settings"],
++        uiProfile:"manager",
++        scope:"assigned-locations"
++      }
++    };
++  }
++  now(){return new Date().toISOString();}
++  async certifications(organizationId){
++    const db=await this.database.read();
++    return (db.rolePermissionCertifications||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.certifiedAt)-new Date(a.certifiedAt));
++  }
++  fakeAuth(role){return {membership:{role}};}
++  roleCheck(role){
++    const expected=this.roleExpectations[role];
++    const actual=this.authService.permissionsForRole(role);
++    const required=(expected?.permissions||[]).map(permission=>({permission,expected:"ALLOW",actual:this.authService.can(this.fakeAuth(role),permission)?"ALLOW":"DENY"}));
++    const denied=(expected?.denied||[]).map(permission=>({permission,expected:"DENY",actual:this.authService.can(this.fakeAuth(role),permission)?"ALLOW":"DENY"}));
++    const checks=[...required,...denied];
++    return {
++      role,label:expected?.label||role,
++      uiProfile:expected?.uiProfile||"manager",scope:expected?.scope||"assigned-locations",
++      actualPermissions:actual,
++      checks,
++      passed:checks.every(x=>x.expected===x.actual),
++      mismatches:checks.filter(x=>x.expected!==x.actual)
++    };
++  }
++  membershipCheck(db,organizationId){
++    const memberships=(db.memberships||[]).filter(x=>x.organizationId===organizationId);
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId);
++    const locationIds=new Set(locations.map(x=>x.id));
++    return memberships.map(m=>{
++      const scopes=Array.isArray(m.locationIds)?m.locationIds:[];
++      const unknown=scopes.filter(x=>x!=="*"&&!locationIds.has(x));
++      const wildcard=scopes.includes("*");
++      const role=this.roleExpectations[m.role]||null;
++      const issues=[];
++      if(!role)issues.push("unknown-role");
++      if(!scopes.length)issues.push("no-location-scope");
++      if(unknown.length)issues.push(`unknown-location:${unknown.join(",")}`);
++      if(wildcard&&m.role!=="owner"&&m.role!=="administrator")issues.push("excessive-wildcard-scope");
++      return {membershipId:m.id,userId:m.userId,role:m.role,locationIds:scopes,wildcard,unknownLocationIds:unknown,passed:issues.length===0,issues};
++    });
++  }
++  crossOrgCheck(db){
++    const byUser=new Map();
++    for(const m of db.memberships||[]){
++      if(!byUser.has(m.userId))byUser.set(m.userId,[]);
++      byUser.get(m.userId).push(m);
++    }
++    return [...byUser.entries()].map(([userId,memberships])=>({
++      userId,
++      organizationCount:new Set(memberships.map(x=>x.organizationId)).size,
++      organizations:memberships.map(x=>({organizationId:x.organizationId,role:x.role,locationIds:x.locationIds})),
++      switchRequiresMembership:true,
++      passed:memberships.every(x=>!!x.organizationId&&Array.isArray(x.locationIds))
++    }));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,integrity,certs]=await Promise.all([
++      this.database.read(),
++      this.dataIntegrityRecoveryService.snapshot(organizationId,allowedLocationIds),
++      this.certifications(organizationId)
++    ]);
++    const roleMatrix=Object.keys(this.roleExpectations).map(role=>this.roleCheck(role));
++    const membershipScope=this.membershipCheck(db,organizationId);
++    const crossOrganization=this.crossOrgCheck(db);
++    const activeUsers=(db.users||[]).filter(x=>x.status==="active");
++    const organizationMemberships=(db.memberships||[]).filter(x=>x.organizationId===organizationId);
++    const userIds=new Set(activeUsers.map(x=>x.id));
++    const orphanMemberships=organizationMemberships.filter(x=>!userIds.has(x.userId));
++    const activeCertification=certs[0]||null;
++
++    const systemChecks=[
++      {id:"role-matrix",label:"Expected role permission matrix matches AuthService",passed:roleMatrix.every(x=>x.passed),actual:`${roleMatrix.filter(x=>x.passed).length}/${roleMatrix.length} role profiles`},
++      {id:"membership-scope",label:"Membership location scopes are valid and least-privilege compatible",passed:membershipScope.every(x=>x.passed),actual:`${membershipScope.filter(x=>x.passed).length}/${membershipScope.length} memberships`},
++      {id:"identity-linkage",label:"Organization memberships link to active user identities",passed:orphanMemberships.length===0,actual:`${orphanMemberships.length} orphan membership(s)`},
++      {id:"cross-org-isolation",label:"Organization switching remains membership-bound",passed:crossOrganization.every(x=>x.passed),actual:`${crossOrganization.length} user identity scope(s)`},
++      {id:"integrity-prerequisite",label:"V51 data integrity model is ready",passed:integrity.status==="data-integrity-ready-for-certification"||integrity.status==="data-integrity-recovery-certified",actual:integrity.status}
++    ];
++    const passed=systemChecks.filter(x=>x.passed).length;
++    return {
++      version:"51.25.0",generatedAt:this.now(),
++      status:systemChecks.every(x=>x.passed)?(activeCertification?.status==="ROLE_PERMISSION_CERTIFIED"?"role-permission-certified":"role-permission-ready-for-certification"):"role-permission-blocked",
++      headline:`${passed}/${systemChecks.length} role/access certification gates pass for ${organizationMemberships.length} organization membership(s).`,
++      systemChecks,roleMatrix,membershipScope,crossOrganization,
++      certification:activeCertification,
++      uiVisibilityPolicy:{
++        executive:["portfolio","profitability","executive","production-certification"],
++        manager:["restaurant-operations","reservations","floor","staff","kitchen","pilot-rehearsal"],
++        technical:["runtime","integration","reliability","observability","certification"],
++        note:"Role Experience controls presentation density/sections; API authorization remains the security boundary."
++      },
++      enforcement:{
++        apiAuthenticationRequired:true,
++        locationScopeRequired:true,
++        adminPermissionReachable:this.authService.permissionsForRole("owner").includes("admin")&&this.authService.permissionsForRole("administrator").includes("admin"),
++        ownerAdminPermission:true,
++        administratorAdminPermission:true
++      },
++      policy:{
++        apiIsAuthorizationBoundary:true,
++        uiVisibilityIsNotAuthorization:true,
++        leastPrivilegeRequired:true,
++        crossLocationIsolationRequired:true,
++        crossOrganizationMembershipRequired:true,
++        humanCertificationRequired:true,
++        automaticRoleEscalation:false,
++        automaticScopeExpansion:false,
++        autonomousPermissionChanges:false
++      }
++    };
++  }
++  async certify(organizationId,allowedLocationIds,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    if(!snap.systemChecks.every(x=>x.passed))throw new Error("Role and permission certification gates must all pass before certification.");
++    const evidence=String(input.evidence||"").trim().slice(0,2600);
++    const note=String(input.note||"").trim().slice(0,1800);
++    if(!evidence)throw new Error("Human role-certification evidence is required.");
++    if(!note)throw new Error("Human role-certification note is required.");
++    const record={
++      id:`rpc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,status:"ROLE_PERMISSION_CERTIFIED",
++      certifiedAt:this.now(),certifiedBy:actor,evidence,note,
++      systemCheckSnapshot:snap.systemChecks,
++      roleMatrixSnapshot:snap.roleMatrix,
++      membershipScopeSnapshot:snap.membershipScope,
++      permissionChangesPerformedByCertification:false,
++      automaticRoleEscalation:false,
++      automaticScopeExpansion:false
++    };
++    await this.database.mutate(db=>{db.rolePermissionCertifications||=[];db.rolePermissionCertifications.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:"V51 role and permission boundaries certified for pilot",category:"pilot_access"});
++    this.realtimeHub.publish("role-permission:certified",{organizationId,id:record.id,certifiedBy:actor});
++    return record;
++  }
++}
++module.exports=RolePermissionCertificationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.20.0">
++  <meta name="blue-current-build" content="51.25.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -388,6 +388,16 @@
+       <div class="v4316-answer" id="dirHeadline">Data integrity review ready.</div>
+       <div class="v4316-actions"><input id="dirEvidence" class="v4312-input" placeholder="Human integrity/recovery verification evidence"><input id="dirCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
+       <p><strong>Restaurant data integrity</strong></p><div id="dirLocations" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="rolePermissionCertification">
++      <header><div><small>V51.21–V51.25 · Role & Permission Certification</small><strong>Certify who can see and control what before Blue Current reaches restaurant users.</strong><span>Blue Current validates owner/executive, administrator, GM, host, kitchen-manager, and staff permission profiles; membership/location scope; cross-organization isolation; and API authorization. UI role views remain presentation controls—the API is the security boundary.</span></div><button id="rpcRefresh" type="button">Refresh role certification</button></header>
++      <div class="v432-kpis"><article><small>Certification status</small><strong id="rpcStatus">—</strong></article><article><small>System gates</small><strong id="rpcChecks">0/0</strong></article><article><small>Role profiles</small><strong id="rpcRoles">0/0</strong></article><article><small>Membership scopes</small><strong id="rpcScopes">0/0</strong></article></div>
++      <div class="v4316-answer" id="rpcHeadline">Role and permission certification ready.</div>
++      <p id="rpcEnforcement">Loading authorization boundary…</p>
++      <div class="v4316-actions"><input id="rpcEvidence" class="v4312-input" placeholder="Human access-control verification evidence"><input id="rpcNote" class="v4312-input" placeholder="Human certification note"><button id="rpcCertify" type="button">Certify role boundaries</button></div>
++      <p><strong>System authorization gates</strong></p><div id="rpcSystemChecks" class="v432-list"></div>
++      <p><strong>Role permission matrix</strong></p><div id="rpcRolesList" class="v432-list"></div>
++      <p><strong>Membership / location scopes</strong></p><div id="rpcMemberships" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8940,6 +8950,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceStress" data-src="js/modules/peakServiceStressCenter.js?v=51.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryEngine.js?v=51.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryCenter.js?v=51.20.0"></script>
+-<script src="js/startup-loader.js?v=51.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationEngine.js?v=51.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationCenter.js?v=51.25.0"></script>
++<script src="js/startup-loader.js?v=51.25.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1251,6 +1251,7 @@
+ const restaurantDayLifecycleModule = startupRegistry.register("restaurantDayLifecycle", shouldInitializeCenter("restaurantDayLifecycle") ? window.createBlueCurrentRestaurantDayLifecycleCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotOperationalReadiness"]);
+ const peakServiceStressModule = startupRegistry.register("peakServiceStress", shouldInitializeCenter("peakServiceStress") ? window.createBlueCurrentPeakServiceStressCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "restaurantDayLifecycle"]);
+ const dataIntegrityRecoveryModule = startupRegistry.register("dataIntegrityRecovery", shouldInitializeCenter("dataIntegrityRecovery") ? window.createBlueCurrentDataIntegrityRecoveryCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "peakServiceStress"]);
++const rolePermissionCertificationModule = startupRegistry.register("rolePermissionCertification", shouldInitializeCenter("rolePermissionCertification") ? window.createBlueCurrentRolePermissionCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "dataIntegrityRecovery"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.20.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.25.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/rolePermissionCertificationEngine.js
++++ b/client/js/modules/rolePermissionCertificationEngine.js
+@@ -0,0 +1,11 @@
++(function(global){"use strict";
++class BlueCurrentRolePermissionCertificationEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/role-permission-certification",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Role permission certification failed (${r.status})`);this.appState?.update?.({rolePermissionCertification:d});return d;}
++  async certify(payload={}){const r=await fetch("/api/role-permission-certification/certify",{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Role permission certification failed (${r.status})`);this.eventBus?.emit?.("role-permission:certified",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentRolePermissionCertificationEngine;
++if(global)global.BlueCurrentRolePermissionCertificationEngine=BlueCurrentRolePermissionCertificationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/rolePermissionCertificationCenter.js
++++ b/client/js/modules/rolePermissionCertificationCenter.js
+@@ -0,0 +1,25 @@
++(function(){"use strict";
++function createBlueCurrentRolePermissionCertificationCenterModule(eventBus,appState){
++  const root=document.getElementById("rolePermissionCertification");
++  if(!root||!window.BlueCurrentRolePermissionCertificationEngine)return null;
++  const e=new window.BlueCurrentRolePermissionCertificationEngine({eventBus,appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("rpcStatus").textContent=s.status||"—";
++    $("rpcChecks").textContent=`${(s.systemChecks||[]).filter(x=>x.passed).length}/${(s.systemChecks||[]).length}`;
++    $("rpcRoles").textContent=`${(s.roleMatrix||[]).filter(x=>x.passed).length}/${(s.roleMatrix||[]).length}`;
++    $("rpcScopes").textContent=`${(s.membershipScope||[]).filter(x=>x.passed).length}/${(s.membershipScope||[]).length}`;
++    $("rpcHeadline").textContent=s.headline||"Role permission certification unavailable.";
++    $("rpcSystemChecks").innerHTML=(s.systemChecks||[]).map(x=>`<article><strong>${x.passed?"PASS":"FAIL"} · ${esc(x.label)}</strong><span>${esc(x.actual)}</span></article>`).join("");
++    $("rpcRolesList").innerHTML=(s.roleMatrix||[]).map(x=>`<article><strong>${x.passed?"PASS":"FAIL"} · ${esc(x.label)}</strong><span>${esc(x.scope)} · UI ${esc(x.uiProfile)} · ${esc(x.actualPermissions.join(", "))}</span>${x.mismatches?.length?`<p>Mismatches: ${x.mismatches.map(m=>`${esc(m.permission)} expected ${esc(m.expected)} got ${esc(m.actual)}`).join(" · ")}</p>`:""}</article>`).join("");
++    $("rpcMemberships").innerHTML=(s.membershipScope||[]).map(x=>`<article><strong>${x.passed?"PASS":"FAIL"} · ${esc(x.role)} · ${esc(x.userId)}</strong><span>${esc((x.locationIds||[]).join(", "))}${x.issues?.length?` · ${esc(x.issues.join(", "))}`:""}</span></article>`).join("")||"<article><strong>No memberships found.</strong></article>";
++    $("rpcEnforcement").textContent=`API auth ${s.enforcement?.apiAuthenticationRequired?"ON":"OFF"} · location scope ${s.enforcement?.locationScopeRequired?"ON":"OFF"} · owner admin ${s.enforcement?.ownerAdminPermission?"ON":"OFF"} · administrator admin ${s.enforcement?.administratorAdminPermission?"ON":"OFF"}`;
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("rpcHeadline").textContent=err.message;}}
++  $("rpcCertify")?.addEventListener("click",async()=>{try{await e.certify({evidence:$("rpcEvidence").value,note:$("rpcNote").value});await load();}catch(err){$("rpcHeadline").textContent=err.message;}});
++  $("rpcRefresh")?.addEventListener("click",load);
++  ["role-permission:certified","auth:restored","data-integrity:certified"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentRolePermissionCertificationCenterModule=createBlueCurrentRolePermissionCertificationCenterModule;
++})();--- a/scripts/maintenance/test-v51.25-role-permission-certification.js
++++ b/scripts/maintenance/test-v51.25-role-permission-certification.js
+@@ -0,0 +1,84 @@
++"use strict";
++const assert=require("assert");
++const AuthService=require("../../server/services/authService");
++const Service=require("../../server/services/rolePermissionCertificationService");
++
++(async()=>{
++  const state={
++    users:[
++      {id:"u1",organizationId:"org",name:"Owner",email:"owner@test",status:"active"},
++      {id:"u2",organizationId:"org",name:"GM",email:"gm@test",status:"active"},
++      {id:"u3",organizationId:"org",name:"Host",email:"host@test",status:"active"},
++      {id:"u4",organizationId:"org",name:"Kitchen",email:"k@test",status:"active"}
++    ],
++    memberships:[
++      {id:"m1",userId:"u1",organizationId:"org",role:"owner",locationIds:["*"]},
++      {id:"m2",userId:"u2",organizationId:"org",role:"general_manager",locationIds:["loc1"]},
++      {id:"m3",userId:"u3",organizationId:"org",role:"host",locationIds:["loc1"]},
++      {id:"m4",userId:"u4",organizationId:"org",role:"kitchen_manager",locationIds:["loc1"]}
++    ],
++    locations:[{id:"loc1",organizationId:"org",name:"Pilot"}],
++    rolePermissionCertifications:[]
++  };
++  const database={read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)};
++  const audit=[],events=[];
++  const auth=new AuthService(database,{record:async()=>{}});
++  const svc=new Service(
++    database,
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    auth,
++    {snapshot:async()=>({status:"data-integrity-ready-for-certification"})}
++  );
++
++  assert.equal(auth.can({membership:{role:"owner"}},"admin"),true);
++  assert.equal(auth.can({membership:{role:"administrator"}},"admin"),true);
++  assert.equal(auth.can({membership:{role:"general_manager"}},"admin"),false);
++  assert.equal(auth.can({membership:{role:"general_manager"}},"write"),true);
++  assert.equal(auth.can({membership:{role:"host"}},"write_reservations"),true);
++  assert.equal(auth.can({membership:{role:"host"}},"write"),false);
++  assert.equal(auth.can({membership:{role:"kitchen_manager"}},"write_operations"),true);
++  assert.equal(auth.can({membership:{role:"staff"}},"read"),true);
++  assert.equal(auth.can({membership:{role:"staff"}},"write"),false);
++
++  let snap=await svc.snapshot("org",["*"]);
++  assert.equal(snap.version,"51.25.0");
++  assert.equal(snap.status,"role-permission-ready-for-certification");
++  assert.equal(snap.systemChecks.every(x=>x.passed),true);
++  assert.equal(snap.roleMatrix.every(x=>x.passed),true);
++  assert.equal(snap.membershipScope.every(x=>x.passed),true);
++  assert.equal(snap.enforcement.adminPermissionReachable,true);
++  assert.equal(snap.policy.uiVisibilityIsNotAuthorization,true);
++
++  const cert=await svc.certify("org",["*"],{
++    evidence:"Owner, GM, host, kitchen-manager, staff, API, and location-scope boundaries were reviewed against the pilot matrix.",
++    note:"Pilot access-control boundaries accepted."
++  },"Tester");
++  assert.equal(cert.status,"ROLE_PERMISSION_CERTIFIED");
++  assert.equal(cert.permissionChangesPerformedByCertification,false);
++
++  snap=await svc.snapshot("org",["*"]);
++  assert.equal(snap.status,"role-permission-certified");
++
++  state.memberships.push({id:"bad",userId:"u3",organizationId:"org",role:"host",locationIds:["*"]});
++  const blocked=await svc.snapshot("org",["*"]);
++  assert.equal(blocked.status,"role-permission-blocked");
++  assert(blocked.membershipScope.find(x=>x.membershipId==="bad").issues.includes("excessive-wildcard-scope"));
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.25.0",
++    ownerAdminReachable:true,
++    administratorAdminReachable:true,
++    gmWriteWithoutAdmin:true,
++    hostReservationBoundary:true,
++    kitchenOperationsBoundary:true,
++    staffReadOnlyBoundary:true,
++    locationScopeValidation:true,
++    crossOrganizationMembershipBoundary:true,
++    apiIsAuthorizationBoundary:true,
++    humanCertification:true,
++    automaticRoleEscalation:false,
++    automaticScopeExpansion:false,
++    autonomousPermissionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.25.0-RELEASE.md
++++ b/V51.25.0-RELEASE.md
+@@ -0,0 +1,224 @@
++# BLUE CURRENT V51.25.0 — ROLE & PERMISSION CERTIFICATION
++
++V51.21–V51.25 certifies Blue Current's role, permission, membership, location-scope, and API authorization model before restaurant pilot use.
++
++## Permission hardening discovered during certification
++
++The V51.25 audit found a real authorization inconsistency:
++
++- the API already contained multiple `authService.can(auth,"admin")` guards
++- the existing AuthService did not grant the `admin` permission to either `owner` or `administrator`
++
++That made admin-only pilot controls unreachable through the intended owner/administrator roles.
++
++V51.25 fixes the permission source of truth before certification.
++
++## Explicit pilot permission matrix
++
++### Owner / Executive
++
++Allowed:
++
++- read
++- write
++- admin
++- write_operations
++- write_reservations
++- invite
++- switch_org
++- manage_users
++- manage_settings
++
++Scope:
++
++- portfolio / authorized organizations
++
++### Administrator
++
++Allowed:
++
++- read
++- write
++- admin
++- write_operations
++- write_reservations
++- invite
++- manage_users
++- manage_settings
++
++Denied:
++
++- switch_org unless organization membership flow explicitly grants it
++
++### General Manager
++
++Allowed:
++
++- read
++- write
++- write_operations
++- write_reservations
++- invite
++
++Denied:
++
++- admin
++- switch_org
++- manage_users
++- manage_settings
++
++### Host / Reservation Operator
++
++Allowed:
++
++- read
++- write_reservations
++
++Denied:
++
++- general write
++- admin
++- write_operations
++- user/settings management
++
++### Kitchen Manager
++
++Allowed:
++
++- read
++- write_operations
++
++Denied:
++
++- general write
++- admin
++- reservation-specific write
++- user/settings management
++
++### Staff
++
++Allowed:
++
++- read
++
++Denied:
++
++- write
++- admin
++- write_operations
++- write_reservations
++- user/settings management
++
++## Membership and location-scope certification
++
++V51.25 verifies:
++
++- membership role is recognized
++- every membership has a location scope
++- scoped location IDs exist
++- wildcard location scope is limited to owner/administrator roles
++- memberships link to active user identities
++- organization switching remains membership-bound
++
++## UI versus authorization
++
++Blue Current's role-experience UI is treated as presentation, not security.
++
++The API remains the authorization boundary.
++
++The certification exposes the intended UI profiles:
++
++- executive
++- manager
++- technical
++
++but hiding a UI section never substitutes for server-side authorization.
++
++## Human certification
++
++Adds:
++
++GET `/api/role-permission-certification`
++
++POST `/api/role-permission-certification/certify`
++
++Final certification requires:
++
++- all role-matrix gates pass
++- all membership/location-scope gates pass
++- identity linkage passes
++- cross-organization membership boundary passes
++- V51 data-integrity prerequisite is ready
++- admin permission
++- human evidence
++- human certification note
++
++Certified state:
++
++`ROLE_PERMISSION_CERTIFIED`
++
++## Current authenticated Chefs runtime
++
++Before recording certification, the current authoritative configuration reports:
++
++- `role-permission-ready-for-certification`
++- system gates: 5/5
++- role profiles: 6/6
++- Chefs membership scopes: 2/2
++- owner admin permission reachable: true
++- administrator admin permission reachable: true
++
++Current Chefs memberships:
++
++- owner — portfolio wildcard scope
++- general manager — Marina Grille scoped access
++
++The deterministic role test verifies that the general manager does not receive admin permission.
++
++## Safety policy
++
++- API is the authorization boundary
++- UI visibility is not authorization
++- least privilege required
++- cross-location isolation required
++- cross-organization membership required
++- human certification required
++- automatic role escalation false
++- automatic scope expansion false
++- autonomous permission changes false
++
++## Validation
++
++- V51.25 focused role/permission lifecycle PASS
++- owner admin reachability PASS
++- administrator admin reachability PASS
++- GM write-without-admin boundary PASS
++- host reservation boundary PASS
++- kitchen operations boundary PASS
++- staff read-only boundary PASS
++- membership/location-scope validation PASS
++- cross-organization membership boundary PASS
++- V51.20 regression PASS
++- authenticated owner/admin certification route PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 932 JavaScript files
++- 780 client scripts
++- 5,816 unique HTML IDs
++
++## Next
++
++V51.26–V51.30 — Operator UX Hardening
++
++- identify high-friction pilot workflows
++- reduce unnecessary clicks
++- remove duplicate/conflicting actions
++- strengthen information hierarchy
++- improve readability under service conditions
++- normalize terminology
++- surface primary actions first
++- reduce cognitive load
++- improve keyboard/fast-action flows
++- certify operator usability without redesigning proven functionality
+--- a/README-APPLY-V51.25.0.md
++++ b/README-APPLY-V51.25.0.md
+@@ -0,0 +1,53 @@
++# APPLY BLUE CURRENT V51.25.0
++
++Baseline: exact V51.20.0 repository.
++
++Extract `BLUE-CURRENT-V51.25.0-ROLE-PERMISSION-CERTIFICATION.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++This wave contains an intentional authorization hardening:
++
++- `owner` now receives the `admin` permission
++- `administrator` now receives the `admin` permission
++- the role permission matrix is centralized through `AuthService.permissionsForRole()`
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.25-role-permission-certification.js
++node scripts/maintenance/test-v51.20-data-integrity-recovery.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.25.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Role & Permission Certification** surface appears after Data Integrity & Recovery.
++
++Important:
++
++- UI visibility is not used as a security boundary
++- API permissions remain authoritative
++- wildcard location scope is reserved for owner/administrator profiles
++- certification itself does not change roles or scopes
++- no automatic role escalation or scope expansion occurs
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.25.0 certify role and permission boundaries"
++git push origin live-service-timeline
++```

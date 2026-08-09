@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.20.0">
+  <meta name="blue-current-build" content="51.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -388,6 +388,16 @@
       <div class="v4316-answer" id="dirHeadline">Data integrity review ready.</div>
       <div class="v4316-actions"><input id="dirEvidence" class="v4312-input" placeholder="Human integrity/recovery verification evidence"><input id="dirCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
       <p><strong>Restaurant data integrity</strong></p><div id="dirLocations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="rolePermissionCertification">
+      <header><div><small>V51.21–V51.25 · Role & Permission Certification</small><strong>Certify who can see and control what before Blue Current reaches restaurant users.</strong><span>Blue Current validates owner/executive, administrator, GM, host, kitchen-manager, and staff permission profiles; membership/location scope; cross-organization isolation; and API authorization. UI role views remain presentation controls—the API is the security boundary.</span></div><button id="rpcRefresh" type="button">Refresh role certification</button></header>
+      <div class="v432-kpis"><article><small>Certification status</small><strong id="rpcStatus">—</strong></article><article><small>System gates</small><strong id="rpcChecks">0/0</strong></article><article><small>Role profiles</small><strong id="rpcRoles">0/0</strong></article><article><small>Membership scopes</small><strong id="rpcScopes">0/0</strong></article></div>
+      <div class="v4316-answer" id="rpcHeadline">Role and permission certification ready.</div>
+      <p id="rpcEnforcement">Loading authorization boundary…</p>
+      <div class="v4316-actions"><input id="rpcEvidence" class="v4312-input" placeholder="Human access-control verification evidence"><input id="rpcNote" class="v4312-input" placeholder="Human certification note"><button id="rpcCertify" type="button">Certify role boundaries</button></div>
+      <p><strong>System authorization gates</strong></p><div id="rpcSystemChecks" class="v432-list"></div>
+      <p><strong>Role permission matrix</strong></p><div id="rpcRolesList" class="v432-list"></div>
+      <p><strong>Membership / location scopes</strong></p><div id="rpcMemberships" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8940,6 +8950,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceStress" data-src="js/modules/peakServiceStressCenter.js?v=51.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryEngine.js?v=51.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryCenter.js?v=51.20.0"></script>
-<script src="js/startup-loader.js?v=51.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationEngine.js?v=51.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolePermissionCertification" data-src="js/modules/rolePermissionCertificationCenter.js?v=51.25.0"></script>
+<script src="js/startup-loader.js?v=51.25.0"></script>
 </body>
 </html>
