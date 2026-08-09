@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="55.75.0">
+  <meta name="blue-current-build" content="56.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -619,6 +619,14 @@
       <div class="v4316-actions"><input id="v5575Remaining" class="v4312-input" type="number" min="0" value="0" placeholder="Remaining modeled opportunity $"><select id="v5575Result" class="v4312-input"><option value="IMPROVED">IMPROVED</option><option value="UNCHANGED">UNCHANGED</option><option value="WORSE">WORSE</option></select><select id="v5575Accountability" class="v4312-input"><option value="PASS">Decision accountability PASS</option><option value="FAIL">Decision accountability FAIL</option></select><input id="v5575OutcomeEvidence" class="v4312-input" placeholder="Outcome evidence"><input id="v5575Lessons" class="v4312-input" placeholder="Lessons learned"></div>
       <div class="v4316-actions"><input id="v5575CertEvidence" class="v4312-input" placeholder="Executive value-certification evidence"><input id="v5575Reason" class="v4312-input" placeholder="Decision reason / override"></div>
       <div id="v5575Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5600DecisionValueCertification">
+      <header><div><small>V55.76–V56.00 · V55 Intelligence & Profitability Closure / Decision-Value Certification</small><strong>Close the intelligence phase only when Blue Current's signals are trusted, actionable, traceable, and tied to measurable operating outcomes.</strong><span>This checkpoint reconciles restaurant intelligence, profitability accountability, modeled-value disclosure, operator and manager acceptance, executive reporting, and explicit V56 entry. Modeled value remains decision support—not GAAP profit.</span></div><button id="v5600Refresh" type="button">Refresh V55 closure</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5600Status">—</strong></article><article><small>Closure</small><strong id="v5600Ready">OPEN</strong></article><article><small>Modeled realized value</small><strong id="v5600Realized">$0</strong></article></div>
+      <div class="v4316-answer" id="v5600Headline">V55 decision-value certification ready.</div>
+      <div class="v4316-actions"><select id="v5600Trust" class="v4312-input"><option value="PASS">Signal trust PASS</option><option value="FAIL">Signal trust FAIL</option></select><select id="v5600Actionability" class="v4312-input"><option value="PASS">Actionability PASS</option><option value="FAIL">Actionability FAIL</option></select><select id="v5600Traceability" class="v4312-input"><option value="PASS">Value traceability PASS</option><option value="FAIL">Value traceability FAIL</option></select><select id="v5600Disclosure" class="v4312-input"><option value="PASS">Modeled-value disclosure PASS</option><option value="FAIL">Modeled-value disclosure FAIL</option></select><input id="v5600Operator" class="v4312-input" placeholder="Operator acceptance"><input id="v5600Manager" class="v4312-input" placeholder="Manager acceptance"><select id="v5600Executive" class="v4312-input"><option value="PASS">Executive reporting PASS</option><option value="FAIL">Executive reporting FAIL</option></select><select id="v5600Entry" class="v4312-input"><option value="APPROVED">V56 entry APPROVED</option><option value="HOLD">V56 entry HOLD</option></select></div>
+      <div class="v4316-actions"><input id="v5600Note" class="v4312-input" placeholder="Closure note"><button id="v5600Review" type="button">Record V55 closure review</button><input id="v5600Evidence" class="v4312-input" placeholder="Certification evidence"><input id="v5600Acceptance" class="v4312-input" placeholder="Executive acceptance"><button id="v5600Certify" type="button">Certify V55 / enter V56</button></div>
+      <div id="v5600Certification" class="v4316-answer">V55 has not been decision-value certified.</div><div id="v5600Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9225,6 +9233,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantIntelligenceDecisionSupportV5525" data-src="js/modules/restaurantIntelligenceDecisionSupportCenter.js?v=55.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="profitabilityInterventionAccountabilityV5575" data-src="js/modules/profitabilityInterventionAccountabilityEngine.js?v=55.75.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="profitabilityInterventionAccountabilityV5575" data-src="js/modules/profitabilityInterventionAccountabilityCenter.js?v=55.75.0"></script>
-<script src="js/startup-loader.js?v=55.75.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v55DecisionValueCertificationV5600" data-src="js/modules/v55DecisionValueCertificationEngine.js?v=56.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v55DecisionValueCertificationV5600" data-src="js/modules/v55DecisionValueCertificationCenter.js?v=56.0.0"></script>
+<script src="js/startup-loader.js?v=56.0.0"></script>
 </body>
 </html>
