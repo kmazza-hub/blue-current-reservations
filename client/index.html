@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="51.15.0">
+  <meta name="blue-current-build" content="51.20.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -381,6 +381,13 @@
       <div class="v4316-actions"><input id="pssOccupancy" class="v4312-input" type="number" min="50" max="100" value="95" placeholder="Target occupancy %"><input id="pssBurst" class="v4312-input" type="number" min="1" max="500" value="25" placeholder="Reservation burst"><input id="pssTurns" class="v4312-input" type="number" min="10" max="240" value="55" placeholder="Turn minutes"><input id="pssLatency" class="v4312-input" type="number" min="0" max="30000" value="1800" placeholder="Simulated latency ms"><input id="pssNote" class="v4312-input" placeholder="Stress run note"></div>
       <div class="v4316-actions"><select id="pssResultStatus" class="v4312-input"><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select><input id="pssEvidence" class="v4312-input" placeholder="Human observed test evidence"><input id="pssRecovery" class="v4312-input" placeholder="Recovery evidence for failure/reconnect scenarios"><input id="pssOverride" class="v4312-input" placeholder="Prerequisite override reason"><input id="pssObservedLatency" class="v4312-input" type="number" min="0" placeholder="Observed latency ms"><input id="pssErrors" class="v4312-input" type="number" min="0" placeholder="Observed errors"><input id="pssDuplicates" class="v4312-input" type="number" min="0" placeholder="Observed duplicates"></div>
       <p><strong>Restaurant peak-service scenarios</strong></p><div id="pssLocations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="dataIntegrityRecovery">
+      <header><div><small>V51.16–V51.20 · Data Integrity & Recovery</small><strong>Prove restaurant data survives reloads, retries, reconciliation, and failure/recovery cycles without corruption or duplication.</strong><span>Blue Current checks reservation, guest, floor, staff, employee, and kitchen identity integrity; validates idempotency/reload persistence and reconciliation readability; and requires a human certification record. No automatic repair or reconciliation is performed.</span></div><button id="dirRefresh" type="button">Refresh integrity</button></header>
+      <div class="v432-kpis"><article><small>Integrity status</small><strong id="dirStatus">—</strong></article><article><small>Ready locations</small><strong id="dirReady">0/0</strong></article><article><small>Certified</small><strong id="dirCertified">0</strong></article><article><small>Checks passing</small><strong id="dirChecks">0/0</strong></article></div>
+      <div class="v4316-answer" id="dirHeadline">Data integrity review ready.</div>
+      <div class="v4316-actions"><input id="dirEvidence" class="v4312-input" placeholder="Human integrity/recovery verification evidence"><input id="dirCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
+      <p><strong>Restaurant data integrity</strong></p><div id="dirLocations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8931,6 +8938,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantDayLifecycle" data-src="js/modules/restaurantDayLifecycleCenter.js?v=51.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceStress" data-src="js/modules/peakServiceStressEngine.js?v=51.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceStress" data-src="js/modules/peakServiceStressCenter.js?v=51.15.0"></script>
-<script src="js/startup-loader.js?v=51.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryEngine.js?v=51.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryCenter.js?v=51.20.0"></script>
+<script src="js/startup-loader.js?v=51.20.0"></script>
 </body>
 </html>

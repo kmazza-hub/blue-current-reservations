@@ -1250,6 +1250,7 @@ const v50ReleaseCertificationModule = startupRegistry.register("v50ReleaseCertif
 const pilotOperationalReadinessModule = startupRegistry.register("pilotOperationalReadiness", shouldInitializeCenter("pilotOperationalReadiness") ? window.createBlueCurrentPilotOperationalReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v50ReleaseCertification"]);
 const restaurantDayLifecycleModule = startupRegistry.register("restaurantDayLifecycle", shouldInitializeCenter("restaurantDayLifecycle") ? window.createBlueCurrentRestaurantDayLifecycleCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotOperationalReadiness"]);
 const peakServiceStressModule = startupRegistry.register("peakServiceStress", shouldInitializeCenter("peakServiceStress") ? window.createBlueCurrentPeakServiceStressCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "restaurantDayLifecycle"]);
+const dataIntegrityRecoveryModule = startupRegistry.register("dataIntegrityRecovery", shouldInitializeCenter("dataIntegrityRecovery") ? window.createBlueCurrentDataIntegrityRecoveryCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "peakServiceStress"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
