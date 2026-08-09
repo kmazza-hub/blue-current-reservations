@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="54.25.0">
+  <meta name="blue-current-build" content="54.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -585,6 +585,12 @@
       <div class="v4316-actions"><input id="v5425Clicks" class="v4312-input" type="number" min="0" value="3" placeholder="Observed clicks"><input id="v5425Seconds" class="v4312-input" type="number" min="0" value="8" placeholder="Observed seconds"><input id="v5425MaxClicks" class="v4312-input" type="number" min="1" value="4" placeholder="Max clicks"><input id="v5425MaxSeconds" class="v4312-input" type="number" min="1" value="12" placeholder="Max seconds"><select id="v5425Handoff" class="v4312-input"><option value="PASS">Handoff clarity PASS</option><option value="FAIL">Handoff clarity FAIL</option></select><select id="v5425Priority" class="v4312-input"><option value="PASS">Priority visibility PASS</option><option value="FAIL">Priority visibility FAIL</option></select><select id="v5425Exception" class="v4312-input"><option value="PASS">Exception visibility PASS</option><option value="FAIL">Exception visibility FAIL</option></select></div>
       <div class="v4316-actions"><input id="v5425Evidence" class="v4312-input" placeholder="Operator usability evidence"><input id="v5425Note" class="v4312-input" placeholder="Observation note"><input id="v5425DecisionEvidence" class="v4312-input" placeholder="READY / REVISE / HOLD evidence"><input id="v5425DecisionReason" class="v4312-input" placeholder="Decision reason / override"></div>
       <div id="v5425Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5450ManagerIntervention">
+      <header><div><small>V54.26–V54.50 · Manager Intervention, Exception Handling & Decision Speed</small><strong>Surface the problem, owner, and next action before service friction compounds.</strong><span>Drill guest recovery, table delay, kitchen delay, staffing, reservation exceptions, and degraded-system events for acknowledgement speed, decision speed, ownership, next-action clarity, and escalation clarity.</span></div><button id="v5450Refresh" type="button">Refresh manager readiness</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5450Status">—</strong></article><article><small>Decision ready</small><strong id="v5450Ready">0/0</strong></article></div><div class="v4316-answer" id="v5450Headline">Manager intervention review ready.</div>
+      <div class="v4316-actions"><input id="v5450Ack" class="v4312-input" type="number" min="0" value="8" placeholder="Acknowledge seconds"><input id="v5450Decision" class="v4312-input" type="number" min="0" value="30" placeholder="Decision seconds"><input id="v5450MaxAck" class="v4312-input" type="number" min="1" value="15" placeholder="Max acknowledge"><input id="v5450MaxDecision" class="v4312-input" type="number" min="1" value="60" placeholder="Max decision"><input id="v5450Owner" class="v4312-input" placeholder="Manager / owner"><input id="v5450Action" class="v4312-input" placeholder="Next operator action"></div>
+      <div class="v4316-actions"><select id="v5450OwnerClarity" class="v4312-input"><option value="PASS">Owner clarity PASS</option><option value="FAIL">Owner clarity FAIL</option></select><select id="v5450ActionClarity" class="v4312-input"><option value="PASS">Next action PASS</option><option value="FAIL">Next action FAIL</option></select><select id="v5450Escalation" class="v4312-input"><option value="PASS">Escalation PASS</option><option value="FAIL">Escalation FAIL</option></select><input id="v5450Evidence" class="v4312-input" placeholder="Manager drill evidence"><input id="v5450Note" class="v4312-input" placeholder="Observation note"><input id="v5450CertEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5450Reason" class="v4312-input" placeholder="Decision reason / override"></div><div id="v5450Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9181,6 +9187,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v53RestaurantOperationalCertificationV5400" data-src="js/modules/v53RestaurantOperationalCertificationCenter.js?v=54.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSpeedWorkflowV5425" data-src="js/modules/operatorSpeedWorkflowSimplificationEngine.js?v=54.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSpeedWorkflowV5425" data-src="js/modules/operatorSpeedWorkflowSimplificationCenter.js?v=54.25.0"></script>
-<script src="js/startup-loader.js?v=54.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerInterventionDecisionSpeedV5450" data-src="js/modules/managerInterventionDecisionSpeedEngine.js?v=54.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managerInterventionDecisionSpeedV5450" data-src="js/modules/managerInterventionDecisionSpeedCenter.js?v=54.50.0"></script>
+<script src="js/startup-loader.js?v=54.50.0"></script>
 </body>
 </html>
