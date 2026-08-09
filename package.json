@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "52.25.0",
+  "version": "52.30.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 expansion activation and cohort observation",
+  "description": "Blue Current Hospitality OS \u2014 expansion stabilization and portfolio proof",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

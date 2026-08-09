@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="52.25.0">
+  <meta name="blue-current-build" content="52.30.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -505,6 +505,15 @@
       <div class="v4316-actions"><select id="v5225Severity" class="v4312-input"><option value="none">No incident</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="critical">Critical</option></select><select id="v5225SupportLoad" class="v4312-input"><option value="MANAGEABLE">Manageable support</option><option value="LOW">Low support</option><option value="HIGH">High support</option><option value="CRITICAL">Critical support</option></select><label><input id="v5225Api" type="checkbox" checked> API</label><label><input id="v5225Auth" type="checkbox" checked> Auth</label><label><input id="v5225Reservations" type="checkbox" checked> Reservations</label><label><input id="v5225Floor" type="checkbox" checked> Floor</label><label><input id="v5225Kitchen" type="checkbox" checked> Kitchen</label><label><input id="v5225Support" type="checkbox" checked> Support bridge</label></div>
       <div class="v4316-actions"><input id="v5225Incident" class="v4312-input" placeholder="Incident description"><input id="v5225ObservationNote" class="v4312-input" placeholder="Observation note"><input id="v5225DecisionEvidence" class="v4312-input" placeholder="CONTINUE / PAUSE / HOLD evidence"><input id="v5225DecisionReason" class="v4312-input" placeholder="Decision reason / override"></div>
       <div id="v5225Cohorts" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5230ExpansionPortfolioProof">
+      <header><div><small>V52.26–V52.30 · Expansion Stabilization & Portfolio Proof</small><strong>Prove the expansion model works across locations before repeating it again.</strong><span>Blue Current combines cohort CONTINUE decisions, repeated healthy observations, support burden, incident severity, data-integrity recheck, expanded-location executive KPI trust, operator confidence, replication lessons, and a stabilization window. REPEAT / HOLD / ROLLBACK remain human decisions only.</span></div><button id="v5230Refresh" type="button">Refresh portfolio proof</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5230Status">—</strong></article><article><small>Expanded locations</small><strong id="v5230Locations">0</strong></article><article><small>Cohorts CONTINUE</small><strong id="v5230Cohorts">0/0</strong></article></div>
+      <div class="v4316-answer" id="v5230Headline">Expansion portfolio proof ready.</div>
+      <p id="v5230Dependencies">Loading dependency status…</p>
+      <div class="v4316-actions"><input id="v5230Confidence" class="v4312-input" type="number" min="1" max="5" value="4"><input id="v5230Outcome" class="v4312-input" placeholder="Portfolio outcome evidence"><input id="v5230Support" class="v4312-input" placeholder="Support-burden review"><input id="v5230Lessons" class="v4312-input" placeholder="Replication lessons"><input id="v5230WindowStart" class="v4312-input" placeholder="Stabilization window start"><input id="v5230WindowEnd" class="v4312-input" placeholder="Stabilization window end"><input id="v5230Note" class="v4312-input" placeholder="Assessment note"><button id="v5230Assess" type="button">Record portfolio assessment</button></div>
+      <div class="v4316-actions"><input id="v5230DecisionEvidence" class="v4312-input" placeholder="REPEAT / HOLD / ROLLBACK evidence"><input id="v5230DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"><button data-v5230-decision="REPEAT" type="button">REPEAT</button><button data-v5230-decision="HOLD" type="button">HOLD</button><button data-v5230-decision="ROLLBACK" type="button">ROLLBACK</button></div>
+      <p><strong>Portfolio-proof gates</strong></p><div id="v5230Checks" class="v432-list"></div><p><strong>Current decision</strong></p><div id="v5230Decision" class="v4316-answer">No portfolio decision recorded.</div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9083,6 +9092,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationExpansionV5220" data-src="js/modules/multiLocationExpansionControlCenter.js?v=52.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionCohortObservationV5225" data-src="js/modules/expansionCohortObservationEngine.js?v=52.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionCohortObservationV5225" data-src="js/modules/expansionCohortObservationCenter.js?v=52.25.0"></script>
-<script src="js/startup-loader.js?v=52.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionPortfolioProofV5230" data-src="js/modules/expansionPortfolioProofEngine.js?v=52.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionPortfolioProofV5230" data-src="js/modules/expansionPortfolioProofCenter.js?v=52.30.0"></script>
+<script src="js/startup-loader.js?v=52.30.0"></script>
 </body>
 </html>
