@@ -1243,6 +1243,7 @@ const launchStabilizationModule = startupRegistry.register("launchStabilization"
 const v49ReleaseCertificationModule = startupRegistry.register("v49ReleaseCertification", shouldInitializeCenter("v49ReleaseCertification") ? window.createBlueCurrentV49ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "launchStabilization"]);
 const productionOperationsHandoffModule = startupRegistry.register("productionOperationsHandoff", shouldInitializeCenter("productionOperationsHandoff") ? window.createBlueCurrentProductionOperationsHandoffCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v49ReleaseCertification"]);
 const productionHealthSupportModule = startupRegistry.register("productionHealthSupport", shouldInitializeCenter("productionHealthSupport") ? window.createBlueCurrentProductionHealthSupportCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionOperationsHandoff"]);
+const productionIncidentCommandModule = startupRegistry.register("productionIncidentCommand", shouldInitializeCenter("productionIncidentCommand") ? window.createBlueCurrentProductionIncidentCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionHealthSupport"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

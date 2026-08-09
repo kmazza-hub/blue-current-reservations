@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="50.10.0">
+  <meta name="blue-current-build" content="50.15.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -321,6 +321,16 @@
       <div class="v4316-actions"><select id="phsSeverity" class="v4312-input"><option value="info">info</option><option value="warning">warning</option><option value="critical">critical</option></select><input id="phsTitle" class="v4312-input" placeholder="Support event title"><input id="phsDescription" class="v4312-input" placeholder="Support event description"><input id="phsIncident" class="v4312-input" placeholder="Linked observability incident ID"><input id="phsNote" class="v4312-input" placeholder="Acknowledgment / escalation note"></div>
       <p><strong>Accepted production locations</strong></p><div id="phsLocations" class="v432-list"></div>
       <p><strong>Production support timeline</strong></p><div id="phsHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="productionIncidentCommand">
+      <header><div><small>V50.11–V50.15 · Production Incident Command</small><strong>Unify critical support, observability, and SLO signals into one human-led incident command workflow.</strong><span>Blue Current surfaces affected restaurants/domains, incident ownership, containment, business/service impact, communications, linked support/observability signals, runbook context, recovery evidence, and resolution. It does not contain, remediate, or resolve incidents automatically.</span></div><button id="picRefresh" type="button">Refresh incident command</button></header>
+      <div class="v432-kpis"><article><small>Incident status</small><strong id="picStatus">—</strong></article><article><small>Active commands</small><strong id="picActive">0</strong></article><article><small>Open signals</small><strong id="picSignals">0</strong></article><article><small>Platform reliability</small><strong id="picReliability">—</strong></article></div>
+      <div class="v4316-answer" id="picHeadline">No active production incident command.</div>
+      <div class="v4316-actions"><select id="picSeverity" class="v4312-input"><option value="info">info</option><option value="warning">warning</option><option value="critical">critical</option></select><input id="picTitle" class="v4312-input" placeholder="Incident title"><input id="picCommander" class="v4312-input" placeholder="Incident commander"><input id="picLocations" class="v4312-input" placeholder="Affected location IDs, comma separated"><input id="picDomains" class="v4312-input" placeholder="Affected domains, comma separated"></div>
+      <div class="v4316-actions"><input id="picBusinessImpact" class="v4312-input" placeholder="Business impact"><input id="picServiceImpact" class="v4312-input" placeholder="Service impact"><input id="picSupportLinks" class="v4312-input" placeholder="Linked support event IDs"><input id="picIncidentLinks" class="v4312-input" placeholder="Linked observability incident IDs"><input id="picRunbook" class="v4312-input" placeholder="Runbook / recovery procedure"><input id="picNote" class="v4312-input" placeholder="Incident creation note"><button id="picCreate" type="button">Open incident command</button></div>
+      <div class="v4316-actions"><input id="picActionNote" class="v4312-input" placeholder="Containment / communication / recovery / resolution note"></div>
+      <p><strong>Open source signals</strong></p><div id="picSignalsList" class="v432-list"></div>
+      <p><strong>Incident command ledger</strong></p><div id="picCommands" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8857,6 +8867,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffCenter.js?v=50.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportEngine.js?v=50.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportCenter.js?v=50.10.0"></script>
-<script src="js/startup-loader.js?v=50.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandEngine.js?v=50.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandCenter.js?v=50.15.0"></script>
+<script src="js/startup-loader.js?v=50.15.0"></script>
 </body>
 </html>

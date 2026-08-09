@@ -1,0 +1,664 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "50.10.0",
++  "version": "50.15.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 production health and support command",
++  "description": "Blue Current Hospitality OS \u2014 production incident command and human-controlled recovery workflow",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -56,6 +56,7 @@
+ const V49ReleaseCertificationService = require("./services/v49ReleaseCertificationService");
+ const ProductionOperationsHandoffService = require("./services/productionOperationsHandoffService");
+ const ProductionHealthSupportService = require("./services/productionHealthSupportService");
++const ProductionIncidentCommandService = require("./services/productionIncidentCommandService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -115,7 +116,8 @@
+ const v49ReleaseCertificationService = new V49ReleaseCertificationService(database, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService);
+ const productionOperationsHandoffService = new ProductionOperationsHandoffService(database, auditService, realtimeHub, launchStabilizationService, reliabilityAutomationService, multiLocationPerformanceService);
+ const productionHealthSupportService = new ProductionHealthSupportService(database, auditService, realtimeHub, productionOperationsHandoffService, reliabilityAutomationService, telemetryService, multiLocationPerformanceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService });
++const productionIncidentCommandService = new ProductionIncidentCommandService(database, auditService, realtimeHub, productionHealthSupportService, reliabilityAutomationService, telemetryService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -202,7 +204,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V50.10.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V50.15.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "50.10.0",
++        version: "50.15.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,25 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/production-incident-command" && request.method === "GET") {
++      return sendJson(response,200,await productionIncidentCommandService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname === "/api/production-incident-command" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required to create a production incident command."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await productionIncidentCommandService.create(auth.membership.organizationId,auth.membership.locationIds||[],body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/production-incident-command/") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required to update a production incident command."});
++      const incidentId=decodeURIComponent(url.pathname.split("/")[3]||"");
++      const body=await readJson(request);
++      try{return sendJson(response,200,await productionIncidentCommandService.update(auth.membership.organizationId,incidentId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/production-health-support" && request.method === "GET") {
+       return sendJson(response,200,await productionHealthSupportService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/productionIncidentCommandService.js
++++ b/server/services/productionIncidentCommandService.js
+@@ -0,0 +1,160 @@
++"use strict";
++
++class ProductionIncidentCommandService {
++  constructor(database,auditService,realtimeHub,productionHealthSupportService,reliabilityAutomationService,telemetryService){
++    Object.assign(this,{database,auditService,realtimeHub,productionHealthSupportService,reliabilityAutomationService,telemetryService});
++  }
++  now(){return new Date().toISOString();}
++  async incidents(organizationId){
++    const db=await this.database.read();
++    return (db.productionIncidentCommands||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [support,reliability,telemetry,commands]=await Promise.all([
++      this.productionHealthSupportService.snapshot(organizationId,allowedLocationIds),
++      this.reliabilityAutomationService.evaluate(organizationId),
++      this.telemetryService.snapshot(),
++      this.incidents(organizationId)
++    ]);
++    const openObservability=(telemetry.incidents?.records||[])
++      .filter(x=>!["resolved","closed"].includes(x.status)&&(!x.organizationId||x.organizationId===organizationId));
++    const openSupport=(support.eventHistory||[]).filter(x=>!["resolved","closed"].includes(x.status));
++    const activeCommands=commands.filter(x=>!["resolved","closed"].includes(x.status));
++
++    const affectedLocationIds=new Set([
++      ...openSupport.map(x=>x.locationId).filter(Boolean),
++      ...activeCommands.flatMap(x=>x.affectedLocationIds||[])
++    ]);
++
++    const locations=(support.locations||[]).filter(x=>affectedLocationIds.has(x.locationId)||x.healthState!=="healthy");
++    const signals=[
++      ...openSupport.map(x=>({
++        id:x.id,type:"support",severity:x.severity,title:x.title,
++        locationId:x.locationId,locationName:x.locationName,status:x.status,owner:x.supportOwner,
++        linkedIncidentId:x.linkedIncidentId||null
++      })),
++      ...openObservability.map(x=>({
++        id:x.id,type:"observability",severity:x.severity,title:x.title||"Observability incident",
++        locationId:null,locationName:null,status:x.status,owner:x.owner||null,linkedIncidentId:x.id
++      }))
++    ];
++
++    return {
++      version:"50.15.0",generatedAt:this.now(),
++      status:activeCommands.some(x=>x.severity==="critical")?"incident-command-critical":
++        activeCommands.length?"incident-command-active":
++        signals.length?"incident-command-signals-open":"incident-command-clear",
++      headline:activeCommands.length
++        ? `${activeCommands.length} active production incident command(s) require human ownership and recovery tracking.`
++        : signals.length
++          ? `${signals.length} open production/support signal(s) are available for incident-command intake.`
++          : "No active production incident command or open critical production signals.",
++      platform:{
++        reliabilityStatus:reliability.status,
++        reliabilityScore:reliability.score,
++        breachedObjectives:reliability.breached,
++        warningObjectives:reliability.warning,
++        errorBudgetRemaining:reliability.errorBudgetRemaining,
++        openObservabilityIncidents:openObservability.length,
++        criticalObservabilityIncidents:openObservability.filter(x=>x.severity==="critical").length
++      },
++      affectedLocations:locations,
++      sourceSignals:signals,
++      activeCommands,
++      commandHistory:commands,
++      policy:{
++        incidentCreationHumanInitiated:true,
++        containmentHumanDirected:true,
++        communicationHumanDirected:true,
++        recoveryEvidenceHumanRecorded:true,
++        resolutionHumanDeclared:true,
++        automaticContainment:false,
++        automaticRemediation:false,
++        automaticResolution:false,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async create(organizationId,allowedLocationIds,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const title=String(input.title||"").trim().slice(0,180);
++    if(!title)throw new Error("Incident title is required.");
++    const severity=String(input.severity||"warning").toLowerCase();
++    if(!["info","warning","critical"].includes(severity))throw new Error("Severity must be info, warning, or critical.");
++    const affectedLocationIds=[...new Set((Array.isArray(input.affectedLocationIds)?input.affectedLocationIds:[]).map(String))];
++    const allowed=new Set((allowedLocationIds||[]).map(String));
++    if(!allowed.has("*")){
++      const invalid=affectedLocationIds.filter(x=>!allowed.has(x));
++      if(invalid.length)throw new Error(`Affected scope contains unauthorized location(s): ${invalid.join(", ")}`);
++    }
++    const commander=String(input.commander||actor||"").trim().slice(0,160);
++    if(!commander)throw new Error("Incident commander is required.");
++    const now=this.now();
++    const record={
++      id:`pic_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,title,severity,status:"open",
++      commander,
++      affectedLocationIds,
++      affectedDomains:(Array.isArray(input.affectedDomains)?input.affectedDomains:[]).map(String).slice(0,20),
++      businessImpact:String(input.businessImpact||"").trim().slice(0,1800),
++      serviceImpact:String(input.serviceImpact||"").trim().slice(0,1800),
++      containmentStatus:"NOT_STARTED",
++      communicationStatus:"NOT_STARTED",
++      linkedSupportEventIds:(Array.isArray(input.linkedSupportEventIds)?input.linkedSupportEventIds:[]).map(String).slice(0,50),
++      linkedObservabilityIncidentIds:(Array.isArray(input.linkedObservabilityIncidentIds)?input.linkedObservabilityIncidentIds:[]).map(String).slice(0,50),
++      linkedSloState:{status:snap.platform.reliabilityStatus,breached:snap.platform.breachedObjectives,warning:snap.platform.warningObjectives,errorBudgetRemaining:snap.platform.errorBudgetRemaining},
++      runbook:String(input.runbook||"").trim().slice(0,2000),
++      recoveryEvidence:[],
++      communications:[],
++      timeline:[{action:"created",actor,detail:String(input.note||title).slice(0,800),createdAt:now}],
++      createdBy:actor,createdAt:now,updatedAt:now,
++      automatedContainmentPerformed:false,
++      automatedRemediationPerformed:false
++    };
++    await this.database.mutate(db=>{db.productionIncidentCommands||=[];db.productionIncidentCommands.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Production incident command created: ${record.id} (${severity})`,category:"production_incident"});
++    this.realtimeHub.publish("production-incident:created",{id:record.id,organizationId,severity,commander});
++    return record;
++  }
++  async update(organizationId,incidentId,input,actor){
++    const action=String(input.action||"").toLowerCase();
++    if(!["acknowledge","contain","communicate","recover","resolve"].includes(action))throw new Error("Action must be acknowledge, contain, communicate, recover, or resolve.");
++    const now=this.now();
++    const record=await this.database.mutate(db=>{
++      db.productionIncidentCommands||=[];
++      const x=db.productionIncidentCommands.find(i=>i.id===incidentId&&i.organizationId===organizationId);
++      if(!x)return null;
++      if(action==="acknowledge")x.status="acknowledged";
++      if(action==="contain"){x.status="contained";x.containmentStatus="HUMAN_RECORDED_CONTAINMENT";}
++      if(action==="communicate"){
++        x.communicationStatus="CHECKPOINT_RECORDED";
++        x.communications||=[];
++        x.communications.push({actor,detail:String(input.note||"").slice(0,1200),createdAt:now});
++      }
++      if(action==="recover"){
++        x.status="recovering";
++        x.recoveryEvidence||=[];
++        x.recoveryEvidence.push({actor,detail:String(input.note||"").slice(0,1500),createdAt:now});
++      }
++      if(action==="resolve"){
++        const resolution=String(input.note||"").trim();
++        if(!resolution)throw new Error("Resolution requires human-recorded recovery evidence or resolution note.");
++        x.status="resolved";
++        x.resolvedBy=actor;
++        x.resolvedAt=now;
++        x.resolution=resolution.slice(0,1800);
++      }
++      x.updatedAt=now;
++      x.timeline||=[];
++      x.timeline.push({action,actor,detail:String(input.note||"").slice(0,1200),createdAt:now});
++      return {...x};
++    });
++    if(!record)throw new Error("Production incident command not found.");
++    await this.auditService.record({organizationId,actor,action:`Production incident command ${action}: ${incidentId}`,category:"production_incident"});
++    this.realtimeHub.publish("production-incident:updated",{id:incidentId,organizationId,status:record.status});
++    return record;
++  }
++}
++module.exports=ProductionIncidentCommandService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="50.10.0">
++  <meta name="blue-current-build" content="50.15.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -321,6 +321,16 @@
+       <div class="v4316-actions"><select id="phsSeverity" class="v4312-input"><option value="info">info</option><option value="warning">warning</option><option value="critical">critical</option></select><input id="phsTitle" class="v4312-input" placeholder="Support event title"><input id="phsDescription" class="v4312-input" placeholder="Support event description"><input id="phsIncident" class="v4312-input" placeholder="Linked observability incident ID"><input id="phsNote" class="v4312-input" placeholder="Acknowledgment / escalation note"></div>
+       <p><strong>Accepted production locations</strong></p><div id="phsLocations" class="v432-list"></div>
+       <p><strong>Production support timeline</strong></p><div id="phsHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="productionIncidentCommand">
++      <header><div><small>V50.11–V50.15 · Production Incident Command</small><strong>Unify critical support, observability, and SLO signals into one human-led incident command workflow.</strong><span>Blue Current surfaces affected restaurants/domains, incident ownership, containment, business/service impact, communications, linked support/observability signals, runbook context, recovery evidence, and resolution. It does not contain, remediate, or resolve incidents automatically.</span></div><button id="picRefresh" type="button">Refresh incident command</button></header>
++      <div class="v432-kpis"><article><small>Incident status</small><strong id="picStatus">—</strong></article><article><small>Active commands</small><strong id="picActive">0</strong></article><article><small>Open signals</small><strong id="picSignals">0</strong></article><article><small>Platform reliability</small><strong id="picReliability">—</strong></article></div>
++      <div class="v4316-answer" id="picHeadline">No active production incident command.</div>
++      <div class="v4316-actions"><select id="picSeverity" class="v4312-input"><option value="info">info</option><option value="warning">warning</option><option value="critical">critical</option></select><input id="picTitle" class="v4312-input" placeholder="Incident title"><input id="picCommander" class="v4312-input" placeholder="Incident commander"><input id="picLocations" class="v4312-input" placeholder="Affected location IDs, comma separated"><input id="picDomains" class="v4312-input" placeholder="Affected domains, comma separated"></div>
++      <div class="v4316-actions"><input id="picBusinessImpact" class="v4312-input" placeholder="Business impact"><input id="picServiceImpact" class="v4312-input" placeholder="Service impact"><input id="picSupportLinks" class="v4312-input" placeholder="Linked support event IDs"><input id="picIncidentLinks" class="v4312-input" placeholder="Linked observability incident IDs"><input id="picRunbook" class="v4312-input" placeholder="Runbook / recovery procedure"><input id="picNote" class="v4312-input" placeholder="Incident creation note"><button id="picCreate" type="button">Open incident command</button></div>
++      <div class="v4316-actions"><input id="picActionNote" class="v4312-input" placeholder="Containment / communication / recovery / resolution note"></div>
++      <p><strong>Open source signals</strong></p><div id="picSignalsList" class="v432-list"></div>
++      <p><strong>Incident command ledger</strong></p><div id="picCommands" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8857,6 +8867,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffCenter.js?v=50.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportEngine.js?v=50.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportCenter.js?v=50.10.0"></script>
+-<script src="js/startup-loader.js?v=50.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandEngine.js?v=50.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandCenter.js?v=50.15.0"></script>
++<script src="js/startup-loader.js?v=50.15.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1243,6 +1243,7 @@
+ const v49ReleaseCertificationModule = startupRegistry.register("v49ReleaseCertification", shouldInitializeCenter("v49ReleaseCertification") ? window.createBlueCurrentV49ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "launchStabilization"]);
+ const productionOperationsHandoffModule = startupRegistry.register("productionOperationsHandoff", shouldInitializeCenter("productionOperationsHandoff") ? window.createBlueCurrentProductionOperationsHandoffCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v49ReleaseCertification"]);
+ const productionHealthSupportModule = startupRegistry.register("productionHealthSupport", shouldInitializeCenter("productionHealthSupport") ? window.createBlueCurrentProductionHealthSupportCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionOperationsHandoff"]);
++const productionIncidentCommandModule = startupRegistry.register("productionIncidentCommand", shouldInitializeCenter("productionIncidentCommand") ? window.createBlueCurrentProductionIncidentCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionHealthSupport"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V50.10.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V50.15.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/productionIncidentCommandEngine.js
++++ b/client/js/modules/productionIncidentCommandEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentProductionIncidentCommandEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/production-incident-command",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Production incident command failed (${r.status})`);this.appState?.update?.({productionIncidentCommand:d});return d;}
++  async create(payload={}){const r=await fetch("/api/production-incident-command",{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Incident command creation failed (${r.status})`);this.eventBus?.emit?.("production-incident:created",structuredClone(d));return d;}
++  async update(id,payload={}){const r=await fetch(`/api/production-incident-command/${encodeURIComponent(id)}`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Incident command update failed (${r.status})`);this.eventBus?.emit?.("production-incident:updated",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentProductionIncidentCommandEngine;
++if(global)global.BlueCurrentProductionIncidentCommandEngine=BlueCurrentProductionIncidentCommandEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/productionIncidentCommandCenter.js
++++ b/client/js/modules/productionIncidentCommandCenter.js
+@@ -0,0 +1,35 @@
++(function(){"use strict";
++function createBlueCurrentProductionIncidentCommandCenterModule(eventBus,appState){
++  const root=document.getElementById("productionIncidentCommand");
++  if(!root||!window.BlueCurrentProductionIncidentCommandEngine)return null;
++  const e=new window.BlueCurrentProductionIncidentCommandEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("picStatus").textContent=s.status||"—";
++    $("picActive").textContent=(s.activeCommands||[]).length;
++    $("picSignals").textContent=(s.sourceSignals||[]).length;
++    $("picReliability").textContent=`${s.platform?.reliabilityScore??"—"} · ${s.platform?.reliabilityStatus||"unknown"}`;
++    $("picHeadline").textContent=s.headline||"Production incident command unavailable.";
++    $("picSignalsList").innerHTML=(s.sourceSignals||[]).map(x=>`<article><strong>${esc(x.type)} · ${esc(x.severity)} · ${esc(x.title)}</strong><span>${esc(x.status)}${x.locationName?` · ${esc(x.locationName)}`:""}</span></article>`).join("")||"<article><strong>No open production incident signals.</strong></article>";
++    $("picCommands").innerHTML=(s.commandHistory||[]).map(x=>`<article data-pic-id="${esc(x.id)}"><div><strong>${esc(x.severity)} · ${esc(x.title)}</strong><span>${esc(x.status)} · commander ${esc(x.commander)} · containment ${esc(x.containmentStatus)}</span></div><p>${esc(x.businessImpact||"No business impact recorded.")}</p><div class="v4316-actions"><button type="button" data-pic-action="acknowledge">Acknowledge</button><button type="button" data-pic-action="contain">Record containment</button><button type="button" data-pic-action="communicate">Communication checkpoint</button><button type="button" data-pic-action="recover">Record recovery evidence</button><button type="button" data-pic-action="resolve">Resolve</button></div></article>`).join("")||"<article><strong>No production incident commands.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("picHeadline").textContent=err.message;}}
++  $("picCreate")?.addEventListener("click",async()=>{try{
++    const affectedLocationIds=$("picLocations").value.split(",").map(x=>x.trim()).filter(Boolean);
++    const affectedDomains=$("picDomains").value.split(",").map(x=>x.trim()).filter(Boolean);
++    const linkedSupportEventIds=$("picSupportLinks").value.split(",").map(x=>x.trim()).filter(Boolean);
++    const linkedObservabilityIncidentIds=$("picIncidentLinks").value.split(",").map(x=>x.trim()).filter(Boolean);
++    await e.create({title:$("picTitle").value,severity:$("picSeverity").value,commander:$("picCommander").value,affectedLocationIds,affectedDomains,businessImpact:$("picBusinessImpact").value,serviceImpact:$("picServiceImpact").value,linkedSupportEventIds,linkedObservabilityIncidentIds,runbook:$("picRunbook").value,note:$("picNote").value});await load();
++  }catch(err){$("picHeadline").textContent=err.message;}});
++  root.addEventListener("click",async ev=>{
++    const action=ev.target.closest("[data-pic-action]"),card=ev.target.closest("[data-pic-id]");
++    if(!action||!card)return;
++    try{await e.update(card.dataset.picId,{action:action.dataset.picAction,note:$("picActionNote").value});await load();}catch(err){$("picHeadline").textContent=err.message;}
++  });
++  $("picRefresh")?.addEventListener("click",load);
++  ["production-support:event-created","production-support:event-updated","observability:incident-created","observability:incident-updated","production-incident:created","production-incident:updated","reliability:slo-evaluated","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentProductionIncidentCommandCenterModule=createBlueCurrentProductionIncidentCommandCenterModule;
++})();--- a/scripts/maintenance/test-v50.15-production-incident-command.js
++++ b/scripts/maintenance/test-v50.15-production-incident-command.js
+@@ -0,0 +1,90 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/productionIncidentCommandService");
++
++(async()=>{
++  const state={productionIncidentCommands:[]},audit=[],events=[];
++  const support={
++    locations:[{locationId:"a",locationName:"A",healthState:"critical"}],
++    eventHistory:[
++      {id:"s1",locationId:"a",locationName:"A",severity:"critical",title:"Reservation outage",status:"open",supportOwner:"Support",linkedIncidentId:"obs1"}
++    ]
++  };
++  let reliability={status:"breached",score:58,breached:1,warning:0,errorBudgetRemaining:45};
++  let telemetry={incidents:{records:[{id:"obs1",organizationId:"org",status:"open",severity:"critical",title:"API failure",owner:"Platform"}]}};
++
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>support},
++    {evaluate:async()=>reliability},
++    {snapshot:async()=>telemetry}
++  );
++
++  let snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.version,"50.15.0");
++  assert.equal(snap.status,"incident-command-signals-open");
++  assert.equal(snap.sourceSignals.length,2);
++  assert.equal(snap.policy.automaticContainment,false);
++
++  const incident=await svc.create("org",["a"],{
++    title:"Dinner service reservation outage",
++    severity:"critical",
++    commander:"Incident Lead",
++    affectedLocationIds:["a"],
++    affectedDomains:["reservations","api"],
++    businessImpact:"Reservations unavailable during dinner.",
++    serviceImpact:"Host stand operating manually.",
++    linkedSupportEventIds:["s1"],
++    linkedObservabilityIncidentIds:["obs1"],
++    runbook:"Fail over reservation intake and verify data integrity.",
++    note:"Opened from combined support/observability signals."
++  },"Tester");
++
++  assert.equal(incident.status,"open");
++  assert.equal(incident.automatedContainmentPerformed,false);
++  assert.equal(incident.automatedRemediationPerformed,false);
++
++  let updated=await svc.update("org",incident.id,{action:"acknowledge",note:"Incident team assembled."},"Tester");
++  assert.equal(updated.status,"acknowledged");
++
++  updated=await svc.update("org",incident.id,{action:"contain",note:"Manual fallback intake enabled."},"Tester");
++  assert.equal(updated.status,"contained");
++  assert.equal(updated.containmentStatus,"HUMAN_RECORDED_CONTAINMENT");
++
++  updated=await svc.update("org",incident.id,{action:"communicate",note:"Operators notified of fallback procedure."},"Tester");
++  assert.equal(updated.communicationStatus,"CHECKPOINT_RECORDED");
++  assert.equal(updated.communications.length,1);
++
++  updated=await svc.update("org",incident.id,{action:"recover",note:"API recovered and reservation sync verified."},"Tester");
++  assert.equal(updated.status,"recovering");
++  assert.equal(updated.recoveryEvidence.length,1);
++
++  updated=await svc.update("org",incident.id,{action:"resolve",note:"Normal reservation flow restored and validated."},"Tester");
++  assert.equal(updated.status,"resolved");
++  assert.equal(updated.resolution,"Normal reservation flow restored and validated.");
++
++  snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.activeCommands.length,0);
++  assert.equal(snap.policy.automaticRemediation,false);
++  assert.equal(snap.policy.automaticResolution,false);
++  assert.equal(snap.policy.autonomousProductionChanges,false);
++  assert.equal(audit.length,6);
++  assert.equal(events.length,6);
++
++  console.log(JSON.stringify({
++    ok:true,version:"50.15.0",
++    supportAndObservabilitySignals:true,
++    incidentCommander:true,
++    affectedScope:true,
++    humanContainment:true,
++    communicationCheckpoints:true,
++    recoveryEvidence:true,
++    humanResolution:true,
++    automaticContainment:false,
++    automaticRemediation:false,
++    automaticResolution:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V50.15.0-RELEASE.md
++++ b/V50.15.0-RELEASE.md
+@@ -0,0 +1,156 @@
++# BLUE CURRENT V50.15.0 — PRODUCTION INCIDENT COMMAND
++
++V50.11–V50.15 adds one human-led incident command workflow across production support, observability, and SLO state.
++
++## Incident intake
++
++Production Incident Command reads existing V50.10 support events plus the existing telemetry/observability incident stream.
++
++Open support and observability signals are surfaced together with:
++
++- severity
++- source
++- location when known
++- current owner
++- linked incident reference
++- current status
++
++Blue Current does not automatically open an incident command from those signals.
++
++Incident creation is human initiated.
++
++## Human incident command
++
++Adds:
++
++POST `/api/production-incident-command`
++
++Each incident command can capture:
++
++- title
++- severity
++- incident commander
++- affected restaurants
++- affected domains
++- business impact
++- service impact
++- linked production-support events
++- linked observability incidents
++- current SLO / error-budget state
++- runbook / recovery procedure
++- operator note
++
++Affected restaurant scope is permission checked.
++
++## Incident workflow
++
++Adds:
++
++POST `/api/production-incident-command/:incidentId`
++
++Supported human actions:
++
++- `acknowledge`
++- `contain`
++- `communicate`
++- `recover`
++- `resolve`
++
++### Containment
++
++Containment is recorded as:
++
++`containmentStatus: HUMAN_RECORDED_CONTAINMENT`
++
++Blue Current records that a human incident team performed containment. It does not execute containment.
++
++### Communications
++
++Communication checkpoints record:
++
++- actor
++- detail
++- timestamp
++
++### Recovery evidence
++
++Recovery evidence records:
++
++- actor
++- recovery evidence
++- timestamp
++
++### Resolution
++
++Resolution requires a human-recorded resolution note.
++
++Blue Current does not resolve incidents autonomously.
++
++## SLO and observability linkage
++
++Each incident captures the current existing ReliabilityAutomationService state:
++
++- SLO status
++- breached objectives
++- warning objectives
++- remaining error budget
++
++Existing observability incidents are linked read-only rather than duplicated.
++
++## Safety policy
++
++- `incidentCreationHumanInitiated: true`
++- `containmentHumanDirected: true`
++- `communicationHumanDirected: true`
++- `recoveryEvidenceHumanRecorded: true`
++- `resolutionHumanDeclared: true`
++- `automaticContainment: false`
++- `automaticRemediation: false`
++- `automaticResolution: false`
++- `autonomousProductionChanges: false`
++
++## Current authenticated runtime
++
++The untouched Chefs runtime currently reports:
++
++- status: `incident-command-clear`
++- active incident commands: 0
++- open source signals: 0
++- automatic containment: false
++- automatic remediation: false
++- automatic resolution: false
++- autonomous production changes: false
++
++## Validation
++
++- V50.15 Production Incident Command lifecycle PASS
++- support + observability signal aggregation PASS
++- incident commander / affected scope PASS
++- permission-checked location scope PASS
++- human containment PASS
++- communication checkpoints PASS
++- recovery evidence PASS
++- human resolution PASS
++- V50.10 production-support regression PASS
++- authenticated incident-command GET PASS
++- authoritative database unchanged
++- npm run check PASS
++- 908 JavaScript files
++- 764 client scripts
++- 5,706 unique HTML IDs
++
++## Next
++
++V50.16–V50.20 should build Production Recovery & Post-Incident Review:
++
++- recovery verification
++- restored-service checks
++- affected-location recovery state
++- incident duration / impact summary
++- root-cause and contributing-factor capture
++- corrective actions
++- owner / due-date tracking
++- repeat-risk assessment
++- post-incident executive brief
++- human closure / lessons accepted
++- no autonomous corrective-action execution
+--- a/README-APPLY-V50.15.0.md
++++ b/README-APPLY-V50.15.0.md
+@@ -0,0 +1,48 @@
++# APPLY BLUE CURRENT V50.15.0
++
++Baseline: exact V50.10.0 repository.
++
++Extract `BLUE-CURRENT-V50.15.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v50.15-production-incident-command.js
++node scripts/maintenance/test-v50.10-production-health-support.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "50.15.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Production Incident Command** surface appears after Production Health & Support Command.
++
++Important:
++
++- incident command creation is human initiated
++- containment is human directed
++- observability/SLO state is linked rather than duplicated
++- recovery evidence is human recorded
++- resolution is human declared
++- Blue Current does not contain, remediate, resolve, or alter production automatically
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V50.15.0 add production incident command"
++git push origin live-service-timeline
++```
