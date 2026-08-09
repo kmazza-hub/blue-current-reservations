@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="55.0.0">
+  <meta name="blue-current-build" content="55.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -603,6 +603,13 @@
       <div class="v432-kpis"><article><small>Status</small><strong id="v5500Status">—</strong></article><article><small>V54 closure</small><strong id="v5500Ready">OPEN</strong></article></div><div class="v4316-answer" id="v5500Headline">V54 operator-experience certification ready.</div>
       <div class="v4316-actions"><select id="v5500Live" class="v4312-input"><option value="PASS">Live service PASS</option><option value="FAIL">Live service FAIL</option></select><select id="v5500Training" class="v4312-input"><option value="PASS">Training burden PASS</option><option value="FAIL">Training burden FAIL</option></select><select id="v5500Handoff" class="v4312-input"><option value="PASS">Shift handoff PASS</option><option value="FAIL">Shift handoff FAIL</option></select><select id="v5500Readability" class="v4312-input"><option value="PASS">Readability/accessibility PASS</option><option value="FAIL">Readability/accessibility FAIL</option></select><input id="v5500Operator" class="v4312-input" placeholder="Operator acceptance"><input id="v5500Manager" class="v4312-input" placeholder="Manager acceptance"><select id="v5500Entry" class="v4312-input"><option value="APPROVED">V55 entry APPROVED</option><option value="HOLD">V55 entry HOLD</option></select><input id="v5500Note" class="v4312-input" placeholder="Closure note"><button id="v5500Review" type="button">Record V54 closure review</button></div>
       <div class="v4316-actions"><input id="v5500Evidence" class="v4312-input" placeholder="V54 certification evidence"><input id="v5500Acceptance" class="v4312-input" placeholder="Executive acceptance"><button id="v5500Certify" type="button">Certify V54 / enter V55</button></div><div id="v5500Certification" class="v4316-answer">V54 has not been operator-experience certified.</div><div id="v5500Checks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5525RestaurantIntelligence">
+      <header><div><small>V55.01–V55.25 · Restaurant Intelligence, Profitability Signals & Operator Decision Support</small><strong>Turn operating data into prioritized restaurant decisions with clear financial context.</strong><span>Blue Current combines controllable-profit leakage, labor pressure, table productivity, kitchen throughput, reservation/waitlist friction, guest-recovery exposure, and prioritized next actions. Modeled opportunity is decision support—not GAAP profit—and never changes restaurant operations automatically.</span></div><button id="v5525Refresh" type="button">Refresh intelligence</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5525Status">—</strong></article><article><small>Intelligence ready</small><strong id="v5525Ready">0/0</strong></article><article><small>Modeled priority opportunity</small><strong id="v5525Opportunity">$0</strong></article></div>
+      <div class="v4316-answer" id="v5525Headline">Restaurant intelligence review ready.</div>
+      <div class="v4316-actions"><select id="v5525Actionability" class="v4312-input"><option value="PASS">Actionability PASS</option><option value="FAIL">Actionability FAIL</option></select><select id="v5525Trust" class="v4312-input"><option value="PASS">Signal trust PASS</option><option value="FAIL">Signal trust FAIL</option></select><select id="v5525Noise" class="v4312-input"><option value="PASS">Noise control PASS</option><option value="FAIL">Noise control FAIL</option></select><input id="v5525Evidence" class="v4312-input" placeholder="Human signal-review evidence"><input id="v5525Note" class="v4312-input" placeholder="Review note"><input id="v5525CertEvidence" class="v4312-input" placeholder="Certification evidence"><input id="v5525Reason" class="v4312-input" placeholder="Decision reason / override"></div>
+      <div id="v5525Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9205,6 +9212,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="roleBasedServiceErgonomicsV5475" data-src="js/modules/roleBasedServiceErgonomicsCenter.js?v=54.75.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v54OperatorExperienceCertificationV5500" data-src="js/modules/v54OperatorExperienceCertificationEngine.js?v=55.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v54OperatorExperienceCertificationV5500" data-src="js/modules/v54OperatorExperienceCertificationCenter.js?v=55.0.0"></script>
-<script src="js/startup-loader.js?v=55.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantIntelligenceDecisionSupportV5525" data-src="js/modules/restaurantIntelligenceDecisionSupportEngine.js?v=55.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantIntelligenceDecisionSupportV5525" data-src="js/modules/restaurantIntelligenceDecisionSupportCenter.js?v=55.25.0"></script>
+<script src="js/startup-loader.js?v=55.25.0"></script>
 </body>
 </html>

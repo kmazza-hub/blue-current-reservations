@@ -1276,6 +1276,7 @@ const operatorSpeedWorkflowV5425Module = startupRegistry.register("operatorSpeed
 const managerInterventionDecisionSpeedV5450Module = startupRegistry.register("managerInterventionDecisionSpeedV5450", shouldInitializeCenter("managerInterventionDecisionSpeedV5450") ? window.createBlueCurrentManagerInterventionDecisionSpeedCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorSpeedWorkflowV5425"]);
 const roleBasedServiceErgonomicsV5475Module = startupRegistry.register("roleBasedServiceErgonomicsV5475", shouldInitializeCenter("roleBasedServiceErgonomicsV5475") ? window.createBlueCurrentRoleBasedServiceErgonomicsCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managerInterventionDecisionSpeedV5450"]);
 const v54OperatorExperienceCertificationV5500Module = startupRegistry.register("v54OperatorExperienceCertificationV5500", shouldInitializeCenter("v54OperatorExperienceCertificationV5500") ? window.createBlueCurrentV54OperatorExperienceCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "roleBasedServiceErgonomicsV5475"]);
+const restaurantIntelligenceDecisionSupportV5525Module = startupRegistry.register("restaurantIntelligenceDecisionSupportV5525", shouldInitializeCenter("restaurantIntelligenceDecisionSupportV5525") ? window.createBlueCurrentRestaurantIntelligenceDecisionSupportCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v54OperatorExperienceCertificationV5500"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
