@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="49.10.0">
+  <meta name="blue-current-build" content="49.15.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -269,6 +269,15 @@
       <p><strong>Technical activation locations</strong></p><div id="tarLocations" class="v432-list"></div>
       <p><strong>Technical activation packet</strong></p><pre id="tarPacket" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre>
       <p><strong>Go-live authorization ledger</strong></p><div id="tarHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="locationDeploymentPackage">
+      <header><div><small>V49.11–V49.15 · Location Deployment Package</small><strong>Turn go-live authorization into a location-specific deployment package without starting production deployment.</strong><span>Blue Current assembles configuration, access, modules, integrations, launch window, rollback ownership, and runbooks into one deployable manifest. Package preparation is admin-only and does not execute deployment or cutover.</span></div><button id="ldpRefresh" type="button">Refresh deployment packages</button></header>
+      <div class="v432-kpis"><article><small>Package status</small><strong id="ldpStatus">—</strong></article><article><small>Go-live authorized</small><strong id="ldpAuthorized">0</strong></article><article><small>Packages prepared</small><strong id="ldpPrepared">0</strong></article><article><small>Deployments started</small><strong id="ldpExecution">0</strong></article></div>
+      <div class="v4316-answer" id="ldpHeadline">Technical go-live authorization is required before deployment packaging.</div>
+      <div class="v4316-actions"><input id="ldpOwner" class="v4312-input" placeholder="Deployment owner"><input id="ldpRollbackOwner" class="v4312-input" placeholder="Rollback owner"><input id="ldpWindow" class="v4312-input" placeholder="Launch window"><input id="ldpRollbackTrigger" class="v4312-input" placeholder="Rollback trigger"><input id="ldpNote" class="v4312-input" placeholder="Deployment package note"></div>
+      <p><strong>Location deployment packages</strong></p><div id="ldpLocations" class="v432-list"></div>
+      <p><strong>Deployment manifest</strong></p><pre id="ldpPacket" style="white-space:pre-wrap;overflow:auto;max-height:420px"></pre>
+      <p><strong>Package history</strong></p><div id="ldpHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8793,6 +8802,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlCenter.js?v=49.5.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessEngine.js?v=49.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessCenter.js?v=49.10.0"></script>
-<script src="js/startup-loader.js?v=49.10.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageEngine.js?v=49.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageCenter.js?v=49.15.0"></script>
+<script src="js/startup-loader.js?v=49.15.0"></script>
 </body>
 </html>
