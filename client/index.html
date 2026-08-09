@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="50.15.0">
+  <meta name="blue-current-build" content="50.20.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -331,6 +331,15 @@
       <div class="v4316-actions"><input id="picActionNote" class="v4312-input" placeholder="Containment / communication / recovery / resolution note"></div>
       <p><strong>Open source signals</strong></p><div id="picSignalsList" class="v432-list"></div>
       <p><strong>Incident command ledger</strong></p><div id="picCommands" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="productionRecoveryReview">
+      <header><div><small>V50.16–V50.20 · Production Recovery & Post-Incident Review</small><strong>Verify service recovery, capture why the incident happened, and leave corrective work explicitly human-owned.</strong><span>Blue Current summarizes duration and impact, checks affected-location recovery, records root cause and contributing factors, tracks corrective actions with owners/due dates, assesses repeat risk, produces an executive review record, and requires human acceptance of lessons learned.</span></div><button id="prrRefresh" type="button">Refresh recovery review</button></header>
+      <div class="v432-kpis"><article><small>Review status</small><strong id="prrStatus">—</strong></article><article><small>Recovery verified</small><strong id="prrRecovered">0/0</strong></article><article><small>Reviews open</small><strong id="prrOpen">0</strong></article><article><small>Lessons accepted</small><strong id="prrAccepted">0</strong></article></div>
+      <div class="v4316-answer" id="prrHeadline">A human-resolved incident is required before post-incident review.</div>
+      <div class="v4316-actions"><input id="prrRootCause" class="v4312-input" placeholder="Human-authored root cause"><input id="prrFactors" class="v4312-input" placeholder="Contributing factors, comma separated"><select id="prrRisk" class="v4312-input"><option value="low">low repeat risk</option><option value="medium" selected>medium repeat risk</option><option value="high">high repeat risk</option><option value="critical">critical repeat risk</option></select><input id="prrExecutiveSummary" class="v4312-input" placeholder="Executive post-incident summary"></div>
+      <div class="v4316-actions"><input id="prrAction" class="v4312-input" placeholder="Corrective action"><input id="prrActionOwner" class="v4312-input" placeholder="Corrective action owner"><input id="prrActionDue" class="v4312-input" placeholder="Due date"><input id="prrApprover" class="v4312-input" placeholder="Lessons approver"><input id="prrClosure" class="v4312-input" placeholder="Closure / lessons accepted note"></div>
+      <p><strong>Resolved incidents & recovery state</strong></p><div id="prrIncidents" class="v432-list"></div>
+      <p><strong>Post-incident review history</strong></p><div id="prrHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8869,6 +8878,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportCenter.js?v=50.10.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandEngine.js?v=50.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandCenter.js?v=50.15.0"></script>
-<script src="js/startup-loader.js?v=50.15.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewEngine.js?v=50.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewCenter.js?v=50.20.0"></script>
+<script src="js/startup-loader.js?v=50.20.0"></script>
 </body>
 </html>
