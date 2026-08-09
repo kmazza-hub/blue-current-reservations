@@ -1,0 +1,649 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "49.20.0",
++  "version": "49.25.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 human-controlled go-live command and manual cutover result ledger",
++  "description": "Blue Current Hospitality OS \u2014 launch stabilization, first-service verification, and human rollback decision control",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -52,6 +52,7 @@
+ const TechnicalActivationReadinessService = require("./services/technicalActivationReadinessService");
+ const LocationDeploymentPackageService = require("./services/locationDeploymentPackageService");
+ const GoLiveCommandService = require("./services/goLiveCommandService");
++const LaunchStabilizationService = require("./services/launchStabilizationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -107,7 +108,8 @@
+ const technicalActivationReadinessService = new TechnicalActivationReadinessService(database, auditService, realtimeHub, rolloutActivationControlService);
+ const locationDeploymentPackageService = new LocationDeploymentPackageService(database, auditService, realtimeHub, technicalActivationReadinessService);
+ const goLiveCommandService = new GoLiveCommandService(database, auditService, realtimeHub, locationDeploymentPackageService, technicalActivationReadinessService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService });
++const launchStabilizationService = new LaunchStabilizationService(database, auditService, realtimeHub, goLiveCommandService, multiLocationPerformanceService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -194,7 +196,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V49.20.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V49.25.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "49.20.0",
++        version: "49.25.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,30 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/launch-stabilization" && request.method === "GET") {
++      return sendJson(response,200,await launchStabilizationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/launch-stabilization/locations/") && url.pathname.endsWith("/observe") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required to record stabilization observations."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await launchStabilizationService.observe(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/launch-stabilization/locations/") && url.pathname.endsWith("/declare") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for stabilization declaration."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await launchStabilizationService.declare(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/go-live-command" && request.method === "GET") {
+       return sendJson(response,200,await goLiveCommandService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/launchStabilizationService.js
++++ b/server/services/launchStabilizationService.js
+@@ -0,0 +1,144 @@
++"use strict";
++
++class LaunchStabilizationService {
++  constructor(database,auditService,realtimeHub,goLiveCommandService,multiLocationPerformanceService){
++    Object.assign(this,{database,auditService,realtimeHub,goLiveCommandService,multiLocationPerformanceService});
++  }
++  now(){return new Date().toISOString();}
++  async observations(organizationId){
++    const db=await this.database.read();
++    return (db.launchStabilizationObservations||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.observedAt)-new Date(a.observedAt));
++  }
++  async declarations(organizationId){
++    const db=await this.database.read();
++    return (db.launchStabilizationDeclarations||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.declaredAt)-new Date(a.declaredAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [command,portfolio,observations,declarations]=await Promise.all([
++      this.goLiveCommandService.snapshot(organizationId,allowedLocationIds),
++      this.multiLocationPerformanceService.snapshot(organizationId,allowedLocationIds),
++      this.observations(organizationId),
++      this.declarations(organizationId)
++    ]);
++    const pmap=new Map((portfolio.locations||[]).map(x=>[x.locationId,x]));
++    const obsByLoc=new Map(),decByLoc=new Map();
++    for(const o of observations){if(!obsByLoc.has(o.locationId))obsByLoc.set(o.locationId,[]);obsByLoc.get(o.locationId).push(o);}
++    for(const d of declarations)if(!decByLoc.has(d.locationId))decByLoc.set(d.locationId,d);
++
++    const locations=(command.locations||[])
++      .filter(x=>x.result?.status==="CUTOVER_SUCCEEDED"||x.result?.status==="ROLLED_BACK"||x.result?.status==="CUTOVER_FAILED")
++      .map(loc=>{
++        const current=pmap.get(loc.locationId)||{};
++        const history=(obsByLoc.get(loc.locationId)||[]).sort((a,b)=>new Date(a.observedAt)-new Date(b.observedAt));
++        const latest=history[history.length-1]||null;
++        const declaration=decByLoc.get(loc.locationId)||null;
++        const successful=loc.result?.status==="CUTOVER_SUCCEEDED";
++        const firstServiceVerified=history.some(x=>x.firstServiceVerified===true);
++        const criticalIncidents=history.filter(x=>x.severity==="critical").length;
++        const highIncidents=history.filter(x=>x.severity==="high").length;
++        const healthFailures=history.filter(x=>x.healthPassed<x.healthTotal).length;
++        const stableObservations=history.filter(x=>x.healthPassed===x.healthTotal&&x.firstServiceVerified&&x.severity==="none").length;
++        const exitChecks=[
++          {id:"successful-cutover",label:"Successful human-recorded production cutover",passed:successful,actual:loc.result?.status||"none"},
++          {id:"observation",label:"At least one post-launch observation recorded",passed:history.length>0,actual:history.length},
++          {id:"first-service",label:"First-service verification completed",passed:firstServiceVerified,actual:firstServiceVerified?"verified":"open"},
++          {id:"health",label:"Latest stabilization health is fully healthy",passed:!!latest&&latest.healthPassed===latest.healthTotal,actual:latest?`${latest.healthPassed}/${latest.healthTotal}`:"no observation"},
++          {id:"critical-incidents",label:"No unresolved critical launch incident",passed:criticalIncidents===0,actual:criticalIncidents},
++          {id:"operating-attention",label:"Current leadership attention is not High/Critical",passed:!["high","critical"].includes(current.attentionLevel),actual:current.attentionLevel||"unknown"},
++          {id:"minimum-stable-observation",label:"At least one clean first-service stabilization observation",passed:stableObservations>=1,actual:stableObservations}
++        ];
++        const passed=exitChecks.filter(x=>x.passed).length;
++        const rollbackRecommended=!successful||criticalIncidents>0||healthFailures>=2||["high","critical"].includes(current.attentionLevel);
++        return {
++          locationId:loc.locationId,locationName:loc.locationName,wave:loc.wave,
++          cutoverStatus:loc.result?.status||"NOT_RECORDED",
++          observedAt:latest?.observedAt||null,
++          observationCount:history.length,
++          firstServiceVerified,
++          currentReadiness:Number(current.readinessScore||0),
++          attentionLevel:current.attentionLevel||"unknown",
++          urgentPredictiveInterventions:Number(current.urgentPredictiveInterventions||0),
++          exitChecks,exitPassed:passed,exitTotal:exitChecks.length,
++          stabilizationReady:passed===exitChecks.length,
++          rollbackRecommendation:rollbackRecommended?"REVIEW_ROLLBACK":"NO_ROLLBACK_SIGNAL",
++          latestObservation:latest,
++          healthTimeline:history,
++          declaration,
++          stabilizationState:declaration?.decision||"OBSERVING"
++        };
++      });
++
++    return {
++      version:"49.25.0",generatedAt:this.now(),
++      status:locations.length===0?"successful-cutover-required":locations.every(x=>x.declaration?.decision==="STABLE")?"stabilization-complete":"stabilization-review",
++      headline:locations.length===0?"A human-recorded cutover result is required before launch stabilization begins.":`${locations.filter(x=>x.stabilizationReady).length}/${locations.length} launched location(s) currently meet all stabilization exit criteria.`,
++      locations,observationHistory:observations,declarationHistory:declarations,
++      policy:{
++        observationIsHumanRecorded:true,
++        rollbackRecommendationIsAdvisory:true,
++        humanStabilizationDeclarationRequired:true,
++        autonomousRollback:false,
++        automaticStableDeclaration:false
++      }
++    };
++  }
++
++  async observe(organizationId,allowedLocationIds,locationId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location requires a recorded launch result before stabilization observation.");
++    const severity=String(input.severity||"none").toLowerCase();
++    if(!["none","low","medium","high","critical"].includes(severity))throw new Error("Severity must be none, low, medium, high, or critical.");
++    const health={
++      apiHealthy:input.apiHealthy===true,
++      authenticationHealthy:input.authenticationHealthy===true,
++      reservationIntegrity:input.reservationIntegrity===true,
++      floorIntegrity:input.floorIntegrity===true,
++      kitchenIntegrity:input.kitchenIntegrity===true,
++      workforceIntegrity:input.workforceIntegrity===true
++    };
++    const passed=Object.values(health).filter(Boolean).length,now=this.now();
++    const record={
++      id:`lso_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,wave:loc.wave,
++      observedAt:now,observedBy:actor,
++      observationWindowHours:Math.max(1,Math.min(Number(input.observationWindowHours)||4,168)),
++      firstServiceVerified:input.firstServiceVerified===true,
++      health:{...health},healthPassed:passed,healthTotal:Object.keys(health).length,
++      severity,
++      incident:String(input.incident||"").trim().slice(0,1500),
++      note:String(input.note||"").slice(0,1000)
++    };
++    if(["high","critical"].includes(severity)&&!record.incident)throw new Error("High/Critical stabilization severity requires an incident description.");
++    await this.database.mutate(db=>{db.launchStabilizationObservations||=[];db.launchStabilizationObservations.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Launch stabilization observation recorded for ${locationId}: health ${passed}/${record.healthTotal}; severity ${severity}`,category:"launch_stabilization"});
++    this.realtimeHub.publish("launch-stabilization:observed",{id:record.id,organizationId,locationId,severity,firstServiceVerified:record.firstServiceVerified});
++    return record;
++  }
++
++  async declare(organizationId,allowedLocationIds,locationId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location is not in launch stabilization.");
++    const decision=String(input.decision||"").toUpperCase();
++    if(!["STABLE","EXTEND","ROLLBACK"].includes(decision))throw new Error("Decision must be STABLE, EXTEND, or ROLLBACK.");
++    const approver=String(input.approver||actor||"").trim().slice(0,160);
++    if(!approver)throw new Error("Stabilization approver is required.");
++    const reason=String(input.reason||"").trim().slice(0,1500);
++    if(decision==="STABLE"&&!loc.stabilizationReady&&!reason)throw new Error("STABLE with open stabilization criteria requires a documented executive reason.");
++    if(decision==="ROLLBACK"&&!reason)throw new Error("ROLLBACK requires a documented human reason.");
++    const record={
++      id:`lsd_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,wave:loc.wave,
++      decision,approver,declaredBy:actor,declaredAt:this.now(),reason,
++      exitCriteriaAtDecision:{passed:loc.exitPassed,total:loc.exitTotal,checks:loc.exitChecks},
++      rollbackRecommendationAtDecision:loc.rollbackRecommendation,
++      executionState:decision==="ROLLBACK"?"ROLLBACK_DECIDED_NOT_EXECUTED":"NO_AUTOMATIC_ACTION"
++    };
++    await this.database.mutate(db=>{db.launchStabilizationDeclarations||=[];db.launchStabilizationDeclarations.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Launch stabilization declared ${decision} for ${locationId} by ${approver}; no autonomous rollback/action executed`,category:"launch_stabilization"});
++    this.realtimeHub.publish("launch-stabilization:declared",{id:record.id,organizationId,locationId,decision,approver});
++    return record;
++  }
++}
++module.exports=LaunchStabilizationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="49.20.0">
++  <meta name="blue-current-build" content="49.25.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -287,6 +287,16 @@
+       <div class="v4316-actions"><select id="glcResultStatus" class="v4312-input"><option value="CUTOVER_SUCCEEDED">CUTOVER_SUCCEEDED</option><option value="CUTOVER_FAILED">CUTOVER_FAILED</option><option value="ROLLED_BACK">ROLLED_BACK</option></select><label><input id="glcApi" type="checkbox"> API healthy</label><label><input id="glcAuth" type="checkbox"> Auth healthy</label><label><input id="glcReservations" type="checkbox"> Reservations intact</label><label><input id="glcFloor" type="checkbox"> Floor intact</label><label><input id="glcKitchen" type="checkbox"> Kitchen intact</label><label><input id="glcWorkforce" type="checkbox"> Workforce intact</label></div>
+       <p><strong>Launch locations</strong></p><div id="glcLocations" class="v432-list"></div>
+       <p><strong>Command and result ledger</strong></p><div id="glcHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="launchStabilization">
++      <header><div><small>V49.21–V49.25 · Launch Stabilization</small><strong>Observe the first live service, surface launch degradation, and require a human stabilization decision.</strong><span>Blue Current records post-launch health, first-service verification, incidents, operating attention, rollback signals, and stabilization exit criteria. It may recommend rollback review, but it cannot execute rollback or declare a location stable automatically.</span></div><button id="lsRefresh" type="button">Refresh stabilization</button></header>
++      <div class="v432-kpis"><article><small>Stabilization status</small><strong id="lsStatus">—</strong></article><article><small>Exit-ready</small><strong id="lsReady">0/0</strong></article><article><small>High/Critical observations</small><strong id="lsIncidents">0</strong></article><article><small>Declared stable</small><strong id="lsStable">0</strong></article></div>
++      <div class="v4316-answer" id="lsHeadline">A human-recorded cutover result is required before stabilization.</div>
++      <div class="v4316-actions"><input id="lsWindow" class="v4312-input" type="number" min="1" max="168" value="4" placeholder="Observation hours"><select id="lsSeverity" class="v4312-input"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option></select><input id="lsIncident" class="v4312-input" placeholder="Launch incident / degradation"><input id="lsNote" class="v4312-input" placeholder="Observation note"><label><input id="lsFirstService" type="checkbox"> First service verified</label></div>
++      <div class="v4316-actions"><label><input id="lsApi" type="checkbox"> API healthy</label><label><input id="lsAuth" type="checkbox"> Auth healthy</label><label><input id="lsReservations" type="checkbox"> Reservations intact</label><label><input id="lsFloor" type="checkbox"> Floor intact</label><label><input id="lsKitchen" type="checkbox"> Kitchen intact</label><label><input id="lsWorkforce" type="checkbox"> Workforce intact</label></div>
++      <div class="v4316-actions"><select id="lsDecision" class="v4312-input"><option value="STABLE">STABLE</option><option value="EXTEND">EXTEND</option><option value="ROLLBACK">ROLLBACK</option></select><input id="lsApprover" class="v4312-input" placeholder="Stabilization approver"><input id="lsReason" class="v4312-input" placeholder="Decision reason / override rationale"></div>
++      <p><strong>Launch stabilization locations</strong></p><div id="lsLocations" class="v432-list"></div>
++      <p><strong>Observation and decision history</strong></p><div id="lsHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8815,6 +8825,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageCenter.js?v=49.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandEngine.js?v=49.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandCenter.js?v=49.20.0"></script>
+-<script src="js/startup-loader.js?v=49.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationEngine.js?v=49.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationCenter.js?v=49.25.0"></script>
++<script src="js/startup-loader.js?v=49.25.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1239,6 +1239,7 @@
+ const technicalActivationReadinessModule = startupRegistry.register("technicalActivationReadiness", shouldInitializeCenter("technicalActivationReadiness") ? window.createBlueCurrentTechnicalActivationReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolloutActivationControl"]);
+ const locationDeploymentPackageModule = startupRegistry.register("locationDeploymentPackage", shouldInitializeCenter("locationDeploymentPackage") ? window.createBlueCurrentLocationDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "technicalActivationReadiness"]);
+ const goLiveCommandModule = startupRegistry.register("goLiveCommand", shouldInitializeCenter("goLiveCommand") ? window.createBlueCurrentGoLiveCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "locationDeploymentPackage"]);
++const launchStabilizationModule = startupRegistry.register("launchStabilization", shouldInitializeCenter("launchStabilization") ? window.createBlueCurrentLaunchStabilizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "goLiveCommand"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V49.20.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V49.25.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/launchStabilizationEngine.js
++++ b/client/js/modules/launchStabilizationEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentLaunchStabilizationEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/launch-stabilization",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Launch stabilization failed (${r.status})`);this.appState?.update?.({launchStabilization:d});return d;}
++  async observe(locationId,payload={}){const r=await fetch(`/api/launch-stabilization/locations/${encodeURIComponent(locationId)}/observe`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Stabilization observation failed (${r.status})`);this.eventBus?.emit?.("launch-stabilization:observed",structuredClone(d));return d;}
++  async declare(locationId,payload={}){const r=await fetch(`/api/launch-stabilization/locations/${encodeURIComponent(locationId)}/declare`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Stabilization declaration failed (${r.status})`);this.eventBus?.emit?.("launch-stabilization:declared",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentLaunchStabilizationEngine;
++if(global)global.BlueCurrentLaunchStabilizationEngine=BlueCurrentLaunchStabilizationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/launchStabilizationCenter.js
++++ b/client/js/modules/launchStabilizationCenter.js
+@@ -0,0 +1,35 @@
++(function(){"use strict";
++function createBlueCurrentLaunchStabilizationCenterModule(eventBus,appState){
++  const root=document.getElementById("launchStabilization");
++  if(!root||!window.BlueCurrentLaunchStabilizationEngine)return null;
++  const e=new window.BlueCurrentLaunchStabilizationEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("lsStatus").textContent=s.status||"—";
++    $("lsReady").textContent=`${locs.filter(x=>x.stabilizationReady).length}/${locs.length}`;
++    $("lsIncidents").textContent=locs.reduce((n,x)=>n+(x.healthTimeline||[]).filter(o=>["high","critical"].includes(o.severity)).length,0);
++    $("lsStable").textContent=locs.filter(x=>x.declaration?.decision==="STABLE").length;
++    $("lsHeadline").textContent=s.headline||"Launch stabilization unavailable.";
++    $("lsLocations").innerHTML=locs.map(x=>`<article data-ls-location="${esc(x.locationId)}"><div><strong>Wave ${x.wave} · ${esc(x.locationName)}</strong><span>${esc(x.stabilizationState)} · exit ${x.exitPassed}/${x.exitTotal} · rollback signal ${esc(x.rollbackRecommendation)}</span></div><div class="v432-list">${(x.exitChecks||[]).map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.label)}</strong><span>${esc(c.actual)}</span></article>`).join("")}</div><p>Observations ${x.observationCount} · first service ${x.firstServiceVerified?"VERIFIED":"OPEN"} · readiness ${x.currentReadiness} · attention ${esc(x.attentionLevel)}</p>${x.latestObservation?`<p><strong>Latest:</strong> health ${x.latestObservation.healthPassed}/${x.latestObservation.healthTotal} · severity ${esc(x.latestObservation.severity)} · ${new Date(x.latestObservation.observedAt).toLocaleString()}</p>`:""}${x.declaration?`<p><strong>Human declaration:</strong> ${esc(x.declaration.decision)} by ${esc(x.declaration.approver)} · ${esc(x.declaration.executionState)}</p>`:""}<div class="v4316-actions"><button type="button" data-ls-observe="true">Record observation</button><button type="button" data-ls-declare="true">Record stabilization decision</button></div></article>`).join("")||"<article><strong>No launched locations are in stabilization.</strong></article>";
++    $("lsHistory").innerHTML=[...(s.observationHistory||[]).map(x=>`<article><strong>OBSERVE · ${esc(x.locationName)} · ${esc(x.severity)}</strong><span>${new Date(x.observedAt).toLocaleString()} · health ${x.healthPassed}/${x.healthTotal} · first service ${x.firstServiceVerified?"yes":"no"}</span></article>`),...(s.declarationHistory||[]).map(x=>`<article><strong>DECISION · ${esc(x.locationName)} · ${esc(x.decision)}</strong><span>${esc(x.approver)} · ${new Date(x.declaredAt).toLocaleString()} · ${esc(x.executionState)}</span></article>`)].join("")||"<article><strong>No stabilization history.</strong></article>";
++  }
++  function healthPayload(){return {apiHealthy:$("lsApi").checked,authenticationHealthy:$("lsAuth").checked,reservationIntegrity:$("lsReservations").checked,floorIntegrity:$("lsFloor").checked,kitchenIntegrity:$("lsKitchen").checked,workforceIntegrity:$("lsWorkforce").checked};}
++  async function load(){try{render(await e.snapshot());}catch(err){$("lsHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-ls-location]"); if(!card)return;
++    const id=card.dataset.lsLocation;
++    if(ev.target.closest("[data-ls-observe]")){
++      try{await e.observe(id,{observationWindowHours:Number($("lsWindow").value||4),firstServiceVerified:$("lsFirstService").checked,severity:$("lsSeverity").value,incident:$("lsIncident").value,note:$("lsNote").value,...healthPayload()});await load();}catch(err){$("lsHeadline").textContent=err.message;}return;
++    }
++    if(ev.target.closest("[data-ls-declare]")){
++      try{await e.declare(id,{decision:$("lsDecision").value,approver:$("lsApprover").value,reason:$("lsReason").value});await load();}catch(err){$("lsHeadline").textContent=err.message;}
++    }
++  });
++  $("lsRefresh")?.addEventListener("click",load);
++  ["go-live-command:result-recorded","launch-stabilization:observed","launch-stabilization:declared","multi-location-performance:updated","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentLaunchStabilizationCenterModule=createBlueCurrentLaunchStabilizationCenterModule;
++})();--- a/scripts/maintenance/test-v49.25-launch-stabilization.js
++++ b/scripts/maintenance/test-v49.25-launch-stabilization.js
+@@ -0,0 +1,101 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/launchStabilizationService");
++
++(async()=>{
++  const state={launchStabilizationObservations:[],launchStabilizationDeclarations:[]},audit=[],events=[];
++  const command={
++    locations:[{
++      locationId:"a",locationName:"A",wave:1,
++      result:{status:"CUTOVER_SUCCEEDED"}
++    }]
++  };
++  let portfolio={
++    locations:[{
++      locationId:"a",locationName:"A",readinessScore:88,attentionLevel:"healthy",urgentPredictiveInterventions:0
++    }]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>command},
++    {snapshot:async()=>portfolio}
++  );
++
++  let snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.version,"49.25.0");
++  assert.equal(snap.locations[0].stabilizationReady,false);
++  assert.equal(snap.policy.autonomousRollback,false);
++
++  const obs=await svc.observe("org",["a"],"a",{
++    observationWindowHours:4,
++    firstServiceVerified:true,
++    severity:"none",
++    apiHealthy:true,
++    authenticationHealthy:true,
++    reservationIntegrity:true,
++    floorIntegrity:true,
++    kitchenIntegrity:true,
++    workforceIntegrity:true,
++    note:"First live dinner service completed cleanly."
++  },"Tester");
++
++  assert.equal(obs.firstServiceVerified,true);
++  assert.equal(obs.healthPassed,6);
++  assert.equal(obs.severity,"none");
++
++  snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.locations[0].stabilizationReady,true);
++  assert.equal(snap.locations[0].rollbackRecommendation,"NO_ROLLBACK_SIGNAL");
++
++  const declaration=await svc.declare("org",["a"],"a",{decision:"STABLE",approver:"VP Ops"},"Tester");
++  assert.equal(declaration.decision,"STABLE");
++  assert.equal(declaration.executionState,"NO_AUTOMATIC_ACTION");
++
++  snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.status,"stabilization-complete");
++  assert.equal(snap.locations[0].stabilizationState,"STABLE");
++
++  portfolio={locations:[{locationId:"a",locationName:"A",readinessScore:60,attentionLevel:"critical",urgentPredictiveInterventions:2}]};
++  const bad=await svc.observe("org",["a"],"a",{
++    observationWindowHours:2,
++    firstServiceVerified:true,
++    severity:"critical",
++    incident:"Authentication degradation during dinner.",
++    apiHealthy:true,
++    authenticationHealthy:false,
++    reservationIntegrity:true,
++    floorIntegrity:true,
++    kitchenIntegrity:true,
++    workforceIntegrity:true
++  },"Tester");
++  assert.equal(bad.severity,"critical");
++
++  snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.locations[0].rollbackRecommendation,"REVIEW_ROLLBACK");
++
++  let rollbackBlocked=false;
++  try{await svc.declare("org",["a"],"a",{decision:"ROLLBACK",approver:"VP Ops"},"Tester");}
++  catch(e){rollbackBlocked=/documented human reason/i.test(e.message);}
++  assert(rollbackBlocked);
++
++  const rollback=await svc.declare("org",["a"],"a",{decision:"ROLLBACK",approver:"VP Ops",reason:"Critical auth degradation requires controlled rollback."},"Tester");
++  assert.equal(rollback.executionState,"ROLLBACK_DECIDED_NOT_EXECUTED");
++
++  assert.equal(audit.length,4);
++  assert.equal(events.length,4);
++
++  console.log(JSON.stringify({
++    ok:true,version:"49.25.0",
++    firstServiceVerification:true,
++    cleanObservation:true,
++    stableDeclaration:true,
++    criticalIncidentSignal:true,
++    rollbackRecommendation:true,
++    rollbackDecisionRequiresReason:true,
++    rollbackExecutionState:"ROLLBACK_DECIDED_NOT_EXECUTED",
++    autonomousRollback:false,
++    automaticStableDeclaration:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V49.25.0-RELEASE.md
++++ b/V49.25.0-RELEASE.md
+@@ -0,0 +1,143 @@
++# BLUE CURRENT V49.25.0 — LAUNCH STABILIZATION
++
++V49.21–V49.25 adds the post-launch stabilization layer between a human-recorded cutover and a location being declared operationally stable.
++
++## Stabilization observation
++
++A location enters stabilization only after a cutover result has been recorded.
++
++Each observation captures:
++
++- observation window
++- first-service verification
++- API health
++- authentication health
++- reservation integrity
++- floor integrity
++- kitchen integrity
++- workforce integrity
++- severity
++- incident/degradation description
++- operator note
++- timestamp / actor
++
++High or Critical severity requires an incident description.
++
++## Stabilization exit criteria
++
++Blue Current evaluates:
++
++1. Human-recorded cutover succeeded.
++2. At least one post-launch observation exists.
++3. First service is verified.
++4. Latest observation passes all health checks.
++5. No critical launch observation exists.
++6. Current leadership attention is not High/Critical.
++7. At least one clean first-service stabilization observation exists.
++
++## Rollback signal
++
++Blue Current surfaces `REVIEW_ROLLBACK` when launch evidence warrants leadership review, including:
++
++- cutover did not succeed
++- critical stabilization observation
++- repeated health failures
++- current High/Critical leadership attention
++
++This signal is advisory only.
++
++## Human stabilization declaration
++
++Adds:
++
++`POST /api/launch-stabilization/locations/:locationId/declare`
++
++Supported human decisions:
++
++- `STABLE`
++- `EXTEND`
++- `ROLLBACK`
++
++STABLE with open exit criteria requires a documented executive reason.
++
++ROLLBACK always requires a documented human reason.
++
++A rollback decision is stored as:
++
++- `decision: ROLLBACK`
++- `executionState: ROLLBACK_DECIDED_NOT_EXECUTED`
++
++Blue Current does not execute rollback.
++
++## API
++
++GET `/api/launch-stabilization`
++
++POST `/api/launch-stabilization/locations/:locationId/observe`
++
++POST `/api/launch-stabilization/locations/:locationId/declare`
++
++Observations require write/admin permission.
++
++Stabilization declarations require admin permission.
++
++## Safety policy
++
++- `observationIsHumanRecorded: true`
++- `rollbackRecommendationIsAdvisory: true`
++- `humanStabilizationDeclarationRequired: true`
++- `autonomousRollback: false`
++- `automaticStableDeclaration: false`
++
++## Current authenticated runtime
++
++The untouched Chefs runtime does not yet contain a successful human-recorded production cutover.
++
++V49.25 therefore correctly reports:
++
++- status: `successful-cutover-required`
++- locations in stabilization: 0
++- autonomous rollback: false
++- automatic stable declaration: false
++
++The current demo owner account is not an admin, and an attempted stabilization declaration correctly returns HTTP 403.
++
++## Focused lifecycle validation
++
++The focused lifecycle verifies:
++
++- successful cutover enters stabilization
++- clean first-service observation
++- six-of-six health confirmation
++- stabilization exit criteria pass
++- human STABLE declaration
++- critical launch degradation
++- rollback recommendation signal
++- ROLLBACK blocked without a reason
++- human ROLLBACK declaration
++- rollback remains NOT EXECUTED
++
++## Validation
++
++- V49.25 launch stabilization test PASS
++- V49.20 Go-Live Command regression PASS
++- authenticated launch-stabilization GET PASS
++- admin-only declaration boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 896 JavaScript files
++- 756 client scripts
++- 5,645 unique HTML IDs
++
++## Next
++
++V49.26–V49.30 should close and certify V49:
++
++- complete V49 rollout chain certification
++- activation / technical / deployment / cutover / stabilization contract checks
++- authorization boundary regression
++- human-control safety audit
++- database write-integrity audit
++- startup/module/UI regression
++- stale/dead V49 surface review
++- final V49 release certification
+--- a/README-APPLY-V49.25.0.md
++++ b/README-APPLY-V49.25.0.md
+@@ -0,0 +1,46 @@
++# APPLY BLUE CURRENT V49.25.0
++
++Baseline: exact V49.20.0 repository.
++
++Extract `BLUE-CURRENT-V49.25.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v49.25-launch-stabilization.js
++node scripts/maintenance/test-v49.20-go-live-command.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "49.25.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Launch Stabilization** surface appears after Go-Live Command.
++
++Important:
++
++- stabilization observations are human-recorded
++- rollback recommendations are advisory
++- STABLE / EXTEND / ROLLBACK are human decisions
++- rollback is never executed automatically
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V49.25.0 add launch stabilization"
++git push origin live-service-timeline
++```

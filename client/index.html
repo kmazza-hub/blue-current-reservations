@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="49.20.0">
+  <meta name="blue-current-build" content="49.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -287,6 +287,16 @@
       <div class="v4316-actions"><select id="glcResultStatus" class="v4312-input"><option value="CUTOVER_SUCCEEDED">CUTOVER_SUCCEEDED</option><option value="CUTOVER_FAILED">CUTOVER_FAILED</option><option value="ROLLED_BACK">ROLLED_BACK</option></select><label><input id="glcApi" type="checkbox"> API healthy</label><label><input id="glcAuth" type="checkbox"> Auth healthy</label><label><input id="glcReservations" type="checkbox"> Reservations intact</label><label><input id="glcFloor" type="checkbox"> Floor intact</label><label><input id="glcKitchen" type="checkbox"> Kitchen intact</label><label><input id="glcWorkforce" type="checkbox"> Workforce intact</label></div>
       <p><strong>Launch locations</strong></p><div id="glcLocations" class="v432-list"></div>
       <p><strong>Command and result ledger</strong></p><div id="glcHistory" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="launchStabilization">
+      <header><div><small>V49.21–V49.25 · Launch Stabilization</small><strong>Observe the first live service, surface launch degradation, and require a human stabilization decision.</strong><span>Blue Current records post-launch health, first-service verification, incidents, operating attention, rollback signals, and stabilization exit criteria. It may recommend rollback review, but it cannot execute rollback or declare a location stable automatically.</span></div><button id="lsRefresh" type="button">Refresh stabilization</button></header>
+      <div class="v432-kpis"><article><small>Stabilization status</small><strong id="lsStatus">—</strong></article><article><small>Exit-ready</small><strong id="lsReady">0/0</strong></article><article><small>High/Critical observations</small><strong id="lsIncidents">0</strong></article><article><small>Declared stable</small><strong id="lsStable">0</strong></article></div>
+      <div class="v4316-answer" id="lsHeadline">A human-recorded cutover result is required before stabilization.</div>
+      <div class="v4316-actions"><input id="lsWindow" class="v4312-input" type="number" min="1" max="168" value="4" placeholder="Observation hours"><select id="lsSeverity" class="v4312-input"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option></select><input id="lsIncident" class="v4312-input" placeholder="Launch incident / degradation"><input id="lsNote" class="v4312-input" placeholder="Observation note"><label><input id="lsFirstService" type="checkbox"> First service verified</label></div>
+      <div class="v4316-actions"><label><input id="lsApi" type="checkbox"> API healthy</label><label><input id="lsAuth" type="checkbox"> Auth healthy</label><label><input id="lsReservations" type="checkbox"> Reservations intact</label><label><input id="lsFloor" type="checkbox"> Floor intact</label><label><input id="lsKitchen" type="checkbox"> Kitchen intact</label><label><input id="lsWorkforce" type="checkbox"> Workforce intact</label></div>
+      <div class="v4316-actions"><select id="lsDecision" class="v4312-input"><option value="STABLE">STABLE</option><option value="EXTEND">EXTEND</option><option value="ROLLBACK">ROLLBACK</option></select><input id="lsApprover" class="v4312-input" placeholder="Stabilization approver"><input id="lsReason" class="v4312-input" placeholder="Decision reason / override rationale"></div>
+      <p><strong>Launch stabilization locations</strong></p><div id="lsLocations" class="v432-list"></div>
+      <p><strong>Observation and decision history</strong></p><div id="lsHistory" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8815,6 +8825,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageCenter.js?v=49.15.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandEngine.js?v=49.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandCenter.js?v=49.20.0"></script>
-<script src="js/startup-loader.js?v=49.20.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationEngine.js?v=49.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationCenter.js?v=49.25.0"></script>
+<script src="js/startup-loader.js?v=49.25.0"></script>
 </body>
 </html>
