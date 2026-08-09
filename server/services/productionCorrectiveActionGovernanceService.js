@@ -15,7 +15,14 @@ class ProductionCorrectiveActionGovernanceService {
     const db=await this.database.read();
     return (db.productionCorrectiveActionEvidence||[])
       .filter(x=>x.organizationId===organizationId)
-      .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+      .sort((a,b)=>{
+        const timeDelta=new Date(b.createdAt)-new Date(a.createdAt);
+        if(timeDelta!==0)return timeDelta;
+        const rank={COMPLETION_ACCEPTED:2,RISK_REDUCTION_VERIFIED:1};
+        const statusDelta=(rank[b.status]||0)-(rank[a.status]||0);
+        if(statusDelta!==0)return statusDelta;
+        return String(b.id||"").localeCompare(String(a.id||""));
+      });
   }
   async snapshot(organizationId,allowedLocationIds){
     const [recovery,incident,evidence]=await Promise.all([

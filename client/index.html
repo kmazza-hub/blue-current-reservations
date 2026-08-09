@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="50.25.0">
+  <meta name="blue-current-build" content="50.30.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -348,6 +348,14 @@
       <div class="v4316-actions"><input id="pcagEvidence" class="v4312-input" placeholder="Risk-reduction evidence"><input id="pcagVerification" class="v4312-input" placeholder="Verification method / result"><input id="pcagApprover" class="v4312-input" placeholder="Completion approver"><input id="pcagCompletionNote" class="v4312-input" placeholder="Human completion acceptance note"></div>
       <p><strong>Executive owner accountability</strong></p><div id="pcagOwners" class="v432-list"></div>
       <p><strong>Corrective-action register</strong></p><div id="pcagActions" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v50ReleaseCertification">
+      <header><div><small>V50.26–V50.30 · Release Closure & Certification</small><strong>Certify the complete production-operations lifecycle before V50 is closed.</strong><span>This read-only certification verifies Production Handoff, Health & Support, Incident Command, Recovery Review, Corrective Action Governance, and every human-control boundary. Architecture certification is reported separately from real production evidence.</span></div><button id="v50certRefresh" type="button">Run V50 certification</button></header>
+      <div class="v432-kpis"><article><small>Release status</small><strong id="v50certStatus">—</strong></article><article><small>Architecture contracts</small><strong id="v50certArchitecture">0/0</strong></article><article><small>Live-state contracts</small><strong id="v50certLive">0/0</strong></article><article><small>Corrective completion</small><strong id="v50certCorrective">0/0</strong></article></div>
+      <div class="v4316-answer" id="v50certHeadline">Running V50 certification…</div>
+      <p><strong>Production operations chain</strong></p><div id="v50certChain" class="v432-list"></div>
+      <p><strong>Architecture / human-control contracts</strong></p><div id="v50certArchitectureChecks" class="v432-list"></div>
+      <p><strong>Current production evidence</strong></p><div id="v50certLiveChecks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -8890,6 +8898,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewCenter.js?v=50.20.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceEngine.js?v=50.25.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceCenter.js?v=50.25.0"></script>
-<script src="js/startup-loader.js?v=50.25.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationEngine.js?v=50.30.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationCenter.js?v=50.30.0"></script>
+<script src="js/startup-loader.js?v=50.30.0"></script>
 </body>
 </html>
