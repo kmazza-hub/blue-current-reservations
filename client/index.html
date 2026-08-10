@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="57.0.0">
+  <meta name="blue-current-build" content="57.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -645,6 +645,15 @@
       <div class="v4316-actions"><select id="v5700Observability" class="v4312-input"><option value="PASS">Observability PASS</option><option value="FAIL">Observability FAIL</option></select><select id="v5700Support" class="v4312-input"><option value="PASS">Support signoff PASS</option><option value="FAIL">Support signoff FAIL</option></select><select id="v5700Rollback" class="v4312-input"><option value="PASS">Rollback signoff PASS</option><option value="FAIL">Rollback signoff FAIL</option></select><input id="v5700KnownIssues" class="v4312-input" placeholder="Known issues register"><input id="v5700Success" class="v4312-input" placeholder="Pilot success criteria"><select id="v5700Recommendation" class="v4312-input"><option value="APPROVE">RC recommendation APPROVE</option><option value="HOLD">RC recommendation HOLD</option></select><input id="v5700Note" class="v4312-input" placeholder="RC review note"><button id="v5700Review" type="button">Record RC review</button></div>
       <div class="v4316-actions"><input id="v5700Evidence" class="v4312-input" placeholder="RC certification evidence"><input id="v5700Reason" class="v4312-input" placeholder="Override / hold reason"><button id="v5700Approve" type="button">RC APPROVE</button><button id="v5700Hold" type="button">HOLD</button></div>
       <div id="v5700Certification" class="v4316-answer">No pilot release-candidate certification.</div><div id="v5700Checks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5750PilotLiveServiceAcceptance">
+      <header><div><small>V57.01–V57.50 · Pilot Execution Evidence & Live-Service Acceptance</small><strong>Prove the certified release candidate can survive a real pilot-service lifecycle before declaring it accepted.</strong><span>This large wave reconciles pilot execution sessions, milestone completion, live health, incidents, operator/manager acceptance, guest impact, workflow acceptance, support burden, data confidence, KPI evidence, and human ACCEPT / EXTEND / HOLD decisions.</span></div><button id="v5750Refresh" type="button">Refresh live-service acceptance</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5750Status">—</strong></article><article><small>Acceptance ready</small><strong id="v5750Ready">0/0</strong></article><article><small>Release candidate</small><strong id="v5750Rc">—</strong></article></div>
+      <div class="v4316-answer" id="v5750Headline">Pilot live-service acceptance review ready.</div>
+      <div class="v4316-actions"><select id="v5750Operator" class="v4312-input"><option value="PASS">Operator acceptance PASS</option><option value="FAIL">Operator acceptance FAIL</option></select><select id="v5750Manager" class="v4312-input"><option value="PASS">Manager acceptance PASS</option><option value="FAIL">Manager acceptance FAIL</option></select><select id="v5750Guest" class="v4312-input"><option value="PASS">Guest impact PASS</option><option value="FAIL">Guest impact FAIL</option></select><select id="v5750Workflow" class="v4312-input"><option value="PASS">Workflow acceptance PASS</option><option value="FAIL">Workflow acceptance FAIL</option></select><select id="v5750Support" class="v4312-input"><option value="PASS">Support burden PASS</option><option value="FAIL">Support burden FAIL</option></select><select id="v5750Data" class="v4312-input"><option value="PASS">Data confidence PASS</option><option value="FAIL">Data confidence FAIL</option></select></div>
+      <div class="v4316-actions"><input id="v5750Kpi" class="v4312-input" placeholder="KPI observation"><input id="v5750Incidents" class="v4312-input" placeholder="Incident summary"><input id="v5750Evidence" class="v4312-input" placeholder="Live-service evidence"><input id="v5750Note" class="v4312-input" placeholder="Review note"></div>
+      <div class="v4316-actions"><input id="v5750DecisionEvidence" class="v4312-input" placeholder="ACCEPT / EXTEND / HOLD evidence"><input id="v5750Reason" class="v4312-input" placeholder="Decision reason / override"></div>
+      <div id="v5750Locations" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9257,6 +9266,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionPilotEnvironmentReadinessV5650" data-src="js/modules/productionPilotEnvironmentReadinessCenter.js?v=56.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotReleaseCandidateCertificationV5700" data-src="js/modules/pilotReleaseCandidateCertificationEngine.js?v=57.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotReleaseCandidateCertificationV5700" data-src="js/modules/pilotReleaseCandidateCertificationCenter.js?v=57.0.0"></script>
-<script src="js/startup-loader.js?v=57.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLiveServiceAcceptanceV5750" data-src="js/modules/pilotLiveServiceAcceptanceEngine.js?v=57.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLiveServiceAcceptanceV5750" data-src="js/modules/pilotLiveServiceAcceptanceCenter.js?v=57.50.0"></script>
+<script src="js/startup-loader.js?v=57.50.0"></script>
 </body>
 </html>

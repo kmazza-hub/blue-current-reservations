@@ -1281,6 +1281,7 @@ const profitabilityInterventionAccountabilityV5575Module = startupRegistry.regis
 const v55DecisionValueCertificationV5600Module = startupRegistry.register("v55DecisionValueCertificationV5600", shouldInitializeCenter("v55DecisionValueCertificationV5600") ? window.createBlueCurrentV55DecisionValueCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "profitabilityInterventionAccountabilityV5575"]);
 const productionPilotEnvironmentReadinessV5650Module = startupRegistry.register("productionPilotEnvironmentReadinessV5650", shouldInitializeCenter("productionPilotEnvironmentReadinessV5650") ? window.createBlueCurrentProductionPilotEnvironmentReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v55DecisionValueCertificationV5600"]);
 const pilotReleaseCandidateCertificationV5700Module = startupRegistry.register("pilotReleaseCandidateCertificationV5700", shouldInitializeCenter("pilotReleaseCandidateCertificationV5700") ? window.createBlueCurrentPilotReleaseCandidateCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionPilotEnvironmentReadinessV5650"]);
+const pilotLiveServiceAcceptanceV5750Module = startupRegistry.register("pilotLiveServiceAcceptanceV5750", shouldInitializeCenter("pilotLiveServiceAcceptanceV5750") ? window.createBlueCurrentPilotLiveServiceAcceptanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotReleaseCandidateCertificationV5700"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
