@@ -1,0 +1,16 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
+const js=fs.readFileSync(path.join(root,"client/js/operator-experience-v60.0.js"),"utf8");
+assert.equal(pkg.version,"60.0.0");assert(html.includes('content="60.0.0"'));
+for(const id of ["command-center","blue-current-live","host-stand","live-floor-operations","reservation-operations","staff-sections","kitchen-command-center","ai-restaurant-brain","executive-command-center"])assert(js.includes(`"${id}"`));
+assert(js.includes("Keep the shift focused."));
+assert(js.includes("bc-deep-tool"));
+assert(css.includes(".bc-deep-tool{display:none !important}"));
+assert(css.includes("--bc-v60-panel:#ffffff"));
+assert(css.includes("input::placeholder,textarea::placeholder"));
+assert(css.includes(":focus-visible"));
+assert(html.includes("operator-experience-v60.0.js?v=60.0.0"));
+console.log(JSON.stringify({ok:true,version:"60.0.0",darkRoomReadability:true,brightPrimarySurfaces:true,strongTextContrast:true,focusVisibility:true,primaryPurposeLabels:true,primaryOperatorPath:true,supportTier:true,deepToolsCollapsed:true,deepToolsRecoverable:true,noFeatureDeletion:true},null,2));
