@@ -13315,3 +13315,96 @@ html[data-v51-operator-ux="hardened"] .v432-list article strong{font-weight:800}
   .oux-quick-actions{grid-template-columns:1fr 1fr}
   html[data-v51-operator-ux="hardened"] .v4316-actions{align-items:stretch}
 }
+
+
+/* ==========================================================================
+   V59.50 · Product Experience Perfection I
+   Default operator experience is intentionally calmer; advanced release and
+   certification surfaces remain available through Product Mode controls.
+   ========================================================================== */
+:root{
+  --bc-readable-text:#16273a;
+  --bc-readable-muted:#52677b;
+  --bc-readable-border:rgba(21,55,78,.16);
+  --bc-readable-surface:rgba(255,255,255,.94);
+}
+.bc-advanced-surface{display:none !important}
+.bc-advanced-open .bc-advanced-surface{display:block !important}
+.bc-product-mode-bar{
+  margin-top:24px;
+  margin-bottom:20px;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  border:1px solid var(--bc-readable-border);
+  border-radius:18px;
+  background:var(--bc-readable-surface);
+  box-shadow:0 12px 34px rgba(13,42,61,.08);
+}
+.bc-product-mode-copy{display:grid;gap:3px;min-width:0}
+.bc-product-mode-copy small{
+  color:#316d86;
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.bc-product-mode-copy strong{color:var(--bc-readable-text);font-size:1rem;line-height:1.25}
+.bc-product-mode-copy span{color:var(--bc-readable-muted);font-size:.86rem;line-height:1.45}
+.desktop-nav{
+  gap:4px !important;
+  padding:4px !important;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  background:rgba(8,27,40,.34);
+  backdrop-filter:blur(16px);
+}
+.desktop-nav a{
+  padding:8px 11px !important;
+  border-radius:999px;
+  font-size:.78rem !important;
+  font-weight:700 !important;
+  white-space:nowrap;
+}
+.desktop-nav a[aria-current="page"]{
+  background:rgba(255,255,255,.14);
+  color:#fff !important;
+}
+.site-header .brand-copy strong{font-weight:800;letter-spacing:-.02em}
+.site-header .brand-copy small{opacity:.82}
+.command-center-section,
+.executive-command-center,
+.live-floor-operations,
+.reservation-operations,
+.kitchen-command-center{
+  scroll-margin-top:92px;
+}
+input,select,textarea,button{font:inherit}
+input::placeholder,textarea::placeholder{opacity:.78}
+.v4312-input,
+.v4316-actions input,
+.v4316-actions select,
+.v4316-actions textarea{
+  min-height:44px;
+}
+.v432-center,
+.v438-center,
+.v4316-center{
+  color:var(--bc-readable-text);
+}
+.v432-center header span,
+.v438-center header span,
+.v4316-center header span,
+.v432-center p,
+.v438-center p,
+.v4316-center p{
+  color:var(--bc-readable-muted);
+}
+@media (max-width:1180px){
+  .desktop-nav a:nth-child(n+8){display:none}
+}
+@media (max-width:760px){
+  .bc-product-mode-bar{align-items:flex-start;flex-direction:column}
+  .bc-product-mode-bar button{width:100%}
+}
