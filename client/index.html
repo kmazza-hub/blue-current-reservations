@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="58.0.0">
+  <meta name="blue-current-build" content="58.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -664,6 +664,17 @@
       <div class="v4316-actions"><input id="v5800Notes" class="v4312-input" placeholder="Final release notes"><input id="v5800Limitations" class="v4312-input" placeholder="Known limitations"><input id="v5800Success" class="v4312-input" placeholder="Final product success criteria"><input id="v5800ReviewNote" class="v4312-input" placeholder="Review note"><button id="v5800Review" type="button">Record final RC review</button></div>
       <div class="v4316-actions"><input id="v5800Evidence" class="v4312-input" placeholder="Final RC certification evidence"><input id="v5800Reason" class="v4312-input" placeholder="Override / hold reason"><button id="v5800Approve" type="button">FINAL RC APPROVE</button><button id="v5800Hold" type="button">HOLD</button></div>
       <div id="v5800Certification" class="v4316-answer">No final product release-candidate certification.</div><div id="v5800Checks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5850FinalHardening">
+      <header><div><small>V58.01–V58.50 · Final Hardening, Defect Closure & Real-Environment Verification</small><strong>Stop expanding architecture and prove the product is actually shippable.</strong><span>This large hardening wave consolidates full regression, defect closure, security/privacy, auth/RBAC, persistence/data integrity, backup/restore, rollback/recovery, performance/load, observability, production configuration, connector failure behavior, operator UX/readability, device responsiveness, accessibility, support runbooks, known-issues reconciliation, and real-environment evidence.</span></div><button id="v5850Refresh" type="button">Refresh final hardening</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5850Status">—</strong></article><article><small>Hardening</small><strong id="v5850Ready">OPEN</strong></article></div>
+      <div class="v4316-answer" id="v5850Headline">Final hardening review ready.</div>
+      <div class="v4316-actions"><select id="v5850Regression" class="v4312-input"><option value="PASS">Full regression PASS</option><option value="FAIL">Full regression FAIL</option></select><select id="v5850Critical" class="v4312-input"><option value="PASS">Critical defects PASS</option><option value="FAIL">Critical defects FAIL</option></select><select id="v5850High" class="v4312-input"><option value="PASS">High defects PASS</option><option value="FAIL">High defects FAIL</option></select><select id="v5850Security" class="v4312-input"><option value="PASS">Security/privacy PASS</option><option value="FAIL">Security/privacy FAIL</option></select><select id="v5850Auth" class="v4312-input"><option value="PASS">Auth/RBAC PASS</option><option value="FAIL">Auth/RBAC FAIL</option></select><select id="v5850Data" class="v4312-input"><option value="PASS">Persistence/data PASS</option><option value="FAIL">Persistence/data FAIL</option></select></div>
+      <div class="v4316-actions"><select id="v5850Backup" class="v4312-input"><option value="PASS">Backup/restore PASS</option><option value="FAIL">Backup/restore FAIL</option></select><select id="v5850Rollback" class="v4312-input"><option value="PASS">Rollback/recovery PASS</option><option value="FAIL">Rollback/recovery FAIL</option></select><select id="v5850Performance" class="v4312-input"><option value="PASS">Performance/load PASS</option><option value="FAIL">Performance/load FAIL</option></select><select id="v5850Observability" class="v4312-input"><option value="PASS">Observability PASS</option><option value="FAIL">Observability FAIL</option></select><select id="v5850Config" class="v4312-input"><option value="PASS">Production config PASS</option><option value="FAIL">Production config FAIL</option></select><select id="v5850Connectors" class="v4312-input"><option value="PASS">Connector failure PASS</option><option value="FAIL">Connector failure FAIL</option></select></div>
+      <div class="v4316-actions"><select id="v5850Ux" class="v4312-input"><option value="PASS">UX/readability PASS</option><option value="FAIL">UX/readability FAIL</option></select><select id="v5850Device" class="v4312-input"><option value="PASS">Device responsiveness PASS</option><option value="FAIL">Device responsiveness FAIL</option></select><select id="v5850Accessibility" class="v4312-input"><option value="PASS">Accessibility PASS</option><option value="FAIL">Accessibility FAIL</option></select><select id="v5850Support" class="v4312-input"><option value="PASS">Support runbook PASS</option><option value="FAIL">Support runbook FAIL</option></select><select id="v5850Recommendation" class="v4312-input"><option value="SHIP">Recommend SHIP</option><option value="REVISE">Recommend REVISE</option><option value="HOLD">Recommend HOLD</option></select></div>
+      <div class="v4316-actions"><input id="v5850Issues" class="v4312-input" placeholder="Known issues reconciled"><input id="v5850Environment" class="v4312-input" placeholder="Real-environment verification evidence"><input id="v5850Note" class="v4312-input" placeholder="Hardening note"><button id="v5850Review" type="button">Record hardening review</button></div>
+      <div class="v4316-actions"><input id="v5850Evidence" class="v4312-input" placeholder="SHIP / REVISE / HOLD evidence"><input id="v5850Reason" class="v4312-input" placeholder="Decision reason / override"><button id="v5850Ship" type="button">SHIP</button><button id="v5850Revise" type="button">REVISE</button><button id="v5850Hold" type="button">HOLD</button></div>
+      <div id="v5850Certification" class="v4316-answer">No final hardening certification.</div><div id="v5850Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9280,6 +9291,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLiveServiceAcceptanceV5750" data-src="js/modules/pilotLiveServiceAcceptanceCenter.js?v=57.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalProductReleaseCandidateV5800" data-src="js/modules/finalProductReleaseCandidateEngine.js?v=58.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalProductReleaseCandidateV5800" data-src="js/modules/finalProductReleaseCandidateCenter.js?v=58.0.0"></script>
-<script src="js/startup-loader.js?v=58.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalHardeningRealEnvironmentV5850" data-src="js/modules/finalHardeningRealEnvironmentEngine.js?v=58.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalHardeningRealEnvironmentV5850" data-src="js/modules/finalHardeningRealEnvironmentCenter.js?v=58.50.0"></script>
+<script src="js/startup-loader.js?v=58.50.0"></script>
 </body>
 </html>

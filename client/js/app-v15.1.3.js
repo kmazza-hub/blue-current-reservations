@@ -1283,6 +1283,7 @@ const productionPilotEnvironmentReadinessV5650Module = startupRegistry.register(
 const pilotReleaseCandidateCertificationV5700Module = startupRegistry.register("pilotReleaseCandidateCertificationV5700", shouldInitializeCenter("pilotReleaseCandidateCertificationV5700") ? window.createBlueCurrentPilotReleaseCandidateCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionPilotEnvironmentReadinessV5650"]);
 const pilotLiveServiceAcceptanceV5750Module = startupRegistry.register("pilotLiveServiceAcceptanceV5750", shouldInitializeCenter("pilotLiveServiceAcceptanceV5750") ? window.createBlueCurrentPilotLiveServiceAcceptanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotReleaseCandidateCertificationV5700"]);
 const finalProductReleaseCandidateV5800Module = startupRegistry.register("finalProductReleaseCandidateV5800", shouldInitializeCenter("finalProductReleaseCandidateV5800") ? window.createBlueCurrentFinalProductReleaseCandidateCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotLiveServiceAcceptanceV5750"]);
+const finalHardeningRealEnvironmentV5850Module = startupRegistry.register("finalHardeningRealEnvironmentV5850", shouldInitializeCenter("finalHardeningRealEnvironmentV5850") ? window.createBlueCurrentFinalHardeningRealEnvironmentCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "finalProductReleaseCandidateV5800"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",
