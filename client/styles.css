@@ -13480,3 +13480,56 @@ input::placeholder,textarea::placeholder{color:#607789 !important;opacity:1 !imp
  .bc-tools-dock button{width:100%;min-height:48px}
  .bc-purpose-chip{width:auto;max-width:none;margin-left:16px;margin-right:16px;text-align:center}
 }
+
+
+/* ==========================================================================
+   V60.50 · Shift Focus + universal restaurant-control ergonomics
+   ========================================================================== */
+.bc-shift-focus-bar{
+ margin:18px auto 10px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:20px;
+ border:1px solid rgba(8,126,164,.22);border-radius:20px;background:#ffffff;
+ box-shadow:0 14px 36px rgba(8,35,51,.10);color:#0b1f2d;
+}
+.bc-shift-focus-copy{display:grid;gap:3px}
+.bc-shift-focus-copy small{font-size:.72rem;font-weight:900;letter-spacing:.13em;color:#08708f}
+.bc-shift-focus-copy strong{font-size:1.08rem;color:#0b1f2d}
+.bc-shift-focus-copy span{font-size:.86rem;line-height:1.45;color:#40596b}
+.bc-shift-focus-actions{display:flex;gap:8px;flex-wrap:wrap}
+.bc-primary-jump{
+ position:sticky;top:76px;z-index:35;margin:0 auto 18px;padding:8px 10px;
+ display:flex;align-items:center;gap:6px;overflow-x:auto;border:1px solid rgba(9,52,76,.14);
+ border-radius:16px;background:rgba(255,255,255,.96);box-shadow:0 8px 24px rgba(8,35,51,.08);backdrop-filter:blur(14px)
+}
+.bc-primary-jump>span{padding:7px 8px;font-size:.7rem;font-weight:900;letter-spacing:.1em;color:#476173;text-transform:uppercase;white-space:nowrap}
+.bc-primary-jump a{padding:8px 11px;border-radius:10px;color:#123348;text-decoration:none;font-size:.78rem;font-weight:800;white-space:nowrap}
+.bc-primary-jump a:hover,.bc-primary-jump a:focus-visible{background:#e8f5f9;color:#075f7c}
+.bc-shift-focus [data-bc-priority="support"]{display:none!important}
+.bc-shift-focus.bc-insights-open [data-bc-priority="support"],
+.bc-insights-open [data-bc-priority="support"],
+.bc-full-workspace [data-bc-priority="support"]{display:block!important}
+.bc-purpose-auto{opacity:.86}
+.bc-touch-control{min-height:46px!important}
+button.bc-touch-control,.button.bc-touch-control{min-width:44px}
+input.bc-touch-control,select.bc-touch-control,textarea.bc-touch-control{font-size:16px!important;line-height:1.35}
+textarea.bc-touch-control{min-height:88px!important}
+.bc-action-primary:not(:disabled){font-weight:850!important}
+.bc-action-caution:not(:disabled){border-color:rgba(148,55,45,.34)!important}
+.bc-action-secondary:not(:disabled){font-weight:750!important}
+.bc-empty-value{opacity:.58!important;font-weight:650!important}
+[data-bc-priority="primary"] article,
+[data-bc-priority="primary"] .card,
+[data-bc-priority="primary"] .panel{
+ border-color:rgba(9,52,76,.14);
+}
+[data-bc-priority="primary"] button:not(:disabled){cursor:pointer}
+[data-bc-priority="primary"] button:disabled{opacity:.48;cursor:not-allowed}
+@media (max-width:900px){
+ .bc-shift-focus-bar{align-items:flex-start;flex-direction:column}
+ .bc-shift-focus-actions{width:100%}
+ .bc-shift-focus-actions button{flex:1}
+ .bc-primary-jump{top:64px;border-radius:0;margin-left:0;margin-right:0;max-width:none}
+}
+@media (prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto!important}
+ *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
+}

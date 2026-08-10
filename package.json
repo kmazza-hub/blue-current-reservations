@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "60.0.0",
+  "version": "60.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 dark-room readability and operator priority hierarchy",
+  "description": "Blue Current Hospitality OS \u2014 shift focus, control clarity, and universal usability",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
