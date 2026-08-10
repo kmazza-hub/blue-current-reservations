@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="57.50.0">
+  <meta name="blue-current-build" content="58.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -654,6 +654,16 @@
       <div class="v4316-actions"><input id="v5750Kpi" class="v4312-input" placeholder="KPI observation"><input id="v5750Incidents" class="v4312-input" placeholder="Incident summary"><input id="v5750Evidence" class="v4312-input" placeholder="Live-service evidence"><input id="v5750Note" class="v4312-input" placeholder="Review note"></div>
       <div class="v4316-actions"><input id="v5750DecisionEvidence" class="v4312-input" placeholder="ACCEPT / EXTEND / HOLD evidence"><input id="v5750Reason" class="v4312-input" placeholder="Decision reason / override"></div>
       <div id="v5750Locations" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5800FinalProductRelease">
+      <header><div><small>V57.51–V58.00 · Pilot Acceptance Closure / Final Product Release Candidate</small><strong>Convert proven pilot acceptance into a controlled final product release candidate—not an automatic rollout.</strong><span>This checkpoint closes the pilot acceptance chain and consolidates product scope, critical defects, security/privacy, data integrity, reliability, recovery/support, operator usability, commercial readiness, release notes, known limitations, and final success criteria.</span></div><button id="v5800Refresh" type="button">Refresh final RC</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5800Status">—</strong></article><article><small>Final RC</small><strong id="v5800Ready">OPEN</strong></article><article><small>Release</small><strong id="v5800Version">—</strong></article></div>
+      <div class="v4316-answer" id="v5800Headline">Final product release-candidate review ready.</div>
+      <div class="v4316-actions"><input id="v5800ReleaseVersion" class="v4312-input" value="58.0.0-rc1" placeholder="Release version"><input id="v5800BuildHash" class="v4312-input" placeholder="Immutable build / commit hash"><select id="v5800Scope" class="v4312-input"><option value="PASS">Product scope freeze PASS</option><option value="FAIL">Product scope freeze FAIL</option></select><select id="v5800Defects" class="v4312-input"><option value="PASS">Critical defect gate PASS</option><option value="FAIL">Critical defect gate FAIL</option></select><select id="v5800Security" class="v4312-input"><option value="PASS">Security/privacy PASS</option><option value="FAIL">Security/privacy FAIL</option></select><select id="v5800Data" class="v4312-input"><option value="PASS">Data integrity PASS</option><option value="FAIL">Data integrity FAIL</option></select></div>
+      <div class="v4316-actions"><select id="v5800Reliability" class="v4312-input"><option value="PASS">Reliability PASS</option><option value="FAIL">Reliability FAIL</option></select><select id="v5800Recovery" class="v4312-input"><option value="PASS">Recovery/support PASS</option><option value="FAIL">Recovery/support FAIL</option></select><select id="v5800Usability" class="v4312-input"><option value="PASS">Operator usability PASS</option><option value="FAIL">Operator usability FAIL</option></select><select id="v5800Commercial" class="v4312-input"><option value="PASS">Commercial readiness PASS</option><option value="FAIL">Commercial readiness FAIL</option></select><select id="v5800Recommendation" class="v4312-input"><option value="APPROVE">Recommend APPROVE</option><option value="HOLD">Recommend HOLD</option></select></div>
+      <div class="v4316-actions"><input id="v5800Notes" class="v4312-input" placeholder="Final release notes"><input id="v5800Limitations" class="v4312-input" placeholder="Known limitations"><input id="v5800Success" class="v4312-input" placeholder="Final product success criteria"><input id="v5800ReviewNote" class="v4312-input" placeholder="Review note"><button id="v5800Review" type="button">Record final RC review</button></div>
+      <div class="v4316-actions"><input id="v5800Evidence" class="v4312-input" placeholder="Final RC certification evidence"><input id="v5800Reason" class="v4312-input" placeholder="Override / hold reason"><button id="v5800Approve" type="button">FINAL RC APPROVE</button><button id="v5800Hold" type="button">HOLD</button></div>
+      <div id="v5800Certification" class="v4316-answer">No final product release-candidate certification.</div><div id="v5800Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9268,6 +9278,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotReleaseCandidateCertificationV5700" data-src="js/modules/pilotReleaseCandidateCertificationCenter.js?v=57.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLiveServiceAcceptanceV5750" data-src="js/modules/pilotLiveServiceAcceptanceEngine.js?v=57.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLiveServiceAcceptanceV5750" data-src="js/modules/pilotLiveServiceAcceptanceCenter.js?v=57.50.0"></script>
-<script src="js/startup-loader.js?v=57.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalProductReleaseCandidateV5800" data-src="js/modules/finalProductReleaseCandidateEngine.js?v=58.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalProductReleaseCandidateV5800" data-src="js/modules/finalProductReleaseCandidateCenter.js?v=58.0.0"></script>
+<script src="js/startup-loader.js?v=58.0.0"></script>
 </body>
 </html>
