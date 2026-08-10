@@ -1,8 +1,9 @@
 (function(){
 "use strict";
 const CORE=[
- "command-center","blue-current-live","host-stand","live-floor-operations","reservation-operations",
- "staff-sections","kitchen-command-center","service-coordination","ai-restaurant-brain","executive-command-center"
+ "command-center","blue-current-live","host-stand","journey",
+ "workforce-foundation","kitchenThroughputCenter",
+ "restaurantAiBrainV341","executive-command-center"
 ];
 const SUPPORT=[
  "hospitalityPerformanceCommand","hospitalityActionWorkspace","hospitalityOutcomeMeasurement",
@@ -28,14 +29,12 @@ ready(()=>{
  const purposes={
   "command-center":"Start here · what needs attention now",
   "blue-current-live":"Live service · what is happening right now",
-  "host-stand":"Front door · seat guests and manage the room",
-  "live-floor-operations":"Dining room · tables, turns, pacing, and pressure",
-  "reservation-operations":"Reservations · demand, availability, and guest commitments",
-  "staff-sections":"Team · coverage, assignments, and operating readiness",
-  "kitchen-command-center":"Kitchen · throughput, pressure, and recovery",
-  "service-coordination":"Service · coordinate active guest and team needs",
-  "ai-restaurant-brain":"AI Brain · recommendations with human control",
-  "executive-command-center":"Executive · performance, risk, and decisions"
+  "host-stand":"Floor · seat guests, manage tables, and control the front door",
+  "journey":"Reservations · guest demand, commitments, arrivals, and occasions",
+  "workforce-foundation":"Staff · team availability, coverage, and operating readiness",
+  "kitchenThroughputCenter":"Kitchen · throughput, bottlenecks, and recovery",
+  "restaurantAiBrainV341":"AI Brain · recommendations, evidence, and human decisions",
+  "executive-command-center":"Executive · performance, risk, and leadership decisions"
  };
  Object.entries(purposes).forEach(([id,text])=>{
    const section=document.getElementById(id); if(!section)return;

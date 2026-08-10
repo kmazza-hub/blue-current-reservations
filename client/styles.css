@@ -13533,3 +13533,82 @@ textarea.bc-touch-control{min-height:88px!important}
  html{scroll-behavior:auto!important}
  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+
+/* ==========================================================================
+   V61.00 · Dark-card contrast + working primary navigation
+   ========================================================================== */
+.live-command-center{
+  --bc-v61-white:#ffffff;
+  --bc-v61-bright:#edf7fb;
+  --bc-v61-muted:#c7dbe6;
+  --bc-v61-soft:#a9c3d1;
+}
+.live-command-center .live-health-ring strong,
+.live-command-center .live-health-ring span,
+.live-command-center .live-kpi-grid button small,
+.live-command-center .live-kpi-grid button strong,
+.live-command-center .live-kpi-grid button span,
+.live-command-center .live-panel-head small,
+.live-command-center .live-panel-head h3,
+.live-command-center .live-status,
+.live-command-center .copilot-answer p,
+.live-command-center .live-event strong,
+.live-command-center .connector-grid strong,
+.live-command-center .connector-grid span,
+.live-command-center .live-action-card h3{
+  color:var(--bc-v61-white)!important;
+  opacity:1!important;
+}
+.live-command-center .live-kpi-grid button small,
+.live-command-center .live-panel-head small{
+  color:var(--bc-v61-bright)!important;
+  font-weight:850!important;
+  letter-spacing:.08em;
+}
+.live-command-center .live-kpi-grid button strong{
+  color:#ffffff!important;
+  font-weight:900!important;
+  text-shadow:0 1px 0 rgba(0,0,0,.18);
+}
+.live-command-center .live-kpi-grid button span,
+.live-command-center .live-event small,
+.live-command-center .live-event-empty,
+.live-command-center .connector-grid small,
+.live-command-center .live-action-card p{
+  color:var(--bc-v61-muted)!important;
+  opacity:1!important;
+}
+.live-command-center .copilot-answer small,
+.live-command-center .connector-grid b{
+  color:#ffd67d!important;
+  opacity:1!important;
+}
+.live-command-center .copilot-prompts button,
+.live-command-center .connector-card button,
+.live-command-center .live-action-card button,
+.live-command-center .copilot-form button{
+  color:#fff8e8!important;
+}
+.live-command-center .copilot-form input{
+  color:#ffffff!important;
+  background:#102f3d!important;
+}
+.live-command-center .live-panel-head input{
+  color:#143044!important;
+  background:#ffffff!important;
+}
+.live-command-center .live-panel-head input::placeholder{
+  color:#607789!important;
+}
+#command-center,#blue-current-live,#host-stand,#journey,#workforce-foundation,
+#kitchenThroughputCenter,#executive-command-center,#restaurantAiBrainV341{
+  scroll-margin-top:118px;
+}
+.desktop-nav a{cursor:pointer}
+.desktop-nav a[aria-current="page"]{
+  color:#ffffff!important;
+  background:rgba(255,255,255,.18)!important;
+}
+
+.bc-deep-tool.bc-nav-open{display:block!important}
