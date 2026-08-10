@@ -1284,6 +1284,7 @@ const pilotReleaseCandidateCertificationV5700Module = startupRegistry.register("
 const pilotLiveServiceAcceptanceV5750Module = startupRegistry.register("pilotLiveServiceAcceptanceV5750", shouldInitializeCenter("pilotLiveServiceAcceptanceV5750") ? window.createBlueCurrentPilotLiveServiceAcceptanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotReleaseCandidateCertificationV5700"]);
 const finalProductReleaseCandidateV5800Module = startupRegistry.register("finalProductReleaseCandidateV5800", shouldInitializeCenter("finalProductReleaseCandidateV5800") ? window.createBlueCurrentFinalProductReleaseCandidateCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotLiveServiceAcceptanceV5750"]);
 const finalHardeningRealEnvironmentV5850Module = startupRegistry.register("finalHardeningRealEnvironmentV5850", shouldInitializeCenter("finalHardeningRealEnvironmentV5850") ? window.createBlueCurrentFinalHardeningRealEnvironmentCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "finalProductReleaseCandidateV5800"]);
+const productionLaunchCertificationV5900Module = startupRegistry.register("productionLaunchCertificationV5900", shouldInitializeCenter("productionLaunchCertificationV5900") ? window.createBlueCurrentProductionLaunchCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "finalHardeningRealEnvironmentV5850"]);
 
 const operatorCopilotCenterModule = startupRegistry.register(
   "operatorCopilotCenter",

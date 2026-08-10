@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="58.50.0">
+  <meta name="blue-current-build" content="59.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -675,6 +675,16 @@
       <div class="v4316-actions"><input id="v5850Issues" class="v4312-input" placeholder="Known issues reconciled"><input id="v5850Environment" class="v4312-input" placeholder="Real-environment verification evidence"><input id="v5850Note" class="v4312-input" placeholder="Hardening note"><button id="v5850Review" type="button">Record hardening review</button></div>
       <div class="v4316-actions"><input id="v5850Evidence" class="v4312-input" placeholder="SHIP / REVISE / HOLD evidence"><input id="v5850Reason" class="v4312-input" placeholder="Decision reason / override"><button id="v5850Ship" type="button">SHIP</button><button id="v5850Revise" type="button">REVISE</button><button id="v5850Hold" type="button">HOLD</button></div>
       <div id="v5850Certification" class="v4316-answer">No final hardening certification.</div><div id="v5850Checks" class="v432-list"></div>
+    </section>
+    <section class="v432-center v438-center v4316-center" id="v5900ProductionLaunchCertification">
+      <header><div><small>V58.51–V59.00 · Production Launch Certification & Finished Product Release</small><strong>Certify the finished product and launch plan without automatically deploying it.</strong><span>This release-governance checkpoint reconciles final hardening, production handoff, launch control, immutable release identity, deployment/cutover planning, rollback authority, operational ownership, customer activation controls, monitoring, launch success/abort criteria, release documentation, and explicit human RELEASE / REVISE / HOLD certification.</span></div><button id="v5900Refresh" type="button">Refresh launch certification</button></header>
+      <div class="v432-kpis"><article><small>Status</small><strong id="v5900Status">—</strong></article><article><small>Launch readiness</small><strong id="v5900Ready">OPEN</strong></article><article><small>Release</small><strong id="v5900Version">—</strong></article></div>
+      <div class="v4316-answer" id="v5900Headline">Production launch certification ready.</div>
+      <div class="v4316-actions"><input id="v5900ReleaseVersion" class="v4312-input" value="59.0.0" placeholder="Release version"><input id="v5900BuildHash" class="v4312-input" placeholder="Immutable build / commit hash"><input id="v5900LaunchOwner" class="v4312-input" placeholder="Launch owner"><input id="v5900SupportOwner" class="v4312-input" placeholder="Support owner"><input id="v5900EscalationOwner" class="v4312-input" placeholder="Escalation owner"><input id="v5900RollbackAuthority" class="v4312-input" placeholder="Rollback authority"></div>
+      <div class="v4316-actions"><input id="v5900Deployment" class="v4312-input" placeholder="Deployment plan"><input id="v5900Cutover" class="v4312-input" placeholder="Cutover plan"><input id="v5900Monitoring" class="v4312-input" placeholder="Monitoring window"><input id="v5900Success" class="v4312-input" placeholder="Launch success criteria"><input id="v5900Abort" class="v4312-input" placeholder="Launch abort criteria"></div>
+      <div class="v4316-actions"><select id="v5900Activation" class="v4312-input"><option value="PASS">Customer activation control PASS</option><option value="FAIL">Customer activation control FAIL</option></select><select id="v5900Freeze" class="v4312-input"><option value="PASS">Change freeze PASS</option><option value="FAIL">Change freeze FAIL</option></select><select id="v5900Documentation" class="v4312-input"><option value="PASS">Release documentation PASS</option><option value="FAIL">Release documentation FAIL</option></select><select id="v5900Recommendation" class="v4312-input"><option value="RELEASE">Recommend RELEASE</option><option value="REVISE">Recommend REVISE</option><option value="HOLD">Recommend HOLD</option></select><input id="v5900Note" class="v4312-input" placeholder="Launch review note"><button id="v5900Review" type="button">Record launch review</button></div>
+      <div class="v4316-actions"><input id="v5900Evidence" class="v4312-input" placeholder="RELEASE / REVISE / HOLD evidence"><input id="v5900Reason" class="v4312-input" placeholder="Decision reason / override"><button id="v5900Release" type="button">RELEASE</button><button id="v5900Revise" type="button">REVISE</button><button id="v5900Hold" type="button">HOLD</button></div>
+      <div id="v5900Certification" class="v4316-answer">No finished-product release certification.</div><div id="v5900Checks" class="v432-list"></div>
     </section>
 <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
       <header>
@@ -9293,6 +9303,8 @@
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalProductReleaseCandidateV5800" data-src="js/modules/finalProductReleaseCandidateCenter.js?v=58.0.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalHardeningRealEnvironmentV5850" data-src="js/modules/finalHardeningRealEnvironmentEngine.js?v=58.50.0"></script>
 <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalHardeningRealEnvironmentV5850" data-src="js/modules/finalHardeningRealEnvironmentCenter.js?v=58.50.0"></script>
-<script src="js/startup-loader.js?v=58.50.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionLaunchCertificationV5900" data-src="js/modules/productionLaunchCertificationEngine.js?v=59.0.0"></script>
+<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionLaunchCertificationV5900" data-src="js/modules/productionLaunchCertificationCenter.js?v=59.0.0"></script>
+<script src="js/startup-loader.js?v=59.0.0"></script>
 </body>
 </html>
