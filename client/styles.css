@@ -13681,3 +13681,88 @@ textarea.bc-touch-control{min-height:88px!important}
  .bc-command-details-dock,.bc-live-details-dock{align-items:stretch;flex-direction:column}
  .bc-detail-toggle{width:100%;min-width:0}
 }
+
+
+/* ==========================================================================
+   V62.00 · Floor + Reservations rush workflow
+   ========================================================================== */
+#host-stand .host-nav button{min-height:48px!important}
+#host-stand .host-top-actions button,#host-stand .queue-item button,#host-stand .queue-tabs button{min-height:44px!important}
+#host-stand .host-status-bar strong,#host-stand .host-quick-stats strong{font-weight:900!important}
+#host-stand .host-table{cursor:pointer}
+#host-stand .host-table.selected{outline:4px solid rgba(255,255,255,.88)!important;outline-offset:3px!important}
+#host-stand .queue-item.priority{box-shadow:inset 4px 0 0 #efb94f}
+#host-stand .queue-item.bc-seated{opacity:.56}
+#host-stand .queue-item.bc-seated button{opacity:1}
+
+.bc-host-view-panel{
+ margin:0 18px 18px;padding:18px;border-radius:18px;background:#f8fbfc;
+ border:1px solid rgba(9,52,76,.14);color:#102838
+}
+.bc-host-panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px}
+.bc-host-panel-head>div{display:grid;gap:3px}
+.bc-host-panel-head small{font-size:.68rem;font-weight:900;letter-spacing:.12em;color:#08708f}
+.bc-host-panel-head strong{font-size:1.04rem;color:#102838}
+.bc-host-panel-head span{font-size:.8rem;color:#526b7c;line-height:1.4}
+.bc-host-panel-head button{min-height:44px;padding:9px 14px}
+
+.bc-reservation-list{display:grid;gap:8px}
+.bc-reservation-list article{
+ display:grid;grid-template-columns:72px minmax(0,1fr) auto auto;align-items:center;gap:12px;
+ padding:12px 14px;border:1px solid rgba(9,52,76,.12);border-radius:14px;background:#fff
+}
+.bc-reservation-list time{font-weight:900;color:#102838}
+.bc-reservation-list article>div{display:grid;gap:2px}
+.bc-reservation-list strong{color:#102838}
+.bc-reservation-list span{font-size:.78rem;color:#526b7c}
+.bc-reservation-list b{padding:5px 8px;border-radius:999px;background:#dff4e7;color:#176a42;font-size:.7rem}
+.bc-reservation-list b[data-tone="expected"]{background:#eaf3f7;color:#416578}
+.bc-reservation-list button{min-height:40px}
+
+.bc-waitlist-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.bc-waitlist-summary article{padding:13px;border-radius:13px;background:#fff;border:1px solid rgba(9,52,76,.12);display:grid;gap:4px}
+.bc-waitlist-summary small{color:#526b7c;font-weight:800}
+.bc-waitlist-summary strong{color:#102838;font-size:1.15rem}
+.bc-host-list-note{padding:11px 13px;border-radius:12px;background:#fff7e7;color:#604915;font-size:.78rem;line-height:1.45}
+
+.bc-host-search{display:grid;gap:6px}
+.bc-host-search span{font-size:.75rem;font-weight:850;color:#36586b}
+.bc-host-search input{min-height:48px!important}
+.bc-guest-results{display:grid;gap:8px;margin-top:12px}
+.bc-guest-results>button{display:grid;gap:3px;text-align:left;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(9,52,76,.13)}
+.bc-guest-results>button strong{color:#102838}
+.bc-guest-results>button span{color:#526b7c;font-size:.78rem}
+
+.bc-host-dialog{border:0;padding:0;background:transparent;max-width:min(680px,calc(100vw - 28px));width:100%}
+.bc-host-dialog::backdrop{background:rgba(3,20,30,.70);backdrop-filter:blur(4px)}
+.bc-host-dialog-card{padding:0;border:1px solid rgba(9,52,76,.16);border-radius:20px;background:#fff;box-shadow:0 26px 90px rgba(3,20,30,.28);overflow:hidden}
+.bc-host-dialog-card header,.bc-host-dialog-card footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px}
+.bc-host-dialog-card header{border-bottom:1px solid rgba(9,52,76,.11)}
+.bc-host-dialog-card header>div{display:grid;gap:2px}
+.bc-host-dialog-card header small{font-weight:900;letter-spacing:.11em;color:#08708f}
+.bc-host-dialog-card header strong{font-size:1.1rem;color:#102838}
+.bc-host-dialog-card header>button{width:44px;height:44px;border-radius:999px;font-size:1.4rem}
+#bcHostDialogBody{padding:18px}
+.bc-host-dialog-card footer{border-top:1px solid rgba(9,52,76,.11);justify-content:flex-end}
+.bc-host-dialog-card footer button{min-height:46px;padding:9px 16px}
+.bc-host-dialog-card footer .primary{background:#0b3445;color:#fff}
+.bc-dialog-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bc-dialog-grid label{display:grid;gap:6px}
+.bc-dialog-grid label.wide{grid-column:1/-1}
+.bc-dialog-grid label>span{font-size:.76rem;font-weight:850;color:#36586b}
+.bc-dialog-grid input,.bc-dialog-grid select{min-height:48px!important}
+.bc-guest-detail{display:grid;gap:7px}
+.bc-guest-detail>strong{font-size:1.2rem;color:#102838}
+.bc-guest-detail>span{color:#526b7c}
+.bc-guest-detail>div{margin-top:8px;padding:13px;border-radius:13px;background:#eef6fa}
+.bc-guest-detail small{font-weight:900;color:#08708f}
+.bc-guest-detail p{margin:4px 0 0;color:#29495c;line-height:1.45}
+
+@media(max-width:760px){
+ .bc-host-panel-head{align-items:stretch;flex-direction:column}
+ .bc-reservation-list article{grid-template-columns:64px 1fr}
+ .bc-reservation-list article>b,.bc-reservation-list article>button{justify-self:start}
+ .bc-waitlist-summary{grid-template-columns:1fr}
+ .bc-dialog-grid{grid-template-columns:1fr}
+ .bc-dialog-grid label.wide{grid-column:auto}
+}

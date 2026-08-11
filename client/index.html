@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="61.50.0">
+  <meta name="blue-current-build" content="62.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=61.50.0">
+  <link rel="stylesheet" href="styles.css?v=62.0.0">
 </head>
 <body class="app-high-contrast">
 
@@ -2252,10 +2252,10 @@
               </div>
 
               <nav class="host-nav" aria-label="Host stand navigation">
-                <button class="active" type="button"><span>▦</span> Floor</button>
-                <button type="button"><span>◷</span> Reservations</button>
-                <button type="button"><span>≋</span> Waitlist</button>
-                <button type="button"><span>◇</span> Guests</button>
+                <button class="active" type="button" data-host-view="floor"><span>▦</span> Floor</button>
+                <button type="button" data-host-view="reservations"><span>◷</span> Reservations</button>
+                <button type="button" data-host-view="waitlist"><span>≋</span> Waitlist</button>
+                <button type="button" data-host-view="guests"><span>◇</span> Guests</button>
               </nav>
 
               <div class="host-quick-stats">
@@ -2274,8 +2274,8 @@
                   <h3>Dining room</h3>
                 </div>
                 <div class="host-top-actions">
-                  <button type="button">Search guest</button>
-                  <button class="primary" type="button">+ Reservation</button>
+                  <button type="button" id="hostSearchGuest">Search guest</button>
+                  <button class="primary" type="button" id="hostAddReservation">+ Reservation</button>
                 </div>
               </div>
 
@@ -2398,6 +2398,43 @@
                   </div>
                 </aside>
               </div>
+
+              
+              <section class="bc-host-view-panel" id="bcHostReservationsPanel" data-host-panel="reservations" hidden>
+                <div class="bc-host-panel-head">
+                  <div><small>RESERVATIONS · TONIGHT</small><strong>Next arrivals</strong><span>See who is coming, what matters, and what needs preparation.</span></div>
+                  <button type="button" id="bcReservationQuickAdd">+ Reservation</button>
+                </div>
+                <div class="bc-reservation-list" id="bcReservationList">
+                  <article data-reservation-name="Melissa Grant"><time>7:15</time><div><strong>Melissa Grant</strong><span>Party of 2 · Anniversary</span></div><b>Arrived</b><button type="button" data-reservation-action="details">Details</button></article>
+                  <article data-reservation-name="Anthony Russo"><time>7:30</time><div><strong>Anthony Russo</strong><span>Party of 4 · Birthday · Waterfront</span></div><b data-tone="expected">Expected</b><button type="button" data-reservation-action="details">Details</button></article>
+                  <article data-reservation-name="Daniel Cho"><time>7:45</time><div><strong>Daniel Cho</strong><span>Party of 6</span></div><b data-tone="expected">Expected</b><button type="button" data-reservation-action="details">Details</button></article>
+                  <article data-reservation-name="Alyssa Moore"><time>8:00</time><div><strong>Alyssa Moore</strong><span>Party of 3 · High chair</span></div><b data-tone="expected">Expected</b><button type="button" data-reservation-action="details">Details</button></article>
+                </div>
+              </section>
+
+              <section class="bc-host-view-panel" id="bcHostWaitlistPanel" data-host-panel="waitlist" hidden>
+                <div class="bc-host-panel-head">
+                  <div><small>WAITLIST · LIVE</small><strong>Seat the longest waits first—unless the room says otherwise.</strong><span>Wait time, party needs, and table fit stay visible together.</span></div>
+                  <button type="button" id="bcWalkInQuickAdd">+ Walk-in</button>
+                </div>
+                <div class="bc-waitlist-summary">
+                  <article><small>Waiting</small><strong id="bcWaitCount">3</strong></article>
+                  <article><small>Longest wait</small><strong id="bcLongestWait">18 min</strong></article>
+                  <article><small>Open tables</small><strong id="bcOpenTables">4</strong></article>
+                </div>
+                <div class="bc-host-list-note">Use <strong>Seat</strong> only after confirming a table. Blue Current will update the visible wait count.</div>
+              </section>
+
+              <section class="bc-host-view-panel" id="bcHostGuestsPanel" data-host-panel="guests" hidden>
+                <div class="bc-host-panel-head">
+                  <div><small>GUESTS · SEARCH</small><strong>Find the person before the reservation.</strong><span>Search by guest name to surface tonight’s context quickly.</span></div>
+                </div>
+                <label class="bc-host-search"><span>Guest name</span><input id="bcGuestSearchInput" type="search" placeholder="Start typing a guest name…" autocomplete="off"></label>
+                <div class="bc-guest-results" id="bcGuestSearchResults" aria-live="polite">
+                  <p>Search tonight’s guests and recent profiles.</p>
+                </div>
+              </section>
 
               <div class="host-bottom-feed">
                 <div class="host-feed-item">
@@ -9287,6 +9324,16 @@
 <script src="js/navigation-v61.0.js?v=61.0.0"></script>
 <script src="js/top-shell-v61.0.js?v=61.0.0"></script>
 <script src="js/command-live-v61.50.js?v=61.50.0"></script>
-<script src="js/startup-loader.js?v=61.50.0"></script>
+<script src="js/floor-reservations-v62.0.js?v=62.0.0"></script>
+<script src="js/startup-loader.js?v=62.0.0"></script>
+
+  <dialog class="bc-host-dialog" id="bcHostDialog">
+    <form method="dialog" class="bc-host-dialog-card" id="bcHostDialogForm">
+      <header><div><small id="bcHostDialogEyebrow">HOST STAND</small><strong id="bcHostDialogTitle">Guest details</strong></div><button type="button" id="bcHostDialogClose" aria-label="Close">×</button></header>
+      <div id="bcHostDialogBody"></div>
+      <footer id="bcHostDialogFooter"><button type="button" id="bcHostDialogCancel">Cancel</button><button type="submit" class="primary" id="bcHostDialogSubmit">Save</button></footer>
+    </form>
+  </dialog>
+
 </body>
 </html>
