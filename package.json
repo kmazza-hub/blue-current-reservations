@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "63.50.0",
+  "version": "64.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 full-system usability verification and runtime guardrails",
+  "description": "Blue Current Hospitality OS \u2014 interaction QA, action feedback, and failure clarity",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="63.50.0">
+  <meta name="blue-current-build" content="64.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=63.50.0">
+  <link rel="stylesheet" href="styles.css?v=64.0.0">
 </head>
 <body class="app-high-contrast">
 
@@ -2290,9 +2290,9 @@
                 <section class="host-floor-panel">
                   <div class="host-floor-toolbar">
                     <div>
-                      <button class="active" type="button">Main floor</button>
-                      <button type="button">Waterfront</button>
-                      <button type="button">Private dining</button>
+                      <button class="active" type="button" data-host-zone="main" aria-pressed="true">Main floor</button>
+                      <button type="button" data-host-zone="waterfront" aria-pressed="false">Waterfront</button>
+                      <button type="button" data-host-zone="private" aria-pressed="false">Private dining</button>
                     </div>
                     <span id="hostRecommendation">AI suggestion: Table 14 opens in 12 minutes</span>
                   </div>
@@ -9386,7 +9386,8 @@
 <script src="js/staff-kitchen-service-v62.50.js?v=62.50.0"></script>
 <script src="js/ai-executive-v63.0.js?v=63.0.0"></script>
 <script src="js/system-usability-v63.50.js?v=63.50.0"></script>
-<script src="js/startup-loader.js?v=63.50.0"></script>
+<script src="js/interaction-feedback-v64.0.js?v=64.0.0"></script>
+<script src="js/startup-loader.js?v=64.0.0"></script>
 
   <dialog class="bc-host-dialog" id="bcHostDialog">
     <form method="dialog" class="bc-host-dialog-card" id="bcHostDialogForm">
