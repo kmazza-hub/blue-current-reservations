@@ -14043,3 +14043,44 @@ dialog:focus-visible{outline:none!important}
  #bcQuickJobsButton{width:100%}
  .bc-quick-jobs-menu{left:0;right:auto;width:min(100%,340px)}
 }
+
+
+/* ==========================================================================
+   V65.00 · Empty states, recovery, and first-time clarity
+   ========================================================================== */
+.bc-empty-message{
+ opacity:1!important;color:#4d6879!important;font-weight:750!important
+}
+.bc-empty-message[aria-label^="No immediate risk"],
+.bc-empty-message[aria-label^="Portfolio is stable"],
+.bc-empty-message[aria-label^="Service is clear"],
+.bc-empty-message[aria-label^="Nothing needs attention yet"]{
+ color:#327354!important
+}
+.bc-recovery-banner{
+ position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:10020;
+ width:min(720px,calc(100vw - 28px));padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+ border:1px solid rgba(194,91,55,.32);border-radius:15px;background:#fff8f4;color:#38251f;
+ box-shadow:0 18px 54px rgba(4,25,37,.22)
+}
+.bc-recovery-banner[hidden]{display:none!important}
+.bc-recovery-banner>div{display:grid;gap:2px}
+.bc-recovery-banner strong{font-size:.86rem;color:#38251f}
+.bc-recovery-banner span{font-size:.76rem;color:#6f554a}
+.bc-recovery-banner button{min-height:40px!important;white-space:nowrap;font-weight:900!important}
+
+.bc-first-use-hint{
+ width:min(1180px,calc(100% - 28px));margin:10px auto 0;padding:12px 14px;
+ display:flex;align-items:center;justify-content:space-between;gap:14px;
+ border:1px solid rgba(8,126,164,.18);border-radius:15px;background:#eff9fc;color:#102838
+}
+.bc-first-use-hint>div{display:grid;gap:2px}
+.bc-first-use-hint small{font-size:.64rem;font-weight:900;letter-spacing:.12em;color:#08708f}
+.bc-first-use-hint strong{font-size:.84rem;color:#102838}
+.bc-first-use-hint span{font-size:.73rem;color:#587182}
+.bc-first-use-hint button{min-height:40px!important;white-space:nowrap}
+
+@media(max-width:700px){
+ .bc-recovery-banner,.bc-first-use-hint{align-items:stretch;flex-direction:column}
+ .bc-recovery-banner button,.bc-first-use-hint button{width:100%}
+}
