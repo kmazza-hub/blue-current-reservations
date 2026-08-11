@@ -14284,3 +14284,21 @@ dialog:focus-visible{outline:none!important}
   .bc-ui-system .bc-ui-card{border-radius:12px}
   .bc-ui-system .bc-ui-heading{letter-spacing:-.012em}
 }
+
+
+/* ==========================================================================
+   V66.50 · Real-use microcopy and action-language clarity
+   ========================================================================== */
+.bc-ui-system .bc-copy-high-impact{
+  border-color:rgba(151,61,49,.36)!important;
+}
+.bc-ui-system .bc-copy-high-impact:hover,
+.bc-ui-system .bc-copy-high-impact:focus-visible{
+  box-shadow:0 0 0 3px rgba(151,61,49,.10)!important;
+}
+.bc-ui-system button[aria-label],
+.bc-ui-system input[aria-label],
+.bc-ui-system textarea[aria-label],
+.bc-ui-system select[aria-label]{
+  scroll-margin-top:110px;
+}
