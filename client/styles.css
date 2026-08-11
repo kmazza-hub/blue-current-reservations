@@ -13845,3 +13845,79 @@ textarea.bc-touch-control{min-height:88px!important}
   #kitchenThroughputCenter .kt-grid{grid-template-columns:1fr!important}
   .bc-staff-detail-dock button{width:100%}
 }
+
+
+/* ==========================================================================
+   V63.00 · AI Brain + Executive decision clarity
+   ========================================================================== */
+.bc-ai-scanline,.bc-exec-scanline{
+ margin:14px 0 16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+ border:1px solid rgba(8,126,164,.18);border-radius:16px;background:#f4fafc;color:#102838
+}
+.bc-ai-scanline>div,.bc-exec-scanline>div{display:grid;gap:3px}
+.bc-ai-scanline small,.bc-exec-scanline small{font-size:.67rem;font-weight:900;letter-spacing:.12em;color:#08708f}
+.bc-ai-scanline strong,.bc-exec-scanline strong{font-size:.92rem;color:#102838}
+.bc-ai-scanline button,.bc-exec-scanline button{min-height:42px!important;white-space:nowrap}
+
+/* AI Brain: keep the real decision interface visible, collapse the nested platform. */
+#restaurantAiBrainV341 .bc-ai-advanced-surface{display:none!important}
+#restaurantAiBrainV341.bc-ai-advanced-open .bc-ai-advanced-surface,
+#restaurantAiBrainV341 .bc-ai-advanced-surface.bc-ai-nav-open{display:block!important}
+#restaurantAiBrainV341 .restaurant-ai-brain-v341-layout{
+ display:grid!important;grid-template-columns:1fr 1fr!important;gap:16px!important;align-items:stretch
+}
+#restaurantAiBrainV341 .bc-ai-decision-card{
+ order:-1;border:2px solid rgba(8,126,164,.24)!important;
+ box-shadow:0 16px 42px rgba(8,35,51,.09)!important
+}
+#restaurantAiBrainV341 .bc-ai-decision-card>small{
+ color:#08708f!important;font-weight:900!important;letter-spacing:.09em!important
+}
+#restaurantAiBrainV341 .restaurant-ai-brain-v341-kpis strong{font-weight:900!important}
+#restaurantAiBrainV341 .bc-ai-risk-kpi{border-color:rgba(205,88,70,.38)!important}
+#restaurantAiBrainV341 .bc-ai-action-kpi{border-color:rgba(8,126,164,.30)!important}
+#restaurantAiBrainV341 .restaurant-ai-brain-v341-prompt-row input{min-height:50px!important;font-size:16px!important}
+#restaurantAiBrainV341 .restaurant-ai-brain-v341-prompt-row button{min-height:50px!important;font-weight:900!important}
+#restaurantAiBrainV341 .restaurant-ai-brain-v341-suggestions button{min-height:42px!important}
+#restaurantAiBrainV341 .restaurant-ai-brain-v341-evidence span{
+ font-weight:800!important;opacity:1!important
+}
+#restaurantAiBrainV341 .bc-ai-evidence-memory{
+ margin-top:18px;padding-top:18px;border-top:1px solid rgba(9,52,76,.12)
+}
+
+/* Executive: alerts and brief first; charts/location detail one click deeper. */
+#executive-command-center .bc-exec-detail{display:none!important}
+#executive-command-center.bc-exec-detail-open .bc-exec-detail{display:block!important}
+#executive-command-center .exec-grid{
+ grid-template-columns:1fr 1fr!important;
+ align-items:start
+}
+#executive-command-center .bc-exec-priority{
+ display:block!important;
+ border-color:rgba(8,126,164,.24)!important
+}
+#executive-command-center .exec-alerts{grid-column:1}
+#executive-command-center .exec-summary{grid-column:2}
+#executive-command-center .exec-alert.critical{
+ border-color:rgba(223,86,68,.46)!important;
+ box-shadow:inset 4px 0 0 rgba(223,86,68,.80)
+}
+#executive-command-center .exec-kpis strong{font-weight:900!important}
+#executive-command-center .exec-alert strong,
+#executive-command-center .exec-summary strong,
+#executive-command-center .exec-panel-head strong{font-weight:850!important}
+#executive-command-center .location-performance-row[role="button"]{cursor:pointer}
+#executive-command-center .location-performance-row[role="button"]:focus-visible{
+ outline:3px solid rgba(8,126,164,.42)!important;outline-offset:3px!important
+}
+#executive-command-center #execDownloadBriefing{font-weight:900!important}
+#executive-command-center #execGuestIntelligence{min-height:42px!important}
+
+@media(max-width:900px){
+ .bc-ai-scanline,.bc-exec-scanline{align-items:stretch;flex-direction:column}
+ .bc-ai-scanline button,.bc-exec-scanline button{width:100%}
+ #restaurantAiBrainV341 .restaurant-ai-brain-v341-layout{grid-template-columns:1fr!important}
+ #executive-command-center .exec-grid{grid-template-columns:1fr!important}
+ #executive-command-center .exec-alerts,#executive-command-center .exec-summary{grid-column:auto}
+}

@@ -12,6 +12,11 @@ ready(()=>{
       document.querySelectorAll(".bc-deep-tool.bc-nav-open").forEach(x=>x.classList.remove("bc-nav-open"));
       const hiddenParent=target.closest(".bc-deep-tool");
       if(hiddenParent)hiddenParent.classList.add("bc-nav-open");
+      const aiHiddenParent=target.closest(".bc-ai-advanced-surface");
+      if(aiHiddenParent){
+        document.getElementById("restaurantAiBrainV341")?.classList.add("bc-ai-advanced-open");
+        aiHiddenParent.classList.add("bc-ai-nav-open");
+      }
       target.scrollIntoView({behavior:"smooth",block:"start"});
       history.replaceState(null,"",`#${id}`);
       document.querySelectorAll(".desktop-nav a").forEach(a=>a.removeAttribute("aria-current"));

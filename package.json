@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "62.50.0",
+  "version": "63.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 Staff, Kitchen, and Service Coordination rush workflow",
+  "description": "Blue Current Hospitality OS \u2014 AI Brain and Executive decision clarity",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

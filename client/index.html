@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="62.50.0">
+  <meta name="blue-current-build" content="63.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=62.50.0">
+  <link rel="stylesheet" href="styles.css?v=63.0.0">
 </head>
 <body class="app-high-contrast">
 
@@ -688,7 +688,7 @@
     </section>
     <section class="v432-center v438-center v4316-center" id="hospitalityActionWorkspace">
       <header><div><small>V47.06–V47.10 · Action Workspace</small><strong>Turn a high-value opportunity into an owned operating action with a target, deadline, status, and decision history.</strong><span>Accepted actions stay human-owned. Blue Current tracks execution without automatically changing restaurant operations.</span></div><button id="hawRefresh" type="button">Refresh actions</button></header>
-      <div class="v432-kpis"><article><small>Active actions</small><strong id="hawActive">0</strong></article><article><small>Blocked</small><strong id="hawBlocked">0</strong></article><article><small>Overdue</small><strong id="hawOverdue">0</strong></article><article><small>Expected impact</small><strong id="hawImpact">$0</strong></article><article><small>Completed</small><strong id="hawCompleted">0</strong></article><article><small>Realized impact</small><strong id="hawRealized">$0</strong></article><article><small>Realization rate</small><strong id="hawRate">0%</strong></article></div>
+      <div class="v432-kpis"><article><small>Actions in motion</small><strong id="hawActive">0</strong></article><article><small>Blocked</small><strong id="hawBlocked">0</strong></article><article><small>Overdue</small><strong id="hawOverdue">0</strong></article><article><small>Expected impact</small><strong id="hawImpact">$0</strong></article><article><small>Completed</small><strong id="hawCompleted">0</strong></article><article><small>Realized impact</small><strong id="hawRealized">$0</strong></article><article><small>Realization rate</small><strong id="hawRate">0%</strong></article></div>
       <div class="v4316-answer" id="hawHeadline">Loading owned actions…</div>
       <div class="v4316-actions"><input id="hawOwner" class="v4312-input" placeholder="Update owner"><input id="hawNote" class="v4312-input" placeholder="Action update / blocker note"></div>
       <div id="hawList" class="v432-list"></div>
@@ -720,7 +720,7 @@
     </section>
     <section class="v432-center v438-center v4316-center" id="managerOperatingRhythm">
       <header><div><small>V47.26–V47.30 · Manager Operating Rhythm</small><strong>Run the entire shift from one continuous management rhythm: plan, execute, anticipate, protect profit, hand off, and close.</strong><span>Blue Current assembles the current priorities and operating evidence into a single shift narrative. Managers remain responsible for every commitment and closeout.</span></div><button id="morRefresh" type="button">Refresh rhythm</button></header>
-      <div class="v432-kpis"><article><small>Rhythm completion</small><strong id="morScore">0%</strong></article><article><small>Readiness</small><strong id="morReadiness">0</strong></article><article><small>Priorities</small><strong id="morPriorities">0</strong></article><article><small>Active actions</small><strong id="morActions">0</strong></article><article><small>Controllable contribution</small><strong id="morProfit">$0</strong></article><article><small>Realized impact</small><strong id="morRealized">$0</strong></article><article><small>Latest handoff</small><strong id="morHandoff">NONE</strong></article><article><small>Latest closeout</small><strong id="morCloseout">NONE</strong></article></div>
+      <div class="v432-kpis"><article><small>Rhythm completion</small><strong id="morScore">0%</strong></article><article><small>Readiness</small><strong id="morReadiness">0</strong></article><article><small>Priorities</small><strong id="morPriorities">0</strong></article><article><small>Actions in motion</small><strong id="morActions">0</strong></article><article><small>Controllable contribution</small><strong id="morProfit">$0</strong></article><article><small>Realized impact</small><strong id="morRealized">$0</strong></article><article><small>Latest handoff</small><strong id="morHandoff">NONE</strong></article><article><small>Latest closeout</small><strong id="morCloseout">NONE</strong></article></div>
       <div class="v4316-answer" id="morHeadline">Building the shift operating rhythm…</div>
       <div class="v4316-actions"><select id="morShift"><option value="opening">Opening</option><option value="lunch">Lunch</option><option value="dinner" selected>Dinner</option><option value="closing">Closing</option></select><input id="morManager" class="v4312-input" placeholder="Manager"><input id="morNote" class="v4312-input" placeholder="Operating intent / handoff / closeout note"><button id="morPlan" type="button">Commit shift plan</button><button id="morHandoffBtn" type="button">Post handoff</button><button id="morCloseoutBtn" type="button">Close shift</button></div>
       <div id="morStages" class="v432-list"></div>
@@ -4114,7 +4114,7 @@
         <div class="ai-operations-coach-kpis">
           <article><small>Active lessons</small><strong id="aiOperationsCoachLessonCount">0</strong><span>Current coaching priorities</span></article>
           <article><small>At-risk commitments</small><strong id="aiOperationsCoachRiskCount">0</strong><span>Overdue or due soon</span></article>
-          <article><small>Verified wins</small><strong id="aiOperationsCoachWinCount">0</strong><span>Repeatable success patterns</span></article>
+          <article><small>Proven wins</small><strong id="aiOperationsCoachWinCount">0</strong><span>Repeatable success patterns</span></article>
           <article><small>Manager focus</small><strong id="aiOperationsCoachManagerFocus">Balanced</strong><span>Primary leadership theme</span></article>
           <article><small>Confidence</small><strong id="aiOperationsCoachConfidence">0%</strong><span>Evidence strength</span></article>
         </div>
@@ -4262,9 +4262,9 @@
         </div>
 
         <div class="autonomous-briefing-kpis">
-          <article><small>Open risks</small><strong id="autonomousBriefingRiskCount">0</strong><span>Portfolio and accountability</span></article>
+          <article><small>Risks needing attention</small><strong id="autonomousBriefingRiskCount">0</strong><span>Portfolio and accountability</span></article>
           <article><small>Priority actions</small><strong id="autonomousBriefingActionCount">0</strong><span>Leadership follow-up</span></article>
-          <article><small>Verified wins</small><strong id="autonomousBriefingWinCount">0</strong><span>Measured positive results</span></article>
+          <article><small>Proven wins</small><strong id="autonomousBriefingWinCount">0</strong><span>Measured positive results</span></article>
           <article><small>Locations covered</small><strong id="autonomousBriefingLocationCount">0</strong><span>Portfolio scope</span></article>
           <article><small>Briefing confidence</small><strong id="autonomousBriefingConfidence">0%</strong><span>Evidence strength</span></article>
         </div>
@@ -4289,7 +4289,7 @@
                   <div id="autonomousBriefingActionList" class="autonomous-briefing-list"></div>
                 </div>
                 <div>
-                  <small>Verified wins</small>
+                  <small>Proven wins</small>
                   <div id="autonomousBriefingWinList" class="autonomous-briefing-list"></div>
                 </div>
               </div>
@@ -4352,36 +4352,36 @@
       <section class="restaurant-ai-brain-v341" id="restaurantAiBrainV341" aria-labelledby="restaurantAiBrainV341Title">
         <div class="restaurant-ai-brain-v341-heading">
           <div>
-            <small>Restaurant AI Brain · Phase 1</small>
-            <h4 id="restaurantAiBrainV341Title">Executive Intelligence Copilot</h4>
-            <span id="restaurantAiBrainV341Updated">Building a unified operating picture from forecasts, decisions, accountability, coaching, and portfolio intelligence…</span>
+            <small>Restaurant AI Brain</small>
+            <h4 id="restaurantAiBrainV341Title">What should we do next—and why?</h4>
+            <span id="restaurantAiBrainV341Updated">Building a decision-ready operating picture from live restaurant evidence…</span>
           </div>
 
           <div class="restaurant-ai-brain-v341-score" id="restaurantAiBrainV341ScoreCard" data-tone="stable">
-            <small>Brain confidence</small>
+            <small>Decision confidence</small>
             <strong id="restaurantAiBrainV341Score">0</strong>
             <span id="restaurantAiBrainV341Label">Awaiting evidence</span>
           </div>
         </div>
 
         <div class="restaurant-ai-brain-v341-kpis">
-          <article><small>Signals indexed</small><strong id="restaurantAiBrainV341Signals">0</strong><span>Cross-system evidence</span></article>
-          <article><small>Open risks</small><strong id="restaurantAiBrainV341Risks">0</strong><span>Executive attention</span></article>
-          <article><small>Active actions</small><strong id="restaurantAiBrainV341Actions">0</strong><span>Owned commitments</span></article>
-          <article><small>Verified wins</small><strong id="restaurantAiBrainV341Wins">0</strong><span>Proven operating patterns</span></article>
-          <article><small>Portfolio scope</small><strong id="restaurantAiBrainV341Locations">0</strong><span>Locations represented</span></article>
+          <article><small>Evidence signals</small><strong id="restaurantAiBrainV341Signals">0</strong><span>Cross-system evidence</span></article>
+          <article><small>Risks needing attention</small><strong id="restaurantAiBrainV341Risks">0</strong><span>Executive attention</span></article>
+          <article><small>Actions in motion</small><strong id="restaurantAiBrainV341Actions">0</strong><span>Owned commitments</span></article>
+          <article><small>Proven wins</small><strong id="restaurantAiBrainV341Wins">0</strong><span>Proven operating patterns</span></article>
+          <article><small>Locations in view</small><strong id="restaurantAiBrainV341Locations">0</strong><span>Locations represented</span></article>
         </div>
 
         <div class="restaurant-ai-brain-v341-layout">
           <div class="restaurant-ai-brain-v341-query">
             <div class="restaurant-ai-brain-v341-section-heading">
-              <div><small>Ask Blue Current</small><strong>Natural-language operating questions</strong></div>
+              <div><small>ASK BLUE CURRENT</small><strong>Ask a restaurant decision question</strong></div>
               <span id="restaurantAiBrainV341QueryStatus">Ready</span>
             </div>
 
             <div class="restaurant-ai-brain-v341-prompt-row">
-              <input id="restaurantAiBrainV341Prompt" type="text" placeholder="Ask: What should leadership fix first tomorrow?">
-              <button type="button" id="restaurantAiBrainV341Ask">Ask the AI Brain</button>
+              <input id="restaurantAiBrainV341Prompt" type="text" placeholder="Ask: What needs attention first?">
+              <button type="button" id="restaurantAiBrainV341Ask">Ask Blue Current</button>
             </div>
 
             <div class="restaurant-ai-brain-v341-suggestions">
@@ -4392,9 +4392,9 @@
             </div>
 
             <article class="restaurant-ai-brain-v341-answer" id="restaurantAiBrainV341Answer">
-              <small>AI response</small>
+              <small>Decision brief</small>
               <strong id="restaurantAiBrainV341AnswerTitle">Ask an operating question</strong>
-              <p id="restaurantAiBrainV341AnswerText">The AI Brain will synthesize evidence already stored across the Hospitality OS.</p>
+              <p id="restaurantAiBrainV341AnswerText">Blue Current will summarize the recommendation, evidence, confidence, and expected value.</p>
               <div class="restaurant-ai-brain-v341-evidence">
                 <span id="restaurantAiBrainV341EvidenceCount">0 evidence points</span>
                 <span id="restaurantAiBrainV341AnswerConfidence">0% confidence</span>
@@ -4403,7 +4403,7 @@
           </div>
 
           <aside class="restaurant-ai-brain-v341-priority">
-            <small>Current executive priority</small>
+            <small>Highest-priority decision</small>
             <strong id="restaurantAiBrainV341PriorityTitle">No priority detected</strong>
             <p id="restaurantAiBrainV341PriorityDetail">As operational evidence accumulates, the AI Brain will identify the highest-value leadership intervention.</p>
 
@@ -4415,7 +4415,7 @@
             </dl>
 
             <div class="restaurant-ai-brain-v341-actions">
-              <button type="button" id="restaurantAiBrainV341OpenSource" disabled>Open source module</button>
+              <button type="button" id="restaurantAiBrainV341OpenSource" disabled>Open supporting evidence</button>
               <button type="button" class="restaurant-ai-brain-v341-secondary" id="restaurantAiBrainV341Copy">Copy response</button>
             </div>
 
@@ -6578,7 +6578,7 @@
 
               <div class="compliance-evidence-vault-actions">
                 <button type="button" id="complianceEvidenceVaultVerify" disabled>Verify record integrity</button>
-                <button type="button" class="compliance-evidence-vault-secondary" id="complianceEvidenceVaultOpenSource" disabled>Open source module</button>
+                <button type="button" class="compliance-evidence-vault-secondary" id="complianceEvidenceVaultOpenSource" disabled>Open supporting evidence</button>
               </div>
 
               <span id="complianceEvidenceVaultStatus" role="status"></span>
@@ -7584,10 +7584,9 @@
       <div class="container">
         <div class="section-heading section-heading-light reveal">
           <p class="eyebrow eyebrow-light"><span></span> Executive command center</p>
-          <h2>One operating picture across every location.</h2>
+          <h2>Know which location needs leadership attention—and why.</h2>
           <p>
-            A portfolio-level view of guest demand, service pressure, call performance,
-            reservations, and the moments that need leadership attention.
+            Start with portfolio health and material risk. Open location detail, guest context, and deeper trends only when a decision requires them.
           </p>
         </div>
 
@@ -7604,7 +7603,7 @@
             <div class="exec-topbar-actions">
               <div class="exec-live"><i></i> Live portfolio view</div>
               <button type="button" id="execRefresh">Refresh</button>
-              <button class="primary" type="button">Download briefing</button>
+              <button class="primary" type="button" id="execDownloadBriefing">Download briefing</button>
             </div>
           </div>
 
@@ -7722,8 +7721,8 @@
             <section class="exec-panel exec-alerts">
               <div class="exec-panel-head">
                 <div>
-                  <small>Leadership attention</small>
-                  <strong>Service alerts</strong>
+                  <small>LEADERSHIP ATTENTION</small>
+                  <strong>Decisions that need attention</strong>
                 </div>
                 <span class="exec-alert-count">3</span>
               </div>
@@ -7762,7 +7761,7 @@
                   <small>Guest experience</small>
                   <strong>Tonight's moments</strong>
                 </div>
-                <button type="button">View guest intelligence</button>
+                <button type="button" id="execGuestIntelligence">View guest intelligence</button>
               </div>
 
               <div class="guest-moment-grid">
@@ -7788,8 +7787,8 @@
             <section class="exec-panel exec-summary">
               <div class="exec-panel-head">
                 <div>
-                  <small>Executive briefing</small>
-                  <strong>What leadership should know</strong>
+                  <small>EXECUTIVE BRIEF</small>
+                  <strong>What matters right now</strong>
                 </div>
                 <span class="exec-generated">Updated <b id="execUpdated">just now</b></span>
               </div>
@@ -8797,7 +8796,7 @@
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipAutonomyBoundaryCenter" data-src="js/modules/aipAutonomyBoundaryCenter.js?v=40.41.0"></script>
 
 <section class="v415-center" id="relationshipGraphCenter" aria-labelledby="relTitle"><header><div><small>V41.3 · Relationship Graph</small><strong id="relTitle">Connect hospitality entities into a traceable operating graph.</strong><span id="relMessage">Relationships show how guests, reservations, tables, employees, tickets, decisions, and locations interact.</span></div></header><form id="relForm" class="v415-form"><input id="relSource" placeholder="Source entity, e.g. reservation"><input id="relType" placeholder="Relationship, e.g. assigned-to"><input id="relTarget" placeholder="Target entity, e.g. table"><input id="relConfidenceInput" type="number" min="0" max="100" value="85" placeholder="Confidence"><input id="relEvidence" placeholder="Evidence source"><button type="submit">Add relationship</button></form><div class="v415-kpis"><article><small>Relationships</small><strong id="relTotal">0</strong></article><article><small>Connected entities</small><strong id="relEntities">0</strong></article><article><small>High confidence</small><strong id="relConfidence">0</strong></article><article><small>Relationship types</small><strong id="relTypes">0</strong></article></div><div id="relList" class="v415-list"></div></section>
-<section class="v415-center" id="contextResolutionCenter" aria-labelledby="ctxTitle"><header><div><small>V41.4 · Context Resolution</small><strong id="ctxTitle">Assemble the smallest complete operating context before an agent reasons.</strong><span id="ctxMessage">Live signals, relationships, open decisions, and exceptions are resolved together.</span></div><div class="v415-actions"><input id="ctxQuery" value="What requires attention right now?" placeholder="Context question"><button type="button" id="ctxResolve">Resolve context</button></div></header><div class="v415-kpis"><article><small>Confidence</small><strong id="ctxConfidence">—</strong></article><article><small>Signals</small><strong id="ctxSignals">0</strong></article><article><small>Relationships</small><strong id="ctxRelations">0</strong></article><article><small>Open risks</small><strong id="ctxRisks">0</strong></article></div><div id="ctxList" class="v415-list v415-context"></div></section>
+<section class="v415-center" id="contextResolutionCenter" aria-labelledby="ctxTitle"><header><div><small>V41.4 · Context Resolution</small><strong id="ctxTitle">Assemble the smallest complete operating context before an agent reasons.</strong><span id="ctxMessage">Live signals, relationships, open decisions, and exceptions are resolved together.</span></div><div class="v415-actions"><input id="ctxQuery" value="What requires attention right now?" placeholder="Context question"><button type="button" id="ctxResolve">Resolve context</button></div></header><div class="v415-kpis"><article><small>Confidence</small><strong id="ctxConfidence">—</strong></article><article><small>Signals</small><strong id="ctxSignals">0</strong></article><article><small>Relationships</small><strong id="ctxRelations">0</strong></article><article><small>Risks needing attention</small><strong id="ctxRisks">0</strong></article></div><div id="ctxList" class="v415-list v415-context"></div></section>
 <section class="v415-center v415-dependency" id="decisionDependencyCenter" aria-labelledby="depTitle"><header><div><small>V41.5 · Decision Dependency Graph</small><strong id="depTitle">Trace second- and third-order effects between operating decisions.</strong><span id="depMessage">Dependencies reveal what another decision enables, constrains, or puts at risk.</span></div></header><form id="depForm" class="v415-form"><select id="depUpstream"><option value="">Upstream decision</option></select><input id="depEffect" value="enables" placeholder="Effect"><select id="depDownstream"><option value="">Downstream decision</option></select><input id="depStrengthInput" type="number" min="1" max="100" value="75"><select id="depRiskInput"><option value="low">Low risk</option><option value="medium" selected>Medium risk</option><option value="high">High risk</option></select><button type="submit">Add dependency</button></form><div class="v415-kpis"><article><small>Dependencies</small><strong id="depTotal">0</strong></article><article><small>Verified</small><strong id="depVerified">0</strong></article><article><small>High risk</small><strong id="depRisk">0</strong></article><article><small>Average strength</small><strong id="depStrength">0%</strong></article></div><div id="depList" class="v415-list"></div></section>
 
   <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="relationshipGraphCenter" data-src="js/modules/relationshipGraphEngine.js?v=41.5.0"></script>
@@ -9385,7 +9384,8 @@
 <script src="js/command-live-v61.50.js?v=61.50.0"></script>
 <script src="js/floor-reservations-v62.0.js?v=62.0.0"></script>
 <script src="js/staff-kitchen-service-v62.50.js?v=62.50.0"></script>
-<script src="js/startup-loader.js?v=62.50.0"></script>
+<script src="js/ai-executive-v63.0.js?v=63.0.0"></script>
+<script src="js/startup-loader.js?v=63.0.0"></script>
 
   <dialog class="bc-host-dialog" id="bcHostDialog">
     <form method="dialog" class="bc-host-dialog-card" id="bcHostDialogForm">
