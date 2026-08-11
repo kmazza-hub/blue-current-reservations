@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "63.0.0",
+  "version": "63.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 AI Brain and Executive decision clarity",
+  "description": "Blue Current Hospitality OS \u2014 full-system usability verification and runtime guardrails",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

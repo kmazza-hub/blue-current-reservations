@@ -13921,3 +13921,30 @@ textarea.bc-touch-control{min-height:88px!important}
  #executive-command-center .exec-grid{grid-template-columns:1fr!important}
  #executive-command-center .exec-alerts,#executive-command-center .exec-summary{grid-column:auto}
 }
+
+
+/* ==========================================================================
+   V63.50 · Full-system usability guardrails
+   ========================================================================== */
+.bc-sr-only{
+ position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+ overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important
+}
+.bc-data-pending{opacity:.64!important;text-decoration:none!important}
+button[aria-disabled="true"],button:disabled{cursor:not-allowed!important}
+[data-bc-priority="primary"] button,
+[data-bc-priority="primary"] a.button{min-height:44px}
+[data-bc-priority="primary"] input,
+[data-bc-priority="primary"] select,
+[data-bc-priority="primary"] textarea{font-size:16px}
+[data-bc-priority="primary"] :focus-visible{
+ outline:3px solid rgba(8,126,164,.48)!important;outline-offset:3px!important
+}
+dialog:focus-visible{outline:none!important}
+@media(prefers-contrast:more){
+ [data-bc-priority="primary"]{border-color:rgba(5,36,53,.34)!important}
+ [data-bc-priority="primary"] p,
+ [data-bc-priority="primary"] span,
+ [data-bc-priority="primary"] small,
+ [data-bc-priority="primary"] label{opacity:1!important}
+}
