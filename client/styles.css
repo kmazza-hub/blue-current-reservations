@@ -14131,3 +14131,156 @@ dialog:focus-visible{outline:none!important}
  .bc-rush-dock button span{display:none}
  .bc-rush-dock button{min-height:48px!important;text-align:center!important}
 }
+
+
+/* ==========================================================================
+   V66.00 · Unified visual system
+   ========================================================================== */
+:root{
+  --bc-ui-radius-sm:10px;
+  --bc-ui-radius-md:14px;
+  --bc-ui-radius-lg:18px;
+  --bc-ui-border:rgba(11,45,64,.14);
+  --bc-ui-border-strong:rgba(11,45,64,.24);
+  --bc-ui-shadow-sm:0 7px 22px rgba(4,27,40,.07);
+  --bc-ui-shadow-md:0 14px 38px rgba(4,27,40,.10);
+  --bc-ui-surface:#ffffff;
+  --bc-ui-surface-soft:#f5fafc;
+  --bc-ui-text:#102838;
+  --bc-ui-muted:#536d7e;
+  --bc-ui-primary:#0c536b;
+  --bc-ui-primary-hover:#0a455a;
+  --bc-ui-positive-bg:#e6f5ec;
+  --bc-ui-positive:#1e7048;
+  --bc-ui-warning-bg:#fff2d8;
+  --bc-ui-warning:#7a5819;
+  --bc-ui-critical-bg:#ffe7e3;
+  --bc-ui-critical:#973d31;
+  --bc-ui-neutral-bg:#eaf2f6;
+  --bc-ui-neutral:#496878;
+}
+
+.bc-ui-section{
+  scroll-margin-top:112px;
+}
+.bc-ui-system{
+  color:var(--bc-ui-text);
+}
+.bc-ui-system .bc-ui-card{
+  border-radius:var(--bc-ui-radius-md);
+}
+.bc-ui-system .bc-ui-card:not(.live-kpi-grid button):not(.host-table){
+  border-color:var(--bc-ui-border);
+}
+.bc-ui-system .bc-ui-heading{
+  letter-spacing:-.018em;
+  line-height:1.16;
+}
+.bc-ui-system h2.bc-ui-heading{font-weight:850}
+.bc-ui-system h3.bc-ui-heading,
+.bc-ui-system h4.bc-ui-heading{font-weight:820}
+.bc-ui-system .bc-ui-support{
+  line-height:1.45;
+}
+.bc-ui-system .bc-ui-button{
+  min-height:44px;
+  border-radius:var(--bc-ui-radius-sm)!important;
+  font-weight:800!important;
+  transition:transform .12s ease,background .12s ease,border-color .12s ease,box-shadow .12s ease;
+}
+.bc-ui-system .bc-ui-button[data-bc-button-tone="primary"]{
+  background:var(--bc-ui-primary)!important;
+  color:#fff!important;
+  border-color:var(--bc-ui-primary)!important;
+}
+.bc-ui-system .bc-ui-button[data-bc-button-tone="primary"]:hover{
+  background:var(--bc-ui-primary-hover)!important;
+  border-color:var(--bc-ui-primary-hover)!important;
+}
+.bc-ui-system .bc-ui-button[data-bc-button-tone="secondary"]{
+  border-color:var(--bc-ui-border-strong);
+}
+.bc-ui-system .bc-ui-button[data-bc-button-tone="caution"]{
+  border-color:rgba(151,61,49,.34)!important;
+}
+.bc-ui-system .bc-ui-field{
+  min-height:44px;
+  border-radius:var(--bc-ui-radius-sm)!important;
+  border-color:var(--bc-ui-border-strong)!important;
+  box-shadow:none!important;
+}
+.bc-ui-system .bc-ui-field:focus{
+  border-color:rgba(12,83,107,.50)!important;
+  box-shadow:0 0 0 3px rgba(12,83,107,.10)!important;
+}
+.bc-ui-status{
+  display:inline-flex!important;
+  align-items:center;
+  width:max-content;
+  max-width:100%;
+  border-radius:999px!important;
+  padding:4px 8px!important;
+  font-size:.68rem!important;
+  font-weight:850!important;
+  line-height:1.2!important;
+}
+.bc-ui-status[data-bc-status-tone="positive"]{background:var(--bc-ui-positive-bg)!important;color:var(--bc-ui-positive)!important}
+.bc-ui-status[data-bc-status-tone="warning"]{background:var(--bc-ui-warning-bg)!important;color:var(--bc-ui-warning)!important}
+.bc-ui-status[data-bc-status-tone="critical"]{background:var(--bc-ui-critical-bg)!important;color:var(--bc-ui-critical)!important}
+.bc-ui-status[data-bc-status-tone="neutral"]{background:var(--bc-ui-neutral-bg)!important;color:var(--bc-ui-neutral)!important}
+
+/* Primary-page rhythm */
+.bc-ui-section > .container,
+.bc-ui-section > .exec-shell,
+.bc-ui-section > .host-shell,
+.bc-ui-section > .restaurant-ai-brain-v341-shell{
+  width:min(1180px,calc(100% - 32px));
+  margin-left:auto;
+  margin-right:auto;
+}
+.bc-ui-system .section-heading,
+.bc-ui-system .live-command-head,
+.bc-ui-system .restaurant-ai-brain-v341-heading{
+  margin-bottom:18px!important;
+}
+.bc-ui-system .section-heading p,
+.bc-ui-system .live-command-head p,
+.bc-ui-system .restaurant-ai-brain-v341-heading span{
+  max-width:860px;
+}
+
+/* Keep bright operating cards readable in dim restaurants. */
+#command-center .bc-ui-card,
+#host-stand .bc-ui-card,
+#workforce-intelligence .bc-ui-card,
+#executive-command-center .bc-ui-card{
+  box-shadow:var(--bc-ui-shadow-sm);
+}
+#blue-current-live .bc-ui-card,
+#service-coordination .bc-ui-card{
+  box-shadow:0 12px 34px rgba(0,0,0,.16);
+}
+
+/* Consistent data emphasis */
+.bc-ui-system strong[id],
+.bc-ui-system .live-kpi-grid strong,
+.bc-ui-system .wf-kpis strong,
+.bc-ui-system .exec-kpis strong,
+.bc-ui-system .svc-kpis strong{
+  font-variant-numeric:tabular-nums;
+}
+
+/* Responsive rhythm */
+@media(max-width:900px){
+  .bc-ui-section > .container,
+  .bc-ui-section > .exec-shell,
+  .bc-ui-section > .host-shell,
+  .bc-ui-section > .restaurant-ai-brain-v341-shell{
+    width:min(100% - 22px,1180px);
+  }
+  .bc-ui-system .bc-ui-button{min-height:46px}
+}
+@media(max-width:560px){
+  .bc-ui-system .bc-ui-card{border-radius:12px}
+  .bc-ui-system .bc-ui-heading{letter-spacing:-.012em}
+}
