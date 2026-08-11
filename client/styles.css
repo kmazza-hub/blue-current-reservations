@@ -13536,13 +13536,34 @@ textarea.bc-touch-control{min-height:88px!important}
 
 
 /* ==========================================================================
-   V61.00 · Dark-card contrast + working primary navigation
+   V61.00 · Navigation, live contrast, and compact operator shell
    ========================================================================== */
+.bc-shell-merged-source{display:none!important}
+.bc-operator-utility{
+  margin:18px auto 14px;
+  min-height:66px;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  border:1px solid rgba(8,126,164,.18);
+  border-radius:18px;
+  background:#ffffff;
+  box-shadow:0 10px 26px rgba(8,35,51,.08);
+}
+.bc-operator-utility-copy{display:grid;gap:2px;min-width:0}
+.bc-operator-utility-copy small{font-size:.67rem;font-weight:900;letter-spacing:.12em;color:#08708f}
+.bc-operator-utility-copy strong{font-size:.98rem;color:#0b1f2d}
+.bc-operator-utility-copy span{font-size:.8rem;color:#506879;line-height:1.35}
+.bc-operator-utility-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bc-operator-utility-actions button{min-height:42px!important;padding:8px 14px!important;white-space:nowrap}
+.bc-deep-tool.bc-nav-open{display:block!important}
+
 .live-command-center{
   --bc-v61-white:#ffffff;
   --bc-v61-bright:#edf7fb;
   --bc-v61-muted:#c7dbe6;
-  --bc-v61-soft:#a9c3d1;
 }
 .live-command-center .live-health-ring strong,
 .live-command-center .live-health-ring span,
@@ -13564,7 +13585,6 @@ textarea.bc-touch-control{min-height:88px!important}
 .live-command-center .live-panel-head small{
   color:var(--bc-v61-bright)!important;
   font-weight:850!important;
-  letter-spacing:.08em;
 }
 .live-command-center .live-kpi-grid button strong{
   color:#ffffff!important;
@@ -13587,28 +13607,15 @@ textarea.bc-touch-control{min-height:88px!important}
 .live-command-center .copilot-prompts button,
 .live-command-center .connector-card button,
 .live-command-center .live-action-card button,
-.live-command-center .copilot-form button{
-  color:#fff8e8!important;
-}
-.live-command-center .copilot-form input{
-  color:#ffffff!important;
-  background:#102f3d!important;
-}
-.live-command-center .live-panel-head input{
-  color:#143044!important;
-  background:#ffffff!important;
-}
-.live-command-center .live-panel-head input::placeholder{
-  color:#607789!important;
-}
+.live-command-center .copilot-form button{color:#fff8e8!important}
+.live-command-center .copilot-form input{color:#ffffff!important;background:#102f3d!important}
+.live-command-center .live-panel-head input{color:#143044!important;background:#ffffff!important}
+.live-command-center .live-panel-head input::placeholder{color:#607789!important}
 #command-center,#blue-current-live,#host-stand,#journey,#workforce-foundation,
-#kitchenThroughputCenter,#executive-command-center,#restaurantAiBrainV341{
-  scroll-margin-top:118px;
+#kitchenThroughputCenter,#executive-command-center,#restaurantAiBrainV341{scroll-margin-top:112px}
+.desktop-nav a[aria-current="page"]{color:#ffffff!important;background:rgba(255,255,255,.18)!important}
+@media (max-width:900px){
+  .bc-operator-utility{align-items:flex-start;flex-direction:column}
+  .bc-operator-utility-actions{width:100%}
+  .bc-operator-utility-actions button{flex:1}
 }
-.desktop-nav a{cursor:pointer}
-.desktop-nav a[aria-current="page"]{
-  color:#ffffff!important;
-  background:rgba(255,255,255,.18)!important;
-}
-
-.bc-deep-tool.bc-nav-open{display:block!important}

@@ -3,7 +3,7 @@
 const CORE=[
  "command-center","blue-current-live","host-stand","journey",
  "workforce-foundation","kitchenThroughputCenter",
- "restaurantAiBrainV341","executive-command-center"
+ "executive-command-center","restaurantAiBrainV341"
 ];
 const SUPPORT=[
  "hospitalityPerformanceCommand","hospitalityActionWorkspace","hospitalityOutcomeMeasurement",
@@ -30,11 +30,11 @@ ready(()=>{
   "command-center":"Start here · what needs attention now",
   "blue-current-live":"Live service · what is happening right now",
   "host-stand":"Floor · seat guests, manage tables, and control the front door",
-  "journey":"Reservations · guest demand, commitments, arrivals, and occasions",
-  "workforce-foundation":"Staff · team availability, coverage, and operating readiness",
+  "journey":"Reservations · demand, commitments, arrivals, and occasions",
+  "workforce-foundation":"Staff · coverage, availability, and operating readiness",
   "kitchenThroughputCenter":"Kitchen · throughput, bottlenecks, and recovery",
-  "restaurantAiBrainV341":"AI Brain · recommendations, evidence, and human decisions",
-  "executive-command-center":"Executive · performance, risk, and leadership decisions"
+  "executive-command-center":"Executive · performance, risk, and leadership decisions",
+  "restaurantAiBrainV341":"AI Brain · recommendations, evidence, and human decisions"
  };
  Object.entries(purposes).forEach(([id,text])=>{
    const section=document.getElementById(id); if(!section)return;
