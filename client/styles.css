@@ -14084,3 +14084,50 @@ dialog:focus-visible{outline:none!important}
  .bc-recovery-banner,.bc-first-use-hint{align-items:stretch;flex-direction:column}
  .bc-recovery-banner button,.bc-first-use-hint button{width:100%}
 }
+
+
+/* ==========================================================================
+   V65.50 · Rush-hour speed & service compression
+   ========================================================================== */
+.bc-rush-dock{
+ position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:9000;
+ width:min(880px,calc(100vw - 24px));padding:8px;display:none;grid-template-columns:repeat(6,1fr);gap:6px;
+ border:1px solid rgba(9,52,76,.18);border-radius:18px;background:rgba(255,255,255,.97);
+ box-shadow:0 20px 64px rgba(4,25,37,.24);backdrop-filter:blur(16px)
+}
+.bc-rush-mode .bc-rush-dock{display:grid}
+.bc-rush-dock button{
+ min-height:54px!important;padding:8px 10px!important;display:grid!important;gap:2px!important;
+ border-radius:12px!important;background:#f4fafc!important;color:#102838!important;
+ border:1px solid rgba(9,52,76,.10)!important;text-align:left!important
+}
+.bc-rush-dock button strong{font-size:.78rem;color:#102838!important}
+.bc-rush-dock button span{font-size:.63rem;color:#627b8b!important}
+.bc-rush-dock button:hover,.bc-rush-dock button:focus-visible{
+ background:#e7f5f9!important;border-color:rgba(8,126,164,.28)!important
+}
+.bc-rush-mode body{padding-bottom:82px}
+.bc-rush-mode .bc-rush-primary-action{
+ min-height:52px!important;font-weight:900!important
+}
+.bc-rush-mode .bc-rush-hide:not(.bc-nav-open){display:none!important}
+.bc-rush-mode #host-stand .host-bottom-feed{display:none!important}
+.bc-rush-mode #host-stand .host-floor-legend{opacity:.88}
+.bc-rush-mode #host-stand .host-top-actions{gap:8px!important}
+.bc-rush-mode #service-coordination .bc-rush-filter{
+ min-height:46px!important;font-weight:900!important
+}
+.bc-rush-mode #kitchenThroughputCenter .bc-kitchen-actions{
+ border:2px solid rgba(8,126,164,.18)!important
+}
+.bc-rush-mode #workforce-intelligence .bc-rush-staff-actions{
+ border:2px solid rgba(8,126,164,.18)!important
+}
+@media(max-width:760px){
+ .bc-rush-dock{grid-template-columns:repeat(3,1fr);bottom:8px}
+ .bc-rush-mode body{padding-bottom:138px}
+}
+@media(max-width:420px){
+ .bc-rush-dock button span{display:none}
+ .bc-rush-dock button{min-height:48px!important;text-align:center!important}
+}
