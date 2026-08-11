@@ -2,7 +2,7 @@
 "use strict";
 const CORE=[
  "command-center","blue-current-live","host-stand","journey",
- "workforce-foundation","kitchenThroughputCenter",
+ "workforce-intelligence","kitchenThroughputCenter","service-coordination",
  "executive-command-center","restaurantAiBrainV341"
 ];
 const SUPPORT=[
@@ -31,8 +31,9 @@ ready(()=>{
   "blue-current-live":"Live service · what is happening right now",
   "host-stand":"Floor · seat guests, manage tables, and control the front door",
   "journey":"Reservations · demand, commitments, arrivals, and occasions",
-  "workforce-foundation":"Staff · coverage, availability, and operating readiness",
+  "workforce-intelligence":"Staff · coverage, callout risk, and the next staffing decision",
   "kitchenThroughputCenter":"Kitchen · throughput, bottlenecks, and recovery",
+  "service-coordination":"Service · tables, expo, server load, and live risk",
   "executive-command-center":"Executive · performance, risk, and leadership decisions",
   "restaurantAiBrainV341":"AI Brain · recommendations, evidence, and human decisions"
  };

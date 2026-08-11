@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="62.0.0">
+  <meta name="blue-current-build" content="62.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=62.0.0">
+  <link rel="stylesheet" href="styles.css?v=62.50.0">
 </head>
 <body class="app-high-contrast">
 
@@ -151,7 +151,7 @@
         <a href="#blue-current-live">Live</a>
         <a href="#host-stand">Floor</a>
         <a href="#journey">Reservations</a>
-        <a href="#workforce-foundation">Staff</a>
+        <a href="#workforce-intelligence">Staff</a>
         <a href="#kitchenThroughputCenter">Kitchen</a>
         <a href="#executive-command-center">Executive</a>
         <a href="#restaurantAiBrainV341">AI Brain</a>
@@ -169,7 +169,7 @@
       <a href="#blue-current-live">Live</a>
       <a href="#host-stand">Floor</a>
       <a href="#journey">Reservations</a>
-      <a href="#workforce-foundation">Staff</a>
+      <a href="#workforce-intelligence">Staff</a>
       <a href="#kitchenThroughputCenter">Kitchen</a>
       <a href="#executive-command-center">Executive</a>
       <a href="#restaurantAiBrainV341">AI Brain</a>
@@ -7841,6 +7841,65 @@
 <section class="guest-intelligence section-shell" id="guest-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V29 · Guest Intelligence & Revenue Engine</p><h2>Know every guest. Grow every relationship.</h2><p>Unified guest profiles, lifetime value, behavioral segments, recovery workflows, and targeted revenue campaigns built from live reservation and service history.</p></div><div class="guest-kpis reveal"><article><small>Known guests</small><strong id="guestKnown">—</strong></article><article><small>VIP guests</small><strong id="guestVip">—</strong></article><article><small>At risk</small><strong id="guestAtRisk">—</strong></article><article><small>Guest revenue</small><strong id="guestRevenue">—</strong></article><article><small>Recoverable</small><strong id="guestRecoverable">—</strong></article><article><small>Average spend</small><strong id="guestAvgSpend">—</strong></article></div><div class="guest-toolbar reveal"><div class="guest-segments" id="guestSegments"></div><button class="button button-light" id="guestRefresh">Refresh intelligence</button></div><div class="guest-main reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Guest graph</small><h3>Profiles & Lifetime Value</h3></div></div><div class="guest-profile-list" id="guestProfileList"></div></article><aside class="guest-panel guest-profile-detail" id="guestProfileDetail"></aside></div><div class="guest-bottom reveal"><article class="guest-panel"><div class="guest-panel-head"><div><small>Revenue activation</small><h3>Campaign Studio</h3></div></div><div class="guest-campaigns" id="guestCampaigns"></div></article><article class="guest-panel"><div class="guest-panel-head"><div><small>Learning loop</small><h3>Engagement Timeline</h3></div></div><div class="guest-engagements" id="guestEngagements"></div></article></div></div></section>
 <section class="workforce-foundation section-shell" id="workforce-foundation"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V33.0.1 · Workforce Foundation</p><h2>One reliable source of truth for every employee.</h2><p>Create employee profiles, capture availability, manage PTO, and build reusable shift templates before the intelligent scheduler arrives.</p></div><div class="wff-kpis reveal"><article><small>Active employees</small><strong id="wffEmployees">—</strong></article><article><small>Pending PTO</small><strong id="wffPending">—</strong></article><article><small>Roles covered</small><strong id="wffRoles">—</strong></article><article><small>Shift templates</small><strong id="wffTemplates">—</strong></article></div><div class="wff-toolbar reveal"><button id="wffRefresh" class="button button-light">Refresh workforce</button></div><div class="wff-grid reveal"><article class="wff-panel"><h3>Add Employee</h3><div class="wff-form"><input id="wffName" placeholder="Employee name"><input id="wffRole" placeholder="Role (Server)"><input id="wffDepartment" placeholder="Department" value="Service"><input id="wffRate" type="number" step="0.01" placeholder="Hourly rate"><input id="wffPreferredHours" type="number" placeholder="Preferred hours"><button id="wffAddEmployee" class="button button-primary">Add employee</button></div><div id="wffEmployeeList" class="wff-list"></div></article><article class="wff-panel"><h3>Availability & PTO</h3><div class="wff-form"><select id="wffEmployeeSelect"></select><select id="wffDay"><option value="1">Monday</option><option value="2">Tuesday</option><option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option><option value="0">Sunday</option></select><input id="wffStart" type="time" value="09:00"><input id="wffEnd" type="time" value="17:00"><label class="wff-check"><input id="wffPreferred" type="checkbox"> Preferred window</label><button id="wffSaveAvailability" class="button button-light">Save availability</button><input id="wffPtoStart" type="date"><input id="wffPtoEnd" type="date"><input id="wffPtoReason" placeholder="PTO reason"><button id="wffRequestPto" class="button button-light">Request PTO</button></div><div id="wffAvailabilityList" class="wff-list compact"></div></article></div><div class="wff-grid reveal"><article class="wff-panel"><h3>PTO Queue</h3><div id="wffPtoList" class="wff-list"></div></article><article class="wff-panel"><h3>Shift Templates</h3><div class="wff-form"><input id="wffTemplateName" placeholder="Template name"><input id="wffTemplateRole" placeholder="Role"><input id="wffTemplateDepartment" value="Service" placeholder="Department"><input id="wffTemplateStart" type="time" value="16:00"><input id="wffTemplateEnd" type="time" value="23:00"><input id="wffTemplateCount" type="number" min="1" value="1"><button id="wffAddTemplate" class="button button-primary">Add template</button></div><div id="wffTemplateList" class="wff-list"></div></article></div></div></section>
 <section class="scheduling section-shell" id="scheduling"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V33.0.3 · AI Scheduling Assistant</p><h2>Build the week with an explainable AI staffing copilot.</h2><p>Create assigned or open shifts, move between weeks, copy the previous schedule, detect conflicts, monitor labor, and publish a manager-ready plan.</p></div><div class="sch-kpis reveal"><article><small>Shifts</small><strong id="scheduleShiftCount">—</strong></article><article><small>Open</small><strong id="scheduleOpenCount">—</strong></article><article><small>Hours</small><strong id="scheduleHours">—</strong></article><article><small>Labor</small><strong id="scheduleLabor">—</strong></article><article><small>Conflicts</small><strong id="scheduleConflictCount">—</strong></article><article><small>Warnings</small><strong id="scheduleWarningCount">—</strong></article></div><div class="sch-toolbar reveal"><div><button id="schedulePrev" class="button button-light">← Previous</button><button id="scheduleToday" class="button button-light">This week</button><button id="scheduleNext" class="button button-light">Next →</button></div><div><strong id="scheduleWeekLabel"></strong><span id="schedulePublication">Draft schedule</span></div><div><button id="scheduleCopy" class="button button-light">Copy previous</button><button id="schedulePublish" class="button button-primary">Publish week</button></div></div><div class="sch-create reveal"><input id="scheduleDate" type="date"><input id="scheduleStart" type="time" value="16:00"><input id="scheduleEnd" type="time" value="23:00"><input id="scheduleRole" placeholder="Role" value="Server"><input id="scheduleDepartment" placeholder="Department" value="Service"><select id="scheduleEmployee"></select><button id="scheduleAdd" class="button button-primary">Add shift</button></div><div class="sch-ai reveal"><div class="sch-ai-head"><div><small>V33.0.3 · AI Scheduling Assistant</small><h3>Blue Current staffing recommendations</h3><p>Explainable recommendations rank qualified employees, identify overtime exposure, and compare staffing with reservation demand.</p></div><div class="sch-ai-stats"><span><b id="scheduleAiCount">0</b> insights</span><span><b id="scheduleAiActionable">0</b> actionable</span><span><b id="scheduleAiCritical">0</b> critical</span></div></div><div id="scheduleAiRecommendations" class="sch-ai-list"></div></div><div id="scheduleBoard" class="sch-board reveal"></div><div class="sch-issues reveal"><h3>Schedule validation</h3><div id="scheduleIssues"></div></div></div></section>
+
+<section class="service-coordination section-shell" id="service-coordination">
+  <div class="container" id="serviceCoordination">
+    <div class="section-heading section-heading-light reveal">
+      <p class="eyebrow eyebrow-light"><span></span> Live Service Coordination</p>
+      <h2>Keep tables, kitchen, expo, and servers moving together.</h2>
+      <p>See which tables need attention, what food is ready, where service is at risk, and who can act next.</p>
+    </div>
+
+    <div class="bc-service-scanline reveal">
+      <div><small>SERVICE NOW</small><strong>Handle risk first. Run ready food next. Keep the room moving.</strong></div>
+      <a class="button button-light button-small" href="#kitchenThroughputCenter">View kitchen pressure</a>
+    </div>
+
+    <div class="svc-kpis reveal">
+      <article><span>Active tables</span><strong id="svcActive">0</strong><small>in service</small></article>
+      <article><span>Food ready</span><strong id="svcReady">0</strong><small>needs a runner</small></article>
+      <article><span>High risk</span><strong id="svcRisk">0</strong><small>needs attention</small></article>
+      <article><span>Service health</span><strong id="svcHealth">0%</strong><small>live operating score</small></article>
+    </div>
+
+    <div class="svc-layout reveal">
+      <article class="svc-flow-card">
+        <div class="svc-head">
+          <div><small>Dining room</small><h3>Active Service</h3></div>
+          <div id="svcFilters" class="bc-svc-filters" role="group" aria-label="Filter active service">
+            <button type="button" class="active" data-svc-filter="all">All</button>
+            <button type="button" data-svc-filter="high">High risk</button>
+            <button type="button" data-svc-filter="critical">Critical</button>
+            <button type="button" data-svc-filter="ready">Food ready</button>
+          </div>
+        </div>
+        <div class="svc-table-wrap">
+          <table class="svc-table">
+            <thead><tr><th>Table / guest</th><th>Server</th><th>Course</th><th>Kitchen</th><th>Expo</th><th>Time</th><th>Risk</th><th>Next action</th></tr></thead>
+            <tbody id="svcFlowBody"><tr><td colspan="8">Waiting for live service data…</td></tr></tbody>
+          </table>
+        </div>
+      </article>
+
+      <aside class="svc-alert-card">
+        <div class="svc-head"><div><small>Attention</small><h3>Service Alerts</h3></div><span>Live</span></div>
+        <div id="svcAlerts" class="svc-alerts"><p class="svc-empty">No active operational alerts.</p></div>
+      </aside>
+    </div>
+
+    <div class="svc-bottom reveal">
+      <article class="svc-expo-card">
+        <div class="svc-head"><div><small>Expo</small><h3>Food Ready Now</h3></div><span>Run these first</span></div>
+        <div id="svcExpoQueue" class="svc-expo"><p class="svc-empty">Expo is clear.</p></div>
+      </article>
+      <article class="svc-load-card">
+        <div class="svc-head"><div><small>Server load</small><h3>Who Has Capacity?</h3></div><span>Current covers</span></div>
+        <div id="svcServerLoad" class="svc-load"></div>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="workforce-intelligence section-shell" id="workforce-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V30 · Workforce Intelligence & Labor Optimizer</p><h2>Put the right people in the right place—at the right cost.</h2><p>Live labor forecasting, role coverage, skill intelligence, callout risk, open-shift workflows, and explainable staffing recommendations.</p></div><div class="wf-kpis reveal"><article><small>Scheduled</small><strong id="workforceScheduled">—</strong></article><article><small>Labor hours</small><strong id="workforceHours">—</strong></article><article><small>Projected labor</small><strong id="workforceLabor">—</strong></article><article><small>Labor %</small><strong id="workforcePercent">—</strong></article><article><small>Demand index</small><strong id="workforceDemand">—</strong></article><article><small>Callout risk</small><strong id="workforceRisk">—</strong></article></div><div class="wf-toolbar reveal"><div><small>Labor budget</small><div class="wf-budget"><i id="workforceBudgetBar"></i></div><span id="workforceBudgetText"></span></div><div><span>Updated <b id="workforceUpdated">—</b></span><button id="workforcePlan" class="button button-light">Edit plan</button><button id="workforceRefresh" class="button button-light">Refresh</button></div></div><div class="wf-main reveal"><article class="wf-panel"><div class="wf-head"><div><small>Shift command</small><h3>Tonight's Workforce</h3></div></div><div id="workforceSchedule" class="wf-schedule"></div></article><aside class="wf-panel"><div class="wf-head"><div><small>Coverage intelligence</small><h3>Role & Skill Matrix</h3></div></div><div id="workforceCoverage" class="wf-coverage"></div></aside></div><div class="wf-bottom reveal"><article class="wf-panel"><div class="wf-head"><div><small>Labor optimizer</small><h3>Staffing Recommendations</h3></div></div><div id="workforceRecommendations" class="wf-recommendations"></div></article><article class="wf-panel"><div class="wf-head"><div><small>Shift marketplace</small><h3>Open Shift Offers</h3></div></div><div id="workforceOffers" class="wf-offers"></div><div class="wf-head wf-history-head"><div><small>Decision trail</small><h3>Recent Actions</h3></div></div><div id="workforceActions" class="wf-actions"></div></article></div></div></section>
 <section class="time-clock section-shell" id="time-clock"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V32.2 · Employee Time & Attendance</p><h2>Accurate punches. Live labor control.</h2><p>PIN clock-in, break tracking, live staffing, overtime exposure, labor cost, and an auditable manager correction workflow.</p></div><div class="tc-kpis reveal"><article><small>Working now</small><strong id="tcWorking">—</strong></article><article><small>On break</small><strong id="tcBreak">—</strong></article><article><small>Hours today</small><strong id="tcHours">—</strong></article><article><small>Labor cost</small><strong id="tcCost">—</strong></article><article><small>Overtime risk</small><strong id="tcOvertime">—</strong></article><article><small>Missed punches</small><strong id="tcMissed">—</strong></article></div><div class="tc-grid reveal"><article class="tc-panel tc-kiosk"><div class="tc-head"><div><small>Employee kiosk</small><h3>Clock In / Out</h3></div><span>Updated <b id="tcUpdated">—</b></span></div><label>Employee<select id="tcEmployee"></select></label><label>PIN<input id="tcPin" type="password" inputmode="numeric" maxlength="6" placeholder="Enter PIN"></label><div><button id="tcClockIn" class="button button-primary">Clock in</button><button id="tcClockOut" class="button button-light">Clock out</button><button id="tcRefresh" class="button button-light">Refresh</button></div></article><article class="tc-panel"><div class="tc-head"><div><small>Live floor</small><h3>Who’s Working</h3></div></div><div id="tcActive" class="tc-active"></div></article></div><div class="tc-grid reveal"><article class="tc-panel"><div class="tc-head"><div><small>Manager review</small><h3>Today’s Timecards</h3></div></div><div id="tcTimecards" class="tc-timecards"></div></article><article class="tc-panel"><div class="tc-head"><div><small>Audit trail</small><h3>Corrections</h3></div></div><div id="tcCorrections" class="tc-corrections"></div></article></div></div></section>
 <section class="inventory-intelligence section-shell" id="inventory-intelligence"><div class="container"><div class="section-heading reveal"><p class="eyebrow"><span></span> V31 · Inventory Intelligence & Food Cost Optimizer</p><h2>Protect availability, margin, and every dollar of food cost.</h2><p>Live stock coverage, recipe costing, waste intelligence, predictive reordering, vendor consolidation, and explainable food-cost actions.</p></div><div class="inventory-kpis reveal"><article><small>Inventory value</small><strong id="inventoryValue">—</strong></article><article><small>Tracked SKUs</small><strong id="inventorySkus">—</strong></article><article><small>Critical stock</small><strong id="inventoryCritical">—</strong></article><article><small>Warning stock</small><strong id="inventoryWarning">—</strong></article><article><small>Actual food cost</small><strong id="inventoryFoodCost">—</strong></article><article><small>Waste today</small><strong id="inventoryWaste">—</strong></article></div><div class="inventory-toolbar reveal"><div class="inventory-cost-meter" id="inventoryFoodCostBar"><i></i><span id="inventoryFoodCostVariance">—</span></div><div><span>Updated <b id="inventoryUpdated">—</b></span><button id="inventoryPolicy" class="button button-light">Edit policy</button><button id="inventoryRefresh" class="button button-light">Refresh</button></div></div><div class="inventory-main reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Stock intelligence</small><h3>Coverage & Reorder Risk</h3></div></div><div id="inventoryItems" class="inventory-items"></div></article><aside class="inventory-panel"><div class="inventory-head"><div><small>Menu engineering</small><h3>Recipe Cost & Margin</h3></div></div><div id="inventoryRecipes" class="inventory-recipes"></div></aside></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Food-cost copilot</small><h3>Recommendations</h3></div></div><div id="inventoryRecommendations" class="inventory-recommendations"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Vendor consolidation</small><h3>Draft Purchase Orders</h3></div><strong id="inventoryOrderValue">—</strong></div><div id="inventoryOrders" class="inventory-orders"></div></article></div><div class="inventory-bottom reveal"><article class="inventory-panel"><div class="inventory-head"><div><small>Loss prevention</small><h3>Waste Log</h3></div></div><div id="inventoryWasteLog" class="inventory-log"></div></article><article class="inventory-panel"><div class="inventory-head"><div><small>Decision trail</small><h3>Inventory Actions</h3></div></div><div id="inventoryActions" class="inventory-log"></div></article></div></div></section>
@@ -9325,7 +9384,8 @@
 <script src="js/top-shell-v61.0.js?v=61.0.0"></script>
 <script src="js/command-live-v61.50.js?v=61.50.0"></script>
 <script src="js/floor-reservations-v62.0.js?v=62.0.0"></script>
-<script src="js/startup-loader.js?v=62.0.0"></script>
+<script src="js/staff-kitchen-service-v62.50.js?v=62.50.0"></script>
+<script src="js/startup-loader.js?v=62.50.0"></script>
 
   <dialog class="bc-host-dialog" id="bcHostDialog">
     <form method="dialog" class="bc-host-dialog-card" id="bcHostDialogForm">
