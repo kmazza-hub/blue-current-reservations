@@ -13619,3 +13619,65 @@ textarea.bc-touch-control{min-height:88px!important}
   .bc-operator-utility-actions{width:100%}
   .bc-operator-utility-actions button{flex:1}
 }
+
+
+/* ==========================================================================
+   V61.50 · Command + Live first-30-seconds perfection
+   ========================================================================== */
+.bc-command-clarity,
+.bc-live-scanline{
+ margin:12px 0 18px;padding:14px 16px;border:1px solid rgba(8,126,164,.18);
+ border-radius:16px;background:#f4fafc;color:#0b1f2d;
+}
+.bc-command-clarity>div,.bc-live-scanline>div{display:grid;gap:3px}
+.bc-command-clarity small,.bc-live-scanline small{font-size:.68rem;font-weight:900;letter-spacing:.12em;color:#08708f}
+.bc-command-clarity strong,.bc-live-scanline strong{font-size:.96rem;line-height:1.35;color:#102838}
+.bc-command-clarity span{font-size:.8rem;line-height:1.45;color:#526b7c}
+
+#command-center .bc-command-detail{display:none!important}
+#command-center.bc-command-details-open .bc-command-detail{display:block!important}
+.bc-command-details-dock,.bc-live-details-dock{
+ margin:18px 0;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:14px;
+ border:1px solid rgba(9,52,76,.14);border-radius:15px;background:#eef5f8;color:#102838;
+}
+.bc-command-details-dock>div,.bc-live-details-dock>div{display:grid;gap:2px}
+.bc-command-details-dock small,.bc-live-details-dock small{font-size:.66rem;font-weight:900;letter-spacing:.1em;color:#477082}
+.bc-command-details-dock span,.bc-live-details-dock span{font-size:.78rem;color:#526b7c}
+.bc-detail-toggle{min-width:190px}
+
+.live-command-center .live-command-head{margin-bottom:16px}
+.live-command-center .live-command-head h2{max-width:720px}
+.live-command-center .live-command-head>div>p:last-child{max-width:820px;line-height:1.5}
+.live-command-center .bc-live-scanline{background:#0e3444;border-color:rgba(255,255,255,.13)}
+.live-command-center .bc-live-scanline small{color:#7ed7f0!important}
+.live-command-center .bc-live-scanline strong{color:#ffffff!important}
+.live-kpi-grid button{position:relative;text-align:left}
+.live-kpi-grid .bc-kpi-intent{
+ display:block;margin-bottom:5px;color:#7ed7f0!important;font-style:normal;font-size:.62rem;
+ font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:1!important
+}
+.live-command-grid{align-items:stretch}
+.live-command-center .bc-live-priority-action{
+ order:-10;border:1px solid rgba(245,185,66,.50)!important;
+ box-shadow:0 18px 44px rgba(2,18,27,.20)
+}
+.live-command-center .bc-live-priority-action>small{color:#ffd67d!important;font-weight:900!important;letter-spacing:.1em}
+.live-command-center .bc-live-priority-action h3{font-size:1.35rem!important;line-height:1.25}
+.live-command-center .bc-live-priority-action button{min-height:48px!important;font-weight:900!important}
+.live-command-center .bc-live-detail{display:none!important}
+.live-command-center.bc-live-details-open .bc-live-detail{display:block!important}
+.live-command-center .bc-live-details-dock{
+ grid-column:1/-1;background:#eef5f8!important;color:#102838!important
+}
+.live-command-center .bc-live-details-dock small{color:#477082!important}
+.live-command-center .bc-live-details-dock span{color:#526b7c!important}
+.live-event-empty{display:grid;gap:5px!important}
+.live-event-empty strong{color:#ffffff!important;font-size:.95rem!important}
+.live-event-empty span{color:#c7dbe6!important;font-size:.8rem!important;line-height:1.45}
+.copilot-prompts{gap:8px!important}
+.copilot-prompts button{min-height:44px!important;padding:9px 12px!important}
+.copilot-form{margin-top:10px}
+@media(max-width:900px){
+ .bc-command-details-dock,.bc-live-details-dock{align-items:stretch;flex-direction:column}
+ .bc-detail-toggle{width:100%;min-width:0}
+}

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="61.0.0">
+  <meta name="blue-current-build" content="61.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | Hospitality That Answers</title>
@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=61.0.0">
+  <link rel="stylesheet" href="styles.css?v=61.50.0">
 </head>
 <body class="app-high-contrast">
 
@@ -2044,7 +2044,7 @@
     </section>
     <section class="live-command-center container" id="blue-current-live" aria-labelledby="liveTitle">
       <div class="live-command-head reveal">
-        <div><p class="eyebrow"><span></span> Blue Current Live</p><h2 id="liveTitle">One command center for the entire service.</h2><p>Live operating health, predictive signals, guest activity, and a state-aware AI copilot—coordinated through the same event architecture.</p></div>
+        <div><p class="eyebrow"><span></span> Blue Current Live</p><h2 id="liveTitle">Know the shift in seconds.</h2><p>See the dining room, guest demand, revenue pace, and the next action that needs attention—without digging through reports.</p></div>
         <div class="live-health-ring" id="liveHealthRing"><strong id="liveHealthScore">94</strong><span>Restaurant health</span></div>
       </div>
       <div class="live-kpi-grid reveal">
@@ -2055,25 +2055,25 @@
       </div>
       <div class="live-command-grid">
         <article class="live-copilot-card reveal">
-          <div class="live-panel-head"><div><small>AI Copilot</small><h3>Ask the operation.</h3></div><span class="live-status"><i></i> State connected</span></div>
+          <div class="live-panel-head"><div><small>Manager Copilot</small><h3>Ask what matters right now.</h3></div><span class="live-status"><i></i> State connected</span></div>
           <div class="copilot-answer" id="copilotAnswer"><small>Manager briefing</small><p>Service is healthy. Prepare Table 14 for a VIP birthday arrival and open the patio before the next demand wave.</p></div>
           <div class="copilot-prompts" id="copilotPrompts">
-            <button type="button" data-copilot-query="vip">Show tonight's VIP guests</button><button type="button" data-copilot-query="birthdays">How many birthdays?</button><button type="button" data-copilot-query="slowdown">What's slowing service?</button><button type="button" data-copilot-query="revenue">Predict closing revenue</button>
+            <button type="button" data-copilot-query="vip">Tonight's VIPs</button><button type="button" data-copilot-query="birthdays">Birthdays tonight</button><button type="button" data-copilot-query="slowdown">Service slowdowns</button><button type="button" data-copilot-query="revenue">Closing revenue</button>
           </div>
           <form class="copilot-form" id="copilotForm"><input id="copilotInput" type="text" placeholder="Ask Blue Current a question…" autocomplete="off"><button type="submit">Ask</button></form>
         </article>
         <article class="live-timeline-card reveal">
-          <div class="live-panel-head"><div><small>Operational timeline</small><h3>Search the service.</h3></div><input id="liveTimelineSearch" type="search" placeholder="Guest, table, event…"></div>
-          <div class="live-event-stream" id="liveEventStream"><p class="live-event-empty">Waiting for live events…</p></div>
+          <div class="live-panel-head"><div><small>Service timeline</small><h3>Find what happened.</h3></div><input id="liveTimelineSearch" type="search" placeholder="Guest, table, event…"></div>
+          <div class="live-event-stream" id="liveEventStream"><p class="live-event-empty"><strong>No live events yet.</strong><span>New guest, table, call, and service events will appear here as they happen.</span></p></div>
         </article>
         <article class="connector-card reveal">
-          <div class="live-panel-head"><div><small>Connector layer</small><h3>Integration-ready core.</h3></div><button type="button" id="connectorPulse">Run connector pulse</button></div>
+          <div class="live-panel-head"><div><small>System connections</small><h3>Connected services.</h3></div><button type="button" id="connectorPulse">Check connections</button></div>
           <div class="connector-grid" id="connectorGrid">
             <div data-connector="Twilio"><i></i><span><strong>Twilio</strong><small>Voice + SMS</small></span><b>Ready</b></div><div data-connector="Toast"><i></i><span><strong>Toast POS</strong><small>Orders + revenue</small></span><b>Adapter</b></div><div data-connector="OpenTable"><i></i><span><strong>OpenTable</strong><small>Reservations</small></span><b>Adapter</b></div><div data-connector="Stripe"><i></i><span><strong>Stripe</strong><small>Deposits + payments</small></span><b>Ready</b></div>
           </div>
         </article>
         <article class="live-action-card reveal">
-          <small>Next best action</small><h3 id="liveNextAction">Prepare Table 14 for VIP arrival</h3><p id="liveNextActionDetail">Birthday preferences are loaded. Notify the host and verify the dessert note.</p><button type="button" id="liveRunSequence">Run live service pulse</button>
+          <small>Next best action</small><h3 id="liveNextAction">Prepare Table 14 for VIP arrival</h3><p id="liveNextActionDetail">Birthday preferences are loaded. Notify the host and verify the dessert note.</p><button type="button" id="liveRunSequence">Review action</button>
         </article>
       </div>
     </section>
@@ -9286,6 +9286,7 @@
 <script src="js/operator-usability-v60.50.js?v=60.50.0"></script>
 <script src="js/navigation-v61.0.js?v=61.0.0"></script>
 <script src="js/top-shell-v61.0.js?v=61.0.0"></script>
-<script src="js/startup-loader.js?v=61.0.0"></script>
+<script src="js/command-live-v61.50.js?v=61.50.0"></script>
+<script src="js/startup-loader.js?v=61.50.0"></script>
 </body>
 </html>
