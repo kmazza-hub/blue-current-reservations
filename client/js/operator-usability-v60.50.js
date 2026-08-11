@@ -115,18 +115,8 @@ ready(()=>{
    if(t==="—"||t==="0/0"||t==="0%"||t==="$0")node.classList.add("bc-empty-value");
  });
 
- // Jump bar for the actual shift path.
- if(primary.length && !document.getElementById("bcPrimaryJump")){
-   const nav=document.createElement("nav");
-   nav.id="bcPrimaryJump";nav.className="bc-primary-jump container";nav.setAttribute("aria-label","Shift workspace");
-   const usable=primary.filter(x=>x.id);
-   nav.innerHTML='<span>Go to</span>'+usable.map(x=>{
-     const heading=x.querySelector("h1,h2,h3,strong");
-     const name=(heading?.textContent||humanize(x.id)).replace(/\s+/g," ").trim().slice(0,30);
-     return `<a href="#${x.id}">${name}</a>`;
-   }).join("");
-   const bar=document.getElementById("bcShiftFocusBar");
-   bar?.insertAdjacentElement("afterend",nav);
- }
+ // V64.50: the duplicate sticky workspace jump bar was retired.
+ // The primary top navigation is now the single canonical workspace navigation layer.
+ document.getElementById("bcPrimaryJump")?.remove();
 });
 })();

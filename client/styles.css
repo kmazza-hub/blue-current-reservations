@@ -14005,3 +14005,41 @@ dialog:focus-visible{outline:none!important}
 @media(prefers-reduced-motion:reduce){
  .bc-toast,.bc-action-working::after{transition:none!important;animation-duration:.01ms!important}
 }
+
+
+/* ==========================================================================
+   V64.50 · Workflow reduction / one job, one home
+   ========================================================================== */
+#bcPrimaryJump{display:none!important}
+
+.bc-quick-jobs{position:relative}
+.bc-quick-jobs-menu{
+ position:absolute;right:0;top:calc(100% + 8px);z-index:1200;width:300px;padding:10px;
+ display:grid;gap:6px;border:1px solid rgba(9,52,76,.18);border-radius:16px;
+ background:#ffffff;box-shadow:0 20px 60px rgba(4,25,37,.22)
+}
+.bc-quick-jobs-menu[hidden]{display:none!important}
+.bc-quick-jobs-menu>small{
+ padding:4px 6px 6px;font-size:.65rem;font-weight:900;letter-spacing:.12em;color:#587182
+}
+.bc-quick-jobs-menu>button{
+ min-height:52px!important;padding:9px 11px!important;display:grid!important;grid-template-columns:1fr auto;
+ align-items:center;gap:8px;text-align:left!important;border-radius:11px!important;
+ background:#f7fbfd!important;color:#102838!important;border:1px solid rgba(9,52,76,.10)!important
+}
+.bc-quick-jobs-menu>button:hover,.bc-quick-jobs-menu>button:focus-visible{
+ background:#eaf6fa!important;border-color:rgba(8,126,164,.28)!important
+}
+.bc-quick-jobs-menu>button strong{font-size:.8rem;color:#102838!important}
+.bc-quick-jobs-menu>button span{font-size:.68rem;color:#60798a!important;white-space:nowrap}
+
+#command-center .bc-deeper-action{
+ opacity:.74!important;
+ font-weight:700!important
+}
+
+@media(max-width:760px){
+ .bc-quick-jobs{width:100%}
+ #bcQuickJobsButton{width:100%}
+ .bc-quick-jobs-menu{left:0;right:auto;width:min(100%,340px)}
+}
