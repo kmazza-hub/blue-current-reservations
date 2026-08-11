@@ -14302,3 +14302,393 @@ dialog:focus-visible{outline:none!important}
 .bc-ui-system select[aria-label]{
   scroll-margin-top:110px;
 }
+
+
+/* ==========================================================================
+   V67.00 · Mobile color, spacing & touch layout
+   ========================================================================== */
+@media(max-width:760px){
+  :root{
+    --bc-mobile-page:#f3f8fb;
+    --bc-mobile-card:#ffffff;
+    --bc-mobile-text:#0a1d2a;
+    --bc-mobile-muted:#476273;
+    --bc-mobile-border:rgba(8,44,64,.18);
+    --bc-mobile-dark:#082431;
+    --bc-mobile-dark-2:#0b3040;
+    --bc-mobile-bright:#ffffff;
+    --bc-mobile-bright-muted:#d6e7ef;
+  }
+
+  html,body{
+    overflow-x:hidden;
+    background:var(--bc-mobile-page)!important;
+  }
+
+  body{
+    font-size:16px;
+    line-height:1.45;
+  }
+
+  /* Header / navigation */
+  .site-header{
+    min-height:64px;
+    padding-left:12px!important;
+    padding-right:12px!important;
+  }
+  .site-header .header-inner,
+  .site-header .container{
+    gap:10px!important;
+  }
+  .brand-copy small{
+    font-size:.66rem!important;
+  }
+  .brand-copy strong{
+    font-size:.92rem!important;
+  }
+  .desktop-nav{display:none!important}
+  .menu-button{display:inline-flex!important;min-width:44px!important;min-height:44px!important}
+  .mobile-nav{
+    padding:10px 12px 14px!important;
+    gap:6px!important;
+    background:#0a2735!important;
+  }
+  .mobile-nav a{
+    min-height:46px;
+    display:flex;
+    align-items:center;
+    padding:10px 12px!important;
+    border-radius:10px;
+    color:#ffffff!important;
+    font-weight:800!important;
+  }
+
+  /* Primary section rhythm */
+  .bc-mobile-ready,
+  .bc-ui-section{
+    padding-top:28px!important;
+    padding-bottom:28px!important;
+  }
+  .bc-mobile-ready > .container,
+  .bc-ui-section > .container,
+  .bc-ui-section > .exec-shell,
+  .bc-ui-section > .host-shell,
+  .bc-ui-section > .restaurant-ai-brain-v341-shell{
+    width:calc(100% - 20px)!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .bc-purpose-chip{
+    margin:8px 10px!important;
+    padding:7px 10px!important;
+    font-size:.68rem!important;
+    line-height:1.25!important;
+  }
+
+  /* Headings and body copy */
+  .bc-mobile-ready h1,
+  .bc-mobile-ready h2,
+  .bc-mobile-ready h3,
+  .bc-mobile-ready h4{
+    max-width:100%!important;
+  }
+  .bc-mobile-ready h2{
+    font-size:clamp(1.45rem,7vw,2rem)!important;
+    line-height:1.08!important;
+    margin-bottom:8px!important;
+  }
+  .bc-mobile-ready h3{
+    font-size:1.1rem!important;
+    line-height:1.18!important;
+  }
+  .bc-mobile-ready p,
+  .bc-mobile-ready span,
+  .bc-mobile-ready small,
+  .bc-mobile-ready label{
+    line-height:1.42;
+  }
+
+  /* Light cards */
+  .bc-mobile-ready .bc-ui-card,
+  .bc-mobile-ready article,
+  .bc-mobile-ready .panel,
+  .bc-mobile-ready .card{
+    border-radius:14px!important;
+  }
+  #command-center .bc-ui-card,
+  #host-stand .bc-ui-card,
+  #workforce-intelligence .bc-ui-card,
+  #executive-command-center .bc-ui-card{
+    background:var(--bc-mobile-card)!important;
+    color:var(--bc-mobile-text)!important;
+    border-color:var(--bc-mobile-border)!important;
+    box-shadow:0 7px 22px rgba(4,27,40,.08)!important;
+  }
+  #command-center .bc-ui-card strong,
+  #host-stand .bc-ui-card strong,
+  #workforce-intelligence .bc-ui-card strong,
+  #executive-command-center .bc-ui-card strong{
+    color:var(--bc-mobile-text)!important;
+  }
+  #command-center .bc-ui-card p,
+  #command-center .bc-ui-card span,
+  #command-center .bc-ui-card small,
+  #host-stand .bc-ui-card p,
+  #host-stand .bc-ui-card span,
+  #host-stand .bc-ui-card small,
+  #workforce-intelligence .bc-ui-card p,
+  #workforce-intelligence .bc-ui-card span,
+  #workforce-intelligence .bc-ui-card small,
+  #executive-command-center .bc-ui-card p,
+  #executive-command-center .bc-ui-card span,
+  #executive-command-center .bc-ui-card small{
+    color:var(--bc-mobile-muted)!important;
+    opacity:1!important;
+  }
+
+  /* Dark Live + Service: force truly bright text on phone */
+  #blue-current-live,
+  #service-coordination{
+    background:var(--bc-mobile-dark)!important;
+    color:var(--bc-mobile-bright)!important;
+  }
+  #blue-current-live .bc-ui-card,
+  #service-coordination .bc-ui-card,
+  #blue-current-live article,
+  #service-coordination article{
+    background:var(--bc-mobile-dark-2)!important;
+    border-color:rgba(255,255,255,.14)!important;
+    color:var(--bc-mobile-bright)!important;
+    box-shadow:0 8px 24px rgba(0,0,0,.18)!important;
+  }
+  #blue-current-live strong,
+  #blue-current-live h2,
+  #blue-current-live h3,
+  #blue-current-live h4,
+  #service-coordination strong,
+  #service-coordination h2,
+  #service-coordination h3,
+  #service-coordination h4{
+    color:#ffffff!important;
+    opacity:1!important;
+  }
+  #blue-current-live p,
+  #blue-current-live span,
+  #blue-current-live small,
+  #blue-current-live label,
+  #service-coordination p,
+  #service-coordination span,
+  #service-coordination small,
+  #service-coordination label{
+    color:var(--bc-mobile-bright-muted)!important;
+    opacity:1!important;
+  }
+
+  /* Grids collapse cleanly */
+  .live-kpi-grid,
+  .exec-kpis,
+  .wf-kpis,
+  .svc-kpis,
+  .bc-waitlist-summary,
+  .restaurant-ai-brain-v341-kpis{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .live-command-grid,
+  .exec-grid,
+  .wf-main,
+  .wf-bottom,
+  .svc-layout,
+  .svc-bottom,
+  #kitchenThroughputCenter .kt-grid,
+  #restaurantAiBrainV341 .restaurant-ai-brain-v341-layout{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+
+  /* Card padding and density */
+  .live-kpi-grid button,
+  .exec-kpis article,
+  .wf-kpis article,
+  .svc-kpis article,
+  .restaurant-ai-brain-v341-kpis article{
+    padding:12px!important;
+    min-height:92px!important;
+  }
+  .live-command-grid > *,
+  .exec-grid > *,
+  .wf-main > *,
+  .wf-bottom > *,
+  .svc-layout > *,
+  .svc-bottom > *{
+    padding:14px!important;
+  }
+
+  /* Operator utility becomes compact */
+  .bc-operator-utility{
+    width:calc(100% - 20px)!important;
+    margin:10px auto!important;
+    padding:10px!important;
+    border-radius:14px!important;
+    gap:10px!important;
+  }
+  .bc-operator-utility-copy span{display:none!important}
+  .bc-operator-utility-copy strong{font-size:.86rem!important}
+  .bc-operator-utility-actions{
+    width:100%;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  .bc-operator-utility-actions button{
+    width:100%!important;
+    min-width:0!important;
+    min-height:44px!important;
+    padding:8px!important;
+    white-space:normal!important;
+    line-height:1.15!important;
+  }
+
+  /* Forms */
+  .bc-mobile-ready input,
+  .bc-mobile-ready select,
+  .bc-mobile-ready textarea{
+    width:100%!important;
+    min-width:0!important;
+    font-size:16px!important;
+  }
+  .bc-dialog-grid{
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+  }
+  .bc-host-dialog{
+    width:calc(100vw - 18px)!important;
+    max-height:calc(100vh - 20px)!important;
+  }
+  .bc-host-dialog-card{
+    max-height:calc(100vh - 20px)!important;
+    overflow:auto!important;
+  }
+
+  /* Action groups wrap safely */
+  .bc-mobile-action-row{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:7px!important;
+  }
+  .bc-mobile-action-row > button,
+  .bc-mobile-action-row > .button{
+    flex:1 1 calc(50% - 7px)!important;
+    min-width:130px!important;
+  }
+
+  /* Tables / wide operational surfaces */
+  .bc-mobile-scroll{
+    max-width:100%!important;
+    overflow-x:auto!important;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+  }
+  .bc-mobile-scroll table,
+  .svc-table{
+    min-width:760px;
+  }
+
+  /* Host stand */
+  #host-stand .host-layout,
+  #host-stand .host-workspace{
+    grid-template-columns:1fr!important;
+  }
+  #host-stand .host-sidebar{
+    position:static!important;
+    width:100%!important;
+  }
+  #host-stand .host-nav{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important;
+  }
+  #host-stand .host-nav button{
+    min-height:46px!important;
+  }
+  #host-stand .host-floor-map{
+    min-height:360px!important;
+  }
+  .bc-reservation-list article{
+    grid-template-columns:56px minmax(0,1fr)!important;
+    gap:8px!important;
+    padding:10px!important;
+  }
+
+  /* Rush dock stays readable without covering too much screen */
+  .bc-rush-dock{
+    width:calc(100vw - 14px)!important;
+    bottom:7px!important;
+    padding:6px!important;
+    gap:5px!important;
+    border-radius:14px!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  .bc-rush-dock button{
+    min-height:46px!important;
+    padding:7px!important;
+    text-align:center!important;
+  }
+  .bc-rush-dock button strong{
+    font-size:.72rem!important;
+  }
+  .bc-rush-dock button span{
+    font-size:.58rem!important;
+  }
+  .bc-rush-mode body{
+    padding-bottom:126px!important;
+  }
+
+  /* Toasts / recovery */
+  .bc-toast-stack{
+    top:68px!important;
+    right:8px!important;
+    width:calc(100vw - 16px)!important;
+  }
+  .bc-recovery-banner{
+    width:calc(100vw - 16px)!important;
+    bottom:8px!important;
+  }
+
+  /* Reduce dead vertical space */
+  .section-heading,
+  .live-command-head,
+  .restaurant-ai-brain-v341-heading{
+    margin-bottom:12px!important;
+  }
+  .bc-command-clarity,
+  .bc-live-scanline,
+  .bc-staff-scanline,
+  .bc-kitchen-scanline,
+  .bc-service-scanline,
+  .bc-ai-scanline,
+  .bc-exec-scanline{
+    margin:8px 0 12px!important;
+    padding:11px 12px!important;
+  }
+}
+
+@media(max-width:420px){
+  .live-kpi-grid,
+  .exec-kpis,
+  .wf-kpis,
+  .svc-kpis,
+  .bc-waitlist-summary,
+  .restaurant-ai-brain-v341-kpis{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .bc-mobile-ready h2{
+    font-size:1.4rem!important;
+  }
+  .bc-mobile-ready .bc-ui-card{
+    border-radius:12px!important;
+  }
+  .bc-operator-utility-actions{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
