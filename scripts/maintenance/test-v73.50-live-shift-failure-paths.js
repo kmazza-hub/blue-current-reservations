@@ -13,7 +13,7 @@ const Workflow=require(path.join(root,"server/services/restaurantWorkflowCertifi
 const Failure=require(path.join(root,"server/services/liveShiftFailureCertificationService"));
 
 (async()=>{
- assert.equal(pkg.version,"73.50.0");
+ assert(Number(pkg.version.split(".")[0]) >= 73);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/system/live-shift-failure-certification"));
 

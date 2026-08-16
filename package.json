@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "73.50.0",
+  "version": "74.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 live-shift failure paths, conflict handling, and recovery certification",
+  "description": "Blue Current Hospitality OS \u2014 authoritative pilot readiness command center and go/no-go certification",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
