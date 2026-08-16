@@ -1,0 +1,21 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Expansion=require(path.join(root,"server/services/controlledExpansionLocationReadinessService"));
+(async()=>{
+ assert.equal(pkg.version,"82.25.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
+ assert(router.includes("/api/expansion/location-readiness/approve-prep"));assert(server.includes("ControlledExpansionLocationReadinessService"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8225-")),dbPath=path.join(dir,"db.json");
+ fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"pilot",organizationId:"o",name:"Pilot"},{id:"l2",organizationId:"o",name:"Expansion Two"}],pilotExecutiveCurrentDecision:{"o:pilot":{decision:"EXPAND"}}}));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ let providerDecision="HOLD";
+ const provider={evaluate:async()=>({decision:providerDecision,bestCandidate:{provider:"toast",score:83,blockers:["certification"]},readyProviders:providerDecision==="READY"?["toast"]:[]})};
+ const svc=new Expansion(db,{},provider);
+ let r=await svc.evaluate("o",["*"],"l2");assert.equal(r.decision,"NOT_READY");assert(r.hardBlockers.includes("pilotSourceDefined"));
+ r=await svc.setReadiness("o",["*"],"l2",{pilotSourceLocationId:"pilot",launchOwner:"Launch Manager",trainingLead:"Trainer",supportOwner:"Support Lead",operatingConfigurationConfirmed:true,staffTrainingConfirmed:true,managerTrainingConfirmed:true,fallbackProcedureConfirmed:true,emergencyContactsConfirmed:true,supportCoverageConfirmed:true,openingHoursConfirmed:true,floorConfigurationConfirmed:true,menuConfigurationConfirmed:true},"admin");
+ assert.equal(r.decision,"READY_FOR_ROLLOUT_PREP");
+ const approved=await svc.approveRolloutPrep("o",["*"],"l2",{rationale:"Location preparation gates passed for controlled rollout."},"executive");
+ assert.equal(approved.approval.status,"ROLLOUT_PREP_APPROVED");assert.equal(approved.approval.productionActivationAuthorized,false);assert.equal(approved.approval.providerAuthorityAuthorized,false);
+ assert.equal(r.policy.eachLocationIndependentlyCertified,true);assert.equal(r.policy.noAutomaticLocationActivation,true);assert.equal(r.policy.noAutomaticMultiLocationRollout,true);assert.equal(r.policy.rolloutPrepDoesNotEqualProductionCutover,true);
+ console.log(JSON.stringify({ok:true,version:"82.25.0",executiveApprovalRequired:true,independentLocationCertification:true,providerMappingGate:true,localFallbackGate:true,trainingReadiness:true,launchOwnership:true,controlledPrepApproval:true,productionActivation:false,automaticMultiLocationRollout:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});

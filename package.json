@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "82.0.0",
+  "version": "82.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 pilot executive review and expansion decision gate",
+  "description": "Blue Current Hospitality OS \u2014 controlled expansion planning and location readiness",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
