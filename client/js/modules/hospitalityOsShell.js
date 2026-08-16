@@ -242,11 +242,17 @@ function renderSourceTruth(data={}){
     return;
   }
 
+  const readiness=truth.providerReadiness||null;
   label.textContent=
+    readiness?.decision==="READY"?"Pilot-ready source":
     truth.status==="LIVE_READY"?"Live sources":
     truth.status==="PARTIALLY_CONNECTED"?"Partial sources":
     "Local data";
-  label.title=`${truth.summary?.connectedProviders||0} connected provider(s) · ${truth.summary?.liveDecisionDomains||0}/${truth.summary?.totalDomains||0} live decision domains`;
+  const candidate=readiness?.bestCandidate;
+  const readinessDetail=candidate
+    ? ` · ${candidate.provider} ${candidate.score}% readiness${candidate.blockers?.length?` · ${candidate.blockers.length} blocker(s)`:""}`
+    : "";
+  label.title=`${truth.summary?.connectedProviders||0} connected provider(s) · ${truth.summary?.liveDecisionDomains||0}/${truth.summary?.totalDomains||0} live decision domains${readinessDetail}`;
 }
 
 function renderCommand(data){
@@ -294,7 +300,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V79.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V79.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 

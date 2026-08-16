@@ -1,9 +1,10 @@
 "use strict";
 
 class CommandDataSourceTruthService{
-  constructor(database,universalIntegrationService){
+  constructor(database,universalIntegrationService,providerConnectionReadinessService=null){
     this.database=database;
     this.integrations=universalIntegrationService;
+    this.providerReadiness=providerConnectionReadinessService;
   }
   now(){return new Date().toISOString();}
   ageMinutes(timestamp){
@@ -76,14 +77,19 @@ class CommandDataSourceTruthService{
         ? "PARTIALLY_CONNECTED"
         : "LOCAL_ONLY";
 
+    const providerReadiness=this.providerReadiness
+      ? await this.providerReadiness.evaluate(organizationId,allowedLocationIds,locationId)
+      : null;
+
     return {
-      version:"79.0.0",
+      version:"79.25.0",
       generatedAt:this.now(),
       organizationId,
       location:{id:location.id,name:location.name},
       status,
       domains:sourceDomains,
       providers,
+      providerReadiness,
       summary:{
         connectedProviders:connected.length,
         liveDecisionDomains,
@@ -96,7 +102,9 @@ class CommandDataSourceTruthService{
         liveCertificationRequired:true,
         staleDataCannotBePresentedAsLive:true,
         localSeedDataMustBeDisclosed:true,
-        noClaimOfLiveToastConnectionWithoutEvidence:true
+        noClaimOfLiveToastConnectionWithoutEvidence:true,
+        adapterPresenceAloneIsNotReadiness:true,
+        providerReadinessMustBeExplicit:true
       }
     };
   }
