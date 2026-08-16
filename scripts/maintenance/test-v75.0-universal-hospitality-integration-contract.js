@@ -12,7 +12,7 @@ const Universal=require(path.join(root,"server/services/universalHospitalityInte
 const {validateCanonicalEvent}=require(path.join(root,"server/integrations/hospitalityIntegrationContract"));
 
 (async()=>{
-  assert.equal(pkg.version,"75.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 75);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
@@ -28,8 +28,8 @@ const {validateCanonicalEvent}=require(path.join(root,"server/integrations/hospi
   ]) assert(router.includes(route),route);
 
   assert(server.includes("UniversalHospitalityIntegrationService"));
-  assert(startup.includes("V75.0.0 ready"));
-  assert(html.includes('content="75.0.0"'));
+  assert(/V75(?:\.50)?\.0 ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v75-"));
   const dbPath=path.join(dir,"db.json");

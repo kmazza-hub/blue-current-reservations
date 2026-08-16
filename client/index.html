@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="75.0.0">
+  <meta name="blue-current-build" content="75.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=75.0.0">
+  <link rel="stylesheet" href="styles.css?v=75.50.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V59.50</strong>
+    <strong>Blue Current V75.50</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -74,7 +74,7 @@
 <div class="auth-overlay" id="authOverlay" aria-modal="true" role="dialog">
   <div class="auth-shell">
     <section class="auth-brand-panel">
-      <p class="eyebrow"><span></span> Blue Current Cloud V59.50</p>
+      <p class="eyebrow"><span></span> Blue Current Hospitality OS V75.50</p>
       <h1>Secure access for every restaurant organization.</h1>
       <p>Authentication, enforced roles, protected APIs, tenant boundaries, and organization-aware sessions are now part of the platform.</p>
       <div class="auth-security-list">
@@ -88,7 +88,7 @@
       <div>
         <small>Hospitality OS</small>
         <h2>Sign in to Blue Current</h2>
-        <p>Use a V23 demo account to enter the protected application.</p>
+        <p>Use your Blue Current account to enter the protected Hospitality OS.</p>
       </div>
       <form id="authLoginForm">
         <label>Email<input id="authEmail" type="email" value="keith@bluecurrent.demo" autocomplete="username" required></label>
@@ -216,6 +216,96 @@
   </header>
 
   <main id="main">
+<section class="bc-os-shell" id="blueCurrentCommand" aria-labelledby="bcCommandTitle">
+  <aside class="bc-os-rail" aria-label="Blue Current workspaces">
+    <div class="bc-os-rail-brand"><img src="assets/logo-mark.svg" alt="" width="38" height="38"><span><strong>Blue Current</strong><small>Hospitality OS</small></span></div>
+    <nav class="bc-os-nav">
+      <button type="button" class="is-active" data-bc-workspace="command"><span>⌂</span>Command</button>
+      <button type="button" data-bc-workspace="guests"><span>◇</span>Guests</button>
+      <button type="button" data-bc-workspace="service"><span>▦</span>Service</button>
+      <button type="button" data-bc-workspace="team"><span>◎</span>Team</button>
+      <button type="button" data-bc-workspace="kitchen"><span>≋</span>Kitchen</button>
+      <button type="button" data-bc-workspace="inventory"><span>□</span>Inventory</button>
+      <button type="button" data-bc-workspace="performance"><span>↗</span>Performance</button>
+      <button type="button" data-bc-workspace="executive"><span>◆</span>Executive</button>
+      <button type="button" data-bc-workspace="integrations"><span>⌁</span>Integrations</button>
+      <button type="button" data-bc-workspace="system"><span>⚙</span>System</button>
+    </nav>
+    <div class="bc-os-rail-foot"><span class="bc-live-dot"></span><div><strong>Blue Current live</strong><small>V75.50 · Local development</small></div></div>
+  </aside>
+
+  <div class="bc-os-command">
+    <header class="bc-command-topbar">
+      <div>
+        <p class="bc-command-kicker">LIVE OPERATING COMMAND</p>
+        <h1 id="bcCommandTitle">Good evening. Run the whole restaurant from here.</h1>
+        <p id="bcCommandContext">Marina Grille · Dinner service · Blue Current is watching the operation.</p>
+      </div>
+      <div class="bc-command-context-controls">
+        <label>Location<select id="bcCommandLocation"><option>Marina Grille</option><option>Harbor House</option><option>River & Rail</option></select></label>
+        <div class="bc-service-live"><span class="bc-live-dot"></span><strong>Service live</strong><small id="bcCommandClock">Now</small></div>
+      </div>
+    </header>
+
+    <div class="bc-command-status" aria-label="Live restaurant status">
+      <article><small>Revenue pace</small><strong id="bcCmdRevenue">+6.8%</strong><span>Ahead of plan</span></article>
+      <article><small>Guests</small><strong id="bcCmdGuests">318</strong><span>Tonight</span></article>
+      <article><small>Occupancy</small><strong id="bcCmdOccupancy">84%</strong><span>Dining room</span></article>
+      <article><small>Average wait</small><strong id="bcCmdWait">12m</strong><span>Within target</span></article>
+      <article><small>Kitchen</small><strong id="bcCmdKitchen">17m</strong><span>Ticket pace</span></article>
+      <article><small>Labor</small><strong id="bcCmdLabor">28.4%</strong><span>Of sales</span></article>
+    </div>
+
+    <div class="bc-command-grid">
+      <section class="bc-command-panel bc-attention-panel">
+        <header><div><small>RIGHT NOW</small><h2>What needs attention</h2></div><span class="bc-count-badge">3</span></header>
+        <div class="bc-attention-list">
+          <button type="button" data-bc-workspace="kitchen"><span class="bc-priority high">HIGH</span><div><strong>Kitchen pressure is building</strong><small>Ticket pace is moving above the dinner target. Review before the next arrival wave.</small></div><b>→</b></button>
+          <button type="button" data-bc-workspace="service"><span class="bc-priority watch">WATCH</span><div><strong>Waterfront section nearing capacity</strong><small>Protect the next turn before committing additional walk-in demand.</small></div><b>→</b></button>
+          <button type="button" data-bc-workspace="guests"><span class="bc-priority guest">GUEST</span><div><strong>Birthday arrival approaching</strong><small>Premier returning guest expected shortly. Hospitality context is ready.</small></div><b>→</b></button>
+        </div>
+      </section>
+
+      <section class="bc-command-panel bc-next-panel">
+        <header><div><small>NEXT 30 MINUTES</small><h2>Service pressure</h2></div><span>Forecast</span></header>
+        <div class="bc-next-metrics"><div><strong>27</strong><small>Reservations</small></div><div><strong>83</strong><small>Projected covers</small></div><div><strong>4</strong><small>Expected turns</small></div></div>
+        <div class="bc-pressure"><span><i style="width:78%"></i></span><div><small>Kitchen load</small><strong>HIGH</strong></div></div>
+        <button class="bc-text-action" type="button" data-bc-workspace="service">Open live service →</button>
+      </section>
+
+      <section class="bc-command-panel bc-intelligence-panel">
+        <header><div><small>BLUE CURRENT INTELLIGENCE</small><h2>What the operation is telling you</h2></div><span class="bc-ai-mark">BC</span></header>
+        <p>Demand is compressing into the next service window while kitchen pace is beginning to rise. Protecting the next waterfront turn should reduce avoidable pressure without sacrificing the guest experience.</p>
+        <div class="bc-recommendation"><small>RECOMMENDED FOCUS</small><strong>Protect Table 14 and review the next large-party seating before committing more demand.</strong></div>
+        <button class="bc-text-action" type="button" data-bc-workspace="performance">Open performance intelligence →</button>
+      </section>
+
+      <section class="bc-command-panel bc-profit-panel">
+        <header><div><small>SHIFT PERFORMANCE</small><h2>Protect hospitality and profit</h2></div><span>Live</span></header>
+        <div class="bc-profit-row"><div><small>Revenue opportunity</small><strong>$2,840</strong></div><div><small>Labor exposure</small><strong>$410</strong></div><div><small>Guest recovery</small><strong>2</strong></div></div>
+        <button class="bc-text-action" type="button" data-bc-workspace="performance">Open profitability →</button>
+      </section>
+    </div>
+
+    <section class="bc-command-launch">
+      <header><div><small>WORKSPACES</small><h2>Go directly to the work.</h2></div><p>Blue Current keeps the command view calm. Open specialist tools only when you need them.</p></header>
+      <div>
+        <button type="button" data-bc-workspace="guests"><strong>Guests</strong><span>Reservations · Waitlist · Host Stand</span></button>
+        <button type="button" data-bc-workspace="service"><strong>Service</strong><span>Floor · Tables · Live flow</span></button>
+        <button type="button" data-bc-workspace="team"><strong>Team</strong><span>Staff · Labor · Scheduling</span></button>
+        <button type="button" data-bc-workspace="kitchen"><strong>Kitchen</strong><span>Tickets · Stations · Pressure</span></button>
+        <button type="button" data-bc-workspace="inventory"><strong>Inventory</strong><span>Stock · Waste · Cost</span></button>
+        <button type="button" data-bc-workspace="executive"><strong>Executive</strong><span>Portfolio · Risk · Leadership</span></button>
+      </div>
+    </section>
+
+    <div class="bc-workspace-return" id="bcWorkspaceReturn" hidden>
+      <button type="button" data-bc-workspace="command">← Back to Command</button>
+      <div><small>ACTIVE WORKSPACE</small><strong id="bcActiveWorkspace">Command</strong></div>
+    </div>
+  </div>
+</section>
+
 
         <section class="v432-center v438-center v4316-center" id="pilotValueScorecard">
       <header><div><small>V48.01–V48.05 · Pilot Value Scorecard</small><strong>Prove whether the Blue Current pilot is creating measurable operating value—without overstating what the data can attribute.</strong><span>Verified value counts only realized impact from measured completed actions. Readiness, contribution, rhythm, and leakage movement are shown separately as observed pilot evidence.</span></div><button id="pvsRefresh" type="button">Refresh scorecard</button></header>
@@ -9811,5 +9901,5 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script></body>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=75.50.0"></script></body>
 </html>
