@@ -10,7 +10,7 @@ const {createPersistence}=require(path.join(root,"server/persistence/persistence
 const Command=require(path.join(root,"server/services/commandOperatingPictureService"));
 
 (async()=>{
-  assert.equal(pkg.version,"76.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 76);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");

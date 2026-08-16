@@ -953,23 +953,6 @@
       "lastSeenAt": "2026-08-16T14:20:40.848Z",
       "idleExpiresAt": "2026-08-16T16:20:40.848Z",
       "updatedAt": "2026-08-16T14:20:40.851Z"
-    },
-    {
-      "id": "ses_1786881313417_0akc5z",
-      "tokenHash": "cb7004694ecccaaa9579cff47a3a8ec77436e18a9733105cecdbd4c1eaedd733",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-16T11:55:13.417Z",
-      "lastSeenAt": "2026-08-16T13:05:27.392Z",
-      "idleExpiresAt": "2026-08-16T15:05:27.392Z",
-      "expiresAt": "2026-08-16T23:55:13.417Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-16T13:05:27.393Z"
     }
   ],
   "invitations": [

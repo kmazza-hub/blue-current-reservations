@@ -1,10 +1,13 @@
 "use strict";
 
+const CommandPrioritizationService=require("./commandPrioritizationService");
+
 class CommandOperatingPictureService{
-  constructor(database,{pilotReadinessCommandCenterService=null,operatorWorkflowCertificationService=null}={}){
+  constructor(database,{pilotReadinessCommandCenterService=null,operatorWorkflowCertificationService=null,commandPrioritizationService=null}={}){
     this.database=database;
     this.pilotReadiness=pilotReadinessCommandCenterService;
     this.operatorWorkflow=operatorWorkflowCertificationService;
+    this.prioritizer=commandPrioritizationService||new CommandPrioritizationService();
   }
 
   _num(value,fallback=0){const n=Number(value);return Number.isFinite(n)?n:fallback;}
@@ -95,8 +98,8 @@ class CommandOperatingPictureService{
       if(this.operatorWorkflow)operator=await this.operatorWorkflow.certify(organizationId,[location.id]);
     }catch{}
 
-    return {
-      version:"76.0.0",generatedAt:new Date().toISOString(),organizationId,
+    const picture={
+      version:"76.50.0",generatedAt:new Date().toISOString(),organizationId,
       dataMode,dataAgeHours,
       location:{id:location.id,name:location.name,capacity,timezone:location.timezone||null},
       locations:locations.map(x=>({id:x.id,name:x.name,capacity:this._num(x.capacity)})),
@@ -113,16 +116,20 @@ class CommandOperatingPictureService{
         actualsAvailable:false
       },
       inventory:{items:inventory.length,lowStockItems:lowStock.length},
-      attention:attention.slice(0,5),
+      attention:attention.slice(0,8),
       readiness:readiness?{decision:readiness.decision,blockerCount:readiness.blockerCount}:null,
       operator:operator?{ready:operator.operatorPilotReady,blockerCount:operator.blockerCount}:null,
       truth:{
         derivedFromPersistedState:true,
         syntheticCommandMetrics:false,
         revenueActualNotInvented:true,
-        expectedTurnsNotInvented:true
+        expectedTurnsNotInvented:true,
+        priorityRankingHeuristic:true,
+        managerDecisionRemainsHuman:true
       }
     };
+    picture.prioritization=this.prioritizer.prioritize(picture);
+    return picture;
   }
 }
 module.exports=CommandOperatingPictureService;

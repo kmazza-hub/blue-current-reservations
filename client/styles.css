@@ -16397,3 +16397,11 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
 #bcNextTurns{
   font-size:1rem;
 }
+
+
+/* V76.50 — manager priority ranking */
+.bc-attention-meta{display:flex;align-items:center;gap:8px}
+.bc-decision-state{padding:7px 9px;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:rgba(255,255,255,.04);color:#c9e6ec!important;font-size:.6rem!important;font-weight:900;letter-spacing:.08em}
+.bc-priority-confidence{margin:0;padding:10px 20px 9px;border-bottom:1px solid rgba(255,255,255,.06);color:#8fb1b9;font-size:.65rem;line-height:1.35}
+.bc-priority-why{margin-top:4px;color:#6f929a!important;font-size:.61rem!important}
+.bc-attention-list button .bc-priority{font-variant-numeric:tabular-nums}

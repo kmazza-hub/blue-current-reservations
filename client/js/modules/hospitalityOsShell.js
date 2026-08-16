@@ -83,35 +83,48 @@ function severityLabel(severity){
   return severity==="high"?"HIGH":severity==="watch"?"WATCH":severity==="guest"?"GUEST":"CLEAR";
 }
 
-function renderAttention(items=[]){
+function renderAttention(data){
+  const priority=data?.prioritization||{};
+  const items=priority.topPriorities||data?.attention||[];
   const list=el("bcAttentionList");
   if(!list)return;
   list.replaceChildren();
   setText("bcAttentionCount",String(items.length));
-  items.slice(0,5).forEach(item=>{
+  setText("bcDecisionState",(priority.state||"STABLE").replaceAll("_"," "));
+  const confidence=priority.confidence;
+  setText("bcPriorityConfidence",confidence
+    ? `${confidence.label} confidence · ${confidence.reason} ${priority.counts?.deferred?`${priority.counts.deferred} lower-priority signal(s) deferred.`:""}`
+    : "Blue Current is ranking verified operating signals.");
+
+  items.slice(0,3).forEach((item,index)=>{
     const button=document.createElement("button");
     button.type="button";
     button.dataset.bcWorkspace=item.workspace||"service";
 
     const badge=document.createElement("span");
     badge.className=`bc-priority ${item.severity||"normal"}`;
-    badge.textContent=severityLabel(item.severity);
+    badge.textContent=item.rank?`#${item.rank}`:severityLabel(item.severity);
 
     const copy=document.createElement("div");
     const title=document.createElement("strong");
     const detail=document.createElement("small");
+    const why=document.createElement("small");
+    why.className="bc-priority-why";
     title.textContent=item.title||"Operational signal";
     detail.textContent=item.detail||"";
-    copy.append(title,detail);
+    why.textContent=item.dimensions
+      ? `Score ${item.score} · urgency ${item.dimensions.urgency} · guest ${item.dimensions.guestImpact} · service ${item.dimensions.serviceRisk} · ${item.owner||"Manager"}`
+      : "";
+    copy.append(title,detail,why);
 
     const arrow=document.createElement("b");
     arrow.textContent="→";
     button.append(badge,copy,arrow);
+    button.title=item.recommendation||"Open workspace";
     button.addEventListener("click",()=>activate(button.dataset.bcWorkspace));
     list.append(button);
   });
 }
-
 function renderLocations(data){
   const select=el("bcCommandLocation");
   if(!select)return;
@@ -129,19 +142,19 @@ function renderLocations(data){
 }
 
 function buildIntelligence(data){
-  const first=(data.attention||[])[0];
+  const priority=data.prioritization?.topPriorities?.[0]||(data.attention||[])[0];
   const mode=data.dataMode==="historical-demo"?"historical demo snapshot":"current operating state";
-  if(first&&first.severity!=="normal"){
+  if(priority&&priority.severity!=="normal"){
     setText("bcIntelligenceSummary",
-      `Blue Current is reading the ${mode}. The highest verified signal is ${first.title.toLowerCase()}. ${first.detail}`);
-    setText("bcRecommendedFocus",`Review ${labels[first.workspace]||"the relevant workspace"} first. Blue Current has not executed an operational action automatically.`);
+      `Blue Current is reading the ${mode}. Priority #1 is ${priority.title.toLowerCase()}. ${priority.detail}`);
+    setText("bcRecommendedFocus",
+      priority.recommendation||`Review ${labels[priority.workspace]||"the relevant workspace"} first. Manager confirmation is required.`);
   }else{
     setText("bcIntelligenceSummary",
-      `Blue Current is reading the ${mode}. No rule-based critical service exception is present in this snapshot.`);
-    setText("bcRecommendedFocus","Maintain service rhythm and monitor the next demand, kitchen, and inventory signals.");
+      `Blue Current is reading the ${mode}. No high-value operating exception currently rises above the prioritization threshold.`);
+    setText("bcRecommendedFocus","Maintain service rhythm and monitor the next demand, kitchen, guest, and inventory signals.");
   }
 }
-
 function renderCommand(data){
   renderLocations(data);
   const s=data.service||{},n=data.next30Minutes||{},f=data.financial||{},inv=data.inventory||{};
@@ -178,11 +191,11 @@ function renderCommand(data){
   setText("bcLaborBudget",money(f.laborBudget));
   setText("bcLowStock",String(inv.lowStockItems??0));
 
-  renderAttention(data.attention||[]);
+  renderAttention(data);
   buildIntelligence(data);
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V76.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V76.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
