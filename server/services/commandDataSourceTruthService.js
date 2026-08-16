@@ -1,11 +1,12 @@
 "use strict";
 
 class CommandDataSourceTruthService{
-  constructor(database,universalIntegrationService,providerConnectionReadinessService=null,providerDataReconciliationService=null){
+  constructor(database,universalIntegrationService,providerConnectionReadinessService=null,providerDataReconciliationService=null,providerIntegrationContinuityService=null){
     this.database=database;
     this.integrations=universalIntegrationService;
     this.providerReadiness=providerConnectionReadinessService;
     this.providerReconciliation=providerDataReconciliationService;
+    this.providerContinuity=providerIntegrationContinuityService;
   }
   now(){return new Date().toISOString();}
   ageMinutes(timestamp){
@@ -84,8 +85,12 @@ class CommandDataSourceTruthService{
 
     const providerReconciliation=this.providerReconciliation?await this.providerReconciliation.evaluate(organizationId,allowedLocationIds,locationId):null;
 
+    const providerContinuity=this.providerContinuity
+      ? await this.providerContinuity.evaluate(organizationId,allowedLocationIds,locationId)
+      : null;
+
     return {
-      version:"79.50.0",
+      version:"79.75.0",
       generatedAt:this.now(),
       organizationId,
       location:{id:location.id,name:location.name},
@@ -94,6 +99,7 @@ class CommandDataSourceTruthService{
       providers,
       providerReadiness,
       providerReconciliation,
+      providerContinuity,
       summary:{
         connectedProviders:connected.length,
         liveDecisionDomains,
@@ -110,7 +116,9 @@ class CommandDataSourceTruthService{
         adapterPresenceAloneIsNotReadiness:true,
         providerReadinessMustBeExplicit:true,
         reconciliationRequiredForTrustedLive:true,
-        providerReadinessDoesNotEqualTrustedLive:true
+        providerReadinessDoesNotEqualTrustedLive:true,
+        continuityRequiredToRemainTrusted:true,
+        providerFailureMustDegradeToLocalFallback:true
       }
     };
   }

@@ -244,9 +244,23 @@ function renderSourceTruth(data={}){
 
   const readiness=truth.providerReadiness||null;
   const reconciliation=truth.providerReconciliation||null;
-  label.textContent=reconciliation?.decision==="TRUSTED_LIVE"?"Trusted live":readiness?.decision==="READY"?"Reconciliation pending":truth.status==="LIVE_READY"?"Live sources":truth.status==="PARTIALLY_CONNECTED"?"Partial sources":"Local data";
-  const candidate=reconciliation?.bestCandidate||readiness?.bestCandidate;
-  const detail=reconciliation?.bestCandidate?` · ${candidate.provider} ${candidate.confidence}% confidence${candidate.blockers?.length?` · ${candidate.blockers.length} blocker(s)`:""}`:candidate?` · ${candidate.provider} ${candidate.score}% readiness${candidate.blockers?.length?` · ${candidate.blockers.length} blocker(s)`:""}`:"";
+  const continuity=truth.providerContinuity||null;
+  label.textContent=
+    continuity?.decision==="CONTINUOUS"?"Trusted live":
+    continuity?.decision==="DEGRADED"?"Provider degraded":
+    continuity?.decision==="LOCAL_FALLBACK"?"Local fallback":
+    reconciliation?.decision==="TRUSTED_LIVE"?"Continuity check":
+    readiness?.decision==="READY"?"Reconciliation pending":
+    truth.status==="LIVE_READY"?"Live sources":
+    truth.status==="PARTIALLY_CONNECTED"?"Partial sources":
+    "Local data";
+  const continuityProvider=continuity?.providers?.find(x=>x.continuity!=="STABLE")||continuity?.providers?.find(x=>x.fallback==="TRUSTED_LIVE")||null;
+  const candidate=continuityProvider||reconciliation?.bestCandidate||readiness?.bestCandidate;
+  const detail=continuityProvider
+    ? ` · ${candidate.provider} ${candidate.continuity.toLowerCase()}${candidate.lastEventAgeMinutes!==null?` · ${candidate.lastEventAgeMinutes}m since event`:""}${candidate.activeDrift?.length?` · ${candidate.activeDrift.length} drift signal(s)`:""}`
+    : reconciliation?.bestCandidate
+      ? ` · ${candidate.provider} ${candidate.confidence}% confidence${candidate.blockers?.length?` · ${candidate.blockers.length} blocker(s)`:""}`
+      : candidate?` · ${candidate.provider} ${candidate.score}% readiness${candidate.blockers?.length?` · ${candidate.blockers.length} blocker(s)`:""}`:"";
   label.title=`${truth.summary?.connectedProviders||0} connected provider(s) · ${truth.summary?.liveDecisionDomains||0}/${truth.summary?.totalDomains||0} live decision domains${detail}`;
 }
 
@@ -295,7 +309,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V79.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V79.75 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
