@@ -17,7 +17,7 @@ function request({method="GET",url="/api/health",headers={},ip="127.0.0.1"}={}) 
 }
 
 (()=>{
-  assert.equal(pkg.version,"69.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 69,`Expected V69 or later, found ${pkg.version}`);
 
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
@@ -32,8 +32,8 @@ function request({method="GET",url="/api/health",headers={},ip="127.0.0.1"}={}) 
   assert(router.includes("/api/system/security-boundary"));
   assert(router.includes("X-RateLimit-Limit"));
   assert(router.includes("PAYLOAD_TOO_LARGE"));
-  assert(startup.includes("V69.0.0 ready"));
-  assert(html.includes('content="69.0.0"'));
+  assert(/V69(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   const boundary=new ProductionBoundaryService({
     maxBodyBytes:100,
@@ -108,7 +108,7 @@ function request({method="GET",url="/api/health",headers={},ip="127.0.0.1"}={}) 
 
   console.log(JSON.stringify({
     ok:true,
-    version:"69.0.0",
+    featureVersion:"69.0.0",currentVersion:pkg.version,
     securityHeaders:true,
     contentSecurityPolicy:true,
     clickjackingProtection:true,

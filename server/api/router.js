@@ -234,7 +234,17 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (url.pathname === "/api/auth/logout" && request.method === "POST") {
-      await authService.logout(bearerToken(request));
+      const token = bearerToken(request);
+      const existingAuth = await authService.authenticate(token);
+      await authService.logout(token);
+      if (existingAuth) {
+        await auditService.record({
+          organizationId: existingAuth.membership.organizationId,
+          actor: existingAuth.user.name,
+          action: "Signed out of Blue Current Cloud",
+          category: "security"
+        });
+      }
       return sendJson(response, 200, { ok: true });
     }
 
@@ -248,6 +258,14 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         organizationId: auth.membership.organizationId,
         role: auth.membership.role,
         locationIds: auth.membership.locationIds,
+        permissions: authService.permissionsForRole(auth.membership.role),
+        session: {
+          id: auth.session.id,
+          createdAt: auth.session.createdAt,
+          lastSeenAt: auth.session.lastSeenAt || auth.session.createdAt,
+          idleExpiresAt: auth.session.idleExpiresAt || null,
+          expiresAt: auth.session.expiresAt
+        },
         organizations: memberships
       });
     }
@@ -291,6 +309,39 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Security boundary diagnostics require admin permission." });
       }
       return sendJson(response, 200, productionBoundaryService.snapshot());
+    }
+
+    if (url.pathname === "/api/system/auth-security" && request.method === "GET") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response, 403, { error: "Authentication security diagnostics require admin permission." });
+      }
+      return sendJson(response, 200, await authService.securitySnapshot(writeOrganizationId));
+    }
+
+    if (url.pathname === "/api/auth/logout-all" && request.method === "POST") {
+      const result = await authService.revokeAllUserSessions(auth.user.id, "user-requested-revocation");
+      await auditService.record({
+        organizationId: writeOrganizationId,
+        actor: auth.user.name,
+        action: `Revoked ${result.revoked} active session(s) across organizations`,
+        category: "security"
+      });
+      return sendJson(response, 200, { ok: true, ...result });
+    }
+
+    if (url.pathname === "/api/system/auth-security/revoke-user" && request.method === "POST") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response, 403, { error: "Session revocation requires admin permission." });
+      }
+      const body = await readJson(request);
+      const result = await authService.revokeOrganizationUserSessions(
+        writeOrganizationId,
+        String(body.userId || ""),
+        auth.user.name
+      );
+      return result
+        ? sendJson(response, 200, { ok: true, ...result })
+        : sendJson(response, 404, { error: "User membership was not found in this organization." });
     }
 
     const writeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);

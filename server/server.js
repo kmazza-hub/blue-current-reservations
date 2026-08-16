@@ -350,6 +350,7 @@ async function bootstrap() {
   const mutationRecovery = await productionMutationIntegrityService.recoverStalePrepared({ force: true });
 
   await authService.initializePasswords();
+  const sessionCleanup = await authService.cleanupSessions();
 
   const backupVerification = await database.verifyBackups();
   if (!backupVerification.ok) {
@@ -371,6 +372,7 @@ async function bootstrap() {
     console.log(`Blue Current Cloud V${APP_VERSION} running at http://localhost:${PORT}`);
     console.log(`Database: ${DB_PATH}`);
     console.log(`Verified recovery backup: ${backupVerification.ok ? "available" : "unavailable"}`);
+    console.log(`Session cleanup: ${sessionCleanup.removed} removed, ${sessionCleanup.after} retained`);
   });
 }
 
