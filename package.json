@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "77.50.0",
+  "version": "77.50.1",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 outcome verification and closed-loop operational learning",
+  "description": "Blue Current Hospitality OS \u2014 command authentication resilience and unobstructed diagnostics hotfix",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

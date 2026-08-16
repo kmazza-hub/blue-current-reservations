@@ -16437,3 +16437,49 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
 .bc-outcome-row strong{color:#e9f8fb;font-size:.68rem}.bc-outcome-row small{color:#7f9fa7;font-size:.58rem}
 .bc-outcome-row.improved small{color:#6ee1c9}.bc-outcome-row.worsened small{color:#ffaaa1}
 @media(max-width:560px){.bc-outcome-totals{grid-template-columns:repeat(2,1fr)}}
+
+
+/* V77.50.1 — diagnostics dock + operator control clearance */
+.startup-diagnostics{
+  top:96px!important;
+  right:14px!important;
+  bottom:auto!important;
+  width:42px!important;
+  z-index:10850!important;
+}
+.startup-diagnostics>button{
+  width:42px!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  grid-template-columns:1fr!important;
+  border-radius:12px!important;
+}
+.startup-diagnostics>button strong,
+.startup-diagnostics>button small{
+  display:none!important;
+}
+#startupDiagnosticsDot{
+  margin:0!important;
+}
+.startup-diagnostics-panel{
+  position:absolute;
+  top:48px;
+  right:0;
+  width:min(310px,calc(100vw - 28px));
+  margin-top:0!important;
+}
+@media(max-width:620px){
+  .startup-diagnostics{
+    top:84px!important;
+    right:10px!important;
+    bottom:auto!important;
+    width:40px!important;
+  }
+  .startup-diagnostics>button{
+    width:40px!important;
+    height:40px!important;
+  }
+}

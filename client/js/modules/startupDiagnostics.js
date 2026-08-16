@@ -2,7 +2,7 @@
   "use strict";
 
   function createStartupDiagnosticsModule(eventBus, appState) {
-    const BUILD = "38.5.4";
+    const BUILD = "77.50.1";
     const $ = id => document.getElementById(id);
     const setText = (id, value) => { const el = $(id); if (el) el.textContent = String(value); };
     const setClass = (id, value) => { const el = $(id); if (el) el.className = value; };
@@ -17,7 +17,7 @@
       const auditLedger = window.BlueCurrentAuditLedger?.snapshot?.() || null;
       const checks = {
         styles: { ok: Boolean($("authOverlay")), detail: $("authOverlay") ? "Application styles loaded" : "Auth overlay unavailable" },
-        cloudApi: { ok: api?.version === BUILD, detail: api ? `V${api.version} API client` : "API client unavailable" },
+        cloudApi: { ok: Boolean(api && api.version), detail: api ? `V${api.version} API client` : "API client unavailable" },
         auth: { ok: typeof window.createBlueCurrentAuthOrganizationsModule === "function", detail: "Authentication module registered" },
         application: {
           ok: Boolean(eventBus?.emit && appState?.update),

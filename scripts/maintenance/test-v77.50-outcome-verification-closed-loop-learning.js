@@ -11,7 +11,7 @@ const Outcome=require(path.join(root,"server/services/commandOutcomeVerification
 const Actions=require(path.join(root,"server/services/commandManagerActionService"));
 
 (async()=>{
-  assert.equal(pkg.version,"77.50.0");
+  assert(/^77\.50\.[01]$/.test(pkg.version));
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");

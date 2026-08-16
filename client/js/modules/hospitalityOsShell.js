@@ -19,7 +19,7 @@ const labels={
  integrations:"Integrations",system:"System"
 };
 
-let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false};
+let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,authRequired:false,transportBackoffUntil:0};
 
 function directSection(node){
   while(node&&node.parentElement&&node.parentElement.id!=="main")node=node.parentElement;
@@ -78,6 +78,42 @@ const setText=(id,value)=>{const node=el(id);if(node)node.textContent=value??"�
 const money=value=>Number.isFinite(Number(value))?new Intl.NumberFormat([],{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(value)):"—";
 const pct=value=>Number.isFinite(Number(value))?`${Math.round(Number(value))}%`:"—";
 const minutes=value=>Number.isFinite(Number(value))?`${Math.round(Number(value))}m`:"—";
+
+function authOverlayOpen(){
+  return document.getElementById("authOverlay")?.classList.contains("open")===true;
+}
+
+async function commandFetch(url,options={}){
+  if(commandState.authRequired || authOverlayOpen()){
+    const error=new Error("Sign in required.");
+    error.code="AUTH_REQUIRED";
+    throw error;
+  }
+  if(Date.now()<commandState.transportBackoffUntil){
+    const error=new Error("Blue Current connection is recovering.");
+    error.code="TRANSPORT_BACKOFF";
+    throw error;
+  }
+
+  const response=await fetch(url,{credentials:"same-origin",...options});
+  if(response.status===401){
+    commandState.authRequired=true;
+    window.dispatchEvent(new CustomEvent("bluecurrent:auth-session-expired",{
+      detail:{reason:"Command session is unauthorized.",path:url}
+    }));
+    const error=new Error("Your Blue Current session expired. Please sign in again.");
+    error.code="AUTH_REQUIRED";
+    throw error;
+  }
+  if(response.status===502 || response.status===503 || response.status===504){
+    commandState.transportBackoffUntil=Date.now()+15000;
+    const error=new Error("Blue Current is temporarily disconnected from the local service.");
+    error.code="UPSTREAM_UNAVAILABLE";
+    throw error;
+  }
+  return response;
+}
+
 
 function severityLabel(severity){
   return severity==="high"?"HIGH":severity==="watch"?"WATCH":severity==="guest"?"GUEST":"CLEAR";
@@ -198,7 +234,7 @@ function renderCommand(data){
   loadOutcomeLearning();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V77.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V77.50.1 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -236,7 +272,7 @@ async function loadManagerActions(){
   commandState.actionsLoading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await fetch(`/api/command/actions${query}`,{method:"GET",credentials:"same-origin",headers:{"Accept":"application/json"}});
+    const response=await commandFetch(`/api/command/actions${query}`,{method:"GET",headers:{"Accept":"application/json"}});
     const payload=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(payload.error||`Command actions returned ${response.status}.`);
     renderManagerActions(payload);
@@ -248,7 +284,7 @@ async function acknowledgeTopPriority(){
   if(!top||!commandState.locationId){setText("bcActionFeedback","No active ranked priority is available to acknowledge.");return;}
   setText("bcActionFeedback","Acknowledging priority…");
   try{
-    const response=await fetch("/api/command/actions",{
+    const response=await commandFetch("/api/command/actions",{
       method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json","X-Blue-Current-Idempotency-Key":`command-${commandState.locationId}-${top.id}-${Date.now()}`},
       body:JSON.stringify({locationId:commandState.locationId,priorityId:top.id,owner:top.owner,note:"Acknowledged from Blue Current Command."})
     });
@@ -262,7 +298,7 @@ async function acknowledgeTopPriority(){
 async function updateManagerAction(actionId,body){
   setText("bcActionFeedback","Updating manager action…");
   try{
-    const response=await fetch(`/api/command/actions/${encodeURIComponent(actionId)}`,{
+    const response=await commandFetch(`/api/command/actions/${encodeURIComponent(actionId)}`,{
       method:"PATCH",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json","X-Blue-Current-Idempotency-Key":`command-action-${actionId}-${body.action}-${Date.now()}`},body:JSON.stringify(body)
     });
     const payload=await response.json().catch(()=>({}));
@@ -320,8 +356,8 @@ async function loadOutcomeLearning(){
   commandState.outcomesLoading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await fetch(`/api/command/outcomes${query}`,{
-      method:"GET",credentials:"same-origin",headers:{"Accept":"application/json"}
+    const response=await commandFetch(`/api/command/outcomes${query}`,{
+      method:"GET",headers:{"Accept":"application/json"}
     });
     const payload=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(payload.error||`Command outcomes returned ${response.status}.`);
@@ -346,11 +382,12 @@ async function refreshCommand(){
   commandState.loading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await fetch(`/api/command/operating-picture${query}`,{
-      method:"GET",credentials:"same-origin",headers:{"Accept":"application/json"}
+    const response=await commandFetch(`/api/command/operating-picture${query}`,{
+      method:"GET",headers:{"Accept":"application/json"}
     });
     const payload=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(payload.error||`Operating picture returned ${response.status}.`);
+    commandState.authRequired=false;
     renderCommand(payload);
   }catch(error){
     renderCommandError(error);
@@ -361,6 +398,12 @@ async function refreshCommand(){
 
 function init(){
   document.body.classList.add("bc-hospitality-os");
+  window.addEventListener("bluecurrent:auth-session-expired",()=>{commandState.authRequired=true;});
+  document.addEventListener("click",event=>{
+    if(event.target?.closest?.("#authLoginForm button[type='submit']")){
+      setTimeout(()=>{commandState.authRequired=false;commandState.transportBackoffUntil=0;refreshCommand();},900);
+    }
+  });
   document.querySelectorAll("[data-bc-workspace]").forEach(button=>{
     button.addEventListener("click",()=>activate(button.dataset.bcWorkspace));
   });
