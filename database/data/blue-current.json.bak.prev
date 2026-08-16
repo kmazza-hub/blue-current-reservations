@@ -982,12 +982,12 @@
         "*"
       ],
       "createdAt": "2026-08-16T19:09:31.948Z",
-      "lastSeenAt": "2026-08-16T19:40:30.240Z",
-      "idleExpiresAt": "2026-08-16T21:40:30.240Z",
+      "lastSeenAt": "2026-08-16T20:15:46.541Z",
+      "idleExpiresAt": "2026-08-16T22:15:46.541Z",
       "expiresAt": "2026-08-17T07:09:31.948Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-16T19:40:30.243Z"
+      "updatedAt": "2026-08-16T20:15:46.542Z"
     }
   ],
   "invitations": [

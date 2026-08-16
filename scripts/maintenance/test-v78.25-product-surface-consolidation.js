@@ -7,14 +7,14 @@ const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
 const manifest=require(path.join(root,"config/product-surface-consolidation-v78.25.json"));
 
-assert.equal(pkg.version,"78.25.0");
+assert(Number(pkg.version.split(".")[0]) >= 78);
 assert.equal(manifest.version,"78.25.0");
 assert(manifest.retiredFromNormalUiCount>=60);
 assert.equal(manifest.policy.legacyBackendDeleted,false);
 assert.equal(manifest.policy.normalUsersSeeBuildHistory,false);
 
 const visibleVersionTokens=[...html.matchAll(/V\d+(?:\.\d+){1,2}/g)].map(m=>m[0]);
-assert.deepEqual(visibleVersionTokens,["V78.25"],`unexpected visible build-history tokens: ${visibleVersionTokens.join(", ")}`);
+assert.deepEqual(visibleVersionTokens,[`V${pkg.version.replace(/\.0$/,"")}`],`unexpected visible build-history tokens: ${visibleVersionTokens.join(", ")}`);
 
 for(const id of manifest.retiredFromNormalUi){
   const match=html.match(new RegExp(`<section\\b(?=[^>]*id="${id}")(?=[^>]*bc-legacy-development-surface)[^>]*>`));

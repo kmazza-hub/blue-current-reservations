@@ -72,7 +72,7 @@ class CommandOutcomeVerificationService{
     const currentMetric=this.metricFor(action.domain,picture);
     const comparison=this.compare(baseline,currentMetric);
     const verification={
-      version:"77.50.0",
+      version:"78.50.0",
       verifiedAt:this.now(),
       verifiedBy:actor,
       domain:action.domain,
@@ -107,6 +107,14 @@ class CommandOutcomeVerificationService{
       delta:verification.delta,
       percentChange:verification.percentChange,
       confidence:verification.confidence,
+      baselineSnapshot:baseline ? {
+        capturedAt:baseline.capturedAt||null,
+        dataMode:baseline.dataMode||null,
+        priorityScore:baseline.priorityScore||null,
+        metric:baseline.metric||null,
+        service:baseline.service||{},
+        inventory:baseline.inventory||{}
+      } : null,
       createdAt:this.now(),
       eligibleForAutomation:false
     };
@@ -130,7 +138,7 @@ class CommandOutcomeVerificationService{
     const unchanged=records.filter(x=>x.verificationStatus==="UNCHANGED").length;
     const unverified=records.filter(x=>x.verificationStatus==="UNVERIFIED").length;
     return {
-      version:"77.50.0",generatedAt:this.now(),locationId,
+      version:"78.50.0",generatedAt:this.now(),locationId,
       counts:{total:records.length,improved,worsened,unchanged,unverified},
       recent:records.slice(0,12),
       policy:{

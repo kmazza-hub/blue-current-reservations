@@ -19,7 +19,7 @@ const labels={
  integrations:"Integrations",system:"System"
 };
 
-let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,playbooksLoading:false,authRequired:false,transportBackoffUntil:0};
+let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,playbooksLoading:false,shiftMemoryLoading:false,authRequired:false,transportBackoffUntil:0};
 
 function directSection(node){
   while(node&&node.parentElement&&node.parentElement.id!=="main")node=node.parentElement;
@@ -233,9 +233,10 @@ function renderCommand(data){
   loadManagerActions();
   loadOutcomeLearning();
   loadPlaybooks();
+  loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V78.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V78.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -371,6 +372,60 @@ async function loadOutcomeLearning(){
   }
 }
 
+
+
+function renderShiftMemory(memory={}){
+  const title=el("bcShiftMemoryTitle");
+  const meta=el("bcShiftMemoryMeta");
+  if(!title||!meta)return;
+
+  const match=memory.match;
+  const playbook=memory.playbook;
+  const evidence=memory.contextualEvidence||{};
+  const phase=memory.currentContext?.servicePhase||"current service";
+
+  if(!memory.currentPriority){
+    title.textContent="No active ranked priority to match.";
+    meta.textContent=`Shift context: ${phase.replaceAll("-"," ")} · Blue Current will wait for a verified priority.`;
+    return;
+  }
+  if(!playbook){
+    title.textContent="No historical playbook is strong enough to apply here.";
+    meta.textContent=`${memory.currentPriority.title} · ${phase.replaceAll("-"," ")} · manager judgment remains primary.`;
+    return;
+  }
+  if(!match){
+    title.textContent=playbook.recommendation||"Historical playbook available.";
+    meta.textContent=`${playbook.guidanceStatus.replaceAll("_"," ")} · no sufficiently comparable shift context has been recorded yet.`;
+    return;
+  }
+
+  title.textContent=playbook.recommendation||"Relevant historical intervention";
+  const improved=evidence.improvedRate===null||evidence.improvedRate===undefined
+    ? "outcome rate unavailable"
+    : `${evidence.improvedRate}% improved`;
+  meta.textContent=`${match.similarityScore}% context match · ${evidence.comparableOutcomes||0} comparable verified outcome${evidence.comparableOutcomes===1?"":"s"} · ${improved} · ${memory.guidance.replaceAll("_"," ")}.`;
+}
+
+async function loadShiftMemory(){
+  if(commandState.shiftMemoryLoading)return;
+  commandState.shiftMemoryLoading=true;
+  try{
+    const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
+    const response=await commandFetch(`/api/command/contextual-playbook${query}`,{
+      method:"GET",headers:{"Accept":"application/json"}
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Contextual playbook returned ${response.status}.`);
+    renderShiftMemory(payload);
+  }catch(error){
+    const title=el("bcShiftMemoryTitle"),meta=el("bcShiftMemoryMeta");
+    if(title)title.textContent="Shift memory unavailable.";
+    if(meta)meta.textContent=error.message;
+  }finally{
+    commandState.shiftMemoryLoading=false;
+  }
+}
 
 function renderPlaybooks(summary={}){
   const root=el("bcPlaybookSummary");

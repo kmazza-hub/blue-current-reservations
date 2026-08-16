@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "78.25.0",
+  "version": "78.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 consolidated product surface and legacy development UI retirement",
+  "description": "Blue Current Hospitality OS \u2014 shift memory and contextual playbook matching",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

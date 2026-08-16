@@ -16519,3 +16519,10 @@ body.bc-consolidated-product-surface.bc-show-advanced .bc-legacy-development-sur
 body.bc-consolidated-product-surface:not(.bc-show-advanced) [data-development-only="true"]{
   display:none!important;
 }
+
+
+/* V78.50 — contextual shift memory inside existing Playbook Intelligence */
+.bc-shift-memory{display:grid;gap:5px;margin:10px 12px 0;padding:11px 12px;border:1px solid rgba(103,221,200,.14);border-radius:10px;background:linear-gradient(135deg,rgba(103,221,200,.07),rgba(255,255,255,.02))}
+.bc-shift-memory small{color:#6fe2ce;font-size:.54rem;font-weight:900;letter-spacing:.1em}
+.bc-shift-memory strong{color:#f2fbfc;font-size:.69rem;line-height:1.42}
+.bc-shift-memory span{color:#88aab1;font-size:.58rem;line-height:1.45}
