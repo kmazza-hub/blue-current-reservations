@@ -10,12 +10,12 @@ const boundary=fs.readFileSync(path.join(root,"server/services/productionBoundar
 const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const startup=fs.readFileSync(path.join(root,"client/js/startup-loader.js"),"utf8");
 
-assert.equal(pkg.version,"71.0.1");
+assert(Number(pkg.version.split(".")[0]) >= 71, `Expected V71 or later, found ${pkg.version}`);
 assert(boundary.includes("font-src 'self' data: https://fonts.gstatic.com"));
 assert(boundary.includes("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"));
 assert(!boundary.includes("style-src 'self' 'unsafe-inline'; script-src"));
-assert(html.includes('content="71.0.1"'));
-assert(startup.includes("V71.0.1 ready"));
+assert(html.includes(`content="${pkg.version}"`));
+assert(/V\d+(?:\.\d+){2} ready/.test(startup));
 
 console.log(JSON.stringify({
   ok:true,

@@ -28,13 +28,13 @@
     },
     {
       "id": "schema-mapping",
-      "status": "future",
+      "status": "complete",
       "description": "Map JSON collections/documents to normalized relational tables and constraints."
     },
     {
       "id": "backfill",
-      "status": "future",
-      "description": "Copy historical state with count/hash verification."
+      "status": "framework-complete",
+      "description": "Deterministic source manifests and count/hash verification framework are complete; target adapter/backfill execution remains future."
     },
     {
       "id": "shadow-read",
@@ -62,5 +62,17 @@
     "noAutomaticDataDeletion": true,
     "noBusinessServiceRewriteRequired": true,
     "humanCertificationRequired": true
+  },
+  "currentVersion": "71.50.0",
+  "verification": {
+    "sourceManifest": "SHA-256 per store plus total record count",
+    "targetVerification": "canonicalized count/hash comparison per store",
+    "cutoverEvidence": [
+      "backfillVerified",
+      "shadowReadVerified",
+      "dualWriteVerified",
+      "humanApproval"
+    ],
+    "automaticCutover": false
   }
 }

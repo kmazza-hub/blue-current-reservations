@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "71.0.1",
+  "version": "71.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 V71.0.1 Google Fonts CSP compatibility hotfix",
+  "description": "Blue Current Hospitality OS \u2014 schema mapping, migration verification, and managed-store cutover framework",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
