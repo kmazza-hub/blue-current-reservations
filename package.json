@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "75.50.1",
+  "version": "76.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 Host Stand and Live Service high-contrast hotfix",
+  "description": "Blue Current Hospitality OS \u2014 live Command operating picture and verified attention intelligence",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

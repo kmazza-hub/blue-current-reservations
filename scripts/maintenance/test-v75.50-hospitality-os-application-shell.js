@@ -6,7 +6,7 @@ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const js=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
 
-assert(/^75\.50\.[01]$/.test(pkg.version));
+assert(Number(pkg.version.split(".")[0]) >= 75);
 assert(html.includes('id="blueCurrentCommand"'));
 assert(html.includes('id="bcCommandTitle"'));
 assert(html.includes("Run the whole restaurant from here."));
@@ -28,7 +28,9 @@ assert(js.includes("candidateSections"));
 assert(js.includes("bc-workspace-visible"));
 assert(js.includes('activate("command",{scroll:false})'));
 assert(js.includes("sessionStorage"));
-assert(!js.includes("fetch(")); // shell does not create a second source of truth or mutate APIs
+assert(js.includes("fetch(`/api/command/operating-picture")); // V76 read-only operating picture
+assert(js.includes('method:"GET"'));
+assert(!js.includes('method:"POST"')&&!js.includes('method:"PUT"')&&!js.includes('method:"DELETE"'));
 
 // Existing deep product surfaces remain in the document rather than being deleted.
 for(const id of ["host-stand","operating-current","profit-current","executive-command-center","inventory-intelligence","integrationControlCenter"]){
@@ -55,6 +57,7 @@ console.log(JSON.stringify({
   mobileOperatingRail:true,
   legacyDepthPreserved:true,
   shellApiMutations:false,
+  shellReadOnlyOperatingPicture:true,
   duplicateIds:0,
   brokenAnchors:0
 },null,2));

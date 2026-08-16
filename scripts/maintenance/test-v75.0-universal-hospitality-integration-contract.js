@@ -28,7 +28,7 @@ const {validateCanonicalEvent}=require(path.join(root,"server/integrations/hospi
   ]) assert(router.includes(route),route);
 
   assert(server.includes("UniversalHospitalityIntegrationService"));
-  assert(/V75(?:\.50)?\.[01] ready/.test(startup));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
   assert(html.includes(`content="${pkg.version}"`));
 
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v75-"));

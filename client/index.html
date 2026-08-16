@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="75.50.1">
+  <meta name="blue-current-build" content="76.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=75.50.1">
+  <link rel="stylesheet" href="styles.css?v=76.0.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V75.50.1</strong>
+    <strong>Blue Current V76.0</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -74,7 +74,7 @@
 <div class="auth-overlay" id="authOverlay" aria-modal="true" role="dialog">
   <div class="auth-shell">
     <section class="auth-brand-panel">
-      <p class="eyebrow"><span></span> Blue Current Hospitality OS V75.50.1</p>
+      <p class="eyebrow"><span></span> Blue Current Hospitality OS V76.0</p>
       <h1>Secure access for every restaurant organization.</h1>
       <p>Authentication, enforced roles, protected APIs, tenant boundaries, and organization-aware sessions are now part of the platform.</p>
       <div class="auth-security-list">
@@ -239,7 +239,7 @@
       <div>
         <p class="bc-command-kicker">LIVE OPERATING COMMAND</p>
         <h1 id="bcCommandTitle">Good evening. Run the whole restaurant from here.</h1>
-        <p id="bcCommandContext">Marina Grille · Dinner service · Blue Current is watching the operation.</p>
+        <p id="bcCommandContext">Marina Grille · Dinner service · Blue Current is watching the operation.</p><p class="bc-command-truth" id="bcCommandTruth">Connecting to Blue Current operating data…</p>
       </div>
       <div class="bc-command-context-controls">
         <label>Location<select id="bcCommandLocation"><option>Marina Grille</option><option>Harbor House</option><option>River & Rail</option></select></label>
@@ -248,18 +248,18 @@
     </header>
 
     <div class="bc-command-status" aria-label="Live restaurant status">
-      <article><small>Revenue pace</small><strong id="bcCmdRevenue">+6.8%</strong><span>Ahead of plan</span></article>
-      <article><small>Guests</small><strong id="bcCmdGuests">318</strong><span>Tonight</span></article>
-      <article><small>Occupancy</small><strong id="bcCmdOccupancy">84%</strong><span>Dining room</span></article>
-      <article><small>Average wait</small><strong id="bcCmdWait">12m</strong><span>Within target</span></article>
-      <article><small>Kitchen</small><strong id="bcCmdKitchen">17m</strong><span>Ticket pace</span></article>
-      <article><small>Labor</small><strong id="bcCmdLabor">28.4%</strong><span>Of sales</span></article>
+      <article><small>Revenue pace</small><strong id="bcCmdRevenue">—</strong><span id="bcCmdRevenueSub">Actual revenue unavailable</span></article>
+      <article><small>Guests</small><strong id="bcCmdGuests">—</strong><span id="bcCmdGuestsSub">Active covers</span></article>
+      <article><small>Occupancy</small><strong id="bcCmdOccupancy">—</strong><span id="bcCmdOccupancySub">Dining room</span></article>
+      <article><small>Average wait</small><strong id="bcCmdWait">—</strong><span id="bcCmdWaitSub">Quoted wait</span></article>
+      <article><small>Kitchen</small><strong id="bcCmdKitchen">—</strong><span id="bcCmdKitchenSub">Active ticket target</span></article>
+      <article><small>Labor</small><strong id="bcCmdLabor">—</strong><span id="bcCmdLaborSub">Labor target</span></article>
     </div>
 
     <div class="bc-command-grid">
       <section class="bc-command-panel bc-attention-panel">
-        <header><div><small>RIGHT NOW</small><h2>What needs attention</h2></div><span class="bc-count-badge">3</span></header>
-        <div class="bc-attention-list">
+        <header><div><small>RIGHT NOW</small><h2>What needs attention</h2></div><span class="bc-count-badge" id="bcAttentionCount">—</span></header>
+        <div class="bc-attention-list" id="bcAttentionList">
           <button type="button" data-bc-workspace="kitchen"><span class="bc-priority high">HIGH</span><div><strong>Kitchen pressure is building</strong><small>Ticket pace is moving above the dinner target. Review before the next arrival wave.</small></div><b>→</b></button>
           <button type="button" data-bc-workspace="service"><span class="bc-priority watch">WATCH</span><div><strong>Waterfront section nearing capacity</strong><small>Protect the next turn before committing additional walk-in demand.</small></div><b>→</b></button>
           <button type="button" data-bc-workspace="guests"><span class="bc-priority guest">GUEST</span><div><strong>Birthday arrival approaching</strong><small>Premier returning guest expected shortly. Hospitality context is ready.</small></div><b>→</b></button>
@@ -268,21 +268,21 @@
 
       <section class="bc-command-panel bc-next-panel">
         <header><div><small>NEXT 30 MINUTES</small><h2>Service pressure</h2></div><span>Forecast</span></header>
-        <div class="bc-next-metrics"><div><strong>27</strong><small>Reservations</small></div><div><strong>83</strong><small>Projected covers</small></div><div><strong>4</strong><small>Expected turns</small></div></div>
-        <div class="bc-pressure"><span><i style="width:78%"></i></span><div><small>Kitchen load</small><strong>HIGH</strong></div></div>
+        <div class="bc-next-metrics"><div><strong id="bcNextReservations">—</strong><small>Reservations</small></div><div><strong id="bcNextCovers">—</strong><small>Projected covers</small></div><div><strong id="bcNextTurns">—</strong><small>Expected turns</small></div></div>
+        <div class="bc-pressure"><span><i id="bcKitchenPressureBar" style="width:0%"></i></span><div><small>Kitchen load</small><strong id="bcKitchenPressure">—</strong></div></div>
         <button class="bc-text-action" type="button" data-bc-workspace="service">Open live service →</button>
       </section>
 
-      <section class="bc-command-panel bc-intelligence-panel">
+      <section class="bc-command-panel bc-intelligence-panel" id="bcIntelligencePanel">
         <header><div><small>BLUE CURRENT INTELLIGENCE</small><h2>What the operation is telling you</h2></div><span class="bc-ai-mark">BC</span></header>
-        <p>Demand is compressing into the next service window while kitchen pace is beginning to rise. Protecting the next waterfront turn should reduce avoidable pressure without sacrificing the guest experience.</p>
-        <div class="bc-recommendation"><small>RECOMMENDED FOCUS</small><strong>Protect Table 14 and review the next large-party seating before committing more demand.</strong></div>
+        <p id="bcIntelligenceSummary">Waiting for the live operating picture…</p>
+        <div class="bc-recommendation"><small>RECOMMENDED FOCUS</small><strong id="bcRecommendedFocus">Blue Current will surface the highest-priority verified signal here.</strong></div>
         <button class="bc-text-action" type="button" data-bc-workspace="performance">Open performance intelligence →</button>
       </section>
 
       <section class="bc-command-panel bc-profit-panel">
         <header><div><small>SHIFT PERFORMANCE</small><h2>Protect hospitality and profit</h2></div><span>Live</span></header>
-        <div class="bc-profit-row"><div><small>Revenue opportunity</small><strong>$2,840</strong></div><div><small>Labor exposure</small><strong>$410</strong></div><div><small>Guest recovery</small><strong>2</strong></div></div>
+        <div class="bc-profit-row"><div><small>Sales forecast</small><strong id="bcSalesForecast">—</strong></div><div><small>Labor budget</small><strong id="bcLaborBudget">—</strong></div><div><small>Low stock</small><strong id="bcLowStock">—</strong></div></div>
         <button class="bc-text-action" type="button" data-bc-workspace="performance">Open profitability →</button>
       </section>
     </div>
@@ -9901,5 +9901,5 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=75.50.0"></script></body>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=76.0.0"></script></body>
 </html>

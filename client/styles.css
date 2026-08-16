@@ -16376,3 +16376,24 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
     color:#d5eaf0!important;
   }
 }
+
+
+/* V76.0 — live Command operating picture */
+.bc-command-truth{
+  margin:10px 0 0!important;
+  padding:8px 10px;
+  display:inline-block;
+  border:1px solid rgba(125,207,238,.14);
+  border-radius:9px;
+  background:rgba(125,207,238,.05);
+  color:#9fc8d2!important;
+  font-size:.67rem!important;
+  line-height:1.35;
+}
+.bc-priority.normal{
+  background:rgba(84,230,199,.10);
+  color:#75e6d2;
+}
+#bcNextTurns{
+  font-size:1rem;
+}

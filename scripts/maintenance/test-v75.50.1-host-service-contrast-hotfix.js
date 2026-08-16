@@ -5,9 +5,9 @@ const pkg=require(path.join(root,"package.json"));
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 
-assert.equal(pkg.version,"75.50.1");
-assert(html.includes('content="75.50.1"'));
-assert(html.includes("styles.css?v=75.50.1"));
+assert(Number(pkg.version.split(".")[0]) >= 75);
+assert(html.includes(`content="${pkg.version}"`));
+assert(html.includes(`styles.css?v=${pkg.version}`));
 assert(css.includes("V75.50.1 · Host Stand + Live Service contrast hotfix"));
 
 for(const selector of [
