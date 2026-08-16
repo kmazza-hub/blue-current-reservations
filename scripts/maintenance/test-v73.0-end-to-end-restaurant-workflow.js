@@ -17,7 +17,7 @@ const Integrity=require(path.join(root,"server/services/operationalDataIntegrity
 const Workflow=require(path.join(root,"server/services/restaurantWorkflowCertificationService"));
 
 (async()=>{
-  assert.equal(pkg.version,"73.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 73);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
@@ -27,8 +27,8 @@ const Workflow=require(path.join(root,"server/services/restaurantWorkflowCertifi
   assert(router.includes("/api/reservation-operations/complete"));
   assert(router.includes("/api/system/workflow-certification"));
   assert(server.includes("RestaurantWorkflowCertificationService"));
-  assert(startup.includes("V73.0.0 ready"));
-  assert(html.includes('content="73.0.0"'));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v73-"));
   const dbPath=path.join(dir,"db.json");

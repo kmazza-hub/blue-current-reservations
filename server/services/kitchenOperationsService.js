@@ -31,6 +31,27 @@ class KitchenOperationsService {
     const ticket=await this.database.transaction(tx=>{
       const current=tx.get("kitchenTickets",id);
       if(!current || current.organizationId!==organizationId) return null;
+
+      if(safe.status && String(safe.status).toLowerCase()!==String(current.status||"").toLowerCase()){
+        const transitions={
+          received:new Set(["cooking","held","cancelled","canceled"]),
+          cooking:new Set(["plating","held","cancelled","canceled"]),
+          held:new Set(["received","cooking","cancelled","canceled"]),
+          plating:new Set(["served","held","cancelled","canceled"]),
+          served:new Set([]),
+          cancelled:new Set([]),
+          canceled:new Set([])
+        };
+        const from=String(current.status||"received").toLowerCase();
+        const to=String(safe.status).toLowerCase();
+        if(!transitions[from] || !transitions[from].has(to)){
+          const error=new Error(`Invalid kitchen ticket transition: ${from} -> ${to}`);
+          error.statusCode=409;
+          error.code="INVALID_KITCHEN_TRANSITION";
+          throw error;
+        }
+      }
+
       return tx.update("kitchenTickets",id,safe);
     },{domain:"kitchen",operation:"update-ticket",organizationId,ticketId:id});
 
@@ -48,13 +69,32 @@ class KitchenOperationsService {
       if(!ticket || ticket.organizationId!==organizationId)return null;
       const item=(ticket.items||[]).find(x=>x.id===itemId);
       if(!item)return null;
-      if(patch.status)item.status=patch.status;
+      if(patch.status){
+        const transitions={
+          received:new Set(["cooking","ready","cancelled","canceled"]),
+          cooking:new Set(["ready","received","cancelled","canceled"]),
+          ready:new Set(["cooking","cancelled","canceled"]),
+          cancelled:new Set([]),
+          canceled:new Set([])
+        };
+        const from=String(item.status||"received").toLowerCase();
+        const to=String(patch.status).toLowerCase();
+        if(from!==to && (!transitions[from] || !transitions[from].has(to))){
+          const error=new Error(`Invalid kitchen item transition: ${from} -> ${to}`);
+          error.statusCode=409;
+          error.code="INVALID_KITCHEN_ITEM_TRANSITION";
+          throw error;
+        }
+        item.status=patch.status;
+      }
       const statuses=ticket.items.map(x=>x.status);
-      ticket.status=statuses.every(x=>x==="ready")
-        ?"plating"
-        :statuses.some(x=>x==="cooking")
-          ?"cooking"
-          :"received";
+      if(!["held","cancelled","canceled","served"].includes(String(ticket.status||"").toLowerCase())){
+        ticket.status=statuses.every(x=>x==="ready")
+          ?"plating"
+          :statuses.some(x=>x==="cooking")
+            ?"cooking"
+            :"received";
+      }
       ticket.updatedAt=new Date().toISOString();
       return {ticket,item};
     },{domain:"kitchen",operation:"update-item",organizationId,ticketId,itemId});

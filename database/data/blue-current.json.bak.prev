@@ -950,9 +950,9 @@
       ],
       "createdAt": "2026-08-16T10:40:00.445Z",
       "expiresAt": "2026-08-16T22:40:00.445Z",
-      "lastSeenAt": "2026-08-16T13:02:59.242Z",
-      "idleExpiresAt": "2026-08-16T15:02:59.242Z",
-      "updatedAt": "2026-08-16T13:02:59.246Z"
+      "lastSeenAt": "2026-08-16T13:11:40.070Z",
+      "idleExpiresAt": "2026-08-16T15:11:40.070Z",
+      "updatedAt": "2026-08-16T13:11:40.073Z"
     },
     {
       "id": "ses_1786881313417_0akc5z",
@@ -964,12 +964,12 @@
         "*"
       ],
       "createdAt": "2026-08-16T11:55:13.417Z",
-      "lastSeenAt": "2026-08-16T12:17:22.318Z",
-      "idleExpiresAt": "2026-08-16T14:17:22.318Z",
+      "lastSeenAt": "2026-08-16T13:05:27.392Z",
+      "idleExpiresAt": "2026-08-16T15:05:27.392Z",
       "expiresAt": "2026-08-16T23:55:13.417Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-16T12:17:22.319Z"
+      "updatedAt": "2026-08-16T13:05:27.393Z"
     }
   ],
   "invitations": [
