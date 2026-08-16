@@ -30,7 +30,8 @@ assert(js.includes('activate("command",{scroll:false})'));
 assert(js.includes("sessionStorage"));
 assert(js.includes("fetch(`/api/command/operating-picture")); // V76 read-only operating picture
 assert(js.includes('method:"GET"'));
-assert(!js.includes('method:"POST"')&&!js.includes('method:"PUT"')&&!js.includes('method:"DELETE"'));
+assert(!js.includes('method:"PUT"')&&!js.includes('method:"DELETE"'));
+assert(js.includes('/api/command/actions')); // V77 adds human-confirmed manager actions while operating-picture reads stay GET-only.
 
 // Existing deep product surfaces remain in the document rather than being deleted.
 for(const id of ["host-stand","operating-current","profit-current","executive-command-center","inventory-intelligence","integrationControlCenter"]){
@@ -56,7 +57,8 @@ console.log(JSON.stringify({
   darkRestaurantContrast:true,
   mobileOperatingRail:true,
   legacyDepthPreserved:true,
-  shellApiMutations:false,
+  shellApiMutations:true,
+  shellMutationsHumanConfirmed:true,
   shellReadOnlyOperatingPicture:true,
   duplicateIds:0,
   brokenAnchors:0

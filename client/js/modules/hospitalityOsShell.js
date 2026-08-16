@@ -19,7 +19,7 @@ const labels={
  integrations:"Integrations",system:"System"
 };
 
-let commandState={loading:false,locationId:null,lastLoadedAt:null};
+let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false};
 
 function directSection(node){
   while(node&&node.parentElement&&node.parentElement.id!=="main")node=node.parentElement;
@@ -156,6 +156,7 @@ function buildIntelligence(data){
   }
 }
 function renderCommand(data){
+  commandState.currentData=data;
   renderLocations(data);
   const s=data.service||{},n=data.next30Minutes||{},f=data.financial||{},inv=data.inventory||{};
 
@@ -193,10 +194,81 @@ function renderCommand(data){
 
   renderAttention(data);
   buildIntelligence(data);
+  loadManagerActions();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V76.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V77.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
+}
+
+
+function actionStatusLabel(status){
+  return ({acknowledged:"Acknowledged",assigned:"Assigned",in_progress:"In progress",resolved:"Resolved",dismissed:"Dismissed"})[status]||status||"Open";
+}
+
+function renderManagerActions(summary={}){
+  const list=el("bcManagerActionList");
+  if(!list)return;
+  const open=summary.openActions||[];
+  setText("bcOpenActionCount",`${summary.counts?.open||0} open manager action${summary.counts?.open===1?"":"s"}`);
+  list.replaceChildren();
+  if(!open.length){
+    const p=document.createElement("p");p.textContent="No acknowledged Command actions yet.";list.append(p);return;
+  }
+  open.slice(0,5).forEach(item=>{
+    const row=document.createElement("article");row.className="bc-manager-action";
+    const copy=document.createElement("div");
+    const title=document.createElement("strong");title.textContent=item.title;
+    const meta=document.createElement("small");meta.textContent=`${actionStatusLabel(item.status)} · ${item.owner||"Manager"}`;
+    copy.append(title,meta);
+    const controls=document.createElement("div");
+    if(item.status!=="in_progress"){
+      const start=document.createElement("button");start.type="button";start.textContent="Start";start.addEventListener("click",()=>updateManagerAction(item.id,{action:"start"}));controls.append(start);
+    }
+    const resolve=document.createElement("button");resolve.type="button";resolve.textContent="Resolve";resolve.addEventListener("click",()=>updateManagerAction(item.id,{action:"resolve",outcome:"Resolved from Command by manager."}));controls.append(resolve);
+    row.append(copy,controls);list.append(row);
+  });
+}
+
+async function loadManagerActions(){
+  if(commandState.actionsLoading)return;
+  commandState.actionsLoading=true;
+  try{
+    const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
+    const response=await fetch(`/api/command/actions${query}`,{method:"GET",credentials:"same-origin",headers:{"Accept":"application/json"}});
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Command actions returned ${response.status}.`);
+    renderManagerActions(payload);
+  }catch(error){setText("bcActionFeedback",`Action queue unavailable · ${error.message}`);}finally{commandState.actionsLoading=false;}
+}
+
+async function acknowledgeTopPriority(){
+  const top=commandState.currentData?.prioritization?.topPriorities?.[0];
+  if(!top||!commandState.locationId){setText("bcActionFeedback","No active ranked priority is available to acknowledge.");return;}
+  setText("bcActionFeedback","Acknowledging priority…");
+  try{
+    const response=await fetch("/api/command/actions",{
+      method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json","X-Blue-Current-Idempotency-Key":`command-${commandState.locationId}-${top.id}-${Date.now()}`},
+      body:JSON.stringify({locationId:commandState.locationId,priorityId:top.id,owner:top.owner,note:"Acknowledged from Blue Current Command."})
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Acknowledge returned ${response.status}.`);
+    setText("bcActionFeedback",payload.action?.duplicate?"This priority already has an open manager action.":"Priority acknowledged and added to the manager action queue.");
+    await loadManagerActions();
+  }catch(error){setText("bcActionFeedback",`Unable to acknowledge · ${error.message}`);}
+}
+
+async function updateManagerAction(actionId,body){
+  setText("bcActionFeedback","Updating manager action…");
+  try{
+    const response=await fetch(`/api/command/actions/${encodeURIComponent(actionId)}`,{
+      method:"PATCH",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json","X-Blue-Current-Idempotency-Key":`command-action-${actionId}-${body.action}-${Date.now()}`},body:JSON.stringify(body)
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Action update returned ${response.status}.`);
+    setText("bcActionFeedback",`${payload.action?.title||"Manager action"} · ${actionStatusLabel(payload.action?.status)}.`);
+    await loadManagerActions();
+  }catch(error){setText("bcActionFeedback",`Unable to update action · ${error.message}`);}
 }
 
 function renderCommandError(error){
@@ -229,6 +301,7 @@ function init(){
   document.querySelectorAll("[data-bc-workspace]").forEach(button=>{
     button.addEventListener("click",()=>activate(button.dataset.bcWorkspace));
   });
+  el("bcAcknowledgeTop")?.addEventListener("click",acknowledgeTopPriority);
   el("bcCommandLocation")?.addEventListener("change",event=>{
     commandState.locationId=event.target.value;
     refreshCommand();

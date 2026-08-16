@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "76.50.0",
+  "version": "77.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 manager decision prioritization and top-three operating focus",
+  "description": "Blue Current Hospitality OS \u2014 manager action queue and accountability loop",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

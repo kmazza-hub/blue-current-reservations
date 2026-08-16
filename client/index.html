@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="76.50.0">
+  <meta name="blue-current-build" content="77.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=76.50.0">
+  <link rel="stylesheet" href="styles.css?v=77.0.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V76.50</strong>
+    <strong>Blue Current V77.0</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -74,7 +74,7 @@
 <div class="auth-overlay" id="authOverlay" aria-modal="true" role="dialog">
   <div class="auth-shell">
     <section class="auth-brand-panel">
-      <p class="eyebrow"><span></span> Blue Current Hospitality OS V76.50</p>
+      <p class="eyebrow"><span></span> Blue Current Hospitality OS V77.0</p>
       <h1>Secure access for every restaurant organization.</h1>
       <p>Authentication, enforced roles, protected APIs, tenant boundaries, and organization-aware sessions are now part of the platform.</p>
       <div class="auth-security-list">
@@ -263,6 +263,14 @@
           <button type="button" data-bc-workspace="kitchen"><span class="bc-priority high">HIGH</span><div><strong>Kitchen pressure is building</strong><small>Ticket pace is moving above the dinner target. Review before the next arrival wave.</small></div><b>→</b></button>
           <button type="button" data-bc-workspace="service"><span class="bc-priority watch">WATCH</span><div><strong>Waterfront section nearing capacity</strong><small>Protect the next turn before committing additional walk-in demand.</small></div><b>→</b></button>
           <button type="button" data-bc-workspace="guests"><span class="bc-priority guest">GUEST</span><div><strong>Birthday arrival approaching</strong><small>Premier returning guest expected shortly. Hospitality context is ready.</small></div><b>→</b></button>
+        </div>
+        <div class="bc-action-controls">
+          <button type="button" id="bcAcknowledgeTop">Acknowledge priority #1</button>
+          <span id="bcActionFeedback">Manager confirmation creates an accountable action.</span>
+        </div>
+        <div class="bc-manager-action-queue">
+          <header><small>ACCOUNTABILITY LOOP</small><strong id="bcOpenActionCount">0 open manager actions</strong></header>
+          <div id="bcManagerActionList"><p>No acknowledged Command actions yet.</p></div>
         </div>
       </section>
 
@@ -9901,5 +9909,5 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=76.50.0"></script></body>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=77.0.0"></script></body>
 </html>

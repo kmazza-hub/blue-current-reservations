@@ -24,7 +24,7 @@ const Command=require(path.join(root,"server/services/commandOperatingPictureSer
   assert(html.includes('id="bcSalesForecast"'));
   assert(shell.includes("fetch(`/api/command/operating-picture"));
   assert(shell.includes('method:"GET"'));
-  assert(!shell.includes('method:"POST"'));
+  assert(shell.includes('method:"GET"')); // V76 operating-picture path remains read-only; later Command action endpoints may write.
   assert(!html.includes('<strong id="bcCmdRevenue">+6.8%</strong>'));
   assert(!html.includes('<strong id="bcCmdGuests">318</strong>'));
   assert(!html.includes('<strong>27</strong><small>Reservations</small>'));

@@ -16405,3 +16405,19 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
 .bc-priority-confidence{margin:0;padding:10px 20px 9px;border-bottom:1px solid rgba(255,255,255,.06);color:#8fb1b9;font-size:.65rem;line-height:1.35}
 .bc-priority-why{margin-top:4px;color:#6f929a!important;font-size:.61rem!important}
 .bc-attention-list button .bc-priority{font-variant-numeric:tabular-nums}
+
+/* V77.0 — manager action queue and accountability loop */
+.bc-action-controls{display:flex;align-items:center;gap:10px;padding:12px 20px;border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(84,230,199,.025)}
+.bc-action-controls button{min-height:38px;padding:0 12px;border:1px solid rgba(84,230,199,.25);border-radius:9px;background:rgba(84,230,199,.10);color:#7be7d3;font-weight:850;cursor:pointer}
+.bc-action-controls span{color:#8baab2;font-size:.64rem;line-height:1.35}
+.bc-manager-action-queue{padding:14px 20px 17px;background:rgba(3,19,24,.22)}
+.bc-manager-action-queue>header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:9px}
+.bc-manager-action-queue>header small{color:#67dec9;font-size:.58rem;font-weight:900;letter-spacing:.11em}
+.bc-manager-action-queue>header strong{color:#cce4e9;font-size:.67rem}
+#bcManagerActionList{display:grid;gap:7px}
+#bcManagerActionList>p{margin:0;color:#7799a1;font-size:.68rem}
+.bc-manager-action{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.03)}
+.bc-manager-action>div:first-child{display:grid;gap:3px}.bc-manager-action strong{color:#fff;font-size:.73rem}.bc-manager-action small{color:#82a4ab;font-size:.61rem}
+.bc-manager-action>div:last-child{display:flex;gap:5px}.bc-manager-action button{min-height:31px;padding:0 9px;border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.05);color:#cde5e9;font-size:.61rem;font-weight:800;cursor:pointer}
+.bc-manager-action button:last-child{border-color:rgba(84,230,199,.20);color:#78e4d0}
+@media(max-width:620px){.bc-action-controls{display:grid}.bc-action-controls button{min-height:46px}.bc-manager-action{align-items:flex-start;display:grid}.bc-manager-action>div:last-child{justify-content:flex-start}.bc-manager-action button{min-height:40px}}
