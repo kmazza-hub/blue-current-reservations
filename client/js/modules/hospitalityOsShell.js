@@ -19,7 +19,7 @@ const labels={
  integrations:"Integrations",system:"System"
 };
 
-let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,playbooksLoading:false,shiftMemoryLoading:false,authRequired:false,transportBackoffUntil:0};
+let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,playbooksLoading:false,shiftMemoryLoading:false,authRequired:false,transportBackoffUntil:0,lastRequestAt:0};
 
 function directSection(node){
   while(node&&node.parentElement&&node.parentElement.id!=="main")node=node.parentElement;
@@ -57,7 +57,7 @@ function activate(name,{scroll=true}={}){
     shell?.classList.remove("bc-shell-workspace-open");
     if(returnBar)returnBar.hidden=true;
     if(scroll)shell?.scrollIntoView({behavior:"smooth",block:"start"});
-    refreshCommand();
+    if(authenticatedAppState())refreshCommand();
   }else{
     shell?.classList.add("bc-shell-workspace-open");
     sections.forEach(section=>section.classList.add("bc-workspace-visible"));
@@ -276,7 +276,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V78.50.1 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V78.75 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -536,10 +536,20 @@ function renderCommandError(error){
   renderAttention([{severity:"high",workspace:"system",title:"Operating picture unavailable",detail:"Sign in or verify API health and location access."}]);
 }
 
-async function refreshCommand(){
+async function refreshCommand({force=false}={}){
   const clock=el("bcCommandClock");
   if(clock)clock.textContent=new Intl.DateTimeFormat([],{hour:"numeric",minute:"2-digit"}).format(new Date());
+
+  if(!authenticatedAppState()){
+    commandState.authRequired=true;
+    setCommandAccessState("auth","Sign in to load protected restaurant data.");
+    return;
+  }
+
+  const now=Date.now();
   if(commandState.loading)return;
+  if(!force && commandState.lastRequestAt && now-commandState.lastRequestAt<1200)return;
+  commandState.lastRequestAt=now;
   commandState.loading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
@@ -567,7 +577,7 @@ function startCommandAfterAuth(){
     commandState.authRequired=false;
     commandState.transportBackoffUntil=0;
     setCommandAccessState("ready");
-    refreshCommand();
+    refreshCommand({force:true});
   };
 
   const requireAuth=(reason="Sign in to load Blue Current Command.")=>{
@@ -586,6 +596,7 @@ function startCommandAfterAuth(){
     bus.on("auth:signed-in",start);
     bus.on("auth:organization-switched",()=>{
       commandState.locationId=null;
+      commandState.lastRequestAt=0;
       start();
     });
     bus.on("auth:required",payload=>requireAuth(

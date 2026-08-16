@@ -864,6 +864,30 @@
       "category": "security",
       "createdAt": "2026-08-16T20:37:39.414Z",
       "id": "audit_1786912659414_wyom33"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-16T21:45:47.799Z",
+      "id": "audit_1786916747799_l3fsv0"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-16T21:47:47.460Z",
+      "id": "audit_1786916867460_dqy7gw"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-16T21:49:31.897Z",
+      "id": "audit_1786916971897_fokt55"
     }
   ],
   "reservations": [
@@ -1015,11 +1039,12 @@
         "*"
       ],
       "createdAt": "2026-08-16T20:34:22.397Z",
-      "lastSeenAt": "2026-08-16T20:34:22.397Z",
-      "idleExpiresAt": "2026-08-16T22:34:22.397Z",
+      "lastSeenAt": "2026-08-16T21:27:50.727Z",
+      "idleExpiresAt": "2026-08-16T23:27:50.727Z",
       "expiresAt": "2026-08-17T08:34:22.397Z",
       "revokedAt": null,
-      "revokedReason": null
+      "revokedReason": null,
+      "updatedAt": "2026-08-16T21:27:50.728Z"
     },
     {
       "id": "ses_1786912659261_g66952",
@@ -1034,6 +1059,54 @@
       "lastSeenAt": "2026-08-16T20:37:39.260Z",
       "idleExpiresAt": "2026-08-16T22:37:39.260Z",
       "expiresAt": "2026-08-17T08:37:39.260Z",
+      "revokedAt": null,
+      "revokedReason": null
+    },
+    {
+      "id": "ses_1786916747726_zakhdp",
+      "tokenHash": "f3c630bf330060a3122192d4206237c07e10ef4e981c2a08a6f4deecda2ddfad",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-16T21:45:47.726Z",
+      "lastSeenAt": "2026-08-16T21:45:47.726Z",
+      "idleExpiresAt": "2026-08-16T23:45:47.726Z",
+      "expiresAt": "2026-08-17T09:45:47.726Z",
+      "revokedAt": null,
+      "revokedReason": null
+    },
+    {
+      "id": "ses_1786916867348_ozn9k5",
+      "tokenHash": "2e02f79b3abbb4f3f7d4228dd94e6ac3203e399faadb8ea0c62382f0abd59458",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-16T21:47:47.348Z",
+      "lastSeenAt": "2026-08-16T21:47:47.348Z",
+      "idleExpiresAt": "2026-08-16T23:47:47.348Z",
+      "expiresAt": "2026-08-17T09:47:47.348Z",
+      "revokedAt": null,
+      "revokedReason": null
+    },
+    {
+      "id": "ses_1786916971773_zwr3ex",
+      "tokenHash": "4b5606f9f41a25242d633afa68170c693c70469039f78da3a83435b9beba024c",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-16T21:49:31.773Z",
+      "lastSeenAt": "2026-08-16T21:49:31.773Z",
+      "idleExpiresAt": "2026-08-16T23:49:31.773Z",
+      "expiresAt": "2026-08-17T09:49:31.773Z",
       "revokedAt": null,
       "revokedReason": null
     }

@@ -5,8 +5,8 @@ const pkg=require(path.join(root,"package.json"));
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 
-assert.equal(pkg.version,"78.50.2");
-assert(html.includes("styles.css?v=78.50.2"));
+assert(Number(pkg.version.split(".")[0]) >= 78);
+assert(html.includes(`styles.css?v=${pkg.version}`));
 assert(css.includes("V78.50.2 — Light Surface Typography Contract"));
 
 for(const surface of [

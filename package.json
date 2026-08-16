@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "78.50.2",
+  "version": "78.75.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 light-surface high-contrast typography contract",
+  "description": "Blue Current Hospitality OS \u2014 authentication and session lifecycle hardening",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

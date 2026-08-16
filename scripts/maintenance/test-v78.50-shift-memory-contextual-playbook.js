@@ -11,7 +11,7 @@ const Playbooks=require(path.join(root,"server/services/commandPlaybookIntellige
 const ShiftMemory=require(path.join(root,"server/services/commandShiftMemoryService"));
 
 (async()=>{
-  assert(/^78\.50\.[0-2]$/.test(pkg.version));
+  assert(Number(pkg.version.split(".")[0]) >= 78);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");

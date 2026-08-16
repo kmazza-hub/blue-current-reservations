@@ -19,15 +19,37 @@
       return true;
     }
 
+    function focusOutsideAuth() {
+      const overlay=$("authOverlay");
+      const active=document.activeElement;
+      if(overlay && active && overlay.contains(active)){
+        const target=$("bcCommandSignIn") || document.querySelector("[data-bc-workspace='command']") || document.body;
+        active.blur?.();
+        target?.focus?.({preventScroll:true});
+      }
+    }
+
     function openAuth() {
-      $("authOverlay")?.classList.add("open");
+      const overlay=$("authOverlay");
+      if(!overlay)return;
+      overlay.classList.add("open");
+      overlay.removeAttribute("aria-hidden");
+      overlay.removeAttribute("inert");
       document.body.classList.add("auth-locked");
+      window.requestAnimationFrame(()=>$("authEmail")?.focus?.({preventScroll:true}));
     }
 
     function closeAuth() {
-      $("authOverlay")?.classList.remove("open");
+      const overlay=$("authOverlay");
+      if(!overlay)return;
+      focusOutsideAuth();
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden","true");
+      overlay.setAttribute("inert","");
       document.body.classList.remove("auth-locked");
     }
+
+    window.BlueCurrentAuthOverlay={open:openAuth,close:closeAuth};
 
     function setMessage(message, error = false) {
       const el = $("authMessage");

@@ -172,9 +172,16 @@
       const overlay = document.getElementById("authOverlay");
       const accountSection = document.getElementById("auth-organizations");
       if (readiness?.authenticated) {
-        overlay?.classList.remove("open");
-        overlay?.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("auth-locked");
+        if (window.BlueCurrentAuthOverlay && typeof window.BlueCurrentAuthOverlay.close === "function") {
+          window.BlueCurrentAuthOverlay.close();
+        } else if (overlay) {
+          const active=document.activeElement;
+          if(active && overlay.contains(active))active.blur?.();
+          overlay.classList.remove("open");
+          overlay.setAttribute("aria-hidden","true");
+          overlay.setAttribute("inert","");
+          document.body.classList.remove("auth-locked");
+        }
         if (accountSection) {
           accountSection.hidden = true;
           accountSection.setAttribute("aria-hidden", "true");
@@ -182,10 +189,15 @@
         }
       } else if (overlay) {
         if (accountSection) accountSection.hidden = true;
-        overlay.classList.add("open");
-        overlay.removeAttribute("aria-hidden");
-        document.body.classList.add("auth-locked");
-        document.getElementById("authEmail")?.focus?.();
+        if (window.BlueCurrentAuthOverlay && typeof window.BlueCurrentAuthOverlay.open === "function") {
+          window.BlueCurrentAuthOverlay.open();
+        } else {
+          overlay.classList.add("open");
+          overlay.removeAttribute("aria-hidden");
+          overlay.removeAttribute("inert");
+          document.body.classList.add("auth-locked");
+          document.getElementById("authEmail")?.focus?.({preventScroll:true});
+        }
       }
 
       window.clearTimeout(watchdog);
@@ -209,7 +221,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V78.50.2 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V78.75.0 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.
