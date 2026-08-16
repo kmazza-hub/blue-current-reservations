@@ -11,7 +11,7 @@ const { createPersistence }=require(path.join(root,"server/persistence/persisten
 const PersistenceMigrationReadinessService=require(path.join(root,"server/services/persistenceMigrationReadinessService"));
 
 (async()=>{
-  assert.equal(pkg.version,"71.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 71, `Expected V71 or later, found ${pkg.version}`);
 
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
@@ -24,8 +24,8 @@ const PersistenceMigrationReadinessService=require(path.join(root,"server/servic
   assert(server.includes("PersistenceMigrationReadinessService"));
   assert(server.includes("Persistence: ${database.driver} (${database.topology})"));
   assert(router.includes("/api/system/persistence-readiness"));
-  assert(startup.includes("V71.0.0 ready"));
-  assert(html.includes('content="71.0.0"'));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
   assert.equal(plan.principles.noAutomaticCutover,true);
   assert.equal(plan.principles.noBusinessServiceRewriteRequired,true);
 

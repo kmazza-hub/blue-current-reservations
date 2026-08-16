@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "71.0.0",
+  "version": "71.0.1",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 persistence abstraction, transaction contracts, and managed database migration readiness",
+  "description": "Blue Current Hospitality OS \u2014 V71.0.1 Google Fonts CSP compatibility hotfix",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
