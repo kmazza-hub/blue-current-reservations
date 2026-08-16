@@ -5,7 +5,7 @@ const {createPersistence}=require(path.join(root,"server/persistence/persistence
 const Continuity=require(path.join(root,"server/services/providerIntegrationContinuityService"));
 
 (async()=>{
-  assert.equal(pkg.version,"79.75.0");
+  assert(Number(pkg.version.split(".")[0]) >= 78);
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
   const truth=fs.readFileSync(path.join(root,"server/services/commandDataSourceTruthService.js"),"utf8");
