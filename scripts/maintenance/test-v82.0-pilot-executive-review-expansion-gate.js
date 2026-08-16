@@ -1,0 +1,25 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Executive=require(path.join(root,"server/services/pilotExecutiveReviewExpansionGateService"));
+(async()=>{
+ assert.equal(pkg.version,"82.0.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
+ assert(router.includes("/api/pilot/executive-review/decision"));assert(server.includes("PilotExecutiveReviewExpansionGateService"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc820-")),dbPath=path.join(dir,"db.json");
+ fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"l1",organizationId:"o",name:"Pilot"}]}));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ let repeatability="REPEATABLE_IMPROVEMENT",critical=false,active=false;
+ const trends={report:async()=>({measuredShiftCount:4,verifiedEvidenceShiftCount:4,repeatability,trends:{revenue:"IMPROVING",avgWaitMinutes:"IMPROVING"},consistency:{revenue:{rating:"HIGH"}},cumulative:{evidenceRevenueProtected:800,evidenceCostAvoided:200,evidenceMinutesSaved:90,evidenceGuestRecoveries:5}})};
+ const recovery={list:async()=>({counts:{total:critical?1:0,open:critical?1:0,investigating:0,resolved:0},incidents:critical?[{severity:"CRITICAL",status:"OPEN"}]:[]})};
+ const live={snapshot:async()=>({shift:active?{id:"s5",status:"ACTIVE"}:{id:"s4",status:"CLOSED"}})};
+ const svc=new Executive(db,trends,recovery,live);
+ let r=await svc.evaluate("o",["*"],"l1");assert.equal(r.recommendation,"CONTINUE_PILOT");
+ r=await svc.setOperatorReview("o",["*"],"l1",{operationalFitReviewed:true,staffImpactReviewed:true,guestImpactReviewed:true,supportBurdenReviewed:true,operationalFit:"Strong",staffImpact:"Positive",guestImpact:"Positive",supportBurden:"Manageable"},"admin");
+ assert.equal(r.recommendation,"EXPAND");
+ const d=await svc.decide("o",["*"],"l1",{decision:"EXPAND",rationale:"Four verified shifts show repeatable operational improvement."},"executive");
+ assert.equal(d.decision.decision,"EXPAND");assert.equal(d.decision.multiLocationRolloutAuthorized,false);assert.equal(d.decision.autonomousProductionChangesAuthorized,false);
+ critical=true;r=await svc.evaluate("o",["*"],"l1");assert.equal(r.recommendation,"HOLD");assert(r.blockers.includes("openCriticalIncident"));
+ let blocked=false;try{await svc.decide("o",["*"],"l1",{decision:"EXPAND",rationale:"Attempt expansion while blocked."},"executive");}catch(e){blocked=e.statusCode===409;}assert.equal(blocked,true);
+ critical=false;repeatability="MIXED_OR_DECLINING";r=await svc.evaluate("o",["*"],"l1");assert.equal(r.recommendation,"HOLD");
+ console.log(JSON.stringify({ok:true,version:"82.0.0",executiveReview:true,operatorReviewRequired:true,repeatableImprovementGate:true,criticalIncidentExpansionBlock:true,humanDecisionRequired:true,advisoryRecommendation:true,noAutomaticMultiLocationRollout:true,noAutomaticPilotRetirement:true,autonomousProductionChanges:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});

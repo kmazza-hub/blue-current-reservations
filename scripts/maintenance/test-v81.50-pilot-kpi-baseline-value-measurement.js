@@ -2,7 +2,7 @@
 const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Kpi=require(path.join(root,"server/services/pilotKpiBaselineValueMeasurementService"));
 (async()=>{
- assert.equal(pkg.version,"81.50.0");const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes("/api/pilot/kpi-baseline"));assert(router.includes("/api/pilot/kpi-value"));
+ assert(Number(pkg.version.split(".")[0]) >= 81);const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes("/api/pilot/kpi-baseline"));assert(router.includes("/api/pilot/kpi-value"));
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8150-")),dbPath=path.join(dir,"db.json");fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"l1",organizationId:"o",name:"Pilot"}]}));
  const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
  const live={snapshot:async()=>({shift:{id:"s1",status:"CLOSED"}})},evidence={outcome:async()=>({evidenceIntegrity:"VERIFIED",evidenceCount:4,totals:{revenueProtected:150,costAvoided:40,minutesSaved:18,guestRecoveries:2}})};
