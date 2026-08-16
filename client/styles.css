@@ -15409,3 +15409,288 @@ dialog:focus-visible{outline:none!important}
 @media(max-width:980px){.standard-story-heading,.system-fit{grid-template-columns:1fr;gap:32px}}
 @media(max-width:760px){.blue-current-standard,.pilot-proof-story{padding:84px 0}.standard-principles,.pilot-proof-grid{grid-template-columns:1fr}.standard-principle,.pilot-proof-card{min-height:0}.system-fit{padding:24px}.system-fit-map{grid-template-columns:repeat(2,minmax(0,1fr))}.system-fit-map strong{grid-column:1/-1}.pilot-proof-decision{align-items:stretch;flex-direction:column}.pilot-proof-decision .button{width:100%}}
 @media(max-width:440px){.system-fit-map{grid-template-columns:1fr}}
+
+
+/* ==========================================================================
+   WEB-033 · Profitability, Calm Operations & Final Homepage Hierarchy
+   ========================================================================== */
+.profit-current{
+  position:relative;
+  padding:125px 0;
+  overflow:hidden;
+  color:var(--atlantic);
+  background:
+    radial-gradient(circle at 88% 18%,rgba(216,179,108,.11),transparent 26%),
+    linear-gradient(180deg,#fbf8f1,#f3ecdf);
+}
+.profit-heading{
+  display:grid;
+  grid-template-columns:minmax(0,1.08fr) minmax(280px,.62fr);
+  gap:70px;
+  align-items:end;
+}
+.profit-heading h2{
+  margin:0;
+  max-width:860px;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:clamp(46px,5.7vw,78px);
+  line-height:.98;
+  letter-spacing:-.048em;
+  font-weight:600;
+}
+.profit-heading>p{
+  margin:0;
+  color:#587274;
+  font-size:15px;
+  line-height:1.75;
+}
+.profit-levers{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin-top:60px;
+}
+.profit-lever{
+  position:relative;
+  min-height:355px;
+  padding:30px;
+  overflow:hidden;
+  border:1px solid rgba(11,45,58,.09);
+  border-radius:28px;
+  background:rgba(255,255,255,.72);
+  box-shadow:0 20px 58px rgba(11,45,58,.045);
+}
+.profit-lever:after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  bottom:-90px;
+  width:230px;
+  height:230px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(216,179,108,.10),transparent 68%);
+}
+.profit-lever>span{
+  color:#91a5a7;
+  font-size:10px;
+  letter-spacing:.12em;
+}
+.profit-lever>small{
+  display:block;
+  margin-top:26px;
+  color:var(--sea);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.14em;
+}
+.profit-lever h3{
+  max-width:520px;
+  margin:16px 0 13px;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:34px;
+  line-height:1.04;
+  letter-spacing:-.035em;
+}
+.profit-lever p{
+  max-width:580px;
+  margin:0 0 58px;
+  color:#587274;
+  font-size:13px;
+  line-height:1.7;
+}
+.profit-lever>div{
+  position:absolute;
+  left:30px;
+  right:30px;
+  bottom:28px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.profit-lever b{
+  padding:7px 9px;
+  border:1px solid rgba(11,45,58,.08);
+  border-radius:999px;
+  color:#5a7375;
+  background:#f7f2e8;
+  font-size:9px;
+  font-weight:700;
+}
+.profit-operating-model{
+  display:grid;
+  grid-template-columns:minmax(300px,.68fr) minmax(0,1.32fr);
+  gap:48px;
+  margin-top:18px;
+  padding:34px;
+  border-radius:28px;
+  color:#fff;
+  background:
+    radial-gradient(circle at 90% 20%,rgba(216,179,108,.12),transparent 28%),
+    linear-gradient(135deg,#0a303b,#071f29);
+}
+.profit-model-copy small{
+  color:var(--gold);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.14em;
+}
+.profit-model-copy h3{
+  margin:12px 0 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:35px;
+  line-height:1.06;
+  letter-spacing:-.035em;
+}
+.profit-model-copy p{
+  margin:16px 0 0;
+  color:#adc1c1;
+  font-size:12px;
+  line-height:1.65;
+}
+.profit-model-flow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.profit-model-flow>b{
+  color:#d6b672;
+  font-size:18px;
+}
+.profit-model-flow>span{
+  flex:1 1 0;
+  min-height:122px;
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  background:rgba(255,255,255,.035);
+}
+.profit-model-flow i{
+  color:#d8b879;
+  font-style:normal;
+  font-size:9px;
+  font-weight:800;
+}
+.profit-model-flow strong{
+  margin-top:8px;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:20px;
+}
+.profit-model-flow small{
+  margin-top:4px;
+  color:#94adaf;
+  font-size:9px;
+}
+.profit-disclaimer{
+  max-width:920px;
+  margin:18px auto 0;
+  color:#758b8d;
+  text-align:center;
+  font-size:10px;
+  line-height:1.6;
+}
+
+/* Final brand thesis */
+.final-thesis{
+  padding:110px 0;
+  background:#f5efe4;
+  color:var(--atlantic);
+}
+.final-thesis-inner{
+  max-width:1080px;
+  text-align:center;
+}
+.final-thesis small{
+  color:var(--sea);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.15em;
+}
+.final-thesis h2{
+  max-width:920px;
+  margin:16px auto 0;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:clamp(48px,6vw,82px);
+  line-height:.98;
+  letter-spacing:-.05em;
+  font-weight:600;
+}
+.final-thesis p{
+  max-width:780px;
+  margin:24px auto 0;
+  color:#587274;
+  font-size:15px;
+  line-height:1.7;
+}
+.final-thesis>div>div,
+.final-thesis-inner>div{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:28px;
+}
+.final-thesis span{
+  padding:9px 12px;
+  border:1px solid rgba(11,45,58,.09);
+  border-radius:999px;
+  color:#4d686b;
+  background:rgba(255,255,255,.58);
+  font-size:10px;
+  font-weight:700;
+}
+
+@media(max-width:980px){
+  .profit-heading,
+  .profit-operating-model{
+    grid-template-columns:1fr;
+    gap:32px;
+  }
+  .profit-model-flow{
+    flex-wrap:wrap;
+  }
+  .profit-model-flow>b{
+    display:none;
+  }
+  .profit-model-flow>span{
+    flex:1 1 calc(50% - 8px);
+  }
+}
+@media(max-width:760px){
+  .profit-current,
+  .final-thesis{
+    padding:84px 0;
+  }
+  .profit-levers{
+    grid-template-columns:1fr;
+  }
+  .profit-lever{
+    min-height:330px;
+  }
+  .profit-operating-model{
+    padding:24px;
+  }
+  .profit-model-flow{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .profit-model-flow>span{
+    min-height:105px;
+  }
+}
+@media(max-width:440px){
+  .profit-model-flow{
+    grid-template-columns:1fr;
+  }
+  .profit-lever{
+    padding:24px;
+  }
+  .profit-lever>div{
+    left:24px;
+    right:24px;
+    bottom:22px;
+  }
+}
