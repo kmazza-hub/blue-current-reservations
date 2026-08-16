@@ -16233,3 +16233,146 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
  .bc-command-context-controls{display:grid;grid-template-columns:1fr}.bc-service-live{height:58px}
  .bc-attention-list button{grid-template-columns:52px 1fr 14px;padding:15px}.bc-next-metrics,.bc-profit-row{padding:17px 15px}.bc-command-launch>div{grid-template-columns:1fr 1fr}
 }
+
+
+/* ==========================================================================
+   V75.50.1 · Host Stand + Live Service contrast hotfix
+   Bright typography for dark restaurant environments.
+   ========================================================================== */
+
+/* Service Coordination — fix low-luminance inherited text on dark panels */
+#service-coordination{
+  color:#f4fbff!important;
+}
+#service-coordination .section-heading-light h2{
+  color:#ffffff!important;
+  text-shadow:0 1px 0 rgba(0,0,0,.16);
+}
+#service-coordination .section-heading-light>p:not(.eyebrow){
+  color:#cbe7f0!important;
+}
+#service-coordination .eyebrow,
+#service-coordination .eyebrow-light{
+  color:#78dff6!important;
+}
+#service-coordination .svc-kpis article>span,
+#service-coordination .svc-head small,
+#service-coordination .svc-head>span,
+#service-coordination .svc-table th{
+  color:#86c9e4!important;
+}
+#service-coordination .svc-kpis article>strong,
+#service-coordination .svc-head h3,
+#service-coordination .svc-table td,
+#service-coordination .svc-alerts strong,
+#service-coordination .svc-expo strong,
+#service-coordination .svc-load strong{
+  color:#f8fcff!important;
+}
+#service-coordination .svc-kpis article>small,
+#service-coordination .svc-empty,
+#service-coordination .svc-alerts p,
+#service-coordination .svc-expo span,
+#service-coordination .svc-load span{
+  color:#b8d4df!important;
+}
+#service-coordination .svc-table tbody td{
+  border-color:rgba(255,255,255,.10)!important;
+}
+#service-coordination .bc-svc-filters button{
+  color:#b9d8e5!important;
+}
+#service-coordination .bc-svc-filters button.active{
+  color:#071c27!important;
+  background:#f2bf5b!important;
+}
+#service-coordination .bc-svc-filters button:hover,
+#service-coordination .bc-svc-filters button:focus-visible{
+  color:#ffffff!important;
+}
+#service-coordination .svc-flow-card,
+#service-coordination .svc-alert-card,
+#service-coordination .svc-expo-card,
+#service-coordination .svc-load-card,
+#service-coordination .svc-kpis article{
+  border-color:rgba(125,207,238,.14)!important;
+}
+
+/* Classic Host Stand — raise all informational text to restaurant-safe contrast */
+#host-stand .section-heading h2{
+  color:#ffffff!important;
+}
+#host-stand .section-heading>p:not(.eyebrow){
+  color:#cce5eb!important;
+}
+#host-stand .eyebrow{
+  color:#76dff1!important;
+}
+#host-stand .host-brand strong,
+#host-stand .host-topbar h3,
+#host-stand .host-service-card strong,
+#host-stand .host-quick-stats strong,
+#host-stand .host-status-bar strong,
+#host-stand .host-table-detail strong,
+#host-stand .queue-item strong,
+#host-stand .host-note-head strong{
+  color:#ffffff!important;
+}
+#host-stand .host-brand span,
+#host-stand .host-service-card small,
+#host-stand .host-service-card>span,
+#host-stand .host-topbar small,
+#host-stand .host-quick-stats span,
+#host-stand .host-status-bar span,
+#host-stand .host-floor-toolbar span,
+#host-stand .host-table-detail small,
+#host-stand .host-table-detail-grid span,
+#host-stand .host-table-detail p,
+#host-stand .queue-item small,
+#host-stand .host-note-card p{
+  color:#b9d7df!important;
+}
+#host-stand .host-nav button{
+  color:#bcd8df!important;
+}
+#host-stand .host-nav button.active{
+  color:#ffffff!important;
+}
+#host-stand .host-floor-toolbar button{
+  color:#bcd8df!important;
+}
+#host-stand .host-floor-toolbar button.active{
+  color:#082631!important;
+  background:#f2bf5b!important;
+}
+#host-stand .host-table span{
+  color:#ffffff!important;
+}
+#host-stand .host-table small{
+  color:#d7edf2!important;
+}
+
+/* Additional live service surfaces visible from Host/Service workspace */
+.service-coordination .svc-head h3,
+.service-coordination .svc-kpis strong,
+.service-coordination .svc-table td{
+  opacity:1!important;
+}
+.service-coordination .svc-head small,
+.service-coordination .svc-head>span,
+.service-coordination .svc-kpis span,
+.service-coordination .svc-kpis small,
+.service-coordination .svc-table th{
+  opacity:1!important;
+}
+
+@media(max-width:760px){
+  #service-coordination .section-heading-light h2,
+  #host-stand .section-heading h2{
+    color:#ffffff!important;
+  }
+  #service-coordination .section-heading-light>p:not(.eyebrow),
+  #host-stand .section-heading>p:not(.eyebrow){
+    color:#d5eaf0!important;
+  }
+}

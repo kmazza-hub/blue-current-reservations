@@ -6,7 +6,7 @@ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const js=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
 
-assert.equal(pkg.version,"75.50.0");
+assert(/^75\.50\.[01]$/.test(pkg.version));
 assert(html.includes('id="blueCurrentCommand"'));
 assert(html.includes('id="bcCommandTitle"'));
 assert(html.includes("Run the whole restaurant from here."));

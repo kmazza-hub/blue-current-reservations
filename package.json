@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "75.50.0",
+  "version": "75.50.1",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 role-aware operating command application shell",
+  "description": "Blue Current Hospitality OS \u2014 Host Stand and Live Service high-contrast hotfix",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
