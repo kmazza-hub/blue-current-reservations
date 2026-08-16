@@ -3,10 +3,19 @@
 const path = require("path");
 
 class ProductionConfigurationService {
-  constructor({ root, databasePath, port, environment = process.env } = {}) {
+  constructor({
+    root,
+    databasePath,
+    port,
+    persistenceDriver = process.env.BLUE_CURRENT_PERSISTENCE_DRIVER || "json",
+    persistenceTopology = persistenceDriver === "json" ? "single-node-durable-json" : "managed-transactional",
+    environment = process.env
+  } = {}) {
     this.root = root;
     this.databasePath = databasePath;
     this.port = Number(port);
+    this.persistenceDriver = String(persistenceDriver || "json").trim().toLowerCase();
+    this.persistenceTopology = persistenceTopology || "unknown";
     this.environment = environment;
     this.mode = String(
       environment.BLUE_CURRENT_ENV || environment.NODE_ENV || "development"
@@ -53,6 +62,13 @@ class ProductionConfigurationService {
       ["development", "test", "staging", "production"].includes(this.mode),
       "error",
       `Runtime mode is ${this.mode}.`
+    );
+
+    push(
+      "persistence-driver",
+      ["json"].includes(this.persistenceDriver),
+      "error",
+      `Persistence driver is ${this.persistenceDriver}. Installed drivers in this build: json.`
     );
 
     push(
@@ -122,14 +138,16 @@ class ProductionConfigurationService {
         "error",
         insecure.length ? `Production origins must use HTTPS: ${insecure.join(", ")}` : "All explicit production origins use HTTPS."
       );
-      push(
-        "production-database-not-cloud-sync",
-        !this._isCloudSyncedDatabase(),
-        "error",
-        this._isCloudSyncedDatabase()
-          ? "Production database path is inside a desktop cloud-sync folder."
-          : "Production database path is outside known desktop cloud-sync folders."
-      );
+      if (this.persistenceDriver === "json") {
+        push(
+          "production-database-not-cloud-sync",
+          !this._isCloudSyncedDatabase(),
+          "error",
+          this._isCloudSyncedDatabase()
+            ? "Production database path is inside a desktop cloud-sync folder."
+            : "Production database path is outside known desktop cloud-sync folders."
+        );
+      }
     } else {
       push(
         "development-database-cloud-sync",
@@ -145,9 +163,11 @@ class ProductionConfigurationService {
     // as a deployment constraint rather than silently represented as multi-node safe.
     push(
       "persistence-topology",
-      false,
+      this.persistenceDriver !== "json",
       "warning",
-      "Current persistence is durable single-node JSON with verified recovery; do not run multiple writers against one database file."
+      this.persistenceDriver === "json"
+        ? "Current persistence is durable single-node JSON with verified recovery; do not run multiple writers against one database file."
+        : `Persistence topology is ${this.persistenceTopology}.`
     );
 
     return checks;
@@ -241,7 +261,8 @@ class ProductionConfigurationService {
       errors: errors.length,
       warnings: warnings.length,
       databasePath: this.databasePath,
-      databaseTopology: "single-node-durable-json",
+      persistenceDriver: this.persistenceDriver,
+      databaseTopology: this.persistenceTopology,
       explicitOrigins: this._configuredOrigins(),
       checks
     };
@@ -273,7 +294,8 @@ class ProductionConfigurationService {
       errors: null,
       warnings: null,
       databasePath: this.databasePath,
-      databaseTopology: "single-node-durable-json",
+      persistenceDriver: this.persistenceDriver,
+      databaseTopology: this.persistenceTopology,
       explicitOrigins: this._configuredOrigins(),
       checks: []
     };

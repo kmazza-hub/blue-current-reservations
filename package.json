@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "70.0.0",
+  "version": "71.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 production configuration, secrets integrity, and deployment readiness",
+  "description": "Blue Current Hospitality OS \u2014 persistence abstraction, transaction contracts, and managed database migration readiness",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

@@ -12,7 +12,7 @@ const ProductionConfigurationService=require(path.join(root,"server/services/pro
 const ProductionBoundaryService=require(path.join(root,"server/services/productionBoundaryService"));
 
 (async()=>{
-  assert.equal(pkg.version,"70.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 70, `Expected V70 or later, found ${pkg.version}`);
 
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
@@ -30,8 +30,8 @@ const ProductionBoundaryService=require(path.join(root,"server/services/producti
   assert(server.includes('checkpointBackup("graceful-shutdown")'));
   assert(router.includes("/api/system/deployment-readiness"));
   assert(boundarySource.includes('mode !== "production"'));
-  assert(startup.includes("V70.0.0 ready"));
-  assert(html.includes('content="70.0.0"'));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
   assert(gitignore.includes(".env"));
   assert(gitignore.includes("*.p12"));
   assert(envExample.includes("BLUE_CURRENT_ALLOWED_ORIGINS"));

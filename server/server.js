@@ -5,7 +5,7 @@ const http = require("http");
 const APP_VERSION = require("../package.json").version;
 const fs = require("fs");
 const path = require("path");
-const DatabaseService = require("./services/databaseService");
+const { createPersistence } = require("./persistence/persistenceFactory");
 const AuditService = require("./services/auditService");
 const IdempotencyService = require("./services/idempotencyService");
 const SyncReconciliationService = require("./services/syncReconciliationService");
@@ -102,6 +102,7 @@ const ProductionLaunchCertificationService = require("./services/productionLaunc
 const ProductionMutationIntegrityService = require("./services/productionMutationIntegrityService");
 const ProductionBoundaryService = require("./services/productionBoundaryService");
 const ProductionConfigurationService = require("./services/productionConfigurationService");
+const PersistenceMigrationReadinessService = require("./services/persistenceMigrationReadinessService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -109,14 +110,24 @@ const CLIENT_ROOT = path.join(ROOT, "client");
 const DB_PATH = process.env.BLUE_CURRENT_DB || path.join(ROOT, "database", "data", "blue-current.json");
 const PORT = Number(process.env.PORT || 8787);
 
-const database = new DatabaseService(DB_PATH);
+const database = createPersistence({
+  driver: process.env.BLUE_CURRENT_PERSISTENCE_DRIVER || "json",
+  databasePath: DB_PATH
+});
 const realtimeHub = new RealtimeHub();
 const auditService = new AuditService(database);
 const idempotencyService = new IdempotencyService(database);
 const syncReconciliationService = new SyncReconciliationService(database, auditService, realtimeHub);
 const productionMutationIntegrityService = new ProductionMutationIntegrityService(database);
 const productionBoundaryService = new ProductionBoundaryService();
-const productionConfigurationService = new ProductionConfigurationService({ root: ROOT, databasePath: DB_PATH, port: PORT });
+const productionConfigurationService = new ProductionConfigurationService({
+  root: ROOT,
+  databasePath: DB_PATH,
+  port: PORT,
+  persistenceDriver: database.driver,
+  persistenceTopology: database.topology
+});
+const persistenceMigrationReadinessService = new PersistenceMigrationReadinessService(database);
 const telemetryService = new TelemetryService(database, realtimeHub);
 const reliabilityAutomationService = new ReliabilityAutomationService(database, telemetryService, auditService, realtimeHub);
 const reservationService = new ReservationService(database, auditService, realtimeHub);
@@ -206,7 +217,7 @@ const pilotLiveServiceAcceptanceService = new PilotLiveServiceAcceptanceService(
 const finalProductReleaseCandidateService = new FinalProductReleaseCandidateService(database, auditService, realtimeHub, pilotLiveServiceAcceptanceService, pilotCloseoutOutcomeService, pilotReleaseCandidateCertificationService);
 const finalHardeningRealEnvironmentService = new FinalHardeningRealEnvironmentService(database, auditService, realtimeHub, finalProductReleaseCandidateService);
 const productionLaunchCertificationService = new ProductionLaunchCertificationService(database, auditService, realtimeHub, finalHardeningRealEnvironmentService, productionOperationsHandoffService, pilotLaunchControlService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService });
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService, persistenceMigrationReadinessService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -392,6 +403,7 @@ async function bootstrap() {
   server.listen(PORT, () => {
     console.log(`Blue Current Cloud V${APP_VERSION} running at http://localhost:${PORT}`);
     console.log(`Database: ${DB_PATH}`);
+    console.log(`Persistence: ${database.driver} (${database.topology})`);
     console.log(`Verified recovery backup: ${backupVerification.ok ? "available" : "unavailable"}`);
     console.log(`Session cleanup: ${sessionCleanup.removed} removed, ${sessionCleanup.after} retained`);
     console.log(

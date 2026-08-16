@@ -1,0 +1,66 @@
+{
+  "version": "71.0.0",
+  "currentDriver": "json",
+  "currentTopology": "single-node-durable-json",
+  "targetClass": "managed-transactional-relational",
+  "exampleTarget": "PostgreSQL",
+  "serviceContract": "PersistenceGateway",
+  "phases": [
+    {
+      "id": "contract",
+      "status": "complete",
+      "description": "All production service constructors receive PersistenceGateway rather than DatabaseService."
+    },
+    {
+      "id": "transaction-boundary",
+      "status": "complete",
+      "description": "Gateway transaction API supports atomic multi-collection work with rollback on failure."
+    },
+    {
+      "id": "schema-catalog",
+      "status": "complete",
+      "description": "Runtime readiness endpoint inventories persisted collections and shape fingerprints."
+    },
+    {
+      "id": "managed-adapter",
+      "status": "future",
+      "description": "Implement managed relational adapter behind the existing contract."
+    },
+    {
+      "id": "schema-mapping",
+      "status": "future",
+      "description": "Map JSON collections/documents to normalized relational tables and constraints."
+    },
+    {
+      "id": "backfill",
+      "status": "future",
+      "description": "Copy historical state with count/hash verification."
+    },
+    {
+      "id": "shadow-read",
+      "status": "future",
+      "description": "Compare managed-store reads to incumbent store without serving managed data."
+    },
+    {
+      "id": "dual-write",
+      "status": "future",
+      "description": "Write both stores with mismatch alarms and authoritative JSON rollback."
+    },
+    {
+      "id": "cutover",
+      "status": "future",
+      "description": "Promote managed store after human certification."
+    },
+    {
+      "id": "rollback",
+      "status": "future",
+      "description": "Retain reversible cutover until managed-store observation window passes."
+    }
+  ],
+  "principles": {
+    "noAutomaticCutover": true,
+    "noAutomaticDataDeletion": true,
+    "noBusinessServiceRewriteRequired": true,
+    "humanCertificationRequired": true
+  }
+}
