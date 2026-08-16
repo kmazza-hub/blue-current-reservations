@@ -100,6 +100,7 @@ const FinalProductReleaseCandidateService = require("./services/finalProductRele
 const FinalHardeningRealEnvironmentService = require("./services/finalHardeningRealEnvironmentService");
 const ProductionLaunchCertificationService = require("./services/productionLaunchCertificationService");
 const ProductionMutationIntegrityService = require("./services/productionMutationIntegrityService");
+const ProductionBoundaryService = require("./services/productionBoundaryService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -113,6 +114,7 @@ const auditService = new AuditService(database);
 const idempotencyService = new IdempotencyService(database);
 const syncReconciliationService = new SyncReconciliationService(database, auditService, realtimeHub);
 const productionMutationIntegrityService = new ProductionMutationIntegrityService(database);
+const productionBoundaryService = new ProductionBoundaryService();
 const telemetryService = new TelemetryService(database, realtimeHub);
 const reliabilityAutomationService = new ReliabilityAutomationService(database, telemetryService, auditService, realtimeHub);
 const reservationService = new ReservationService(database, auditService, realtimeHub);
@@ -202,7 +204,7 @@ const pilotLiveServiceAcceptanceService = new PilotLiveServiceAcceptanceService(
 const finalProductReleaseCandidateService = new FinalProductReleaseCandidateService(database, auditService, realtimeHub, pilotLiveServiceAcceptanceService, pilotCloseoutOutcomeService, pilotReleaseCandidateCertificationService);
 const finalHardeningRealEnvironmentService = new FinalHardeningRealEnvironmentService(database, auditService, realtimeHub, finalProductReleaseCandidateService);
 const productionLaunchCertificationService = new ProductionLaunchCertificationService(database, auditService, realtimeHub, finalHardeningRealEnvironmentService, productionOperationsHandoffService, pilotLaunchControlService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService });
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -224,8 +226,53 @@ function safeFilePath(requestPath) {
 
 const server = http.createServer(async (request, response) => {
   const telemetryContext = telemetryService.begin(request);
+
+  const requestPath = String(request.url || "").split("?")[0];
+  const isApi = requestPath.startsWith("/api/");
+  response._securityHeaders = productionBoundaryService.securityHeaders({ api: isApi });
+
+  if (isApi) {
+    request._maxBodyBytes = productionBoundaryService.maxBodyBytes;
+
+    const origin = productionBoundaryService.corsOrigin(request);
+    if (origin === false) {
+      response._securityHeaders["Content-Type"] = "application/json; charset=utf-8";
+      response.writeHead(403, response._securityHeaders);
+      return response.end(JSON.stringify({ error: "Origin is not allowed.", code: "ORIGIN_NOT_ALLOWED" }));
+    }
+    response._corsOrigin = origin || null;
+
+    const validation = productionBoundaryService.validateRequest(request, requestPath);
+    if (!validation.ok) {
+      response._securityHeaders["Content-Type"] = "application/json; charset=utf-8";
+      response.writeHead(validation.status, response._securityHeaders);
+      return response.end(JSON.stringify({ error: validation.error, code: validation.code }));
+    }
+
+    const rateLimit = productionBoundaryService.consume(request, requestPath);
+    response._rateLimit = rateLimit;
+    if (!rateLimit.allowed) {
+      response.writeHead(429, {
+        ...response._securityHeaders,
+        "Content-Type": "application/json; charset=utf-8",
+        "Retry-After": String(rateLimit.retryAfterSeconds),
+        "X-RateLimit-Limit": String(rateLimit.limit),
+        "X-RateLimit-Remaining": "0",
+        "X-RateLimit-Reset": String(Math.ceil(rateLimit.resetAt / 1000))
+      });
+      return response.end(JSON.stringify({
+        error: "Too many requests. Retry after the rate-limit window.",
+        code: "RATE_LIMITED"
+      }));
+    }
+  }
   const originalWriteHead = response.writeHead.bind(response);
   response.writeHead = function instrumentedWriteHead(statusCode, ...args) {
+    if (response._securityHeaders) {
+      for (const [name, value] of Object.entries(response._securityHeaders)) {
+        if (!response.hasHeader(name)) response.setHeader(name, value);
+      }
+    }
     if (!response._telemetryCompleted) {
       response._telemetryCompleted = true;
       telemetryService.complete(telemetryContext, statusCode, {
@@ -282,9 +329,14 @@ const server = http.createServer(async (request, response) => {
   } catch (error) {
     console.error(`[server] ${request.method} ${request.url} failed:`, error && (error.stack || error));
     if (!response.headersSent) {
-      response.writeHead(500, { "Content-Type": "application/json" });
+      const status = Number(error.statusCode || (error instanceof SyntaxError ? 400 : 500));
+      response.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+      return response.end(JSON.stringify({
+        error: status === 500 ? "Internal server error." : error.message,
+        code: error.code || (error instanceof SyntaxError ? "INVALID_JSON" : "INTERNAL_ERROR")
+      }));
     }
-    response.end(JSON.stringify({ error: error.message }));
+    response.end();
   }
 });
 

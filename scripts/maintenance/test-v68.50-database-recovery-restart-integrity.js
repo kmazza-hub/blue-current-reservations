@@ -11,7 +11,7 @@ const DatabaseService = require(path.join(root, "server/services/databaseService
 const ProductionMutationIntegrityService = require(path.join(root, "server/services/productionMutationIntegrityService"));
 
 (async () => {
-  assert.equal(pkg.version, "68.50.0");
+  assert(Number(pkg.version.split(".")[0]) >= 68, `Expected V68 or later, found ${pkg.version}`);
 
   const router = fs.readFileSync(path.join(root, "server/api/router.js"), "utf8");
   const server = fs.readFileSync(path.join(root, "server/server.js"), "utf8");
@@ -23,8 +23,8 @@ const ProductionMutationIntegrityService = require(path.join(root, "server/servi
   assert(server.includes('checkpointBackup("startup-verified-primary")'));
   assert(server.includes('recoverStalePrepared({ force: true })'));
   assert(server.includes('Verified recovery backup:'));
-  assert(startup.includes("V68.50.0 ready"));
-  assert(html.includes('content="68.50.0"'));
+  assert(/V(?:68|69)(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bc-v6850-"));
   const dbPath = path.join(dir, "blue-current.json");

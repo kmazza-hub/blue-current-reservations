@@ -72,11 +72,21 @@ async function sendJson(response, status, payload) {
   const headers = {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
-    "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match, X-Blue-Current-Signature",
-    "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version, X-Blue-Current-Operation-Id, X-Blue-Current-Write-Integrity",
-    "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+    "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version, X-Blue-Current-Operation-Id, X-Blue-Current-Write-Integrity, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+    ...(response._securityHeaders || {})
   };
+  if (response._corsOrigin) {
+    headers["Access-Control-Allow-Origin"] = response._corsOrigin;
+    headers.Vary = "Origin";
+  }
+  if (response._rateLimit) {
+    headers["X-RateLimit-Limit"] = String(response._rateLimit.limit);
+    headers["X-RateLimit-Remaining"] = String(response._rateLimit.remaining);
+    headers["X-RateLimit-Reset"] = String(Math.ceil(response._rateLimit.resetAt / 1000));
+    if (!response._rateLimit.allowed) headers["Retry-After"] = String(response._rateLimit.retryAfterSeconds);
+  }
   if (response._idempotencyReplayed) headers["X-Blue-Current-Idempotency-Replayed"] = "true";
   if (response._resourceVersion != null) {
     headers["X-Blue-Current-Resource-Version"] = String(response._resourceVersion);
@@ -92,9 +102,17 @@ async function sendJson(response, status, payload) {
 async function readJson(request) {
   if (request._jsonBody !== undefined) return request._jsonBody;
   let body = "";
+  let bytes = 0;
+  const maxBytes = Number(request._maxBodyBytes || 1_000_000);
   for await (const chunk of request) {
+    bytes += Buffer.byteLength(chunk);
+    if (bytes > maxBytes) {
+      const error = new Error(`Request body exceeds ${maxBytes} bytes.`);
+      error.statusCode = 413;
+      error.code = "PAYLOAD_TOO_LARGE";
+      throw error;
+    }
     body += chunk;
-    if (body.length > 1_000_000) throw new Error("Payload too large");
   }
   request._rawBody = body;
   request._jsonBody = body ? JSON.parse(body) : {};
@@ -106,16 +124,19 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
     if (request.method === "OPTIONS") {
+      const origin = productionBoundaryService.corsOrigin(request);
+      if (origin === false) return sendJson(response, 403, { error: "Origin is not allowed.", code: "ORIGIN_NOT_ALLOWED" });
       response.writeHead(204, {
-        "Access-Control-Allow-Origin": "*",
+        ...(productionBoundaryService.securityHeaders({ api: true })),
+        ...(origin ? { "Access-Control-Allow-Origin": origin, "Vary": "Origin" } : {}),
         "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match, X-Blue-Current-Signature",
         "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-        "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version, X-Blue-Current-Operation-Id, X-Blue-Current-Write-Integrity"
+        "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version, X-Blue-Current-Operation-Id, X-Blue-Current-Write-Integrity, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset"
       });
       return response.end();
     }
@@ -263,6 +284,13 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         backups,
         mutationIntegrity: await productionMutationIntegrityService.snapshot(writeOrganizationId)
       });
+    }
+
+    if (url.pathname === "/api/system/security-boundary" && request.method === "GET") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response, 403, { error: "Security boundary diagnostics require admin permission." });
+      }
+      return sendJson(response, 200, productionBoundaryService.snapshot());
     }
 
     const writeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);

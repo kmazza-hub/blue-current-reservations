@@ -10,7 +10,7 @@ const DatabaseService=require(path.join(root,"server/services/databaseService"))
 const ProductionMutationIntegrityService=require(path.join(root,"server/services/productionMutationIntegrityService"));
 
 (async()=>{
-  assert(/^68(?:\.|$)/.test(pkg.version),`Expected a V68.x build, found ${pkg.version}`);
+  assert(Number(pkg.version.split(".")[0]) >= 68,`Expected V68 or later, found ${pkg.version}`);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
@@ -29,7 +29,7 @@ const ProductionMutationIntegrityService=require(path.join(root,"server/services
   assert(router.includes('WRITE_FINALIZATION_FAILED'));
   assert(server.includes('ProductionMutationIntegrityService'));
   assert(server.includes('productionMutationIntegrityService'));
-  assert(/V68(?:\.\d+){2} ready/.test(startup));
+  assert(/V(?:68|69)(?:\.\d+){2} ready/.test(startup));
   assert(html.includes(`content="${pkg.version}"`));
 
   // The late V59-style write middleware must be gone: only one writeMethods declaration.
