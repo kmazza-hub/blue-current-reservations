@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "80.75.0",
+  "version": "81.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 pilot shift certification and go/no-go control",
+  "description": "Blue Current Hospitality OS \u2014 live pilot command and shift control",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

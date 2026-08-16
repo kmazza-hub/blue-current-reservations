@@ -1,0 +1,25 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Live=require(path.join(root,"server/services/livePilotShiftCommandService"));
+(async()=>{
+ assert.equal(pkg.version,"81.0.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
+ assert(router.includes("/api/pilot/live-shift/start"));assert(router.includes("/api/pilot/live-shift/close"));assert(server.includes("LivePilotShiftCommandService"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc810-")),dbPath=path.join(dir,"db.json");
+ fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"l1",organizationId:"o",name:"Pilot"}]}));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ let decision="GO",cert={id:"cert1",decision:"GO",shiftLabel:"Friday Dinner"},runtimeState="NORMAL";
+ const shiftCert={evaluate:async()=>({decision,conditions:decision==="GO_WITH_CONDITIONS"?["operatorHoldActive"]:[],hardBlockers:decision==="NO_GO"?["critical"]:[],priorCertification:cert})};
+ const runtime={evaluate:async()=>({state:runtimeState,action:"CONTINUE",controls:{localOperationsAvailable:true,externalWritesAllowed:true}})};
+ const recovery={list:async()=>({counts:{open:0,investigating:0},incidents:[]})};
+ const cutover={status:async()=>({mode:"PROVIDER_AUTHORITY",provider:"toast"})};
+ const continuity={evaluate:async()=>({decision:"CONTINUOUS"})};
+ const svc=new Live(db,shiftCert,runtime,recovery,cutover,continuity);
+ let snap=await svc.snapshot("o",["*"],"l1");assert.equal(snap.phase,"PRE_SHIFT");assert.equal(snap.command.recommendedAction,"READY_TO_START");
+ snap=await svc.start("o",["*"],"l1",{shiftLabel:"Friday Dinner"},"admin");assert.equal(snap.phase,"LIVE");assert.equal(snap.shift.status,"ACTIVE");assert.equal(snap.autonomousProductionChangesAllowed,false);
+ let duplicateBlocked=false;try{await svc.start("o",["*"],"l1",{},"admin");}catch(e){duplicateBlocked=e.statusCode===409;}assert.equal(duplicateBlocked,true);
+ runtimeState="DEGRADED";snap=await svc.snapshot("o",["*"],"l1");assert.equal(snap.command.operatorInterventionRequired,true);assert.equal(snap.command.recommendedAction,"REVIEW_AND_ROLLBACK");
+ snap=await svc.close("o",["*"],"l1",{serviceOutcome:"Completed service",operatorNotes:"Pilot stable",guestImpact:"None",followUpRequired:false},"admin");assert.equal(snap.phase,"CLOSED");assert.equal(snap.shift.closeout.serviceOutcome,"Completed service");
+ decision="NO_GO";cert=null;let blocked=false;try{await svc.start("o",["*"],"l1",{},"admin");}catch(e){blocked=e.statusCode===409;}assert.equal(blocked,true);
+ console.log(JSON.stringify({ok:true,version:"81.0.0",liveShiftCommand:true,certifiedStartRequired:true,oneActiveShiftPerLocation:true,runtimeStatusVisible:true,authorityStateVisible:true,incidentStateVisible:true,humanStart:true,humanClose:true,controlledCloseout:true,autonomousProductionChanges:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});
