@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "81.25.0",
+  "version": "81.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 live pilot evidence and outcome ledger",
+  "description": "Blue Current Hospitality OS \u2014 pilot KPI baseline and value measurement",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
