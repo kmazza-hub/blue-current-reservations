@@ -3,11 +3,12 @@
 const CommandPrioritizationService=require("./commandPrioritizationService");
 
 class CommandOperatingPictureService{
-  constructor(database,{pilotReadinessCommandCenterService=null,operatorWorkflowCertificationService=null,commandPrioritizationService=null}={}){
+  constructor(database,{pilotReadinessCommandCenterService=null,operatorWorkflowCertificationService=null,commandPrioritizationService=null,dataSourceTruthService=null}={}){
     this.database=database;
     this.pilotReadiness=pilotReadinessCommandCenterService;
     this.operatorWorkflow=operatorWorkflowCertificationService;
     this.prioritizer=commandPrioritizationService||new CommandPrioritizationService();
+    this.dataSourceTruthService=dataSourceTruthService;
   }
 
   _num(value,fallback=0){const n=Number(value);return Number.isFinite(n)?n:fallback;}
@@ -98,9 +99,13 @@ class CommandOperatingPictureService{
       if(this.operatorWorkflow)operator=await this.operatorWorkflow.certify(organizationId,[location.id]);
     }catch{}
 
+    const sourceTruth=this.dataSourceTruthService
+      ? await this.dataSourceTruthService.snapshot(organizationId,allowedLocationIds,location.id)
+      : null;
+
     const picture={
-      version:"76.50.0",generatedAt:new Date().toISOString(),organizationId,
-      dataMode,dataAgeHours,
+      version:"79.0.0",generatedAt:new Date().toISOString(),organizationId,
+      dataMode,dataAgeHours,sourceTruth,
       location:{id:location.id,name:location.name,capacity,timezone:location.timezone||null},
       locations:locations.map(x=>({id:x.id,name:x.name,capacity:this._num(x.capacity)})),
       service:{
@@ -125,7 +130,9 @@ class CommandOperatingPictureService{
         revenueActualNotInvented:true,
         expectedTurnsNotInvented:true,
         priorityRankingHeuristic:true,
-        managerDecisionRemainsHuman:true
+        managerDecisionRemainsHuman:true,
+        sourceFreshnessDisclosed:Boolean(sourceTruth),
+        staleProviderDataCannotMasqueradeAsLive:true
       }
     };
     picture.prioritization=this.prioritizer.prioritize(picture);

@@ -7,9 +7,9 @@ const auth=fs.readFileSync(path.join(root,"client/js/modules/authOrganizations.j
 const loader=fs.readFileSync(path.join(root,"client/js/startup-loader.js"),"utf8");
 const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 
-assert.equal(pkg.version,"78.75.0");
-assert(html.includes("styles.css?v=78.75.0"));
-assert(html.includes("hospitalityOsShell.js?v=78.75.0"));
+assert(Number(pkg.version.split(".")[0]) >= 78);
+assert(html.includes(`styles.css?v=${pkg.version}`));
+assert(html.includes(`hospitalityOsShell.js?v=${pkg.version}`));
 
 assert(shell.includes("async function refreshCommand({force=false}={})"));
 assert(shell.includes("if(!authenticatedAppState())"));

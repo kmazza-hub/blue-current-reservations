@@ -231,6 +231,24 @@ function buildIntelligence(data){
     setText("bcRecommendedFocus","Maintain service rhythm and monitor the next demand, kitchen, guest, and inventory signals.");
   }
 }
+function renderSourceTruth(data={}){
+  const truth=data.sourceTruth||null;
+  const label=el("bcSourceTruthLabel");
+  if(!label)return;
+
+  if(!truth){
+    label.textContent=data.dataMode==="historical-demo"?"Historical data":"Local data";
+    label.title="Provider source truth is unavailable.";
+    return;
+  }
+
+  label.textContent=
+    truth.status==="LIVE_READY"?"Live sources":
+    truth.status==="PARTIALLY_CONNECTED"?"Partial sources":
+    "Local data";
+  label.title=`${truth.summary?.connectedProviders||0} connected provider(s) · ${truth.summary?.liveDecisionDomains||0}/${truth.summary?.totalDomains||0} live decision domains`;
+}
+
 function renderCommand(data){
   commandState.currentData=data;
   renderLocations(data);
@@ -276,7 +294,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V78.75 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V79.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
