@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "77.0.0",
+  "version": "77.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 manager action queue and accountability loop",
+  "description": "Blue Current Hospitality OS \u2014 outcome verification and closed-loop operational learning",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

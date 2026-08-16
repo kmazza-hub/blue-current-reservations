@@ -16421,3 +16421,19 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
 .bc-manager-action>div:last-child{display:flex;gap:5px}.bc-manager-action button{min-height:31px;padding:0 9px;border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.05);color:#cde5e9;font-size:.61rem;font-weight:800;cursor:pointer}
 .bc-manager-action button:last-child{border-color:rgba(84,230,199,.20);color:#78e4d0}
 @media(max-width:620px){.bc-action-controls{display:grid}.bc-action-controls button{min-height:46px}.bc-manager-action{align-items:flex-start;display:grid}.bc-manager-action>div:last-child{justify-content:flex-start}.bc-manager-action button{min-height:40px}}
+
+
+/* V77.50 — closed-loop outcome verification */
+.bc-outcome-learning{margin:12px 18px 18px;border:1px solid rgba(94,226,204,.14);border-radius:13px;background:rgba(94,226,204,.035);overflow:hidden}
+.bc-outcome-learning>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.06)}
+.bc-outcome-learning>header small{color:#69dfcb;font-size:.58rem;font-weight:900;letter-spacing:.09em}
+.bc-outcome-learning>header strong{color:#dff8f3;font-size:.68rem}
+#bcOutcomeSummary{padding:12px 13px;color:#91afb6;font-size:.67rem}
+#bcOutcomeSummary>p{margin:0}
+.bc-outcome-totals{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}
+.bc-outcome-totals span{display:grid;gap:2px;padding:8px;border:1px solid rgba(255,255,255,.06);border-radius:8px;background:rgba(255,255,255,.025)}
+.bc-outcome-totals strong{color:#fff;font-size:.82rem}.bc-outcome-totals small{color:#75979f;font-size:.56rem}
+.bc-outcome-row{display:grid;gap:3px;padding:8px 0;border-top:1px solid rgba(255,255,255,.055)}
+.bc-outcome-row strong{color:#e9f8fb;font-size:.68rem}.bc-outcome-row small{color:#7f9fa7;font-size:.58rem}
+.bc-outcome-row.improved small{color:#6ee1c9}.bc-outcome-row.worsened small{color:#ffaaa1}
+@media(max-width:560px){.bc-outcome-totals{grid-template-columns:repeat(2,1fr)}}

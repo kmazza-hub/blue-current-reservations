@@ -1,8 +1,8 @@
 "use strict";
 
 class CommandManagerActionService{
-  constructor(database,auditService,realtimeHub,commandOperatingPictureService){
-    Object.assign(this,{database,auditService,realtimeHub,commandOperatingPictureService});
+  constructor(database,auditService,realtimeHub,commandOperatingPictureService,outcomeVerificationService=null){
+    Object.assign(this,{database,auditService,realtimeHub,commandOperatingPictureService,outcomeVerificationService});
   }
   now(){return new Date().toISOString();}
   allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
@@ -43,6 +43,10 @@ class CommandManagerActionService{
       outcome:null,
       timeline:[{action:"acknowledged",actor,note:String(input.note||"").slice(0,600),createdAt:now}],
       source:{type:"command-priority",dataMode:picture.dataMode,confidence:priority.confidence||null},
+      baseline:this.outcomeVerificationService
+        ? this.outcomeVerificationService.captureBaseline({domain:priority.domain,priorityScore:priority.score},picture)
+        : null,
+      verification:null,
       automaticAction:false
     };
     await this.database.mutate(db=>{db.commandManagerActions||=[];db.commandManagerActions.push(record);return record;});
@@ -84,6 +88,29 @@ class CommandManagerActionService{
     if(!record)throw Object.assign(new Error("Command action not found."),{statusCode:404});
     await this.auditService.record({organizationId,actor,action:`Command action ${action}: ${record.title}`,category:"command_action"});
     this.realtimeHub.publish("command:action-updated",{organizationId,locationId:record.locationId,id:record.id,status:record.status});
+
+    if(action==="resolve" && this.outcomeVerificationService){
+      try{
+        const picture=await this.commandOperatingPictureService.snapshot(organizationId,allowedLocationIds,record.locationId);
+        const result=await this.outcomeVerificationService.verify(record,picture,actor);
+        record.verification=result.verification;
+        await this.database.mutate(db=>{
+          const item=(db.commandManagerActions||[]).find(x=>x.id===record.id);
+          if(item){item.verification=result.verification;item.updatedAt=this.now();}
+          return item||null;
+        });
+        await this.auditService.record({
+          organizationId,actor,
+          action:`Command outcome verified: ${record.title} -> ${result.verification.status}`,
+          category:"command_outcome"
+        });
+        this.realtimeHub.publish("command:outcome-verified",{
+          organizationId,locationId:record.locationId,id:record.id,status:result.verification.status
+        });
+      }catch(error){
+        record.verification={version:"77.50.0",status:"UNVERIFIED",error:error.message,verifiedAt:this.now(),automaticSuccessClaim:false};
+      }
+    }
     return record;
   }
 
@@ -91,7 +118,7 @@ class CommandManagerActionService{
     const actions=await this.list(organizationId,allowedLocationIds,locationId);
     const open=actions.filter(x=>!["resolved","dismissed"].includes(x.status));
     return {
-      version:"77.0.0",generatedAt:this.now(),locationId,
+      version:"77.50.0",generatedAt:this.now(),locationId,
       counts:{total:actions.length,open:open.length,acknowledged:open.filter(x=>x.status==="acknowledged").length,assigned:open.filter(x=>x.status==="assigned").length,inProgress:open.filter(x=>x.status==="in_progress").length,resolved:actions.filter(x=>x.status==="resolved").length,dismissed:actions.filter(x=>x.status==="dismissed").length},
       openActions:open.slice(0,12),recentClosed:actions.filter(x=>["resolved","dismissed"].includes(x.status)).slice(0,8),
       policy:{humanAcknowledgementRequired:true,humanAssignmentRequired:true,humanResolutionRequired:true,automaticAction:false,autonomousMutation:false}

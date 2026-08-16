@@ -19,7 +19,7 @@ const labels={
  integrations:"Integrations",system:"System"
 };
 
-let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false};
+let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false};
 
 function directSection(node){
   while(node&&node.parentElement&&node.parentElement.id!=="main")node=node.parentElement;
@@ -195,9 +195,10 @@ function renderCommand(data){
   renderAttention(data);
   buildIntelligence(data);
   loadManagerActions();
+  loadOutcomeLearning();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V77.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V77.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -269,6 +270,68 @@ async function updateManagerAction(actionId,body){
     setText("bcActionFeedback",`${payload.action?.title||"Manager action"} · ${actionStatusLabel(payload.action?.status)}.`);
     await loadManagerActions();
   }catch(error){setText("bcActionFeedback",`Unable to update action · ${error.message}`);}
+}
+
+
+function renderOutcomeLearning(summary={}){
+  const root=el("bcOutcomeSummary");
+  if(!root)return;
+  const c=summary.counts||{};
+  setText("bcOutcomeCount",`${c.total||0} verified outcome${c.total===1?"":"s"}`);
+  root.replaceChildren();
+
+  if(!summary.recent?.length){
+    const p=document.createElement("p");
+    p.textContent="Resolved actions will be compared against the current operating state.";
+    root.append(p);
+    return;
+  }
+
+  const totals=document.createElement("div");
+  totals.className="bc-outcome-totals";
+  [
+    ["Improved",c.improved||0],
+    ["Unchanged",c.unchanged||0],
+    ["Worsened",c.worsened||0],
+    ["Unverified",c.unverified||0]
+  ].forEach(([label,value])=>{
+    const item=document.createElement("span");
+    const strong=document.createElement("strong");strong.textContent=String(value);
+    const small=document.createElement("small");small.textContent=label;
+    item.append(strong,small);totals.append(item);
+  });
+  root.append(totals);
+
+  summary.recent.slice(0,3).forEach(item=>{
+    const row=document.createElement("article");
+    row.className=`bc-outcome-row ${String(item.verificationStatus||"").toLowerCase()}`;
+    const title=document.createElement("strong");
+    title.textContent=item.title||"Resolved action";
+    const meta=document.createElement("small");
+    const delta=item.delta===null||item.delta===undefined?"":` · Δ ${item.delta}`;
+    meta.textContent=`${item.verificationStatus||"UNVERIFIED"} · ${item.metricName||"metric"}${delta}`;
+    row.append(title,meta);
+    root.append(row);
+  });
+}
+
+async function loadOutcomeLearning(){
+  if(commandState.outcomesLoading)return;
+  commandState.outcomesLoading=true;
+  try{
+    const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
+    const response=await fetch(`/api/command/outcomes${query}`,{
+      method:"GET",credentials:"same-origin",headers:{"Accept":"application/json"}
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Command outcomes returned ${response.status}.`);
+    renderOutcomeLearning(payload);
+  }catch(error){
+    const root=el("bcOutcomeSummary");
+    if(root)root.textContent=`Outcome learning unavailable · ${error.message}`;
+  }finally{
+    commandState.outcomesLoading=false;
+  }
 }
 
 function renderCommandError(error){

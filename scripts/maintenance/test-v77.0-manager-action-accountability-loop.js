@@ -5,7 +5,7 @@ const pkg=require(path.join(root,"package.json"));
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory"));
 const Actions=require(path.join(root,"server/services/commandManagerActionService"));
 (async()=>{
- assert.equal(pkg.version,"77.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 77);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
  const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
