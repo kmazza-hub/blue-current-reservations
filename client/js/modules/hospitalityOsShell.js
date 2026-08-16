@@ -2,15 +2,15 @@
 "use strict";
 
 const workspaceMap={
-  guests:["host-stand","guest-journey-live"],
-  service:["operating-current","digital-twin"],
-  team:["staff-operations","workforce-intelligence","managerOperatingRhythm"],
-  kitchen:["kitchen-operations","kitchenThroughputCenter"],
-  inventory:["inventory-intelligence","inventoryWasteCenter"],
-  performance:["profit-current","serviceProfitabilityIntelligence"],
-  executive:["executive-command-center","executiveMorningBrief"],
-  integrations:["integrationControlCenter","v5325RestaurantWorkflowIntegration"],
-  system:["technicalActivationReadiness","deploymentReadinessCenter","production-readiness"]
+  guests:["host-stand","guest-intelligence","guest-journey-live"],
+  service:["service-coordination","operating-current","digital-twin"],
+  team:["workforce-foundation","scheduling","time-clock","workforce-intelligence"],
+  kitchen:["service-coordination"],
+  inventory:["inventory-intelligence"],
+  performance:["profit-current","hospitality-analytics"],
+  executive:["executive-command-center","portfolio-mode"],
+  integrations:["mission-control"],
+  system:["production-readiness","cloud-foundation"]
 };
 
 const labels={
@@ -235,7 +235,7 @@ function renderCommand(data){
   loadPlaybooks();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V78.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V78.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -458,7 +458,9 @@ async function refreshCommand(){
 }
 
 function init(){
-  document.body.classList.add("bc-hospitality-os");
+  document.body.classList.add("bc-hospitality-os","bc-consolidated-product-surface");
+  const advanced=new URLSearchParams(window.location.search).get("advanced")==="1";
+  if(advanced)document.body.classList.add("bc-show-advanced");
   window.addEventListener("bluecurrent:auth-session-expired",()=>{commandState.authRequired=true;});
   document.addEventListener("click",event=>{
     if(event.target?.closest?.("#authLoginForm button[type='submit']")){

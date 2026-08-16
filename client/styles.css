@@ -16499,3 +16499,23 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
 .bc-playbook-row span{flex:0 0 auto;padding:3px 6px;border-radius:6px;background:rgba(103,221,200,.09);color:#70e1cd;font-size:.49rem;font-weight:900;letter-spacing:.05em}
 .bc-playbook-row small{color:#7f9fa7;font-size:.57rem}
 .bc-playbook-caution{color:#719198!important;font-style:italic}
+
+
+/* ==========================================================================
+   V78.25 — Product surface consolidation
+   Engineering depth stays intact; normal restaurant users see product
+   concepts, not build history, release centers, or certification machinery.
+   ========================================================================== */
+body.bc-consolidated-product-surface .bc-legacy-development-surface{
+  display:none!important;
+}
+body.bc-consolidated-product-surface .site-footer,
+body.bc-consolidated-product-surface .launch-face-close{
+  display:none!important;
+}
+body.bc-consolidated-product-surface.bc-show-advanced .bc-legacy-development-surface{
+  display:block!important;
+}
+body.bc-consolidated-product-surface:not(.bc-show-advanced) [data-development-only="true"]{
+  display:none!important;
+}

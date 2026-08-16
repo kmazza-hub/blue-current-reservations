@@ -965,12 +965,12 @@
         "*"
       ],
       "createdAt": "2026-08-16T19:09:25.913Z",
-      "lastSeenAt": "2026-08-16T19:33:37.612Z",
-      "idleExpiresAt": "2026-08-16T21:33:37.612Z",
+      "lastSeenAt": "2026-08-16T19:52:50.199Z",
+      "idleExpiresAt": "2026-08-16T21:52:50.199Z",
       "expiresAt": "2026-08-17T07:09:25.913Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-16T19:33:37.613Z"
+      "updatedAt": "2026-08-16T19:52:50.200Z"
     },
     {
       "id": "ses_1786907371948_ww5tfu",
@@ -982,12 +982,12 @@
         "*"
       ],
       "createdAt": "2026-08-16T19:09:31.948Z",
-      "lastSeenAt": "2026-08-16T19:23:36.368Z",
-      "idleExpiresAt": "2026-08-16T21:23:36.368Z",
+      "lastSeenAt": "2026-08-16T19:40:30.240Z",
+      "idleExpiresAt": "2026-08-16T21:40:30.240Z",
       "expiresAt": "2026-08-17T07:09:31.948Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-16T19:23:36.369Z"
+      "updatedAt": "2026-08-16T19:40:30.243Z"
     }
   ],
   "invitations": [

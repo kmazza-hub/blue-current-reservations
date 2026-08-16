@@ -8,7 +8,7 @@ const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell
 const diagnostics=fs.readFileSync(path.join(root,"client/js/modules/startupDiagnostics.js"),"utf8");
 
 assert(Number(pkg.version.split(".")[0]) >= 77);
-assert(html.includes("Blue Current V78.0")||html.includes("Blue Current V77.50.1"));
+assert(/Blue Current V\d+(?:\.\d+){1,2}/.test(html));
 assert(html.includes(`styles.css?v=${pkg.version}`));
 assert(html.includes(`hospitalityOsShell.js?v=${pkg.version}`));
 

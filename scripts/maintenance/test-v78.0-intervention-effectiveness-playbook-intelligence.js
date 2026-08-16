@@ -10,7 +10,7 @@ const {createPersistence}=require(path.join(root,"server/persistence/persistence
 const Playbooks=require(path.join(root,"server/services/commandPlaybookIntelligenceService"));
 
 (async()=>{
-  assert.equal(pkg.version,"78.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 78);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
