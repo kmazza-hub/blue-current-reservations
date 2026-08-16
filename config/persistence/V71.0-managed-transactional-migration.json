@@ -23,8 +23,8 @@
     },
     {
       "id": "managed-adapter",
-      "status": "future",
-      "description": "Implement managed relational adapter behind the existing contract."
+      "status": "contract-complete",
+      "description": "Managed adapter capability/method contract is complete; concrete PostgreSQL driver remains future."
     },
     {
       "id": "schema-mapping",
@@ -33,18 +33,18 @@
     },
     {
       "id": "backfill",
-      "status": "framework-complete",
-      "description": "Deterministic source manifests and count/hash verification framework are complete; target adapter/backfill execution remains future."
+      "status": "execution-framework-complete",
+      "description": "Deterministic batching, replay-safe import, count/hash verification, and source manifests are complete."
     },
     {
       "id": "shadow-read",
-      "status": "future",
-      "description": "Compare managed-store reads to incumbent store without serving managed data."
+      "status": "framework-complete",
+      "description": "Non-authoritative shadow store, all-store comparison, mismatch counters, and alarms are complete."
     },
     {
       "id": "dual-write",
-      "status": "future",
-      "description": "Write both stores with mismatch alarms and authoritative JSON rollback."
+      "status": "guarded-framework-complete",
+      "description": "Authoritative-first mirror coordinator and reconciliation signaling are complete; production business writes are not yet attached."
     },
     {
       "id": "cutover",
@@ -63,7 +63,7 @@
     "noBusinessServiceRewriteRequired": true,
     "humanCertificationRequired": true
   },
-  "currentVersion": "71.50.0",
+  "currentVersion": "72.0.0",
   "verification": {
     "sourceManifest": "SHA-256 per store plus total record count",
     "targetVerification": "canonicalized count/hash comparison per store",
@@ -74,5 +74,15 @@
       "humanApproval"
     ],
     "automaticCutover": false
+  },
+  "v72": {
+    "authoritativeDriver": "json",
+    "shadowStore": "ephemeral-migration-shadow",
+    "shadowDefaultMode": "disabled",
+    "managedAdapterInstalled": false,
+    "automaticDualWrite": false,
+    "automaticCutover": false,
+    "replicationSemantics": "authoritative-first-mirror-second",
+    "distributedTransaction": false
   }
 }

@@ -124,7 +124,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService, persistenceMigrationReadinessService, persistenceSchemaMappingService, persistenceMigrationVerificationService, persistenceCutoverFrameworkService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService, persistenceMigrationReadinessService, persistenceSchemaMappingService, persistenceMigrationVerificationService, persistenceCutoverFrameworkService, persistenceBackfillService, migrationShadowStore, persistenceShadowExecutionService, persistenceReplicationCoordinatorService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -372,6 +372,67 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         category: "security"
       });
       return sendJson(response, 200, { ok: true, ...result });
+    }
+
+    if (url.pathname === "/api/system/persistence-backfill-plan" && request.method === "GET") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response, 403, { error: "Persistence backfill planning requires admin permission." });
+      }
+      const batchSize=Math.max(1,Math.min(5000,Number(url.searchParams.get("batchSize")||100)));
+      const plan=await persistenceBackfillService.plan({batchSize});
+      return sendJson(response, 200, {
+        version:plan.version,
+        generatedAt:plan.generatedAt,
+        sourceDriver:plan.sourceDriver,
+        batchSize:plan.batchSize,
+        totals:plan.totals,
+        manifestHash:plan.manifestHash,
+        stores:plan.stores.map(store=>({
+          store:store.store,kind:store.kind,count:store.count,sha256:store.sha256,
+          batches:store.batches.map(batch=>({
+            id:batch.id,ordinal:batch.ordinal,offset:batch.offset,count:batch.count,sha256:batch.sha256
+          }))
+        }))
+      });
+    }
+
+    if (url.pathname === "/api/system/persistence-shadow" && request.method === "GET") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response, 403, { error: "Persistence shadow diagnostics require admin permission." });
+      }
+      return sendJson(response, 200, {
+        status:persistenceShadowExecutionService.status(),
+        shadow:migrationShadowStore.diagnostics(),
+        replication:persistenceReplicationCoordinatorService.snapshot()
+      });
+    }
+
+    if (url.pathname === "/api/system/persistence-shadow/seed" && request.method === "POST") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response, 403, { error: "Persistence shadow seed requires admin permission." });
+      }
+      const body=await readJson(request);
+      const batchSize=Math.max(1,Math.min(5000,Number(body.batchSize||100)));
+      await migrationShadowStore.reset();
+      const backfill=await persistenceBackfillService.execute(migrationShadowStore,{batchSize});
+      persistenceShadowExecutionService.configure({mode:"shadow-read"});
+      const comparison=await persistenceShadowExecutionService.compareAll();
+      await auditService.record({
+        organizationId:writeOrganizationId,
+        actor:auth.user.name,
+        action:`Seeded migration shadow store (${backfill.importedBatches} batches, ${comparison.mismatches} mismatches)`,
+        category:"security"
+      });
+      return sendJson(response,200,{
+        ok:comparison.verified,
+        backfill,
+        comparison:{
+          verified:comparison.verified,
+          mismatches:comparison.mismatches,
+          mismatchStores:comparison.comparisons.filter(item=>item.match===false).map(item=>item.store)
+        },
+        shadow:migrationShadowStore.diagnostics()
+      });
     }
 
     if (url.pathname === "/api/auth/logout-all" && request.method === "POST") {
