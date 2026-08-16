@@ -1045,38 +1045,6 @@
       "updatedAt": "2026-08-16T22:27:10.304Z"
     },
     {
-      "id": "ses_1786916747726_zakhdp",
-      "tokenHash": "f3c630bf330060a3122192d4206237c07e10ef4e981c2a08a6f4deecda2ddfad",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-16T21:45:47.726Z",
-      "lastSeenAt": "2026-08-16T21:45:47.726Z",
-      "idleExpiresAt": "2026-08-16T23:45:47.726Z",
-      "expiresAt": "2026-08-17T09:45:47.726Z",
-      "revokedAt": null,
-      "revokedReason": null
-    },
-    {
-      "id": "ses_1786916867348_ozn9k5",
-      "tokenHash": "2e02f79b3abbb4f3f7d4228dd94e6ac3203e399faadb8ea0c62382f0abd59458",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-16T21:47:47.348Z",
-      "lastSeenAt": "2026-08-16T21:47:47.348Z",
-      "idleExpiresAt": "2026-08-16T23:47:47.348Z",
-      "expiresAt": "2026-08-17T09:47:47.348Z",
-      "revokedAt": null,
-      "revokedReason": null
-    },
-    {
       "id": "ses_1786916971773_zwr3ex",
       "tokenHash": "4b5606f9f41a25242d633afa68170c693c70469039f78da3a83435b9beba024c",
       "userId": "usr_keith",
@@ -1153,9 +1121,26 @@
         "*"
       ],
       "createdAt": "2026-08-16T23:36:42.738Z",
-      "lastSeenAt": "2026-08-16T23:36:42.738Z",
-      "idleExpiresAt": "2026-08-17T01:36:42.738Z",
+      "lastSeenAt": "2026-08-16T23:48:53.658Z",
+      "idleExpiresAt": "2026-08-17T01:48:53.658Z",
       "expiresAt": "2026-08-17T11:36:42.738Z",
+      "revokedAt": null,
+      "revokedReason": null,
+      "updatedAt": "2026-08-16T23:48:53.660Z"
+    },
+    {
+      "id": "ses_1786924137668_8n6l97",
+      "tokenHash": "ca54f59c9aae9a2b82ad8f5a8a359ffbd7652e0db4f07be97b6af0e074bd258a",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-16T23:48:57.668Z",
+      "lastSeenAt": "2026-08-16T23:48:57.668Z",
+      "idleExpiresAt": "2026-08-17T01:48:57.668Z",
+      "expiresAt": "2026-08-17T11:48:57.668Z",
       "revokedAt": null,
       "revokedReason": null
     }
