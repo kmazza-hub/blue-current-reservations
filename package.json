@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "78.50.1",
+  "version": "78.50.2",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 Command blank-screen and authentication resilience hotfix",
+  "description": "Blue Current Hospitality OS \u2014 light-surface high-contrast typography contract",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

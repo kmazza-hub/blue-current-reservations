@@ -16575,3 +16575,293 @@ body.bc-command-transport-down .bc-os-command{
   .bc-command-access-state{align-items:flex-start;flex-direction:column}
   .bc-command-access-state button{width:100%}
 }
+
+
+/* ==========================================================================
+   V78.50.2 — Light Surface Typography Contract
+   Light backgrounds always use dark, high-contrast typography.
+   Dark cards nested inside light screens keep their existing light text.
+   ========================================================================== */
+:root{
+  --bc-light-ink:#0b2a35;
+  --bc-light-ink-strong:#071f29;
+  --bc-light-muted:#506b74;
+  --bc-light-soft:#6b838a;
+  --bc-light-accent:#176a7d;
+  --bc-light-border:rgba(11,42,53,.14);
+}
+
+/* Canonical light operating screens */
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+){
+  color:var(--bc-light-ink)!important;
+}
+
+.inventory-intelligence{
+  background:linear-gradient(180deg,#f3f8fa 0%,#edf4f6 100%)!important;
+}
+
+/* Section-level typography. This intentionally outranks the older global
+   dark-screen .section-heading rules without changing dark sections. */
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) .section-heading h1,
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) .section-heading h2,
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) .section-heading h3{
+  color:var(--bc-light-ink-strong)!important;
+  text-shadow:none!important;
+  opacity:1!important;
+}
+
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) .section-heading>p:not(.eyebrow),
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) .section-heading .lede{
+  color:var(--bc-light-muted)!important;
+  opacity:1!important;
+}
+
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) .eyebrow{
+  color:var(--bc-light-accent)!important;
+  opacity:1!important;
+}
+
+/* Alternate heading systems used by older but still-curated light surfaces. */
+.predictive-heading h1,
+.predictive-heading h2,
+.analytics-section .analytics-heading h1,
+.analytics-section .analytics-heading h2,
+.intelligence-network-section .intelligence-heading h1,
+.intelligence-network-section .intelligence-heading h2,
+.guest-intelligence-section h1,
+.guest-intelligence-section h2{
+  color:var(--bc-light-ink-strong)!important;
+  text-shadow:none!important;
+  opacity:1!important;
+}
+
+.predictive-heading p,
+.analytics-section .analytics-heading p,
+.intelligence-network-section .intelligence-heading p,
+.guest-intelligence-section>.container>p{
+  color:var(--bc-light-muted)!important;
+  opacity:1!important;
+}
+
+/* Inventory screen: light canvas, dark data cards. */
+.inventory-intelligence .section-heading h2{
+  color:var(--bc-light-ink-strong)!important;
+}
+.inventory-intelligence .section-heading>p:not(.eyebrow){
+  color:var(--bc-light-muted)!important;
+}
+.inventory-intelligence .section-heading .eyebrow{
+  color:var(--bc-light-accent)!important;
+}
+.inventory-intelligence .inventory-toolbar{
+  color:#eaf7fb!important;
+}
+.inventory-intelligence .inventory-kpis article,
+.inventory-intelligence .inventory-panel,
+.inventory-intelligence .inventory-toolbar{
+  color:#edf8fb!important;
+}
+.inventory-intelligence .inventory-kpis strong,
+.inventory-intelligence .inventory-head h3,
+.inventory-intelligence .inventory-head>strong{
+  color:#ffffff!important;
+}
+.inventory-intelligence .inventory-kpis small,
+.inventory-intelligence .inventory-head small,
+.inventory-intelligence .inventory-toolbar span{
+  color:#92b7c2!important;
+}
+
+/* Generic genuinely light cards/panels used inside otherwise dark workspaces. */
+.portfolio-focus-panel,
+.predictive-card:not(.recommendation-card),
+.predictive-brief,
+.guest-card{
+  color:var(--bc-light-ink)!important;
+}
+.portfolio-focus-panel h1,
+.portfolio-focus-panel h2,
+.portfolio-focus-panel h3,
+.portfolio-focus-panel strong,
+.predictive-card:not(.recommendation-card) h1,
+.predictive-card:not(.recommendation-card) h2,
+.predictive-card:not(.recommendation-card) h3,
+.predictive-card:not(.recommendation-card) strong,
+.predictive-brief h1,
+.predictive-brief h2,
+.predictive-brief h3,
+.predictive-brief strong,
+.guest-card h1,
+.guest-card h2,
+.guest-card h3,
+.guest-card strong{
+  color:var(--bc-light-ink-strong)!important;
+}
+.portfolio-focus-panel p,
+.portfolio-focus-panel span:not(.portfolio-status),
+.predictive-card:not(.recommendation-card) p,
+.predictive-brief p,
+.guest-card p{
+  color:var(--bc-light-muted)!important;
+}
+
+/* Form controls placed on light surfaces should never inherit white text. */
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) input:not([type="button"]):not([type="submit"]),
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) select,
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) textarea{
+  color:var(--bc-light-ink)!important;
+}
+
+/* Preserve deliberate dark cards nested on light canvases. */
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) :is(
+  .host-app,
+  .recommendation-card,
+  .inventory-kpis article,
+  .inventory-panel,
+  .inventory-toolbar
+) input,
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) :is(
+  .host-app,
+  .recommendation-card,
+  .inventory-kpis article,
+  .inventory-panel,
+  .inventory-toolbar
+) select,
+:is(
+  .operator-section,
+  .host-stand-section,
+  .guest-intelligence-section,
+  .analytics-section,
+  .predictive-operations-section,
+  .intelligence-network-section,
+  .inventory-intelligence
+) :is(
+  .host-app,
+  .recommendation-card,
+  .inventory-kpis article,
+  .inventory-panel,
+  .inventory-toolbar
+) textarea{
+  color:#ffffff!important;
+}
+
+@media(max-width:760px){
+  :is(
+    .operator-section,
+    .host-stand-section,
+    .guest-intelligence-section,
+    .analytics-section,
+    .predictive-operations-section,
+    .intelligence-network-section,
+    .inventory-intelligence
+  ) .section-heading h2{
+    color:var(--bc-light-ink-strong)!important;
+  }
+  :is(
+    .operator-section,
+    .host-stand-section,
+    .guest-intelligence-section,
+    .analytics-section,
+    .predictive-operations-section,
+    .intelligence-network-section,
+    .inventory-intelligence
+  ) .section-heading>p:not(.eyebrow){
+    color:var(--bc-light-muted)!important;
+  }
+}

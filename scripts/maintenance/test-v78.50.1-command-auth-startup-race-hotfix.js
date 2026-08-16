@@ -9,12 +9,12 @@ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
 
-assert.equal(pkg.version,"78.50.1");
+assert(/^78\.50\.[12]$/.test(pkg.version));
 
 assert(html.includes('id="bcCommandAccessState"'));
 assert(html.includes('id="bcCommandSignIn"'));
-assert(html.includes("styles.css?v=78.50.1"));
-assert(html.includes("hospitalityOsShell.js?v=78.50.1"));
+assert(html.includes(`styles.css?v=${pkg.version}`));
+assert(html.includes(`hospitalityOsShell.js?v=${pkg.version}`));
 
 assert(shell.includes("function startCommandAfterAuth"));
 assert(shell.includes("authenticatedAppState"));
