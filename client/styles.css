@@ -16865,3 +16865,126 @@ body.bc-command-transport-down .bc-os-command{
     color:var(--bc-light-muted)!important;
   }
 }
+
+
+/* ==========================================================================
+   V83.25.1 — Light Surface Typography Enforcement Hotfix
+   Final authority for light Guest / Host / Team surfaces.
+   Legacy dark-theme rules must not render light text on a light canvas.
+   ========================================================================== */
+
+#host-stand,
+.workforce-foundation,
+.guest-intelligence-section{
+  --bc-light-ink:#0b2a35;
+  --bc-light-ink-strong:#071f29;
+  --bc-light-muted:#506b74;
+  --bc-light-soft:#6b838a;
+  --bc-light-accent:#176a7d;
+}
+
+/* Host / guest-facing light canvas */
+#host-stand .section-heading h1,
+#host-stand .section-heading h2,
+#host-stand .section-heading h3,
+.guest-intelligence-section .section-heading h1,
+.guest-intelligence-section .section-heading h2,
+.guest-intelligence-section .section-heading h3{
+  color:var(--bc-light-ink-strong)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+
+#host-stand .section-heading>p:not(.eyebrow),
+.guest-intelligence-section .section-heading>p:not(.eyebrow){
+  color:var(--bc-light-muted)!important;
+  opacity:1!important;
+}
+
+#host-stand .section-heading .eyebrow,
+#host-stand .eyebrow,
+.guest-intelligence-section .section-heading .eyebrow,
+.guest-intelligence-section .eyebrow{
+  color:var(--bc-light-accent)!important;
+  opacity:1!important;
+}
+
+/* Workforce / Team is currently presented on a light workspace canvas. */
+.workforce-foundation{
+  color:var(--bc-light-ink)!important;
+  background:linear-gradient(180deg,#f3f8fa 0%,#edf4f6 100%)!important;
+}
+
+.workforce-foundation .section-heading h1,
+.workforce-foundation .section-heading h2,
+.workforce-foundation .section-heading h3,
+.workforce-foundation .wff-panel h1,
+.workforce-foundation .wff-panel h2,
+.workforce-foundation .wff-panel h3,
+.workforce-foundation .wff-kpis strong,
+.workforce-foundation .wff-list strong{
+  color:var(--bc-light-ink-strong)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+
+.workforce-foundation .section-heading>p:not(.eyebrow),
+.workforce-foundation .wff-panel p,
+.workforce-foundation .wff-list p,
+.workforce-foundation .wff-list span,
+.workforce-foundation .wff-list small,
+.workforce-foundation .wff-kpis small,
+.workforce-foundation label{
+  color:var(--bc-light-muted)!important;
+  opacity:1!important;
+}
+
+.workforce-foundation .section-heading .eyebrow,
+.workforce-foundation .eyebrow{
+  color:var(--bc-light-accent)!important;
+  opacity:1!important;
+}
+
+.workforce-foundation .wff-kpis article,
+.workforce-foundation .wff-panel,
+.workforce-foundation .wff-list article{
+  color:var(--bc-light-ink)!important;
+  background:rgba(255,255,255,.76)!important;
+  border-color:rgba(11,42,53,.14)!important;
+}
+
+.workforce-foundation .wff-form input,
+.workforce-foundation .wff-form select,
+.workforce-foundation .wff-form textarea,
+.workforce-foundation .wff-pto-decision textarea{
+  color:var(--bc-light-ink)!important;
+  background:#ffffff!important;
+  border-color:rgba(11,42,53,.18)!important;
+  opacity:1!important;
+}
+
+.workforce-foundation input::placeholder,
+.workforce-foundation textarea::placeholder{
+  color:var(--bc-light-soft)!important;
+  opacity:1!important;
+}
+
+/* Keep explicit semantic status colors readable on the light Team surface. */
+.workforce-foundation .status-approved{color:#176b4c!important;}
+.workforce-foundation .status-denied{color:#9a3e3e!important;}
+.workforce-foundation .status-pending{color:#8a6114!important;}
+.workforce-foundation .wff-pto-feedback{color:#8a6114!important;}
+
+/* Mobile must obey the same final contrast contract. */
+@media(max-width:760px){
+  #host-stand .section-heading h2,
+  .guest-intelligence-section .section-heading h2,
+  .workforce-foundation .section-heading h2{
+    color:var(--bc-light-ink-strong)!important;
+  }
+  #host-stand .section-heading>p:not(.eyebrow),
+  .guest-intelligence-section .section-heading>p:not(.eyebrow),
+  .workforce-foundation .section-heading>p:not(.eyebrow){
+    color:var(--bc-light-muted)!important;
+  }
+}

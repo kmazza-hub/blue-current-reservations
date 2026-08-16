@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "83.25.0",
+  "version": "83.25.1",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 portfolio exception command and executive escalation",
+  "description": "Blue Current Hospitality OS \u2014 light surface typography enforcement hotfix",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
