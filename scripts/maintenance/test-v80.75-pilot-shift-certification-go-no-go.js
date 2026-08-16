@@ -1,0 +1,25 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Shift=require(path.join(root,"server/services/pilotShiftCertificationService"));
+(async()=>{
+ assert.equal(pkg.version,"80.75.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
+ assert(router.includes("/api/pilot/shift-certification/certify"));assert(server.includes("PilotShiftCertificationService"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8075-")),dbPath=path.join(dir,"db.json");
+ fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"l1",organizationId:"o",name:"Pilot"}],pilotRuntimeIncidents:[]}));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ let runtimeState="NORMAL",providerStable=true,critical=false;
+ const runtime={evaluate:async()=>({state:runtimeState,controls:{localOperationsAvailable:true},openIncidents:critical?[{id:"c",severity:"CRITICAL"}]:[]})};
+ const recovery={list:async()=>({incidents:critical?[{id:"c",severity:"CRITICAL",status:"OPEN"}]:[]})};
+ const continuity={evaluate:async()=>({providers:[{provider:"toast",continuity:providerStable?"STABLE":"DEGRADED",fallback:providerStable?"TRUSTED_LIVE":"DEGRADED_LOCAL_FALLBACK"}]})};
+ const cutover={status:async()=>({mode:"PROVIDER_AUTHORITY",provider:"toast"})};
+ const svc=new Shift(db,runtime,recovery,continuity,cutover);
+ let state=await svc.evaluate("o",["*"],"l1");assert.equal(state.decision,"GO_WITH_CONDITIONS");
+ state=await svc.setOperatorReadiness("o",["*"],"l1",{leadName:"Pilot Manager",briefingConfirmed:true,rollbackProcedureConfirmed:true,emergencyContactConfirmed:true},"admin");
+ assert.equal(state.decision,"GO");
+ const certified=await svc.certify("o",["*"],"l1",{shiftLabel:"Friday dinner"},"admin");assert.equal(certified.certification.decision,"GO");assert.equal(certified.certification.autonomousProductionChangesAllowed,false);
+ providerStable=false;state=await svc.evaluate("o",["*"],"l1");assert.equal(state.decision,"NO_GO");assert(state.hardBlockers.includes("providerContinuityNotStable"));
+ providerStable=true;critical=true;state=await svc.evaluate("o",["*"],"l1");assert.equal(state.decision,"NO_GO");assert(state.hardBlockers.includes("unresolvedCriticalIncident"));
+ critical=false;runtimeState="OPERATOR_HOLD";state=await svc.evaluate("o",["*"],"l1");assert.equal(state.decision,"GO_WITH_CONDITIONS");assert(state.conditions.includes("operatorHoldActive"));
+ console.log(JSON.stringify({ok:true,version:"80.75.0",goNoGoControl:true,operatorReadiness:true,providerContinuityGate:true,criticalIncidentNoGo:true,conditionalGo:true,humanCertification:true,automaticNoGoOverride:false,autonomousProductionChanges:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});
