@@ -16133,3 +16133,24 @@ body[data-web-launch-face="37"] [aria-disabled="true"]{
     font-size:36px;
   }
 }
+
+
+/* V74.50 — role-first operator focus */
+.operator-role-focus{max-width:1440px;margin:28px auto;padding:26px;border-radius:24px;background:#082b36;color:#fff;box-shadow:0 18px 48px rgba(3,22,29,.18)}
+.operator-role-focus-head{display:flex;align-items:flex-start;justify-content:space-between;gap:24px}
+.operator-role-focus h2{margin:.3rem 0 .45rem;color:#fff}
+.operator-role-focus p,.operator-role-focus small{color:#cfe9ef}
+.operator-role-focus label{display:grid;gap:7px;font-weight:800;color:#fff;min-width:190px}
+.operator-role-focus select{min-height:48px;border:1px solid rgba(255,255,255,.28);border-radius:14px;padding:0 14px;background:#fff;color:#082b36;font:inherit}
+.operator-role-focus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+.operator-role-focus-grid article{min-height:112px;padding:18px;border:1px solid rgba(255,255,255,.18);border-radius:18px;background:rgba(255,255,255,.07)}
+.operator-role-focus-grid strong{display:block;margin-top:9px;color:#fff;font-size:1.05rem;line-height:1.35}
+.operator-role-focus .button{min-height:48px}
+@media(max-width:760px){
+ .operator-role-focus{margin:18px 12px;padding:20px;border-radius:20px}
+ .operator-role-focus-head{display:grid}
+ .operator-role-focus label{width:100%}
+ .operator-role-focus-grid{grid-template-columns:1fr}
+ .operator-role-focus-grid article{min-height:auto}
+ .operator-role-focus .button{width:100%;min-height:52px}
+}

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="74.0.0">
+  <meta name="blue-current-build" content="74.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=74.0.0">
+  <link rel="stylesheet" href="styles.css?v=74.50.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -2262,7 +2262,23 @@
     </section>
 
 
-    <section class="hospitality-os-story" id="operating-current">
+    <section class="operator-role-focus reveal" id="operatorRoleFocus" aria-labelledby="operatorRoleFocusTitle">
+  <div class="operator-role-focus-head">
+    <div><small>V74.50 · OPERATOR FOCUS</small><h2 id="operatorRoleFocusTitle">Show me what matters for my role.</h2><p>Keep immediate service work visible. Push analysis and specialist controls behind the moment they are needed.</p></div>
+    <label>Working as
+      <select data-operator-role aria-label="Operator role">
+        <option value="host">Host</option><option value="server">Server</option><option value="kitchen">Kitchen</option><option value="manager" selected>Manager</option><option value="executive">Executive</option>
+      </select>
+    </label>
+  </div>
+  <div class="operator-role-focus-grid">
+    <article><small>NOW</small><strong data-focus-now>Exceptions requiring intervention</strong></article>
+    <article><small>NEXT</small><strong data-focus-next>Protect the next 30 minutes</strong></article>
+    <article><small>LATER</small><strong data-focus-later>Review shift performance</strong></article>
+  </div>
+  <button class="button button-gold" type="button" data-focus-open>Open Manager workspace</button>
+</section>
+<section class="hospitality-os-story" id="operating-current">
       <div class="container">
         <div class="os-story-heading reveal">
           <div>
@@ -9795,5 +9811,5 @@
     </form>
   </dialog>
 
-</body>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script></body>
 </html>
