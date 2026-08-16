@@ -83,6 +83,43 @@ function authOverlayOpen(){
   return document.getElementById("authOverlay")?.classList.contains("open")===true;
 }
 
+function openAuthFallback(message="Sign in to continue."){
+  const overlay=document.getElementById("authOverlay");
+  if(overlay)overlay.classList.add("open");
+  document.body.classList.add("auth-locked");
+  const msg=document.getElementById("authMessage");
+  if(msg){msg.textContent=message;msg.classList.add("error");}
+}
+
+function setCommandAccessState(mode,detail=""){
+  const panel=el("bcCommandAccessState");
+  if(!panel)return;
+
+  const title=el("bcCommandAccessTitle");
+  const copy=el("bcCommandAccessDetail");
+
+  if(mode==="ready"){
+    panel.hidden=true;
+    document.body.classList.remove("bc-command-auth-required","bc-command-transport-down");
+    return;
+  }
+
+  panel.hidden=false;
+
+  if(mode==="auth"){
+    document.body.classList.add("bc-command-auth-required");
+    document.body.classList.remove("bc-command-transport-down");
+    if(title)title.textContent="Sign in to load the operating picture.";
+    if(copy)copy.textContent=detail||"Your restaurant data is protected. Sign in to continue using Command.";
+    return;
+  }
+
+  document.body.classList.add("bc-command-transport-down");
+  document.body.classList.remove("bc-command-auth-required");
+  if(title)title.textContent="Blue Current is reconnecting.";
+  if(copy)copy.textContent=detail||"The local service is temporarily unavailable. Your interface remains available while the connection recovers.";
+}
+
 async function commandFetch(url,options={}){
   if(commandState.authRequired || authOverlayOpen()){
     const error=new Error("Sign in required.");
@@ -98,6 +135,8 @@ async function commandFetch(url,options={}){
   const response=await fetch(url,{credentials:"same-origin",...options});
   if(response.status===401){
     commandState.authRequired=true;
+    setCommandAccessState("auth","Your Blue Current session is missing or expired. Sign in to load protected restaurant data.");
+    openAuthFallback("Your session expired. Please sign in again.");
     window.dispatchEvent(new CustomEvent("bluecurrent:auth-session-expired",{
       detail:{reason:"Command session is unauthorized.",path:url}
     }));
@@ -107,6 +146,7 @@ async function commandFetch(url,options={}){
   }
   if(response.status===502 || response.status===503 || response.status===504){
     commandState.transportBackoffUntil=Date.now()+15000;
+    setCommandAccessState("transport","Blue Current cannot currently reach the local service. The interface remains available while it reconnects.");
     const error=new Error("Blue Current is temporarily disconnected from the local service.");
     error.code="UPSTREAM_UNAVAILABLE";
     throw error;
@@ -236,7 +276,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V78.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V78.50.1 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -487,8 +527,13 @@ async function loadPlaybooks(){
 }
 
 function renderCommandError(error){
+  if(error?.code==="AUTH_REQUIRED"){
+    setCommandAccessState("auth",error.message);
+  }else if(error?.code==="UPSTREAM_UNAVAILABLE"||error?.code==="TRANSPORT_BACKOFF"){
+    setCommandAccessState("transport",error.message);
+  }
   setText("bcCommandTruth",`Operating picture unavailable · ${error?.message||"Unable to load Blue Current data."}`);
-  renderAttention([{severity:"high",workspace:"system",title:"Operating picture unavailable",detail:"Open System and verify authentication, API health, and location access."}]);
+  renderAttention([{severity:"high",workspace:"system",title:"Operating picture unavailable",detail:"Sign in or verify API health and location access."}]);
 }
 
 async function refreshCommand(){
@@ -504,12 +549,61 @@ async function refreshCommand(){
     const payload=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(payload.error||`Operating picture returned ${response.status}.`);
     commandState.authRequired=false;
+    setCommandAccessState("ready");
     renderCommand(payload);
   }catch(error){
     renderCommandError(error);
   }finally{
     commandState.loading=false;
   }
+}
+
+function authenticatedAppState(){
+  try{return Boolean(window.appState?.get?.("authenticatedUser"));}catch{return false;}
+}
+
+function startCommandAfterAuth(){
+  const start=()=>{
+    commandState.authRequired=false;
+    commandState.transportBackoffUntil=0;
+    setCommandAccessState("ready");
+    refreshCommand();
+  };
+
+  const requireAuth=(reason="Sign in to load Blue Current Command.")=>{
+    commandState.authRequired=true;
+    setCommandAccessState("auth",reason);
+  };
+
+  if(authenticatedAppState()){
+    start();
+    return;
+  }
+
+  const bus=window.eventBus;
+  if(bus?.on){
+    bus.on("auth:restored",start);
+    bus.on("auth:signed-in",start);
+    bus.on("auth:organization-switched",()=>{
+      commandState.locationId=null;
+      start();
+    });
+    bus.on("auth:required",payload=>requireAuth(
+      payload?.reason==="anonymous"
+        ? "Sign in to load protected restaurant data."
+        : "Your Blue Current session needs to be restored."
+    ));
+    bus.on("auth:signed-out",()=>requireAuth("You are signed out. Sign in to load protected restaurant data."));
+  }
+
+  // Auth restoration is asynchronous. Do not race it with a protected Command GET.
+  window.setTimeout(()=>{
+    if(authenticatedAppState()){
+      start();
+    }else if(!commandState.lastLoadedAt){
+      requireAuth("Blue Current is waiting for an authenticated session before loading restaurant data.");
+    }
+  },1800);
 }
 
 function init(){
@@ -519,11 +613,14 @@ function init(){
   window.addEventListener("bluecurrent:auth-session-expired",()=>{commandState.authRequired=true;});
   document.addEventListener("click",event=>{
     if(event.target?.closest?.("#authLoginForm button[type='submit']")){
-      setTimeout(()=>{commandState.authRequired=false;commandState.transportBackoffUntil=0;refreshCommand();},900);
+      setCommandAccessState("auth","Signing in… Blue Current will load Command after authentication completes.");
     }
   });
   document.querySelectorAll("[data-bc-workspace]").forEach(button=>{
     button.addEventListener("click",()=>activate(button.dataset.bcWorkspace));
+  });
+  el("bcCommandSignIn")?.addEventListener("click",()=>{
+    openAuthFallback("Sign in to load Blue Current Command.");
   });
   el("bcAcknowledgeTop")?.addEventListener("click",acknowledgeTopPriority);
   el("bcCommandLocation")?.addEventListener("change",event=>{
@@ -531,8 +628,15 @@ function init(){
     refreshCommand();
   });
   hideDeepSurfaces();
-  refreshCommand();
-  setInterval(refreshCommand,30000);
+  const commandShell=document.getElementById("blueCurrentCommand");
+  if(commandShell && !window.location.hash){
+    window.scrollTo({top:0,left:0,behavior:"auto"});
+    commandShell.scrollIntoView({block:"start",behavior:"auto"});
+  }
+  startCommandAfterAuth();
+  setInterval(()=>{
+    if(!commandState.authRequired && authenticatedAppState())refreshCommand();
+  },30000);
   activate("command",{scroll:false});
 }
 

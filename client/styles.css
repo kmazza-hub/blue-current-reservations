@@ -16526,3 +16526,52 @@ body.bc-consolidated-product-surface:not(.bc-show-advanced) [data-development-on
 .bc-shift-memory small{color:#6fe2ce;font-size:.54rem;font-weight:900;letter-spacing:.1em}
 .bc-shift-memory strong{color:#f2fbfc;font-size:.69rem;line-height:1.42}
 .bc-shift-memory span{color:#88aab1;font-size:.58rem;line-height:1.45}
+
+
+/* V78.50.1 — Command blank-screen + authentication resilience */
+.bc-command-access-state{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:18px;
+  padding:15px 16px;
+  border:1px solid rgba(242,191,91,.28);
+  border-radius:14px;
+  background:linear-gradient(135deg,rgba(242,191,91,.11),rgba(255,255,255,.025));
+}
+.bc-command-access-state[hidden]{display:none!important}
+.bc-command-access-state>div{display:grid;gap:4px}
+.bc-command-access-state small{color:#f0c46d;font-size:.58rem;font-weight:900;letter-spacing:.1em}
+.bc-command-access-state strong{color:#fff;font-size:.88rem}
+.bc-command-access-state span{color:#b7ced4;font-size:.68rem;line-height:1.45}
+.bc-command-access-state button{
+  flex:0 0 auto;
+  min-height:42px;
+  padding:0 16px;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:10px;
+  background:#f4efe4;
+  color:#08212b;
+  font:inherit;
+  font-size:.72rem;
+  font-weight:900;
+  cursor:pointer;
+}
+body.bc-command-auth-required #blueCurrentCommand,
+body.bc-command-transport-down #blueCurrentCommand{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  min-height:100vh!important;
+}
+body.bc-command-auth-required .bc-os-command,
+body.bc-command-transport-down .bc-os-command{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+@media(max-width:620px){
+  .bc-command-access-state{align-items:flex-start;flex-direction:column}
+  .bc-command-access-state button{width:100%}
+}
