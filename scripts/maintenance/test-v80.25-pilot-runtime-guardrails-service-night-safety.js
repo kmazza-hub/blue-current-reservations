@@ -1,0 +1,22 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Guardrails=require(path.join(root,"server/services/pilotRuntimeGuardrailService"));
+(async()=>{
+ assert.equal(pkg.version,"80.25.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
+ assert(router.includes("/api/pilot/runtime-safety/emergency-local"));assert(router.includes("/api/pilot/runtime-safety/incidents"));assert(server.includes("PilotRuntimeGuardrailService"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8025-")),dbPath=path.join(dir,"db.json");fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"l1",organizationId:"o",name:"Friday Pilot"}],pilotRuntimeIncidents:[]}));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ let providerAuthority=true,stable=true,rollbackCount=0;
+ const cutover={status:async()=>({mode:providerAuthority?"PROVIDER_AUTHORITY":"LOCAL_AUTHORITY",provider:"toast"}),rollback:async()=>{providerAuthority=false;rollbackCount++;return {mode:"LOCAL_AUTHORITY"};}};
+ const continuity={evaluate:async()=>({decision:stable?"CONTINUOUS":"DEGRADED",providers:[{provider:"toast",continuity:stable?"STABLE":"DEGRADED",fallback:stable?"TRUSTED_LIVE":"DEGRADED_LOCAL_FALLBACK"}]})};
+ const svc=new Guardrails(db,cutover,continuity);
+ let state=await svc.evaluate("o",["*"],"l1");assert.equal(state.state,"NORMAL");assert.equal(state.controls.externalWritesAllowed,true);assert.equal(state.controls.autonomousProductionChangesAllowed,false);
+ stable=false;state=await svc.evaluate("o",["*"],"l1");assert.equal(state.state,"DEGRADED");assert.equal(state.action,"ROLLBACK_RECOMMENDED");assert.equal(state.controls.externalWritesAllowed,false);
+ stable=true;state=await svc.setHold("o",["*"],"l1",true,"manager","busy service");assert.equal(state.state,"OPERATOR_HOLD");assert.equal(state.controls.externalWritesAllowed,false);
+ await svc.setHold("o",["*"],"l1",false,"manager","clear");
+ const critical=await svc.recordIncident("o",["*"],"l1",{severity:"CRITICAL",type:"provider-mismatch",summary:"Provider totals diverged"},"manager");
+ assert.equal(critical.runtime.state,"EMERGENCY_LOCAL");assert.equal(critical.runtime.cutoverMode,"LOCAL_AUTHORITY");assert.equal(rollbackCount,1);assert.equal(critical.runtime.controls.localOperationsAvailable,true);
+ assert.equal(critical.runtime.policy.humanInTheLoopRequired,true);assert.equal(critical.runtime.policy.noDestructiveAutomation,true);assert.equal(critical.runtime.policy.recoveryRequiresHumanClearance,true);
+ console.log(JSON.stringify({ok:true,version:"80.25.0",serviceNightGuardrails:true,continuityDegradeBlocksWrites:true,operatorHold:true,criticalIncidentForcesLocal:true,providerRollback:true,localOperationsRemainAvailable:true,autonomousProductionChanges:false,destructiveAutomation:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});
