@@ -19,7 +19,7 @@ const labels={
  integrations:"Integrations",system:"System"
 };
 
-let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,authRequired:false,transportBackoffUntil:0};
+let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,playbooksLoading:false,authRequired:false,transportBackoffUntil:0};
 
 function directSection(node){
   while(node&&node.parentElement&&node.parentElement.id!=="main")node=node.parentElement;
@@ -232,9 +232,10 @@ function renderCommand(data){
   buildIntelligence(data);
   loadManagerActions();
   loadOutcomeLearning();
+  loadPlaybooks();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V77.50.1 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V78.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -367,6 +368,66 @@ async function loadOutcomeLearning(){
     if(root)root.textContent=`Outcome learning unavailable · ${error.message}`;
   }finally{
     commandState.outcomesLoading=false;
+  }
+}
+
+
+function renderPlaybooks(summary={}){
+  const root=el("bcPlaybookSummary");
+  if(!root)return;
+  const items=summary.playbooks||[];
+  const c=summary.counts||{};
+  setText("bcPlaybookCount",items.length
+    ? `${c.evidenceBacked||0} evidence-backed · ${c.promising||0} promising`
+    : "No evidence yet");
+  root.replaceChildren();
+
+  if(!items.length){
+    const p=document.createElement("p");
+    p.textContent="No repeated verified intervention pattern exists yet. Blue Current will not invent a playbook from insufficient evidence.";
+    root.append(p);
+    return;
+  }
+
+  items.slice(0,3).forEach(item=>{
+    const row=document.createElement("article");
+    row.className="bc-playbook-row";
+
+    const head=document.createElement("div");
+    const title=document.createElement("strong");
+    title.textContent=item.recommendation||`${item.domain} intervention`;
+    const badge=document.createElement("span");
+    badge.textContent=item.guidanceStatus.replaceAll("_"," ");
+    head.append(title,badge);
+
+    const evidence=document.createElement("small");
+    evidence.textContent=`${item.sampleSize} observed outcome${item.sampleSize===1?"":"s"} · ${item.improvedRate}% improved · ${item.confidence.label} confidence`;
+
+    const caution=document.createElement("small");
+    caution.className="bc-playbook-caution";
+    caution.textContent="Observed association only · manager review required.";
+
+    row.append(head,evidence,caution);
+    root.append(row);
+  });
+}
+
+async function loadPlaybooks(){
+  if(commandState.playbooksLoading)return;
+  commandState.playbooksLoading=true;
+  try{
+    const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
+    const response=await commandFetch(`/api/command/playbooks${query}`,{
+      method:"GET",headers:{"Accept":"application/json"}
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Command playbooks returned ${response.status}.`);
+    renderPlaybooks(payload);
+  }catch(error){
+    const root=el("bcPlaybookSummary");
+    if(root)root.textContent=`Playbook intelligence unavailable · ${error.message}`;
+  }finally{
+    commandState.playbooksLoading=false;
   }
 }
 

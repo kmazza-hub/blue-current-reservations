@@ -16483,3 +16483,19 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
     height:40px!important;
   }
 }
+
+
+/* V78.0 — intervention effectiveness + playbook intelligence */
+.bc-playbook-intelligence{margin:0 20px 18px;border:1px solid rgba(108,222,203,.13);border-radius:12px;background:rgba(5,28,34,.38);overflow:hidden}
+.bc-playbook-intelligence>header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.06)}
+.bc-playbook-intelligence>header small{color:#67ddc8;font-size:.57rem;font-weight:900;letter-spacing:.1em}
+.bc-playbook-intelligence>header strong{color:#cae8e2;font-size:.62rem}
+#bcPlaybookSummary{padding:10px 12px;color:#8daeb5;font-size:.64rem}
+#bcPlaybookSummary>p{margin:0;line-height:1.45}
+.bc-playbook-row{display:grid;gap:5px;padding:9px 0;border-top:1px solid rgba(255,255,255,.055)}
+.bc-playbook-row:first-child{border-top:0}
+.bc-playbook-row>div{display:flex;justify-content:space-between;align-items:flex-start;gap:9px}
+.bc-playbook-row strong{color:#edf9fb;font-size:.67rem;line-height:1.35}
+.bc-playbook-row span{flex:0 0 auto;padding:3px 6px;border-radius:6px;background:rgba(103,221,200,.09);color:#70e1cd;font-size:.49rem;font-weight:900;letter-spacing:.05em}
+.bc-playbook-row small{color:#7f9fa7;font-size:.57rem}
+.bc-playbook-caution{color:#719198!important;font-style:italic}

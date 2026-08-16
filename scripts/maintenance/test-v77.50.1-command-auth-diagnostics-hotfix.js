@@ -7,10 +7,10 @@ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
 const diagnostics=fs.readFileSync(path.join(root,"client/js/modules/startupDiagnostics.js"),"utf8");
 
-assert.equal(pkg.version,"77.50.1");
-assert(html.includes("Blue Current V77.50.1"));
-assert(html.includes("styles.css?v=77.50.1"));
-assert(html.includes("hospitalityOsShell.js?v=77.50.1"));
+assert(Number(pkg.version.split(".")[0]) >= 77);
+assert(html.includes("Blue Current V78.0")||html.includes("Blue Current V77.50.1"));
+assert(html.includes(`styles.css?v=${pkg.version}`));
+assert(html.includes(`hospitalityOsShell.js?v=${pkg.version}`));
 
 assert(css.includes("V77.50.1 — diagnostics dock"));
 assert(css.includes("top:96px!important"));
@@ -29,7 +29,7 @@ assert(shell.includes("commandFetch(`/api/command/operating-picture"));
 assert(shell.includes("commandFetch(`/api/command/actions"));
 assert(shell.includes("commandFetch(`/api/command/outcomes"));
 
-assert(diagnostics.includes('const BUILD = "77.50.1"'));
+assert(/const BUILD = "\d+\.\d+\.\d+"/.test(diagnostics));
 assert(diagnostics.includes("Boolean(api && api.version)"));
 assert(!diagnostics.includes("api?.version === BUILD"));
 
