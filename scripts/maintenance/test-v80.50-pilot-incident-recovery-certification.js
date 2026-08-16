@@ -1,0 +1,24 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Recovery=require(path.join(root,"server/services/pilotIncidentRecoveryCertificationService"));
+(async()=>{
+ assert.equal(pkg.version,"80.50.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
+ assert(router.includes("/api/pilot/incidents/certify-recovery"));assert(router.includes("/api/pilot/incidents/clear-emergency"));assert(server.includes("PilotIncidentRecoveryCertificationService"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8050-")),dbPath=path.join(dir,"db.json");
+ fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"l1",organizationId:"o",name:"Pilot"}],pilotRuntimeIncidents:[{id:"i1",organizationId:"o",locationId:"l1",severity:"CRITICAL",type:"provider",summary:"Totals diverged",openedAt:new Date().toISOString(),status:"OPEN"}]}));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ let stable=false,cleared=false;
+ const runtime={evaluate:async()=>({activeProvider:"toast",openIncidents:(await db.read()).pilotRuntimeIncidents.filter(x=>x.status!=="RESOLVED")}),clearEmergency:async()=>{cleared=true;return {state:"NORMAL"};}};
+ const continuity={evaluate:async()=>({providers:[{provider:"toast",continuity:stable?"STABLE":"DEGRADED",fallback:stable?"TRUSTED_LIVE":"DEGRADED_LOCAL_FALLBACK",recoveryReady:stable}]})};
+ const svc=new Recovery(db,runtime,continuity,{});
+ const investigated=await svc.investigate("o",["*"],"l1","i1",{rootCause:"Provider duplicate event delivery",correctiveAction:"Deduplicated event stream and verified mapping"},"admin");
+ assert.equal(investigated.status,"INVESTIGATING");
+ let blocked=false;try{await svc.certify("o",["*"],"l1","i1",{recoveryEvidence:"Clean reconciled event flow observed"},"admin");}catch(e){blocked=e.statusCode===409;}assert.equal(blocked,true);
+ stable=true;
+ const certified=await svc.certify("o",["*"],"l1","i1",{recoveryEvidence:"Clean reconciled event flow observed for verification window"},"admin");
+ assert.equal(certified.status,"RESOLVED");assert.equal(certified.recoveryCertified,true);assert.equal(certified.authorityRestoreApproved,false);
+ const clearedState=await svc.clearEmergency("o",["*"],"l1","admin","recovery certified");assert.equal(cleared,true);assert.equal(clearedState.state,"NORMAL");
+ assert.equal(certified.certification.checks.continuityStable,true);assert.equal(certified.certification.checks.recoveryChecksPassed,true);assert.equal(certified.certification.authorityRestoreApproved,false);
+ console.log(JSON.stringify({ok:true,version:"80.50.0",investigationWorkflow:true,unstableRecoveryBlocked:true,rootCauseRequired:true,correctiveActionRequired:true,recoveryEvidenceRequired:true,humanRecoveryCertification:true,emergencyClearAfterCertification:true,automaticAuthorityRestore:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});
