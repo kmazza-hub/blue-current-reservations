@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "74.50.0",
+  "version": "75.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 role-first operator workflow and UX certification",
+  "description": "Blue Current Hospitality OS \u2014 universal hospitality integration contract and provider adapter framework",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

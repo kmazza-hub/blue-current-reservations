@@ -124,7 +124,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService, persistenceMigrationReadinessService, persistenceSchemaMappingService, persistenceMigrationVerificationService, persistenceCutoverFrameworkService, persistenceBackfillService, migrationShadowStore, persistenceShadowExecutionService, persistenceReplicationCoordinatorService, operationalDataIntegrityService, restaurantWorkflowCertificationService, liveShiftFailureCertificationService, pilotReadinessCommandCenterService, operatorWorkflowCertificationService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService, persistenceMigrationReadinessService, persistenceSchemaMappingService, persistenceMigrationVerificationService, persistenceCutoverFrameworkService, persistenceBackfillService, migrationShadowStore, persistenceShadowExecutionService, persistenceReplicationCoordinatorService, operationalDataIntegrityService, restaurantWorkflowCertificationService, liveShiftFailureCertificationService, pilotReadinessCommandCenterService, operatorWorkflowCertificationService, universalHospitalityIntegrationService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -401,6 +401,60 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Operational data integrity diagnostics require write permission." });
       }
       return sendJson(response, 200, await operationalDataIntegrityService.certify());
+    }
+
+    if (url.pathname === "/api/system/integration-contract" && request.method === "GET") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
+        return sendJson(response,403,{error:"Integration contract diagnostics require write permission."});
+      }
+      return sendJson(response,200,{
+        version:"75.0.0",
+        providers:universalHospitalityIntegrationService.providers(),
+        capabilities:universalHospitalityIntegrationService.capabilities(),
+        contracts:universalHospitalityIntegrationService.contracts()
+      });
+    }
+
+    if (url.pathname === "/api/system/integration-health" && request.method === "GET") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
+        return sendJson(response,403,{error:"Integration health diagnostics require write permission."});
+      }
+      return sendJson(response,200,await universalHospitalityIntegrationService.health(organizationId));
+    }
+
+    if (url.pathname === "/api/system/integration-mappings" && request.method === "GET") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
+        return sendJson(response,403,{error:"Integration mappings require write permission."});
+      }
+      return sendJson(response,200,{mappings:await universalHospitalityIntegrationService.mappings(organizationId)});
+    }
+
+    if (url.pathname === "/api/system/integration-mappings" && request.method === "POST") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response,403,{error:"Integration mapping changes require admin permission."});
+      }
+      const body=await readJson(request);
+      const mapping=await universalHospitalityIntegrationService.saveMapping(organizationId,auth.user.name,body);
+      return sendJson(response,200,{ok:true,mapping});
+    }
+
+    if (url.pathname === "/api/system/integration-preview" && request.method === "POST") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
+        return sendJson(response,403,{error:"Integration preview requires write permission."});
+      }
+      const body=await readJson(request);
+      return sendJson(response,200,await universalHospitalityIntegrationService.preview(body.provider,body.event||{}));
+    }
+
+    if (url.pathname === "/api/system/integration-ingest" && request.method === "POST") {
+      if (!authService.can(auth,"admin")) {
+        return sendJson(response,403,{error:"Integration ingestion requires admin permission."});
+      }
+      const body=await readJson(request);
+      const event=await universalHospitalityIntegrationService.ingest(
+        organizationId,auth.user.name,body.provider,body.event||{}
+      );
+      return sendJson(response,event.duplicate?200:201,{ok:true,event});
     }
 
     if (url.pathname === "/api/system/operator-workflow-certification" && request.method === "GET") {
