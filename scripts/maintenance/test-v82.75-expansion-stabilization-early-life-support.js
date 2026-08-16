@@ -3,7 +3,7 @@ const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("p
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Stabilization=require(path.join(root,"server/services/expansionStabilizationSupportControlService"));
 
 (async()=>{
- assert.equal(pkg.version,"82.75.0");
+ assert(Number(pkg.version.split(".")[0]) >= 82);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
  assert(router.includes("/api/expansion/stabilization/graduate"));
  assert(router.includes("/api/expansion/stabilization/incidents"));
