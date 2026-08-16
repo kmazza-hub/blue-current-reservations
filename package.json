@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "69.50.0",
+  "version": "70.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 authentication lifecycle, session revocation, and organization isolation hardening",
+  "description": "Blue Current Hospitality OS \u2014 production configuration, secrets integrity, and deployment readiness",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

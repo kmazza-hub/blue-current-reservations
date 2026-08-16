@@ -101,6 +101,7 @@ const FinalHardeningRealEnvironmentService = require("./services/finalHardeningR
 const ProductionLaunchCertificationService = require("./services/productionLaunchCertificationService");
 const ProductionMutationIntegrityService = require("./services/productionMutationIntegrityService");
 const ProductionBoundaryService = require("./services/productionBoundaryService");
+const ProductionConfigurationService = require("./services/productionConfigurationService");
 const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -115,6 +116,7 @@ const idempotencyService = new IdempotencyService(database);
 const syncReconciliationService = new SyncReconciliationService(database, auditService, realtimeHub);
 const productionMutationIntegrityService = new ProductionMutationIntegrityService(database);
 const productionBoundaryService = new ProductionBoundaryService();
+const productionConfigurationService = new ProductionConfigurationService({ root: ROOT, databasePath: DB_PATH, port: PORT });
 const telemetryService = new TelemetryService(database, realtimeHub);
 const reliabilityAutomationService = new ReliabilityAutomationService(database, telemetryService, auditService, realtimeHub);
 const reservationService = new ReservationService(database, auditService, realtimeHub);
@@ -204,7 +206,7 @@ const pilotLiveServiceAcceptanceService = new PilotLiveServiceAcceptanceService(
 const finalProductReleaseCandidateService = new FinalProductReleaseCandidateService(database, auditService, realtimeHub, pilotLiveServiceAcceptanceService, pilotCloseoutOutcomeService, pilotReleaseCandidateCertificationService);
 const finalHardeningRealEnvironmentService = new FinalHardeningRealEnvironmentService(database, auditService, realtimeHub, finalProductReleaseCandidateService);
 const productionLaunchCertificationService = new ProductionLaunchCertificationService(database, auditService, realtimeHub, finalHardeningRealEnvironmentService, productionOperationsHandoffService, pilotLaunchControlService);
-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService });
+const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService });
 
 const MIME = {
   ".html": "text/html; charset=utf-8",
@@ -353,9 +355,28 @@ async function bootstrap() {
   const sessionCleanup = await authService.cleanupSessions();
 
   const backupVerification = await database.verifyBackups();
+  const deploymentReadiness = await productionConfigurationService.assertReady(database);
+
   if (!backupVerification.ok) {
+    if (productionConfigurationService.mode === "production") {
+      const error = new Error("Production startup requires at least one verified recovery backup.");
+      error.code = "VERIFIED_BACKUP_REQUIRED";
+      throw error;
+    }
     console.warn("[startup] No verified recovery backup is currently available.");
   }
+
+  if (
+    productionConfigurationService.mode === "production" &&
+    mutationRecovery.reconcileRequired > 0
+  ) {
+    const error = new Error(
+      `Production startup blocked: ${mutationRecovery.reconcileRequired} mutation(s) require reconciliation.`
+    );
+    error.code = "MUTATION_RECONCILIATION_REQUIRED";
+    throw error;
+  }
+
   if (mutationRecovery.recovered > 0) {
     console.warn(
       `[startup] Reconciled ${mutationRecovery.recovered} unfinished mutation(s): ` +
@@ -373,8 +394,57 @@ async function bootstrap() {
     console.log(`Database: ${DB_PATH}`);
     console.log(`Verified recovery backup: ${backupVerification.ok ? "available" : "unavailable"}`);
     console.log(`Session cleanup: ${sessionCleanup.removed} removed, ${sessionCleanup.after} retained`);
+    console.log(
+      `Deployment readiness: ${deploymentReadiness.ready ? "ready" : "not-ready"} ` +
+      `(${deploymentReadiness.mode}, ${deploymentReadiness.errors} errors, ${deploymentReadiness.warnings} warnings)`
+    );
   });
 }
+
+let shutdownStarted = false;
+
+async function gracefulShutdown(signal) {
+  if (shutdownStarted) return;
+  shutdownStarted = true;
+
+  console.log(`[shutdown] ${signal} received; draining Blue Current.`);
+
+  const closeServer = new Promise(resolve => {
+    if (!server.listening) return resolve();
+    const timer = setTimeout(() => resolve(), 10_000);
+    timer.unref?.();
+    server.close(() => {
+      clearTimeout(timer);
+      resolve();
+    });
+  });
+
+  await closeServer;
+
+  const idle = await database.awaitIdle();
+  if (!idle.ok) {
+    console.error(`[shutdown] Database queue did not drain cleanly: ${idle.message || idle.error}`);
+    process.exitCode = 1;
+  }
+
+  const backup = await database.checkpointBackup("graceful-shutdown").catch(error => ({
+    ok: false,
+    error: error.message
+  }));
+  if (!backup.ok) {
+    console.error(`[shutdown] Final recovery checkpoint failed: ${backup.error || backup.reason || "unknown"}`);
+    process.exitCode = 1;
+  }
+
+  console.log("[shutdown] Blue Current shutdown complete.");
+}
+
+process.once("SIGINT", () => {
+  gracefulShutdown("SIGINT").finally(() => process.exit(process.exitCode || 0));
+});
+process.once("SIGTERM", () => {
+  gracefulShutdown("SIGTERM").finally(() => process.exit(process.exitCode || 0));
+});
 
 bootstrap().catch(error => {
   console.error("[startup] Blue Current failed recovery/readiness bootstrap:", error);

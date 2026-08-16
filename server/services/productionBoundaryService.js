@@ -122,15 +122,21 @@ class ProductionBoundaryService {
 
     const configured = String(process.env.BLUE_CURRENT_ALLOWED_ORIGINS || "")
       .split(",").map(value => value.trim()).filter(Boolean);
-
     if (configured.includes(origin)) return origin;
 
-    try {
-      const url = new URL(origin);
-      if (url.hostname === "localhost" || url.hostname === "127.0.0.1") return origin;
-      if (url.hostname === "bluecurrentco.com" || url.hostname.endsWith(".bluecurrentco.com")) return origin;
-      if (url.hostname.endsWith(".trycloudflare.com")) return origin;
-    } catch {}
+    const mode = String(process.env.BLUE_CURRENT_ENV || process.env.NODE_ENV || "development")
+      .trim().toLowerCase();
+
+    // Production browser origins are explicit-only. Development/staging retain
+    // localhost and temporary Cloudflare convenience without weakening production.
+    if (mode !== "production") {
+      try {
+        const url = new URL(origin);
+        if (url.hostname === "localhost" || url.hostname === "127.0.0.1") return origin;
+        if (url.hostname === "bluecurrentco.com" || url.hostname.endsWith(".bluecurrentco.com")) return origin;
+        if (url.hostname.endsWith(".trycloudflare.com")) return origin;
+      } catch {}
+    }
 
     this.counters.badOrigin += 1;
     return false;

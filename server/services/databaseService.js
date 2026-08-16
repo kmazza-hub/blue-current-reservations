@@ -273,6 +273,20 @@ class DatabaseService {
     };
   }
 
+  async awaitIdle() {
+    try {
+      await this.queue;
+      return { ok: true, at: new Date().toISOString() };
+    } catch (error) {
+      return {
+        ok: false,
+        at: new Date().toISOString(),
+        error: error.code || error.name || "DATABASE_QUEUE_ERROR",
+        message: String(error.message || error)
+      };
+    }
+  }
+
   _enqueue(operation) {
     // A failed persistence operation must not poison every later database mutation.
     const run = () => Promise.resolve().then(operation);

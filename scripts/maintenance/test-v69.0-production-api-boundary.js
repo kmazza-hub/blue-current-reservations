@@ -32,7 +32,7 @@ function request({method="GET",url="/api/health",headers={},ip="127.0.0.1"}={}) 
   assert(router.includes("/api/system/security-boundary"));
   assert(router.includes("X-RateLimit-Limit"));
   assert(router.includes("PAYLOAD_TOO_LARGE"));
-  assert(/V69(?:\.\d+){2} ready/.test(startup));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
   assert(html.includes(`content="${pkg.version}"`));
 
   const boundary=new ProductionBoundaryService({

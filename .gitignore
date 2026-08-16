@@ -2,3 +2,19 @@
 # Blue Current runtime database artifacts
 database/data/blue-current.json.*.tmp
 database/data/blue-current.json.bak
+
+# Local environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Blue Current runtime database recovery artifacts
+database/data/*.bak
+database/data/*.bak.prev
+database/data/*.meta.json
+database/data/*.corrupt.*.json
+database/data/*.tmp

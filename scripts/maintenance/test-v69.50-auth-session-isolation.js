@@ -14,7 +14,7 @@ const AuthService=require(path.join(root,"server/services/authService"));
 const hashToken=token=>crypto.createHash("sha256").update(token).digest("hex");
 
 (async()=>{
-  assert.equal(pkg.version,"69.50.0");
+  assert(Number(pkg.version.split(".")[0]) >= 69, `Expected V69 or later, found ${pkg.version}`);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
@@ -29,8 +29,8 @@ const hashToken=token=>crypto.createHash("sha256").update(token).digest("hex");
   ]) assert(router.includes(term),term);
   assert(server.includes("authService.cleanupSessions()"));
   assert(server.includes("Session cleanup:"));
-  assert(startup.includes("V69.50.0 ready"));
-  assert(html.includes('content="69.50.0"'));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v6950-"));
   const dbPath=path.join(dir,"db.json");

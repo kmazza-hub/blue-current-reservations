@@ -23,7 +23,7 @@ const ProductionMutationIntegrityService = require(path.join(root, "server/servi
   assert(server.includes('checkpointBackup("startup-verified-primary")'));
   assert(server.includes('recoverStalePrepared({ force: true })'));
   assert(server.includes('Verified recovery backup:'));
-  assert(/V(?:68|69)(?:\.\d+){2} ready/.test(startup));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
   assert(html.includes(`content="${pkg.version}"`));
 
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bc-v6850-"));

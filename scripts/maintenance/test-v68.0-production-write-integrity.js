@@ -29,7 +29,7 @@ const ProductionMutationIntegrityService=require(path.join(root,"server/services
   assert(router.includes('WRITE_FINALIZATION_FAILED'));
   assert(server.includes('ProductionMutationIntegrityService'));
   assert(server.includes('productionMutationIntegrityService'));
-  assert(/V(?:68|69)(?:\.\d+){2} ready/.test(startup));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
   assert(html.includes(`content="${pkg.version}"`));
 
   // The late V59-style write middleware must be gone: only one writeMethods declaration.
