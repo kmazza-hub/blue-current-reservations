@@ -1,10 +1,11 @@
 "use strict";
 
 class CommandDataSourceTruthService{
-  constructor(database,universalIntegrationService,providerConnectionReadinessService=null){
+  constructor(database,universalIntegrationService,providerConnectionReadinessService=null,providerDataReconciliationService=null){
     this.database=database;
     this.integrations=universalIntegrationService;
     this.providerReadiness=providerConnectionReadinessService;
+    this.providerReconciliation=providerDataReconciliationService;
   }
   now(){return new Date().toISOString();}
   ageMinutes(timestamp){
@@ -81,8 +82,10 @@ class CommandDataSourceTruthService{
       ? await this.providerReadiness.evaluate(organizationId,allowedLocationIds,locationId)
       : null;
 
+    const providerReconciliation=this.providerReconciliation?await this.providerReconciliation.evaluate(organizationId,allowedLocationIds,locationId):null;
+
     return {
-      version:"79.25.0",
+      version:"79.50.0",
       generatedAt:this.now(),
       organizationId,
       location:{id:location.id,name:location.name},
@@ -90,6 +93,7 @@ class CommandDataSourceTruthService{
       domains:sourceDomains,
       providers,
       providerReadiness,
+      providerReconciliation,
       summary:{
         connectedProviders:connected.length,
         liveDecisionDomains,
@@ -104,7 +108,9 @@ class CommandDataSourceTruthService{
         localSeedDataMustBeDisclosed:true,
         noClaimOfLiveToastConnectionWithoutEvidence:true,
         adapterPresenceAloneIsNotReadiness:true,
-        providerReadinessMustBeExplicit:true
+        providerReadinessMustBeExplicit:true,
+        reconciliationRequiredForTrustedLive:true,
+        providerReadinessDoesNotEqualTrustedLive:true
       }
     };
   }

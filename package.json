@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "79.25.0",
+  "version": "79.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 provider connection readiness and live integration gate",
+  "description": "Blue Current Hospitality OS \u2014 provider reconciliation and data confidence",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
