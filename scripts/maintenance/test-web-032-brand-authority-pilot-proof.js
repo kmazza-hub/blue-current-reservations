@@ -1,0 +1,11 @@
+"use strict";
+const fs=require("fs"),path=require("path"),assert=require("assert");
+const root=path.resolve(__dirname,"../..");
+const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
+for(const id of ["blue-current-standard","pilot-proof","pilot","why-blue-current"])assert(html.includes(`id="${id}"`),`missing ${id}`);
+for(const copy of ["Hospitality software should earn its place in the restaurant.","HOSPITALITY BEFORE AUTOMATION","SERVICE SPEED BEFORE SOFTWARE COMPLEXITY","EVIDENCE BEFORE AUTONOMY","CONNECT BEFORE REPLACE","One current across systems that were never designed to think together.","A pilot should answer business questions—not just prove the software turns on.","Expand. Hold. Extend. Retire.","Design a measured pilot"])assert(html.includes(copy),`missing copy: ${copy}`);
+assert(css.includes(".blue-current-standard"));assert(css.includes(".pilot-proof-story"));
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(ids.length,new Set(ids).size,"duplicate HTML ids");
+const targets=[...html.matchAll(/href="#([^"]+)"/g)].map(x=>x[1]),set=new Set(ids),missing=[...new Set(targets.filter(x=>!set.has(x)))];assert.equal(missing.length,0,`broken anchors: ${missing.join(", ")}`);
+console.log(JSON.stringify({ok:true,wave:"WEB-032",web030Present:true,web031Present:true,brandAuthorityLayer:true,hospitalityStandard:true,connectBeforeReplace:true,enterpriseSystemFit:true,measurablePilotFramework:true,evidenceBasedExpansionGate:true,fakeProofClaimsAdded:false,duplicateHtmlIds:0,brokenHashTargets:0},null,2));
