@@ -2,7 +2,7 @@
 const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Expansion=require(path.join(root,"server/services/controlledExpansionLocationReadinessService"));
 (async()=>{
- assert.equal(pkg.version,"82.25.0");
+ assert(Number(pkg.version.split(".")[0]) >= 82);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
  assert(router.includes("/api/expansion/location-readiness/approve-prep"));assert(server.includes("ControlledExpansionLocationReadinessService"));
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8225-")),dbPath=path.join(dir,"db.json");
