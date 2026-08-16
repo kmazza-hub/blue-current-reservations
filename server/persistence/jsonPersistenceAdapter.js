@@ -27,7 +27,9 @@ class JsonPersistenceAdapter {
   list(collection, predicate) { return this.database.list(collection, predicate); }
   get(collection, id) { return this.database.get(collection, id); }
   create(collection, entity) { return this.database.create(collection, entity); }
+  insert(collection, entity) { return this.database.insert(collection, entity); }
   update(collection, id, patch) { return this.database.update(collection, id, patch); }
+  delete(collection, id) { return this.database.delete(collection, id); }
   diagnostics() {
     return {
       driver: this.driver,

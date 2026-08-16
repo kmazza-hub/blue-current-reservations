@@ -71,12 +71,58 @@ class InventoryIntelligenceService {
     return record;
   }
   async createPurchaseOrder(input,actor,organizationId){
-    const order={id:`po_${Date.now()}`,organizationId,locationId:input.locationId||"loc_marina",vendorId:input.vendorId,status:"draft",items:Array.isArray(input.items)?input.items:[],total:Number(input.total||0),createdAt:new Date().toISOString(),createdBy:actor};
+    const locationId=input.locationId||"loc_marina";
+    const location=await this.database.get("locations",locationId);
+    if(!location || location.organizationId!==organizationId){
+      const error=new Error("Location is not available to this organization.");
+      error.statusCode=404;
+      throw error;
+    }
+
+    const vendor=input.vendorId ? await this.database.get("vendors",input.vendorId) : null;
+    if(input.vendorId && (!vendor || vendor.organizationId!==organizationId)){
+      const error=new Error("Vendor is not available to this organization.");
+      error.statusCode=400;
+      throw error;
+    }
+
+    const items=Array.isArray(input.items)?input.items:[];
+    const safeItems=[];
+    for(const line of items){
+      const item=line.inventoryId ? await this.database.get("inventoryItems",line.inventoryId) : null;
+      if(line.inventoryId && (!item || item.organizationId!==organizationId || item.locationId!==locationId)){
+        const error=new Error(`Inventory item ${line.inventoryId} is not available at this location.`);
+        error.statusCode=400;
+        throw error;
+      }
+      const quantity=Number(line.quantity||0);
+      if(quantity<0){
+        const error=new Error("Purchase quantity cannot be negative.");
+        error.statusCode=400;
+        throw error;
+      }
+      safeItems.push({...line,quantity});
+    }
+
+    const order={
+      id:`po_${Date.now()}`,
+      organizationId,
+      locationId,
+      vendorId:input.vendorId,
+      status:"draft",
+      items:safeItems,
+      total:Number(input.total||0),
+      createdAt:new Date().toISOString(),
+      createdBy:actor
+    };
     await this.database.insert("purchaseOrders",order);
-    await this.auditService.record({organizationId,actor,action:`Draft purchase order created: ${order.id}`,category:"inventory"});
+    await this.auditService.record({
+      organizationId,actor,action:`Draft purchase order created: ${order.id}`,category:"inventory"
+    });
     this.realtimeHub.publish("inventory:purchase-order-created",order);
     return order;
   }
+
   async updatePolicy(locationId,input,actor,organizationId){
     let result;
     await this.database.mutate(db=>{db.inventoryPolicies||=[];let policy=db.inventoryPolicies.find(x=>x.organizationId===organizationId&&x.locationId===locationId);if(!policy){policy={id:`policy_${locationId}`,organizationId,locationId};db.inventoryPolicies.push(policy);}Object.assign(policy,{targetFoodCostPercent:Number(input.targetFoodCostPercent??policy.targetFoodCostPercent??29),criticalDaysRemaining:Number(input.criticalDaysRemaining??policy.criticalDaysRemaining??1.5),autoDraftOrders:input.autoDraftOrders===undefined?Boolean(policy.autoDraftOrders):Boolean(input.autoDraftOrders),updatedAt:new Date().toISOString()});result=policy;return policy;});

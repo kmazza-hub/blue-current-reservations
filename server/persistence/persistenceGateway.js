@@ -30,7 +30,9 @@ class PersistenceGateway {
   list(collection, predicate) { return this.adapter.list(collection, predicate); }
   get(collection, id) { return this.adapter.get(collection, id); }
   create(collection, entity) { return this.adapter.create(collection, entity); }
+  insert(collection, entity) { return this.adapter.insert(collection, entity); }
   update(collection, id, patch) { return this.adapter.update(collection, id, patch); }
+  delete(collection, id) { return this.adapter.delete(collection, id); }
   awaitIdle() { return this.adapter.awaitIdle(); }
   checkpointBackup(source) { return this.adapter.checkpointBackup(source); }
   verifyBackups() { return this.adapter.verifyBackups(); }

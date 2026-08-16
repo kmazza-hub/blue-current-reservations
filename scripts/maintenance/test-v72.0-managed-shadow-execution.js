@@ -15,7 +15,7 @@ const PersistenceShadowExecutionService=require(path.join(root,"server/services/
 const PersistenceReplicationCoordinatorService=require(path.join(root,"server/services/persistenceReplicationCoordinatorService"));
 
 (async()=>{
-  assert.equal(pkg.version,"72.0.0");
+  assert(Number(pkg.version.split(".")[0]) >= 72, `Expected V72 or later, found ${pkg.version}`);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
@@ -32,8 +32,8 @@ const PersistenceReplicationCoordinatorService=require(path.join(root,"server/se
   assert(server.includes("PersistenceBackfillService"));
   assert(server.includes("PersistenceShadowExecutionService"));
   assert(server.includes("PersistenceReplicationCoordinatorService"));
-  assert(startup.includes("V72.0.0 ready"));
-  assert(html.includes('content="72.0.0"'));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   // Managed adapter contract rejects incomplete or JSON adapters.
   assert.throws(

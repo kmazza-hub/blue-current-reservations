@@ -506,6 +506,19 @@ class DatabaseService {
       return database[collection][index];
     });
   }
+
+  insert(collection, entity) {
+    return this.create(collection, entity);
+  }
+
+  delete(collection, id) {
+    return this.mutate(database => {
+      database[collection] ||= [];
+      const index = database[collection].findIndex(item => item.id === id);
+      if (index === -1) return null;
+      return database[collection].splice(index, 1)[0];
+    });
+  }
 }
 
 module.exports = DatabaseService;

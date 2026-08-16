@@ -24,27 +24,39 @@ class StaffOperationsService {
     for (const key of allowed) {
       if (Object.prototype.hasOwnProperty.call(patch, key)) safePatch[key] = patch[key];
     }
-    const staff = await this.database.update("staff", staffId, safePatch);
-    if (!staff) return null;
+    if (Object.prototype.hasOwnProperty.call(safePatch,"maxCovers") && Number(safePatch.maxCovers) < 0) {
+      const error=new Error("maxCovers cannot be negative.");
+      error.statusCode=400;
+      throw error;
+    }
 
-    const event = models.operationalEvent({
-      organizationId,
-      locationId: staff.locationId,
-      staffId,
-      type: "staff.updated",
-      actor,
-      summary: `${staff.name} updated`,
-      payload: safePatch
-    });
-    await this.database.create("staffEvents", event);
+    const result=await this.database.transaction(tx=>{
+      const current=tx.get("staff",staffId);
+      if(!current || current.organizationId!==organizationId) return null;
+      if(safePatch.sectionId){
+        const section=tx.get("sections",safePatch.sectionId);
+        if(!section || section.organizationId!==organizationId || section.locationId!==current.locationId) return null;
+      }
+      const updated=tx.update("staff",staffId,safePatch);
+      const event=models.operationalEvent({
+        organizationId,
+        locationId:updated.locationId,
+        staffId,
+        type:"staff.updated",
+        actor,
+        summary:`${updated.name} updated`,
+        payload:safePatch
+      });
+      tx.create("staffEvents",event);
+      return {staff:updated,event};
+    },{domain:"staff",operation:"update-staff",organizationId,staffId});
+
+    if(!result)return null;
     await this.auditService.record({
-      organizationId,
-      actor,
-      action: `${staff.name} staff assignment updated`,
-      category: "staff"
+      organizationId,actor,action:`${result.staff.name} staff assignment updated`,category:"staff"
     });
-    this.realtimeHub.publish("staff:updated", { ...staff, organizationId });
-    return staff;
+    this.realtimeHub.publish("staff:updated",{...result.staff,organizationId});
+    return result.staff;
   }
 
   async assignSection(sectionId, serverId, actor, organizationId) {
@@ -52,6 +64,7 @@ class StaffOperationsService {
       const section = (database.sections || []).find(item => item.id === sectionId);
       const server = (database.staff || []).find(item => item.id === serverId);
       if (!section || !server || section.locationId !== server.locationId) return null;
+      if (section.organizationId !== organizationId || server.organizationId !== organizationId) return null;
 
       section.serverId = server.id;
       server.sectionId = section.id;
@@ -95,6 +108,7 @@ class StaffOperationsService {
       const table = (database.tables || []).find(item => item.id === tableId);
       const server = (database.staff || []).find(item => item.id === serverId);
       if (!table || !server || table.locationId !== server.locationId) return null;
+      if (table.organizationId !== organizationId || server.organizationId !== organizationId) return null;
       table.serverId = server.id;
       table.server = server.name;
 

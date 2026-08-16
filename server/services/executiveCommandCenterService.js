@@ -106,7 +106,15 @@ class ExecutiveCommandCenterService {
     };
   }
   async updateGoal(id,patch,actor,org){
-    const goal=await this.database.update("executiveGoals",id,{target:Number(patch.target),updatedAt:new Date().toISOString()});
+    const current=await this.database.get("executiveGoals",id);
+    if(!current || current.organizationId!==org)return null;
+    const target=Number(patch.target);
+    if(!Number.isFinite(target)){
+      const error=new Error("Executive goal target must be numeric.");
+      error.statusCode=400;
+      throw error;
+    }
+    const goal=await this.database.update("executiveGoals",id,{target,updatedAt:new Date().toISOString()});
     if(!goal)return null;
     await this.auditService.record({organizationId:org,actor,action:`Executive goal updated: ${goal.label}`,category:"executive"});
     this.realtimeHub.publish("executive:goal-updated",{...goal,organizationId:org});

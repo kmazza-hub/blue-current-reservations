@@ -1,7 +1,7 @@
 "use strict";
 
 const REQUIRED_METHODS = Object.freeze([
-  "read","reload","write","mutate","list","get","create","update",
+  "read","reload","write","mutate","list","get","create","insert","update","delete",
   "diagnostics","awaitIdle","checkpointBackup","verifyBackups"
 ]);
 
