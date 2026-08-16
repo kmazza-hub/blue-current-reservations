@@ -2,14 +2,79 @@
 "use strict";
 
 const { URL } = require("url");
+const APP_VERSION = require("../../package.json").version;
 
-function sendJson(response, status, payload) {
+async function sendJson(response, status, payload) {
+  const context = response._writeContext;
+  if (context && !context.completed) {
+    context.completed = true;
+    let resourceVersion = null;
+    let outcome = status >= 500 ? "failed" : status >= 400 ? "rejected" : "committed";
+
+    try {
+      if (status >= 200 && status < 400 && context.syncPreparation?.ok) {
+        const version = await context.syncService.commit({
+          key: context.syncPreparation.key,
+          organizationId: context.organizationId,
+          path: context.path,
+          entityId: context.entityId,
+          actor: context.actor,
+          payload
+        });
+        resourceVersion = version.version;
+        response._resourceVersion = resourceVersion;
+      }
+
+      if (context.idempotencyKey) {
+        if (status >= 500) {
+          await context.idempotencyService.fail(context.idempotencyKey, status, payload);
+        } else {
+          await context.idempotencyService.complete(context.idempotencyKey, status, payload);
+        }
+      }
+
+      await context.mutationIntegrityService?.finalize(context.operationId, {
+        outcome,
+        responseStatus: status,
+        resourceVersion
+      });
+
+      response._writeIntegrity = outcome;
+    } catch (error) {
+      outcome = "failed";
+      response._writeIntegrity = "failed";
+
+      await context.mutationIntegrityService?.finalize(context.operationId, {
+        outcome: "failed",
+        responseStatus: 503,
+        resourceVersion,
+        error: error?.message || error
+      }).catch(() => {});
+
+      if (context.idempotencyKey) {
+        await context.idempotencyService.fail(context.idempotencyKey, 503, {
+          error: "The operation changed state but durable write finalization did not complete.",
+          code: "WRITE_FINALIZATION_FAILED",
+          operationId: context.operationId
+        }).catch(() => {});
+      }
+
+      status = 503;
+      payload = {
+        ok: false,
+        error: "The operation could not be durably finalized. Reconcile before retrying.",
+        code: "WRITE_FINALIZATION_FAILED",
+        operationId: context.operationId
+      };
+    }
+  }
+
   const headers = {
     "Content-Type": "application/json; charset=utf-8",
     "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match, X-Blue-Current-Signature",
-    "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version",
+    "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version, X-Blue-Current-Operation-Id, X-Blue-Current-Write-Integrity",
     "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
   };
   if (response._idempotencyReplayed) headers["X-Blue-Current-Idempotency-Replayed"] = "true";
@@ -17,32 +82,15 @@ function sendJson(response, status, payload) {
     headers["X-Blue-Current-Resource-Version"] = String(response._resourceVersion);
     headers.ETag = `"${response._resourceVersion}"`;
   }
+  if (response._operationId) headers["X-Blue-Current-Operation-Id"] = response._operationId;
+  if (response._writeIntegrity) headers["X-Blue-Current-Write-Integrity"] = response._writeIntegrity;
+
   response.writeHead(status, headers);
   response.end(JSON.stringify(payload));
-
-  const context = response._writeContext;
-  if (context && !context.completed) {
-    context.completed = true;
-    const operation = status < 500
-      ? context.idempotencyService.complete(context.idempotencyKey, status, payload)
-      : context.idempotencyService.fail(context.idempotencyKey, status, payload);
-    operation.catch(() => {});
-    if (status >= 200 && status < 400 && context.syncPreparation?.ok) {
-      context.syncService.commit({
-        key: context.syncPreparation.key,
-        organizationId: context.organizationId,
-        path: context.path,
-        entityId: context.entityId,
-        actor: context.actor,
-        payload
-      }).then(version => {
-        response._resourceVersion = version.version;
-      }).catch(() => {});
-    }
-  }
 }
 
 async function readJson(request) {
+  if (request._jsonBody !== undefined) return request._jsonBody;
   let body = "";
   for await (const chunk of request) {
     body += chunk;
@@ -58,7 +106,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -66,7 +114,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       response.writeHead(204, {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Blue-Current-Idempotency-Key, If-Match, X-Blue-Current-Signature",
-        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+        "Access-Control-Expose-Headers": "X-Blue-Current-Idempotency-Replayed, ETag, X-Blue-Current-Resource-Version, X-Blue-Current-Operation-Id, X-Blue-Current-Write-Integrity"
       });
       return response.end();
     }
@@ -74,7 +123,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/health" && request.method === "GET") {
       return sendJson(response, 200, {
         ok: true,
-        version: "59.0.0",
+        version: APP_VERSION,
         database: "connected",
         auth: "enabled",
         realtimeClients: realtimeHub.count(),
@@ -193,6 +242,96 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     const auth = await authService.authenticate(bearerToken(request));
     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
+
+    const writeOrganizationId = auth.membership.organizationId;
+
+    if (url.pathname === "/api/system/write-integrity" && request.method === "GET") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
+        return sendJson(response, 403, { error: "Write-integrity diagnostics permission required." });
+      }
+      return sendJson(response, 200, await productionMutationIntegrityService.snapshot(writeOrganizationId));
+    }
+
+    const writeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+    if (writeMethods.has(request.method)) {
+      const idempotencyKey = idempotencyService.key(request, writeOrganizationId);
+
+      if (idempotencyKey) {
+        const existing = await idempotencyService.find(idempotencyKey);
+        if (existing?.status === "complete" || existing?.status === "failed") {
+          response._idempotencyReplayed = true;
+          return sendJson(response, existing.responseStatus, existing.responsePayload);
+        }
+        if (existing?.status === "processing") {
+          return sendJson(response, 409, {
+            error: "An operation with this idempotency key is already processing.",
+            code: "IDEMPOTENCY_IN_PROGRESS"
+          });
+        }
+        await idempotencyService.reserve(idempotencyKey, {
+          method: request.method,
+          path: url.pathname,
+          organizationId: writeOrganizationId,
+          userId: auth.user.id
+        });
+      }
+
+      const body = await readJson(request);
+      const entityId = body.id || body.entityId || body.reservationId || body.tableId ||
+        decodeURIComponent(url.pathname.split("/").filter(Boolean).pop() || "collection");
+      const ifMatch = request.headers["if-match"];
+      const expectedVersion = ifMatch
+        ? Number(String(ifMatch).replaceAll('"', ""))
+        : body.baseVersion ?? null;
+
+      const preparation = await syncReconciliationService.prepare({
+        organizationId: writeOrganizationId,
+        path: url.pathname,
+        entityId,
+        expectedVersion
+      });
+
+      if (!preparation.ok) {
+        const current = await database.get("resourceVersions", preparation.key);
+        const conflictPayload = {
+          error: "The resource changed after the client snapshot.",
+          code: "VERSION_CONFLICT",
+          version: preparation.currentVersion,
+          expectedVersion: preparation.expectedVersion,
+          current: current?.lastPayload || null
+        };
+        if (idempotencyKey) {
+          await idempotencyService.fail(idempotencyKey, 412, conflictPayload);
+        }
+        return sendJson(response, 412, conflictPayload);
+      }
+
+      const mutation = await productionMutationIntegrityService.begin({
+        organizationId: writeOrganizationId,
+        method: request.method,
+        path: url.pathname,
+        entityId,
+        userId: auth.user.id,
+        actor: auth.user.name,
+        idempotencyKey,
+        expectedVersion
+      });
+
+      response._operationId = mutation.id;
+      response._writeContext = {
+        idempotencyService,
+        syncService: syncReconciliationService,
+        mutationIntegrityService: productionMutationIntegrityService,
+        operationId: mutation.id,
+        idempotencyKey,
+        syncPreparation: preparation,
+        organizationId: writeOrganizationId,
+        path: url.pathname,
+        entityId,
+        actor: auth.user.name,
+        completed: false
+      };
+    }
 
     const v47AllowedLocations = auth.membership.locationIds || [];
     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
@@ -1542,76 +1681,6 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         category: "observability"
       });
       return sendJson(response, 200, incident);
-    }
-
-    const writeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
-    if (writeMethods.has(request.method)) {
-      const idempotencyKey = idempotencyService.key(request, organizationId);
-      if (idempotencyKey) {
-        const existing = await idempotencyService.find(idempotencyKey);
-        if (existing?.status === "complete" || existing?.status === "failed") {
-          response._idempotencyReplayed = true;
-          return sendJson(response, existing.responseStatus, existing.responsePayload);
-        }
-        if (existing?.status === "processing") {
-          return sendJson(response, 409, {
-            error: "An operation with this idempotency key is already processing.",
-            code: "IDEMPOTENCY_IN_PROGRESS"
-          });
-        }
-        await idempotencyService.reserve(idempotencyKey, {
-          method: request.method,
-          path: url.pathname,
-          organizationId,
-          userId: auth.user.id
-        });
-      }
-
-      const body = request._jsonBody || await readJson(request);
-      const entityId = body.id || body.entityId || body.reservationId || body.tableId ||
-        decodeURIComponent(url.pathname.split("/").filter(Boolean).pop() || "collection");
-      const ifMatch = request.headers["if-match"];
-      const expectedVersion = ifMatch
-        ? Number(String(ifMatch).replaceAll('"', ""))
-        : body.baseVersion ?? null;
-      const preparation = await syncReconciliationService.prepare({
-        organizationId,
-        path: url.pathname,
-        entityId,
-        expectedVersion
-      });
-
-      if (!preparation.ok) {
-        const current = await database.get("resourceVersions", preparation.key);
-        if (idempotencyKey) {
-          await idempotencyService.fail(idempotencyKey, 412, {
-            error: "The resource changed after the client snapshot.",
-            code: "VERSION_CONFLICT",
-            version: preparation.currentVersion,
-            expectedVersion: preparation.expectedVersion,
-            current: current?.lastPayload || null
-          });
-        }
-        return sendJson(response, 412, {
-          error: "The resource changed after the client snapshot.",
-          code: "VERSION_CONFLICT",
-          version: preparation.currentVersion,
-          expectedVersion: preparation.expectedVersion,
-          current: current?.lastPayload || null
-        });
-      }
-
-      response._writeContext = {
-        idempotencyService,
-        syncService: syncReconciliationService,
-        idempotencyKey,
-        syncPreparation: preparation,
-        organizationId,
-        path: url.pathname,
-        entityId,
-        actor: auth.user.name,
-        completed: false
-      };
     }
 
     if (url.pathname === "/api/sync/reconcile" && request.method === "POST") {
