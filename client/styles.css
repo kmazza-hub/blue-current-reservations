@@ -15902,3 +15902,92 @@ body[data-web-art-direction="35"] .pilot-section{
     transform:none!important;
   }
 }
+
+
+/* ==========================================================================
+   WEB-036 · Full Visual QA & Homepage Certification
+   ========================================================================== */
+body[data-web-certified="36"]{overflow-x:clip}
+body[data-web-certified="36"] img,
+body[data-web-certified="36"] svg,
+body[data-web-certified="36"] video,
+body[data-web-certified="36"] canvas{max-width:100%}
+body[data-web-certified="36"] #experience,
+body[data-web-certified="36"] #service-speed,
+body[data-web-certified="36"] #operating-current,
+body[data-web-certified="36"] #profit-current,
+body[data-web-certified="36"] #intelligence-current,
+body[data-web-certified="36"] #blue-current-standard,
+body[data-web-certified="36"] #pilot{scroll-margin-top:96px}
+body[data-web-certified="36"] .desktop-nav a{position:relative}
+body[data-web-certified="36"] .desktop-nav a::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:1px;background:#d8b879;transform:scaleX(0);transform-origin:left;transition:transform .18s ease}
+body[data-web-certified="36"] .desktop-nav a:hover::after,
+body[data-web-certified="36"] .desktop-nav a[aria-current="page"]::after{transform:scaleX(1)}
+body[data-web-certified="36"] .desktop-nav a[aria-current="page"]{color:#fff}
+body[data-web-certified="36"] :focus-visible{outline:2px solid #d8b879;outline-offset:4px}
+body[data-web-certified="36"] section[tabindex="-1"]:focus{outline:none}
+body[data-web-certified="36"] .hero-copy h1,
+body[data-web-certified="36"] .speed-proof-heading h2,
+body[data-web-certified="36"] .os-story-heading h2,
+body[data-web-certified="36"] .profit-heading h2,
+body[data-web-certified="36"] .intelligence-copy h2,
+body[data-web-certified="36"] .buyer-bridge-heading h2,
+body[data-web-certified="36"] .standard-story-heading h2,
+body[data-web-certified="36"] .pilot-proof-heading h2,
+body[data-web-certified="36"] .final-thesis h2{text-wrap:balance;overflow-wrap:anywhere}
+body[data-web-certified="36"] p,
+body[data-web-certified="36"] li{text-wrap:pretty}
+body[data-web-certified="36"] .product-stage,
+body[data-web-certified="36"] .os-story-card,
+body[data-web-certified="36"] .profit-lever,
+body[data-web-certified="36"] .standard-principle,
+body[data-web-certified="36"] .pilot-proof-card,
+body[data-web-certified="36"] .buyer-role{contain:paint}
+body[data-web-certified="36"] .button,
+body[data-web-certified="36"] button,
+body[data-web-certified="36"] a{-webkit-tap-highlight-color:transparent}
+body[data-web-certified="36"] .button,
+body[data-web-certified="36"] .mobile-nav a{min-height:46px}
+body[data-web-certified="36"] .bc-conversion-float.is-compact span{display:none}
+body[data-web-certified="36"] .bc-conversion-float.is-compact{left:auto;width:auto}
+body[data-web-certified="36"] .decision-cta-inner,
+body[data-web-certified="36"] .buyer-pilot-bridge,
+body[data-web-certified="36"] .pilot-proof-decision{overflow:hidden}
+
+@media(max-width:1100px){
+ body[data-web-certified="36"] .desktop-nav{display:none!important}
+ body[data-web-certified="36"] .menu-button{display:flex!important}
+}
+@media(max-width:760px){
+ body[data-web-certified="36"]{overflow-x:hidden}
+ body[data-web-certified="36"] .container{width:min(100% - 22px,1180px)}
+ body[data-web-certified="36"] .hero{padding-left:0;padding-right:0}
+ body[data-web-certified="36"] .product-stage{max-width:100%;overflow:hidden}
+ body[data-web-certified="36"] .dashboard-grid,
+ body[data-web-certified="36"] .os-story-grid,
+ body[data-web-certified="36"] .profit-levers,
+ body[data-web-certified="36"] .buyer-bridge-grid,
+ body[data-web-certified="36"] .standard-principles,
+ body[data-web-certified="36"] .pilot-proof-grid{min-width:0}
+ body[data-web-certified="36"] .dashboard-grid>*,
+ body[data-web-certified="36"] .os-story-grid>*,
+ body[data-web-certified="36"] .profit-levers>*,
+ body[data-web-certified="36"] .buyer-bridge-grid>*,
+ body[data-web-certified="36"] .standard-principles>*,
+ body[data-web-certified="36"] .pilot-proof-grid>*{min-width:0}
+ body[data-web-certified="36"] .decision-cta-inner strong,
+ body[data-web-certified="36"] .buyer-pilot-bridge strong{font-size:clamp(24px,7vw,31px)}
+ body[data-web-certified="36"] .bc-conversion-float{max-width:calc(100vw - 20px)}
+}
+@media(max-width:390px){
+ body[data-web-certified="36"] .hero-quality-line i{display:none}
+ body[data-web-certified="36"] .hero-quality-line{gap:6px 10px}
+ body[data-web-certified="36"] .buyer-outcome-strip{grid-template-columns:1fr}
+ body[data-web-certified="36"] .system-fit-map,
+ body[data-web-certified="36"] .enterprise-foundation-grid{grid-template-columns:1fr!important}
+}
+@media(prefers-reduced-motion:reduce){
+ body[data-web-certified="36"] *,
+ body[data-web-certified="36"] *::before,
+ body[data-web-certified="36"] *::after{scroll-behavior:auto!important}
+}
