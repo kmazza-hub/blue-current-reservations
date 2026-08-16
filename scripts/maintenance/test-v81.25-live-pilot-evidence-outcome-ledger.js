@@ -1,0 +1,20 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Ledger=require(path.join(root,"server/services/livePilotEvidenceOutcomeLedgerService"));
+(async()=>{
+ assert.equal(pkg.version,"81.25.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
+ assert(router.includes("/api/pilot/evidence"));assert(router.includes("/api/pilot/outcome"));assert(server.includes("LivePilotEvidenceOutcomeLedgerService"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8125-")),dbPath=path.join(dir,"db.json");
+ const shift={id:"s1",organizationId:"o",locationId:"l1",status:"ACTIVE",shiftLabel:"Friday Dinner",closeout:null};
+ fs.writeFileSync(dbPath,JSON.stringify({locations:[{id:"l1",organizationId:"o",name:"Pilot"}],livePilotShiftHistory:[shift],livePilotEvidenceLedger:[]}));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ const live={snapshot:async()=>({shift,phase:"LIVE"})};
+ const svc=new Ledger(db,live);
+ await svc.record("o",["*"],"l1",{type:"INTERVENTION",summary:"Rebalanced seating pace",minutesSaved:8,revenueProtected:125,source:"manager"},"manager");
+ await svc.record("o",["*"],"l1",{type:"GUEST_IMPACT",summary:"Recovered delayed table",guestRecoveries:1,costAvoided:35,source:"host"},"host");
+ const ledger=await svc.ledger("o",["*"],"l1","s1");assert.equal(ledger.entryCount,2);assert.equal(ledger.chainValid,true);assert.equal(ledger.entries[1].priorHash,ledger.entries[0].entryHash);
+ const outcome=await svc.outcome("o",["*"],"l1","s1");assert.equal(outcome.evidenceIntegrity,"VERIFIED");assert.equal(outcome.totals.minutesSaved,8);assert.equal(outcome.totals.revenueProtected,125);assert.equal(outcome.totals.costAvoided,35);assert.equal(outcome.totals.guestRecoveries,1);assert.equal(outcome.policy.noAutomaticFinancialClaim,true);
+ shift.status="CLOSED";let blocked=false;try{await svc.record("o",["*"],"l1",{summary:"late edit"},"admin");}catch(e){blocked=e.statusCode===409;}assert.equal(blocked,true);
+ console.log(JSON.stringify({ok:true,version:"81.25.0",appendOnlyEvidence:true,hashChainedIntegrity:true,activeShiftCaptureOnly:true,interventionEvidence:true,guestImpactEvidence:true,measurableOutcomeAggregation:true,evidenceBackedClaims:true,automaticFinancialClaims:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});

@@ -2,7 +2,7 @@
   "use strict";
 
   function createStartupDiagnosticsModule(eventBus, appState) {
-    const BUILD = "81.0.0";
+    const BUILD = "81.25.0";
     const $ = id => document.getElementById(id);
     const setText = (id, value) => { const el = $(id); if (el) el.textContent = String(value); };
     const setClass = (id, value) => { const el = $(id); if (el) el.className = value; };

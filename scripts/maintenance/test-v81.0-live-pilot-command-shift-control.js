@@ -2,7 +2,7 @@
 const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Live=require(path.join(root,"server/services/livePilotShiftCommandService"));
 (async()=>{
- assert.equal(pkg.version,"81.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 81);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
  assert(router.includes("/api/pilot/live-shift/start"));assert(router.includes("/api/pilot/live-shift/close"));assert(server.includes("LivePilotShiftCommandService"));
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc810-")),dbPath=path.join(dir,"db.json");
