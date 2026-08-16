@@ -124,7 +124,7 @@ function bearerToken(request) {
   return header.startsWith("Bearer ") ? header.slice(7) : null;
 }
 
-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService, persistenceMigrationReadinessService, persistenceSchemaMappingService, persistenceMigrationVerificationService, persistenceCutoverFrameworkService, persistenceBackfillService, migrationShadowStore, persistenceShadowExecutionService, persistenceReplicationCoordinatorService, operationalDataIntegrityService }) {
+function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService, expansionReplicationService, multiLocationExpansionControlService, expansionCohortObservationService, expansionPortfolioProofService, expansionRepeatabilityCertificationService, operationalIntegrationExpansionOrchestrationService, v52OperationalReadinessCertificationService, restaurantWorkflowIntegrationService, peakServiceWorkflowResilienceService, failureRecoveryShiftContinuityService, v53RestaurantOperationalCertificationService, operatorSpeedWorkflowSimplificationService, managerInterventionDecisionSpeedService, roleBasedServiceErgonomicsService, v54OperatorExperienceCertificationService, restaurantIntelligenceDecisionSupportService, profitabilityInterventionAccountabilityService, v55DecisionValueCertificationService, productionPilotEnvironmentReadinessService, pilotReleaseCandidateCertificationService, pilotLiveServiceAcceptanceService, finalProductReleaseCandidateService, finalHardeningRealEnvironmentService, productionLaunchCertificationService, productionMutationIntegrityService, productionBoundaryService, productionConfigurationService, persistenceMigrationReadinessService, persistenceSchemaMappingService, persistenceMigrationVerificationService, persistenceCutoverFrameworkService, persistenceBackfillService, migrationShadowStore, persistenceShadowExecutionService, persistenceReplicationCoordinatorService, operationalDataIntegrityService, restaurantWorkflowCertificationService }) {
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
 
@@ -401,6 +401,19 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Operational data integrity diagnostics require write permission." });
       }
       return sendJson(response, 200, await operationalDataIntegrityService.certify());
+    }
+
+    if (url.pathname === "/api/system/workflow-certification" && request.method === "GET") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
+        return sendJson(response, 403, { error: "Workflow certification requires write permission." });
+      }
+      const locationId=url.searchParams.get("locationId")||null;
+      if(locationId && !canAccessLocation(locationId)){
+        return sendJson(response,403,{error:"Location access denied."});
+      }
+      return sendJson(response,200,await restaurantWorkflowCertificationService.certify(
+        organizationId,locationId
+      ));
     }
 
     if (url.pathname === "/api/system/persistence-shadow" && request.method === "GET") {
@@ -2443,6 +2456,25 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return result
         ? sendJson(response, 200, result)
         : sendJson(response, 409, { error: "Unable to seat this reservation." });
+    }
+
+    if (url.pathname === "/api/reservation-operations/complete" && request.method === "POST") {
+      if (!authService.can(auth, "write") && !authService.can(auth, "write_reservations")) {
+        return sendJson(response, 403, { error: "Reservation completion permission required." });
+      }
+      const body = await readJson(request);
+      const reservation = await database.get("reservations", body.reservationId);
+      if (!reservation || !canAccessLocation(reservation.locationId)) {
+        return sendJson(response, 404, { error: "Reservation not found." });
+      }
+      const result = await reservationOperationsService.complete(
+        body.reservationId,
+        auth.user.name,
+        organizationId
+      );
+      return result
+        ? sendJson(response, 200, result)
+        : sendJson(response, 409, { error: "Unable to complete this service." });
     }
 
     if (url.pathname === "/api/reservations" && request.method === "GET") {

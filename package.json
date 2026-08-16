@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "72.50.0",
+  "version": "73.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 backend service contracts and cross-module operational data integrity certification",
+  "description": "Blue Current Hospitality OS \u2014 end-to-end restaurant workflow certification and pilot readiness",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

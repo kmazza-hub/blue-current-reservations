@@ -16,7 +16,7 @@ const InventoryService=require(path.join(root,"server/services/inventoryIntellig
 const ExecutiveService=require(path.join(root,"server/services/executiveCommandCenterService"));
 
 (async()=>{
-  assert.equal(pkg.version,"72.50.0");
+  assert(Number(pkg.version.split(".")[0]) >= 72, `Expected V72 or later, found ${pkg.version}`);
 
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
@@ -31,8 +31,8 @@ const ExecutiveService=require(path.join(root,"server/services/executiveCommandC
   assert(gateway.includes("delete(collection"));
   assert(contract.includes('"insert"'));
   assert(contract.includes('"delete"'));
-  assert(startup.includes("V72.50.0 ready"));
-  assert(html.includes('content="72.50.0"'));
+  assert(/V\d+(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   // No server service may call a persistence method outside the gateway contract.
   const allowed=new Set([
