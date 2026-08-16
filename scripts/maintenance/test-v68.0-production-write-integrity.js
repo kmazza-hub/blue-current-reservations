@@ -10,7 +10,7 @@ const DatabaseService=require(path.join(root,"server/services/databaseService"))
 const ProductionMutationIntegrityService=require(path.join(root,"server/services/productionMutationIntegrityService"));
 
 (async()=>{
-  assert.equal(pkg.version,"68.0.0");
+  assert(/^68(?:\.|$)/.test(pkg.version),`Expected a V68.x build, found ${pkg.version}`);
 
   const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
   const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
@@ -29,8 +29,8 @@ const ProductionMutationIntegrityService=require(path.join(root,"server/services
   assert(router.includes('WRITE_FINALIZATION_FAILED'));
   assert(server.includes('ProductionMutationIntegrityService'));
   assert(server.includes('productionMutationIntegrityService'));
-  assert(startup.includes("V68.0.0 ready"));
-  assert(html.includes('content="68.0.0"'));
+  assert(/V68(?:\.\d+){2} ready/.test(startup));
+  assert(html.includes(`content="${pkg.version}"`));
 
   // The late V59-style write middleware must be gone: only one writeMethods declaration.
   assert.equal((router.match(/const writeMethods = new Set/g)||[]).length,1);
@@ -71,7 +71,8 @@ const ProductionMutationIntegrityService=require(path.join(root,"server/services
 
   console.log(JSON.stringify({
     ok:true,
-    version:"68.0.0",
+    featureVersion:"68.0.0",
+    currentVersion:pkg.version,
     actualHealthVersion:true,
     cachedRequestBody:true,
     centralizedAuthenticatedWritePreparation:true,

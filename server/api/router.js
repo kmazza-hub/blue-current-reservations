@@ -252,6 +252,19 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response, 200, await productionMutationIntegrityService.snapshot(writeOrganizationId));
     }
 
+    if (url.pathname === "/api/system/database-recovery" && request.method === "GET") {
+      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
+        return sendJson(response, 403, { error: "Database recovery diagnostics permission required." });
+      }
+      const backups = await database.verifyBackups();
+      return sendJson(response, 200, {
+        version: "68.50.0",
+        database: database.diagnostics(),
+        backups,
+        mutationIntegrity: await productionMutationIntegrityService.snapshot(writeOrganizationId)
+      });
+    }
+
     const writeMethods = new Set(["POST", "PUT", "PATCH", "DELETE"]);
     if (writeMethods.has(request.method)) {
       const idempotencyKey = idempotencyService.key(request, writeOrganizationId);

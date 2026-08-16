@@ -2,6 +2,7 @@
 "use strict";
 
 const http = require("http");
+const APP_VERSION = require("../package.json").version;
 const fs = require("fs");
 const path = require("path");
 const DatabaseService = require("./services/databaseService");
@@ -287,10 +288,41 @@ const server = http.createServer(async (request, response) => {
   }
 });
 
-authService.initializePasswords().then(() => server.listen(PORT, () => {
-  console.log(`Blue Current Cloud V59.0.0 running at http://localhost:${PORT}`);
-  console.log(`Database: ${DB_PATH}`);
-})).catch(error => {
-  console.error(error);
+async function bootstrap() {
+  // Force the first database read before the HTTP listener starts. A corrupt or
+  // missing primary will recover from the newest verified backup here or fail closed.
+  await database.read();
+
+  const backupCheckpoint = await database.checkpointBackup("startup-verified-primary")
+    .catch(error => ({ ok: false, error: error.message }));
+  const mutationRecovery = await productionMutationIntegrityService.recoverStalePrepared({ force: true });
+
+  await authService.initializePasswords();
+
+  const backupVerification = await database.verifyBackups();
+  if (!backupVerification.ok) {
+    console.warn("[startup] No verified recovery backup is currently available.");
+  }
+  if (mutationRecovery.recovered > 0) {
+    console.warn(
+      `[startup] Reconciled ${mutationRecovery.recovered} unfinished mutation(s): ` +
+      `${mutationRecovery.committedRecovered} committed, ` +
+      `${mutationRecovery.failedRecovered} failed, ` +
+      `${mutationRecovery.reconcileRequired} require reconciliation.`
+    );
+  }
+  if (!backupCheckpoint.ok) {
+    console.warn(`[startup] Backup checkpoint warning: ${backupCheckpoint.error || backupCheckpoint.reason || "unknown"}`);
+  }
+
+  server.listen(PORT, () => {
+    console.log(`Blue Current Cloud V${APP_VERSION} running at http://localhost:${PORT}`);
+    console.log(`Database: ${DB_PATH}`);
+    console.log(`Verified recovery backup: ${backupVerification.ok ? "available" : "unavailable"}`);
+  });
+}
+
+bootstrap().catch(error => {
+  console.error("[startup] Blue Current failed recovery/readiness bootstrap:", error);
   process.exit(1);
 });
