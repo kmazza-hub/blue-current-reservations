@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"94.0.0");
+const stress=fs.readFileSync(path.join(root,"server/services/peakServiceStressTestService.js"),"utf8");
+for(const id of ["RESERVATION_BURST","HIGH_OCCUPANCY","RAPID_TABLE_TURNS","STAFF_CHANGE","KITCHEN_PRESSURE","DELAYED_REQUESTS","API_FAILURE","CONNECTOR_FAILURE","RECONNECT_RETRY","PARTIAL_DEGRADATION_RECOVERY"])assert(stress.includes(`id:"${id}"`),id);
+const resilience=fs.readFileSync(path.join(root,"server/services/peakServiceWorkflowResilienceService.js"),"utf8");
+for(const id of ["HANDOFF_LATENCY","OPERATOR_WORKLOAD","KITCHEN_CONGESTION","FLOOR_CONGESTION","RECOVERY_TIME","NO_HIGH_CRITICAL_FINDINGS","SERVICE_COMPLETION"])assert(resilience.includes(`id:"${id}"`),id);
+assert(resilience.includes("humanPeakObservationRequired:true"));assert(resilience.includes("humanReadyDegradedHoldDecisionRequired:true"));assert(resilience.includes("noAutomaticOperationalMutation:true"));
+const svc=fs.readFileSync(path.join(root,"server/services/pilotPerformanceCapacityResilienceReadinessService.js"),"utf8");assert(svc.includes('version:"94.0.0"'));assert(svc.includes("peakServiceStressTestService.snapshot"));assert(svc.includes("peakServiceWorkflowResilienceService.snapshot"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/performance-readiness'));
+console.log(JSON.stringify({ok:true,version:"94.0.0",peakScenarios:10,handoffLatencyThreshold:true,operatorWorkloadThreshold:true,kitchenCongestionThreshold:true,floorCongestionThreshold:true,recoveryTimeThreshold:true,serviceCompletion:true,humanPeakObservation:true,humanReadyDegradedHold:true,automaticOperationalMutation:false,autonomousProductionChanges:false,nextGate:"PILOT_DEVICE_NETWORK_AND_ONSITE_CONTINUITY_READINESS"},null,2));

@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"93.75.0");
+assert(Number(pkg.version.split(".")[0])>=93);
 const auth=fs.readFileSync(path.join(root,"server/services/authService.js"),"utf8");
 assert(auth.includes("crypto.scryptSync"));assert(auth.includes("crypto.timingSafeEqual"));assert(auth.includes('createHash("sha256")'));
 assert(auth.includes("SESSION_IDLE_MINUTES"));assert(auth.includes("SESSION_HOURS"));assert(auth.includes("revokeAllUserSessions"));
