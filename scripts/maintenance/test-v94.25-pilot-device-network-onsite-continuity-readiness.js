@@ -1,0 +1,14 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"94.25.0");
+const continuity=fs.readFileSync(path.join(root,"server/services/failureRecoveryShiftContinuityService.js"),"utf8");
+for(const id of ["API_FAILURE","CONNECTOR_FAILURE","STALE_DATA","OFFLINE_CONTINUITY","DEVICE_SURFACE_FAILURE","RECONNECT_RECONCILIATION"])assert(continuity.includes(`"${id}"`),id);
+for(const id of ["FALLBACK_RUNBOOK","ESCALATION_OWNER","RECOVERY_TIME_OBJECTIVE","SHIFT_CONTINUITY","NO_HIGH_CRITICAL_FINDINGS"])assert(continuity.includes(`id:"${id}"`),id);
+assert(continuity.includes("humanFailureRehearsalRequired:true"));assert(continuity.includes("offlineContinuityRequired:true"));assert(continuity.includes("reconnectReconciliationRequired:true"));assert(continuity.includes("humanRecoverDegradedHoldDecisionRequired:true"));
+const live=fs.readFileSync(path.join(root,"server/services/liveShiftFailureCertificationService.js"),"utf8");
+assert(live.includes("staleWriteConflict:true"));assert(live.includes("ambiguousRestartRequiresReconciliation:true"));assert(live.includes("automaticRepair:false"));
+const sync=fs.readFileSync(path.join(root,"server/services/syncReconciliationService.js"),"utf8");assert(sync.includes('"client-behind"'));assert(sync.includes('"client-ahead"'));
+const svc=fs.readFileSync(path.join(root,"server/services/pilotDeviceNetworkOnsiteContinuityReadinessService.js"),"utf8");assert(svc.includes('version:"94.25.0"'));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/onsite-continuity-readiness'));
+console.log(JSON.stringify({ok:true,version:"94.25.0",failureScenarios:6,offlineContinuity:true,deviceSurfaceFailure:true,staleDataProtection:true,reconnectReconciliation:true,fallbackRunbook:true,escalationOwner:true,recoveryTimeObjective:true,shiftContinuity:true,automaticRepair:false,automaticOperationalMutation:false,nextGate:"PILOT_TRAINING_RUNBOOK_AND_OPERATOR_ENABLEMENT_READINESS"},null,2));

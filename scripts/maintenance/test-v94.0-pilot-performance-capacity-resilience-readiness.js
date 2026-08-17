@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"94.0.0");
+assert(Number(pkg.version.split(".")[0])>=94);
 const stress=fs.readFileSync(path.join(root,"server/services/peakServiceStressTestService.js"),"utf8");
 for(const id of ["RESERVATION_BURST","HIGH_OCCUPANCY","RAPID_TABLE_TURNS","STAFF_CHANGE","KITCHEN_PRESSURE","DELAYED_REQUESTS","API_FAILURE","CONNECTOR_FAILURE","RECONNECT_RETRY","PARTIAL_DEGRADATION_RECOVERY"])assert(stress.includes(`id:"${id}"`),id);
 const resilience=fs.readFileSync(path.join(root,"server/services/peakServiceWorkflowResilienceService.js"),"utf8");

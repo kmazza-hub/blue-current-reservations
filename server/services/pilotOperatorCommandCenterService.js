@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"94.0.0",phase:"D",organizationId,
+      version:"94.25.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -142,6 +142,7 @@ class PilotOperatorCommandCenterService{
       supportReadiness:{gate:"PILOT_OBSERVABILITY_ALERTING_AND_SUPPORT_READINESS",liveEvidenceEndpoint:"/api/pilot/support-readiness",criticalIncidentPauseGuard:true,humanSupportOwnershipRequired:true,automaticRemediation:false},
       securityReadiness:{gate:"PILOT_SECURITY_ACCESS_AND_AUDIT_READINESS",liveEvidenceEndpoint:"/api/pilot/security-readiness",apiAuthorizationBoundary:true,leastPrivilegeRequired:true,humanRoleCertificationRequired:true,autonomousPermissionChanges:false},
       performanceReadiness:{gate:"PILOT_PERFORMANCE_CAPACITY_AND_RESILIENCE_READINESS",liveEvidenceEndpoint:"/api/pilot/performance-readiness",peakStressEvidenceRequired:true,humanPeakObservationRequired:true,noAutomaticOperationalMutation:true},
+      onsiteContinuityReadiness:{gate:"PILOT_DEVICE_NETWORK_AND_ONSITE_CONTINUITY_READINESS",liveEvidenceEndpoint:"/api/pilot/onsite-continuity-readiness",offlineContinuityRequired:true,reconnectReconciliationRequired:true,fallbackRunbookRequired:true,automaticRepair:false},
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false
