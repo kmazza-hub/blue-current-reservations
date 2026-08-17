@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"96.25.0");
+const svc=fs.readFileSync(path.join(root,"server/services/pilotBaselineLockCommercialHardeningService.js"),"utf8");
+for(const id of ["V96_PILOT_READY_CERTIFIED","ARCHITECTURE_AUTHORITY_FROZEN","DUPLICATE_DOMAIN_AUTHORITY_PROHIBITED","DUPLICATE_WRITE_PATHS_PROHIBITED","PILOT_DEFECT_FIXES_ALLOWED","UX_SIMPLIFICATION_ALLOWED","RELIABILITY_SECURITY_ALLOWED","NEW_MAJOR_CAPABILITY_REQUIRES_EVIDENCE"])assert(svc.includes(`id:"${id}"`),id);
+for(const x of ["v96BaselineMustRemainRecoverable:true","majorCapabilityRequiresPilotEvidence:true","humanChangeApprovalPreserved:true","noAutomaticExpansion:true","noAutomaticProductionMutation:true","autonomousProductionChanges:false"])assert(svc.includes(x),x);
+for(const x of ["PILOT_DEFECT_FIX","UX_SIMPLIFICATION","RELIABILITY_HARDENING","SECURITY_HARDENING","OBSERVABILITY_HARDENING","SUPPORTABILITY_HARDENING","DEPLOYMENT_DISCIPLINE","COMMERCIAL_RELEASE_PREPARATION"])assert(svc.includes(`"${x}"`),x);
+for(const x of ["UNVALIDATED_MAJOR_CAPABILITY","DUPLICATE_DOMAIN_AUTHORITY","DUPLICATE_WRITE_PATH","AUTONOMOUS_PRODUCTION_CHANGE"])assert(svc.includes(`"${x}"`),x);
+const freeze=fs.readFileSync(path.join(root,"server/services/architectureFreezeService.js"),"utf8");assert(freeze.includes("duplicateDomainAuthorityProhibited:true"));assert(freeze.includes("newMajorCapabilityRequiresPilotEvidence:true"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/commercial-hardening/baseline-lock'));
+console.log(JSON.stringify({ok:true,version:"96.25.0",baseline:"V96.0.0 PILOT_READY_BASELINE",baselineChecks:8,allowedChangeClasses:8,restrictedChangeClasses:4,v96BaselineRecoverable:true,majorCapabilityRequiresPilotEvidence:true,noAutomaticProductionMutation:true,nextGate:"COMMERCIAL_HARDENING_DEFECT_AND_FRICTION_CONTROL"},null,2));

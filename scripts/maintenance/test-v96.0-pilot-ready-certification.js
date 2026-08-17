@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"96.0.0");
+assert(Number(pkg.version.split(".")[0])>=96);
 const svc=fs.readFileSync(path.join(root,"server/services/v96PilotReadyCertificationService.js"),"utf8");
 for(const id of ["V95_75_PREPARATION_COMPLETE","LOCATION_EXIT_EVIDENCE","RELEASE_EVIDENCE_COMPLETE","HUMAN_CERTIFICATION"])assert(svc.includes(`id:"${id}"`),id);
 for(const x of ["humanCertificationRequired:true","certificationDoesNotDeploy:true","certificationDoesNotStartRuntime:true","certificationDoesNotAuthorizeExpansion:true","pilotExecutionStillUsesLaunchControls:true","noAutomaticGoLive:true","noAutomaticExpansion:true","autonomousProductionChanges:false"])assert(svc.includes(x),x);
