@@ -1,0 +1,10 @@
+{
+  "version": "92.50.0",
+  "gate": "PILOT_OPERATOR_USABILITY_AND_SERVICE_NIGHT_ACCEPTANCE",
+  "minimumTouchTargetPx": 44,
+  "mobilePrimaryControlsPx": 48,
+  "singlePrimaryAction": true,
+  "duplicateSubmissionProtection": true,
+  "keyboardRefresh": "R",
+  "nextGate": "PILOT_REHEARSAL_AND_FIELD_ACCEPTANCE_CERTIFICATION"
+}

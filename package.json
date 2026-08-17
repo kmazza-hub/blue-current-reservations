@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "92.25.0",
+  "version": "92.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 service recovery evidence and post-shift review",
+  "description": "Blue Current Hospitality OS \u2014 pilot operator usability and service-night acceptance",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

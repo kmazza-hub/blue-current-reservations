@@ -362,7 +362,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V92.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V92.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -696,6 +696,7 @@ async function pilotControl(action){
       body={reason:confirmation.reason};
     }else body={label:"Controlled pilot service"};
   }
+  const ids={start:"bcPilotStart",pause:"bcPilotPause",resume:"bcPilotResume",stop:"bcPilotStop",refresh:"bcPilotRefresh"};setPilotControlBusy(true,ids[action]||"");
   if(feedback)feedback.textContent=`${action[0].toUpperCase()+action.slice(1)} requested…`;
   try{
     const response=await commandFetch(`/api/pilot/operator-command/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
@@ -703,7 +704,7 @@ async function pilotControl(action){
     if(!response.ok)throw new Error(payload.error||`Pilot ${action} returned ${response.status}.`);
     if(feedback)feedback.textContent=payload.message||`Pilot ${action} completed.`;
     await refreshPilotCommand();
-  }catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
+  }catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}finally{setPilotControlBusy(false,"");}
 }
 
 async function pilotIncidentAction(incidentId,action){
@@ -755,6 +756,9 @@ function syncWorkspaceHierarchyForRole(role){
   if(secondaryExecutive)secondaryExecutive.hidden=normalized==="EXECUTIVE";
 }
 
+function renderServiceNightFocus(data){const r=el("bcServiceNightFocus");if(!r)return;const c=Number(data?.health?.criticalOpen||0),o=Number(data?.health?.openIncidents||0),session=data?.session;r.dataset.state=c?"critical":o?"attention":"ready";setText("bcServiceNightFocusTitle",c?"Critical exception requires manager control":o?"Service exception remains visible":session?"Service picture is stable":"Ready for controlled service");setText("bcServiceNightFocusCopy",c?"Protect service first. Recover and verify before clearing the exception.":o?"Keep recovery visible while the manager works the exception.":session?"Primary control, shift state, and exceptions remain one glance away.":"Start only when the human operator and certified readiness state agree.");setText("bcServiceNightBadge",c?"RECOVERY":o?"ATTENTION":session?"IN SERVICE":"FIELD READY");}
+function syncPrimaryPilotAction(data){const m={START:"bcPilotStart",PAUSE:"bcPilotPause",RESUME:"bcPilotResume",STOP:"bcPilotStop",MONITOR:"bcPilotRefresh",REVIEW:"bcPilotRefresh"};document.querySelectorAll("#bcPilotControls button").forEach(b=>b.removeAttribute("data-primary-action"));const b=el(m[String(data?.controls?.primaryAction||"REVIEW").toUpperCase()]||"bcPilotRefresh");if(b)b.dataset.primaryAction="true";}
+function setPilotControlBusy(active,ownerId){const c=el("bcPilotControls");if(!c)return;c.dataset.busy=active?"true":"false";c.querySelectorAll("button").forEach(b=>{b.removeAttribute("data-busy-owner");if(active&&b.id===ownerId)b.dataset.busyOwner="true";});}
 async function refreshPilotCommand(){
   if(!authenticatedAppState())return;
   try{
@@ -762,7 +766,7 @@ async function refreshPilotCommand(){
     const response=await commandFetch(`/api/pilot/operator-command?role=${encodeURIComponent(role)}`,{method:"GET",headers:{"Accept":"application/json"}});
     const data=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(data.error||`Pilot command returned ${response.status}.`);
-    applyPilotRolePresentation(data);
+    applyPilotRolePresentation(data);renderServiceNightFocus(data);syncPrimaryPilotAction(data);
     const state=el("bcPilotState");
     if(state){state.textContent=String(data.status||"UNKNOWN").replaceAll("_"," ");state.dataset.tone=data.tone||"neutral";}
     setText("bcPilotReadiness",String(data.readiness?.decision||"UNKNOWN").replaceAll("_"," "));
@@ -892,6 +896,7 @@ function init(){
   el("bcPilotResume")?.addEventListener("click",()=>pilotControl("resume"));
   el("bcPilotStop")?.addEventListener("click",()=>pilotControl("stop"));
   el("bcPilotRefresh")?.addEventListener("click",()=>refreshPilotCommand());
+  document.addEventListener("keydown",event=>{if(event.defaultPrevented||event.ctrlKey||event.metaKey||event.altKey)return;const tag=String(document.activeElement?.tagName||"").toLowerCase();if(["input","textarea","select"].includes(tag)||document.querySelector("dialog[open]"))return;if(event.key.toLowerCase()==="r"){event.preventDefault();refreshPilotCommand();}});
   el("bcShiftStartView")?.addEventListener("click",()=>setShiftBridgeMode("start"));
   el("bcShiftHandoffView")?.addEventListener("click",()=>setShiftBridgeMode("handoff"));
   el("bcMoreWorkspaces")?.addEventListener("click",()=>{

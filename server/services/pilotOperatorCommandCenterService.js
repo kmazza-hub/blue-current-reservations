@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"92.25.0",phase:"D",organizationId,
+      version:"92.50.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -135,6 +135,7 @@ class PilotOperatorCommandCenterService{
         dangerousActions:["STOP"],
         reasonRequired:["PAUSE","STOP"]
       },
+      fieldAcceptance:{primaryActionVisible:true,exceptionRecoveryVisible:true,minimumTouchTargetPx:44,duplicateControlSubmissionProtected:true,secondaryToolsProgressivelyDisclosed:true,keyboardRefreshShortcut:"R"},
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false
