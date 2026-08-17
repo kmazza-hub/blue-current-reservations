@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.j
 const DatabaseService=require(path.join(root,"server/services/databaseService"));
 const Service=require(path.join(root,"server/services/pilotBackupRestoreRollbackReadinessService"));
 (async()=>{
-assert.equal(pkg.version,"93.25.0");
+assert(Number(pkg.version.split(".")[0])>=93);
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v9325-")),dbPath=path.join(dir,"db.json");
 fs.writeFileSync(dbPath,JSON.stringify({pilot:[{id:"state",value:1}]},null,2));
 const db=new DatabaseService(dbPath,{logger:{warn(){},error(){}}});await db.read();

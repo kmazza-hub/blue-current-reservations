@@ -1,0 +1,20 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const Service=require(path.join(root,"server/services/pilotObservabilityAlertingSupportReadinessService"));
+(async()=>{
+assert.equal(pkg.version,"93.50.0");
+const observability={current:async()=>({runtime:{activeSession:{id:"session-1"}},observability:{summary:{metrics:12,incidents:2,openIncidents:1,criticalOpen:1,escalated:1}}})};
+const report=await new Service(observability).current("org-test");
+assert.equal(report.state,"CRITICAL");assert.equal(report.activeSession,true);
+assert.equal(report.supportReadiness.runtimeMetricsVisible,true);assert.equal(report.supportReadiness.incidentTimelineVisible,true);
+assert.equal(report.supportReadiness.criticalIncidentPauseGuard,true);assert.equal(report.supportReadiness.acknowledgementSupported,true);
+assert.equal(report.supportReadiness.escalationSupported,true);assert.equal(report.supportReadiness.resolutionEvidenceRequired,true);
+assert.equal(report.escalationPolicy.CRITICAL,"pause-protect-escalate-recover-verify");
+assert.equal(report.supportBoundary.automaticRemediation,false);assert.equal(report.supportBoundary.automaticResolution,false);
+const pilot=fs.readFileSync(path.join(root,"server/services/pilotRuntimeObservabilityIncidentService.js"),"utf8");
+assert(pilot.includes('if(severity==="CRITICAL"&&session.state==="ACTIVE")'));assert(pilot.includes('"PAUSE"'));
+assert(pilot.includes("async acknowledge("));assert(pilot.includes("async escalate("));assert(pilot.includes("async resolve("));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/support-readiness'));
+console.log(JSON.stringify({ok:true,version:"93.50.0",runtimeMetrics:true,incidentTimeline:true,criticalPauseGuard:true,acknowledgement:true,escalation:true,resolutionEvidence:true,humanSupportOwnership:true,automaticRemediation:false,automaticResolution:false,nextGate:"PILOT_SECURITY_ACCESS_AND_AUDIT_READINESS"},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});
