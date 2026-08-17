@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "83.50.0",
+  "version": "83.75.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 portfolio decision ledger and executive accountability",
+  "description": "Blue Current Hospitality OS \u2014 executive decision outcome intelligence",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
