@@ -1,0 +1,21 @@
+{
+  "version": "88.75.0",
+  "phase": "C",
+  "gate": "PILOT_SCENARIO_AND_SERVICE_SIMULATION",
+  "requiredScenarios": [
+    "reservation-arrival",
+    "walk-in-pressure",
+    "table-turn",
+    "staffing-gap",
+    "kitchen-delay",
+    "pos-stale",
+    "service-recovery"
+  ],
+  "mode": "SIMULATION_ONLY",
+  "safety": {
+    "externalProviderWriteBack": false,
+    "customerCommunication": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_OBSERVATION_AND_OPERATOR_ACCEPTANCE"
+}

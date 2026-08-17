@@ -7,7 +7,7 @@ const Cert=require(path.join(root,"server/services/pilotLocationConfigurationCer
 const Binding=require(path.join(root,"server/services/pilotDataWorkflowBindingService"));
 
 (async()=>{
- assert.equal(pkg.version,"88.50.0");
+ assert(Number(pkg.version.split(".")[0]) >= 88);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/pilot/workflow-binding"));
 
