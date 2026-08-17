@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "90.0.0",
+  "version": "90.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 pilot session closeout and evidence capture",
+  "description": "Blue Current Hospitality OS \u2014 pilot learning review and next-session decision",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

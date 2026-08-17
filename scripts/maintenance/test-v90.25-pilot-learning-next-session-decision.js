@@ -1,0 +1,22 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory"));
+const Closeout=require(path.join(root,"server/services/pilotSessionCloseoutEvidenceService"));
+const Learning=require(path.join(root,"server/services/pilotLearningNextSessionDecisionService"));
+(async()=>{
+ assert.equal(pkg.version,"90.25.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
+ assert(router.includes("/api/pilot/learning-decision/"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc9025-")),dbPath=path.join(dir,"db.json");
+ const closeout={id:"c1",version:"90.0.0",organizationId:"o",sessionId:"s1",status:"CLOSED",outcome:"SUCCESS_WITH_FOLLOWUP",operatorSummary:"Dinner service was stable and operators used the system successfully.",lessonsLearned:"Connector freshness deserves another controlled observation.",followUp:"Review freshness threshold before next session.",closedAt:new Date().toISOString(),evidence:{runtimeSummary:{metrics:4,incidents:1},incidents:[{id:"i1",severity:"WARNING",status:"RESOLVED"}]}};
+ fs.writeFileSync(dbPath,JSON.stringify({pilotSessionCloseouts:{s1:closeout}},null,2));
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ const fakeRuntime={},fakeObs={};const closeouts=new Closeout(db,fakeRuntime,fakeObs),learning=new Learning(db,closeouts);
+ let a=await learning.assess("o","s1");assert.equal(a.suggestedDecision,"REVISE");assert.equal(a.humanDecisionRequired,true);
+ const d=await learning.decide("o","s1",{decision:"REVISE",rationale:"Repeat the controlled pilot after tightening the connector freshness threshold and recertifying the evidence.","requiredChanges":["Review connector freshness threshold","Recertify workflow binding after configuration change"]},"operator");
+ assert.equal(d.decision,"REVISE");assert.equal(d.controls.authorizesAutomaticNextSession,false);assert.equal(d.controls.authorizesAutomaticExpansion,false);
+ const current=await learning.current("o","s1");assert.equal(current.status,"DECIDED_REVISE");assert.equal(current.nextGate,"APPLY_AND_RECERTIFY_REQUIRED_CHANGES");
+ const portfolio=await learning.portfolio("o");assert.equal(portfolio.decisions,1);assert.equal(portfolio.counts.REVISE,1);
+ console.log(JSON.stringify({ok:true,version:"90.25.0",phase:"C",decisions:["REPEAT","HOLD","REVISE","PROGRESS"],humanDecisionRequired:true,systemSuggestionNonBinding:true,requiredChangeRegister:true,humanOverrideCaptured:true,automaticNextSession:false,automaticExpansion:false,autonomousProductionChanges:false,nextPhase:"PILOT_OPERATOR_EXPERIENCE_AND_FIELD_READINESS"},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});

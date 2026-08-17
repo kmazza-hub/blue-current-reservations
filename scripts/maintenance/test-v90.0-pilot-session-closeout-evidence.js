@@ -12,7 +12,7 @@ const Runtime=require(path.join(root,"server/services/pilotRuntimeSessionControl
 const Obs=require(path.join(root,"server/services/pilotRuntimeObservabilityIncidentService"));
 const Closeout=require(path.join(root,"server/services/pilotSessionCloseoutEvidenceService"));
 (async()=>{
- assert.equal(pkg.version,"90.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 90);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes("/api/pilot/session-closeout/"));
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc900-")),dbPath=path.join(dir,"db.json");fs.writeFileSync(dbPath,"{}");
  const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
