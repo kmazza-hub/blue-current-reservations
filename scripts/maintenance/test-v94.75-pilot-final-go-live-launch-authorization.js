@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"94.75.0");
+const svc=fs.readFileSync(path.join(root,"server/services/pilotFinalGoLiveLaunchAuthorizationService.js"),"utf8");
+for(const dep of ["environment.current","backup.current","support.current","security.current","performance.current","continuity.current","enablement.current","pilotLaunchControlService.snapshot"])assert(svc.includes(dep),dep);
+for(const key of ["assessmentDoesNotLaunch:true","explicitHumanLaunchAuthorizationRequired:true","authorizationDoesNotStartRuntime:true","automaticLaunch:false","automaticGoLive:false","automaticExpansion:false","autonomousProductionChanges:false"])assert(svc.includes(key),key);
+const launch=fs.readFileSync(path.join(root,"server/services/pilotLaunchControlService.js"),"utf8");
+for(const id of ["PILOT_LOCATION_SELECTED","DEPLOYMENT_PACKAGE_CERTIFIED","CONFIGURATION_FROZEN","CONFIGURATION_UNCHANGED","LAUNCH_WINDOW","LAUNCH_OWNER","OPERATOR_ROSTER","SUPPORT_BRIDGE","NO_OPEN_BLOCKERS","PRELAUNCH_EVIDENCE"])assert(launch.includes(`id:"${id}"`),id);
+assert(launch.includes("humanLaunchAuthorizationRequired:true"));assert(launch.includes("authorizationDoesNotStartRuntime:true"));assert(launch.includes("automaticLaunch:false"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/final-go-live-readiness'));assert(router.includes('authService.can(auth,"admin")'));
+console.log(JSON.stringify({ok:true,version:"94.75.0",readinessGates:8,launchControlChecks:10,zeroOpenBlockersRequired:true,explicitHumanAuthorization:true,assessmentDoesNotLaunch:true,authorizationDoesNotStartRuntime:true,automaticLaunch:false,automaticGoLive:false,automaticExpansion:false,autonomousProductionChanges:false,nextGate:"PILOT_LAUNCH_DAY_COMMAND_AND_CONTROL"},null,2));

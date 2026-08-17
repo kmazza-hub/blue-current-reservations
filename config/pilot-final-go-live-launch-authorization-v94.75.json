@@ -1,0 +1,27 @@
+{
+  "version": "94.75.0",
+  "phase": "D",
+  "gate": "PILOT_FINAL_GO_LIVE_CHECKLIST_AND_LAUNCH_AUTHORIZATION",
+  "requiredGates": [
+    "ENVIRONMENT_DEPLOYMENT",
+    "BACKUP_RESTORE_ROLLBACK",
+    "OBSERVABILITY_ALERTING_SUPPORT",
+    "SECURITY_ACCESS_AUDIT",
+    "PERFORMANCE_CAPACITY_RESILIENCE",
+    "DEVICE_NETWORK_ONSITE_CONTINUITY",
+    "TRAINING_RUNBOOK_OPERATOR_ENABLEMENT",
+    "LAUNCH_CONTROL"
+  ],
+  "decision": {
+    "allGatesRequired": true,
+    "zeroOpenBlockersRequired": true,
+    "explicitHumanLaunchAuthorizationRequired": true,
+    "assessmentDoesNotLaunch": true,
+    "authorizationDoesNotStartRuntime": true,
+    "automaticLaunch": false,
+    "automaticGoLive": false,
+    "automaticExpansion": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_LAUNCH_DAY_COMMAND_AND_CONTROL"
+}

@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"94.50.0");
+assert(Number(pkg.version.split(".")[0])>=94);
 const ux=fs.readFileSync(path.join(root,"server/services/v54OperatorExperienceCertificationService.js"),"utf8");
 for(const id of ["LIVE_SERVICE_USABILITY","TRAINING_BURDEN","SHIFT_HANDOFF","ACCESSIBILITY_READABILITY","OPERATOR_ACCEPTANCE","MANAGER_ACCEPTANCE"])assert(ux.includes(`id:"${id}"`),id);
 assert(ux.includes("humanOperatorAcceptanceRequired:true"));assert(ux.includes("humanManagerAcceptanceRequired:true"));
