@@ -1,0 +1,34 @@
+{
+  "version": "89.75.0",
+  "phase": "C",
+  "gate": "PILOT_RUNTIME_OBSERVABILITY_AND_INCIDENT_CONTROL",
+  "runtimeHealth": [
+    "HEALTHY",
+    "DEGRADED",
+    "CRITICAL"
+  ],
+  "incidentSeverity": [
+    "INFO",
+    "WARNING",
+    "HIGH",
+    "CRITICAL"
+  ],
+  "incidentLifecycle": [
+    "OPEN",
+    "ACKNOWLEDGED",
+    "ESCALATED",
+    "RESOLVED"
+  ],
+  "criticalIncidentAction": "PAUSE_ACTIVE_PILOT_SESSION",
+  "timelineIncludes": [
+    "sessionEvents",
+    "metrics",
+    "incidentLifecycle"
+  ],
+  "safety": {
+    "observabilityExecutesOperations": false,
+    "providerWriteBack": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_SESSION_CLOSEOUT_AND_EVIDENCE_CAPTURE"
+}
