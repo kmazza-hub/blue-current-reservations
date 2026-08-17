@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="91.0.0">
+  <meta name="blue-current-build" content="91.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=91.0.0">
+  <link rel="stylesheet" href="styles.css?v=91.25.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V91.0</strong>
+    <strong>Blue Current V91.25</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -319,9 +319,23 @@
     <section class="bc-pilot-command-card" id="bcPilotCommandCard" aria-labelledby="bcPilotCommandTitle">
       <header>
         <div><small>CONTROLLED PILOT</small><h2 id="bcPilotCommandTitle">Pilot command</h2></div>
-        <span class="bc-pilot-state" id="bcPilotState" data-tone="neutral">Checking</span>
+        <div class="bc-pilot-header-actions">
+          <label class="bc-role-focus">View
+            <select id="bcPilotRole" aria-label="Command role focus">
+              <option value="HOST">Host</option>
+              <option value="MANAGER" selected>Manager</option>
+              <option value="OPERATOR">Operator</option>
+              <option value="EXECUTIVE">Executive</option>
+            </select>
+          </label>
+          <span class="bc-pilot-state" id="bcPilotState" data-tone="neutral">Checking</span>
+        </div>
       </header>
-      <div class="bc-pilot-command-grid">
+      <div class="bc-role-guidance" id="bcPilotRoleGuidance">
+        <strong id="bcPilotRoleLabel">Manager view</strong>
+        <span id="bcPilotRoleCopy">Control the shift and keep service inside the approved operating envelope.</span>
+      </div>
+      <div class="bc-pilot-command-grid" data-role-group="core">
         <div><small>Readiness</small><strong id="bcPilotReadiness">Checking</strong><span id="bcPilotReadinessDetail">Verifying pilot gates…</span></div>
         <div><small>Session</small><strong id="bcPilotSession">No active session</strong><span id="bcPilotSessionDetail">Controlled start required</span></div>
         <div><small>Health</small><strong id="bcPilotHealth">—</strong><span id="bcPilotHealthDetail">No runtime health yet</span></div>
@@ -341,7 +355,7 @@
           <strong id="bcPilotSessionClock">—</strong>
         </div>
       </div>
-      <div class="bc-pilot-controls" id="bcPilotControls">
+      <div class="bc-pilot-controls" id="bcPilotControls" data-role-group="controls">
         <button type="button" id="bcPilotStart" data-action-tone="go">Start session</button>
         <button type="button" id="bcPilotPause" data-action-tone="watch">Pause</button>
         <button type="button" id="bcPilotResume" data-action-tone="go">Resume</button>
@@ -349,11 +363,11 @@
         <button type="button" id="bcPilotRefresh" data-action-tone="neutral">Refresh</button>
         <span id="bcPilotActionFeedback" role="status" aria-live="polite">Controls follow the certified operating envelope.</span>
       </div>
-      <div class="bc-pilot-incidents" id="bcPilotIncidents" hidden>
+      <div class="bc-pilot-incidents" id="bcPilotIncidents" data-role-group="incidents" hidden>
         <header><small>OPEN INCIDENTS</small><strong id="bcPilotIncidentCount">0</strong></header>
         <div id="bcPilotIncidentList"></div>
       </div>
-      <footer><span id="bcPilotEvidence">No closed pilot evidence yet.</span><span>Human controlled · No automatic expansion</span></footer>
+      <footer><span id="bcPilotEvidence" data-role-group="evidence">No closed pilot evidence yet.</span><span>Human controlled · No automatic expansion</span></footer>
     </section>
 
     <section class="bc-command-launch">
@@ -9970,7 +9984,7 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=91.0.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=91.0.0" defer></script>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=91.25.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=91.25.0" defer></script>
     <dialog class="bc-pilot-confirm" id="bcPilotConfirmDialog">
       <form method="dialog">
         <small id="bcPilotConfirmEyebrow">PILOT CONTROL</small>

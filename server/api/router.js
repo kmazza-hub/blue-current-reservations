@@ -799,7 +799,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/pilot/operator-command" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot operator command requires read permission."});
-      return sendJson(response,200,await pilotOperatorCommandCenterService.current(organizationId));
+      const presentationRole=String(url.searchParams.get("role")||"MANAGER").toUpperCase();
+      return sendJson(response,200,await pilotOperatorCommandCenterService.current(organizationId,presentationRole));
     }
 
     if (url.pathname === "/api/pilot/learning-decisions" && request.method === "GET") {

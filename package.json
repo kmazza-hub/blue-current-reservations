@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "91.0.0",
+  "version": "91.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 field operator workflow and service-night polish",
+  "description": "Blue Current Hospitality OS \u2014 command information hierarchy and role focus",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

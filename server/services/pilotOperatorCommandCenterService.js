@@ -6,7 +6,41 @@ class PilotOperatorCommandCenterService{
     this.observability=observability;this.closeout=closeout;this.learning=learning;
   }
   async safe(fn,fallback=null){try{return await fn();}catch{return fallback;}}
-  async current(organizationId){
+  roleProfile(role){
+    const key=String(role||"MANAGER").toUpperCase();
+    const profiles={
+      HOST:{
+        role:"HOST",label:"Host",
+        primary:"GUEST_FLOW",
+        priorities:["guestFlow","tableState","serviceAlerts"],
+        showPilotControls:false,showEvidence:false,showIncidents:true,
+        guidance:"Keep guest flow, waits, and table readiness clear. Escalate operational exceptions to the manager."
+      },
+      MANAGER:{
+        role:"MANAGER",label:"Manager",
+        primary:"SERVICE_CONTROL",
+        priorities:["nextAction","sessionHealth","incidents","readiness"],
+        showPilotControls:true,showEvidence:true,showIncidents:true,
+        guidance:"Control the shift, resolve exceptions, and keep the pilot inside its approved operating envelope."
+      },
+      OPERATOR:{
+        role:"OPERATOR",label:"Operator",
+        primary:"PILOT_CONTROL",
+        priorities:["readiness","sessionHealth","incidents","evidence"],
+        showPilotControls:true,showEvidence:true,showIncidents:true,
+        guidance:"Protect pilot integrity, verify evidence continuity, and document every intervention."
+      },
+      EXECUTIVE:{
+        role:"EXECUTIVE",label:"Executive",
+        primary:"OUTCOME_OVERVIEW",
+        priorities:["readiness","outcomes","evidence","exceptions"],
+        showPilotControls:false,showEvidence:true,showIncidents:false,
+        guidance:"Review readiness, outcomes, exceptions, and learning without entering service-level controls."
+      }
+    };
+    return profiles[key]||profiles.MANAGER;
+  }
+  async current(organizationId,role="MANAGER"){
     const [launch,runtime,closeouts,decisions]=await Promise.all([
       this.safe(()=>this.launch.current(organizationId),null),
       this.safe(()=>this.runtime.current(organizationId),null),
@@ -39,9 +73,11 @@ class PilotOperatorCommandCenterService{
       status="READINESS_HOLD";nextAction="Complete the remaining readiness gates before launch approval.";tone="hold";
     }
 
+    const presentation=this.roleProfile(role);
     return {
-      version:"91.0.0",phase:"D",organizationId,
+      version:"91.25.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
+      presentation,
       status,tone,nextAction,
       readiness:{
         decision:launch?.assessment?.decision||"UNKNOWN",

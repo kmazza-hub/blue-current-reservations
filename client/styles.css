@@ -17236,3 +17236,36 @@ textarea.bc-auto-light-contrast:disabled{
   .bc-pilot-incident-actions{display:grid;grid-template-columns:1fr}
   .bc-pilot-incident-actions button{width:100%;min-height:44px}
 }
+
+
+/* ==========================================================================
+   V91.25 — COMMAND INFORMATION HIERARCHY & ROLE FOCUS
+   Presentation focus only. Authorization remains server-side and unchanged.
+   ========================================================================== */
+.bc-pilot-header-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}
+.bc-role-focus{display:flex;align-items:center;gap:7px;color:#aebed0;font-size:.74rem;font-weight:850;letter-spacing:.05em;text-transform:uppercase}
+.bc-role-focus select{
+  min-height:36px;border-radius:9px;border:1px solid rgba(255,255,255,.14);
+  background:#142235;color:#fff;padding:6px 28px 6px 9px;font:inherit;letter-spacing:0;text-transform:none
+}
+.bc-role-guidance{
+  display:flex;align-items:center;gap:10px;margin:12px 0 0;padding:9px 12px;
+  border-radius:10px;background:rgba(91,160,193,.09);border:1px solid rgba(116,183,215,.12)
+}
+.bc-role-guidance strong{color:#fff;white-space:nowrap;font-size:.82rem}
+.bc-role-guidance span{color:#bfd0dc;font-size:.79rem;line-height:1.35}
+.bc-pilot-command-card[data-role="HOST"] [data-role-group="controls"],
+.bc-pilot-command-card[data-role="EXECUTIVE"] [data-role-group="controls"]{display:none!important}
+.bc-pilot-command-card[data-role="EXECUTIVE"] [data-role-group="incidents"]{display:none!important}
+.bc-pilot-command-card[data-role="HOST"] [data-role-group="evidence"]{display:none!important}
+.bc-pilot-command-card[data-role="EXECUTIVE"] .bc-pilot-focus-strip>div:nth-child(3){display:none}
+.bc-pilot-command-card[data-role="EXECUTIVE"] .bc-pilot-focus-strip{grid-template-columns:1fr 1.8fr}
+.bc-pilot-command-card[data-role="HOST"] .bc-pilot-command-grid>div:nth-child(1),
+.bc-pilot-command-card[data-role="HOST"] .bc-pilot-command-grid>div:nth-child(4){opacity:.68}
+.bc-pilot-command-card[data-role="OPERATOR"] .bc-role-guidance{background:rgba(88,125,184,.10)}
+@media(max-width:700px){
+  .bc-pilot-command-card>header{align-items:flex-start}
+  .bc-pilot-header-actions{width:100%;justify-content:space-between}
+  .bc-role-focus select{min-height:42px}
+  .bc-role-guidance{align-items:flex-start;flex-direction:column;gap:4px}
+}

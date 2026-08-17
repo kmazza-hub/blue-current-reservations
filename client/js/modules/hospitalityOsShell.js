@@ -309,7 +309,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V91.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V91.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -663,12 +663,38 @@ async function pilotIncidentAction(incidentId,action){
   }catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
 }
 
+
+const PILOT_ROLE_KEY="bc-pilot-command-role";
+function currentPilotRole(){
+  const select=el("bcPilotRole");
+  const saved=localStorage.getItem(PILOT_ROLE_KEY);
+  const allowed=["HOST","MANAGER","OPERATOR","EXECUTIVE"];
+  const value=allowed.includes(select?.value)?select.value:allowed.includes(saved)?saved:"MANAGER";
+  if(select&&select.value!==value)select.value=value;
+  return value;
+}
+function applyPilotRolePresentation(data){
+  const profile=data.presentation||{};
+  const role=profile.role||currentPilotRole();
+  const card=el("bcPilotCommandCard");if(card)card.dataset.role=role;
+  setText("bcPilotRoleLabel",`${profile.label||role} view`);
+  setText("bcPilotRoleCopy",profile.guidance||"Focus on the information required for this operating role.");
+  const controls=el("bcPilotControls");
+  if(controls)controls.hidden=profile.showPilotControls===false;
+  const incidents=el("bcPilotIncidents");
+  if(incidents&&profile.showIncidents===false)incidents.hidden=true;
+  const evidence=el("bcPilotEvidence");
+  if(evidence)evidence.hidden=profile.showEvidence===false;
+}
+
 async function refreshPilotCommand(){
   if(!authenticatedAppState())return;
   try{
-    const response=await commandFetch("/api/pilot/operator-command",{method:"GET",headers:{"Accept":"application/json"}});
+    const role=currentPilotRole();
+    const response=await commandFetch(`/api/pilot/operator-command?role=${encodeURIComponent(role)}`,{method:"GET",headers:{"Accept":"application/json"}});
     const data=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(data.error||`Pilot command returned ${response.status}.`);
+    applyPilotRolePresentation(data);
     const state=el("bcPilotState");
     if(state){state.textContent=String(data.status||"UNKNOWN").replaceAll("_"," ");state.dataset.tone=data.tone||"neutral";}
     setText("bcPilotReadiness",String(data.readiness?.decision||"UNKNOWN").replaceAll("_"," "));
@@ -686,7 +712,8 @@ async function refreshPilotCommand(){
     setText("bcPilotFocusPriority",data.nextAction||"Review pilot readiness.");
     syncPilotClock(data.session?.startedAt||null);
     ["Start","Pause","Resume","Stop"].forEach(name=>{const b=el(`bcPilot${name}`);if(b)b.disabled=!data.controls?.[`can${name}`];});
-    renderPilotIncidents(data.health?.incidents||[]);
+    if(data.presentation?.showIncidents!==false)renderPilotIncidents(data.health?.incidents||[]);
+    else {const incidentRoot=el("bcPilotIncidents");if(incidentRoot)incidentRoot.hidden=true;}
   }catch(error){
     const state=el("bcPilotState");if(state){state.textContent="Unavailable";state.dataset.tone="hold";}
     setText("bcPilotNextAction","Pilot command data is temporarily unavailable. Core Command remains available.");
@@ -797,6 +824,10 @@ function init(){
   el("bcPilotResume")?.addEventListener("click",()=>pilotControl("resume"));
   el("bcPilotStop")?.addEventListener("click",()=>pilotControl("stop"));
   el("bcPilotRefresh")?.addEventListener("click",()=>refreshPilotCommand());
+  el("bcPilotRole")?.addEventListener("change",event=>{
+    localStorage.setItem(PILOT_ROLE_KEY,String(event.target.value||"MANAGER"));
+    refreshPilotCommand();
+  });
   el("bcCommandLocation")?.addEventListener("change",event=>{
     commandState.locationId=event.target.value;
     refreshCommand();
