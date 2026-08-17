@@ -17360,3 +17360,19 @@ textarea.bc-auto-light-contrast:disabled{
 
 /* V92.75 — PILOT REHEARSAL & FIELD ACCEPTANCE CERTIFICATION */
 .bc-field-rehearsal{width:100%;margin-top:10px;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}.bc-field-rehearsal header{display:flex;justify-content:space-between;gap:10px}.bc-field-rehearsal header strong{color:#fff}.bc-field-rehearsal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:9px 0}.bc-field-rehearsal-grid span{min-height:36px;display:flex;align-items:center;justify-content:center;padding:5px;border-radius:8px;background:rgba(255,255,255,.055);color:#c4d1da;font-size:.68rem;font-weight:800;text-align:center}.bc-field-rehearsal p{margin:5px 0 0;color:#aebfcb;font-size:.75rem;line-height:1.4}@media(max-width:760px){.bc-field-rehearsal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.bc-field-rehearsal-grid span{min-height:44px}}
+
+
+/* V98.75 FINAL OPERATOR ACCESSIBILITY BASELINE */
+:where(button,a,input,select,textarea,[tabindex]):focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 3px;
+}
+:where(.card,.panel,.surface,.sheet,.modal,.drawer,[data-surface="light"],[class*="light"]) {
+  text-rendering: optimizeLegibility;
+}
+:where([data-surface="light"],.surface-light,.panel-light,.card-light,.bg-light,.bg-white) :where(p,span,label,small,strong,h1,h2,h3,h4,h5,h6,li,td,th) {
+  color: #172033;
+}
+@media (max-width: 760px) {
+  button, input, select, textarea, [role="button"] { min-height: 44px; }
+}
