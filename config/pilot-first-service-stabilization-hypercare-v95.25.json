@@ -1,0 +1,31 @@
+{
+  "version": "95.25.0",
+  "phase": "D",
+  "gate": "PILOT_FIRST_SERVICE_STABILIZATION_AND_HYPERCARE",
+  "checks": [
+    "LAUNCH_DAY_COMMAND",
+    "NO_CRITICAL_INCIDENTS",
+    "INCIDENT_FOLLOWUP",
+    "OPERATOR_CONFIDENCE",
+    "WORKFLOW_STABILITY",
+    "GUEST_IMPACT",
+    "SUPPORT_BURDEN",
+    "REPEATED_HEALTH",
+    "DATA_KPI_CONFIDENCE",
+    "UNRESOLVED_DEBT_VISIBLE"
+  ],
+  "decisions": [
+    "PROCEED",
+    "PROCEED_WITH_CONDITIONS",
+    "HOLD"
+  ],
+  "safety": {
+    "recommendationIsAdvisory": true,
+    "humanNextServiceDecisionRequired": true,
+    "noAutomaticNextService": true,
+    "noAutomaticRollback": true,
+    "noAutomaticExpansion": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_REPEAT_SERVICE_RELIABILITY_AND_CONFIDENCE"
+}

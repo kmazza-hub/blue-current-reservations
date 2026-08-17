@@ -1,0 +1,13 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"95.25.0");
+const svc=fs.readFileSync(path.join(root,"server/services/pilotFirstServiceStabilizationHypercareService.js"),"utf8");
+for(const id of ["LAUNCH_DAY_COMMAND","NO_CRITICAL_INCIDENTS","INCIDENT_FOLLOWUP","OPERATOR_CONFIDENCE","WORKFLOW_STABILITY","GUEST_IMPACT","SUPPORT_BURDEN","REPEATED_HEALTH","DATA_KPI_CONFIDENCE","UNRESOLVED_DEBT_VISIBLE"])assert(svc.includes(`id:"${id}"`),id);
+for(const d of ['"HOLD"','"PROCEED"','"PROCEED_WITH_CONDITIONS"'])assert(svc.includes(d),d);
+for(const x of ["recommendationIsAdvisory:true","humanNextServiceDecisionRequired:true","noAutomaticNextService:true","noAutomaticRollback:true","noAutomaticExpansion:true","autonomousProductionChanges:false"])assert(svc.includes(x),x);
+const stab=fs.readFileSync(path.join(root,"server/services/pilotStabilizationExitService.js"),"utf8");
+for(const id of ["REPEATED_HEALTH","INCIDENT_TREND","OPERATOR_CONFIDENCE","WORKFLOW_STABILITY","GUEST_IMPACT","SUPPORT_LOAD","DATA_INTEGRITY_RECHECK","EXECUTIVE_KPI_RECHECK"])assert(stab.includes(`id:"${id}"`),id);
+const close=fs.readFileSync(path.join(root,"server/services/pilotCloseoutOutcomeService.js"),"utf8");assert(close.includes('id:"DEBT_REGISTER"'));assert(close.includes("unresolvedDebtMustRemainVisible:true"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/first-service-hypercare'));
+console.log(JSON.stringify({ok:true,version:"95.25.0",hypercareChecks:10,decisions:["PROCEED","PROCEED_WITH_CONDITIONS","HOLD"],incidentFollowup:true,operatorFrictionReview:true,supportBurdenReview:true,repeatedHealth:true,dataKpiRecheck:true,unresolvedDebtVisible:true,humanNextServiceDecision:true,noAutomaticNextService:true,noAutomaticRollback:true,noAutomaticExpansion:true,nextGate:"PILOT_REPEAT_SERVICE_RELIABILITY_AND_CONFIDENCE"},null,2));

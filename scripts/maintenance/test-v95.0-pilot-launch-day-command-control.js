@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"95.0.0");
+assert(Number(pkg.version.split(".")[0])>=95);
 const svc=fs.readFileSync(path.join(root,"server/services/pilotLaunchDayCommandControlService.js"),"utf8");
 for(const id of ["FINAL_GO_LIVE","HUMAN_SHIFT_START","SUPPORT_OWNERSHIP","INCIDENT_VISIBILITY","CRITICAL_PAUSE_POSTURE","LOCAL_FALLBACK","HUMAN_SHIFT_CLOSE"])assert(svc.includes(`id:"${id}"`),id);
 for(const x of ["commandAssessmentDoesNotStartShift:true","humanStartRequired:true","humanPauseResumeStopRequired:true","humanCloseRequired:true","criticalIncidentsPauseRuntime:true","rollbackHumanDirected:true","automaticGoLive:false","autonomousProductionChanges:false"])assert(svc.includes(x),x);
