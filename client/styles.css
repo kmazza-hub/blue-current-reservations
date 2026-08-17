@@ -17135,3 +17135,17 @@ textarea.bc-auto-light-contrast:disabled{
     background:none!important;
   }
 }
+
+
+/* V90.50 — Operator Pilot Command Center Foundation */
+.bc-pilot-command-card{margin:18px 0;padding:20px;border:1px solid rgba(124,146,170,.28);border-radius:18px;background:linear-gradient(180deg,rgba(17,28,42,.96),rgba(12,21,33,.96));color:#f7fbff;box-shadow:0 16px 38px rgba(0,0,0,.16)}
+.bc-pilot-command-card>header,.bc-pilot-command-card>footer{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.bc-pilot-command-card h2{margin:3px 0 0;color:#fff}.bc-pilot-command-card small{color:#aebed0;font-weight:800;letter-spacing:.08em}
+.bc-pilot-state{padding:7px 11px;border-radius:999px;background:#26384b;color:#f7fbff;font-weight:800;font-size:.78rem}
+.bc-pilot-state[data-tone="go"]{background:#153f34}.bc-pilot-state[data-tone="watch"]{background:#59461b}.bc-pilot-state[data-tone="hold"]{background:#572c31}
+.bc-pilot-command-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.bc-pilot-command-grid>div{min-height:96px;padding:14px;border-radius:14px;background:rgba(255,255,255,.065);display:flex;flex-direction:column;gap:5px}
+.bc-pilot-command-grid strong{color:#fff;font-size:1rem}.bc-pilot-command-grid span{color:#c5d1dc;font-size:.82rem;line-height:1.35}
+.bc-pilot-command-grid .bc-pilot-next{grid-column:1/-1;min-height:auto;background:rgba(255,255,255,.1)}
+.bc-pilot-command-card>footer{color:#aebed0;font-size:.78rem;border-top:1px solid rgba(255,255,255,.09);padding-top:12px}
+@media(max-width:820px){.bc-pilot-command-grid{grid-template-columns:1fr}.bc-pilot-command-grid .bc-pilot-next{grid-column:auto}.bc-pilot-command-card>footer{align-items:flex-start;flex-direction:column}}

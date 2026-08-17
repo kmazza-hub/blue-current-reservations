@@ -1,0 +1,25 @@
+{
+  "version": "90.50.0",
+  "phase": "D",
+  "surface": "OPERATOR_PILOT_COMMAND_CENTER",
+  "operatorFields": [
+    "status",
+    "readiness",
+    "session",
+    "health",
+    "nextHumanAction",
+    "evidence"
+  ],
+  "principles": [
+    "calmAtAGlance",
+    "progressiveDisclosure",
+    "humanActionFirst",
+    "backendComplexityHidden"
+  ],
+  "safety": {
+    "humanApprovalRequired": true,
+    "humanSessionStartRequired": true,
+    "automaticExpansion": false,
+    "autonomousProductionChanges": false
+  }
+}

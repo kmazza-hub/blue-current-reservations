@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="90.25.0">
+  <meta name="blue-current-build" content="90.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=90.25.0">
+  <link rel="stylesheet" href="styles.css?v=90.50.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V90.25</strong>
+    <strong>Blue Current V90.50</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -315,6 +315,20 @@
         <button class="bc-text-action" type="button" data-bc-workspace="performance">Open profitability →</button>
       </section>
     </div>
+
+    <section class="bc-pilot-command-card" id="bcPilotCommandCard" aria-labelledby="bcPilotCommandTitle">
+      <header>
+        <div><small>CONTROLLED PILOT</small><h2 id="bcPilotCommandTitle">Pilot command</h2></div>
+        <span class="bc-pilot-state" id="bcPilotState" data-tone="neutral">Checking</span>
+      </header>
+      <div class="bc-pilot-command-grid">
+        <div><small>Readiness</small><strong id="bcPilotReadiness">Checking</strong><span id="bcPilotReadinessDetail">Verifying pilot gates…</span></div>
+        <div><small>Session</small><strong id="bcPilotSession">No active session</strong><span id="bcPilotSessionDetail">Controlled start required</span></div>
+        <div><small>Health</small><strong id="bcPilotHealth">—</strong><span id="bcPilotHealthDetail">No runtime health yet</span></div>
+        <div class="bc-pilot-next"><small>NEXT HUMAN ACTION</small><strong id="bcPilotNextAction">Loading pilot command…</strong></div>
+      </div>
+      <footer><span id="bcPilotEvidence">No closed pilot evidence yet.</span><span>Human controlled · No automatic expansion</span></footer>
+    </section>
 
     <section class="bc-command-launch">
       <header><div><small>WORKSPACES</small><h2>Go directly to the work.</h2></div><p>Blue Current keeps the command view calm. Open specialist tools only when you need them.</p></header>
@@ -9930,6 +9944,6 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=90.25.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=90.25.0" defer></script>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=90.50.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=90.50.0" defer></script>
 </body>
 </html>

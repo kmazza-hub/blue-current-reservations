@@ -309,7 +309,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V90.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V90.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -569,6 +569,29 @@ function renderCommandError(error){
   renderAttention([{severity:"high",workspace:"system",title:"Operating picture unavailable",detail:"Sign in or verify API health and location access."}]);
 }
 
+
+async function refreshPilotCommand(){
+  if(!authenticatedAppState())return;
+  try{
+    const response=await commandFetch("/api/pilot/operator-command",{method:"GET",headers:{"Accept":"application/json"}});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||`Pilot command returned ${response.status}.`);
+    const state=el("bcPilotState");
+    if(state){state.textContent=String(data.status||"UNKNOWN").replaceAll("_"," ");state.dataset.tone=data.tone||"neutral";}
+    setText("bcPilotReadiness",String(data.readiness?.decision||"UNKNOWN").replaceAll("_"," "));
+    setText("bcPilotReadinessDetail",data.readiness?.explicitHold?"Explicit launch hold is active.":data.readiness?.currentApproval?"Human launch approval is current.":`${data.readiness?.blocking?.length||0} readiness blocker(s).`);
+    setText("bcPilotSession",data.session?String(data.session.state||"ACTIVE").replaceAll("_"," "):"No active session");
+    setText("bcPilotSessionDetail",data.session?.label||"Controlled start required");
+    setText("bcPilotHealth",data.health?.state||"—");
+    setText("bcPilotHealthDetail",data.health?`${data.health.openIncidents} open incident(s) · ${data.health.metrics} metric(s)`:"No runtime health yet");
+    setText("bcPilotNextAction",data.nextAction||"Review pilot status.");
+    setText("bcPilotEvidence",`${data.evidence?.closedSessions||0} closed session(s) · ${data.evidence?.learningDecisions||0} learning decision(s)${data.evidence?.latestDecision?` · Latest ${data.evidence.latestDecision}`:""}`);
+  }catch(error){
+    const state=el("bcPilotState");if(state){state.textContent="Unavailable";state.dataset.tone="hold";}
+    setText("bcPilotNextAction","Pilot command data is temporarily unavailable. Core Command remains available.");
+  }
+}
+
 async function refreshCommand({force=false}={}){
   const clock=el("bcCommandClock");
   if(clock)clock.textContent=new Intl.DateTimeFormat([],{hour:"numeric",minute:"2-digit"}).format(new Date());
@@ -594,6 +617,7 @@ async function refreshCommand({force=false}={}){
     commandState.authRequired=false;
     setCommandAccessState("ready");
     renderCommand(payload);
+    refreshPilotCommand();
   }catch(error){
     renderCommandError(error);
   }finally{

@@ -1,0 +1,67 @@
+"use strict";
+
+class PilotOperatorCommandCenterService{
+  constructor(database,launchControl,runtime,observability,closeout,learning){
+    this.database=database;this.launch=launchControl;this.runtime=runtime;
+    this.observability=observability;this.closeout=closeout;this.learning=learning;
+  }
+  async safe(fn,fallback=null){try{return await fn();}catch{return fallback;}}
+  async current(organizationId){
+    const [launch,runtime,closeouts,decisions]=await Promise.all([
+      this.safe(()=>this.launch.current(organizationId),null),
+      this.safe(()=>this.runtime.current(organizationId),null),
+      this.safe(()=>this.closeout.portfolio(organizationId),{closedSessions:0,closeouts:[]}),
+      this.safe(()=>this.learning.portfolio(organizationId),{decisions:0,history:[]})
+    ]);
+    const active=runtime?.activeSession||null;
+    const obs=active?await this.safe(()=>this.observability.timeline(organizationId,active.id),null):null;
+    const latestCloseout=closeouts?.closeouts?.[0]||null;
+    const latestDecision=decisions?.history?.[0]||null;
+
+    let status="SETUP_REQUIRED",nextAction="Complete restaurant configuration and pilot readiness gates.",tone="hold";
+    if(launch?.hold){status="LAUNCH_HOLD";nextAction="Review and release the explicit pilot launch hold when conditions are ready.";tone="hold";}
+    else if(active){
+      const critical=Number(obs?.summary?.criticalOpen||0),open=Number(obs?.summary?.openIncidents||0);
+      status=active.state==="PAUSED"?"PILOT_PAUSED":critical?"CRITICAL_INCIDENT":open?"PILOT_DEGRADED":"PILOT_ACTIVE";
+      nextAction=active.state==="PAUSED"?"Review the pause reason and operating envelope before resuming.":critical?"Resolve the critical incident before service continues.":open?"Acknowledge and resolve open pilot incidents.":"Continue the controlled session and monitor service health.";
+      tone=critical||active.state==="PAUSED"?"hold":open?"watch":"go";
+    }else if(launch?.current){
+      status="READY_TO_START";nextAction="Human approval is current. Start the controlled pilot session when the operator is ready.";tone="go";
+    }else if(latestCloseout&&!latestDecision){
+      status="LEARNING_DECISION_REQUIRED";nextAction="Review the completed session evidence and record REPEAT, HOLD, REVISE, or PROGRESS.";tone="watch";
+    }else if(latestDecision){
+      status=`DECIDED_${latestDecision.decision}`;
+      nextAction=latestDecision.decision==="REVISE"?"Apply required changes and recertify before another session.":latestDecision.decision==="HOLD"?"Resolve the hold before further pilot activity.":latestDecision.decision==="REPEAT"?"Prepare a new controlled session against current certified evidence.":"Prepare the next controlled pilot stage; no automatic expansion is authorized.";
+      tone=latestDecision.decision==="PROGRESS"?"go":latestDecision.decision==="HOLD"?"hold":"watch";
+    }else if(launch?.assessment?.decision==="GO_ELIGIBLE"){
+      status="HUMAN_APPROVAL_REQUIRED";nextAction="Review the readiness evidence and explicitly approve or hold pilot launch.";tone="watch";
+    }else if(launch){
+      status="READINESS_HOLD";nextAction="Complete the remaining readiness gates before launch approval.";tone="hold";
+    }
+
+    return {
+      version:"90.50.0",phase:"D",organizationId,
+      surface:"OPERATOR_PILOT_COMMAND_CENTER",
+      status,tone,nextAction,
+      readiness:{
+        decision:launch?.assessment?.decision||"UNKNOWN",
+        currentApproval:Boolean(launch?.current),
+        explicitHold:Boolean(launch?.hold),
+        blocking:launch?.assessment?.blocking||[]
+      },
+      session:active?{id:active.id,label:active.label,state:active.state,startedAt:active.startedAt}:null,
+      health:active?{
+        state:Number(obs?.summary?.criticalOpen||0)>0?"CRITICAL":Number(obs?.summary?.openIncidents||0)>0?"DEGRADED":"HEALTHY",
+        openIncidents:Number(obs?.summary?.openIncidents||0),
+        criticalOpen:Number(obs?.summary?.criticalOpen||0),
+        metrics:Number(obs?.summary?.metrics||0)
+      }:null,
+      evidence:{closedSessions:Number(closeouts?.closedSessions||0),learningDecisions:Number(decisions?.decisions||0),latestOutcome:latestCloseout?.outcome||null,latestDecision:latestDecision?.decision||null},
+      operatorBoundary:{
+        humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
+        providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false
+      }
+    };
+  }
+}
+module.exports=PilotOperatorCommandCenterService;

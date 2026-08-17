@@ -1,0 +1,20 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const Service=require(path.join(root,"server/services/pilotOperatorCommandCenterService"));
+(async()=>{
+ assert.equal(pkg.version,"90.50.0");
+ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8"),shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8"),router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
+ for(const id of ["bcPilotCommandCard","bcPilotState","bcPilotReadiness","bcPilotSession","bcPilotHealth","bcPilotNextAction","bcPilotEvidence"])assert(html.includes(`id="${id}"`),id);
+ assert(css.includes("V90.50 — Operator Pilot Command Center Foundation"));assert(shell.includes("refreshPilotCommand"));assert(router.includes("/api/pilot/operator-command"));
+ const fakeDb={read:async()=>({})};
+ const launch={current:async()=>({current:true,hold:null,assessment:{decision:"GO_ELIGIBLE",blocking:[]}})};
+ const runtime={current:async()=>({activeSession:{id:"s1",label:"Dinner pilot",state:"ACTIVE",startedAt:new Date().toISOString()}})};
+ const obs={timeline:async()=>({summary:{openIncidents:1,criticalOpen:0,metrics:7}})};
+ const closeout={portfolio:async()=>({closedSessions:1,closeouts:[{outcome:"SUCCESS"}]})};
+ const learning={portfolio:async()=>({decisions:1,history:[{decision:"PROGRESS"}]})};
+ const svc=new Service(fakeDb,launch,runtime,obs,closeout,learning),view=await svc.current("o");
+ assert.equal(view.status,"PILOT_DEGRADED");assert.equal(view.health.state,"DEGRADED");assert.equal(view.health.openIncidents,1);
+ assert.equal(view.operatorBoundary.automaticExpansion,false);assert.equal(view.operatorBoundary.autonomousProductionChanges,false);
+ console.log(JSON.stringify({ok:true,version:"90.50.0",phase:"D",operatorPilotCommand:true,readinessAtAGlance:true,sessionAtAGlance:true,runtimeHealthAtAGlance:true,nextHumanAction:true,evidenceSummary:true,responsiveSurface:true,progressiveDisclosure:true,automaticExpansion:false,autonomousProductionChanges:false,nextGate:"OPERATOR_PILOT_CONTROL_ACTIONS"},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});
