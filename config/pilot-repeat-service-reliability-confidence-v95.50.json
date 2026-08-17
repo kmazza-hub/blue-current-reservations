@@ -1,0 +1,31 @@
+{
+  "version": "95.50.0",
+  "phase": "D",
+  "gate": "PILOT_REPEAT_SERVICE_RELIABILITY_AND_CONFIDENCE",
+  "checks": [
+    "MULTIPLE_CLOSED_SERVICES",
+    "REPEATED_HEALTH",
+    "NO_HIGH_CRITICAL_TREND",
+    "OPERATOR_CONFIDENCE",
+    "WORKFLOW_STABILITY",
+    "SUPPORT_BURDEN_NOT_INCREASING",
+    "GUEST_IMPACT_CONTROLLED",
+    "NEXT_SESSION_DECISIONS_RECORDED",
+    "NO_AUTOMATIC_NEXT_SESSION",
+    "HYPERCARE_NOT_HOLD"
+  ],
+  "confidenceStates": [
+    "REPEATABLE",
+    "BUILDING_CONFIDENCE",
+    "HOLD"
+  ],
+  "safety": {
+    "confidenceIsAdvisory": true,
+    "humanNextSessionDecisionRequired": true,
+    "noAutomaticNextSession": true,
+    "noAutomaticExpansion": true,
+    "noAutomaticRollback": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_EXIT_READINESS_AND_V96_CERTIFICATION"
+}

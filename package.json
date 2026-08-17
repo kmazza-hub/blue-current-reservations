@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "95.25.0",
+  "version": "95.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 pilot first-service stabilization and hypercare",
+  "description": "Blue Current Hospitality OS \u2014 pilot repeat-service reliability and confidence",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
