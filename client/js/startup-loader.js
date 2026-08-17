@@ -221,7 +221,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V86.50.1 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V86.50.2 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.

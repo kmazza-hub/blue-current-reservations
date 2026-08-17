@@ -17037,3 +17037,101 @@ textarea.bc-auto-light-contrast:disabled{
     -webkit-text-fill-color:var(--bc-auto-light-ink)!important;
   }
 }
+
+
+/* ==========================================================================
+   V86.50.2 — EXPLICIT LIGHT SECTION TYPOGRAPHY AUTHORITY
+   Known remaining legacy sections use display-text effects that can bypass the
+   computed contrast guard. These five light section families are now explicit.
+   ========================================================================== */
+
+#guest-intelligence,
+#time-clock,
+#scheduling,
+#production-readiness,
+#cloud-foundation{
+  --bc-explicit-light-ink:#082733;
+  --bc-explicit-light-body:#496871;
+  --bc-explicit-light-muted:#587680;
+  --bc-explicit-light-accent:#176b7e;
+}
+
+/* Main oversized display headings — final authority. */
+#guest-intelligence .section-heading h2,
+#time-clock .section-heading h2,
+#scheduling .section-heading h2,
+#production-readiness .section-heading h2,
+#cloud-foundation .section-heading h2{
+  color:var(--bc-explicit-light-ink)!important;
+  -webkit-text-fill-color:var(--bc-explicit-light-ink)!important;
+  opacity:1!important;
+  background:none!important;
+  background-image:none!important;
+  background-clip:border-box!important;
+  -webkit-background-clip:border-box!important;
+  text-shadow:none!important;
+  filter:none!important;
+  mix-blend-mode:normal!important;
+}
+
+/* Supporting copy on the light canvas. */
+#guest-intelligence .section-heading>p:not(.eyebrow),
+#time-clock .section-heading>p:not(.eyebrow),
+#scheduling .section-heading>p:not(.eyebrow),
+#production-readiness .section-heading>p:not(.eyebrow),
+#cloud-foundation .section-heading>p:not(.eyebrow){
+  color:var(--bc-explicit-light-body)!important;
+  -webkit-text-fill-color:var(--bc-explicit-light-body)!important;
+  opacity:1!important;
+  text-shadow:none!important;
+}
+
+/* Eyebrows stay blue/teal but must remain readable. */
+#guest-intelligence .section-heading .eyebrow,
+#time-clock .section-heading .eyebrow,
+#scheduling .section-heading .eyebrow,
+#production-readiness .section-heading .eyebrow,
+#cloud-foundation .section-heading .eyebrow{
+  color:var(--bc-explicit-light-accent)!important;
+  -webkit-text-fill-color:var(--bc-explicit-light-accent)!important;
+  opacity:1!important;
+}
+
+/* Any text directly rendered on these light section canvases inherits dark ink,
+   while dark KPI/panel cards keep their own existing dark-surface palette. */
+#guest-intelligence .container > .guest-toolbar,
+#time-clock .container > .tc-grid,
+#scheduling .container > .sch-toolbar,
+#production-readiness .container > .production-summary-grid,
+#cloud-foundation .container > .cloud-status-bar{
+  --bc-light-section-ink:var(--bc-explicit-light-ink);
+}
+
+/* Prevent legacy transparent display-heading effects from returning. */
+#guest-intelligence .section-heading h2::before,
+#guest-intelligence .section-heading h2::after,
+#time-clock .section-heading h2::before,
+#time-clock .section-heading h2::after,
+#scheduling .section-heading h2::before,
+#scheduling .section-heading h2::after,
+#production-readiness .section-heading h2::before,
+#production-readiness .section-heading h2::after,
+#cloud-foundation .section-heading h2::before,
+#cloud-foundation .section-heading h2::after{
+  text-shadow:none!important;
+  filter:none!important;
+}
+
+/* Responsive layouts use the exact same readable contract. */
+@media(max-width:900px){
+  #guest-intelligence .section-heading h2,
+  #time-clock .section-heading h2,
+  #scheduling .section-heading h2,
+  #production-readiness .section-heading h2,
+  #cloud-foundation .section-heading h2{
+    color:var(--bc-explicit-light-ink)!important;
+    -webkit-text-fill-color:var(--bc-explicit-light-ink)!important;
+    opacity:1!important;
+    background:none!important;
+  }
+}

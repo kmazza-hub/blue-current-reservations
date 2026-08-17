@@ -62,7 +62,8 @@
     if (el.closest("[hidden],[aria-hidden='true']")) return false;
 
     const style = getComputedStyle(el);
-    const fg = parseColor(style.color);
+    const textFill = parseColor(style.webkitTextFillColor);
+    const fg = textFill && textFill.a > 0 ? textFill : parseColor(style.color);
     if (!fg) return false;
     const bg = effectiveBackground(el);
 

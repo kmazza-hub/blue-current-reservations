@@ -5,9 +5,9 @@ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const guard=fs.readFileSync(path.join(root,"client/js/modules/lightSurfaceContrastGuard.js"),"utf8");
 
-assert.equal(pkg.version,"86.50.1");
-assert(html.includes("lightSurfaceContrastGuard.js?v=86.50.1"));
-assert(html.includes("styles.css?v=86.50.1"));
+assert(Number(pkg.version.split(".")[0]) >= 86);
+assert(html.includes(`lightSurfaceContrastGuard.js?v=${pkg.version}`));
+assert(html.includes(`styles.css?v=${pkg.version}`));
 assert(css.includes("V86.50.1 — GLOBAL LIGHT-SURFACE CONTRAST ENFORCEMENT"));
 assert(css.includes(".bc-auto-light-contrast"));
 assert(css.includes("-webkit-text-fill-color:var(--bc-auto-light-ink)!important"));
