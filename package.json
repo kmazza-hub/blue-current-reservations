@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "86.0.0",
+  "version": "86.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 integration readiness and connector data trust",
+  "description": "Blue Current Hospitality OS \u2014 connector sync reliability and checkpoint recovery",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

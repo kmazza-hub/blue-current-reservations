@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.j
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory"));
 const Readiness=require(path.join(root,"server/services/integrationReadinessService"));
 (async()=>{
- assert.equal(pkg.version,"86.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 86);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes('"/api/integrations/readiness"'));
  assert(router.includes('"/api/integrations/readiness/connectors"'));

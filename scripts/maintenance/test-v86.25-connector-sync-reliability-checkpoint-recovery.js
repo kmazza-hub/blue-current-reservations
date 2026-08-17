@@ -1,0 +1,26 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory"));
+const Reliability=require(path.join(root,"server/services/connectorSyncReliabilityService"));
+(async()=>{
+ assert.equal(pkg.version,"86.25.0");
+ const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
+ assert(router.includes("/api/integrations/sync-reliability/checkpoint"));
+ assert(router.includes("/api/integrations/sync-reliability/recover"));
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8625-")),dbPath=path.join(dir,"db.json");fs.writeFileSync(dbPath,"{}");
+ const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}});
+ const svc=new Reliability(db);
+ await svc.checkpoint("o",{connectorId:"toast-pilot",stream:"orders",cursor:"c100",sequence:100},"admin");
+ await svc.checkpoint("o",{connectorId:"toast-pilot",stream:"orders",cursor:"c101",sequence:101},"admin");
+ let backwards=false;try{await svc.checkpoint("o",{connectorId:"toast-pilot",stream:"orders",cursor:"c99",sequence:99},"admin");}catch(e){backwards=e.statusCode===409;}assert.equal(backwards,true);
+ const first=await svc.acceptEvent("o",{connectorId:"toast-pilot",stream:"orders",eventId:"evt-1"});assert.equal(first.accepted,true);
+ const duplicate=await svc.acceptEvent("o",{connectorId:"toast-pilot",stream:"orders",eventId:"evt-1"});assert.equal(duplicate.duplicate,true);
+ await svc.recordFailure("o",{connectorId:"toast-pilot",stream:"orders",reason:"Provider timeout during incremental order pull."},"connector");
+ const recovery=await svc.recover("o",{connectorId:"toast-pilot",stream:"orders"},"admin");
+ assert.equal(recovery.recoveryFromCursor,"c101");assert.equal(recovery.recoveryFromSequence,101);assert.equal(recovery.recoveryMode,"REPLAY_FROM_LAST_COMMITTED_CHECKPOINT");assert.equal(recovery.writeAuthorityGranted,false);
+ const out=await svc.report("o");
+ assert.equal(out.summary.checkpoints,1);assert.equal(out.summary.processedEvents,1);assert.equal(out.summary.openFailures,0);assert.equal(out.summary.recoveryAcknowledged,1);
+ assert.equal(out.policy.idempotentEventAcceptance,true);assert.equal(out.policy.monotonicCheckpointSequence,true);assert.equal(out.policy.restartRecoverySupported,true);assert.equal(out.policy.writeAuthorityNotGrantedByRecovery,true);assert.equal(out.policy.autonomousProductionChanges,false);
+ console.log(JSON.stringify({ok:true,version:"86.25.0",idempotentEvents:true,monotonicCheckpoints:true,duplicateSuppression:true,partialFailureIsolation:true,replayFromCheckpoint:true,restartRecovery:true,writeAuthorityNotGrantedByRecovery:true,autonomousProductionChanges:false},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});
