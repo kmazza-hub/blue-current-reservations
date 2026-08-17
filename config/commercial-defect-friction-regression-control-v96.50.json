@@ -1,0 +1,40 @@
+{
+  "version": "96.50.0",
+  "gate": "COMMERCIAL_HARDENING_DEFECT_AND_FRICTION_CONTROL",
+  "issueTypes": [
+    "DEFECT",
+    "OPERATOR_FRICTION",
+    "REGRESSION"
+  ],
+  "severities": [
+    "CRITICAL",
+    "HIGH",
+    "MEDIUM",
+    "LOW"
+  ],
+  "lifecycle": [
+    "OPEN",
+    "TRIAGED",
+    "IN_PROGRESS",
+    "RESOLVED",
+    "VERIFIED",
+    "CLOSED"
+  ],
+  "evidenceRequirements": [
+    "REPRODUCTION_EVIDENCE",
+    "ROOT_CAUSE",
+    "RESOLUTION_EVIDENCE",
+    "REGRESSION_TEST",
+    "HUMAN_VERIFICATION"
+  ],
+  "policy": {
+    "criticalHighBlockRelease": true,
+    "resolvedRequiresHumanVerification": true,
+    "regressionsRequireRegressionEvidence": true,
+    "operatorFrictionIsCommercialHardeningWork": true,
+    "noAutomaticClose": true,
+    "noAutomaticRelease": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "COMMERCIAL_HARDENING_PRODUCTION_RELIABILITY_AND_SUPPORTABILITY"
+}

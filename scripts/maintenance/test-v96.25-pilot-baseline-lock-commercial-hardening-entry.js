@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"96.25.0");
+assert(Number(pkg.version.split(".")[0])>=96);
 const svc=fs.readFileSync(path.join(root,"server/services/pilotBaselineLockCommercialHardeningService.js"),"utf8");
 for(const id of ["V96_PILOT_READY_CERTIFIED","ARCHITECTURE_AUTHORITY_FROZEN","DUPLICATE_DOMAIN_AUTHORITY_PROHIBITED","DUPLICATE_WRITE_PATHS_PROHIBITED","PILOT_DEFECT_FIXES_ALLOWED","UX_SIMPLIFICATION_ALLOWED","RELIABILITY_SECURITY_ALLOWED","NEW_MAJOR_CAPABILITY_REQUIRES_EVIDENCE"])assert(svc.includes(`id:"${id}"`),id);
 for(const x of ["v96BaselineMustRemainRecoverable:true","majorCapabilityRequiresPilotEvidence:true","humanChangeApprovalPreserved:true","noAutomaticExpansion:true","noAutomaticProductionMutation:true","autonomousProductionChanges:false"])assert(svc.includes(x),x);

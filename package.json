@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "96.25.0",
+  "version": "96.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 pilot baseline lock and commercial-hardening entry",
+  "description": "Blue Current Hospitality OS \u2014 commercial defect, friction, and regression control",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
