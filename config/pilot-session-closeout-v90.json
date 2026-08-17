@@ -1,0 +1,33 @@
+{
+  "version": "90.0.0",
+  "phase": "C",
+  "gate": "PILOT_SESSION_CLOSEOUT_AND_EVIDENCE_CAPTURE",
+  "closeoutRequirements": [
+    "sessionStopped",
+    "allIncidentsResolved",
+    "serviceTimelineAvailable",
+    "humanOperatorSummary",
+    "lessonsLearned"
+  ],
+  "outcomes": [
+    "SUCCESS",
+    "SUCCESS_WITH_FOLLOWUP",
+    "INCONCLUSIVE",
+    "UNSUCCESSFUL"
+  ],
+  "evidence": [
+    "launchApproval",
+    "approvedEvidence",
+    "sessionLifecycle",
+    "runtimeSummary",
+    "incidents",
+    "metrics",
+    "serviceTimeline"
+  ],
+  "safety": {
+    "automaticPilotExpansion": false,
+    "automaticProductionChange": false,
+    "providerWriteBack": false
+  },
+  "nextGate": "PILOT_LEARNING_REVIEW_AND_NEXT_SESSION_DECISION"
+}

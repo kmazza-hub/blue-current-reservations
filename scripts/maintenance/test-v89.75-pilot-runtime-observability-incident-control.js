@@ -11,7 +11,7 @@ const Launch=require(path.join(root,"server/services/pilotReadinessLaunchControl
 const Runtime=require(path.join(root,"server/services/pilotRuntimeSessionControlService"));
 const Observability=require(path.join(root,"server/services/pilotRuntimeObservabilityIncidentService"));
 (async()=>{
- assert.equal(pkg.version,"89.75.0");
+ assert(Number(pkg.version.split(".")[0]) >= 89);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/pilot/runtime-observability/incident"));
  assert(router.includes("/timeline"));
