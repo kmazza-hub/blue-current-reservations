@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"98.25.0",phase:"D",organizationId,
+      version:"98.50.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -158,6 +158,7 @@ class PilotOperatorCommandCenterService{
       pilotValueProofAcceptance:{gate:"PILOT_VALUE_PROOF_AND_OPERATOR_ACCEPTANCE",liveEvidenceEndpoint:"/api/pilot/value-proof-acceptance",operatorAcceptanceHumanRecorded:true,noAutomaticValueClaim:true,noAutomaticExpansion:true},
       pilotProductDecisionControl:{gate:"PILOT_LEARNING_TO_PRODUCT_DECISION_CONTROL",liveEvidenceEndpoint:"/api/pilot/product-decisions",evidenceLinkRequired:true,humanOwnerRequired:true,noAutomaticProductChange:true,noAutomaticExpansion:true},
       commercialProductFreeze:{gate:"COMMERCIAL_PRODUCT_FREEZE_AND_FINAL_HARDENING",liveEvidenceEndpoint:"/api/commercial-hardening/product-freeze",scopeExpansionAfterFreezeProhibited:true,regressionProtectionRequired:true,noAutomaticExceptionApproval:true},
+      finalTechnicalCertification:{gate:"FINAL_REGRESSION_SECURITY_AND_DATA_INTEGRITY_CERTIFICATION",liveEvidenceEndpoint:"/api/commercial-hardening/final-technical-certification",securityRegressionBlocksCertification:true,dataIntegrityRegressionBlocksCertification:true,noAutomaticSecurityWaiver:true,noAutomaticRelease:true},
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false

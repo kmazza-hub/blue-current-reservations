@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "98.25.0",
+  "version": "98.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 commercial product freeze and final hardening baseline",
+  "description": "Blue Current Hospitality OS \u2014 final regression security and data integrity certification",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

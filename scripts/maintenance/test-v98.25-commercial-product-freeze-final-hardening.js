@@ -1,5 +1,5 @@
 "use strict";
-const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert.equal(pkg.version,"98.25.0");
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert(Number(pkg.version.split(".")[0])>=98);
 const s=fs.readFileSync(path.join(root,"server/services/commercialProductFreezeFinalHardeningService.js"),"utf8");
 for(const id of["PILOT_LEARNING_CONTROLLED","FREEZE_BASELINE_RECORDED","SCOPE_FREEZE_ACKNOWLEDGED","PERMITTED_CHANGE_CLASSES_DEFINED","REGRESSION_PROTECTION_REQUIRED","NO_HIGH_RISK_FREEZE_EXCEPTIONS","FREEZE_OWNER_ASSIGNED","FINAL_HARDENING_TARGET_DEFINED"])assert(s.includes(`id:"${id}"`),id);
 for(const x of["P0_DEFECT","P1_DEFECT","SECURITY","RELIABILITY","DATA_INTEGRITY","ACCESSIBILITY","REGRESSION","CERTIFICATION_BLOCKER"])assert(s.includes(`"${x}"`),x);
