@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "95.75.0",
+  "version": "96.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 pilot exit readiness and V96 certification preparation",
+  "description": "Blue Current Hospitality OS \u2014 V96 pilot-ready certification baseline",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

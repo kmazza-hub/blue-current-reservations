@@ -1,0 +1,11 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"96.0.0");
+const svc=fs.readFileSync(path.join(root,"server/services/v96PilotReadyCertificationService.js"),"utf8");
+for(const id of ["V95_75_PREPARATION_COMPLETE","LOCATION_EXIT_EVIDENCE","RELEASE_EVIDENCE_COMPLETE","HUMAN_CERTIFICATION"])assert(svc.includes(`id:"${id}"`),id);
+for(const x of ["humanCertificationRequired:true","certificationDoesNotDeploy:true","certificationDoesNotStartRuntime:true","certificationDoesNotAuthorizeExpansion:true","pilotExecutionStillUsesLaunchControls:true","noAutomaticGoLive:true","noAutomaticExpansion:true","autonomousProductionChanges:false"])assert(svc.includes(x),x);
+assert(svc.includes('"PILOT_READY"'));assert(svc.includes('"HOLD"'));assert(svc.includes('designation:"PILOT_READY_BASELINE"'));
+const prep=fs.readFileSync(path.join(root,"server/services/pilotExitReadinessV96PreparationService.js"),"utf8");assert(prep.includes('totalCertificationPreparationChecks')===false);assert(prep.includes('preparationDoesNotCertifyV96:true'));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/v96-certification'));assert(router.includes('v96PilotReadyCertificationService.certify'));
+console.log(JSON.stringify({ok:true,version:"96.0.0",milestone:"PILOT_READY_BASELINE",certificationChecks:4,preparationChecks:21,humanCertificationRequired:true,decisions:["PILOT_READY","HOLD"],certificationDoesNotDeploy:true,certificationDoesNotStartRuntime:true,noAutomaticGoLive:true,noAutomaticExpansion:true,nextPhase:"V96_TO_V100_COMMERCIAL_HARDENING"},null,2));

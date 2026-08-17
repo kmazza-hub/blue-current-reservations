@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"95.75.0",phase:"D",organizationId,
+      version:"96.0.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -149,6 +149,7 @@ class PilotOperatorCommandCenterService{
       firstServiceHypercare:{gate:"PILOT_FIRST_SERVICE_STABILIZATION_AND_HYPERCARE",liveEvidenceEndpoint:"/api/pilot/first-service-hypercare",humanNextServiceDecisionRequired:true,repeatedHealthRequired:true,unresolvedDebtVisible:true,noAutomaticNextService:true},
       repeatServiceConfidence:{gate:"PILOT_REPEAT_SERVICE_RELIABILITY_AND_CONFIDENCE",liveEvidenceEndpoint:"/api/pilot/repeat-service-confidence",multipleServicesRequired:true,humanLearningDecisionPerSession:true,noAutomaticExpansion:true},
       v96CertificationPreparation:{gate:"PILOT_EXIT_READINESS_AND_V96_CERTIFICATION_PREPARATION",liveEvidenceEndpoint:"/api/pilot/v96-certification-preparation",humanV96CertificationRequired:true,preparationDoesNotCertifyV96:true,noAutomaticExpansion:true},
+      v96PilotReadyCertification:{gate:"V96_PILOT_READY_CERTIFICATION",liveEvidenceEndpoint:"/api/pilot/v96-certification",humanCertificationRequired:true,certificationDoesNotDeploy:true,noAutomaticGoLive:true,noAutomaticExpansion:true},
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false
