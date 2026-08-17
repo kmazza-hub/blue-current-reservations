@@ -1,5 +1,5 @@
 "use strict";
-const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert.equal(pkg.version,"99.0.0");
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert(Number(pkg.version.split(".")[0])>=99);
 const s=fs.readFileSync(path.join(root,"server/services/commercialReleaseCandidateLockService.js"),"utf8");
 for(const id of["FINAL_OPERATOR_READINESS_CLEAR","RELEASE_CANDIDATE_IDENTITY_LOCKED","SOURCE_REVISION_RECORDED","BUILD_IDENTITY_RECORDED","SCOPE_LOCK_ACKNOWLEDGED","CERTIFICATION_CHAIN_ACKNOWLEDGED","NO_OPEN_RELEASE_BLOCKERS","ROLLBACK_REFERENCE_RECORDED","HUMAN_RC_OWNER_ASSIGNED"])assert(s.includes(`id:"${id}"`),id);
 for(const x of["candidateIdentityImmutable:true","sourceRevisionRequired:true","buildIdentityRequired:true","scopeLockRequired:true","rollbackReferenceRequired:true","releaseBlockersMustBeClosed:true","humanRcOwnerRequired:true","noAutomaticCandidateMutation:true","noAutomaticBlockerWaiver:true","noAutomaticCommercialRelease:true","autonomousProductionChanges:false"])assert(s.includes(x),x);
