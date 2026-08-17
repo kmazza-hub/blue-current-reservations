@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"97.75.0",phase:"D",organizationId,
+      version:"98.25.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -156,6 +156,8 @@ class PilotOperatorCommandCenterService{
       livePilotFieldEvidence:{gate:"LIVE_PILOT_EXECUTION_AND_FIELD_EVIDENCE",liveEvidenceEndpoint:"/api/pilot/field-evidence",humanObserved:true,noAutomaticProductChange:true,noAutomaticReleaseDecision:true},
       pilotEvidenceQualityOutcomes:{gate:"PILOT_EVIDENCE_QUALITY_AND_OUTCOME_MEASUREMENT",liveEvidenceEndpoint:"/api/pilot/evidence-quality-outcomes",humanVerificationRequired:true,noAutomaticCommercialClaim:true,noAutomaticProductChange:true},
       pilotValueProofAcceptance:{gate:"PILOT_VALUE_PROOF_AND_OPERATOR_ACCEPTANCE",liveEvidenceEndpoint:"/api/pilot/value-proof-acceptance",operatorAcceptanceHumanRecorded:true,noAutomaticValueClaim:true,noAutomaticExpansion:true},
+      pilotProductDecisionControl:{gate:"PILOT_LEARNING_TO_PRODUCT_DECISION_CONTROL",liveEvidenceEndpoint:"/api/pilot/product-decisions",evidenceLinkRequired:true,humanOwnerRequired:true,noAutomaticProductChange:true,noAutomaticExpansion:true},
+      commercialProductFreeze:{gate:"COMMERCIAL_PRODUCT_FREEZE_AND_FINAL_HARDENING",liveEvidenceEndpoint:"/api/commercial-hardening/product-freeze",scopeExpansionAfterFreezeProhibited:true,regressionProtectionRequired:true,noAutomaticExceptionApproval:true},
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false

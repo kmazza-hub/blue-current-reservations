@@ -1,0 +1,8 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert.equal(pkg.version,"98.25.0");
+const s=fs.readFileSync(path.join(root,"server/services/commercialProductFreezeFinalHardeningService.js"),"utf8");
+for(const id of["PILOT_LEARNING_CONTROLLED","FREEZE_BASELINE_RECORDED","SCOPE_FREEZE_ACKNOWLEDGED","PERMITTED_CHANGE_CLASSES_DEFINED","REGRESSION_PROTECTION_REQUIRED","NO_HIGH_RISK_FREEZE_EXCEPTIONS","FREEZE_OWNER_ASSIGNED","FINAL_HARDENING_TARGET_DEFINED"])assert(s.includes(`id:"${id}"`),id);
+for(const x of["P0_DEFECT","P1_DEFECT","SECURITY","RELIABILITY","DATA_INTEGRITY","ACCESSIBILITY","REGRESSION","CERTIFICATION_BLOCKER"])assert(s.includes(`"${x}"`),x);
+for(const x of["scopeExpansionAfterFreezeProhibited:true","exceptionEvidenceRequired:true","exceptionOwnerRequired:true","exceptionRiskRequired:true","regressionProtectionRequired:true","humanFreezeApprovalRequired:true","noAutomaticScopeExpansion:true","noAutomaticExceptionApproval:true","noAutomaticProductMutation:true","autonomousProductionChanges:false"])assert(s.includes(x),x);
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes("/api/commercial-hardening/product-freeze"));assert(router.includes("/exception"));
+console.log(JSON.stringify({ok:true,version:"98.25.0",freezeChecks:8,permittedChangeClasses:8,scopeFrozen:true,regressionProtection:true,humanFreezeApproval:true,noAutomaticScopeExpansion:true,noAutomaticExceptionApproval:true,noAutomaticProductMutation:true,nextGate:"FINAL_REGRESSION_SECURITY_AND_DATA_INTEGRITY_CERTIFICATION"},null,2));
