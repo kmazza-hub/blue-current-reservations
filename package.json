@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "86.75.0",
+  "version": "87.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 connector observability and integration health command",
+  "description": "Blue Current Hospitality OS \u2014 integration certification and Phase B exit gate",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

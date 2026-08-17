@@ -968,6 +968,14 @@
       "category": "security",
       "createdAt": "2026-08-17T01:16:31.791Z",
       "id": "audit_1786929391791_b2ylmd"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-17T01:24:23.753Z",
+      "id": "audit_1786929863753_bmkjjt"
     }
   ],
   "reservations": [
