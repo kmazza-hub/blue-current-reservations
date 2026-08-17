@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="91.50.0">
+  <meta name="blue-current-build" content="91.75.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=91.50.0">
+  <link rel="stylesheet" href="styles.css?v=91.75.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V91.50</strong>
+    <strong>Blue Current V91.75</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -263,6 +263,25 @@
       <article><small>Kitchen</small><strong id="bcCmdKitchen">—</strong><span id="bcCmdKitchenSub">Active ticket target</span></article>
       <article><small>Labor</small><strong id="bcCmdLabor">—</strong><span id="bcCmdLaborSub">Labor target</span></article>
     </div>
+
+    <section class="bc-shift-bridge" id="bcShiftBridge" data-mode="start">
+      <header>
+        <div><small>SHIFT CONTROL</small><h2 id="bcShiftBridgeTitle">Take control of the shift</h2></div>
+        <div class="bc-shift-bridge-actions">
+          <button type="button" id="bcShiftStartView" aria-pressed="true">Shift start</button>
+          <button type="button" id="bcShiftHandoffView" aria-pressed="false">Handoff</button>
+        </div>
+      </header>
+      <div class="bc-shift-bridge-grid">
+        <article><small>STATUS</small><strong id="bcShiftStatus">Reviewing current operation</strong><span id="bcShiftStatusDetail">Blue Current is assembling the shift picture.</span></article>
+        <article><small>FIRST PRIORITY</small><strong id="bcShiftFirstPriority">Waiting for verified signals</strong><span id="bcShiftFirstPriorityDetail">The highest-priority operating signal will appear here.</span></article>
+        <article><small>OPEN OWNERSHIP</small><strong id="bcShiftOpenOwnership">0 actions</strong><span id="bcShiftOwnerDetail">No unresolved manager ownership.</span></article>
+      </div>
+      <div class="bc-shift-brief" id="bcShiftBrief">
+        <strong id="bcShiftBriefTitle">Before service</strong>
+        <p id="bcShiftBriefCopy">Confirm the operating picture, review the first priority, and take ownership of unresolved actions.</p>
+      </div>
+    </section>
 
     <div class="bc-command-grid">
       <section class="bc-command-panel bc-attention-panel">
@@ -9999,7 +10018,7 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=91.50.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=91.50.0" defer></script>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=91.75.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=91.75.0" defer></script>
     <dialog class="bc-pilot-confirm" id="bcPilotConfirmDialog">
       <form method="dialog">
         <small id="bcPilotConfirmEyebrow">PILOT CONTROL</small>

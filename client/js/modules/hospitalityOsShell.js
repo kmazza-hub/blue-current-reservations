@@ -264,6 +264,39 @@ function renderSourceTruth(data={}){
   label.title=`${truth.summary?.connectedProviders||0} connected provider(s) · ${truth.summary?.liveDecisionDomains||0}/${truth.summary?.totalDomains||0} live decision domains${detail}`;
 }
 
+
+const shiftBridgeState={mode:"start",actionSummary:null};
+
+function renderShiftBridge(){
+  const data=commandState.currentData||{},priority=data.prioritization||{},items=priority.topPriorities||data.attention||[];
+  const actions=shiftBridgeState.actionSummary||{},open=actions.openActions||[],mode=shiftBridgeState.mode;
+  const bridge=el("bcShiftBridge");if(bridge)bridge.dataset.mode=mode;
+  const start=el("bcShiftStartView"),handoff=el("bcShiftHandoffView");
+  if(start)start.setAttribute("aria-pressed",mode==="start"?"true":"false");
+  if(handoff)handoff.setAttribute("aria-pressed",mode==="handoff"?"true":"false");
+  const top=items[0];
+  const decision=(priority.state||"STABLE").replaceAll("_"," ");
+  setText("bcShiftBridgeTitle",mode==="start"?"Take control of the shift":"Prepare the next manager");
+  setText("bcShiftStatus",decision);
+  setText("bcShiftStatusDetail",mode==="start"?"Current verified operating state.":"State the next manager inherits.");
+  setText("bcShiftFirstPriority",top?.title||"No urgent verified priority");
+  setText("bcShiftFirstPriorityDetail",top?.detail||top?.description||"Continue normal service monitoring.");
+  setText("bcShiftOpenOwnership",`${actions.counts?.open||open.length||0} open action${(actions.counts?.open||open.length)===1?"":"s"}`);
+  setText("bcShiftOwnerDetail",open.length?`${open[0].owner||"Manager"} · ${open[0].title}`:"No unresolved manager ownership.");
+  if(mode==="start"){
+    setText("bcShiftBriefTitle","Before service");
+    setText("bcShiftBriefCopy",top?`Review ${top.title.toLowerCase()}, then take ownership of any unresolved actions before the next demand wave.`:"Operating picture is stable. Confirm readiness and unresolved ownership before service builds.");
+  }else{
+    setText("bcShiftBriefTitle","Handoff");
+    const ownership=open.length?`${open.length} unresolved action${open.length===1?"":"s"} remain. First: ${open[0].title}.`:"No unresolved manager actions are currently recorded.";
+    setText("bcShiftBriefCopy",`${decision} operating state. ${top?`Top live priority: ${top.title}. `:""}${ownership}`);
+  }
+}
+function setShiftBridgeMode(mode){
+  shiftBridgeState.mode=mode==="handoff"?"handoff":"start";
+  renderShiftBridge();
+}
+
 function renderCommand(data){
   commandState.currentData=data;
   renderLocations(data);
@@ -302,6 +335,7 @@ function renderCommand(data){
   setText("bcLowStock",String(inv.lowStockItems??0));
 
   renderAttention(data);
+  renderShiftBridge();
   buildIntelligence(data);
   loadManagerActions();
   loadOutcomeLearning();
@@ -309,7 +343,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V91.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V91.75 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -319,6 +353,8 @@ function actionStatusLabel(status){
 }
 
 function renderManagerActions(summary={}){
+  shiftBridgeState.actionSummary=summary;
+  renderShiftBridge();
   const list=el("bcManagerActionList");
   if(!list)return;
   const open=summary.openActions||[];
@@ -843,6 +879,8 @@ function init(){
   el("bcPilotResume")?.addEventListener("click",()=>pilotControl("resume"));
   el("bcPilotStop")?.addEventListener("click",()=>pilotControl("stop"));
   el("bcPilotRefresh")?.addEventListener("click",()=>refreshPilotCommand());
+  el("bcShiftStartView")?.addEventListener("click",()=>setShiftBridgeMode("start"));
+  el("bcShiftHandoffView")?.addEventListener("click",()=>setShiftBridgeMode("handoff"));
   el("bcMoreWorkspaces")?.addEventListener("click",()=>{
     const button=el("bcMoreWorkspaces");
     setSecondaryWorkspaceDisclosure(button?.getAttribute("aria-expanded")!=="true");

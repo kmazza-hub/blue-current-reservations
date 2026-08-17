@@ -1,0 +1,28 @@
+{
+  "version": "91.75.0",
+  "phase": "D",
+  "gate": "SHIFT_START_AND_HANDOFF_OPERATOR_FLOW",
+  "shiftStart": [
+    "currentOperatingState",
+    "firstVerifiedPriority",
+    "openOwnership"
+  ],
+  "handoff": [
+    "inheritedOperatingState",
+    "topLivePriority",
+    "unresolvedManagerActions"
+  ],
+  "design": {
+    "consolidatesExistingCommandData": true,
+    "noDuplicateBackendLedger": true,
+    "aboveFoldCompactBridge": true,
+    "mobileReady": true
+  },
+  "safety": {
+    "presentationAndWorkflowOnly": true,
+    "serverAuthorizationUnchanged": true,
+    "automaticActionAssignment": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "SERVICE_EXCEPTION_AND_RECOVERY_WORKFLOW"
+}

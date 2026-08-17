@@ -16,6 +16,7 @@ class PilotOperatorCommandCenterService{
         primaryWorkspaces:["guests","service"],
         secondaryWorkspaces:["team"],
         showPilotControls:false,showEvidence:false,showIncidents:true,
+        shiftFlow:"SERVICE_AWARENESS",
         guidance:"Keep guest flow, waits, and table readiness clear. Escalate operational exceptions to the manager."
       },
       MANAGER:{
@@ -25,6 +26,7 @@ class PilotOperatorCommandCenterService{
         primaryWorkspaces:["service","guests","kitchen"],
         secondaryWorkspaces:["team","inventory","executive"],
         showPilotControls:true,showEvidence:true,showIncidents:true,
+        shiftFlow:"TAKE_CONTROL_AND_HANDOFF",
         guidance:"Control the shift, resolve exceptions, and keep the pilot inside its approved operating envelope."
       },
       OPERATOR:{
@@ -34,6 +36,7 @@ class PilotOperatorCommandCenterService{
         primaryWorkspaces:["service","kitchen","guests"],
         secondaryWorkspaces:["team","inventory","executive"],
         showPilotControls:true,showEvidence:true,showIncidents:true,
+        shiftFlow:"PILOT_CONTINUITY",
         guidance:"Protect pilot integrity, verify evidence continuity, and document every intervention."
       },
       EXECUTIVE:{
@@ -43,6 +46,7 @@ class PilotOperatorCommandCenterService{
         primaryWorkspaces:["executive"],
         secondaryWorkspaces:[],
         showPilotControls:false,showEvidence:true,showIncidents:false,
+        shiftFlow:"OUTCOME_REVIEW",
         guidance:"Review readiness, outcomes, exceptions, and learning without entering service-level controls."
       }
     };
@@ -83,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"91.50.0",phase:"D",organizationId,
+      version:"91.75.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,

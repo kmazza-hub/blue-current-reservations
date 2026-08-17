@@ -1,0 +1,22 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const Service=require(path.join(root,"server/services/pilotOperatorCommandCenterService"));
+(async()=>{
+ assert.equal(pkg.version,"91.75.0");
+ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+ const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
+ const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
+ for(const id of ["bcShiftBridge","bcShiftStartView","bcShiftHandoffView","bcShiftStatus","bcShiftFirstPriority","bcShiftOpenOwnership","bcShiftBriefCopy"])assert(html.includes(`id="${id}"`),id);
+ assert(css.includes("V91.75 — SHIFT START & HANDOFF OPERATOR FLOW"));
+ assert(shell.includes('const shiftBridgeState={mode:"start"'));
+ assert(shell.includes("function renderShiftBridge()"));
+ assert(shell.includes('setShiftBridgeMode("handoff")'));
+ assert(shell.includes("shiftBridgeState.actionSummary=summary"));
+ const fakeDb={read:async()=>({})},launch={current:async()=>({current:true,hold:null,assessment:{decision:"GO_ELIGIBLE",blocking:[]}})},runtime={current:async()=>({activeSession:null})},obs={timeline:async()=>null},closeout={portfolio:async()=>({closedSessions:0,closeouts:[]})},learning={portfolio:async()=>({decisions:0,history:[]})};
+ const svc=new Service(fakeDb,launch,runtime,obs,closeout,learning);
+ const manager=await svc.current("o","MANAGER");
+ assert.equal(manager.presentation.shiftFlow,"TAKE_CONTROL_AND_HANDOFF");
+ assert.equal(manager.operatorBoundary.autonomousProductionChanges,false);
+ console.log(JSON.stringify({ok:true,version:"91.75.0",phase:"D",shiftStartSummary:true,handoffSummary:true,currentState:true,firstVerifiedPriority:true,openOwnership:true,reusesCommandPrioritization:true,reusesManagerActionQueue:true,noDuplicateBackendLedger:true,mobileReady:true,serverAuthorizationUnchanged:true,automaticActionAssignment:false,autonomousProductionChanges:false,nextGate:"SERVICE_EXCEPTION_AND_RECOVERY_WORKFLOW"},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});

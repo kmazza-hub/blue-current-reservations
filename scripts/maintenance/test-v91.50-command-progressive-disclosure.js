@@ -3,7 +3,7 @@ const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const Service=require(path.join(root,"server/services/pilotOperatorCommandCenterService"));
 (async()=>{
- assert.equal(pkg.version,"91.50.0");
+ assert(Number(pkg.version.split(".")[0]) >= 91);
  const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
  const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
  const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");

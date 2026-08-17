@@ -17318,3 +17318,20 @@ textarea.bc-auto-light-contrast:disabled{
   .bc-command-launch .bc-workspace-primary>button,
   .bc-command-launch .bc-workspace-secondary>button{min-height:64px}
 }
+
+/* V91.75 — SHIFT START & HANDOFF OPERATOR FLOW */
+.bc-shift-bridge{margin:14px 0;padding:14px;border:1px solid rgba(255,255,255,.10);border-radius:15px;background:rgba(8,19,31,.76)}
+.bc-shift-bridge>header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.bc-shift-bridge>header h2{margin:2px 0 0;color:#fff;font-size:1.05rem}
+.bc-shift-bridge-actions{display:flex;gap:6px}
+.bc-shift-bridge-actions button{min-height:38px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.055);color:#c8d5df;padding:7px 11px;font-weight:850}
+.bc-shift-bridge-actions button[aria-pressed="true"]{background:rgba(78,151,181,.22);border-color:rgba(105,189,220,.34);color:#fff}
+.bc-shift-bridge-grid{display:grid;grid-template-columns:.9fr 1.5fr 1fr;gap:8px}
+.bc-shift-bridge-grid article{padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.055);min-height:78px}
+.bc-shift-bridge-grid article small{display:block;color:#8fa5b7;font-size:.68rem;font-weight:900;letter-spacing:.07em}
+.bc-shift-bridge-grid article strong{display:block;color:#fff;margin-top:4px;line-height:1.25}
+.bc-shift-bridge-grid article span{display:block;color:#aebdca;font-size:.76rem;margin-top:4px;line-height:1.3}
+.bc-shift-brief{display:flex;align-items:flex-start;gap:12px;margin-top:8px;padding:10px 12px;border-radius:10px;background:rgba(87,145,102,.08)}
+.bc-shift-brief strong{color:#fff;white-space:nowrap}.bc-shift-brief p{margin:0;color:#bfd0dc;font-size:.8rem;line-height:1.4}
+.bc-shift-bridge[data-mode="handoff"] .bc-shift-brief{background:rgba(121,103,55,.10)}
+@media(max-width:760px){.bc-shift-bridge>header{align-items:flex-start;flex-direction:column}.bc-shift-bridge-grid{grid-template-columns:1fr}.bc-shift-bridge-actions{width:100%}.bc-shift-bridge-actions button{flex:1;min-height:44px}.bc-shift-brief{flex-direction:column;gap:4px}}

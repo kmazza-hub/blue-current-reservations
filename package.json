@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "91.50.0",
+  "version": "91.75.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 command progressive disclosure and navigation simplification",
+  "description": "Blue Current Hospitality OS \u2014 shift start and handoff operator flow",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
