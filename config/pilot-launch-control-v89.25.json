@@ -1,0 +1,27 @@
+{
+  "version": "89.25.0",
+  "phase": "C",
+  "gate": "PILOT_READINESS_AND_LAUNCH_CONTROL",
+  "requiredEvidence": [
+    "restaurantConfiguration",
+    "locationCertification",
+    "workflowBinding",
+    "serviceSimulation",
+    "operatorAcceptance"
+  ],
+  "decisionStates": [
+    "HOLD",
+    "GO_ELIGIBLE",
+    "CONTROLLED_PILOT_APPROVED"
+  ],
+  "humanLaunchApprovalRequired": true,
+  "activeHoldBlocksLaunch": true,
+  "evidenceChangeInvalidatesApproval": true,
+  "safety": {
+    "automaticLaunch": false,
+    "automaticExpansion": false,
+    "providerWriteBack": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_RUNTIME_GUARDRAILS_AND_SESSION_CONTROL"
+}

@@ -8,7 +8,7 @@ const Binding=require(path.join(root,"server/services/pilotDataWorkflowBindingSe
 const Simulation=require(path.join(root,"server/services/pilotScenarioServiceSimulationService"));
 const Acceptance=require(path.join(root,"server/services/pilotOperatorAcceptanceService"));
 (async()=>{
- assert.equal(pkg.version,"89.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 89);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/pilot/operator-acceptance/observe"));
  assert(router.includes("/api/pilot/operator-acceptance/accept"));
