@@ -13,6 +13,8 @@ class PilotOperatorCommandCenterService{
         role:"HOST",label:"Host",
         primary:"GUEST_FLOW",
         priorities:["guestFlow","tableState","serviceAlerts"],
+        primaryWorkspaces:["guests","service"],
+        secondaryWorkspaces:["team"],
         showPilotControls:false,showEvidence:false,showIncidents:true,
         guidance:"Keep guest flow, waits, and table readiness clear. Escalate operational exceptions to the manager."
       },
@@ -20,6 +22,8 @@ class PilotOperatorCommandCenterService{
         role:"MANAGER",label:"Manager",
         primary:"SERVICE_CONTROL",
         priorities:["nextAction","sessionHealth","incidents","readiness"],
+        primaryWorkspaces:["service","guests","kitchen"],
+        secondaryWorkspaces:["team","inventory","executive"],
         showPilotControls:true,showEvidence:true,showIncidents:true,
         guidance:"Control the shift, resolve exceptions, and keep the pilot inside its approved operating envelope."
       },
@@ -27,6 +31,8 @@ class PilotOperatorCommandCenterService{
         role:"OPERATOR",label:"Operator",
         primary:"PILOT_CONTROL",
         priorities:["readiness","sessionHealth","incidents","evidence"],
+        primaryWorkspaces:["service","kitchen","guests"],
+        secondaryWorkspaces:["team","inventory","executive"],
         showPilotControls:true,showEvidence:true,showIncidents:true,
         guidance:"Protect pilot integrity, verify evidence continuity, and document every intervention."
       },
@@ -34,6 +40,8 @@ class PilotOperatorCommandCenterService{
         role:"EXECUTIVE",label:"Executive",
         primary:"OUTCOME_OVERVIEW",
         priorities:["readiness","outcomes","evidence","exceptions"],
+        primaryWorkspaces:["executive"],
+        secondaryWorkspaces:[],
         showPilotControls:false,showEvidence:true,showIncidents:false,
         guidance:"Review readiness, outcomes, exceptions, and learning without entering service-level controls."
       }
@@ -75,7 +83,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"91.25.0",phase:"D",organizationId,
+      version:"91.50.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,

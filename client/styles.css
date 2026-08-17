@@ -17269,3 +17269,52 @@ textarea.bc-auto-light-contrast:disabled{
   .bc-role-focus select{min-height:42px}
   .bc-role-guidance{align-items:flex-start;flex-direction:column;gap:4px}
 }
+
+
+/* ==========================================================================
+   V91.50 — COMMAND PROGRESSIVE DISCLOSURE & NAVIGATION SIMPLIFICATION
+   Primary work stays visible; secondary tools remain available on demand.
+   ========================================================================== */
+.bc-command-launch .bc-workspace-primary,
+.bc-command-launch .bc-workspace-secondary{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px
+}
+.bc-command-launch .bc-workspace-primary>button,
+.bc-command-launch .bc-workspace-secondary>button{
+  min-height:76px
+}
+.bc-more-workspaces{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  min-height:42px;margin-top:10px;padding:8px 12px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.045);
+  color:#c6d2dd;font-weight:800;cursor:pointer
+}
+.bc-more-workspaces:hover{background:rgba(255,255,255,.075)}
+.bc-workspace-secondary{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08)}
+.bc-workspace-secondary[hidden]{display:none!important}
+.bc-pilot-details{
+  margin-top:10px;border-top:1px solid rgba(255,255,255,.09);padding-top:9px;color:#aebed0
+}
+.bc-pilot-details summary{
+  width:max-content;cursor:pointer;font-size:.78rem;font-weight:850;color:#cbd7e2;list-style-position:inside
+}
+.bc-pilot-details>div{
+  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:9px;font-size:.78rem
+}
+.bc-pilot-command-card[data-role="HOST"] .bc-pilot-details{display:none}
+.bc-command-launch[data-role="HOST"] [data-role-workspace]:not([data-role-workspace*="HOST"]),
+.bc-command-launch[data-role="MANAGER"] [data-role-workspace]:not([data-role-workspace*="MANAGER"]),
+.bc-command-launch[data-role="OPERATOR"] [data-role-workspace]:not([data-role-workspace*="OPERATOR"]),
+.bc-command-launch[data-role="EXECUTIVE"] [data-role-workspace]:not([data-role-workspace*="EXECUTIVE"]){display:none}
+.bc-command-launch[data-role="EXECUTIVE"] #bcMoreWorkspaces{display:none}
+.bc-command-launch[data-role="EXECUTIVE"] #bcWorkspaceSecondary{display:none!important}
+@media(max-width:820px){
+  .bc-command-launch .bc-workspace-primary,
+  .bc-command-launch .bc-workspace-secondary{grid-template-columns:1fr 1fr}
+}
+@media(max-width:520px){
+  .bc-command-launch .bc-workspace-primary,
+  .bc-command-launch .bc-workspace-secondary{grid-template-columns:1fr}
+  .bc-command-launch .bc-workspace-primary>button,
+  .bc-command-launch .bc-workspace-secondary>button{min-height:64px}
+}

@@ -309,7 +309,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V91.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V91.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -677,14 +677,33 @@ function applyPilotRolePresentation(data){
   const profile=data.presentation||{};
   const role=profile.role||currentPilotRole();
   const card=el("bcPilotCommandCard");if(card)card.dataset.role=role;
+  const launch=el("bcCommandLaunch");if(launch)launch.dataset.role=role;
   setText("bcPilotRoleLabel",`${profile.label||role} view`);
   setText("bcPilotRoleCopy",profile.guidance||"Focus on the information required for this operating role.");
+  syncWorkspaceHierarchyForRole(role);
   const controls=el("bcPilotControls");
   if(controls)controls.hidden=profile.showPilotControls===false;
   const incidents=el("bcPilotIncidents");
   if(incidents&&profile.showIncidents===false)incidents.hidden=true;
   const evidence=el("bcPilotEvidence");
   if(evidence)evidence.hidden=profile.showEvidence===false;
+}
+
+
+function setSecondaryWorkspaceDisclosure(open){
+  const secondary=el("bcWorkspaceSecondary"),button=el("bcMoreWorkspaces");
+  if(!secondary||!button)return;
+  secondary.hidden=!open;
+  button.setAttribute("aria-expanded",open?"true":"false");
+  const label=button.querySelector("span:first-child"),icon=button.querySelector("span:last-child");
+  if(label)label.textContent=open?"Fewer tools":"More tools";
+  if(icon)icon.textContent=open?"−":"+";
+}
+function syncWorkspaceHierarchyForRole(role){
+  const normalized=String(role||"MANAGER").toUpperCase();
+  if(normalized==="EXECUTIVE")setSecondaryWorkspaceDisclosure(false);
+  const secondaryExecutive=document.querySelector('[data-secondary-executive="true"]');
+  if(secondaryExecutive)secondaryExecutive.hidden=normalized==="EXECUTIVE";
 }
 
 async function refreshPilotCommand(){
@@ -824,6 +843,10 @@ function init(){
   el("bcPilotResume")?.addEventListener("click",()=>pilotControl("resume"));
   el("bcPilotStop")?.addEventListener("click",()=>pilotControl("stop"));
   el("bcPilotRefresh")?.addEventListener("click",()=>refreshPilotCommand());
+  el("bcMoreWorkspaces")?.addEventListener("click",()=>{
+    const button=el("bcMoreWorkspaces");
+    setSecondaryWorkspaceDisclosure(button?.getAttribute("aria-expanded")!=="true");
+  });
   el("bcPilotRole")?.addEventListener("change",event=>{
     localStorage.setItem(PILOT_ROLE_KEY,String(event.target.value||"MANAGER"));
     refreshPilotCommand();

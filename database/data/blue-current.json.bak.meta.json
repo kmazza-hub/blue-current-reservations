@@ -1,9 +1,9 @@
 {
   "version": 1,
-  "source": "graceful-shutdown",
+  "source": "post-write",
   "databaseFile": "blue-current.json",
   "backupFile": "blue-current.json.bak",
   "sha256": "c824527246f14c0be0af815a8e0029f023b9dce154b24328191c1f7c1c606e6c",
   "bytes": 77312,
-  "createdAt": "2026-08-17T02:54:07.388Z"
+  "createdAt": "2026-08-17T02:55:22.437Z"
 }

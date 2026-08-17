@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="91.25.0">
+  <meta name="blue-current-build" content="91.50.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=91.25.0">
+  <link rel="stylesheet" href="styles.css?v=91.50.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V91.25</strong>
+    <strong>Blue Current V91.50</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -367,18 +367,33 @@
         <header><small>OPEN INCIDENTS</small><strong id="bcPilotIncidentCount">0</strong></header>
         <div id="bcPilotIncidentList"></div>
       </div>
-      <footer><span id="bcPilotEvidence" data-role-group="evidence">No closed pilot evidence yet.</span><span>Human controlled · No automatic expansion</span></footer>
+      <details class="bc-pilot-details" id="bcPilotDetails">
+        <summary>Session details</summary>
+        <div>
+          <span id="bcPilotEvidence" data-role-group="evidence">No closed pilot evidence yet.</span>
+          <span id="bcPilotBoundarySummary">Human controlled · No automatic expansion</span>
+        </div>
+      </details>
     </section>
 
-    <section class="bc-command-launch">
-      <header><div><small>WORKSPACES</small><h2>Go directly to the work.</h2></div><p>Blue Current keeps the command view calm. Open specialist tools only when you need them.</p></header>
-      <div>
-        <button type="button" data-bc-workspace="guests"><strong>Guests</strong><span>Reservations · Waitlist · Host Stand</span></button>
-        <button type="button" data-bc-workspace="service"><strong>Service</strong><span>Floor · Tables · Live flow</span></button>
+    <section class="bc-command-launch" id="bcCommandLaunch">
+      <header>
+        <div><small>WORKSPACES</small><h2>Go directly to the work.</h2></div>
+        <p>Primary service work stays one tap away. Secondary tools remain available without crowding Command.</p>
+      </header>
+      <div class="bc-workspace-primary" id="bcWorkspacePrimary">
+        <button type="button" data-bc-workspace="guests" data-role-workspace="HOST,MANAGER,OPERATOR"><strong>Guests</strong><span>Reservations · Waitlist · Host Stand</span></button>
+        <button type="button" data-bc-workspace="service" data-role-workspace="HOST,MANAGER,OPERATOR"><strong>Service</strong><span>Floor · Tables · Live flow</span></button>
+        <button type="button" data-bc-workspace="kitchen" data-role-workspace="MANAGER,OPERATOR"><strong>Kitchen</strong><span>Tickets · Stations · Pressure</span></button>
+        <button type="button" data-bc-workspace="executive" data-role-workspace="EXECUTIVE"><strong>Executive</strong><span>Portfolio · Risk · Leadership</span></button>
+      </div>
+      <button class="bc-more-workspaces" type="button" id="bcMoreWorkspaces" aria-expanded="false" aria-controls="bcWorkspaceSecondary">
+        <span>More tools</span><span aria-hidden="true">+</span>
+      </button>
+      <div class="bc-workspace-secondary" id="bcWorkspaceSecondary" hidden>
         <button type="button" data-bc-workspace="team"><strong>Team</strong><span>Staff · Labor · Scheduling</span></button>
-        <button type="button" data-bc-workspace="kitchen"><strong>Kitchen</strong><span>Tickets · Stations · Pressure</span></button>
         <button type="button" data-bc-workspace="inventory"><strong>Inventory</strong><span>Stock · Waste · Cost</span></button>
-        <button type="button" data-bc-workspace="executive"><strong>Executive</strong><span>Portfolio · Risk · Leadership</span></button>
+        <button type="button" data-bc-workspace="executive" data-secondary-executive="true"><strong>Executive</strong><span>Portfolio · Risk · Leadership</span></button>
       </div>
     </section>
 
@@ -9984,7 +9999,7 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=91.25.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=91.25.0" defer></script>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=91.50.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=91.50.0" defer></script>
     <dialog class="bc-pilot-confirm" id="bcPilotConfirmDialog">
       <form method="dialog">
         <small id="bcPilotConfirmEyebrow">PILOT CONTROL</small>

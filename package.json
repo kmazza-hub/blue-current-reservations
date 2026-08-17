@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "91.25.0",
+  "version": "91.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 command information hierarchy and role focus",
+  "description": "Blue Current Hospitality OS \u2014 command progressive disclosure and navigation simplification",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
