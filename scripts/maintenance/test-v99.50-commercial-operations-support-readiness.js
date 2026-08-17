@@ -1,6 +1,6 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path");
-const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert.equal(pkg.version,"99.50.0");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert(Number(pkg.version.split(".")[0])>=99);
 const s=fs.readFileSync(path.join(root,"server/services/commercialOperationsSupportReadinessService.js"),"utf8");
 for(const id of["RC_END_TO_END_VALIDATED","SUPPORT_OWNER_ASSIGNED","ESCALATION_OWNER_ASSIGNED","DEPLOYMENT_OWNER_ASSIGNED","SUPPORT_RUNBOOK_RECORDED","INCIDENT_RUNBOOK_RECORDED","RECOVERY_RUNBOOK_RECORDED","BUSINESS_HOURS_AND_ON_CALL_DEFINED","NO_CRITICAL_ACTIVE_INCIDENTS","RECOVERY_REVIEWS_CURRENT","PRODUCTION_HEALTH_VISIBLE","HUMAN_SUPPORT_READINESS_ACCEPTED"])assert(s.includes(`id:"${id}"`),id);
 for(const x of["namedSupportOwnerRequired:true","namedEscalationOwnerRequired:true","namedDeploymentOwnerRequired:true","supportRunbookRequired:true","incidentRunbookRequired:true","recoveryRunbookRequired:true","humanSupportReadinessAcceptanceRequired:true","criticalIncidentBlocksReadiness:true","openRecoveryReviewBlocksReadiness:true","noAutomaticIncidentClosure:true","noAutomaticSupportAction:true","noAutomaticCommercialRelease:true","autonomousProductionChanges:false"])assert(s.includes(x),x);
