@@ -1,0 +1,21 @@
+{
+  "version": "85.0.0",
+  "status": "ARCHITECTURE_FROZEN",
+  "baseline": "PILOT_BUILD_BASELINE",
+  "freezePolicy": {
+    "newMajorCapabilityRequiresPilotEvidence": true,
+    "duplicateDomainAuthorityProhibited": true,
+    "duplicateWritePathsProhibited": true,
+    "integrationWorkAllowed": true,
+    "configurationWorkAllowed": true,
+    "uxSimplificationAllowed": true,
+    "reliabilityAndSecurityWorkAllowed": true,
+    "pilotDefectFixesAllowed": true
+  },
+  "nextPhases": {
+    "V86-V87": "Integration readiness and certification",
+    "V88-V89": "Restaurant configuration and pilot setup",
+    "V90-V92": "Command-first frontend and operator UX consolidation",
+    "V93-V96": "Security, reliability, recovery, simulation and pilot certification"
+  }
+}
