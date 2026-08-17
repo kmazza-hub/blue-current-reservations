@@ -1,0 +1,35 @@
+{
+  "version": "86.0.0",
+  "phase": "B",
+  "purpose": "PILOT_INTEGRATION_READINESS",
+  "requiredCapabilities": [
+    "IDENTITY",
+    "CONNECTIVITY",
+    "SCHEMA_CONTRACT",
+    "INCREMENTAL_SYNC",
+    "RECONCILIATION",
+    "FRESHNESS",
+    "FAILURE_ISOLATION",
+    "AUDITABILITY"
+  ],
+  "sourceOfRecordPolicy": "EXTERNAL_SOURCE_UNTIL_EXPLICITLY_CHANGED",
+  "defaultMode": "READ_ONLY",
+  "certificationRule": "No provider is represented as production-certified until tested with real provider credentials/data and reconciliation passes.",
+  "providers": {
+    "TOAST": {
+      "profile": "CONTRACT_READY_NOT_VENDOR_CERTIFIED"
+    },
+    "GENERIC_POS": {
+      "profile": "CONTRACT_READY"
+    },
+    "RESERVATION_PROVIDER": {
+      "profile": "CONTRACT_READY"
+    },
+    "LABOR_PROVIDER": {
+      "profile": "CONTRACT_READY"
+    },
+    "INVENTORY_ACCOUNTING": {
+      "profile": "CONTRACT_READY"
+    }
+  }
+}

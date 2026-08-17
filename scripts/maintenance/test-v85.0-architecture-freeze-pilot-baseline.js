@@ -3,7 +3,7 @@ const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const Freeze=require(path.join(root,"server/services/architectureFreezeService"));
 (()=>{
- assert.equal(pkg.version,"85.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 85);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  const server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
  assert(router.includes('"/api/system/architecture-baseline"'));
