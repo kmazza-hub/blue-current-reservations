@@ -1,5 +1,5 @@
 "use strict";
-const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert.equal(pkg.version,"97.25.0");
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert(Number(pkg.version.split(".")[0])>=97);
 const s=fs.readFileSync(path.join(root,"server/services/livePilotFieldEvidenceService.js"),"utf8");
 for(const x of["OPERATOR_FRICTION","GUEST_IMPACT","WORKFLOW_PERFORMANCE","SYSTEM_INTERVENTION","INCIDENT","RECOVERY","OPERATIONAL_OUTCOME"])assert(s.includes(`"${x}"`),x);
 for(const x of["fieldEvidenceHumanObserved:true","serviceNightIdentityRequired:true","locationIdentityRequired:true","evidenceTimestampRequired:true","productionMutationFromEvidence:false","noAutomaticProductChange:true","noAutomaticReleaseDecision:true","autonomousProductionChanges:false"])assert(s.includes(x),x);

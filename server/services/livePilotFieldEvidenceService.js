@@ -49,5 +49,16 @@ class LivePilotFieldEvidenceService {
     await this.auditService.record({organizationId:org,actor,action:`Live pilot evidence recorded ${rec.id}: ${category}`,category:"live_pilot_field_evidence"});
     this.realtimeHub.publish("pilot:field-evidence",{organizationId:org,id:rec.id,serviceNightId:rec.serviceNightId,category});return rec;
   }
+  async verify(org,id,actor){
+    let updated=null;
+    await this.database.mutate(db=>{
+      const item=(db.livePilotFieldEvidence||[]).find(x=>x.organizationId===org&&x.id===id);
+      if(!item)throw new Error("Field evidence not found.");
+      item.verified=true;item.verifiedAt=this.now();item.verifiedBy=actor;updated=item;return item;
+    });
+    await this.auditService.record({organizationId:org,actor,action:`Live pilot evidence verified ${id}`,category:"live_pilot_field_evidence_verification"});
+    this.realtimeHub.publish("pilot:field-evidence-verified",{organizationId:org,id});return updated;
+  }
+
 }
 module.exports=LivePilotFieldEvidenceService;
