@@ -1,0 +1,22 @@
+{
+  "version": "88.0.0",
+  "phase": "C",
+  "name": "RESTAURANT_CONFIGURATION_FOUNDATION",
+  "configurationDomains": [
+    "location",
+    "servicePeriods",
+    "diningAreas",
+    "tables",
+    "roles",
+    "targets",
+    "integrationAssignments",
+    "pilot"
+  ],
+  "safety": {
+    "providerWriteBackEnabled": false,
+    "autonomousProductionChanges": false,
+    "adminRequiredForChanges": true,
+    "auditRequired": true
+  },
+  "nextGate": "PILOT_LOCATION_CONFIGURATION_CERTIFICATION"
+}
