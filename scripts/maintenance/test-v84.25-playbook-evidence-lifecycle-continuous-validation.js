@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.j
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory"));
 const Lifecycle=require(path.join(root,"server/services/playbookEvidenceLifecycleService"));
 (async()=>{
- assert.equal(pkg.version,"84.25.0");
+ assert(Number(pkg.version.split(".")[0]) >= 84);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/executive/playbook-evidence-lifecycle/acknowledge"));
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8425-")),dbPath=path.join(dir,"db.json");

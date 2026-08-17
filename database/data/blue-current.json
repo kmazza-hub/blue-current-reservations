@@ -1052,57 +1052,6 @@
   ],
   "sessions": [
     {
-      "id": "ses_1786912462397_vyrkys",
-      "tokenHash": "b360846192f0ba4dedd5d14035425111f2f072672cf8209c3cc4d7d064b436d5",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-16T20:34:22.397Z",
-      "lastSeenAt": "2026-08-16T22:27:10.301Z",
-      "idleExpiresAt": "2026-08-17T00:27:10.301Z",
-      "expiresAt": "2026-08-17T08:34:22.397Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-16T22:27:10.304Z"
-    },
-    {
-      "id": "ses_1786919234556_a0dd0j",
-      "tokenHash": "8d60ba429381c12219cc7d337f5a47d46a0e7c7048f8934b4d6b285f28f0d815",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-16T22:27:14.555Z",
-      "lastSeenAt": "2026-08-16T22:40:24.740Z",
-      "idleExpiresAt": "2026-08-17T00:40:24.740Z",
-      "expiresAt": "2026-08-17T10:27:14.555Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-16T22:40:24.742Z"
-    },
-    {
-      "id": "ses_1786920028167_242jd1",
-      "tokenHash": "ffa48abd19c8c590dbfc93513429716828643aa5f0462137b3c5954e5bbc21f0",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-16T22:40:28.166Z",
-      "lastSeenAt": "2026-08-16T22:48:34.587Z",
-      "idleExpiresAt": "2026-08-17T00:48:34.587Z",
-      "expiresAt": "2026-08-17T10:40:28.166Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-16T22:48:34.589Z"
-    },
-    {
       "id": "ses_1786920526604_2kkctw",
       "tokenHash": "a6cba5f62343228d24ba7d1a6ba739be347a5e61de12118b245076754af01e1a",
       "userId": "usr_keith",
