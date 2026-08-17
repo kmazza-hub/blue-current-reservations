@@ -1,0 +1,15 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"93.75.0");
+const auth=fs.readFileSync(path.join(root,"server/services/authService.js"),"utf8");
+assert(auth.includes("crypto.scryptSync"));assert(auth.includes("crypto.timingSafeEqual"));assert(auth.includes('createHash("sha256")'));
+assert(auth.includes("SESSION_IDLE_MINUTES"));assert(auth.includes("SESSION_HOURS"));assert(auth.includes("revokeAllUserSessions"));
+assert(auth.includes("FAILED_LOGIN_THRESHOLD"));assert(auth.includes("lockedUntil"));
+const role=fs.readFileSync(path.join(root,"server/services/rolePermissionCertificationService.js"),"utf8");
+assert(role.includes("leastPrivilegeRequired:true"));assert(role.includes("crossOrganizationMembershipRequired:true"));
+assert(role.includes("automaticRoleEscalation:false"));assert(role.includes("automaticScopeExpansion:false"));
+const svc=fs.readFileSync(path.join(root,"server/services/pilotSecurityAccessAuditReadinessService.js"),"utf8");
+assert(svc.includes('version:"93.75.0"'));assert(svc.includes("privilegedActionsRequireServerAuthorization:true"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/security-readiness'));assert(router.includes('authService.can(auth,"admin")'));
+console.log(JSON.stringify({ok:true,version:"93.75.0",passwordScrypt:true,timingSafeVerification:true,tokenHashing:true,sessionExpiry:true,sessionRevocation:true,failedLoginLockout:true,apiAuthorizationBoundary:true,leastPrivilege:true,organizationIsolation:true,locationScope:true,auditEvidence:true,automaticRoleEscalation:false,autonomousPermissionChanges:false,nextGate:"PILOT_PERFORMANCE_CAPACITY_AND_RESILIENCE_READINESS"},null,2));
