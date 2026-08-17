@@ -40,7 +40,7 @@ class PilotOperatorCommandCenterService{
     }
 
     return {
-      version:"90.75.0",phase:"D",organizationId,
+      version:"91.0.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       status,tone,nextAction,
       readiness:{
@@ -63,7 +63,10 @@ class PilotOperatorCommandCenterService{
         canPause:Boolean(active?.state==="ACTIVE"),
         canResume:Boolean(active?.state==="PAUSED"),
         canStop:Boolean(active&&["ACTIVE","PAUSED"].includes(active.state)),
-        sessionId:active?.id||null
+        sessionId:active?.id||null,
+        primaryAction:active?.state==="ACTIVE"?"MONITOR":active?.state==="PAUSED"?"RESUME":(!active&&launch?.current&&!launch?.hold)?"START":"REVIEW",
+        dangerousActions:["STOP"],
+        reasonRequired:["PAUSE","STOP"]
       },
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,

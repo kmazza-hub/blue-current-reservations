@@ -2,7 +2,7 @@
 const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 (async()=>{
- assert.equal(pkg.version,"90.75.0");
+ assert(Number(pkg.version.split(".")[0]) >= 90);
  const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
  const shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8");
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");

@@ -309,7 +309,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V90.75 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V91.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -571,6 +571,41 @@ function renderCommandError(error){
 
 
 
+
+let pilotClockTimer=null;
+let pilotClockStartedAt=null;
+
+function formatPilotElapsed(startedAt){
+  if(!startedAt)return "—";
+  const ms=Math.max(0,Date.now()-new Date(startedAt).getTime());
+  const total=Math.floor(ms/1000),h=Math.floor(total/3600),m=Math.floor((total%3600)/60),s=total%60;
+  return h>0?`${h}h ${String(m).padStart(2,"0")}m`:`${m}m ${String(s).padStart(2,"0")}s`;
+}
+function syncPilotClock(startedAt){
+  pilotClockStartedAt=startedAt||null;
+  if(pilotClockTimer)clearInterval(pilotClockTimer);
+  setText("bcPilotSessionClock",formatPilotElapsed(pilotClockStartedAt));
+  if(pilotClockStartedAt)pilotClockTimer=setInterval(()=>setText("bcPilotSessionClock",formatPilotElapsed(pilotClockStartedAt)),1000);
+}
+function requestPilotConfirmation(action){
+  const dialog=el("bcPilotConfirmDialog"),title=el("bcPilotConfirmTitle"),copy=el("bcPilotConfirmCopy"),
+    wrap=el("bcPilotConfirmReasonWrap"),reason=el("bcPilotConfirmReason"),submit=el("bcPilotConfirmSubmit");
+  if(!dialog)return Promise.resolve({confirmed:false,reason:""});
+  const requiresReason=["pause","stop"].includes(action);
+  title.textContent=action==="stop"?"Stop controlled pilot?":action==="pause"?"Pause controlled pilot?":"Start controlled pilot?";
+  copy.textContent=action==="stop"?"Stopping ends this controlled pilot session. Closeout will be required before evidence is complete.":action==="pause"?"Pausing keeps the session open but stops progression until a human resumes it.":"Starting begins a controlled pilot session against the currently approved evidence.";
+  wrap.hidden=!requiresReason;reason.value="";
+  submit.textContent=action==="stop"?"Stop pilot":action==="pause"?"Pause pilot":"Start pilot";
+  submit.dataset.actionTone=action==="stop"?"danger":action==="pause"?"watch":"go";
+  return new Promise(resolve=>{
+    const handler=()=>{
+      dialog.removeEventListener("close",handler);
+      resolve({confirmed:dialog.returnValue==="confirm",reason:reason.value.trim()});
+    };
+    dialog.addEventListener("close",handler);dialog.showModal();
+  });
+}
+
 function renderPilotIncidents(items){
   const root=el("bcPilotIncidents"),list=el("bcPilotIncidentList");
   if(!root||!list)return;
@@ -593,12 +628,13 @@ function renderPilotIncidents(items){
 async function pilotControl(action){
   const feedback=el("bcPilotActionFeedback");
   let body={};
-  if(action==="start"){
-    const label=window.prompt("Pilot session label:","Controlled pilot service");
-    if(label===null)return;body={label};
-  }else if(action==="pause"||action==="stop"){
-    const reason=window.prompt(`${action==="pause"?"Pause":"Stop"} reason (required):`,"");
-    if(reason===null)return;if(reason.trim().length<10){if(feedback)feedback.textContent="Please enter a meaningful reason (at least 10 characters).";return;}body={reason};
+  if(["start","pause","stop"].includes(action)){
+    const confirmation=await requestPilotConfirmation(action);
+    if(!confirmation.confirmed)return;
+    if(["pause","stop"].includes(action)){
+      if(confirmation.reason.length<10){if(feedback)feedback.textContent="Blocked · enter a meaningful reason of at least 10 characters.";return;}
+      body={reason:confirmation.reason};
+    }else body={label:"Controlled pilot service"};
   }
   if(feedback)feedback.textContent=`${action[0].toUpperCase()+action.slice(1)} requested…`;
   try{
@@ -643,6 +679,12 @@ async function refreshPilotCommand(){
     setText("bcPilotHealthDetail",data.health?`${data.health.openIncidents} open incident(s) · ${data.health.metrics} metric(s)`:"No runtime health yet");
     setText("bcPilotNextAction",data.nextAction||"Review pilot status.");
     setText("bcPilotEvidence",`${data.evidence?.closedSessions||0} closed session(s) · ${data.evidence?.learningDecisions||0} learning decision(s)${data.evidence?.latestDecision?` · Latest ${data.evidence.latestDecision}`:""}`);
+    const focus=el("bcPilotFocusStrip");
+    const runtimeState=data.session?.state||"IDLE";
+    if(focus)focus.dataset.state=data.health?.state==="CRITICAL"?"critical":runtimeState==="ACTIVE"?"active":runtimeState==="PAUSED"?"paused":"idle";
+    setText("bcPilotFocusState",data.session?`${runtimeState.replaceAll("_"," ")} · ${data.session.label||"Controlled pilot"}`:"No active pilot");
+    setText("bcPilotFocusPriority",data.nextAction||"Review pilot readiness.");
+    syncPilotClock(data.session?.startedAt||null);
     ["Start","Pause","Resume","Stop"].forEach(name=>{const b=el(`bcPilot${name}`);if(b)b.disabled=!data.controls?.[`can${name}`];});
     renderPilotIncidents(data.health?.incidents||[]);
   }catch(error){
@@ -754,6 +796,7 @@ function init(){
   el("bcPilotPause")?.addEventListener("click",()=>pilotControl("pause"));
   el("bcPilotResume")?.addEventListener("click",()=>pilotControl("resume"));
   el("bcPilotStop")?.addEventListener("click",()=>pilotControl("stop"));
+  el("bcPilotRefresh")?.addEventListener("click",()=>refreshPilotCommand());
   el("bcCommandLocation")?.addEventListener("change",event=>{
     commandState.locationId=event.target.value;
     refreshCommand();

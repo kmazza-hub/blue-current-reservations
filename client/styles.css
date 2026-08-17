@@ -17162,3 +17162,77 @@ textarea.bc-auto-light-contrast:disabled{
 .bc-pilot-incident-row>span{font-size:.72rem;font-weight:900}.bc-pilot-incident-row strong{color:#fff}.bc-pilot-incident-row small{display:block;color:#aebed0;margin-top:2px}
 .bc-pilot-incident-actions{display:flex;gap:6px}.bc-pilot-incident-actions button{border:1px solid rgba(255,255,255,.15);background:transparent;color:#fff;border-radius:8px;padding:6px 9px;font-size:.75rem;font-weight:800}
 @media(max-width:700px){.bc-pilot-incident-row{grid-template-columns:1fr}.bc-pilot-incident-actions{flex-wrap:wrap}}
+
+
+/* ==========================================================================
+   V91.0 — FIELD OPERATOR WORKFLOW & SERVICE-NIGHT POLISH
+   High-pressure service use: state first, touch targets, dangerous-action clarity.
+   ========================================================================== */
+.bc-pilot-focus-strip{
+  display:grid;grid-template-columns:1.1fr 1.7fr .8fr;gap:8px;margin:0 0 12px;
+}
+.bc-pilot-focus-strip>div{
+  min-height:74px;padding:12px 14px;border-radius:12px;
+  background:rgba(255,255,255,.075);border:1px solid rgba(255,255,255,.09);
+  display:flex;flex-direction:column;justify-content:center;gap:4px;
+}
+.bc-pilot-focus-strip strong{color:#fff;font-size:1rem;line-height:1.25}
+.bc-pilot-focus-strip[data-state="active"]>div:first-child{box-shadow:inset 4px 0 #54d6a0}
+.bc-pilot-focus-strip[data-state="paused"]>div:first-child{box-shadow:inset 4px 0 #f0c55b}
+.bc-pilot-focus-strip[data-state="critical"]>div:first-child{box-shadow:inset 4px 0 #ff7b86}
+.bc-pilot-controls button{
+  min-height:44px;min-width:88px;font-size:.86rem;
+}
+.bc-pilot-controls button[data-action-tone="go"]:not(:disabled){
+  background:rgba(49,133,98,.26);border-color:rgba(94,218,164,.35);
+}
+.bc-pilot-controls button[data-action-tone="watch"]:not(:disabled){
+  background:rgba(154,117,35,.24);border-color:rgba(240,197,91,.32);
+}
+.bc-pilot-controls button[data-action-tone="danger"]:not(:disabled){
+  background:rgba(146,50,61,.30);border-color:rgba(255,123,134,.40);
+}
+.bc-pilot-controls button[data-action-tone="danger"]:not(:disabled):hover{
+  background:rgba(172,56,69,.42);
+}
+.bc-pilot-controls #bcPilotActionFeedback{
+  flex:1 1 260px;min-height:20px;
+}
+.bc-pilot-incidents:not([hidden]){
+  max-height:340px;overflow:auto;padding-right:4px;
+}
+.bc-pilot-incident-row{
+  min-height:64px;
+}
+.bc-pilot-incident-actions button{
+  min-height:38px;
+}
+.bc-pilot-confirm{
+  width:min(520px,calc(100vw - 28px));border:1px solid rgba(255,255,255,.14);
+  border-radius:18px;background:#101a27;color:#f7fbff;padding:0;box-shadow:0 24px 70px rgba(0,0,0,.45)
+}
+.bc-pilot-confirm::backdrop{background:rgba(2,8,15,.72);backdrop-filter:blur(3px)}
+.bc-pilot-confirm form{padding:22px}.bc-pilot-confirm h3{margin:4px 0 8px;color:#fff}
+.bc-pilot-confirm p{color:#c7d2dd;line-height:1.45}.bc-pilot-confirm label{display:flex;flex-direction:column;gap:7px;color:#dbe5ee;font-weight:800}
+.bc-pilot-confirm textarea{
+  width:100%;resize:vertical;border-radius:10px;border:1px solid rgba(255,255,255,.16);
+  background:#0b1520;color:#fff;padding:11px;font:inherit;min-height:86px
+}
+.bc-pilot-confirm-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.bc-pilot-confirm-actions button{min-height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.16);padding:9px 15px;background:rgba(255,255,255,.08);color:#fff;font-weight:850}
+.bc-pilot-confirm-actions button[data-action-tone="danger"]{background:#74333b}
+@media(max-width:820px){
+  .bc-pilot-command-card{padding:15px;margin:12px 0;border-radius:15px}
+  .bc-pilot-focus-strip{grid-template-columns:1fr}
+  .bc-pilot-focus-strip>div{min-height:62px}
+  .bc-pilot-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .bc-pilot-controls button{width:100%;min-height:48px}
+  .bc-pilot-controls #bcPilotActionFeedback{grid-column:1/-1}
+}
+@media(max-width:480px){
+  .bc-pilot-controls{grid-template-columns:1fr}
+  .bc-pilot-controls #bcPilotActionFeedback{grid-column:auto}
+  .bc-pilot-command-grid>div{min-height:82px}
+  .bc-pilot-incident-actions{display:grid;grid-template-columns:1fr}
+  .bc-pilot-incident-actions button{width:100%;min-height:44px}
+}
