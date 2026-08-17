@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "91.75.0",
+  "version": "92.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 shift start and handoff operator flow",
+  "description": "Blue Current Hospitality OS \u2014 service exception and recovery workflow",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

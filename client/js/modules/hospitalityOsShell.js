@@ -343,7 +343,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V91.75 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V92.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -642,12 +642,17 @@ function requestPilotConfirmation(action){
   });
 }
 
+
+function recoveryStageForIncident(item){const s=String(item?.status||"OPEN").toUpperCase(),v=String(item?.severity||"INFO").toUpperCase();if(s==="RESOLVED"||s==="CLOSED")return"verified";if(s==="ESCALATED")return"recovering";if(s==="ACKNOWLEDGED")return"owned";return v==="CRITICAL"?"critical":"open";}
+function renderRecoveryCommand(items=[]){const root=el("bcRecoveryCommand");if(!root)return;const active=items.filter(x=>!["RESOLVED","CLOSED"].includes(String(x.status||"").toUpperCase()));root.hidden=!active.length;if(!active.length){root.dataset.state="clear";return;}const critical=active.some(x=>String(x.severity||"").toUpperCase()==="CRITICAL"),owned=active.every(x=>["ACKNOWLEDGED","ESCALATED"].includes(String(x.status||"").toUpperCase()));root.dataset.state=critical?"critical":"open";setText("bcRecoveryState",critical?"Critical exception in recovery":owned?"Exception owned · recovery in progress":"Service exception requires ownership");setText("bcRecoveryGuidance",owned?"Continue recovery and resolve only after the condition is verified stable.":"Acknowledge the exception so human ownership is explicit.");const activeStep=owned?"recover":"own";root.querySelectorAll("[data-step]").forEach(n=>n.dataset.active=(n.dataset.step==="detect"||n.dataset.step===activeStep)?"true":"false");}
+function requestIncidentAction(action){const d=el("bcIncidentActionDialog"),t=el("bcIncidentActionTitle"),c=el("bcIncidentActionCopy"),n=el("bcIncidentActionNote"),s=el("bcIncidentActionSubmit");if(!d)return Promise.resolve({confirmed:false,value:""});t.textContent=action==="resolve"?"Verify recovery and resolve":action==="escalate"?"Escalate service exception":"Acknowledge ownership";c.textContent=action==="resolve"?"Resolve only after the operating condition has been checked and service is stable.":action==="escalate"?"Record why additional support or authority is required.":"Record that a human has taken ownership of this exception.";n.placeholder=action==="acknowledge"?"Optional ownership note":"Required · minimum 10 characters";n.value="";s.textContent=action==="resolve"?"Verify & resolve":action==="escalate"?"Escalate":"Acknowledge";return new Promise(resolve=>{const h=()=>{d.removeEventListener("close",h);resolve({confirmed:d.returnValue==="confirm",value:n.value.trim()});};d.addEventListener("close",h);d.showModal();});}
+
 function renderPilotIncidents(items){
   const root=el("bcPilotIncidents"),list=el("bcPilotIncidentList");
   if(!root||!list)return;
-  root.hidden=!items.length;setText("bcPilotIncidentCount",String(items.length));list.replaceChildren();
+  root.hidden=!items.length;setText("bcPilotIncidentCount",String(items.length));list.replaceChildren();renderRecoveryCommand(items);
   items.forEach(item=>{
-    const row=document.createElement("div");row.className="bc-pilot-incident-row";
+    const row=document.createElement("div");row.className="bc-pilot-incident-row";row.dataset.recoveryState=recoveryStageForIncident(item);
     const sev=document.createElement("span");sev.textContent=item.severity||"INFO";
     const copy=document.createElement("div"),title=document.createElement("strong"),detail=document.createElement("small");
     title.textContent=item.title||"Pilot incident";detail.textContent=`${item.status||"OPEN"}${item.description?` · ${item.description}`:""}`;copy.append(title,detail);
@@ -683,22 +688,11 @@ async function pilotControl(action){
 }
 
 async function pilotIncidentAction(incidentId,action){
-  const feedback=el("bcPilotActionFeedback");let body={};
-  if(action==="acknowledge"){
-    const note=window.prompt("Acknowledgement note (optional):","");if(note===null)return;body={note};
-  }else if(action==="escalate"){
-    const note=window.prompt("Escalation note (required):","");if(note===null)return;if(note.trim().length<10){if(feedback)feedback.textContent="Escalation needs a meaningful note.";return;}body={note};
-  }else{
-    const resolution=window.prompt("Resolution summary (required):","");if(resolution===null)return;if(resolution.trim().length<10){if(feedback)feedback.textContent="Resolution needs a meaningful summary.";return;}body={resolution};
-  }
-  try{
-    const response=await commandFetch(`/api/pilot/operator-command/incidents/${encodeURIComponent(incidentId)}/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Incident ${action} returned ${response.status}.`);
-    if(feedback)feedback.textContent=`Incident ${action} completed.`;await refreshPilotCommand();
-  }catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
+  const feedback=el("bcPilotActionFeedback"),decision=await requestIncidentAction(action);if(!decision.confirmed)return;
+  if(action!=="acknowledge"&&decision.value.length<10){if(feedback)feedback.textContent="Blocked · recovery action requires a meaningful note of at least 10 characters.";return;}
+  const body=action==="resolve"?{resolution:decision.value,verifiedStable:true}:{note:decision.value};
+  try{const response=await commandFetch(`/api/pilot/operator-command/incidents/${encodeURIComponent(incidentId)}/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Incident ${action} returned ${response.status}.`);if(feedback)feedback.textContent=action==="resolve"?"Recovery verified · incident resolved.":`Incident ${action} completed.`;await refreshPilotCommand();}catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
 }
-
 
 const PILOT_ROLE_KEY="bc-pilot-command-role";
 function currentPilotRole(){

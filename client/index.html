@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="91.75.0">
+  <meta name="blue-current-build" content="92.0.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=91.75.0">
+  <link rel="stylesheet" href="styles.css?v=92.0.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V91.75</strong>
+    <strong>Blue Current V92.0</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -381,6 +381,10 @@
         <button type="button" id="bcPilotStop" data-action-tone="danger">Stop</button>
         <button type="button" id="bcPilotRefresh" data-action-tone="neutral">Refresh</button>
         <span id="bcPilotActionFeedback" role="status" aria-live="polite">Controls follow the certified operating envelope.</span>
+      </div>
+      <div class="bc-recovery-command" id="bcRecoveryCommand" data-state="clear" hidden>
+        <div><small>SERVICE RECOVERY</small><strong id="bcRecoveryState">Operation stable</strong><span id="bcRecoveryGuidance">No active service exception requires recovery.</span></div>
+        <div class="bc-recovery-steps" id="bcRecoverySteps" aria-label="Recovery workflow"><span data-step="detect">1 Detect</span><span data-step="own">2 Own</span><span data-step="recover">3 Recover</span><span data-step="verify">4 Verify</span></div>
       </div>
       <div class="bc-pilot-incidents" id="bcPilotIncidents" data-role-group="incidents" hidden>
         <header><small>OPEN INCIDENTS</small><strong id="bcPilotIncidentCount">0</strong></header>
@@ -10018,7 +10022,7 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=91.75.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=91.75.0" defer></script>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=92.0.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=92.0.0" defer></script>
     <dialog class="bc-pilot-confirm" id="bcPilotConfirmDialog">
       <form method="dialog">
         <small id="bcPilotConfirmEyebrow">PILOT CONTROL</small>
@@ -10033,6 +10037,8 @@
         </div>
       </form>
     </dialog>
+
+    <dialog class="bc-pilot-confirm bc-incident-dialog" id="bcIncidentActionDialog"><form method="dialog"><small>SERVICE EXCEPTION</small><h3 id="bcIncidentActionTitle">Update incident</h3><p id="bcIncidentActionCopy">Record the human action taken during service recovery.</p><label id="bcIncidentActionLabel">Note<textarea id="bcIncidentActionNote" rows="3"></textarea></label><div class="bc-pilot-confirm-actions"><button value="cancel" type="submit">Cancel</button><button value="confirm" type="submit" id="bcIncidentActionSubmit">Confirm</button></div></form></dialog>
 
 </body>
 </html>

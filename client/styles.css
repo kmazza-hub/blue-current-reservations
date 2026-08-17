@@ -17335,3 +17335,10 @@ textarea.bc-auto-light-contrast:disabled{
 .bc-shift-brief strong{color:#fff;white-space:nowrap}.bc-shift-brief p{margin:0;color:#bfd0dc;font-size:.8rem;line-height:1.4}
 .bc-shift-bridge[data-mode="handoff"] .bc-shift-brief{background:rgba(121,103,55,.10)}
 @media(max-width:760px){.bc-shift-bridge>header{align-items:flex-start;flex-direction:column}.bc-shift-bridge-grid{grid-template-columns:1fr}.bc-shift-bridge-actions{width:100%}.bc-shift-bridge-actions button{flex:1;min-height:44px}.bc-shift-brief{flex-direction:column;gap:4px}}
+
+/* V92.0 — SERVICE EXCEPTION & RECOVERY WORKFLOW */
+.bc-recovery-command{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:10px 0;padding:11px 13px;border-radius:12px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.05)}
+.bc-recovery-command[data-state="open"]{background:rgba(148,101,43,.13);border-color:rgba(236,181,87,.22)}.bc-recovery-command[data-state="critical"]{background:rgba(145,48,60,.17);border-color:rgba(255,113,127,.30)}
+.bc-recovery-command>div:first-child{display:flex;flex-direction:column;gap:3px}.bc-recovery-command strong{color:#fff}.bc-recovery-command span{color:#b9c8d4;font-size:.77rem}.bc-recovery-steps{display:flex;gap:5px;flex-wrap:wrap}.bc-recovery-steps span{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.06);font-size:.69rem;font-weight:850}.bc-recovery-steps span[data-active="true"]{background:rgba(76,159,122,.20);color:#e9fff4}
+.bc-pilot-incident-row[data-recovery-state="critical"]{box-shadow:inset 4px 0 rgba(255,113,127,.72)}.bc-pilot-incident-row[data-recovery-state="owned"]{box-shadow:inset 4px 0 rgba(240,194,91,.68)}.bc-pilot-incident-row[data-recovery-state="recovering"]{box-shadow:inset 4px 0 rgba(85,172,213,.70)}.bc-pilot-incident-actions button[data-recovery-action="resolve"]{background:rgba(60,132,96,.22)}.bc-incident-dialog textarea{min-height:96px}
+@media(max-width:700px){.bc-recovery-command{align-items:flex-start;flex-direction:column}}

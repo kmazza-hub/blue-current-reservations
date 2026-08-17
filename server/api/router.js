@@ -793,6 +793,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot incident control requires admin permission."});
       const parts=url.pathname.split("/"),incidentId=parts[5],action=parts[6],body=await readJsonBody(request),actor=auth.user?.email||auth.user?.id||"operator";
       if(!["acknowledge","escalate","resolve"].includes(action)) return sendJson(response,400,{error:"Unknown pilot incident action."});
+      if(action==="resolve"&&body.verifiedStable!==true) return sendJson(response,400,{error:"Recovery must be explicitly verified stable before incident resolution."});
       const incident=await pilotRuntimeObservabilityIncidentService[action](organizationId,incidentId,body,actor);
       return sendJson(response,200,{ok:true,incident});
     }

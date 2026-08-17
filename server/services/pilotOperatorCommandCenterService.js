@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"91.75.0",phase:"D",organizationId,
+      version:"92.0.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -103,7 +103,8 @@ class PilotOperatorCommandCenterService{
         openIncidents:Number(obs?.summary?.openIncidents||0),
         criticalOpen:Number(obs?.summary?.criticalOpen||0),
         metrics:Number(obs?.summary?.metrics||0),
-        incidents:(obs?.incidents||[]).filter(x=>x.status!=="RESOLVED").map(x=>({id:x.id,title:x.title,severity:x.severity,status:x.status,description:x.description||null}))
+        incidents:(obs?.incidents||[]).filter(x=>x.status!=="RESOLVED").map(x=>({id:x.id,title:x.title,severity:x.severity,status:x.status,description:x.description||null})),
+        recovery:{workflow:["DETECT","OWN","RECOVER","VERIFY"],verificationRequiredBeforeResolve:true,humanControlled:true}
       }:null,
       evidence:{closedSessions:Number(closeouts?.closedSessions||0),learningDecisions:Number(decisions?.decisions||0),latestOutcome:latestCloseout?.outcome||null,latestDecision:latestDecision?.decision||null},
       controls:{
