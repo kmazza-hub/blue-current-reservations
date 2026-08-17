@@ -1,0 +1,25 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+const DatabaseService=require(path.join(root,"server/services/databaseService"));
+const Service=require(path.join(root,"server/services/pilotBackupRestoreRollbackReadinessService"));
+(async()=>{
+assert.equal(pkg.version,"93.25.0");
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v9325-")),dbPath=path.join(dir,"db.json");
+fs.writeFileSync(dbPath,JSON.stringify({pilot:[{id:"state",value:1}]},null,2));
+const db=new DatabaseService(dbPath,{logger:{warn(){},error(){}}});await db.read();
+const svc=new Service(db);const cp=await svc.checkpoint("v93.25-certification");assert.equal(cp.ok,true);
+await db.update("pilot","state",{value:2});const report=await svc.current();
+assert.equal(report.version,"93.25.0");assert.equal(report.ready,true);assert(report.backupVerification.verifiedCopies>=1);
+assert.equal(report.recoveryContract.checksumVerificationRequired,true);
+assert.equal(report.recoveryContract.previousVerifiedBackupFallback,true);
+assert.equal(report.recoveryContract.ambiguousMutationRequiresReconciliation,true);
+assert.equal(report.recoveryContract.silentMutationRetry,false);
+assert.equal(report.rollbackBoundary.humanApprovalRequired,true);
+assert.equal(report.rollbackBoundary.preRollbackCheckpointRequired,true);
+assert.equal(report.rollbackBoundary.postRestoreVerificationRequired,true);
+assert.equal(report.rollbackBoundary.automaticRollback,false);
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
+assert(router.includes('/api/pilot/recovery-readiness'));assert(router.includes('/api/pilot/recovery-readiness/checkpoint'));
+console.log(JSON.stringify({ok:true,version:"93.25.0",verifiedBackup:true,checksumVerification:true,previousBackupFallback:true,forensicArchive:true,ambiguousMutationReconciliation:true,silentRetry:false,humanRollbackApproval:true,automaticRollback:false,nextGate:"PILOT_OBSERVABILITY_ALERTING_AND_SUPPORT_READINESS"},null,2));
+})().catch(e=>{console.error(e);process.exit(1);});

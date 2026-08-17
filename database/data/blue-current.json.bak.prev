@@ -1116,23 +1116,6 @@
   ],
   "sessions": [
     {
-      "id": "ses_1786929391697_efcz9l",
-      "tokenHash": "ec5d9e89e73ed317d49f43f3ef7754d1e9f83e730824cae6544360ad38883589",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-17T01:16:31.697Z",
-      "lastSeenAt": "2026-08-17T01:24:20.510Z",
-      "idleExpiresAt": "2026-08-17T03:24:20.510Z",
-      "expiresAt": "2026-08-17T13:16:31.697Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-17T01:24:20.511Z"
-    },
-    {
       "id": "ses_1786929863657_3c2pvv",
       "tokenHash": "564424304e0a3de9c6136e9f859bd8573c0fb536a4ba0a87046acba1aa002a00",
       "userId": "usr_keith",

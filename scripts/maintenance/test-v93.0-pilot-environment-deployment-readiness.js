@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.j
 const ProductionConfigurationService=require(path.join(root,"server/services/productionConfigurationService"));
 const PilotEnvironmentDeploymentReadinessService=require(path.join(root,"server/services/pilotEnvironmentDeploymentReadinessService"));
 (async()=>{
-assert.equal(pkg.version,"93.0.0");
+assert(Number(pkg.version.split(".")[0])>=93);
 const temp=path.join(root,"database","data","blue-current.json");
 const env={BLUE_CURRENT_ENV:"production",BLUE_CURRENT_ALLOWED_ORIGINS:"https://app.bluecurrentco.com"};
 const config=new ProductionConfigurationService({root,databasePath:temp,port:8787,persistenceDriver:"json",persistenceTopology:"single-node-durable-json",environment:env});

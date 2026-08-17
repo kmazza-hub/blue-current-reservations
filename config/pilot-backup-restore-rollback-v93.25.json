@@ -1,0 +1,26 @@
+{
+  "version": "93.25.0",
+  "phase": "D",
+  "gate": "PILOT_BACKUP_RESTORE_AND_ROLLBACK_READINESS",
+  "backup": {
+    "rollingVerifiedCopies": true,
+    "sha256Manifest": true,
+    "preChangeCheckpointRequired": true
+  },
+  "restore": {
+    "checksumRequired": true,
+    "newestVerifiedPreferred": true,
+    "previousVerifiedFallback": true,
+    "corruptPrimaryForensicArchive": true
+  },
+  "rollback": {
+    "humanApprovalRequired": true,
+    "postRestoreVerificationRequired": true,
+    "automaticRollback": false
+  },
+  "mutationRecovery": {
+    "ambiguousRequiresReconciliation": true,
+    "silentRetry": false
+  },
+  "nextGate": "PILOT_OBSERVABILITY_ALERTING_AND_SUPPORT_READINESS"
+}
