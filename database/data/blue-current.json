@@ -1064,6 +1064,14 @@
       "category": "security",
       "createdAt": "2026-08-17T04:15:11.949Z",
       "id": "audit_1786940111949_4ayo1y"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-17T04:40:41.984Z",
+      "id": "audit_1786941641984_7c2hzv"
     }
   ],
   "reservations": [
@@ -1187,22 +1195,6 @@
       "revokedAt": "2026-08-17T04:15:11.899Z",
       "revokedReason": "concurrent-session-limit",
       "updatedAt": "2026-08-17T04:15:11.899Z"
-    },
-    {
-      "id": "ses_1786934391803_i9w53q",
-      "tokenHash": "8db6a29a883f7d3c20bf9bb414fe82698d025a7b5180c9c41d6f835424e621bd",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-17T02:39:51.803Z",
-      "lastSeenAt": "2026-08-17T02:39:51.803Z",
-      "idleExpiresAt": "2026-08-17T04:39:51.803Z",
-      "expiresAt": "2026-08-17T14:39:51.803Z",
-      "revokedAt": null,
-      "revokedReason": null
     },
     {
       "id": "ses_1786934447159_1bd1ut",
@@ -1348,9 +1340,26 @@
         "*"
       ],
       "createdAt": "2026-08-17T04:15:11.846Z",
-      "lastSeenAt": "2026-08-17T04:15:11.846Z",
-      "idleExpiresAt": "2026-08-17T06:15:11.846Z",
+      "lastSeenAt": "2026-08-17T04:40:38.392Z",
+      "idleExpiresAt": "2026-08-17T06:40:38.392Z",
       "expiresAt": "2026-08-17T16:15:11.846Z",
+      "revokedAt": null,
+      "revokedReason": null,
+      "updatedAt": "2026-08-17T04:40:38.394Z"
+    },
+    {
+      "id": "ses_1786941641857_yo5b0j",
+      "tokenHash": "ca4e35c992279068e6d6b1a9a54e9a25dc891ec9b86a64098a4f8b7fe260a024",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-17T04:40:41.857Z",
+      "lastSeenAt": "2026-08-17T04:40:41.857Z",
+      "idleExpiresAt": "2026-08-17T06:40:41.857Z",
+      "expiresAt": "2026-08-17T16:40:41.857Z",
       "revokedAt": null,
       "revokedReason": null
     }

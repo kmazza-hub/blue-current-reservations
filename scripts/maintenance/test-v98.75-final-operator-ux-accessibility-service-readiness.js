@@ -1,5 +1,5 @@
 "use strict";
-const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert.equal(pkg.version,"98.75.0");
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));assert(Number(pkg.version.split(".")[0])>=98);
 const s=fs.readFileSync(path.join(root,"server/services/finalOperatorUxAccessibilityServiceReadinessService.js"),"utf8");
 for(const id of["FINAL_TECHNICAL_CERTIFICATION_CLEAR","PRODUCTION_SERVICE_HEALTH_CLEAR","DARK_ENVIRONMENT_READABILITY_PROTECTED","LIGHT_SURFACE_CONTRAST_PROTECTED","PRIMARY_NAVIGATION_AVAILABLE","MOBILE_RESPONSIVE_BASELINE","KEYBOARD_FOCUS_VISIBILITY","CRITICAL_ACTION_LABELING","SERVICE_READINESS_VISIBILITY","HUMAN_SERVICE_READINESS_REVIEW_REQUIRED"])assert(s.includes(`id:"${id}"`),id);
 for(const x of["restaurantServiceUsabilityRequired:true","accessibilityRegressionBlocksCertification:true","readabilityRegressionBlocksCertification:true","criticalWorkflowRegressionBlocksCertification:true","humanServiceReadinessReviewRequired:true","noAutomaticUxWaiver:true","noAutomaticAccessibilityWaiver:true","noAutomaticCommercialRelease:true","autonomousProductionChanges:false"])assert(s.includes(x),x);

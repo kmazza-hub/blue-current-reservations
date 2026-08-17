@@ -1,0 +1,29 @@
+{
+  "version": "99.0.0",
+  "gate": "COMMERCIAL_RELEASE_CANDIDATE_LOCK",
+  "checks": [
+    "FINAL_OPERATOR_READINESS_CLEAR",
+    "RELEASE_CANDIDATE_IDENTITY_LOCKED",
+    "SOURCE_REVISION_RECORDED",
+    "BUILD_IDENTITY_RECORDED",
+    "SCOPE_LOCK_ACKNOWLEDGED",
+    "CERTIFICATION_CHAIN_ACKNOWLEDGED",
+    "NO_OPEN_RELEASE_BLOCKERS",
+    "ROLLBACK_REFERENCE_RECORDED",
+    "HUMAN_RC_OWNER_ASSIGNED"
+  ],
+  "policy": {
+    "candidateIdentityImmutable": true,
+    "sourceRevisionRequired": true,
+    "buildIdentityRequired": true,
+    "scopeLockRequired": true,
+    "rollbackReferenceRequired": true,
+    "releaseBlockersMustBeClosed": true,
+    "humanRcOwnerRequired": true,
+    "noAutomaticCandidateMutation": true,
+    "noAutomaticBlockerWaiver": true,
+    "noAutomaticCommercialRelease": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "RELEASE_CANDIDATE_END_TO_END_VALIDATION"
+}

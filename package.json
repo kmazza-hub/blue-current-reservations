@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "98.75.0",
+  "version": "99.0.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 final operator UX accessibility and service readiness certification",
+  "description": "Blue Current Hospitality OS \u2014 commercial release candidate lock",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
