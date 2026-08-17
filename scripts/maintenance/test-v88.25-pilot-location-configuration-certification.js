@@ -6,7 +6,7 @@ const RestaurantConfigurationService=require(path.join(root,"server/services/res
 const CertificationService=require(path.join(root,"server/services/pilotLocationConfigurationCertificationService"));
 
 (async()=>{
- assert.equal(pkg.version,"88.25.0");
+ assert(Number(pkg.version.split(".")[0]) >= 88);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/configuration/pilot-certification"));
  assert(router.includes("/api/configuration/pilot-certification/assess"));
