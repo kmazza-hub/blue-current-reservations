@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"94.75.0",phase:"D",organizationId,
+      version:"95.0.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -145,6 +145,7 @@ class PilotOperatorCommandCenterService{
       onsiteContinuityReadiness:{gate:"PILOT_DEVICE_NETWORK_AND_ONSITE_CONTINUITY_READINESS",liveEvidenceEndpoint:"/api/pilot/onsite-continuity-readiness",offlineContinuityRequired:true,reconnectReconciliationRequired:true,fallbackRunbookRequired:true,automaticRepair:false},
       operatorEnablementReadiness:{gate:"PILOT_TRAINING_RUNBOOK_AND_OPERATOR_ENABLEMENT_READINESS",liveEvidenceEndpoint:"/api/pilot/operator-enablement-readiness",humanOperatorAcceptanceRequired:true,humanManagerAcceptanceRequired:true,trainingDoesNotGrantPermissions:true},
       finalGoLiveReadiness:{gate:"PILOT_FINAL_GO_LIVE_CHECKLIST_AND_LAUNCH_AUTHORIZATION",liveEvidenceEndpoint:"/api/pilot/final-go-live-readiness",allReadinessGatesRequired:true,explicitHumanLaunchAuthorizationRequired:true,automaticLaunch:false},
+      launchDayCommand:{gate:"PILOT_LAUNCH_DAY_COMMAND_AND_CONTROL",liveEvidenceEndpoint:"/api/pilot/launch-day-command",humanGoHold:true,criticalIncidentPauseGuard:true,localFallbackVisible:true,humanCloseout:true},
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false

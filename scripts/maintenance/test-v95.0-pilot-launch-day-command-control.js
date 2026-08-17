@@ -1,0 +1,13 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"95.0.0");
+const svc=fs.readFileSync(path.join(root,"server/services/pilotLaunchDayCommandControlService.js"),"utf8");
+for(const id of ["FINAL_GO_LIVE","HUMAN_SHIFT_START","SUPPORT_OWNERSHIP","INCIDENT_VISIBILITY","CRITICAL_PAUSE_POSTURE","LOCAL_FALLBACK","HUMAN_SHIFT_CLOSE"])assert(svc.includes(`id:"${id}"`),id);
+for(const x of ["commandAssessmentDoesNotStartShift:true","humanStartRequired:true","humanPauseResumeStopRequired:true","humanCloseRequired:true","criticalIncidentsPauseRuntime:true","rollbackHumanDirected:true","automaticGoLive:false","autonomousProductionChanges:false"])assert(svc.includes(x),x);
+const shift=fs.readFileSync(path.join(root,"server/services/livePilotShiftCommandService.js"),"utf8");
+assert(shift.includes("humanStartRequired:true"));assert(shift.includes("humanCloseRequired:true"));assert(shift.includes("localFallbackAlwaysVisible:true"));assert(shift.includes("incidentStateAlwaysVisible:true"));
+const incident=fs.readFileSync(path.join(root,"server/services/pilotRuntimeObservabilityIncidentService.js"),"utf8");
+assert(incident.includes('if(severity==="CRITICAL"&&session.state==="ACTIVE")'));assert(incident.includes('"PAUSE"'));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/launch-day-command'));
+console.log(JSON.stringify({ok:true,version:"95.0.0",launchDayCheckpoints:7,humanGoHold:true,humanStart:true,humanPauseResumeStop:true,humanClose:true,criticalIncidentPauseGuard:true,localFallbackVisible:true,incidentStateVisible:true,rollbackHumanDirected:true,automaticGoLive:false,autonomousProductionChanges:false,nextGate:"PILOT_FIRST_SERVICE_STABILIZATION_AND_HYPERCARE"},null,2));
