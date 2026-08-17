@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"92.0.0",phase:"D",organizationId,
+      version:"92.25.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -106,7 +106,25 @@ class PilotOperatorCommandCenterService{
         incidents:(obs?.incidents||[]).filter(x=>x.status!=="RESOLVED").map(x=>({id:x.id,title:x.title,severity:x.severity,status:x.status,description:x.description||null})),
         recovery:{workflow:["DETECT","OWN","RECOVER","VERIFY"],verificationRequiredBeforeResolve:true,humanControlled:true}
       }:null,
-      evidence:{closedSessions:Number(closeouts?.closedSessions||0),learningDecisions:Number(decisions?.decisions||0),latestOutcome:latestCloseout?.outcome||null,latestDecision:latestDecision?.decision||null},
+      evidence:{
+        closedSessions:Number(closeouts?.closedSessions||0),learningDecisions:Number(decisions?.decisions||0),
+        latestOutcome:latestCloseout?.outcome||null,latestDecision:latestDecision?.decision||null,
+        postShiftReview:latestCloseout?{
+          sessionId:latestCloseout.sessionId||null,
+          outcome:latestCloseout.outcome||null,
+          operatorSummary:latestCloseout.operatorSummary||null,
+          lessonsLearned:latestCloseout.lessonsLearned||null,
+          followUp:latestCloseout.followUp||null,
+          closedAt:latestCloseout.closedAt||null,
+          incidentCount:Number(latestCloseout.evidence?.runtimeSummary?.incidents||latestCloseout.evidence?.incidents?.length||0),
+          resolvedIncidentCount:(latestCloseout.evidence?.incidents||[]).filter(x=>x.status==="RESOLVED").length,
+          recoveryEvidence:(latestCloseout.evidence?.incidents||[]).filter(x=>x.status==="RESOLVED").slice(-5).map(x=>({
+            id:x.id,title:x.title,severity:x.severity,
+            acknowledgedAt:x.acknowledgedAt||null,escalatedAt:x.escalatedAt||null,resolvedAt:x.resolvedAt||null,
+            resolution:x.resolution||null,resolvedBy:x.resolvedBy||null
+          }))
+        }:null
+      },
       controls:{
         canStart:Boolean(!active&&launch?.current&&!launch?.hold),
         canPause:Boolean(active?.state==="ACTIVE"),

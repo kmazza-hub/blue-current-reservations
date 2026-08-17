@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="92.0.0">
+  <meta name="blue-current-build" content="92.25.0">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Blue Current | The Hospitality Operating System</title>
@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=92.0.0">
+  <link rel="stylesheet" href="styles.css?v=92.25.0">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -58,7 +58,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V92.0</strong>
+    <strong>Blue Current V92.25</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -395,6 +395,17 @@
         <div>
           <span id="bcPilotEvidence" data-role-group="evidence">No closed pilot evidence yet.</span>
           <span id="bcPilotBoundarySummary">Human controlled · No automatic expansion</span>
+          <section class="bc-post-shift-review" id="bcPostShiftReview" hidden>
+            <header><small>POST-SHIFT REVIEW</small><strong id="bcPostShiftOutcome">No completed session</strong></header>
+            <div class="bc-post-shift-metrics">
+              <span><b id="bcPostShiftIncidents">0</b> incidents</span>
+              <span><b id="bcPostShiftRecovered">0</b> recovered</span>
+              <span id="bcPostShiftClosedAt">No closeout yet</span>
+            </div>
+            <p id="bcPostShiftSummary">Completed service evidence will appear here.</p>
+            <div class="bc-recovery-evidence-list" id="bcRecoveryEvidenceList"></div>
+            <p class="bc-post-shift-learning" id="bcPostShiftLearning"></p>
+          </section>
         </div>
       </details>
     </section>
@@ -10022,7 +10033,7 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=92.0.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=92.0.0" defer></script>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=92.25.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=92.25.0" defer></script>
     <dialog class="bc-pilot-confirm" id="bcPilotConfirmDialog">
       <form method="dialog">
         <small id="bcPilotConfirmEyebrow">PILOT CONTROL</small>

@@ -297,6 +297,24 @@ function setShiftBridgeMode(mode){
   renderShiftBridge();
 }
 
+
+function renderPostShiftReview(review){
+  const root=el("bcPostShiftReview");if(!root)return;root.hidden=!review;if(!review)return;
+  setText("bcPostShiftOutcome",String(review.outcome||"CLOSED").replaceAll("_"," "));
+  setText("bcPostShiftIncidents",String(review.incidentCount||0));setText("bcPostShiftRecovered",String(review.resolvedIncidentCount||0));
+  setText("bcPostShiftClosedAt",review.closedAt?`Closed ${new Date(review.closedAt).toLocaleString()}`:"Closed session");
+  setText("bcPostShiftSummary",review.operatorSummary||"Session closed with captured evidence.");
+  setText("bcPostShiftLearning",review.lessonsLearned?`Carry forward · ${review.lessonsLearned}`:(review.followUp?`Follow-up · ${review.followUp}`:"No additional learning note recorded."));
+  const list=el("bcRecoveryEvidenceList");if(!list)return;list.replaceChildren();
+  (review.recoveryEvidence||[]).forEach(item=>{
+    const row=document.createElement("div");row.className="bc-recovery-evidence-row";
+    const sev=document.createElement("span"),copy=document.createElement("strong"),meta=document.createElement("small");
+    sev.textContent=item.severity||"INFO";copy.textContent=item.title||"Recovered exception";
+    meta.textContent=item.resolvedAt?`Verified ${new Date(item.resolvedAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}`:"Verified recovered";
+    row.append(sev,copy,meta);list.append(row);
+  });
+}
+
 function renderCommand(data){
   commandState.currentData=data;
   renderLocations(data);
@@ -336,6 +354,7 @@ function renderCommand(data){
 
   renderAttention(data);
   renderShiftBridge();
+  renderPostShiftReview(data.evidence?.postShiftReview||null);
   buildIntelligence(data);
   loadManagerActions();
   loadOutcomeLearning();
@@ -343,7 +362,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V92.0 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V92.25 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 

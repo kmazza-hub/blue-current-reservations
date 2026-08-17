@@ -17342,3 +17342,13 @@ textarea.bc-auto-light-contrast:disabled{
 .bc-recovery-command>div:first-child{display:flex;flex-direction:column;gap:3px}.bc-recovery-command strong{color:#fff}.bc-recovery-command span{color:#b9c8d4;font-size:.77rem}.bc-recovery-steps{display:flex;gap:5px;flex-wrap:wrap}.bc-recovery-steps span{padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.06);font-size:.69rem;font-weight:850}.bc-recovery-steps span[data-active="true"]{background:rgba(76,159,122,.20);color:#e9fff4}
 .bc-pilot-incident-row[data-recovery-state="critical"]{box-shadow:inset 4px 0 rgba(255,113,127,.72)}.bc-pilot-incident-row[data-recovery-state="owned"]{box-shadow:inset 4px 0 rgba(240,194,91,.68)}.bc-pilot-incident-row[data-recovery-state="recovering"]{box-shadow:inset 4px 0 rgba(85,172,213,.70)}.bc-pilot-incident-actions button[data-recovery-action="resolve"]{background:rgba(60,132,96,.22)}.bc-incident-dialog textarea{min-height:96px}
 @media(max-width:700px){.bc-recovery-command{align-items:flex-start;flex-direction:column}}
+
+/* V92.25 — SERVICE RECOVERY EVIDENCE & POST-SHIFT REVIEW */
+.bc-post-shift-review{width:100%;margin-top:10px;padding:11px 12px;border-radius:11px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
+.bc-post-shift-review header{display:flex;justify-content:space-between;gap:12px;align-items:center}.bc-post-shift-review header strong{color:#fff}
+.bc-post-shift-metrics{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0;color:#aebfcb;font-size:.76rem}.bc-post-shift-metrics b{color:#fff}
+.bc-post-shift-review>p{margin:7px 0;color:#c1cfda;font-size:.79rem;line-height:1.4}
+.bc-recovery-evidence-list{display:grid;gap:6px;margin-top:8px}.bc-recovery-evidence-row{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:8px 9px;border-radius:9px;background:rgba(68,137,101,.10)}
+.bc-recovery-evidence-row>span{font-size:.68rem;font-weight:900}.bc-recovery-evidence-row strong{color:#fff;font-size:.78rem}.bc-recovery-evidence-row small{color:#9fb1bf;text-align:right}
+.bc-post-shift-learning{padding-top:8px;border-top:1px solid rgba(255,255,255,.07)}
+@media(max-width:620px){.bc-post-shift-review header{align-items:flex-start;flex-direction:column}.bc-recovery-evidence-row{grid-template-columns:auto 1fr}.bc-recovery-evidence-row small{grid-column:2;text-align:left}}

@@ -1,0 +1,25 @@
+{
+  "version": "92.25.0",
+  "phase": "D",
+  "gate": "SERVICE_RECOVERY_EVIDENCE_AND_POST_SHIFT_REVIEW",
+  "evidenceSource": "PILOT_SESSION_CLOSEOUT",
+  "review": [
+    "outcome",
+    "operatorSummary",
+    "incidentRecovery",
+    "lessonsLearned",
+    "followUp"
+  ],
+  "principles": {
+    "reuseAuthoritativeCloseout": true,
+    "noDuplicateEvidenceStore": true,
+    "recoveryVisibleAfterShift": true,
+    "learningCarriedForward": true
+  },
+  "safety": {
+    "humanCloseoutAuthorityUnchanged": true,
+    "automaticLearningDecision": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_OPERATOR_USABILITY_AND_SERVICE_NIGHT_ACCEPTANCE"
+}
