@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory"));const Recon=require(path.join(root,"server/services/dataReconciliationConflictService"));
-(async()=>{assert.equal(pkg.version,"86.50.0");const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes("/api/integrations/reconciliation/compare"));assert(router.includes("/api/integrations/reconciliation/resolve"));
+(async()=>{assert(Number(pkg.version.split(".")[0]) >= 86);const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes("/api/integrations/reconciliation/compare"));assert(router.includes("/api/integrations/reconciliation/resolve"));
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8650-")),dbPath=path.join(dir,"db.json");fs.writeFileSync(dbPath,"{}");const db=createPersistence({driver:"json",databasePath:dbPath,options:{logger:{warn(){},error(){}}}}),svc=new Recon(db);
 const match=await svc.compare("o",{entityType:"POS_TRANSACTION",entityId:"check-1",field:"total",observations:[{source:"EXTERNAL_POS",value:125.5},{source:"BLUE_CURRENT",value:125.5}]});assert.equal(match.status,"MATCH");
 const conflict=await svc.compare("o",{entityType:"POS_TRANSACTION",entityId:"check-2",field:"total",observations:[{source:"EXTERNAL_POS",value:98.25,sourceRecordId:"toast-22"},{source:"BLUE_CURRENT",value:89.25}]});assert.equal(conflict.status,"RESOLVABLE_BY_AUTHORITY");assert.equal(conflict.authoritativeObservation.value,98.25);

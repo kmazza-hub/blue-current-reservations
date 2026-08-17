@@ -16988,3 +16988,52 @@ body.bc-command-transport-down .bc-os-command{
     color:var(--bc-light-muted)!important;
   }
 }
+
+
+/* ==========================================================================
+   V86.50.1 — GLOBAL LIGHT-SURFACE CONTRAST ENFORCEMENT
+   Computed contrast guard marks only text that is actually low-contrast on a
+   light rendered background. This is intentionally the final CSS authority.
+   ========================================================================== */
+:root{
+  --bc-auto-light-ink:#082733;
+  --bc-auto-light-ink-muted:#3f5f69;
+}
+
+.bc-auto-light-contrast{
+  color:var(--bc-auto-light-ink)!important;
+  opacity:1!important;
+  -webkit-text-fill-color:var(--bc-auto-light-ink)!important;
+  text-shadow:none!important;
+}
+
+/* Form controls need both readable entered text and readable placeholder text. */
+input.bc-auto-light-contrast::placeholder,
+textarea.bc-auto-light-contrast::placeholder{
+  color:var(--bc-auto-light-ink-muted)!important;
+  opacity:1!important;
+  -webkit-text-fill-color:var(--bc-auto-light-ink-muted)!important;
+}
+
+/* Legacy display headings sometimes use transparent/washed-out text effects. */
+.bc-auto-light-contrast:is(h1,h2,h3,h4,h5,h6,strong,b){
+  color:var(--bc-auto-light-ink)!important;
+  -webkit-text-fill-color:var(--bc-auto-light-ink)!important;
+  background-image:none!important;
+  filter:none!important;
+}
+
+/* Keep text fully readable in disabled controls without changing disabled state. */
+button.bc-auto-light-contrast:disabled,
+input.bc-auto-light-contrast:disabled,
+select.bc-auto-light-contrast:disabled,
+textarea.bc-auto-light-contrast:disabled{
+  opacity:.72!important;
+}
+
+@media(max-width:760px){
+  .bc-auto-light-contrast{
+    color:var(--bc-auto-light-ink)!important;
+    -webkit-text-fill-color:var(--bc-auto-light-ink)!important;
+  }
+}
