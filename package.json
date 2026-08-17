@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "83.25.1",
+  "version": "83.50.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 light surface typography enforcement hotfix",
+  "description": "Blue Current Hospitality OS \u2014 portfolio decision ledger and executive accountability",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

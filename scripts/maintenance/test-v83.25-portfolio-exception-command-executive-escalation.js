@@ -2,7 +2,7 @@
 const assert=require("assert"),fs=require("fs"),os=require("os"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory")),Command=require(path.join(root,"server/services/portfolioExceptionCommandService"));
 (async()=>{
- assert.equal(pkg.version,"83.25.0");
+ assert(Number(pkg.version.split(".")[0]) >= 83);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),server=fs.readFileSync(path.join(root,"server/server.js"),"utf8");
  assert(router.includes("/api/executive/portfolio-exceptions/acknowledge"));assert(router.includes("/api/executive/portfolio-exceptions/resolve"));assert(server.includes("PortfolioExceptionCommandService"));
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc8325-")),dbPath=path.join(dir,"db.json");
