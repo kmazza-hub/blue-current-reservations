@@ -1,0 +1,43 @@
+{
+  "version": "98.0.0",
+  "gate": "PILOT_LEARNING_TO_PRODUCT_DECISION_CONTROL",
+  "decisions": [
+    "FIX",
+    "SIMPLIFY",
+    "RETAIN",
+    "DEFER",
+    "EXPAND"
+  ],
+  "priorities": [
+    "P0",
+    "P1",
+    "P2",
+    "P3"
+  ],
+  "riskLevels": [
+    "LOW",
+    "MEDIUM",
+    "HIGH",
+    "CRITICAL"
+  ],
+  "requirements": [
+    "PILOT_VALUE_ACCEPTED",
+    "PRODUCT_DECISION_EVIDENCE_LINKED",
+    "DECISION_OWNERSHIP_ASSIGNED",
+    "PRIORITY_ASSIGNED",
+    "HIGH_RISK_DECISIONS_RESOLVED",
+    "HUMAN_PRODUCT_DECISION_PRESENT"
+  ],
+  "policy": {
+    "evidenceLinkRequired": true,
+    "humanOwnerRequired": true,
+    "humanPriorityRequired": true,
+    "expansionDecisionIsNotExpansionAuthorization": true,
+    "noAutomaticBacklogMutation": true,
+    "noAutomaticProductChange": true,
+    "noAutomaticExpansion": true,
+    "noAutomaticCommercialization": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "COMMERCIAL_PRODUCT_FREEZE_AND_FINAL_HARDENING"
+}
