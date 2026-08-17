@@ -1,0 +1,30 @@
+{
+  "version": "94.50.0",
+  "phase": "D",
+  "gate": "PILOT_TRAINING_RUNBOOK_AND_OPERATOR_ENABLEMENT_READINESS",
+  "operatorEvidence": [
+    "LIVE_SERVICE_USABILITY",
+    "TRAINING_BURDEN",
+    "SHIFT_HANDOFF",
+    "ACCESSIBILITY_READABILITY",
+    "OPERATOR_ACCEPTANCE",
+    "MANAGER_ACCEPTANCE"
+  ],
+  "runbooks": [
+    "ACCESS_PACKAGE",
+    "BACKUP_RESTORE",
+    "STARTUP_RESTART",
+    "SUPPORT_ESCALATION",
+    "ROLLBACK",
+    "DEPLOYMENT_EVIDENCE"
+  ],
+  "decision": {
+    "currentPilotOperatorAcceptanceRequired": true,
+    "humanOperatorAcceptanceRequired": true,
+    "humanManagerAcceptanceRequired": true,
+    "trainingDoesNotGrantPermissions": true,
+    "trainingDoesNotExecuteRestaurantActions": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_FINAL_GO_LIVE_CHECKLIST_AND_LAUNCH_AUTHORIZATION"
+}

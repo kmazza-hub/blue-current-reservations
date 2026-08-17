@@ -1,0 +1,15 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"94.50.0");
+const ux=fs.readFileSync(path.join(root,"server/services/v54OperatorExperienceCertificationService.js"),"utf8");
+for(const id of ["LIVE_SERVICE_USABILITY","TRAINING_BURDEN","SHIFT_HANDOFF","ACCESSIBILITY_READABILITY","OPERATOR_ACCEPTANCE","MANAGER_ACCEPTANCE"])assert(ux.includes(`id:"${id}"`),id);
+assert(ux.includes("humanOperatorAcceptanceRequired:true"));assert(ux.includes("humanManagerAcceptanceRequired:true"));
+const deploy=fs.readFileSync(path.join(root,"server/services/pilotDeploymentPackageService.js"),"utf8");
+for(const id of ["ACCESS_PACKAGE","BACKUP_RESTORE","STARTUP_RESTART","SUPPORT_ESCALATION","ROLLBACK","DEPLOYMENT_EVIDENCE"])assert(deploy.includes(`id:"${id}"`),id);
+const acceptance=fs.readFileSync(path.join(root,"server/services/pilotOperatorAcceptanceService.js"),"utf8");
+assert(acceptance.includes("humanAcceptanceRequired:true"));assert(acceptance.includes("simulationDoesNotSelfApprove:true"));
+const svc=fs.readFileSync(path.join(root,"server/services/pilotTrainingRunbookOperatorEnablementReadinessService.js"),"utf8");
+assert(svc.includes('version:"94.50.0"'));assert(svc.includes("trainingDoesNotGrantPermissions:true"));assert(svc.includes("trainingDoesNotExecuteRestaurantActions:true"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/operator-enablement-readiness'));
+console.log(JSON.stringify({ok:true,version:"94.50.0",operatorEvidenceGates:6,runbookGates:6,currentPilotAcceptance:true,humanOperatorAcceptance:true,humanManagerAcceptance:true,trainingDoesNotGrantPermissions:true,trainingDoesNotExecuteRestaurantActions:true,autonomousProductionChanges:false,nextGate:"PILOT_FINAL_GO_LIVE_CHECKLIST_AND_LAUNCH_AUTHORIZATION"},null,2));
