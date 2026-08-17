@@ -1,0 +1,26 @@
+{
+  "version": "100.0.0",
+  "gate": "V100_COMMERCIAL_V1_CERTIFICATION",
+  "checks": [
+    "V100_RELEASE_AUTHORIZED",
+    "COMMERCIAL_OPERATIONS_SUPPORT_READY",
+    "RC_END_TO_END_VALIDATED",
+    "COMMERCIAL_RC_LOCKED",
+    "ZERO_RELEASE_BLOCKERS",
+    "CANDIDATE_IDENTITY_PRESERVED",
+    "ROLLBACK_REFERENCE_PRESERVED",
+    "HUMAN_COMMERCIAL_V1_CERTIFICATION"
+  ],
+  "policy": {
+    "commercialBaselineImmutable": true,
+    "certificationRequiresHumanAuthorization": true,
+    "certificationDoesNotDeploy": true,
+    "certificationDoesNotMutateProduction": true,
+    "newBlockerInvalidatesCertification": true,
+    "releaseCandidateMutationInvalidatesCertification": true,
+    "noAutomaticDeployment": true,
+    "noAutomaticCommercialRelease": true,
+    "autonomousProductionChanges": false
+  },
+  "lifecycle": "COMMERCIAL_V1_BASELINE"
+}

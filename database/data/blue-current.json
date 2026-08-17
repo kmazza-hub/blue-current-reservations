@@ -1197,23 +1197,6 @@
       "updatedAt": "2026-08-17T04:15:11.899Z"
     },
     {
-      "id": "ses_1786934447159_1bd1ut",
-      "tokenHash": "3516e23ba3eb3c0d58ad16d6f8e67d648f2d04047e2a2307336e6d1bdb8f90a0",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-17T02:40:47.159Z",
-      "lastSeenAt": "2026-08-17T02:48:41.590Z",
-      "idleExpiresAt": "2026-08-17T04:48:41.590Z",
-      "expiresAt": "2026-08-17T14:40:47.159Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-17T02:48:41.592Z"
-    },
-    {
       "id": "ses_1786934924985_ehiyh5",
       "tokenHash": "920213b2acd683d7bced0b58b9f634084ede79a87cc690fb221c98c67d223e7c",
       "userId": "usr_keith",
