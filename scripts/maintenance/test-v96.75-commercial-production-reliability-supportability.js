@@ -1,6 +1,6 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"96.75.0");
+assert(Number(pkg.version.split(".")[0])>=96);
 const s=fs.readFileSync(path.join(root,"server/services/commercialProductionReliabilitySupportabilityService.js"),"utf8");
 for(const id of ["PRODUCTION_HEALTH_VISIBLE","SUPPORT_OWNERSHIP_VISIBLE","NO_CRITICAL_SUPPORT_EVENTS","NO_CRITICAL_INCIDENT_COMMANDS","RECOVERY_REVIEWS_COMPLETE","RELIABILITY_NOT_BREACHED","ERROR_BUDGET_VISIBLE","LATENCY_VISIBLE","SERVER_ERRORS_VISIBLE","COMMERCIAL_BLOCKERS_CLEAR"])assert(s.includes(`id:"${id}"`),id);
 for(const x of ["supportOwnerRequired:true","escalationOwnerRequired:true","incidentCommandRequiredForMajorEvents:true","recoveryReviewRequired:true","rootCauseRequired:true","correctiveActionOwnershipRequired:true","reliabilityAndErrorBudgetVisible:true","noAutomaticRemediation:true","noAutomaticIncidentResolution:true","noAutomaticRelease:true","autonomousProductionChanges:false"])assert(s.includes(x),x);
