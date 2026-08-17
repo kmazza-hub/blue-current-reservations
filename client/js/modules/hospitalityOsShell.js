@@ -309,7 +309,7 @@ function renderCommand(data){
   loadShiftMemory();
 
   const rail=document.querySelector(".bc-os-rail-foot small");
-  if(rail)rail.textContent=`V90.50 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
+  if(rail)rail.textContent=`V90.75 · ${data.dataMode==="historical-demo"?"Demo data":"Live data"}`;
   commandState.lastLoadedAt=Date.now();
 }
 
@@ -570,6 +570,63 @@ function renderCommandError(error){
 }
 
 
+
+function renderPilotIncidents(items){
+  const root=el("bcPilotIncidents"),list=el("bcPilotIncidentList");
+  if(!root||!list)return;
+  root.hidden=!items.length;setText("bcPilotIncidentCount",String(items.length));list.replaceChildren();
+  items.forEach(item=>{
+    const row=document.createElement("div");row.className="bc-pilot-incident-row";
+    const sev=document.createElement("span");sev.textContent=item.severity||"INFO";
+    const copy=document.createElement("div"),title=document.createElement("strong"),detail=document.createElement("small");
+    title.textContent=item.title||"Pilot incident";detail.textContent=`${item.status||"OPEN"}${item.description?` · ${item.description}`:""}`;copy.append(title,detail);
+    const actions=document.createElement("div");actions.className="bc-pilot-incident-actions";
+    if(item.status!=="ACKNOWLEDGED"){
+      const ack=document.createElement("button");ack.type="button";ack.textContent="Acknowledge";ack.addEventListener("click",()=>pilotIncidentAction(item.id,"acknowledge"));actions.append(ack);
+    }
+    const esc=document.createElement("button");esc.type="button";esc.textContent="Escalate";esc.addEventListener("click",()=>pilotIncidentAction(item.id,"escalate"));actions.append(esc);
+    const res=document.createElement("button");res.type="button";res.textContent="Resolve";res.addEventListener("click",()=>pilotIncidentAction(item.id,"resolve"));actions.append(res);
+    row.append(sev,copy,actions);list.append(row);
+  });
+}
+
+async function pilotControl(action){
+  const feedback=el("bcPilotActionFeedback");
+  let body={};
+  if(action==="start"){
+    const label=window.prompt("Pilot session label:","Controlled pilot service");
+    if(label===null)return;body={label};
+  }else if(action==="pause"||action==="stop"){
+    const reason=window.prompt(`${action==="pause"?"Pause":"Stop"} reason (required):`,"");
+    if(reason===null)return;if(reason.trim().length<10){if(feedback)feedback.textContent="Please enter a meaningful reason (at least 10 characters).";return;}body={reason};
+  }
+  if(feedback)feedback.textContent=`${action[0].toUpperCase()+action.slice(1)} requested…`;
+  try{
+    const response=await commandFetch(`/api/pilot/operator-command/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Pilot ${action} returned ${response.status}.`);
+    if(feedback)feedback.textContent=payload.message||`Pilot ${action} completed.`;
+    await refreshPilotCommand();
+  }catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
+}
+
+async function pilotIncidentAction(incidentId,action){
+  const feedback=el("bcPilotActionFeedback");let body={};
+  if(action==="acknowledge"){
+    const note=window.prompt("Acknowledgement note (optional):","");if(note===null)return;body={note};
+  }else if(action==="escalate"){
+    const note=window.prompt("Escalation note (required):","");if(note===null)return;if(note.trim().length<10){if(feedback)feedback.textContent="Escalation needs a meaningful note.";return;}body={note};
+  }else{
+    const resolution=window.prompt("Resolution summary (required):","");if(resolution===null)return;if(resolution.trim().length<10){if(feedback)feedback.textContent="Resolution needs a meaningful summary.";return;}body={resolution};
+  }
+  try{
+    const response=await commandFetch(`/api/pilot/operator-command/incidents/${encodeURIComponent(incidentId)}/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(payload.error||`Incident ${action} returned ${response.status}.`);
+    if(feedback)feedback.textContent=`Incident ${action} completed.`;await refreshPilotCommand();
+  }catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
+}
+
 async function refreshPilotCommand(){
   if(!authenticatedAppState())return;
   try{
@@ -586,6 +643,8 @@ async function refreshPilotCommand(){
     setText("bcPilotHealthDetail",data.health?`${data.health.openIncidents} open incident(s) · ${data.health.metrics} metric(s)`:"No runtime health yet");
     setText("bcPilotNextAction",data.nextAction||"Review pilot status.");
     setText("bcPilotEvidence",`${data.evidence?.closedSessions||0} closed session(s) · ${data.evidence?.learningDecisions||0} learning decision(s)${data.evidence?.latestDecision?` · Latest ${data.evidence.latestDecision}`:""}`);
+    ["Start","Pause","Resume","Stop"].forEach(name=>{const b=el(`bcPilot${name}`);if(b)b.disabled=!data.controls?.[`can${name}`];});
+    renderPilotIncidents(data.health?.incidents||[]);
   }catch(error){
     const state=el("bcPilotState");if(state){state.textContent="Unavailable";state.dataset.tone="hold";}
     setText("bcPilotNextAction","Pilot command data is temporarily unavailable. Core Command remains available.");
@@ -691,6 +750,10 @@ function init(){
     openAuthFallback("Sign in to load Blue Current Command.");
   });
   el("bcAcknowledgeTop")?.addEventListener("click",acknowledgeTopPriority);
+  el("bcPilotStart")?.addEventListener("click",()=>pilotControl("start"));
+  el("bcPilotPause")?.addEventListener("click",()=>pilotControl("pause"));
+  el("bcPilotResume")?.addEventListener("click",()=>pilotControl("resume"));
+  el("bcPilotStop")?.addEventListener("click",()=>pilotControl("stop"));
   el("bcCommandLocation")?.addEventListener("change",event=>{
     commandState.locationId=event.target.value;
     refreshCommand();

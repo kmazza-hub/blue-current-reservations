@@ -40,7 +40,7 @@ class PilotOperatorCommandCenterService{
     }
 
     return {
-      version:"90.50.0",phase:"D",organizationId,
+      version:"90.75.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       status,tone,nextAction,
       readiness:{
@@ -54,9 +54,17 @@ class PilotOperatorCommandCenterService{
         state:Number(obs?.summary?.criticalOpen||0)>0?"CRITICAL":Number(obs?.summary?.openIncidents||0)>0?"DEGRADED":"HEALTHY",
         openIncidents:Number(obs?.summary?.openIncidents||0),
         criticalOpen:Number(obs?.summary?.criticalOpen||0),
-        metrics:Number(obs?.summary?.metrics||0)
+        metrics:Number(obs?.summary?.metrics||0),
+        incidents:(obs?.incidents||[]).filter(x=>x.status!=="RESOLVED").map(x=>({id:x.id,title:x.title,severity:x.severity,status:x.status,description:x.description||null}))
       }:null,
       evidence:{closedSessions:Number(closeouts?.closedSessions||0),learningDecisions:Number(decisions?.decisions||0),latestOutcome:latestCloseout?.outcome||null,latestDecision:latestDecision?.decision||null},
+      controls:{
+        canStart:Boolean(!active&&launch?.current&&!launch?.hold),
+        canPause:Boolean(active?.state==="ACTIVE"),
+        canResume:Boolean(active?.state==="PAUSED"),
+        canStop:Boolean(active&&["ACTIVE","PAUSED"].includes(active.state)),
+        sessionId:active?.id||null
+      },
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false

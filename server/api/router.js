@@ -775,6 +775,28 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response,200,await providerIntegrationContinuityService.evaluate(organizationId,auth.allowedLocationIds||[],target));
     }
 
+    if (url.pathname === "/api/pilot/operator-command/start" && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Starting a controlled pilot session requires admin permission."});
+      const body=await readJsonBody(request);
+      const session=await pilotRuntimeSessionControlService.start(organizationId,body,auth.user?.email||auth.user?.id||"operator");
+      return sendJson(response,201,{ok:true,message:"Controlled pilot session started.",session});
+    }
+    if (url.pathname.startsWith("/api/pilot/operator-command/") && ["pause","resume","stop"].some(x=>url.pathname.endsWith(`/${x}`)) && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot session control requires admin permission."});
+      const action=url.pathname.split("/").pop().toUpperCase(),body=await readJsonBody(request);
+      const current=await pilotRuntimeSessionControlService.current(organizationId);
+      if(!current.activeSession) return sendJson(response,409,{error:"No active or paused controlled pilot session exists."});
+      const session=await pilotRuntimeSessionControlService.transition(organizationId,current.activeSession.id,action,body,auth.user?.email||auth.user?.id||"operator");
+      return sendJson(response,200,{ok:true,message:`Pilot session ${action.toLowerCase()} completed.`,session});
+    }
+    if (url.pathname.startsWith("/api/pilot/operator-command/incidents/") && request.method === "POST") {
+      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot incident control requires admin permission."});
+      const parts=url.pathname.split("/"),incidentId=parts[5],action=parts[6],body=await readJsonBody(request),actor=auth.user?.email||auth.user?.id||"operator";
+      if(!["acknowledge","escalate","resolve"].includes(action)) return sendJson(response,400,{error:"Unknown pilot incident action."});
+      const incident=await pilotRuntimeObservabilityIncidentService[action](organizationId,incidentId,body,actor);
+      return sendJson(response,200,{ok:true,incident});
+    }
+
     if (url.pathname === "/api/pilot/operator-command" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot operator command requires read permission."});
       return sendJson(response,200,await pilotOperatorCommandCenterService.current(organizationId));

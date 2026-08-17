@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "90.50.0",
+  "version": "90.75.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 operator pilot command center foundation",
+  "description": "Blue Current Hospitality OS \u2014 operator pilot control actions",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

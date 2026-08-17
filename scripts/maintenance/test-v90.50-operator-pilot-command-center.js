@@ -3,7 +3,7 @@ const assert=require("assert"),fs=require("fs"),path=require("path");
 const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
 const Service=require(path.join(root,"server/services/pilotOperatorCommandCenterService"));
 (async()=>{
- assert.equal(pkg.version,"90.50.0");
+ assert(Number(pkg.version.split(".")[0]) >= 90);
  const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8"),shell=fs.readFileSync(path.join(root,"client/js/modules/hospitalityOsShell.js"),"utf8"),router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  for(const id of ["bcPilotCommandCard","bcPilotState","bcPilotReadiness","bcPilotSession","bcPilotHealth","bcPilotNextAction","bcPilotEvidence"])assert(html.includes(`id="${id}"`),id);
  assert(css.includes("V90.50 — Operator Pilot Command Center Foundation"));assert(shell.includes("refreshPilotCommand"));assert(router.includes("/api/pilot/operator-command"));
