@@ -1,0 +1,12 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"95.75.0");
+const svc=fs.readFileSync(path.join(root,"server/services/pilotExitReadinessV96PreparationService.js"),"utf8");
+for(const id of ["REPEAT_SERVICE_CONFIDENCE","PILOT_STABLE","CLOSEOUT_REVIEW","INCIDENT_CLOSEOUT","NO_HIGH_CRITICAL_DEBT","OPERATOR_FEEDBACK","GUEST_IMPACT_SUMMARY","SUPPORT_BURDEN_SUMMARY","DATA_KPI_CONFIDENCE","LESSONS_LEARNED","RELEASE_CANDIDATE_REVIEW","IMMUTABLE_BUILD_ID","CHANGE_FREEZE","REGRESSION_EVIDENCE","SECURITY_SIGNOFF","BACKUP_RESTORE_SIGNOFF","OBSERVABILITY_SIGNOFF","SUPPORT_SIGNOFF","ROLLBACK_SIGNOFF","KNOWN_ISSUES_REGISTER","PILOT_SUCCESS_CRITERIA"])assert(svc.includes(`id:"${id}"`),id);
+for(const x of ["preparationDoesNotCertifyV96:true","humanV96CertificationRequired:true","certificationDoesNotDeploy:true","certificationDoesNotStartRuntime:true","noAutomaticExpansion:true","autonomousProductionChanges:false"])assert(svc.includes(x),x);
+const rc=fs.readFileSync(path.join(root,"server/services/pilotReleaseCandidateCertificationService.js"),"utf8");
+assert(rc.includes("immutableBuildIdentificationRequired:true"));assert(rc.includes("knownIssuesRegisterRequired:true"));assert(rc.includes("pilotSuccessCriteriaRequired:true"));assert(rc.includes("humanRcApproveHoldRequired:true"));
+const close=fs.readFileSync(path.join(root,"server/services/pilotCloseoutOutcomeService.js"),"utf8");assert(close.includes("unresolvedDebtMustRemainVisible:true"));assert(close.includes("humanExpandHoldRetireDecisionRequired:true"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/pilot/v96-certification-preparation'));assert(router.includes('authService.can(auth,"admin")'));
+console.log(JSON.stringify({ok:true,version:"95.75.0",locationExitChecks:10,releaseEvidenceChecks:11,totalCertificationPreparationChecks:21,humanV96CertificationRequired:true,preparationDoesNotCertifyV96:true,immutableBuildRequired:true,knownIssuesRegisterRequired:true,pilotSuccessCriteriaRequired:true,noAutomaticExpansion:true,nextGate:"V96_PILOT_READY_CERTIFICATION"},null,2));
