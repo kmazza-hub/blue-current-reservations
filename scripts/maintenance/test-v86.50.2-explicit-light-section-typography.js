@@ -6,9 +6,9 @@ const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
 const guard=fs.readFileSync(path.join(root,"client/js/modules/lightSurfaceContrastGuard.js"),"utf8");
 
-assert.equal(pkg.version,"86.50.2");
-assert(html.includes("styles.css?v=86.50.2"));
-assert(html.includes("lightSurfaceContrastGuard.js?v=86.50.2"));
+assert(Number(pkg.version.split(".")[0]) >= 86);
+assert(html.includes(`styles.css?v=${pkg.version}`));
+assert(html.includes(`lightSurfaceContrastGuard.js?v=${pkg.version}`));
 
 const sections=[
   ["#guest-intelligence","Know every guest. Grow every relationship."],

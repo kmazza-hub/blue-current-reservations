@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "86.50.2",
+  "version": "86.75.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 explicit light section typography authority",
+  "description": "Blue Current Hospitality OS \u2014 connector observability and integration health command",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
