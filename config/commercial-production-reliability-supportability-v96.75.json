@@ -1,0 +1,36 @@
+{
+  "version": "96.75.0",
+  "gate": "COMMERCIAL_HARDENING_PRODUCTION_RELIABILITY_AND_SUPPORTABILITY",
+  "checks": [
+    "PRODUCTION_HEALTH_VISIBLE",
+    "SUPPORT_OWNERSHIP_VISIBLE",
+    "NO_CRITICAL_SUPPORT_EVENTS",
+    "NO_CRITICAL_INCIDENT_COMMANDS",
+    "RECOVERY_REVIEWS_COMPLETE",
+    "RELIABILITY_NOT_BREACHED",
+    "ERROR_BUDGET_VISIBLE",
+    "LATENCY_VISIBLE",
+    "SERVER_ERRORS_VISIBLE",
+    "COMMERCIAL_BLOCKERS_CLEAR"
+  ],
+  "supportability": {
+    "supportOwnerRequired": true,
+    "escalationOwnerRequired": true,
+    "incidentCommandRequiredForMajorEvents": true,
+    "recoveryReviewRequired": true,
+    "rootCauseRequired": true,
+    "correctiveActionOwnershipRequired": true,
+    "reliabilityAndErrorBudgetVisible": true
+  },
+  "policy": {
+    "supportActionsHumanInitiated": true,
+    "incidentContainmentHumanDirected": true,
+    "recoveryReviewHumanAuthored": true,
+    "correctiveActionsHumanOwned": true,
+    "noAutomaticRemediation": true,
+    "noAutomaticIncidentResolution": true,
+    "noAutomaticRelease": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "COMMERCIAL_HARDENING_DEPLOYMENT_RELEASE_DISCIPLINE"
+}

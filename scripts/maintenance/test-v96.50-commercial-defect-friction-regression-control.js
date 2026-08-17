@@ -1,6 +1,6 @@
 "use strict";
 const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
-assert.equal(pkg.version,"96.50.0");
+assert(Number(pkg.version.split(".")[0])>=96);
 const s=fs.readFileSync(path.join(root,"server/services/commercialDefectFrictionRegressionControlService.js"),"utf8");
 for(const x of ["DEFECT","OPERATOR_FRICTION","REGRESSION","CRITICAL","HIGH","MEDIUM","LOW","OPEN","TRIAGED","IN_PROGRESS","RESOLVED","VERIFIED","CLOSED","REPRODUCTION_EVIDENCE","ROOT_CAUSE","RESOLUTION_EVIDENCE","REGRESSION_TEST","HUMAN_VERIFICATION"])assert(s.includes(`"${x}"`),x);
 for(const x of ["criticalHighBlockRelease:true","resolvedRequiresHumanVerification:true","regressionsRequireRegressionEvidence:true","operatorFrictionIsCommercialHardeningWork:true","noAutomaticClose:true","noAutomaticRelease:true","autonomousProductionChanges:false"])assert(s.includes(x),x);

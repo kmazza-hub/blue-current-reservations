@@ -1,0 +1,11 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.json"));
+assert.equal(pkg.version,"96.75.0");
+const s=fs.readFileSync(path.join(root,"server/services/commercialProductionReliabilitySupportabilityService.js"),"utf8");
+for(const id of ["PRODUCTION_HEALTH_VISIBLE","SUPPORT_OWNERSHIP_VISIBLE","NO_CRITICAL_SUPPORT_EVENTS","NO_CRITICAL_INCIDENT_COMMANDS","RECOVERY_REVIEWS_COMPLETE","RELIABILITY_NOT_BREACHED","ERROR_BUDGET_VISIBLE","LATENCY_VISIBLE","SERVER_ERRORS_VISIBLE","COMMERCIAL_BLOCKERS_CLEAR"])assert(s.includes(`id:"${id}"`),id);
+for(const x of ["supportOwnerRequired:true","escalationOwnerRequired:true","incidentCommandRequiredForMajorEvents:true","recoveryReviewRequired:true","rootCauseRequired:true","correctiveActionOwnershipRequired:true","reliabilityAndErrorBudgetVisible:true","noAutomaticRemediation:true","noAutomaticIncidentResolution:true","noAutomaticRelease:true","autonomousProductionChanges:false"])assert(s.includes(x),x);
+const health=fs.readFileSync(path.join(root,"server/services/productionHealthSupportService.js"),"utf8");assert(health.includes("p95LatencyMs"));assert(health.includes("errorBudgetRemaining"));assert(health.includes("supportOwner"));assert(health.includes("escalationOwner"));
+const incident=fs.readFileSync(path.join(root,"server/services/productionIncidentCommandService.js"),"utf8");assert(incident.includes("incidentCreationHumanInitiated:true"));assert(incident.includes("recoveryEvidenceHumanRecorded:true"));
+const recovery=fs.readFileSync(path.join(root,"server/services/productionRecoveryReviewService.js"),"utf8");assert(recovery.includes("rootCauseHumanAuthored:true"));assert(recovery.includes("correctiveActionsHumanOwned:true"));
+const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");assert(router.includes('/api/commercial-hardening/production-supportability'));
+console.log(JSON.stringify({ok:true,version:"96.75.0",supportabilityChecks:10,supportOwnership:true,incidentCommand:true,recoveryReview:true,reliabilityVisibility:true,errorBudgetVisibility:true,latencyVisibility:true,humanRootCause:true,humanCorrectiveActionOwnership:true,noAutomaticRemediation:true,noAutomaticRelease:true,nextGate:"COMMERCIAL_HARDENING_DEPLOYMENT_RELEASE_DISCIPLINE"},null,2));

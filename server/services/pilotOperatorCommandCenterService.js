@@ -87,7 +87,7 @@ class PilotOperatorCommandCenterService{
 
     const presentation=this.roleProfile(role);
     return {
-      version:"96.50.0",phase:"D",organizationId,
+      version:"96.75.0",phase:"D",organizationId,
       surface:"OPERATOR_PILOT_COMMAND_CENTER",
       presentation,
       status,tone,nextAction,
@@ -152,6 +152,7 @@ class PilotOperatorCommandCenterService{
       v96PilotReadyCertification:{gate:"V96_PILOT_READY_CERTIFICATION",liveEvidenceEndpoint:"/api/pilot/v96-certification",humanCertificationRequired:true,certificationDoesNotDeploy:true,noAutomaticGoLive:true,noAutomaticExpansion:true},
       commercialHardeningBaselineLock:{gate:"PILOT_BASELINE_LOCK_AND_COMMERCIAL_HARDENING_ENTRY",liveEvidenceEndpoint:"/api/commercial-hardening/baseline-lock",v96BaselineMustRemainRecoverable:true,majorCapabilityRequiresPilotEvidence:true,noAutomaticProductionMutation:true},
       commercialDefectFrictionControl:{gate:"COMMERCIAL_HARDENING_DEFECT_AND_FRICTION_CONTROL",liveEvidenceEndpoint:"/api/commercial-hardening/issues",criticalHighBlockRelease:true,resolvedRequiresHumanVerification:true,noAutomaticClose:true,noAutomaticRelease:true},
+      commercialProductionSupportability:{gate:"COMMERCIAL_HARDENING_PRODUCTION_RELIABILITY_AND_SUPPORTABILITY",liveEvidenceEndpoint:"/api/commercial-hardening/production-supportability",supportOwnerRequired:true,recoveryReviewRequired:true,noAutomaticRemediation:true,noAutomaticRelease:true},
       operatorBoundary:{
         humanApprovalRequired:true,humanSessionStartRequired:true,humanLearningDecisionRequired:true,
         providerWriteBack:false,automaticExpansion:false,autonomousProductionChanges:false
