@@ -5,7 +5,7 @@ const {createPersistence}=require(path.join(root,"server/persistence/persistence
 const Service=require(path.join(root,"server/services/restaurantConfigurationService"));
 
 (async()=>{
- assert.equal(pkg.version,"88.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 88);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/configuration/restaurant"));
  assert(router.includes("/api/configuration/restaurant/audit"));

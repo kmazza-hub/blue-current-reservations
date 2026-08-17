@@ -1226,9 +1226,26 @@
         "*"
       ],
       "createdAt": "2026-08-17T01:24:23.656Z",
-      "lastSeenAt": "2026-08-17T01:24:23.656Z",
-      "idleExpiresAt": "2026-08-17T03:24:23.656Z",
+      "lastSeenAt": "2026-08-17T01:34:35.808Z",
+      "idleExpiresAt": "2026-08-17T03:34:35.808Z",
       "expiresAt": "2026-08-17T13:24:23.656Z",
+      "revokedAt": null,
+      "revokedReason": null,
+      "updatedAt": "2026-08-17T01:34:35.810Z"
+    },
+    {
+      "id": "ses_1786930479550_k3u3i7",
+      "tokenHash": "245d38cbbd1a2f267ef9904cc856a143be7582b7b9fcbdaa2e6cf882d643c96d",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-17T01:34:39.549Z",
+      "lastSeenAt": "2026-08-17T01:34:39.549Z",
+      "idleExpiresAt": "2026-08-17T03:34:39.549Z",
+      "expiresAt": "2026-08-17T13:34:39.549Z",
       "revokedAt": null,
       "revokedReason": null
     }

@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "88.0.0",
+  "version": "88.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 restaurant configuration foundation",
+  "description": "Blue Current Hospitality OS \u2014 pilot location configuration certification",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"
