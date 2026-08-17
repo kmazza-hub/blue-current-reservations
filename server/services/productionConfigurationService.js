@@ -252,7 +252,7 @@ class ProductionConfigurationService {
     const errors = checks.filter(check => !check.ok && check.severity === "error");
     const warnings = checks.filter(check => !check.ok && check.severity === "warning");
     const report = {
-      version: "70.0.0",
+      version: "93.0.0",
       mode: this.mode,
       generatedAt: new Date().toISOString(),
       ready: errors.length === 0,
@@ -285,7 +285,7 @@ class ProductionConfigurationService {
 
   snapshot() {
     return this.lastReport || {
-      version: "70.0.0",
+      version: "93.0.0",
       mode: this.mode,
       generatedAt: null,
       ready: false,

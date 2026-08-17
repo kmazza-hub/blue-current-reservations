@@ -1,0 +1,24 @@
+{
+  "version": "93.0.0",
+  "phase": "D",
+  "gate": "PILOT_ENVIRONMENT_AND_DEPLOYMENT_READINESS",
+  "checks": [
+    "NODE_RUNTIME",
+    "RUNTIME_MODE",
+    "PERSISTENCE_DRIVER",
+    "PORT",
+    "EXPLICIT_ORIGINS",
+    "HTTPS_ORIGINS",
+    "DATABASE_LOCATION",
+    "PASSWORD_STORAGE",
+    "CONNECTOR_SECRETS",
+    "PLAINTEXT_SECRET_SCAN"
+  ],
+  "deployment": {
+    "humanApprovalRequired": true,
+    "automaticDeployment": false,
+    "automaticPilotLaunch": false,
+    "jsonPersistenceSingleWriterOnly": true
+  },
+  "nextGate": "PILOT_BACKUP_RESTORE_AND_ROLLBACK_READINESS"
+}

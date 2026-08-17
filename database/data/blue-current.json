@@ -1116,55 +1116,6 @@
   ],
   "sessions": [
     {
-      "id": "ses_1786925730131_u1u161",
-      "tokenHash": "211fd7a8ef6edcac166d611597a16ad117512b04cab901cef365c3cfb3fc30e8",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-17T00:15:30.130Z",
-      "lastSeenAt": "2026-08-17T01:15:18.031Z",
-      "idleExpiresAt": "2026-08-17T03:15:18.031Z",
-      "expiresAt": "2026-08-17T12:15:30.130Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-17T01:15:18.033Z"
-    },
-    {
-      "id": "ses_1786929321487_fmcpg3",
-      "tokenHash": "eefd998bfdd09cdf11811006642740870054414ada87ff11007c0e010ed834e7",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-17T01:15:21.487Z",
-      "lastSeenAt": "2026-08-17T01:15:21.487Z",
-      "idleExpiresAt": "2026-08-17T03:15:21.487Z",
-      "expiresAt": "2026-08-17T13:15:21.487Z",
-      "revokedAt": null,
-      "revokedReason": null
-    },
-    {
-      "id": "ses_1786929354765_ehuaew",
-      "tokenHash": "17bb1f64dbef5f7ce226e961aa412075a875c615cf13d5c445b3b2bd3f8e6fd4",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-17T01:15:54.765Z",
-      "lastSeenAt": "2026-08-17T01:15:54.765Z",
-      "idleExpiresAt": "2026-08-17T03:15:54.765Z",
-      "expiresAt": "2026-08-17T13:15:54.765Z",
-      "revokedAt": null,
-      "revokedReason": null
-    },
-    {
       "id": "ses_1786929391697_efcz9l",
       "tokenHash": "ec5d9e89e73ed317d49f43f3ef7754d1e9f83e730824cae6544360ad38883589",
       "userId": "usr_keith",
