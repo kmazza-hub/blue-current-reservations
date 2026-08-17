@@ -1,0 +1,35 @@
+{
+  "version": "97.75.0",
+  "gate": "PILOT_VALUE_PROOF_AND_OPERATOR_ACCEPTANCE",
+  "checks": [
+    "OUTCOME_MEASUREMENT_READY",
+    "OPERATOR_ACCEPTANCE_RECORDED",
+    "OPERATOR_VALUE_ACCEPTED",
+    "OPERATOR_FRICTION_REVIEWED",
+    "GUEST_IMPACT_REVIEWED",
+    "WORKFLOW_IMPACT_REVIEWED",
+    "RELIABILITY_CONFIDENCE_RECORDED",
+    "MEASURABLE_VALUE_EVIDENCE"
+  ],
+  "decisions": [
+    "ACCEPTED",
+    "HOLD",
+    "REJECTED"
+  ],
+  "reliabilityConfidence": [
+    "HIGH",
+    "MEDIUM",
+    "LOW"
+  ],
+  "policy": {
+    "operatorAcceptanceHumanRecorded": true,
+    "valueNarrativeHumanAuthored": true,
+    "reliabilityConfidenceHumanRated": true,
+    "measuredTrendIsEvidenceNotCausation": true,
+    "noAutomaticValueClaim": true,
+    "noAutomaticExpansion": true,
+    "noAutomaticCommercialization": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_LEARNING_TO_PRODUCT_DECISION_CONTROL"
+}
