@@ -1184,11 +1184,12 @@
         "*"
       ],
       "createdAt": "2026-08-17T01:34:39.549Z",
-      "lastSeenAt": "2026-08-17T01:34:39.549Z",
-      "idleExpiresAt": "2026-08-17T03:34:39.549Z",
+      "lastSeenAt": "2026-08-17T02:24:46.585Z",
+      "idleExpiresAt": "2026-08-17T04:24:46.585Z",
       "expiresAt": "2026-08-17T13:34:39.549Z",
       "revokedAt": null,
-      "revokedReason": null
+      "revokedReason": null,
+      "updatedAt": "2026-08-17T02:24:46.587Z"
     }
   ],
   "invitations": [
