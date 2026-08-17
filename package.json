@@ -1,8 +1,8 @@
 {
   "name": "blue-current-cloud",
-  "version": "84.0.0",
+  "version": "84.25.0",
   "private": true,
-  "description": "Blue Current Hospitality OS \u2014 portfolio learning and operating playbook intelligence",
+  "description": "Blue Current Hospitality OS \u2014 playbook evidence lifecycle and continuous validation",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js"

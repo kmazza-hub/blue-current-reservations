@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,"../.."),pkg=require(path.join(root,"package.j
 const {createPersistence}=require(path.join(root,"server/persistence/persistenceFactory"));
 const Learning=require(path.join(root,"server/services/portfolioLearningPlaybookIntelligenceService"));
 (async()=>{
- assert.equal(pkg.version,"84.0.0");
+ assert(Number(pkg.version.split(".")[0]) >= 84);
  const router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8");
  assert(router.includes("/api/executive/portfolio-learning"));
  assert(router.includes("/api/executive/portfolio-playbooks/approve"));
