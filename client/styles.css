@@ -16506,7 +16506,7 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
    Engineering depth stays intact; normal restaurant users see product
    concepts, not build history, release centers, or certification machinery.
    ========================================================================== */
-body.bc-consolidated-product-surface .bc-legacy-development-surface{
+body.bc-consolidated-product-surface .bc-legacy-development-surface:not(.bc-operator-workspace){
   display:none!important;
 }
 body.bc-consolidated-product-surface .site-footer,

@@ -1,16 +1,16 @@
 (function(){
 "use strict";
 const ROUTES={
-  floor:{target:"host-stand",view:"floor",label:"Manage floor"},
-  walkin:{target:"host-stand",view:"waitlist",action:"bcWalkInQuickAdd",label:"Add walk-in"},
-  reservations:{target:"host-stand",view:"reservations",label:"Reservations"},
-  addReservation:{target:"host-stand",view:"reservations",action:"bcReservationQuickAdd",label:"Add reservation"},
-  guests:{target:"host-stand",view:"guests",focus:"bcGuestSearchInput",label:"Find guest"},
-  staff:{target:"workforce-intelligence",label:"Staffing"},
-  kitchen:{target:"kitchenThroughputCenter",label:"Kitchen pressure"},
-  service:{target:"service-coordination",label:"Service coordination"},
+  floor:{target:"host-stand",workspace:"guests",view:"floor",label:"Manage floor"},
+  walkin:{target:"host-stand",workspace:"guests",view:"waitlist",action:"bcWalkInQuickAdd",label:"Add walk-in"},
+  reservations:{target:"host-stand",workspace:"guests",view:"reservations",label:"Reservations"},
+  addReservation:{target:"host-stand",workspace:"guests",view:"reservations",action:"bcReservationQuickAdd",label:"Add reservation"},
+  guests:{target:"host-stand",workspace:"guests",view:"guests",focus:"bcGuestSearchInput",label:"Find guest"},
+  staff:{target:"workforce-intelligence",workspace:"team",label:"Staffing"},
+  kitchen:{target:"kitchenThroughputCenter",workspace:"kitchen",label:"Kitchen pressure"},
+  service:{target:"service-coordination",workspace:"service",label:"Service coordination"},
   ai:{target:"restaurantAiBrainV341",focus:"restaurantAiBrainV341Prompt",label:"Ask Blue Current"},
-  executive:{target:"executive-command-center",label:"Leadership decision"}
+  executive:{target:"executive-command-center",workspace:"executive",label:"Leadership decision"}
 };
 function ready(fn){document.readyState==="loading"?document.addEventListener("DOMContentLoaded",fn,{once:true}):fn();}
 function reveal(target){
@@ -30,9 +30,24 @@ function activateHostView(view){
   const button=document.querySelector(`#host-stand [data-host-view="${CSS.escape(view)}"]`);
   button?.click();
 }
+function isActuallyVisible(target){
+  if(!target||target.hidden||target.getAttribute("aria-hidden")==="true")return false;
+  const style=window.getComputedStyle?.(target);
+  if(style&&(style.display==="none"||style.visibility==="hidden"))return false;
+  return target.getClientRects?.().length>0;
+}
+function reportActivation(route,target,silent){
+  if(silent)return;
+  if(isActuallyVisible(target)){
+    window.BlueCurrentFeedback?.toast?.(`${route.label} opened.`,"info",1800);
+  }else{
+    window.BlueCurrentFeedback?.toast?.(`${route.label} could not be opened.`,"error",2600);
+  }
+}
 function openWorkflow(key,{silent=false}={}){
   const route=ROUTES[key];if(!route)return false;
   const target=document.getElementById(route.target);if(!target)return false;
+  if(route.workspace)window.BlueCurrentHospitalityShell?.activate?.(route.workspace,{scroll:false});
   reveal(target);
   activateHostView(route.view);
   target.scrollIntoView({behavior:"smooth",block:"start"});
@@ -40,8 +55,8 @@ function openWorkflow(key,{silent=false}={}){
   setTimeout(()=>{
     if(route.action)document.getElementById(route.action)?.click();
     if(route.focus)document.getElementById(route.focus)?.focus();
+    reportActivation(route,target,silent);
   },260);
-  if(!silent)window.BlueCurrentFeedback?.toast?.(`${route.label} opened.`,"info",1800);
   return true;
 }
 ready(()=>{

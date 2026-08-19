@@ -1,0 +1,39 @@
+{
+  "ok": true,
+  "release": "V100.1.1",
+  "name": "Command Auth Transport Hotfix",
+  "prerequisite": "V100.1.0 Operator Shell Stabilization",
+  "commercialBaselineVersion": "100.0.0",
+  "scope": "client operator-shell authenticated transport only",
+  "files": [
+    {
+      "path": "README-APPLY-V100.1.1.md",
+      "bytes": 913,
+      "sha256": "c1717aee768bc5e9c213130e864dbb3c53687a548b0bc571bfca9d2cec11b8dd"
+    },
+    {
+      "path": "V100.1.1-RELEASE.md",
+      "bytes": 1768,
+      "sha256": "63a6f1e630e0c2d8c4beeff614c062f18fc7cd3812fa63c289a7a875a847d1ea"
+    },
+    {
+      "path": "client/js/modules/hospitalityOsShell.js",
+      "bytes": 53618,
+      "sha256": "e79a09a6a06cdad364c41371c896757b7a19ce041ab78191793dfba406621400"
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1-operator-shell-stabilization.js",
+      "bytes": 2896,
+      "sha256": "f58b38a62c5ae6baea50f72862cf98fce977ad8a5efd90ddebd12cd115f44b71"
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.1-command-auth-transport.js",
+      "bytes": 2967,
+      "sha256": "3bc30c9e6b5f6b60cf87bd99726bc5f723f898caf7ef8b4e2840dba471d867fe"
+    }
+  ],
+  "serverFilesModified": false,
+  "databaseFilesModified": false,
+  "persistenceFilesModified": false,
+  "rbacFilesModified": false
+}

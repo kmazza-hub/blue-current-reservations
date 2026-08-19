@@ -282,7 +282,13 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const auth = await authService.authenticate(bearerToken(request));
     if (!auth) return sendJson(response, 401, { error: "Authentication required." });
 
-    const writeOrganizationId = auth.membership.organizationId;
+    // Establish tenant/location scope immediately after authentication so every
+    // protected route can safely consume the same authoritative access context.
+    const organizationId = auth.membership.organizationId;
+    const allowedLocations = auth.membership.locationIds || [];
+    const canAccessLocation = locationId =>
+      allowedLocations.includes("*") || allowedLocations.includes(locationId);
+    const writeOrganizationId = organizationId;
 
     if (url.pathname === "/api/system/write-integrity" && request.method === "GET") {
       if (!authService.can(auth,"admin") && !authService.can(auth,"write")) {
@@ -466,10 +472,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response,403,{error:"Location access denied."});
       }
       const picture=await commandOperatingPictureService.snapshot(
-        organizationId,auth.allowedLocationIds||[],locationId
+        organizationId,allowedLocations,locationId
       );
       return sendJson(response,200,await commandShiftMemoryService.match(
-        organizationId,auth.allowedLocationIds||[],picture.location.id,picture
+        organizationId,allowedLocations,picture.location.id,picture
       ));
     }
 
@@ -482,7 +488,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response,403,{error:"Location access denied."});
       }
       return sendJson(response,200,await commandPlaybookIntelligenceService.build(
-        organizationId,auth.allowedLocationIds||[],locationId
+        organizationId,allowedLocations,locationId
       ));
     }
 
@@ -493,7 +499,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const locationId=url.searchParams.get("locationId")||null;
       if(locationId && !canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
       return sendJson(response,200,await commandOutcomeVerificationService.summary(
-        organizationId,auth.allowedLocationIds||[],locationId
+        organizationId,allowedLocations,locationId
       ));
     }
 
@@ -501,14 +507,14 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       if (!authService.can(auth,"read") && !authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Command action access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(locationId && !canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await commandManagerActionService.summary(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await commandManagerActionService.summary(organizationId,allowedLocations,locationId));
     }
 
     if (url.pathname === "/api/command/actions" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"write_operations") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Command action acknowledgement requires operations permission."});
       try{
         const body=await readJson(request);
-        const action=await commandManagerActionService.createFromPriority(organizationId,auth.allowedLocationIds||[],body,auth.user.name);
+        const action=await commandManagerActionService.createFromPriority(organizationId,allowedLocations,body,auth.user.name);
         return sendJson(response,action.duplicate?200:201,{ok:true,action});
       }catch(error){return sendJson(response,error.statusCode||400,{error:error.message,code:error.code||null});}
     }
@@ -516,101 +522,101 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname.startsWith("/api/command/actions/") && request.method === "PATCH") {
       if (!authService.can(auth,"write") && !authService.can(auth,"write_operations") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Command action changes require operations permission."});
       const actionId=decodeURIComponent(url.pathname.split("/")[4]||"");
-      try{return sendJson(response,200,{ok:true,action:await commandManagerActionService.update(organizationId,auth.allowedLocationIds||[],actionId,await readJson(request),auth.user.name)});}catch(error){return sendJson(response,error.statusCode||400,{error:error.message,code:error.code||null});}
+      try{return sendJson(response,200,{ok:true,action:await commandManagerActionService.update(organizationId,allowedLocations,actionId,await readJson(request),auth.user.name)});}catch(error){return sendJson(response,error.statusCode||400,{error:error.message,code:error.code||null});}
     }
 
     if (url.pathname === "/api/expansion/stabilization" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion stabilization access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionStabilizationSupportControlService.status(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await expansionStabilizationSupportControlService.status(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/expansion/stabilization/configure" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion stabilization configuration requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionStabilizationSupportControlService.configure(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await expansionStabilizationSupportControlService.configure(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/expansion/stabilization/incidents" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion stabilization incident capture requires write permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,201,await expansionStabilizationSupportControlService.recordIncident(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"operator"));
+      return sendJson(response,201,await expansionStabilizationSupportControlService.recordIncident(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"operator"));
     }
     if (url.pathname === "/api/expansion/stabilization/incidents/resolve" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion stabilization incident resolution requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionStabilizationSupportControlService.resolveIncident(organizationId,auth.allowedLocationIds||[],locationId,body.incidentId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await expansionStabilizationSupportControlService.resolveIncident(organizationId,allowedLocations,locationId,body.incidentId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/expansion/stabilization/graduate" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion stabilization graduation requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionStabilizationSupportControlService.graduate(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await expansionStabilizationSupportControlService.graduate(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"executive"));
     }
 
     if (url.pathname === "/api/expansion/launch-certification" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion launch certification requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionLaunchCertificationActivationService.status(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await expansionLaunchCertificationActivationService.status(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/expansion/launch-certification/certify" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion launch certification requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionLaunchCertificationActivationService.certify(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await expansionLaunchCertificationActivationService.certify(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"executive"));
     }
     if (url.pathname === "/api/expansion/production-activation" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion production activation requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionLaunchCertificationActivationService.activate(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await expansionLaunchCertificationActivationService.activate(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"executive"));
     }
     if (url.pathname === "/api/expansion/production-activation/rollback" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion production rollback requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await expansionLaunchCertificationActivationService.rollback(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await expansionLaunchCertificationActivationService.rollback(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"executive"));
     }
 
     if (url.pathname === "/api/expansion/location-readiness" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion readiness requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await controlledExpansionLocationReadinessService.evaluate(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await controlledExpansionLocationReadinessService.evaluate(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/expansion/location-readiness" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion readiness configuration requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await controlledExpansionLocationReadinessService.setReadiness(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await controlledExpansionLocationReadinessService.setReadiness(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/expansion/location-readiness/approve-prep" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Expansion rollout preparation approval requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await controlledExpansionLocationReadinessService.approveRolloutPrep(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await controlledExpansionLocationReadinessService.approveRolloutPrep(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"executive"));
     }
 
     if (url.pathname === "/api/pilot/executive-review" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot executive review requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotExecutiveReviewExpansionGateService.evaluate(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await pilotExecutiveReviewExpansionGateService.evaluate(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/pilot/executive-review/operator" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive operator review requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotExecutiveReviewExpansionGateService.setOperatorReview(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await pilotExecutiveReviewExpansionGateService.setOperatorReview(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/pilot/executive-review/decision" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot executive decision requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotExecutiveReviewExpansionGateService.decide(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await pilotExecutiveReviewExpansionGateService.decide(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"executive"));
     }
 
     if (url.pathname === "/api/pilot/performance/measurement" && request.method === "POST") {
@@ -618,161 +624,161 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
       if(!body.shiftId) return sendJson(response,400,{error:"shiftId is required."});
-      return sendJson(response,200,await pilotPerformanceTrendIntelligenceService.recordShiftMeasurement(organizationId,auth.allowedLocationIds||[],locationId,body.shiftId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await pilotPerformanceTrendIntelligenceService.recordShiftMeasurement(organizationId,allowedLocations,locationId,body.shiftId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/pilot/performance/trends" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot performance trends require read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotPerformanceTrendIntelligenceService.report(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await pilotPerformanceTrendIntelligenceService.report(organizationId,allowedLocations,locationId));
     }
 
     if (url.pathname === "/api/pilot/kpi-baseline" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"KPI baseline requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotKpiBaselineValueMeasurementService.setBaseline(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await pilotKpiBaselineValueMeasurementService.setBaseline(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/pilot/kpi-value" && request.method === "POST") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"KPI value measurement requires read permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotKpiBaselineValueMeasurementService.report(organizationId,auth.allowedLocationIds||[],locationId,body.shiftId||null,body));
+      return sendJson(response,200,await pilotKpiBaselineValueMeasurementService.report(organizationId,allowedLocations,locationId,body.shiftId||null,body));
     }
 
     if (url.pathname === "/api/pilot/evidence" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot evidence access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null,shiftId=url.searchParams.get("shiftId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await livePilotEvidenceOutcomeLedgerService.ledger(organizationId,auth.allowedLocationIds||[],locationId,shiftId));
+      return sendJson(response,200,await livePilotEvidenceOutcomeLedgerService.ledger(organizationId,allowedLocations,locationId,shiftId));
     }
     if (url.pathname === "/api/pilot/evidence" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot evidence capture requires write permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,201,await livePilotEvidenceOutcomeLedgerService.record(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"operator"));
+      return sendJson(response,201,await livePilotEvidenceOutcomeLedgerService.record(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"operator"));
     }
     if (url.pathname === "/api/pilot/outcome" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot outcome access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null,shiftId=url.searchParams.get("shiftId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await livePilotEvidenceOutcomeLedgerService.outcome(organizationId,auth.allowedLocationIds||[],locationId,shiftId));
+      return sendJson(response,200,await livePilotEvidenceOutcomeLedgerService.outcome(organizationId,allowedLocations,locationId,shiftId));
     }
 
     if (url.pathname === "/api/pilot/live-shift" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Live pilot shift access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await livePilotShiftCommandService.snapshot(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await livePilotShiftCommandService.snapshot(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/pilot/live-shift/start" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Live pilot shift start requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await livePilotShiftCommandService.start(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await livePilotShiftCommandService.start(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/pilot/live-shift/close" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Live pilot shift close requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await livePilotShiftCommandService.close(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await livePilotShiftCommandService.close(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"admin"));
     }
 
     if (url.pathname === "/api/pilot/shift-certification" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot shift certification access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotShiftCertificationService.evaluate(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await pilotShiftCertificationService.evaluate(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/pilot/shift-certification/operator-readiness" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operator readiness requires write permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotShiftCertificationService.setOperatorReadiness(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"operator"));
+      return sendJson(response,200,await pilotShiftCertificationService.setOperatorReadiness(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"operator"));
     }
     if (url.pathname === "/api/pilot/shift-certification/certify" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot shift certification requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotShiftCertificationService.certify(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await pilotShiftCertificationService.certify(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"admin"));
     }
 
     if (url.pathname === "/api/pilot/incidents" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot incident access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.list(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.list(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/pilot/incidents/investigate" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot incident investigation requires write permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.investigate(organizationId,auth.allowedLocationIds||[],locationId,body.incidentId,body,auth.user?.email||auth.user?.id||"operator"));
+      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.investigate(organizationId,allowedLocations,locationId,body.incidentId,body,auth.user?.email||auth.user?.id||"operator"));
     }
     if (url.pathname === "/api/pilot/incidents/certify-recovery" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Recovery certification requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.certify(organizationId,auth.allowedLocationIds||[],locationId,body.incidentId,body,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.certify(organizationId,allowedLocations,locationId,body.incidentId,body,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/pilot/incidents/clear-emergency" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Emergency clearance requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.clearEmergency(organizationId,auth.allowedLocationIds||[],locationId,auth.user?.email||auth.user?.id||"admin",body.reason));
+      return sendJson(response,200,await pilotIncidentRecoveryCertificationService.clearEmergency(organizationId,allowedLocations,locationId,auth.user?.email||auth.user?.id||"admin",body.reason));
     }
 
     if (url.pathname === "/api/pilot/runtime-safety" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot runtime safety access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotRuntimeGuardrailService.evaluate(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await pilotRuntimeGuardrailService.evaluate(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/pilot/runtime-safety/hold" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot runtime hold requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotRuntimeGuardrailService.setHold(organizationId,auth.allowedLocationIds||[],locationId,body.enabled,auth.user?.email||auth.user?.id||"admin",body.reason));
+      return sendJson(response,200,await pilotRuntimeGuardrailService.setHold(organizationId,allowedLocations,locationId,body.enabled,auth.user?.email||auth.user?.id||"admin",body.reason));
     }
     if (url.pathname === "/api/pilot/runtime-safety/emergency-local" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Emergency local mode requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotRuntimeGuardrailService.emergencyLocal(organizationId,auth.allowedLocationIds||[],locationId,auth.user?.email||auth.user?.id||"admin",body.reason));
+      return sendJson(response,200,await pilotRuntimeGuardrailService.emergencyLocal(organizationId,allowedLocations,locationId,auth.user?.email||auth.user?.id||"admin",body.reason));
     }
     if (url.pathname === "/api/pilot/runtime-safety/incidents" && request.method === "POST") {
       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot incident capture requires write permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,201,await pilotRuntimeGuardrailService.recordIncident(organizationId,auth.allowedLocationIds||[],locationId,body,auth.user?.email||auth.user?.id||"operator"));
+      return sendJson(response,201,await pilotRuntimeGuardrailService.recordIncident(organizationId,allowedLocations,locationId,body,auth.user?.email||auth.user?.id||"operator"));
     }
 
     if (url.pathname === "/api/pilot/data-authority" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot authority access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotDataAuthorityCutoverService.status(organizationId,auth.allowedLocationIds||[],locationId));
+      return sendJson(response,200,await pilotDataAuthorityCutoverService.status(organizationId,allowedLocations,locationId));
     }
     if (url.pathname === "/api/pilot/data-authority/activate" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot authority cutover requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotDataAuthorityCutoverService.activate(organizationId,auth.allowedLocationIds||[],locationId,body.provider,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await pilotDataAuthorityCutoverService.activate(organizationId,allowedLocations,locationId,body.provider,auth.user?.email||auth.user?.id||"admin"));
     }
     if (url.pathname === "/api/pilot/data-authority/rollback" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot authority rollback requires admin permission."});
       const body=await readJsonBody(request),locationId=body.locationId;
       if(!locationId||!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      return sendJson(response,200,await pilotDataAuthorityCutoverService.rollback(organizationId,auth.allowedLocationIds||[],locationId,body.reason,auth.user?.email||auth.user?.id||"admin"));
+      return sendJson(response,200,await pilotDataAuthorityCutoverService.rollback(organizationId,allowedLocations,locationId,body.reason,auth.user?.email||auth.user?.id||"admin"));
     }
 
     if (url.pathname === "/api/integrations/continuity" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Integration continuity access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(locationId && !canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      const target=locationId || (auth.allowedLocationIds||[]).find(id=>id!=="*");
+      const target=locationId || (allowedLocations).find(id=>id!=="*");
       if(!target)return sendJson(response,400,{error:"A location is required for integration continuity."});
-      return sendJson(response,200,await providerIntegrationContinuityService.evaluate(organizationId,auth.allowedLocationIds||[],target));
+      return sendJson(response,200,await providerIntegrationContinuityService.evaluate(organizationId,allowedLocations,target));
     }
 
     if (url.pathname === "/api/pilot/operator-command/start" && request.method === "POST") {
@@ -1250,9 +1256,9 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       if (!authService.can(auth,"read") && !authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Integration reconciliation access requires read permission."});
       const locationId=url.searchParams.get("locationId")||null;
       if(locationId && !canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      const target=locationId || (auth.allowedLocationIds||[]).find(id=>id!=="*");
+      const target=locationId || (allowedLocations).find(id=>id!=="*");
       if(!target)return sendJson(response,400,{error:"A location is required for reconciliation."});
-      return sendJson(response,200,await providerDataReconciliationService.evaluate(organizationId,auth.allowedLocationIds||[],target));
+      return sendJson(response,200,await providerDataReconciliationService.evaluate(organizationId,allowedLocations,target));
     }
 
     if (url.pathname === "/api/integrations/provider-readiness" && request.method === "GET") {
@@ -1261,10 +1267,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       }
       const locationId=url.searchParams.get("locationId")||null;
       if(locationId && !canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      const target=locationId || (auth.allowedLocationIds||[]).find(id=>id!=="*");
+      const target=locationId || (allowedLocations).find(id=>id!=="*");
       if(!target)return sendJson(response,400,{error:"A location is required for provider readiness."});
       return sendJson(response,200,await providerConnectionReadinessService.evaluate(
-        organizationId,auth.allowedLocationIds||[],target
+        organizationId,allowedLocations,target
       ));
     }
 
@@ -1274,10 +1280,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       }
       const locationId=url.searchParams.get("locationId")||null;
       if(locationId && !canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
-      const target=locationId || (auth.allowedLocationIds||[]).find(id=>id!=="*");
+      const target=locationId || (allowedLocations).find(id=>id!=="*");
       if(!target)return sendJson(response,400,{error:"A location is required for source truth."});
       return sendJson(response,200,await commandDataSourceTruthService.snapshot(
-        organizationId,auth.allowedLocationIds||[],target
+        organizationId,allowedLocations,target
       ));
     }
 
@@ -1291,7 +1297,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       }
       return sendJson(response,200,await commandOperatingPictureService.snapshot(
         organizationId,
-        auth.allowedLocationIds||[],
+        allowedLocations,
         locationId
       ));
     }
@@ -1302,7 +1308,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       }
       return sendJson(response,200,await operatorWorkflowCertificationService.certify(
         organizationId,
-        auth.allowedLocationIds||[]
+        allowedLocations
       ));
     }
 
@@ -1312,7 +1318,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       }
       return sendJson(response,200,await pilotReadinessCommandCenterService.snapshot(
         organizationId,
-        auth.allowedLocationIds||[]
+        allowedLocations
       ));
     }
 
@@ -2404,11 +2410,6 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response,201,await hospitalityPerformanceService.decide(auth.membership.organizationId,locationId,opportunityId,body,auth.user.name));
     }
 
-    const organizationId = auth.membership.organizationId;
-    const allowedLocations = auth.membership.locationIds || [];
-    const canAccessLocation = locationId =>
-      allowedLocations.includes("*") || allowedLocations.includes(locationId);
-
     if (url.pathname === "/api/live/connectors" && request.method === "GET") {
       return sendJson(response, 200, { connectors: await liveIntegrationService.listConnectors(organizationId) });
     }
@@ -2781,7 +2782,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/executive/intelligence" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive intelligence requires read permission."});
-      return sendJson(response,200,await intelligenceConsolidationService.build(organizationId,auth.allowedLocationIds||[]));
+      return sendJson(response,200,await intelligenceConsolidationService.build(organizationId,allowedLocations));
     }
 
     if (url.pathname === "/api/executive/playbook-governance" && request.method === "GET") {
@@ -2801,7 +2802,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     if (url.pathname === "/api/executive/playbook-governance/approve" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Playbook governance approval requires admin permission."});
       const body=await readJsonBody(request);
-      return sendJson(response,200,await playbookGovernanceAuthorityService.approve(organizationId,auth.allowedLocationIds||[],body.playbookId,body,auth.user?.email||auth.user?.id||"approver"));
+      return sendJson(response,200,await playbookGovernanceAuthorityService.approve(organizationId,allowedLocations,body.playbookId,body,auth.user?.email||auth.user?.id||"approver"));
     }
     if (url.pathname === "/api/executive/playbook-governance/transition" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Playbook governance transition requires admin permission."});
@@ -2811,7 +2812,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/executive/playbook-evidence-lifecycle" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Playbook evidence lifecycle requires read permission."});
-      return sendJson(response,200,await playbookEvidenceLifecycleService.evaluate(organizationId,auth.allowedLocationIds||[]));
+      return sendJson(response,200,await playbookEvidenceLifecycleService.evaluate(organizationId,allowedLocations));
     }
     if (url.pathname === "/api/executive/playbook-evidence-lifecycle/acknowledge" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Playbook evidence review acknowledgement requires admin permission."});
@@ -2821,12 +2822,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/executive/portfolio-learning" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Portfolio learning requires read permission."});
-      return sendJson(response,200,await portfolioLearningPlaybookIntelligenceService.build(organizationId,auth.allowedLocationIds||[]));
+      return sendJson(response,200,await portfolioLearningPlaybookIntelligenceService.build(organizationId,allowedLocations));
     }
     if (url.pathname === "/api/executive/portfolio-playbooks/draft" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Playbook drafting requires admin permission."});
       const body=await readJsonBody(request);
-      return sendJson(response,201,await portfolioLearningPlaybookIntelligenceService.createDraft(organizationId,auth.allowedLocationIds||[],body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,201,await portfolioLearningPlaybookIntelligenceService.createDraft(organizationId,allowedLocations,body,auth.user?.email||auth.user?.id||"executive"));
     }
     if (url.pathname === "/api/executive/portfolio-playbooks/approve" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Playbook approval requires admin permission."});
@@ -2841,37 +2842,37 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/executive/decision-outcome-intelligence" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Decision outcome intelligence requires read permission."});
-      return sendJson(response,200,await executiveDecisionOutcomeIntelligenceService.build(organizationId,auth.allowedLocationIds||[]));
+      return sendJson(response,200,await executiveDecisionOutcomeIntelligenceService.build(organizationId,allowedLocations));
     }
 
     if (url.pathname === "/api/executive/portfolio-decisions" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Portfolio decisions require read permission."});
-      return sendJson(response,200,await portfolioDecisionAccountabilityService.list(organizationId,auth.allowedLocationIds||[]));
+      return sendJson(response,200,await portfolioDecisionAccountabilityService.list(organizationId,allowedLocations));
     }
     if (url.pathname === "/api/executive/portfolio-decisions" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Portfolio decision creation requires admin permission."});
       const body=await readJsonBody(request);
-      return sendJson(response,201,await portfolioDecisionAccountabilityService.create(organizationId,auth.allowedLocationIds||[],body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,201,await portfolioDecisionAccountabilityService.create(organizationId,allowedLocations,body,auth.user?.email||auth.user?.id||"executive"));
     }
     if (url.pathname === "/api/executive/portfolio-decisions/review" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Portfolio decision review requires admin permission."});
       const body=await readJsonBody(request);
-      return sendJson(response,200,await portfolioDecisionAccountabilityService.review(organizationId,auth.allowedLocationIds||[],body.decisionId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await portfolioDecisionAccountabilityService.review(organizationId,allowedLocations,body.decisionId,body,auth.user?.email||auth.user?.id||"executive"));
     }
 
     if (url.pathname === "/api/executive/portfolio-exceptions" && request.method === "GET") {
       if (!authService.can(auth,"read") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Portfolio exceptions require read permission."});
-      return sendJson(response,200,await portfolioExceptionCommandService.list(organizationId,auth.allowedLocationIds||[]));
+      return sendJson(response,200,await portfolioExceptionCommandService.list(organizationId,allowedLocations));
     }
     if (url.pathname === "/api/executive/portfolio-exceptions/acknowledge" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Portfolio exception acknowledgement requires admin permission."});
       const body=await readJsonBody(request);
-      return sendJson(response,200,await portfolioExceptionCommandService.acknowledge(organizationId,auth.allowedLocationIds||[],body.exceptionId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await portfolioExceptionCommandService.acknowledge(organizationId,allowedLocations,body.exceptionId,body,auth.user?.email||auth.user?.id||"executive"));
     }
     if (url.pathname === "/api/executive/portfolio-exceptions/resolve" && request.method === "POST") {
       if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Portfolio exception resolution requires admin permission."});
       const body=await readJsonBody(request);
-      return sendJson(response,200,await portfolioExceptionCommandService.resolve(organizationId,auth.allowedLocationIds||[],body.exceptionId,body,auth.user?.email||auth.user?.id||"executive"));
+      return sendJson(response,200,await portfolioExceptionCommandService.resolve(organizationId,allowedLocations,body.exceptionId,body,auth.user?.email||auth.user?.id||"executive"));
     }
     if (url.pathname === "/api/executive/portfolio-health" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executivePortfolioHealth(organizationId));
     if (url.pathname === "/api/executive/knowledge-graph" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveKnowledgeGraph(organizationId));

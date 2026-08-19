@@ -91,13 +91,11 @@ class CommandOperatingPictureService{
     const laborPercent=this._num(laborPlan?.targetLaborPercent);
     const openReservationCovers=upcoming.reduce((s,r)=>s+this._num(r.partySize),0);
 
-    let readiness=null,operator=null;
-    try{
-      if(this.pilotReadiness)readiness=await this.pilotReadiness.snapshot(organizationId,[location.id]);
-    }catch{}
-    try{
-      if(this.operatorWorkflow)operator=await this.operatorWorkflow.certify(organizationId,[location.id]);
-    }catch{}
+    // Command refreshes every 30 seconds. Keep the hot path bounded to current
+    // operating data and source-truth checks; heavyweight pilot/certification
+    // snapshots remain available through their dedicated endpoints instead of
+    // being recomputed on every manager glance.
+    const readiness=null,operator=null;
 
     const sourceTruth=this.dataSourceTruthService
       ? await this.dataSourceTruthService.snapshot(organizationId,allowedLocationIds,location.id)

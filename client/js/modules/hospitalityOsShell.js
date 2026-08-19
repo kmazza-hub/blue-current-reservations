@@ -5,7 +5,7 @@ const workspaceMap={
   guests:["host-stand","guest-intelligence","guest-journey-live"],
   service:["service-coordination","operating-current","digital-twin"],
   team:["workforce-foundation","scheduling","time-clock","workforce-intelligence"],
-  kitchen:["service-coordination"],
+  kitchen:["kitchenThroughputCenter"],
   inventory:["inventory-intelligence"],
   performance:["profit-current","hospitality-analytics"],
   executive:["executive-command-center","portfolio-mode"],
@@ -84,9 +84,21 @@ function authOverlayOpen(){
 }
 
 function openAuthFallback(message="Sign in to continue."){
-  const overlay=document.getElementById("authOverlay");
-  if(overlay)overlay.classList.add("open");
-  document.body.classList.add("auth-locked");
+  const managedOverlay=window.BlueCurrentAuthOverlay;
+  if(managedOverlay && typeof managedOverlay.open==="function"){
+    managedOverlay.open();
+  }else{
+    const overlay=document.getElementById("authOverlay");
+    const active=document.activeElement;
+    if(active && active!==document.body)active.blur?.();
+    if(overlay){
+      overlay.classList.add("open");
+      overlay.removeAttribute("aria-hidden");
+      overlay.removeAttribute("inert");
+    }
+    document.body.classList.add("auth-locked");
+    window.requestAnimationFrame(()=>document.getElementById("authEmail")?.focus?.({preventScroll:true}));
+  }
   const msg=document.getElementById("authMessage");
   if(msg){msg.textContent=message;msg.classList.add("error");}
 }
@@ -132,26 +144,49 @@ async function commandFetch(url,options={}){
     throw error;
   }
 
-  const response=await fetch(url,{credentials:"same-origin",...options});
-  if(response.status===401){
-    commandState.authRequired=true;
-    setCommandAccessState("auth","Your Blue Current session is missing or expired. Sign in to load protected restaurant data.");
-    openAuthFallback("Your session expired. Please sign in again.");
-    window.dispatchEvent(new CustomEvent("bluecurrent:auth-session-expired",{
-      detail:{reason:"Command session is unauthorized.",path:url}
-    }));
-    const error=new Error("Your Blue Current session expired. Please sign in again.");
-    error.code="AUTH_REQUIRED";
+  // Command is a protected operator surface. Route its requests through the same
+  // authenticated transport used by the rest of Blue Current so restored/login
+  // Bearer sessions are attached consistently on every refresh cycle.
+  const Api=window.BlueCurrentCloudApi;
+  if(!Api){
+    const error=new Error("Blue Current authenticated API transport is unavailable.");
+    error.code="TRANSPORT_UNAVAILABLE";
     throw error;
   }
-  if(response.status===502 || response.status===503 || response.status===504){
-    commandState.transportBackoffUntil=Date.now()+15000;
-    setCommandAccessState("transport","Blue Current cannot currently reach the local service. The interface remains available while it reconnects.");
-    const error=new Error("Blue Current is temporarily disconnected from the local service.");
-    error.code="UPSTREAM_UNAVAILABLE";
+
+  const api=new Api("");
+  const token=localStorage.getItem("blueCurrentV3230Token")||"";
+  api.setToken?.(token);
+
+  try{
+    return await api.request(url,{
+      ...options,
+      cache:false,
+      forceRefresh:true,
+      scope:"command"
+    });
+  }catch(error){
+    if(error?.status===401 || error?.code==="AUTH_REQUIRED" || error?.code==="SESSION_EXPIRED"){
+      const snapshot=authSessionSnapshot();
+      commandState.authRequired=!snapshot?.authenticated;
+      if(commandState.authRequired){
+        setCommandAccessState("auth","Your Blue Current session is missing or expired. Sign in to load protected restaurant data.");
+        openAuthFallback("Your session expired. Please sign in again.");
+      }else{
+        setCommandAccessState("transport","Blue Current could not authorize the latest Command refresh. Retrying without discarding the active session.");
+      }
+      throw error;
+    }
+    if(error?.status===502 || error?.status===503 || error?.status===504 || error?.code==="NETWORK_UNAVAILABLE"){
+      commandState.transportBackoffUntil=Date.now()+15000;
+      setCommandAccessState("transport","Blue Current cannot currently reach the local service. The interface remains available while it reconnects.");
+      const transportError=new Error("Blue Current is temporarily disconnected from the local service.");
+      transportError.code="UPSTREAM_UNAVAILABLE";
+      transportError.cause=error;
+      throw transportError;
+    }
     throw error;
   }
-  return response;
 }
 
 
@@ -402,9 +437,7 @@ async function loadManagerActions(){
   commandState.actionsLoading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await commandFetch(`/api/command/actions${query}`,{method:"GET",headers:{"Accept":"application/json"}});
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Command actions returned ${response.status}.`);
+    const payload=await commandFetch(`/api/command/actions${query}`,{method:"GET",headers:{"Accept":"application/json"}});
     renderManagerActions(payload);
   }catch(error){setText("bcActionFeedback",`Action queue unavailable · ${error.message}`);}finally{commandState.actionsLoading=false;}
 }
@@ -414,12 +447,10 @@ async function acknowledgeTopPriority(){
   if(!top||!commandState.locationId){setText("bcActionFeedback","No active ranked priority is available to acknowledge.");return;}
   setText("bcActionFeedback","Acknowledging priority…");
   try{
-    const response=await commandFetch("/api/command/actions",{
+    const payload=await commandFetch("/api/command/actions",{
       method:"POST",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json","X-Blue-Current-Idempotency-Key":`command-${commandState.locationId}-${top.id}-${Date.now()}`},
       body:JSON.stringify({locationId:commandState.locationId,priorityId:top.id,owner:top.owner,note:"Acknowledged from Blue Current Command."})
     });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Acknowledge returned ${response.status}.`);
     setText("bcActionFeedback",payload.action?.duplicate?"This priority already has an open manager action.":"Priority acknowledged and added to the manager action queue.");
     await loadManagerActions();
   }catch(error){setText("bcActionFeedback",`Unable to acknowledge · ${error.message}`);}
@@ -428,11 +459,9 @@ async function acknowledgeTopPriority(){
 async function updateManagerAction(actionId,body){
   setText("bcActionFeedback","Updating manager action…");
   try{
-    const response=await commandFetch(`/api/command/actions/${encodeURIComponent(actionId)}`,{
+    const payload=await commandFetch(`/api/command/actions/${encodeURIComponent(actionId)}`,{
       method:"PATCH",credentials:"same-origin",headers:{"Content-Type":"application/json","Accept":"application/json","X-Blue-Current-Idempotency-Key":`command-action-${actionId}-${body.action}-${Date.now()}`},body:JSON.stringify(body)
     });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Action update returned ${response.status}.`);
     setText("bcActionFeedback",`${payload.action?.title||"Manager action"} · ${actionStatusLabel(payload.action?.status)}.`);
     await loadManagerActions();
   }catch(error){setText("bcActionFeedback",`Unable to update action · ${error.message}`);}
@@ -486,11 +515,9 @@ async function loadOutcomeLearning(){
   commandState.outcomesLoading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await commandFetch(`/api/command/outcomes${query}`,{
+    const payload=await commandFetch(`/api/command/outcomes${query}`,{
       method:"GET",headers:{"Accept":"application/json"}
     });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Command outcomes returned ${response.status}.`);
     renderOutcomeLearning(payload);
   }catch(error){
     const root=el("bcOutcomeSummary");
@@ -540,11 +567,9 @@ async function loadShiftMemory(){
   commandState.shiftMemoryLoading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await commandFetch(`/api/command/contextual-playbook${query}`,{
+    const payload=await commandFetch(`/api/command/contextual-playbook${query}`,{
       method:"GET",headers:{"Accept":"application/json"}
     });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Contextual playbook returned ${response.status}.`);
     renderShiftMemory(payload);
   }catch(error){
     const title=el("bcShiftMemoryTitle"),meta=el("bcShiftMemoryMeta");
@@ -600,11 +625,9 @@ async function loadPlaybooks(){
   commandState.playbooksLoading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await commandFetch(`/api/command/playbooks${query}`,{
+    const payload=await commandFetch(`/api/command/playbooks${query}`,{
       method:"GET",headers:{"Accept":"application/json"}
     });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Command playbooks returned ${response.status}.`);
     renderPlaybooks(payload);
   }catch(error){
     const root=el("bcPlaybookSummary");
@@ -699,9 +722,7 @@ async function pilotControl(action){
   const ids={start:"bcPilotStart",pause:"bcPilotPause",resume:"bcPilotResume",stop:"bcPilotStop",refresh:"bcPilotRefresh"};setPilotControlBusy(true,ids[action]||"");
   if(feedback)feedback.textContent=`${action[0].toUpperCase()+action.slice(1)} requested…`;
   try{
-    const response=await commandFetch(`/api/pilot/operator-command/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Pilot ${action} returned ${response.status}.`);
+    const payload=await commandFetch(`/api/pilot/operator-command/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});
     if(feedback)feedback.textContent=payload.message||`Pilot ${action} completed.`;
     await refreshPilotCommand();
   }catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}finally{setPilotControlBusy(false,"");}
@@ -711,7 +732,7 @@ async function pilotIncidentAction(incidentId,action){
   const feedback=el("bcPilotActionFeedback"),decision=await requestIncidentAction(action);if(!decision.confirmed)return;
   if(action!=="acknowledge"&&decision.value.length<10){if(feedback)feedback.textContent="Blocked · recovery action requires a meaningful note of at least 10 characters.";return;}
   const body=action==="resolve"?{resolution:decision.value,verifiedStable:true}:{note:decision.value};
-  try{const response=await commandFetch(`/api/pilot/operator-command/incidents/${encodeURIComponent(incidentId)}/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});const payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||`Incident ${action} returned ${response.status}.`);if(feedback)feedback.textContent=action==="resolve"?"Recovery verified · incident resolved.":`Incident ${action} completed.`;await refreshPilotCommand();}catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
+  try{const payload=await commandFetch(`/api/pilot/operator-command/incidents/${encodeURIComponent(incidentId)}/${action}`,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(body)});if(feedback)feedback.textContent=action==="resolve"?"Recovery verified · incident resolved.":`Incident ${action} completed.`;await refreshPilotCommand();}catch(error){if(feedback)feedback.textContent=`Blocked · ${error.message}`;}
 }
 
 const PILOT_ROLE_KEY="bc-pilot-command-role";
@@ -763,9 +784,7 @@ async function refreshPilotCommand(){
   if(!authenticatedAppState())return;
   try{
     const role=currentPilotRole();
-    const response=await commandFetch(`/api/pilot/operator-command?role=${encodeURIComponent(role)}`,{method:"GET",headers:{"Accept":"application/json"}});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(data.error||`Pilot command returned ${response.status}.`);
+    const data=await commandFetch(`/api/pilot/operator-command?role=${encodeURIComponent(role)}`,{method:"GET",headers:{"Accept":"application/json"}});
     applyPilotRolePresentation(data);renderServiceNightFocus(data);syncPrimaryPilotAction(data);
     const state=el("bcPilotState");
     if(state){state.textContent=String(data.status||"UNKNOWN").replaceAll("_"," ");state.dataset.tone=data.tone||"neutral";}
@@ -809,11 +828,9 @@ async function refreshCommand({force=false}={}){
   commandState.loading=true;
   try{
     const query=commandState.locationId?`?locationId=${encodeURIComponent(commandState.locationId)}`:"";
-    const response=await commandFetch(`/api/command/operating-picture${query}`,{
+    const payload=await commandFetch(`/api/command/operating-picture${query}`,{
       method:"GET",headers:{"Accept":"application/json"}
     });
-    const payload=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(payload.error||`Operating picture returned ${response.status}.`);
     commandState.authRequired=false;
     setCommandAccessState("ready");
     renderCommand(payload);
@@ -825,36 +842,68 @@ async function refreshCommand({force=false}={}){
   }
 }
 
+function authSessionSnapshot(){
+  try{return window.BlueCurrentAuthSession?.snapshot?.()||null;}catch{return null;}
+}
+
+function syncAppStateFromSession(snapshot){
+  const session=snapshot?.session;
+  if(!snapshot?.authenticated||!session?.user)return;
+  try{
+    window.appState?.update?.({
+      authenticatedUser:session.user,
+      activeOrganizationId:session.organizationId||null,
+      activeRole:session.role||null,
+      authorizedLocationIds:Array.isArray(session.locationIds)?session.locationIds:[]
+    });
+  }catch{}
+}
+
 function authenticatedAppState(){
+  const snapshot=authSessionSnapshot();
+  if(snapshot?.authenticated){
+    syncAppStateFromSession(snapshot);
+    return true;
+  }
+  // When the coordinator exists, it is authoritative. Never let stale appState
+  // resurrect a prior login while session restoration is initializing/restoring.
+  if(window.BlueCurrentAuthSession)return false;
   try{return Boolean(window.appState?.get?.("authenticatedUser"));}catch{return false;}
 }
 
 function startCommandAfterAuth(){
-  const start=()=>{
+  let startedForSessionId=null;
+
+  const start=snapshot=>{
+    const current=snapshot||authSessionSnapshot();
+    if(!current?.authenticated)return;
+    syncAppStateFromSession(current);
     commandState.authRequired=false;
     commandState.transportBackoffUntil=0;
     setCommandAccessState("ready");
-    refreshCommand({force:true});
+    const sessionId=current.session?.session?.id||current.session?.id||null;
+    const force=sessionId!==startedForSessionId || !commandState.lastLoadedAt;
+    startedForSessionId=sessionId||startedForSessionId||"authenticated";
+    refreshCommand({force});
   };
 
   const requireAuth=(reason="Sign in to load Blue Current Command.")=>{
     commandState.authRequired=true;
+    startedForSessionId=null;
     setCommandAccessState("auth",reason);
   };
 
-  if(authenticatedAppState()){
-    start();
-    return;
-  }
-
+  // Register lifecycle listeners before inspecting initial state. This prevents an
+  // initializing coordinator + stale appState from taking an early-return path that
+  // permanently misses the later successful sign-in event.
   const bus=window.eventBus;
   if(bus?.on){
-    bus.on("auth:restored",start);
-    bus.on("auth:signed-in",start);
+    bus.on("auth:restored",()=>start(authSessionSnapshot()));
+    bus.on("auth:signed-in",()=>start(authSessionSnapshot()));
     bus.on("auth:organization-switched",()=>{
       commandState.locationId=null;
       commandState.lastRequestAt=0;
-      start();
+      start(authSessionSnapshot());
     });
     bus.on("auth:required",payload=>requireAuth(
       payload?.reason==="anonymous"
@@ -864,14 +913,40 @@ function startCommandAfterAuth(){
     bus.on("auth:signed-out",()=>requireAuth("You are signed out. Sign in to load protected restaurant data."));
   }
 
-  // Auth restoration is asynchronous. Do not race it with a protected Command GET.
-  window.setTimeout(()=>{
-    if(authenticatedAppState()){
-      start();
-    }else if(!commandState.lastLoadedAt){
-      requireAuth("Blue Current is waiting for an authenticated session before loading restaurant data.");
+  const handleCoordinatorState=event=>{
+    const snapshot=event?.detail?.snapshot||authSessionSnapshot();
+    if(snapshot?.authenticated){
+      start(snapshot);
+    }else if(snapshot?.status==="anonymous"){
+      requireAuth(snapshot?.lastError
+        ? "Your Blue Current session needs to be restored."
+        : "Sign in to load protected restaurant data.");
     }
-  },1800);
+  };
+  window.addEventListener("bluecurrent:auth-session-state",handleCoordinatorState);
+
+  const coordinator=window.BlueCurrentAuthSession;
+  const initialSnapshot=authSessionSnapshot();
+  if(initialSnapshot?.authenticated)start(initialSnapshot);
+
+  // Auth restoration is asynchronous. Await the authoritative coordinator and keep
+  // the listener active so a subsequent fresh login immediately starts Command.
+  coordinator?.whenReady?.().then(snapshot=>{
+    if(snapshot?.authenticated)start(snapshot);
+    else if(snapshot?.status==="anonymous"&&!commandState.lastLoadedAt){
+      requireAuth(snapshot?.lastError
+        ? "Your Blue Current session needs to be restored."
+        : "Sign in to load protected restaurant data.");
+    }
+  }).catch(()=>{});
+
+  // Legacy fallback only applies if the coordinator is not installed.
+  if(!coordinator){
+    window.setTimeout(()=>{
+      if(authenticatedAppState())refreshCommand({force:true});
+      else if(!commandState.lastLoadedAt)requireAuth("Sign in to load protected restaurant data.");
+    },1500);
+  }
 }
 
 function init(){
@@ -917,6 +992,12 @@ function init(){
     window.scrollTo({top:0,left:0,behavior:"auto"});
     commandShell.scrollIntoView({block:"start",behavior:"auto"});
   }
+  window.BlueCurrentHospitalityShell={
+    version:"100.1.3",
+    activate:(workspace,options={})=>activate(workspace,options),
+    current:()=>document.documentElement.dataset.bcWorkspace||"command",
+    sections:workspace=>candidateSections(workspace).map(section=>section.id)
+  };
   startCommandAfterAuth();
   setInterval(()=>{
     if(!commandState.authRequired && authenticatedAppState())refreshCommand();
