@@ -13726,8 +13726,16 @@ textarea.bc-touch-control{min-height:88px!important}
 .bc-host-list-note{padding:11px 13px;border-radius:12px;background:#fff7e7;color:#604915;font-size:.78rem;line-height:1.45}
 
 .bc-host-search{display:grid;gap:6px}
-.bc-host-search span{font-size:.75rem;font-weight:850;color:#36586b}
-.bc-host-search input{min-height:48px!important}
+.bc-host-search span{font-size:.75rem;font-weight:850;color:#b9d7df!important}
+#host-stand .bc-host-search input{
+ min-height:48px!important;background:#0d2e3b!important;color:#f7fbfd!important;
+ border:2px solid #7bd7e8!important;caret-color:#ffffff!important;
+}
+#host-stand .bc-host-search input::placeholder{color:#b9d7df!important;opacity:1!important}
+#host-stand .bc-host-search input:focus-visible{
+ border-color:#a8effb!important;outline:3px solid rgba(123,215,232,.35)!important;outline-offset:2px!important
+}
+#host-stand .bc-guest-results>p{color:#d7edf2!important}
 .bc-guest-results{display:grid;gap:8px;margin-top:12px}
 .bc-guest-results>button{display:grid;gap:3px;text-align:left;padding:12px 14px;border-radius:12px;background:#fff;border:1px solid rgba(9,52,76,.13)}
 .bc-guest-results>button strong{color:#102838}
@@ -17375,4 +17383,181 @@ textarea.bc-auto-light-contrast:disabled{
 }
 @media (max-width: 760px) {
   button, input, select, textarea, [role="button"] { min-height: 44px; }
+}
+
+
+/* V100.2.0 — Hospitality OS shell ownership contract
+   Legacy product/operator classifiers must never hide the canonical app shell. */
+body.bc-hospitality-os #main > #blueCurrentCommand.bc-os-shell{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+body.bc-hospitality-os #main > #blueCurrentCommand.bc-os-shell.bc-advanced-surface,
+body.bc-hospitality-os #main > #blueCurrentCommand.bc-os-shell.bc-deep-tool,
+body.bc-hospitality-os #main > #blueCurrentCommand.bc-os-shell.bc-rush-hide{
+  display:grid!important;
+}
+
+/* ==========================================================================\n   V100.2.4 · Reservation readability ownership\n   Keep reservation rows visually consistent with the dark host-stand surface.\n   ========================================================================== */
+#host-stand #bcHostReservationsPanel{
+  background:#10313d!important;
+  border-color:rgba(126,215,232,.18)!important;
+  color:#f7fbfd!important;
+}
+#host-stand #bcHostReservationsPanel .bc-host-panel-head small{
+  color:#9bddeb!important;
+}
+#host-stand #bcHostReservationsPanel .bc-host-panel-head strong{
+  color:#ffffff!important;
+}
+#host-stand #bcHostReservationsPanel .bc-host-panel-head span{
+  color:#9fc3cf!important;
+}
+#host-stand #bcHostReservationsPanel .bc-host-panel-head button{
+  background:#0b6078!important;
+  border-color:#2387a3!important;
+  color:#ffffff!important;
+  opacity:1!important;
+}
+#host-stand #bcReservationList article{
+  background:#123744!important;
+  border-color:rgba(126,215,232,.22)!important;
+  color:#f7fbfd!important;
+}
+#host-stand #bcReservationList article time{
+  color:#a9dcec!important;
+  opacity:1!important;
+}
+#host-stand #bcReservationList article strong{
+  color:#ffffff!important;
+  opacity:1!important;
+}
+#host-stand #bcReservationList article span{
+  color:#9fc3cf!important;
+  opacity:1!important;
+}
+#host-stand #bcReservationList article b{
+  background:#e8f6ee!important;
+  color:#176a42!important;
+  opacity:1!important;
+}
+#host-stand #bcReservationList article b[data-tone="expected"]{
+  background:#e9f3f7!important;
+  color:#315f73!important;
+}
+#host-stand #bcReservationList article button[data-reservation-action="details"]{
+  min-height:42px!important;
+  padding:8px 13px!important;
+  background:#0b6078!important;
+  border:1px solid #2b8da6!important;
+  color:#ffffff!important;
+  opacity:1!important;
+  font-weight:850!important;
+}
+#host-stand #bcReservationList article button[data-reservation-action="details"]:hover,
+#host-stand #bcReservationList article button[data-reservation-action="details"]:focus-visible{
+  background:#0d718d!important;
+  outline:3px solid rgba(126,215,232,.35)!important;
+  outline-offset:2px!important;
+}
+
+/* V100.2.5 — Reservation Detail Operations */
+#bcHostDialog .bc-reservation-detail{display:grid;gap:16px;color:#183244}
+#bcHostDialog .bc-reservation-detail__identity{display:flex;align-items:center;justify-content:space-between;gap:16px}
+#bcHostDialog .bc-reservation-detail__identity strong{font-size:1.3rem;color:#102838}
+#bcHostDialog .bc-reservation-detail__identity span{padding:6px 10px;border-radius:999px;background:#e9f3f7;color:#315f73;font-weight:850;font-size:.78rem}
+#bcHostDialog .bc-reservation-detail__grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
+#bcHostDialog .bc-reservation-detail__grid>div{padding:12px 14px;border:1px solid #d6e5ec;border-radius:12px;background:#f7fbfd}
+#bcHostDialog .bc-reservation-detail__grid>div.wide{grid-column:1/-1}
+#bcHostDialog .bc-reservation-detail__grid dt{font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#5b7686}
+#bcHostDialog .bc-reservation-detail__grid dd{margin:4px 0 0;font-weight:850;color:#17384a}
+#bcHostDialog .bc-reservation-detail__focus{padding:13px;border-radius:13px;background:#eef6fa}
+#bcHostDialog .bc-reservation-detail__focus small{font-weight:900;color:#08708f}
+#bcHostDialog .bc-reservation-detail__focus p{margin:4px 0 0;color:#29495c;line-height:1.45}
+#bcHostDialog .bc-reservation-detail__actions{display:flex;flex-wrap:wrap;gap:10px}
+#bcHostDialog .bc-reservation-detail__actions button{min-height:44px;padding:0 16px;border:1px solid #0b6078;border-radius:10px;background:#0b6078;color:#fff;font-weight:850;cursor:pointer}
+#bcHostDialog .bc-reservation-detail__actions button.danger{border-color:#b95b59;background:#fff;color:#9f3938}
+@media(max-width:720px){#bcHostDialog .bc-reservation-detail__grid{grid-template-columns:1fr}#bcHostDialog .bc-reservation-detail__grid>div.wide{grid-column:auto}}
+
+/* ==========================================================================
+   V100.2.6 · Guest search result contrast ownership
+   Light result cards must not inherit dark-surface foreground colors.
+   ========================================================================== */
+#host-stand #bcGuestSearchResults > button{
+  color:#102838!important;
+}
+#host-stand #bcGuestSearchResults > button strong{
+  color:#102838!important;
+  opacity:1!important;
+}
+#host-stand #bcGuestSearchResults > button span{
+  color:#526b7c!important;
+  opacity:1!important;
+}
+#host-stand #bcGuestSearchResults > button:hover,
+#host-stand #bcGuestSearchResults > button:focus-visible{
+  border-color:#2b8da6!important;
+  box-shadow:0 0 0 3px rgba(43,141,166,.18)!important;
+}
+
+/* ==========================================================================
+   V100.2.8 · Host Stand Contrast Hardening
+   Keep waitlist/arrivals scannable in the dark host workspace without
+   changing queue state, seating behavior, or reservation logic.
+   ========================================================================== */
+#host-stand .queue-tabs button{
+  color:#d7edf2!important;
+  background:transparent!important;
+  opacity:1!important;
+}
+#host-stand .queue-tabs button.active{
+  color:#082631!important;
+  background:#f1f7f5!important;
+  opacity:1!important;
+}
+#host-stand .queue-tabs button span{
+  color:#164c5b!important;
+  background:#ffffff!important;
+  opacity:1!important;
+}
+#host-stand .queue-item strong{
+  color:#ffffff!important;
+  opacity:1!important;
+}
+#host-stand .queue-item small,
+#host-stand .arrival-time{
+  color:#c9e3e9!important;
+  opacity:1!important;
+}
+#host-stand #waitlistQueue .queue-item button{
+  color:#ffffff!important;
+  background:#0d6f8c!important;
+  border-color:#1a8dad!important;
+  opacity:1!important;
+}
+#host-stand #waitlistQueue .queue-item button:hover,
+#host-stand #waitlistQueue .queue-item button:focus-visible{
+  color:#ffffff!important;
+  background:#0a7f9f!important;
+  border-color:#52c5dc!important;
+}
+#host-stand #waitlistQueue .queue-item.bc-seated{
+  opacity:.82!important;
+}
+#host-stand #waitlistQueue .queue-item.bc-seated button,
+#host-stand #waitlistQueue .queue-item button:disabled{
+  color:#dce9ed!important;
+  background:#294d59!important;
+  border-color:#426875!important;
+  opacity:1!important;
+}
+#host-stand #arrivalQueue .arrival-chip{
+  color:#285f4d!important;
+  background:#edf8f2!important;
+  opacity:1!important;
+}
+#host-stand #arrivalQueue .arrival-chip.pending{
+  color:#6c531b!important;
+  background:#fff2d9!important;
 }

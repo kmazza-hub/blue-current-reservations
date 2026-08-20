@@ -6,7 +6,7 @@ const pkg=require(path.join(root,"package.json"));
 assert.equal(pkg.version,"100.0.0","Commercial V100 baseline version must remain unchanged");
 
 const shell=read("client/js/modules/hospitalityOsShell.js");
-assert(shell.includes('version:"100.1.4"'),"Shell marker must be V100.1.4");
+assert(shell.includes('version:"100.2.0"'),"Shell marker must be V100.2.0");
 assert(shell.includes('const managedOverlay=window.BlueCurrentAuthOverlay;'),"Command sign-in fallback must prefer the authoritative auth overlay controller");
 assert(shell.includes('managedOverlay.open();'),"Command sign-in fallback must delegate to the auth overlay controller");
 assert(shell.includes('overlay.removeAttribute("inert");'),"Fallback auth opening must remove inert from the visible login overlay");

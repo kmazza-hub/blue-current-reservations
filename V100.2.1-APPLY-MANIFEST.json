@@ -1,0 +1,13 @@
+{
+  "version": "100.2.1",
+  "name": "Command Presentation State Ownership",
+  "baseline": "V100.2.0 consolidated operator shell ownership",
+  "forwardOnly": true,
+  "files": [
+    "client/js/modules/lightSurfaceContrastGuard.js",
+    "scripts/maintenance/test-v100.2.1-command-presentation-state-ownership.js"
+  ],
+  "serverChanges": false,
+  "databaseChanges": false,
+  "persistenceChanges": false
+}

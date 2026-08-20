@@ -1,0 +1,24 @@
+const fs=require('fs');
+const path=require('path');
+const root=path.resolve(__dirname,'../..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const product=read('client/js/product-experience-v59.50.js');
+const operator=read('client/js/operator-experience-v60.0.js');
+const usability=read('client/js/operator-usability-v60.50.js');
+const shell=read('client/js/modules/hospitalityOsShell.js');
+const css=read('client/styles.css');
+const checks=[];
+function check(name,ok){checks.push({name,ok:!!ok});}
+check('product classifier excludes Hospitality OS shell',product.includes('child.id==="blueCurrentCommand" || child.classList.contains("bc-os-shell")'));
+check('operator priority classifier excludes Hospitality OS shell',operator.includes('section.id!=="blueCurrentCommand" && !section.classList.contains("bc-os-shell")'));
+check('operator usability skips Hospitality OS shell',usability.includes('section.id==="blueCurrentCommand" || section.classList.contains("bc-os-shell")'));
+check('shell claims ownership of legacy visibility classes',shell.includes('function claimCommandShellOwnership()') && shell.includes('bc-advanced-surface') && shell.includes('bc-deep-tool') && shell.includes('bc-rush-hide'));
+check('shell removes legacy priority metadata',shell.includes('delete shell.dataset.bcPriority'));
+check('shell ownership is claimed during init',/function init\(\)\{\s*claimCommandShellOwnership\(\);/.test(shell));
+check('shell version 100.2.0',shell.includes('version:"100.2.0"'));
+check('CSS guarantees canonical shell remains visible',css.includes('V100.2.0 — Hospitality OS shell ownership contract') && css.includes('#blueCurrentCommand.bc-os-shell') && css.includes('display:grid!important'));
+check('legacy advanced surface hiding remains intact',css.includes('.bc-advanced-surface{display:none !important}'));
+check('legacy deep tool hiding remains intact',css.includes('.bc-deep-tool{display:none !important}'));
+const failed=checks.filter(x=>!x.ok);
+console.log(JSON.stringify({ok:failed.length===0,repair:'V100.2.0 Consolidated Operator Shell Ownership',baselineVersion:'100.0.0',checks:checks.map(x=>x.name),failed:failed.map(x=>x.name)},null,2));
+if(failed.length)process.exit(1);

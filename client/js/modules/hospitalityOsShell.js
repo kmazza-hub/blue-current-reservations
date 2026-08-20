@@ -21,6 +21,16 @@ const labels={
 
 let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,playbooksLoading:false,shiftMemoryLoading:false,authRequired:false,transportBackoffUntil:0,lastRequestAt:0};
 
+function claimCommandShellOwnership(){
+  const shell=document.getElementById("blueCurrentCommand");
+  if(!shell)return;
+  // V100.2.0: one owner for the application shell. Remove legacy classification
+  // markers that can apply display:none or legacy workspace styling.
+  ["bc-advanced-surface","bc-deep-tool","bc-rush-hide","bc-nav-open"].forEach(name=>shell.classList.remove(name));
+  delete shell.dataset.bcPriority;
+  shell.querySelectorAll(":scope > .bc-purpose-chip.bc-purpose-auto").forEach(node=>node.remove());
+}
+
 function directSection(node){
   while(node&&node.parentElement&&node.parentElement.id!=="main")node=node.parentElement;
   return node&&node.parentElement?.id==="main"?node:null;
@@ -109,6 +119,18 @@ function setCommandAccessState(mode,detail=""){
 
   const title=el("bcCommandAccessTitle");
   const copy=el("bcCommandAccessDetail");
+  const signIn=el("bcCommandSignIn");
+  const authoritativeAuthenticated=authSessionSnapshot()?.authenticated===true;
+
+  // V100.1.5: the auth-session coordinator is authoritative for presentation too.
+  // Never render a Sign in CTA while the coordinator says the operator is already
+  // authenticated. A transport problem may keep the reconnecting banner visible,
+  // but it must not masquerade as an authentication problem.
+  if(authoritativeAuthenticated && mode==="auth")mode="ready";
+  if(signIn){
+    signIn.hidden=authoritativeAuthenticated || mode!=="auth";
+    signIn.setAttribute("aria-hidden",signIn.hidden?"true":"false");
+  }
 
   if(mode==="ready"){
     panel.hidden=true;
@@ -130,6 +152,19 @@ function setCommandAccessState(mode,detail=""){
   document.body.classList.remove("bc-command-auth-required");
   if(title)title.textContent="Blue Current is reconnecting.";
   if(copy)copy.textContent=detail||"The local service is temporarily unavailable. Your interface remains available while the connection recovers.";
+}
+
+function reconcileCommandConnectivity(source="runtime"){
+  const snapshot=authSessionSnapshot();
+  if(!snapshot?.authenticated)return;
+  commandState.authRequired=false;
+  commandState.transportBackoffUntil=0;
+  setCommandAccessState("ready");
+  const truth=el("bcCommandTruth");
+  if(truth && /temporarily disconnected|connection is recovering|sign in required/i.test(truth.textContent||"")){
+    truth.textContent="Operating picture synchronizing…";
+  }
+  refreshCommand({force:true});
 }
 
 async function commandFetch(url,options={}){
@@ -159,11 +194,14 @@ async function commandFetch(url,options={}){
   api.setToken?.(token);
 
   try{
-    return await api.request(url,{
+    // V100.1.6: Command is a live operator surface and must not inherit stale
+    // request-pipeline circuit/backoff state from unrelated startup traffic.
+    // Use CloudApi's authenticated transport directly so every Command refresh
+    // reaches the local service while preserving bearer/session enforcement and
+    // the parsed-payload contract.
+    return await api.transportRequest(url,{
       ...options,
-      cache:false,
-      forceRefresh:true,
-      scope:"command"
+      cache:"no-store"
     });
   }catch(error){
     if(error?.status===401 || error?.code==="AUTH_REQUIRED" || error?.code==="SESSION_EXPIRED"){
@@ -919,6 +957,8 @@ function startCommandAfterAuth(){
       refreshCommand({force:true});
     });
     bus.on("auth:restored",()=>start(authSessionSnapshot()));
+    bus.on("cloud:connected",()=>reconcileCommandConnectivity("cloud-connected"));
+    bus.on("cloud:authenticated",()=>reconcileCommandConnectivity("cloud-authenticated"));
     bus.on("auth:signed-in",()=>start(authSessionSnapshot()));
     bus.on("auth:organization-switched",()=>{
       commandState.locationId=null;
@@ -945,6 +985,8 @@ function startCommandAfterAuth(){
   };
   window.addEventListener("bluecurrent:auth-session-state",handleCoordinatorState);
 
+  window.addEventListener("bluecurrent:bootstrap-hydrated",()=>reconcileCommandConnectivity("bootstrap-hydrated"));
+
   const coordinator=window.BlueCurrentAuthSession;
   const initialSnapshot=authSessionSnapshot();
   if(initialSnapshot?.authenticated)start(initialSnapshot);
@@ -970,6 +1012,7 @@ function startCommandAfterAuth(){
 }
 
 function init(){
+  claimCommandShellOwnership();
   document.body.classList.add("bc-hospitality-os","bc-consolidated-product-surface");
   const advanced=new URLSearchParams(window.location.search).get("advanced")==="1";
   if(advanced)document.body.classList.add("bc-show-advanced");
@@ -1013,7 +1056,7 @@ function init(){
     commandShell.scrollIntoView({block:"start",behavior:"auto"});
   }
   window.BlueCurrentHospitalityShell={
-    version:"100.1.4",
+    version:"100.2.0",
     activate:(workspace,options={})=>activate(workspace,options),
     current:()=>document.documentElement.dataset.bcWorkspace||"command",
     sections:workspace=>candidateSections(workspace).map(section=>section.id)

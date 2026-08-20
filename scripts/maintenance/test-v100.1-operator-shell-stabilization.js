@@ -16,7 +16,7 @@ for(const marker of[
   'window.addEventListener("bluecurrent:auth-session-state",handleCoordinatorState)',
   "coordinator?.whenReady?.().then",
   "window.BlueCurrentHospitalityShell={",
-  'version:"100.1.4"'
+  'version:"100.2.0"'
 ])assert(shell.includes(marker),`Missing shell stabilization marker: ${marker}`);
 
 const workflow=read("client/js/workflow-reduction-v64.50.js");

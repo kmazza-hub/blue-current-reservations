@@ -12,15 +12,15 @@ const block=fetchBlock[0];
 assert(block.includes("window.BlueCurrentCloudApi"),"Command must use the canonical authenticated Cloud API transport");
 assert(block.includes('localStorage.getItem("blueCurrentV3230Token")'),"Command transport must source the active bearer token");
 assert(block.includes("api.setToken?.(token)"),"Command transport must attach the current bearer token to the Cloud API instance");
-assert(block.includes("return await api.request(url"),"Command refresh must execute through CloudApi.request");
+assert(/return await api\.(?:request|transportRequest)\(url/.test(block),"Command refresh must execute through canonical CloudApi authenticated transport");
 assert(!/\bfetch\s*\(/.test(block),"Command protected refresh must not bypass authenticated transport with raw fetch");
-assert(block.includes('scope:"command"'),"Command refreshes must be identifiable as command transport requests");
+assert(block.includes("api.transportRequest")||block.includes('scope:"command"'),"Command refreshes must use the dedicated authenticated Command transport path");
 
 assert(shell.includes('const payload=await commandFetch(`/api/command/operating-picture${query}`'),"Operating picture must consume the authenticated Command transport payload");
 const refreshBlock=shell.match(/async function refreshCommand\(\{force=false\}=\{\}\)\{[\s\S]*?\n\}\n\nfunction authSessionSnapshot/);
 assert(refreshBlock,"Command refresh function must exist");
 assert(!refreshBlock[0].includes("const payload=await response.json().catch(()=>({}));"),"Command refresh must not retain the old raw Response parsing path");
-assert(shell.includes('version:"100.1.4"'),"Shell lifecycle hotfix version marker must be V100.1.4");
+assert(shell.includes('version:"100.2.0"'),"Shell lifecycle hotfix version marker must be V100.2.0");
 assert(/setInterval\(\(\)=>\{[\s\S]*?refreshCommand\(\);[\s\S]*?\},30000\);/.test(shell),"30-second Command refresh cycle must remain active for regression coverage");
 
 const api=read("client/js/cloud/cloudApi.js");

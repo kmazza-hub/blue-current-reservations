@@ -57,9 +57,22 @@
     return s.display !== "none" && s.visibility !== "hidden" && Number(s.opacity || 1) > 0.05;
   };
 
+  const DARK_SURFACE_SELECTOR = [
+    "#blueCurrentCommand",
+    ".bc-os-shell",
+    "[data-bc-surface-tone='dark']"
+  ].join(",");
+
   const requiresFix = el => {
     if (!isVisible(el)) return false;
     if (el.closest("[hidden],[aria-hidden='true']")) return false;
+
+    // V100.2.1: the computed light-surface guard must not recolor explicit
+    // dark application shells. These surfaces commonly use gradients and
+    // translucent panels; backgroundColor alone cannot represent their actual
+    // rendered luminance, which previously caused dark ink to be injected
+    // into the Hospitality OS Command surface.
+    if (el.closest(DARK_SURFACE_SELECTOR)) return false;
 
     const style = getComputedStyle(el);
     const textFill = parseColor(style.webkitTextFillColor);
@@ -136,5 +149,8 @@
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded",start,{once:true});
   else start();
 
-  window.BlueCurrentLightSurfaceContrastGuard = { refresh:() => schedule(document.body) };
+  window.BlueCurrentLightSurfaceContrastGuard = {
+    refresh:() => schedule(document.body),
+    darkSurfaceSelector:DARK_SURFACE_SELECTOR
+  };
 })();

@@ -100,7 +100,17 @@ function createGuestJourneyModule(eventBus, appState) {
     if (list) list.innerHTML = `<div class="guest-journey-empty"><span>⌁</span><p>Run the live journey to watch one guest move from first contact to return visit.</p></div>`;
   }
 
+  function releaseJourneyFocus() {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && root.contains(active)) active.blur();
+  }
+
   function runFullJourney() {
+    // V100.2.7: release focus from Guest Journey controls before any later
+    // workspace/deep-surface visibility controller can hide this section.
+    // This prevents aria-hidden from being applied while #guestJourneyPlay
+    // or #guestJourneyReset still owns focus.
+    releaseJourneyFocus();
     reset();
     const guest = { guestName: "Anthony Russo", tableNumber: 14 };
     const sequence = [
@@ -124,7 +134,10 @@ function createGuestJourneyModule(eventBus, appState) {
   const unsubs = Object.entries(eventToStage).map(([eventName, stage]) => eventBus.on(eventName, (payload) => advance(stage, payload)));
   unsubs.push(eventBus.on("state:reset", reset));
   document.getElementById("guestJourneyPlay")?.addEventListener("click", runFullJourney);
-  document.getElementById("guestJourneyReset")?.addEventListener("click", reset);
+  document.getElementById("guestJourneyReset")?.addEventListener("click", () => {
+    releaseJourneyFocus();
+    reset();
+  });
   reset();
 
   return { run: runFullJourney, reset, destroy() { clearTimers(); unsubs.forEach((fn) => fn?.()); } };

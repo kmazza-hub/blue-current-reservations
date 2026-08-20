@@ -1,0 +1,17 @@
+{
+  "version": "100.2.6",
+  "name": "Guest Search Result Contrast",
+  "baselineVersion": "100.0.0",
+  "forwardOnly": true,
+  "files": [
+    "client/styles.css",
+    "scripts/maintenance/test-v100.2.6-guest-search-result-contrast.js",
+    "README-APPLY-V100.2.6.md",
+    "V100.2.6-RELEASE.md",
+    "V100.2.6-APPLY-MANIFEST.json"
+  ],
+  "serverChanges": false,
+  "databaseChanges": false,
+  "persistenceChanges": false,
+  "authChanges": false
+}

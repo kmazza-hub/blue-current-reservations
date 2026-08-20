@@ -13,6 +13,10 @@ ready(function(){
   for(const child of Array.from(main.children)){
     if(child===command)break;
     if(child.tagName==="SECTION"){
+      // V100.2.0: the Hospitality OS shell is application chrome, not a legacy
+      // product/certification surface. Legacy product-mode classification must
+      // never own, hide, or restyle it.
+      if(child.id==="blueCurrentCommand" || child.classList.contains("bc-os-shell")) continue;
       child.classList.add("bc-advanced-surface");
       advanced.push(child);
     }

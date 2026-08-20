@@ -6,7 +6,7 @@ const pkg=require(path.join(root,"package.json"));
 assert.equal(pkg.version,"100.0.0","Commercial V100 baseline version must remain unchanged");
 
 const shell=read("client/js/modules/hospitalityOsShell.js");
-assert(shell.includes('version:"100.1.4"'),"Shell lifecycle marker must be V100.1.4");
+assert(shell.includes('version:"100.2.0"'),"Shell lifecycle marker must be V100.2.0");
 assert(shell.includes("if(window.BlueCurrentAuthSession)return false;"),"Authoritative coordinator must prevent stale appState authentication fallback");
 assert(shell.includes("Register lifecycle listeners before inspecting initial state."),"Command lifecycle must register listeners before checking initial auth state");
 assert(shell.includes('window.addEventListener("bluecurrent:auth-session-state",handleCoordinatorState);'),"Coordinator state listener must remain active after startup");

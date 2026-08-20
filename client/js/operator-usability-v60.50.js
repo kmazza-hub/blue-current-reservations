@@ -72,6 +72,9 @@ ready(()=>{
  // ---------- Make section purpose explicit ----------
  const topLevel=Array.from(main.querySelectorAll(":scope > section[id]"));
  topLevel.forEach(section=>{
+   // V100.2.0: do not inject legacy purpose/priority presentation into the
+   // Hospitality OS application shell.
+   if(section.id==="blueCurrentCommand" || section.classList.contains("bc-os-shell"))return;
    if(section.classList.contains("bc-advanced-surface"))return;
    if(section.querySelector(":scope > .bc-purpose-chip"))return;
    const priority=section.dataset.bcPriority||"deep";

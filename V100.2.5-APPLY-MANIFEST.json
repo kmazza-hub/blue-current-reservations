@@ -1,0 +1,13 @@
+{
+  "version": "100.2.5",
+  "name": "Reservation Detail Operations",
+  "baselineVersion": "100.0.0",
+  "files": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/styles.css",
+    "scripts/maintenance/test-v100.2.5-reservation-detail-operations.js",
+    "README-APPLY-V100.2.5.md",
+    "V100.2.5-RELEASE.md",
+    "V100.2.5-APPLY-MANIFEST.json"
+  ]
+}

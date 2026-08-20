@@ -1,0 +1,13 @@
+{
+  "version": "100.1.7",
+  "repair": "Command Shell Visibility Ownership Hotfix",
+  "baselineVersion": "100.0.0",
+  "files": [
+    "client/js/product-experience-v59.50.js",
+    "client/js/operator-experience-v60.0.js",
+    "scripts/maintenance/test-v100.1.7-command-shell-visibility-ownership.js",
+    "README-APPLY-V100.1.7.md",
+    "V100.1.7-RELEASE.md",
+    "V100.1.7-APPLY-MANIFEST.json"
+  ]
+}

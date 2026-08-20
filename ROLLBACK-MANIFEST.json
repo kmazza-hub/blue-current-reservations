@@ -1,0 +1,15 @@
+{
+  "purpose": "Rollback V100.1.7 layout regression to exact pre-V100.1.7 files from user-uploaded repository snapshot blue-current-reservations(20260820-005313).zip",
+  "files": [
+    {
+      "path": "client/js/product-experience-v59.50.js",
+      "sha256": "7b6049285b697ca213957e8aaf1b43024ccf13a5c13641add8ba9eb33a56f781",
+      "bytes": 3117
+    },
+    {
+      "path": "client/js/operator-experience-v60.0.js",
+      "sha256": "7ab86e25de8f16b4a7d231b1e809a097294665731481f5a8ca2c8433dda48ed7",
+      "bytes": 4259
+    }
+  ]
+}

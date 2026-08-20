@@ -12,6 +12,7 @@ ready(()=>{
  const dialogBody=document.getElementById("bcHostDialogBody");
  const dialogSubmit=document.getElementById("bcHostDialogSubmit");
  let dialogMode=null;
+ let activeReservationArticle=null;
 
  function setView(view){
    navButtons.forEach(b=>{const on=b.dataset.hostView===view;b.classList.toggle("active",on);b.setAttribute("aria-current",on?"page":"false");});
@@ -26,20 +27,33 @@ ready(()=>{
  navButtons.forEach(b=>b.addEventListener("click",()=>setView(b.dataset.hostView)));
  setView("floor");
 
+ function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[ch]));}
+ function escapeAttr(value){return escapeHtml(value);}
+ function to24Hour(value){
+   const raw=String(value||"").trim();
+   if(/^\d{2}:\d{2}$/.test(raw))return raw;
+   const match=raw.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);if(!match)return "19:30";
+   let hour=Number(match[1]);const minute=match[2],period=match[3].toUpperCase();
+   if(period==="PM"&&hour<12)hour+=12;if(period==="AM"&&hour===12)hour=0;
+   return `${String(hour).padStart(2,"0")}:${minute}`;
+ }
  function openDialog(mode,payload={}){
    dialogMode=mode;
    dialogEyebrow.textContent=mode==="reservation"?"RESERVATION":mode==="walkin"?"WALK-IN":"GUEST";
    dialogSubmit.hidden=mode==="details";
-   if(mode==="reservation"){
-     dialogTitle.textContent="Add reservation";
+   if(mode==="reservation"||mode==="edit-reservation"){
+     const editing=mode==="edit-reservation";
+     const values=payload||{};
+     dialogEyebrow.textContent="RESERVATION";
+     dialogTitle.textContent=editing?"Edit reservation":"Add reservation";
      dialogBody.innerHTML=`<div class="bc-dialog-grid">
-       <label><span>Guest name</span><input name="guestName" required placeholder="Guest name"></label>
-       <label><span>Time</span><input name="time" type="time" required value="19:30"></label>
-       <label><span>Party size</span><input name="partySize" type="number" min="1" max="30" required value="2"></label>
-       <label><span>Seating preference</span><select name="preference"><option>Flexible</option><option>Waterfront</option><option>Main dining</option><option>Bar</option><option>Accessible</option></select></label>
-       <label class="wide"><span>Occasion / notes</span><input name="notes" placeholder="Birthday, allergy, high chair…"></label>
+       <label><span>Guest name</span><input name="guestName" required placeholder="Guest name" value="${escapeAttr(values.name||"")}"></label>
+       <label><span>Time</span><input name="time" type="time" required value="${escapeAttr(values.time24||"19:30")}"></label>
+       <label><span>Party size</span><input name="partySize" type="number" min="1" max="30" required value="${escapeAttr(values.party||"2")}"></label>
+       <label><span>Seating preference</span><select name="preference">${["Flexible","Waterfront","Main dining","Bar","Accessible"].map(option=>`<option${option===(values.preference||"Flexible")?" selected":""}>${option}</option>`).join("")}</select></label>
+       <label class="wide"><span>Occasion / notes</span><input name="notes" placeholder="Birthday, allergy, high chair…" value="${escapeAttr(values.notes||"")}"></label>
      </div>`;
-     dialogSubmit.textContent="Add reservation";
+     dialogSubmit.textContent=editing?"Save changes":"Add reservation";
    }else if(mode==="walkin"){
      dialogTitle.textContent="Add walk-in";
      dialogBody.innerHTML=`<div class="bc-dialog-grid">
@@ -49,12 +63,32 @@ ready(()=>{
        <label><span>Quoted wait</span><input name="quotedWait" type="number" min="0" max="180" value="15"><small>minutes</small></label>
      </div>`;
      dialogSubmit.textContent="Add to waitlist";
+   }else if(mode==="reservation-details"){
+     activeReservationArticle=payload.article||null;
+     dialogTitle.textContent=payload.name||"Reservation details";
+     dialogBody.innerHTML=`<div class="bc-reservation-detail">
+       <div class="bc-reservation-detail__identity"><strong>${escapeHtml(payload.name||"Guest")}</strong><span>${escapeHtml(payload.status||"Expected")}</span></div>
+       <dl class="bc-reservation-detail__grid">
+         <div><dt>Time</dt><dd>${escapeHtml(payload.time||"Tonight")}</dd></div>
+         <div><dt>Party</dt><dd>${escapeHtml(String(payload.party||"—"))}</dd></div>
+         <div><dt>Seating</dt><dd>${escapeHtml(payload.preference||"Flexible")}</dd></div>
+         <div><dt>Status</dt><dd>${escapeHtml(payload.status||"Expected")}</dd></div>
+         <div class="wide"><dt>Occasion / notes</dt><dd>${escapeHtml(payload.notes||"None recorded")}</dd></div>
+       </dl>
+       <div class="bc-reservation-detail__focus"><small>Host focus</small><p>Confirm arrival status, seating preference, and celebration notes before assigning a table.</p></div>
+       <div class="bc-reservation-detail__actions">
+         <button type="button" data-reservation-detail-action="arrived">Mark arrived</button>
+         <button type="button" data-reservation-detail-action="edit">Edit reservation</button>
+         <button type="button" data-reservation-detail-action="cancel" class="danger">Cancel reservation</button>
+       </div>
+     </div>`;
+     wireReservationDetailActions(payload);
    }else{
      dialogTitle.textContent=payload.name||"Guest details";
      dialogBody.innerHTML=`<div class="bc-guest-detail">
-       <strong>${payload.name||"Guest"}</strong>
-       <span>${payload.detail||"Tonight's guest"}</span>
-       <div><small>Host focus</small><p>${payload.note||"Confirm timing, table preference, and any special occasion before seating."}</p></div>
+       <strong>${escapeHtml(payload.name||"Guest")}</strong>
+       <span>${escapeHtml(payload.detail||"Tonight's guest")}</span>
+       <div><small>Host focus</small><p>${escapeHtml(payload.note||"Confirm timing, table preference, and any special occasion before seating.")}</p></div>
      </div>`;
    }
    if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
@@ -74,11 +108,12 @@ ready(()=>{
    document.getElementById("bcLongestWait").textContent=Math.max(18,Number(wait)||0)+" min";
  }
  function addReservation(name,time,party,preference,notes){
-   const list=document.getElementById("bcReservationList");if(!list)return;
+   const list=document.getElementById("bcReservationList");if(!list)return null;
    const readable=time?new Date(`2000-01-01T${time}`).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"Tonight";
-   const article=document.createElement("article");article.dataset.reservationName=name;
-   article.innerHTML=`<time>${readable}</time><div><strong>${name}</strong><span>Party of ${party} · ${preference}${notes?` · ${notes}`:""}</span></div><b data-tone="expected">Expected</b><button type="button" data-reservation-action="details">Details</button>`;
+   const article=document.createElement("article");article.dataset.reservationName=name;article.dataset.reservationTime=time;article.dataset.reservationParty=party;article.dataset.reservationPreference=preference;article.dataset.reservationNotes=notes||"";article.dataset.reservationStatus="Expected";
+   article.innerHTML=`<time>${readable}</time><div><strong>${escapeHtml(name)}</strong><span>Party of ${escapeHtml(party)} · ${escapeHtml(preference)}${notes?` · ${escapeHtml(notes)}`:""}</span></div><b data-tone="expected">Expected</b><button type="button" data-reservation-action="details">Details</button>`;
    list.appendChild(article);wireReservation(article);
+   return article;
  }
 
  document.getElementById("hostAddReservation")?.addEventListener("click",()=>openDialog("reservation"));
@@ -90,10 +125,34 @@ ready(()=>{
  document.getElementById("bcHostDialogForm")?.addEventListener("submit",event=>{
    event.preventDefault();
    if(dialogMode==="details"){closeDialog();return;}
+   const mode=dialogMode;
    const data=new FormData(event.currentTarget);
-   if(dialogMode==="reservation")addReservation(String(data.get("guestName")||"Guest"),String(data.get("time")||""),String(data.get("partySize")||"2"),String(data.get("preference")||"Flexible"),String(data.get("notes")||""));
-   if(dialogMode==="walkin")addWalkin(String(data.get("guestName")||"Walk-in"),String(data.get("partySize")||"2"),String(data.get("preference")||"Flexible"),String(data.get("quotedWait")||"15"));
+   let reservationArticle=null;
+   if(mode==="reservation")reservationArticle=addReservation(String(data.get("guestName")||"Guest"),String(data.get("time")||""),String(data.get("partySize")||"2"),String(data.get("preference")||"Flexible"),String(data.get("notes")||""));
+   if(mode==="edit-reservation"&&activeReservationArticle){
+     const name=String(data.get("guestName")||"Guest"),time=String(data.get("time")||""),party=String(data.get("partySize")||"2"),preference=String(data.get("preference")||"Flexible"),notes=String(data.get("notes")||"");
+     updateReservationArticle(activeReservationArticle,{name,time,party,preference,notes});reservationArticle=activeReservationArticle;
+   }
+   if(mode==="walkin")addWalkin(String(data.get("guestName")||"Walk-in"),String(data.get("partySize")||"2"),String(data.get("preference")||"Flexible"),String(data.get("quotedWait")||"15"));
+
+   // V100.2.3: own the post-dialog transition explicitly. Native <dialog> focus
+   // restoration can otherwise return focus to a control inside a workspace that
+   // the Host Stand immediately hides, producing aria-hidden/focus warnings and
+   // a visually blank Guests surface. Move focus out before closing, then land
+   // deterministically on the completed workflow.
+   if(document.activeElement instanceof HTMLElement)document.activeElement.blur();
    closeDialog();
+   if(mode==="reservation"||mode==="edit-reservation"){
+     setView("reservations");
+     const panel=document.getElementById("bcHostReservationsPanel");
+     panel?.scrollIntoView({behavior:"smooth",block:"nearest"});
+     requestAnimationFrame(()=>{
+       const focusTarget=reservationArticle?.querySelector('[data-reservation-action="details"]')||document.getElementById("bcReservationQuickAdd");
+       focusTarget?.focus({preventScroll:true});
+     });
+   }else if(mode==="walkin"){
+     setView("floor");
+   }
  });
 
  function wireSeatButton(button){
@@ -111,30 +170,93 @@ ready(()=>{
  }
  host.querySelectorAll("#waitlistQueue .queue-item button").forEach(wireSeatButton);
 
- function wireReservation(article){
-   const btn=article.querySelector('[data-reservation-action="details"]');if(!btn)return;
-   btn.addEventListener("click",()=>{
-     const name=article.querySelector("strong")?.textContent||"Guest";
-     const detail=article.querySelector("span")?.textContent||"Tonight";
-     openDialog("details",{name,detail,note:"Confirm arrival status, seating preference, and celebration notes before assigning a table."});
+ function reservationRecord(article){
+   const name=article.dataset.reservationName||article.querySelector("strong")?.textContent||"Guest";
+   const time=article.querySelector("time")?.textContent||"Tonight";
+   const detail=article.querySelector("span")?.textContent||"";
+   const party=article.dataset.reservationParty||(detail.match(/Party of ([^·]+)/)?.[1]||"—").trim();
+   const preference=article.dataset.reservationPreference||(detail.split("·")[1]||"Flexible").trim();
+   const notes=article.dataset.reservationNotes||(detail.split("·").slice(2).join(" · ").trim());
+   const status=article.dataset.reservationStatus||article.querySelector("b")?.textContent||"Expected";
+   return {article,name,time,time24:article.dataset.reservationTime||to24Hour(time),party,preference,notes,status};
+ }
+ function updateReservationArticle(article,record){
+   const readable=record.time?new Date(`2000-01-01T${record.time}`).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"Tonight";
+   article.dataset.reservationName=record.name;article.dataset.reservationTime=record.time;article.dataset.reservationParty=record.party;article.dataset.reservationPreference=record.preference;article.dataset.reservationNotes=record.notes||"";
+   article.querySelector("time").textContent=readable;article.querySelector("strong").textContent=record.name;article.querySelector("span").textContent=`Party of ${record.party} · ${record.preference}${record.notes?` · ${record.notes}`:""}`;
+ }
+ function wireReservationDetailActions(payload){
+   const article=payload.article;if(!article)return;
+   dialogBody.querySelector('[data-reservation-detail-action="arrived"]')?.addEventListener("click",()=>{
+     article.dataset.reservationStatus="Arrived";const badge=article.querySelector("b");if(badge){badge.textContent="Arrived";badge.dataset.tone="arrived";}
+     if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeDialog();setView("reservations");article.querySelector('[data-reservation-action="details"]')?.focus({preventScroll:true});
    });
+   dialogBody.querySelector('[data-reservation-detail-action="edit"]')?.addEventListener("click",()=>{
+     const record=reservationRecord(article);if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeDialog();openDialog("edit-reservation",record);
+   });
+   dialogBody.querySelector('[data-reservation-detail-action="cancel"]')?.addEventListener("click",()=>{
+     if(!window.confirm(`Cancel reservation for ${payload.name||"this guest"}?`))return;
+     if(document.activeElement instanceof HTMLElement)document.activeElement.blur();article.remove();closeDialog();setView("reservations");document.getElementById("bcReservationQuickAdd")?.focus({preventScroll:true});
+   });
+ }
+ function wireReservation(article){
+   const btn=article.querySelector('[data-reservation-action="details"]');if(!btn||btn.dataset.bcWired)return;btn.dataset.bcWired="true";
+   btn.addEventListener("click",()=>openDialog("reservation-details",reservationRecord(article)));
  }
  host.querySelectorAll("#bcReservationList article").forEach(wireReservation);
 
- const guestData=[
-   {name:"Anthony Russo",detail:"7:30 PM · Party of 4 · Birthday",note:"Waterfront preference. Birthday dessert note is loaded."},
-   {name:"Melissa Grant",detail:"7:15 PM · Party of 2 · Anniversary",note:"Anniversary dinner. Guest has arrived."},
-   {name:"Daniel Cho",detail:"7:45 PM · Party of 6",note:"Large party. Confirm table combination before arrival."},
-   {name:"Alyssa Moore",detail:"8:00 PM · Party of 3 · High chair",note:"High chair requested. Confirm accessible path."}
+ const profileGuestData=[
+   {name:"Anthony Russo",detail:"7:30 PM · Party of 4 · Birthday",note:"Waterfront preference. Birthday dessert note is loaded.",source:"profile"},
+   {name:"Melissa Grant",detail:"7:15 PM · Party of 2 · Anniversary",note:"Anniversary dinner. Guest has arrived.",source:"profile"},
+   {name:"Daniel Cho",detail:"7:45 PM · Party of 6",note:"Large party. Confirm table combination before arrival.",source:"profile"},
+   {name:"Alyssa Moore",detail:"8:00 PM · Party of 3 · High chair",note:"High chair requested. Confirm accessible path.",source:"profile"}
  ];
- const search=document.getElementById("bcGuestSearchInput"),results=document.getElementById("bcGuestSearchResults");
- search?.addEventListener("input",()=>{
-   const q=search.value.trim().toLowerCase();
-   if(!q){results.innerHTML="<p>Search tonight’s guests and recent profiles.</p>";return;}
-   const matches=guestData.filter(x=>x.name.toLowerCase().includes(q));
+
+ function normalizeGuestName(value){return String(value||"").trim().replace(/\s+/g," ");}
+ function guestKey(value){return normalizeGuestName(value).toLowerCase();}
+ function liveGuestData(){
+   const live=[];
+   host.querySelectorAll("#waitlistQueue .queue-item").forEach(item=>{
+     const name=normalizeGuestName(item.querySelector("strong")?.textContent);if(!name)return;
+     const detail=normalizeGuestName(item.querySelector("small")?.textContent)||"Live waitlist";
+     live.push({name,detail:`Waitlist · ${detail}`,note:"Currently on the live waitlist. Confirm quoted wait, party needs, and table fit before seating.",source:"waitlist"});
+   });
+   host.querySelectorAll("#arrivalQueue .queue-item").forEach(item=>{
+     const name=normalizeGuestName(item.querySelector("strong")?.textContent);if(!name)return;
+     const time=normalizeGuestName(item.querySelector(".arrival-time")?.textContent);
+     const detail=normalizeGuestName(item.querySelector("small")?.textContent)||"Tonight's arrival";
+     live.push({name,detail:`${time?`${time} · `:""}${detail}`,note:"Tonight's arrival. Confirm arrival status and seating needs before assigning a table.",source:"arrival"});
+   });
+   host.querySelectorAll("#bcReservationList article").forEach(item=>{
+     const name=normalizeGuestName(item.querySelector("strong")?.textContent);if(!name)return;
+     const time=normalizeGuestName(item.querySelector("time")?.textContent);
+     const detail=normalizeGuestName(item.querySelector("span")?.textContent)||"Tonight's reservation";
+     live.push({name,detail:`${time?`${time} · `:""}${detail}`,note:"Tonight's reservation. Confirm arrival status, seating preference, and any occasion notes.",source:"reservation"});
+   });
+   return live;
+ }
+ function searchableGuestData(){
+   const merged=new Map();
+   [...profileGuestData,...liveGuestData()].forEach(guest=>{
+     const key=guestKey(guest.name);if(!key)return;
+     const existing=merged.get(key);
+     // Live operating state wins over static profile/demo context for the same guest.
+     if(!existing||guest.source!=="profile")merged.set(key,{...(existing||{}),...guest});
+   });
+   return Array.from(merged.values());
+ }
+ function renderGuestSearch(){
+   if(!search||!results)return;
+   const q=guestKey(search.value);
+   if(!q){results.innerHTML="<p>Search tonight’s waitlist, arrivals, reservations, and recent profiles.</p>";return;}
+   const matches=searchableGuestData().filter(x=>guestKey(x.name).includes(q));
    results.innerHTML=matches.length?matches.map((x,i)=>`<button type="button" data-guest-result="${i}"><strong>${x.name}</strong><span>${x.detail}</span></button>`).join(""):"<p>No matching guest found.</p>";
    results.querySelectorAll("[data-guest-result]").forEach((b,i)=>b.addEventListener("click",()=>openDialog("details",matches[i])));
- });
+ }
+ const search=document.getElementById("bcGuestSearchInput"),results=document.getElementById("bcGuestSearchResults");
+ search?.addEventListener("input",renderGuestSearch);
+ // Keep search results synchronized with local Host Stand mutations without inventing a second guest store.
+ document.getElementById("bcHostDialogForm")?.addEventListener("submit",()=>setTimeout(()=>{if(search?.value.trim())renderGuestSearch();},0));
 
  // Make queue tabs intentionally switch the visible queue inside Floor, while sidebar nav changes workspaces.
  host.querySelectorAll(".queue-tabs button").forEach(button=>button.setAttribute("aria-label",button.dataset.queue==="waitlist"?"Show live waitlist":"Show upcoming arrivals"));

@@ -14,7 +14,10 @@ const SUPPORT=[
 function ready(fn){document.readyState==="loading"?document.addEventListener("DOMContentLoaded",fn,{once:true}):fn();}
 ready(()=>{
  const main=document.getElementById("main"); if(!main)return;
- const sections=Array.from(main.querySelectorAll(":scope > section[id]"));
+ // V100.2.0: legacy operator-priority classification owns only legacy
+ // top-level surfaces. The Hospitality OS shell has its own renderer/router.
+ const sections=Array.from(main.querySelectorAll(":scope > section[id]"))
+   .filter(section=>section.id!=="blueCurrentCommand" && !section.classList.contains("bc-os-shell"));
  const advanced=new Set(Array.from(main.querySelectorAll(":scope > .bc-advanced-surface[id]")).map(x=>x.id));
  const core=new Set(CORE),support=new Set(SUPPORT);
 
