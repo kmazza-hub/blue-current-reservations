@@ -1,0 +1,18 @@
+{
+  "version": "100.2.10",
+  "repair": "Table Assignment & Seating Lifecycle",
+  "baselineVersion": "100.0.0",
+  "requires": "V100.2.9 Host Stand Service-Scale Typography",
+  "forwardOnly": true,
+  "files": [
+    "APPLY-V100.2.10.js",
+    "patches/host-stand-table-lifecycle-handler.jsfrag",
+    "client/styles.css",
+    "scripts/maintenance/test-v100.2.10-table-assignment-seating-lifecycle.js"
+  ],
+  "runtimeScope": "host-stand-table-lifecycle",
+  "serverChanges": false,
+  "databaseChanges": false,
+  "authChanges": false,
+  "persistenceChanges": false
+}

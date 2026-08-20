@@ -1,0 +1,82 @@
+$("#assignTableButton")?.addEventListener("click", () => {
+  const button = $("#assignTableButton");
+  const table = $("#hostFeaturedTable");
+  if (!button || !table) return;
+
+  const tableNumber = table.dataset.table || "14";
+  const guestName = "Anthony Russo";
+  const shortName = "Anthony";
+  const state = button.dataset.bcAssignmentState || "ready";
+
+  const setNumber = (selector, updater) => {
+    const node = $(selector);
+    if (!node) return;
+    const current = Number(node.textContent || 0);
+    node.textContent = String(Math.max(0, updater(current)));
+  };
+
+  const setLifecycleStatus = (message) => {
+    let status = document.getElementById("hostTableLifecycleStatus");
+    if (!status) {
+      status = document.createElement("div");
+      status.id = "hostTableLifecycleStatus";
+      status.className = "host-table-lifecycle-status";
+      status.setAttribute("role", "status");
+      button.parentNode?.insertBefore(status, button);
+    }
+    status.textContent = message;
+  };
+
+  if (state === "ready") {
+    table.classList.remove("cleaning", "available", "seated");
+    table.classList.add("reserved", "selected");
+    table.querySelector("small").textContent = "7:30";
+
+    $(".cleaning-chip").textContent = "Reserved";
+    button.dataset.bcAssignmentState = "assigned";
+    button.textContent = `Seat ${shortName} at Table ${tableNumber}`;
+    $("#hostRecommendation").textContent = `Table ${tableNumber} assigned to ${guestName} for 7:30 PM`;
+    setLifecycleStatus(`${guestName} is assigned to Table ${tableNumber}. Seat when the party is at the table.`);
+    setNumber("#cleaningCount", () => 0);
+    return;
+  }
+
+  if (state === "assigned") {
+    table.classList.remove("cleaning", "available", "reserved");
+    table.classList.add("seated", "selected");
+    table.querySelector("small").textContent = "Seated";
+    table.dataset.bcGuestName = guestName;
+    table.dataset.bcGuestStatus = "seated";
+
+    $(".cleaning-chip").textContent = "Occupied";
+    $("#hostRecommendation").textContent = `${guestName} seated at Table ${tableNumber}`;
+    setLifecycleStatus(`${guestName} · Party of 4 · Seated at Table ${tableNumber}`);
+
+    const arrival = [...document.querySelectorAll("#arrivalQueue .queue-item.arrival")]
+      .find((item) => item.querySelector("strong")?.textContent?.trim() === guestName);
+    if (arrival) {
+      arrival.dataset.bcTable = tableNumber;
+      arrival.dataset.bcGuestStatus = "seated";
+      arrival.setAttribute("aria-label", `${guestName}, seated at Table ${tableNumber}`);
+      const chip = arrival.querySelector(".arrival-chip");
+      if (chip) {
+        chip.classList.remove("pending");
+        chip.classList.add("bc-seated-table");
+        chip.textContent = `Seated · Table ${tableNumber}`;
+      }
+    }
+
+    const detailGrid = document.querySelector("#hostTableDetail .host-table-detail-grid");
+    const nextGuest = detailGrid?.querySelector("div:last-child strong");
+    const nextGuestLabel = detailGrid?.querySelector("div:last-child span");
+    if (nextGuestLabel) nextGuestLabel.textContent = "Current guest";
+    if (nextGuest) nextGuest.textContent = `${guestName} · Table ${tableNumber}`;
+
+    setNumber("#reservedCount", (value) => value - 1);
+    setNumber("#seatedCount", (value) => value + 1);
+    button.dataset.bcAssignmentState = "seated";
+    button.hidden = true;
+    button.disabled = true;
+    return;
+  }
+});
