@@ -1,0 +1,48 @@
+{
+  "version": "100.1.4",
+  "repair": "Command Auth State Synchronization Hotfix",
+  "baselineVersion": "100.0.0",
+  "applyMode": "merge-into-existing-v100.1.3",
+  "files": [
+    {
+      "path": "README-APPLY-V100.1.4.md",
+      "sha256": "aa8084e6ff567f035e1847cf2531c72da4e25cfb82553551287c7559661870a4",
+      "bytes": 1295
+    },
+    {
+      "path": "V100.1.4-RELEASE.md",
+      "sha256": "66b233a0476ddbc51852fc375c724280b496379eb8fccb9d816e9d647ab10842",
+      "bytes": 1114
+    },
+    {
+      "path": "client/js/modules/hospitalityOsShell.js",
+      "sha256": "d6d0c4748e4dc3687de8d0bd55122c96f94520f5c0e23f130241bcebe7433ed3",
+      "bytes": 54368
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1-operator-shell-stabilization.js",
+      "sha256": "cad019548d1c5ea1b82a5b78509e5c200f312feb5a7e36119443e6649baee129",
+      "bytes": 2896
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.1-command-auth-transport.js",
+      "sha256": "27948381f3bcab8b72fcf32df1fbd9e3005d0be62f45ecb2c365a42e3e09f901",
+      "bytes": 2977
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.2-command-lifecycle-api-contract.js",
+      "sha256": "059476ce71dad3ec6897f1b50e737e51affbf6d7cfb94ee9f55fca916076c911",
+      "bytes": 4126
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.3-auth-overlay-interaction-focus.js",
+      "sha256": "9d6d2c5524c5a982112aa29eafcf3631b1d0a9c4070ebb8139ac413e9e030ffa",
+      "bytes": 3482
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.4-command-auth-state-synchronization.js",
+      "sha256": "2e4162c60e112ea92caa253281ee9eb7f015327e2bce1a6481b5d441efd1dabe",
+      "bytes": 1316
+    }
+  ]
+}

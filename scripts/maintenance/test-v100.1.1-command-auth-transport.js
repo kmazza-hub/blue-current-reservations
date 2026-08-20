@@ -20,7 +20,7 @@ assert(shell.includes('const payload=await commandFetch(`/api/command/operating-
 const refreshBlock=shell.match(/async function refreshCommand\(\{force=false\}=\{\}\)\{[\s\S]*?\n\}\n\nfunction authSessionSnapshot/);
 assert(refreshBlock,"Command refresh function must exist");
 assert(!refreshBlock[0].includes("const payload=await response.json().catch(()=>({}));"),"Command refresh must not retain the old raw Response parsing path");
-assert(shell.includes('version:"100.1.3"'),"Shell lifecycle hotfix version marker must be V100.1.2");
+assert(shell.includes('version:"100.1.4"'),"Shell lifecycle hotfix version marker must be V100.1.4");
 assert(/setInterval\(\(\)=>\{[\s\S]*?refreshCommand\(\);[\s\S]*?\},30000\);/.test(shell),"30-second Command refresh cycle must remain active for regression coverage");
 
 const api=read("client/js/cloud/cloudApi.js");

@@ -865,8 +865,21 @@ function authenticatedAppState(){
     syncAppStateFromSession(snapshot);
     return true;
   }
-  // When the coordinator exists, it is authoritative. Never let stale appState
-  // resurrect a prior login while session restoration is initializing/restoring.
+
+  // V100.1.4: authenticated UI state may be hydrated by the auth/bootstrap path
+  // before the session coordinator has caught up. If a bearer token and a live
+  // authenticatedUser are both present, allow Command to perform its protected
+  // request; commandFetch remains the server-authoritative check and will drive
+  // the shell back to auth-required on any 401. This prevents a stale Sign in
+  // banner from surviving after /api/auth/me and bootstrap have already succeeded.
+  try{
+    const user=window.appState?.get?.("authenticatedUser");
+    const token=localStorage.getItem("blueCurrentV3230Token")||"";
+    if(user&&token)return true;
+  }catch{}
+
+  // Without both a hydrated user and bearer token, the coordinator remains
+  // authoritative so stale app state cannot resurrect an expired session.
   if(window.BlueCurrentAuthSession)return false;
   try{return Boolean(window.appState?.get?.("authenticatedUser"));}catch{return false;}
 }
@@ -898,6 +911,13 @@ function startCommandAfterAuth(){
   // permanently misses the later successful sign-in event.
   const bus=window.eventBus;
   if(bus?.on){
+    bus.on("state:changed",payload=>{
+      if(payload?.key!=="authenticatedUser"||!payload?.value)return;
+      commandState.authRequired=false;
+      commandState.transportBackoffUntil=0;
+      setCommandAccessState("ready");
+      refreshCommand({force:true});
+    });
     bus.on("auth:restored",()=>start(authSessionSnapshot()));
     bus.on("auth:signed-in",()=>start(authSessionSnapshot()));
     bus.on("auth:organization-switched",()=>{
@@ -993,7 +1013,7 @@ function init(){
     commandShell.scrollIntoView({block:"start",behavior:"auto"});
   }
   window.BlueCurrentHospitalityShell={
-    version:"100.1.3",
+    version:"100.1.4",
     activate:(workspace,options={})=>activate(workspace,options),
     current:()=>document.documentElement.dataset.bcWorkspace||"command",
     sections:workspace=>candidateSections(workspace).map(section=>section.id)
