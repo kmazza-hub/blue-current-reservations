@@ -1,0 +1,7 @@
+{
+  "version": "100.2.16",
+  "baseline": "100.2.15",
+  "name": "Generic Guest Action Context + Host Stand Contrast Polish",
+  "apply": "node APPLY-V100.2.16.js",
+  "test": "node scripts/maintenance/test-v100.2.16-generic-guest-action-context.js"
+}

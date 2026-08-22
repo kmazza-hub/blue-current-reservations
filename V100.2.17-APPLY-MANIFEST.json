@@ -1,0 +1,8 @@
+{
+  "version": "100.2.17",
+  "name": "Arrival Check-In + Priority Seating Queue",
+  "baseline": "V100.2.16",
+  "forwardOnly": true,
+  "scope": ["Host Stand arrivals", "priority ready-to-seat queue", "special occasion prominence", "blank workflow banner cleanup"],
+  "excluded": ["auth", "server", "database", "RBAC", "Command shell", "Service", "Kitchen"]
+}
