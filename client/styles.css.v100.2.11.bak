@@ -17663,9 +17663,3 @@ body.bc-hospitality-os #main > #blueCurrentCommand.bc-os-shell.bc-rush-hide{
   font-weight: 800;
   white-space: nowrap;
 }
-
-
-/* V100.2.11 — seated table detail auto-collapse */
-#hostTableDetail[hidden] {
-  display: none !important;
-}

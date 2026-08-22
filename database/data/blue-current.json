@@ -1248,6 +1248,14 @@
       "category": "security",
       "createdAt": "2026-08-20T09:57:49.084Z",
       "id": "audit_1787219869084_31rsm1"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Sarah Morgan",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-22T10:44:23.586Z",
+      "id": "audit_1787395463586_sy5tkz"
     }
   ],
   "reservations": [
@@ -1390,21 +1398,21 @@
       "updatedAt": "2026-08-17T04:50:59.751Z"
     },
     {
-      "id": "ses_1787219868976_zbw72o",
-      "tokenHash": "e645f51c94de0fd8285f2aca792648da2a6c8c501d5da180254c6a8699f2cb49",
-      "userId": "usr_keith",
+      "id": "ses_1787395463487_pxklvc",
+      "tokenHash": "e0825d0d3ee42934930f426fe6352df65f5d832651317f2f3e4afaf162d4fab2",
+      "userId": "usr_sarah",
       "organizationId": "org_chefs",
-      "role": "owner",
+      "role": "general_manager",
       "locationIds": [
-        "*"
+        "loc_marina"
       ],
-      "createdAt": "2026-08-20T09:57:48.976Z",
-      "lastSeenAt": "2026-08-20T10:03:18.367Z",
-      "idleExpiresAt": "2026-08-20T12:03:18.367Z",
-      "expiresAt": "2026-08-20T21:57:48.976Z",
+      "createdAt": "2026-08-22T10:44:23.487Z",
+      "lastSeenAt": "2026-08-22T11:34:34.916Z",
+      "idleExpiresAt": "2026-08-22T13:34:34.916Z",
+      "expiresAt": "2026-08-22T22:44:23.487Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-20T10:03:18.368Z"
+      "updatedAt": "2026-08-22T11:34:34.917Z"
     }
   ],
   "invitations": [

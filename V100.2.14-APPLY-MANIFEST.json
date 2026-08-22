@@ -1,0 +1,9 @@
+{
+  "version": "100.2.14",
+  "name": "Host Stand Workspace Simplification",
+  "baseline": "V100.2.13",
+  "strategy": "append guarded client workspace controller",
+  "touches": ["client/js runtime containing V100.2.13 host lifecycle"],
+  "doesNotTouch": ["server", "database", "auth", "RBAC", "persistence", "reservation creation"],
+  "principle": "Aim small, miss small — one job, one screen, one obvious next action"
+}

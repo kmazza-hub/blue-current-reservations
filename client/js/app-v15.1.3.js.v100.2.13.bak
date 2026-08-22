@@ -331,7 +331,7 @@ $("#addWalkIn")?.addEventListener("click", () => {
   $("#hostWaiting").textContent = current + 1;
 });
 
-// V100.2.13 — Reservation Arrival & One-Tap Seating Flow
+// V100.2.12 — Dynamic Table Selection & Assignment Ownership
 (() => {
   const guestName = "Anthony Russo";
   const shortName = "Anthony";
@@ -344,19 +344,6 @@ $("#addWalkIn")?.addEventListener("click", () => {
     ["available", "reserved", "seated", "cleaning"].find((name) => table?.classList.contains(name)) || "selected";
   const titleCase = (value) => value ? value.charAt(0).toUpperCase() + value.slice(1) : "Selected";
   const tableNumberOf = (table) => table?.dataset?.table || "";
-
-  const getArrival = () => [...document.querySelectorAll("#arrivalQueue .queue-item.arrival")]
-    .find((item) => item.querySelector("strong")?.textContent?.trim() === guestName) || null;
-
-  const arrivalStatus = () => {
-    const arrival = getArrival();
-    if (!arrival) return "expected";
-    if (arrival.dataset.bcGuestStatus) return arrival.dataset.bcGuestStatus;
-    const text = arrival.querySelector(".arrival-chip")?.textContent?.trim().toLowerCase() || "";
-    if (text.includes("seated")) return "seated";
-    if (text.includes("arrived")) return "arrived";
-    return "expected";
-  };
 
   const setNumber = (selector, updater) => {
     const node = $(selector);
@@ -409,97 +396,38 @@ $("#addWalkIn")?.addEventListener("click", () => {
     if (value) value.textContent = seatedHere ? `${guestName} · Table ${number}` : guestName;
   };
 
-  const assignment = window.__bcHostAssignmentV100_2_13 || {
+  const assignment = window.__bcHostAssignmentV100_2_12 || {
     status: "none",
     table: null,
     tableNumber: null,
     guestName
   };
-  window.__bcHostAssignmentV100_2_13 = assignment;
+  window.__bcHostAssignmentV100_2_12 = assignment;
 
   const isAssignable = (table) => {
     const state = getTableState(table);
     return state === "available" || state === "cleaning";
   };
 
-  const ensureArrivalAction = () => {
-    const arrival = getArrival();
-    if (!arrival) return null;
-    const chip = arrival.querySelector(".arrival-chip");
-    if (!chip) return null;
-
-    let action = arrival.querySelector(".bc-arrival-action-v100-2-13");
-    if (!action) {
-      action = document.createElement("button");
-      action.type = "button";
-      action.className = "bc-arrival-action-v100-2-13";
-      action.textContent = "Mark arrived";
-      action.setAttribute("aria-label", `Mark ${guestName} arrived`);
-      chip.insertAdjacentElement("afterend", action);
-    }
-
-    const status = arrivalStatus();
-    action.hidden = status !== "expected";
-    return action;
-  };
-
-  const updateArrivalState = (status, tableNumber = null) => {
-    const arrival = getArrival();
-    if (!arrival) return;
-    const chip = arrival.querySelector(".arrival-chip");
-    arrival.dataset.bcGuestStatus = status;
-
-    if (status === "arrived") {
-      arrival.removeAttribute("data-bc-table");
-      arrival.setAttribute("aria-label", `${guestName}, arrived`);
-      if (chip) {
-        chip.classList.remove("pending", "bc-seated-table");
-        chip.textContent = "Arrived";
-      }
-    }
-
-    if (status === "seated") {
-      arrival.dataset.bcTable = tableNumber || "";
-      arrival.setAttribute("aria-label", `${guestName}, seated at Table ${tableNumber}`);
-      if (chip) {
-        chip.classList.remove("pending");
-        chip.classList.add("bc-seated-table");
-        chip.textContent = `Seated · Table ${tableNumber}`;
-      }
-    }
-
-    const action = ensureArrivalAction();
-    if (action) action.hidden = status !== "expected";
-  };
-
   const updateButtonForSelection = (table) => {
     const number = tableNumberOf(table);
     const state = getTableState(table);
-    const guestStatus = arrivalStatus();
     button.hidden = false;
     button.disabled = false;
     delete button.dataset.bcTargetTable;
 
-    if (assignment.status === "seated" || guestStatus === "seated") {
+    if (assignment.status === "seated") {
       button.hidden = true;
       button.disabled = true;
-      setLifecycleStatus(`${guestName} is already seated at Table ${assignment.tableNumber || table.dataset.bcTable || number}.`);
+      setLifecycleStatus(`${guestName} is already seated at Table ${assignment.tableNumber}.`);
       return;
     }
 
     if (assignment.status === "assigned" && assignment.table === table) {
+      button.dataset.bcAssignmentState = "assigned";
       button.dataset.bcTargetTable = number;
-      if (guestStatus === "arrived") {
-        button.dataset.bcAssignmentState = "assigned";
-        button.disabled = false;
-        button.textContent = `Seat ${shortName} at Table ${number}`;
-        setLifecycleStatus(`${guestName} has arrived. Table ${number} is held and ready to seat.`);
-      } else {
-        button.dataset.bcAssignmentState = "held";
-        button.disabled = true;
-        button.textContent = `Table ${number} held for ${shortName}`;
-        setLifecycleStatus(`Table ${number} is held for ${guestName}. Mark the reservation arrived before seating.`);
-      }
+      button.textContent = `Seat ${shortName} at Table ${number}`;
+      setLifecycleStatus(`${guestName} is assigned to Table ${number}. Seat when the party is at the table.`);
       return;
     }
 
@@ -520,17 +448,10 @@ $("#addWalkIn")?.addEventListener("click", () => {
       button.dataset.bcAssignmentState = "reassign";
       button.textContent = `Move ${shortName} to Table ${number}`;
       setLifecycleStatus(`${guestName} is currently assigned to Table ${assignment.tableNumber}.`);
-      return;
-    }
-
-    if (guestStatus === "arrived") {
-      button.dataset.bcAssignmentState = "seat-ready";
-      button.textContent = `Seat ${shortName} at Table ${number}`;
-      setLifecycleStatus(`${guestName} has arrived. Table ${number} is ${state} and ready for one-tap seating.`);
     } else {
       button.dataset.bcAssignmentState = "ready";
-      button.textContent = `Reserve Table ${number} for ${shortName}`;
-      setLifecycleStatus(`${guestName} is expected. Hold Table ${number} now, then seat after arrival.`);
+      button.textContent = `Assign ${shortName} to Table ${number}`;
+      setLifecycleStatus(`Table ${number} is ${state}. Ready to assign ${guestName}.`);
     }
   };
 
@@ -538,7 +459,7 @@ $("#addWalkIn")?.addEventListener("click", () => {
     if (!table) return;
     tables().forEach((item) => item.classList.remove("selected"));
     table.classList.add("selected");
-    window.__bcHostSelectedTableV100_2_13 = table;
+    window.__bcHostSelectedTableV100_2_12 = table;
     setSelectedHeading(table);
     setGuestGrid(table);
     setDetailVisibility(true);
@@ -571,10 +492,13 @@ $("#addWalkIn")?.addEventListener("click", () => {
     assignment.status = "assigned";
     assignment.table = table;
     assignment.tableNumber = number;
+    button.dataset.bcAssignmentState = "assigned";
+    button.dataset.bcTargetTable = number;
+    button.textContent = `Seat ${shortName} at Table ${number}`;
     setSelectedHeading(table);
     setGuestGrid(table);
-    $("#hostRecommendation") && ($("#hostRecommendation").textContent = `Table ${number} held for ${guestName} at 7:30 PM`);
-    updateButtonForSelection(table);
+    $("#hostRecommendation") && ($("#hostRecommendation").textContent = `Table ${number} assigned to ${guestName} for 7:30 PM`);
+    setLifecycleStatus(`${guestName} is assigned to Table ${number}. Seat when the party is at the table.`);
   };
 
   const releaseAssignedTable = () => {
@@ -611,7 +535,20 @@ $("#addWalkIn")?.addEventListener("click", () => {
     if (chip) chip.textContent = "Occupied";
     $("#hostRecommendation") && ($("#hostRecommendation").textContent = `${guestName} seated at Table ${number}`);
     setLifecycleStatus(`${guestName} · Party of 4 · Seated at Table ${number}`);
-    updateArrivalState("seated", number);
+
+    const arrival = [...document.querySelectorAll("#arrivalQueue .queue-item.arrival")]
+      .find((item) => item.querySelector("strong")?.textContent?.trim() === guestName);
+    if (arrival) {
+      arrival.dataset.bcTable = number;
+      arrival.dataset.bcGuestStatus = "seated";
+      arrival.setAttribute("aria-label", `${guestName}, seated at Table ${number}`);
+      const arrivalChip = arrival.querySelector(".arrival-chip");
+      if (arrivalChip) {
+        arrivalChip.classList.remove("pending");
+        arrivalChip.classList.add("bc-seated-table");
+        arrivalChip.textContent = `Seated · Table ${number}`;
+      }
+    }
 
     setGuestGrid(table);
     setNumber("#reservedCount", (value) => value - 1);
@@ -622,42 +559,23 @@ $("#addWalkIn")?.addEventListener("click", () => {
     setDetailVisibility(false);
   };
 
-  const seatArrivedGuestDirectly = (table) => {
-    reserveTableForGuest(table);
-    seatAssignedGuest();
-  };
-
-  if (!window.__bcDynamicTableSelectionV100_2_13) {
-    window.__bcDynamicTableSelectionV100_2_13 = true;
-    tables().forEach((table) => table.addEventListener("click", () => selectTable(table)));
-  }
-
-  const arrivalAction = ensureArrivalAction();
-  if (arrivalAction && !arrivalAction.dataset.bcBoundV100213) {
-    arrivalAction.dataset.bcBoundV100213 = "true";
-    arrivalAction.addEventListener("click", () => {
-      updateArrivalState("arrived");
-      const selected = window.__bcHostSelectedTableV100_2_13;
-      if (selected) updateButtonForSelection(selected);
+  if (!window.__bcDynamicTableSelectionV100_2_12) {
+    window.__bcDynamicTableSelectionV100_2_12 = true;
+    tables().forEach((table) => {
+      table.addEventListener("click", () => selectTable(table));
     });
   }
 
-  if (!window.__bcDynamicAssignmentClickV100_2_13) {
-    window.__bcDynamicAssignmentClickV100_2_13 = true;
+  if (!window.__bcDynamicAssignmentClickV100_2_12) {
+    window.__bcDynamicAssignmentClickV100_2_12 = true;
     button.addEventListener("click", () => {
       const state = button.dataset.bcAssignmentState || "blocked";
-      const selected = window.__bcHostSelectedTableV100_2_13;
-      if (!selected || state === "blocked" || state === "held" || button.disabled) return;
+      const selected = window.__bcHostSelectedTableV100_2_12;
+      if (!selected || state === "blocked" || button.disabled) return;
 
       if (state === "ready") {
         if (!isAssignable(selected)) return updateButtonForSelection(selected);
         reserveTableForGuest(selected);
-        return;
-      }
-
-      if (state === "seat-ready") {
-        if (!isAssignable(selected)) return updateButtonForSelection(selected);
-        seatArrivedGuestDirectly(selected);
         return;
       }
 
@@ -670,236 +588,20 @@ $("#addWalkIn")?.addEventListener("click", () => {
 
       if (state === "assigned") {
         if (assignment.table !== selected) return updateButtonForSelection(selected);
-        if (arrivalStatus() !== "arrived") return updateButtonForSelection(selected);
         seatAssignedGuest();
       }
     });
   }
 
-  // V100.2.13 keeps arrival state visible throughout the host flow and starts
-  // with no transient table-detail card until the host explicitly selects a table.
+  // Start clean on every page load. A table detail is transient and must only
+  // appear after the host explicitly taps a table.
   tables().forEach((table) => table.classList.remove("selected"));
-  window.__bcHostSelectedTableV100_2_13 = null;
+  window.__bcHostSelectedTableV100_2_12 = null;
   button.dataset.bcAssignmentState = "blocked";
   button.hidden = true;
   button.disabled = true;
   setLifecycleStatus("");
   setDetailVisibility(false);
-})();
-
-// V100.2.14 — Host Stand Workspace Simplification
-(() => {
-  const hostWorkspace = document.querySelector('.host-workspace');
-  const floorPanel = document.querySelector('.host-floor-panel');
-  const queuePanel = document.querySelector('.host-queue-panel');
-  const navButtons = [...document.querySelectorAll('.host-nav button')];
-  const hostMain = document.querySelector('.host-main');
-  if (!hostWorkspace || !floorPanel || !queuePanel || !navButtons.length || !hostMain) return;
-
-  const normalizeLabel = (button) => (button?.textContent || '').replace(/[^a-zA-Z]/g, '').toLowerCase();
-  const navByName = Object.fromEntries(navButtons.map((button) => [normalizeLabel(button), button]));
-  const floorNav = navByName.floor;
-  const reservationsNav = navByName.reservations;
-  const waitlistNav = navByName.waitlist;
-  const guestsNav = navByName.guests;
-  if (!floorNav || !reservationsNav || !waitlistNav || !guestsNav) return;
-
-  // One job, one screen, one obvious next action.
-  // The floor remains powerful underneath, but transient floor UI never leaks into another workspace.
-  const styleId = 'bc-host-workspace-simplification-v100-2-14';
-  if (!document.getElementById(styleId)) {
-    const style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = `
-      .host-workspace.bc-single-workspace { grid-template-columns: minmax(0,1fr) !important; }
-      .host-workspace.bc-single-workspace .host-queue-panel { width:100%; max-width:none; min-height:560px; }
-      .host-workspace.bc-single-workspace .queue-tabs { max-width:520px; margin-bottom:22px; }
-      .host-workspace.bc-single-workspace .queue-list { display:grid; gap:12px; }
-      .host-workspace.bc-single-workspace .queue-item { min-height:78px; padding:16px 18px; }
-      .bc-host-workspace-panel { grid-column:1 / -1; min-height:560px; border:1px solid rgba(131,197,187,.25); border-radius:24px; background:#0d3441; padding:28px; color:#fff; }
-      .bc-host-workspace-head { display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:24px; }
-      .bc-host-workspace-head small { display:block; color:#83c5bb; text-transform:uppercase; letter-spacing:.12em; font-weight:800; margin-bottom:5px; }
-      .bc-host-workspace-head h4 { margin:0; font-size:30px; line-height:1.05; color:#fff; }
-      .bc-host-workspace-head p { margin:7px 0 0; color:#b9d5d7; font-size:16px; }
-      .bc-guest-search-input { width:100%; min-height:58px; border-radius:14px; border:2px solid #83c5bb; padding:0 16px; background:#082632; color:#fff; font-size:19px; outline:none; }
-      .bc-guest-search-input::placeholder { color:#91aeb2; }
-      .bc-guest-results { display:grid; gap:10px; margin-top:18px; }
-      .bc-guest-result { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center; min-height:76px; padding:14px 16px; border:1px solid rgba(131,197,187,.22); border-radius:16px; background:#123d4b; }
-      .bc-guest-result strong { display:block; font-size:19px; color:#fff; }
-      .bc-guest-result span { display:block; margin-top:3px; color:#b9d5d7; font-size:15px; }
-      .bc-guest-result em { font-style:normal; border-radius:999px; padding:7px 10px; background:#edf5f1; color:#15343c; font-weight:800; font-size:13px; }
-      .bc-guest-empty { padding:22px; border-radius:16px; background:#123d4b; color:#b9d5d7; font-size:16px; }
-      .bc-workspace-title-strip { margin:0 0 18px; }
-      .bc-workspace-title-strip small { display:block; color:#83c5bb; text-transform:uppercase; letter-spacing:.12em; font-weight:800; }
-      .bc-workspace-title-strip strong { display:block; color:#fff; font-size:26px; margin-top:4px; }
-      .bc-workspace-title-strip span { display:block; color:#b9d5d7; margin-top:5px; }
-      .bc-host-focus-hidden { display:none !important; }
-    `;
-    document.head.appendChild(style);
-  }
-
-  let guestPanel = document.getElementById('bcHostGuestsWorkspaceV100_2_14');
-  if (!guestPanel) {
-    guestPanel = document.createElement('section');
-    guestPanel.id = 'bcHostGuestsWorkspaceV100_2_14';
-    guestPanel.className = 'bc-host-workspace-panel';
-    guestPanel.hidden = true;
-    guestPanel.innerHTML = `
-      <div class="bc-host-workspace-head">
-        <div>
-          <small>Guests</small>
-          <h4>Find a guest</h4>
-          <p>Search tonight's reservations and waitlist. Keep the answer on one screen.</p>
-        </div>
-      </div>
-      <label>
-        <span class="sr-only">Guest name</span>
-        <input id="bcHostGuestSearchV100_2_14" class="bc-guest-search-input" type="search" autocomplete="off" placeholder="Start typing a guest name">
-      </label>
-      <div id="bcHostGuestResultsV100_2_14" class="bc-guest-results" aria-live="polite"></div>
-    `;
-    hostWorkspace.appendChild(guestPanel);
-  }
-
-  let titleStrip = document.getElementById('bcHostWorkspaceTitleV100_2_14');
-  if (!titleStrip) {
-    titleStrip = document.createElement('div');
-    titleStrip.id = 'bcHostWorkspaceTitleV100_2_14';
-    titleStrip.className = 'bc-workspace-title-strip';
-    titleStrip.hidden = true;
-    queuePanel.insertBefore(titleStrip, queuePanel.firstChild);
-  }
-
-  const heading = hostMain.querySelector('.host-topbar h3');
-  const subtitle = hostMain.querySelector('.host-topbar small');
-  const originalHeading = heading?.textContent || 'Dining room';
-  const originalSubtitle = subtitle?.textContent || '';
-
-  const clearTransientFloorUI = () => {
-    document.querySelectorAll('.host-table.selected').forEach((table) => table.classList.remove('selected'));
-    const detail = document.getElementById('hostTableDetail');
-    if (detail) {
-      detail.hidden = true;
-      detail.setAttribute('aria-hidden', 'true');
-      detail.classList.remove('bc-detail-open');
-    }
-    window.__bcHostSelectedTableV100_2_13 = null;
-    window.__bcHostSelectedTableV100_2_12 = null;
-  };
-
-  const setTopbar = (title, helper) => {
-    if (heading) heading.textContent = title;
-    if (subtitle) subtitle.textContent = helper;
-  };
-
-  const forceQueueView = (name) => {
-    const waitlist = document.getElementById('waitlistQueue');
-    const arrivals = document.getElementById('arrivalQueue');
-    const tabs = [...queuePanel.querySelectorAll('.queue-tabs button')];
-    tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.queue === name));
-    if (waitlist) waitlist.classList.toggle('hidden', name !== 'waitlist');
-    if (arrivals) arrivals.classList.toggle('hidden', name === 'waitlist');
-  };
-
-  const setTitleStrip = (kicker, title, helper) => {
-    titleStrip.innerHTML = `<small>${kicker}</small><strong>${title}</strong><span>${helper}</span>`;
-    titleStrip.hidden = false;
-  };
-
-  const collectGuests = () => {
-    const results = [];
-    document.querySelectorAll('#arrivalQueue .queue-item.arrival').forEach((row) => {
-      const name = row.querySelector('strong')?.textContent?.trim();
-      if (!name) return;
-      const detailText = row.querySelector('small')?.textContent?.trim() || 'Reservation';
-      const status = row.querySelector('.arrival-chip')?.textContent?.trim() || 'Reservation';
-      results.push({ name, detail: detailText, status });
-    });
-    document.querySelectorAll('#waitlistQueue .queue-item').forEach((row) => {
-      const name = row.querySelector('strong')?.textContent?.trim();
-      if (!name || results.some((guest) => guest.name === name)) return;
-      const detailText = row.querySelector('small')?.textContent?.trim() || 'Waitlist';
-      results.push({ name, detail: detailText, status: 'Waiting' });
-    });
-    return results;
-  };
-
-  const renderGuestSearch = () => {
-    const input = document.getElementById('bcHostGuestSearchV100_2_14');
-    const output = document.getElementById('bcHostGuestResultsV100_2_14');
-    if (!input || !output) return;
-    const query = input.value.trim().toLowerCase();
-    const guests = collectGuests().filter((guest) => !query || guest.name.toLowerCase().includes(query));
-    if (!guests.length) {
-      output.innerHTML = '<div class="bc-guest-empty">No matching guest found.</div>';
-      return;
-    }
-    output.innerHTML = guests.map((guest) => `
-      <article class="bc-guest-result">
-        <div><strong>${guest.name}</strong><span>${guest.detail}</span></div>
-        <em>${guest.status}</em>
-      </article>
-    `).join('');
-  };
-
-  const guestInput = document.getElementById('bcHostGuestSearchV100_2_14');
-  if (guestInput && !guestInput.dataset.bcBoundV100214) {
-    guestInput.dataset.bcBoundV100214 = 'true';
-    guestInput.addEventListener('input', renderGuestSearch);
-  }
-
-  const activate = (workspaceName) => {
-    const name = workspaceName.toLowerCase();
-    navButtons.forEach((button) => button.classList.toggle('active', normalizeLabel(button) === name));
-    clearTransientFloorUI();
-    guestPanel.hidden = true;
-    titleStrip.hidden = true;
-
-    if (name === 'floor') {
-      hostWorkspace.classList.remove('bc-single-workspace');
-      floorPanel.hidden = false;
-      queuePanel.hidden = false;
-      setTopbar(originalHeading, originalSubtitle);
-      forceQueueView('waitlist');
-      return;
-    }
-
-    hostWorkspace.classList.add('bc-single-workspace');
-    floorPanel.hidden = true;
-
-    if (name === 'reservations') {
-      queuePanel.hidden = false;
-      forceQueueView('arrivals');
-      setTitleStrip('Reservations', "Tonight's arrivals", 'Who is coming, what matters, and who is ready to seat.');
-      setTopbar('Reservations', 'Tonight · Marina Grille');
-      return;
-    }
-
-    if (name === 'waitlist') {
-      queuePanel.hidden = false;
-      forceQueueView('waitlist');
-      setTitleStrip('Waitlist', 'Who is waiting', 'Seat the right party quickly. Nothing else competes for attention.');
-      setTopbar('Waitlist', 'Live front-door queue · Marina Grille');
-      return;
-    }
-
-    if (name === 'guests') {
-      queuePanel.hidden = true;
-      guestPanel.hidden = false;
-      setTopbar('Guests', 'Find tonight\'s guest');
-      renderGuestSearch();
-    }
-  };
-
-  if (!window.__bcHostWorkspaceSimplificationV100_2_14) {
-    window.__bcHostWorkspaceSimplificationV100_2_14 = true;
-    navButtons.forEach((button) => {
-      button.addEventListener('click', () => activate(normalizeLabel(button)));
-    });
-  }
-
-  // Start clean: Floor is the only default workspace and no stale selected-table card survives refresh.
-  activate('floor');
 })();
 
 const gs=document.getElementById('guestSearch');
