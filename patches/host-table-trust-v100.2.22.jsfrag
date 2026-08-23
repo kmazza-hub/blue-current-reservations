@@ -1,0 +1,216 @@
+// V100.2.22 — Trustworthy Table Lifecycle + Predictive Availability
+(() => {
+  const floorMap = document.getElementById('hostFloorMap');
+  const floorPanel = document.querySelector('.host-floor-panel');
+  if (!floorMap || !floorPanel || window.__bcHostTableTrustV100_2_22) return;
+
+  const tables = () => [...document.querySelectorAll('.host-table')];
+  const stateOf = (table) => ['available','reserved','seated','cleaning'].find((s) => table.classList.contains(s)) || 'unknown';
+  const numOf = (table) => String(table?.dataset?.table || '');
+  const capacities = { '2':2, '4':4, '6':4, '8':4, '14':4, '16':4, '18':2, '20':4, '22':4 };
+  const defaultTargets = { 1:65, 2:75, 3:80, 4:90, 5:95, 6:105, 7:110, 8:120 };
+  const turnTargets = window.BlueCurrentHostTurnTargets || defaultTargets;
+  const now = () => Date.now();
+  const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
+  const minsSince = (stamp) => Math.max(0, Math.floor((now()-Number(stamp||now()))/60000));
+  const parseParty = (text) => Number(String(text||'').match(/party\s+of\s+(\d+)/i)?.[1] || 0);
+  const capacityOf = (table) => Number(table?.dataset?.capacity || capacities[numOf(table)] || 4);
+  const targetFor = (table) => Number(turnTargets[Number(table?.dataset?.bcPartySize || capacityOf(table))] || 90);
+
+  const parseClockToday = (text) => {
+    const m = String(text||'').trim().match(/^(\d{1,2}):(\d{2})$/);
+    if (!m) return null;
+    const d = new Date();
+    d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+    if (d.getTime() > now() + 5*60000) d.setDate(d.getDate()-1);
+    return d.getTime();
+  };
+
+  const seedTable = (table) => {
+    table.dataset.capacity = String(capacityOf(table));
+    const small = table.querySelector('small');
+    const initial = String(small?.textContent || '').trim();
+    const state = stateOf(table);
+    if (state === 'seated' && !table.dataset.bcSeatedAt) {
+      table.dataset.bcSeatedAt = String(parseClockToday(initial) || now());
+      table.dataset.bcPartySize = table.dataset.bcPartySize || String(capacityOf(table));
+    }
+    if (state === 'cleaning' && !table.dataset.bcCleaningAt) table.dataset.bcCleaningAt = String(now());
+    if (state === 'reserved' && !table.dataset.bcReservationLabel) table.dataset.bcReservationLabel = initial.replace(/^reserved\s*[·-]?\s*/i,'') || 'Held';
+  };
+
+  const remainingFor = (table) => {
+    if (stateOf(table) !== 'seated') return null;
+    return targetFor(table) - minsSince(table.dataset.bcSeatedAt);
+  };
+
+  const renderTable = (table) => {
+    seedTable(table);
+    const small = table.querySelector('small');
+    if (!small) return;
+    const state = stateOf(table);
+    if (state === 'available') {
+      small.textContent = 'OPEN';
+      table.dataset.bcOperationalLabel = 'Open now';
+      return;
+    }
+    if (state === 'reserved') {
+      small.textContent = `RESERVED · ${table.dataset.bcReservationLabel || 'Held'}`;
+      table.dataset.bcOperationalLabel = `Reserved ${table.dataset.bcReservationLabel || ''}`.trim();
+      return;
+    }
+    if (state === 'cleaning') {
+      const elapsed = minsSince(table.dataset.bcCleaningAt);
+      small.textContent = `CLEANING · ${elapsed}m`;
+      table.dataset.bcOperationalLabel = `Cleaning ${elapsed} minutes`;
+      return;
+    }
+    if (state === 'seated') {
+      const elapsed = minsSince(table.dataset.bcSeatedAt);
+      const remaining = remainingFor(table);
+      if (remaining <= 0) {
+        small.textContent = 'CHECK TABLE';
+        table.dataset.bcOperationalLabel = `Seated ${elapsed} minutes, check table`;
+      } else if (remaining <= 15) {
+        small.textContent = `OPEN ~${clamp(Math.ceil(remaining/5)*5,5,15)}m`;
+        table.dataset.bcOperationalLabel = `Likely open in about ${clamp(Math.ceil(remaining/5)*5,5,15)} minutes`;
+      } else {
+        small.textContent = `SEATED · ${elapsed}m`;
+        table.dataset.bcOperationalLabel = `Seated ${elapsed} minutes`;
+      }
+    }
+  };
+
+  const renderAll = () => {
+    tables().forEach(renderTable);
+    const rec = document.getElementById('hostRecommendation');
+    if (!rec) return;
+    const open = tables().filter((table) => stateOf(table) === 'available').length;
+    if (open > 0) rec.textContent = `${open} table${open===1?'':'s'} open now · seat only tables that fit`;
+    else {
+      const next = nextFits(1,1)[0];
+      rec.textContent = next ? `Next likely: Table ${next.tableNumber} · ~${Math.max(1,next.minutes)} min · estimate` : 'No table opening estimate yet · check the room';
+    }
+  };
+
+  const nextFits = (partySize, limit=3) => {
+    const size = Number(partySize || 1);
+    const candidates = [];
+    tables().forEach((table) => {
+      if (capacityOf(table) < size) return;
+      const state = stateOf(table);
+      if (state === 'available') candidates.push({table, minutes:0, kind:'open'});
+      else if (state === 'cleaning') candidates.push({table, minutes:Math.max(2, 6-minsSince(table.dataset.bcCleaningAt)), kind:'cleaning'});
+      else if (state === 'seated') candidates.push({table, minutes:Math.max(1, remainingFor(table)), kind:'predicted'});
+    });
+    return candidates.sort((a,b)=>a.minutes-b.minutes).slice(0,limit).map((item)=>({
+      tableNumber:numOf(item.table),
+      capacity:capacityOf(item.table),
+      minutes:Math.round(item.minutes),
+      kind:item.kind
+    }));
+  };
+
+  let lifecycleCard = document.getElementById('bcTableLifecycleCardV100_2_22');
+  if (!lifecycleCard) {
+    lifecycleCard = document.createElement('div');
+    lifecycleCard.id = 'bcTableLifecycleCardV100_2_22';
+    lifecycleCard.className = 'bc-table-lifecycle-card-v100-2-22';
+    lifecycleCard.hidden = true;
+    lifecycleCard.innerHTML = '<small>TABLE STATUS</small><strong></strong><p></p><div class="bc-table-lifecycle-prediction-v100-2-22"></div><button type="button" class="bc-table-lifecycle-primary-v100-2-22"></button><button type="button" class="bc-table-lifecycle-close-v100-2-22">Close</button>';
+    floorMap.appendChild(lifecycleCard);
+  }
+  let activeTable = null;
+
+  const closeCard = () => { lifecycleCard.hidden = true; activeTable = null; };
+  const updateCounts = (from,to) => {
+    const ids = {available:'availableCount',reserved:'reservedCount',seated:'seatedCount',cleaning:'cleaningCount'};
+    if (ids[from]) { const n=document.getElementById(ids[from]); if(n) n.textContent=String(Math.max(0,Number(n.textContent||0)-1)); }
+    if (ids[to]) { const n=document.getElementById(ids[to]); if(n) n.textContent=String(Number(n.textContent||0)+1); }
+    if (from === 'seated') { const n=document.getElementById('hostSeated'); if(n) n.textContent=String(Math.max(0,Number(n.textContent||0)-1)); }
+    if (to === 'available') { const n=document.getElementById('hostOpen'); if(n) n.textContent=String(Number(n.textContent||0)+1); }
+  };
+  const showCard = (table) => {
+    const state = stateOf(table);
+    if (state !== 'seated' && state !== 'cleaning') return false;
+    activeTable = table;
+    const num = numOf(table);
+    const heading = lifecycleCard.querySelector('strong');
+    const body = lifecycleCard.querySelector('p');
+    const pred = lifecycleCard.querySelector('.bc-table-lifecycle-prediction-v100-2-22');
+    const primary = lifecycleCard.querySelector('.bc-table-lifecycle-primary-v100-2-22');
+    heading.textContent = `Table ${num}`;
+    if (state === 'seated') {
+      const elapsed = minsSince(table.dataset.bcSeatedAt);
+      const remaining = remainingFor(table);
+      body.textContent = `Seated ${elapsed} minutes${table.dataset.bcGuestName ? ` · ${table.dataset.bcGuestName}` : ''}`;
+      pred.textContent = remaining > 0 ? `Estimated open ~${Math.max(5,Math.ceil(remaining/5)*5)} min. Staff confirmation required.` : 'Turn target reached. Check the table before changing its status.';
+      primary.textContent = 'Party left';
+      primary.dataset.action = 'left';
+    } else {
+      const elapsed = minsSince(table.dataset.bcCleaningAt);
+      body.textContent = `Cleaning ${elapsed} minutes`;
+      pred.textContent = 'Blue Current will not mark this table open automatically.';
+      primary.textContent = 'Mark table open';
+      primary.dataset.action = 'open';
+    }
+    lifecycleCard.hidden = false;
+    return true;
+  };
+
+  lifecycleCard.querySelector('.bc-table-lifecycle-close-v100-2-22').addEventListener('click', closeCard);
+  lifecycleCard.querySelector('.bc-table-lifecycle-primary-v100-2-22').addEventListener('click', () => {
+    if (!activeTable) return;
+    const action = lifecycleCard.querySelector('.bc-table-lifecycle-primary-v100-2-22').dataset.action;
+    const before = stateOf(activeTable);
+    if (action === 'left' && before === 'seated') {
+      activeTable.classList.remove('seated','reserved','available');
+      activeTable.classList.add('cleaning');
+      activeTable.dataset.bcCleaningAt = String(now());
+      updateCounts('seated','cleaning');
+      renderTable(activeTable);
+      const rec = document.getElementById('hostRecommendation');
+      if (rec) rec.textContent = `Table ${numOf(activeTable)} needs reset · Mark open when ready`;
+      showCard(activeTable);
+    } else if (action === 'open' && before === 'cleaning') {
+      activeTable.classList.remove('cleaning','reserved','seated');
+      activeTable.classList.add('available');
+      delete activeTable.dataset.bcGuestName;
+      delete activeTable.dataset.bcGuestStatus;
+      delete activeTable.dataset.bcCleaningAt;
+      delete activeTable.dataset.bcSeatedAt;
+      updateCounts('cleaning','available');
+      renderTable(activeTable);
+      const rec = document.getElementById('hostRecommendation');
+      if (rec) rec.textContent = `Table ${numOf(activeTable)} is open now`;
+      closeCard();
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    const unified = window.__bcUnifiedSeatingFlowV100_2_20;
+    if (unified?.active) return;
+    const table = event.target.closest?.('.host-table');
+    if (!table) return;
+    if (stateOf(table) !== 'seated' && stateOf(table) !== 'cleaning') return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    showCard(table);
+  }, true);
+
+  const api = {
+    renderAll,
+    nextFits,
+    capacityOf,
+    stateOf,
+    markSeated(table, partySize, guestName) {
+      table.dataset.bcSeatedAt = String(now());
+      table.dataset.bcPartySize = String(Number(partySize || capacityOf(table)));
+      if (guestName) table.dataset.bcGuestName = guestName;
+      renderTable(table);
+    }
+  };
+  window.__bcHostTableTrustV100_2_22 = api;
+  renderAll();
+  setInterval(renderAll, 30000);
+})();

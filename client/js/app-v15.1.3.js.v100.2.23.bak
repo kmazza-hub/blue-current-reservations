@@ -2157,8 +2157,12 @@ $("#addWalkIn")?.addEventListener("click", () => {
   const decorateReadyRow = (row, sourceType='walk-in') => {
     row.dataset.bcSourceType = sourceType;
     const content = row.querySelector('div');
-    // Provenance remains in data/history, never as rush-screen chrome.
-    content?.querySelectorAll('.bc-ready-seat-source-v100-2-17, .bc-ready-source-v100-2-17').forEach((node) => node.remove());
+    if (content && !content.querySelector('.bc-ready-seat-source-v100-2-17')) {
+      const source = document.createElement('span');
+      source.className = 'bc-ready-seat-source-v100-2-17';
+      source.textContent = sourceType === 'reservation' ? 'Reservation · Arrived' : 'Walk-in';
+      content.appendChild(source);
+    }
     const label = specialLabelFor(row.textContent);
     if (label && content && !content.querySelector('.bc-special-badge-v100-2-17')) {
       row.classList.add('bc-special-priority-v100-2-17');
@@ -2168,6 +2172,7 @@ $("#addWalkIn")?.addEventListener("click", () => {
       content.appendChild(badge);
     }
   };
+
   const buildReadyRow = (sourceRow) => {
     const name = firstStrong(sourceRow);
     if (!name) return null;
@@ -2426,17 +2431,11 @@ $("#addWalkIn")?.addEventListener("click", () => {
   const capacityOf = (table) => Number(table?.dataset?.capacity || demoCapacities[tableNumber(table)] || 4);
   const eligibleFor = (table, partySize) => tableState(table) === 'available' && capacityOf(table) >= partySize;
   const noTableMessage = (partySize) => {
-    const rows = [...waitlist.querySelectorAll('.queue-item')].filter((row) => !lower(row.textContent).includes('seated'));
-    const position = Math.max(1, rows.indexOf(flow.row) + 1);
-    const quoteApi = window.__bcHostWaitQuoteV100_2_26;
-    const estimate = quoteApi?.forParty?.(partySize, position);
-    if (Number.isFinite(estimate)) {
-      const ahead = Math.max(0, position - 1);
-      const place = ahead === 0 ? 'Next in line' : `${ahead} part${ahead===1?'y':'ies'} ahead`;
-      return estimate <= 0 ? `${place} · waiting for staff table confirmation.` : `${place} · estimated seat ~${estimate} min. Staff confirms when the table is ready.`;
-    }
-    const next = window.__bcHostTableTrustV100_2_22?.nextFits?.(partySize,1) || [];
-    return next[0] ? `Estimated seat ~${Math.max(5,Math.ceil(Number(next[0].minutes||0)/5)*5)} min. Staff confirmation required.` : 'No matching table estimate yet. Keep waiting.';
+    const next = window.__bcHostTableTrustV100_2_22?.nextFits?.(partySize,3) || [];
+    const future = next.filter((item) => item.minutes > 0);
+    if (!future.length) return 'No table that fits is projected yet. Keep the party in Ready to seat.';
+    const summary = future.map((item) => `Table ${item.tableNumber} ~${Math.max(1,item.minutes)}m`).join(' · ');
+    return `No table that fits is open. Next likely: ${summary}. Estimates only—staff confirms when a table is actually open.`;
   };
 
   const begin = (row) => {
@@ -2627,32 +2626,32 @@ window.__bcHostRuntimeRecoveryV100_2_20 = { ok:true, observer:'guarded', seating
       return;
     }
     if (state === 'reserved') {
-      const label = table.dataset.bcReservationLabel || 'Held';
-      small.textContent = /^\d{1,2}:\d{2}$/.test(label) ? label : 'RESERVED';
-      table.dataset.bcOperationalLabel = `Reserved ${label}`.trim();
+      small.textContent = `RESERVED · ${table.dataset.bcReservationLabel || 'Held'}`;
+      table.dataset.bcOperationalLabel = `Reserved ${table.dataset.bcReservationLabel || ''}`.trim();
       return;
     }
     if (state === 'cleaning') {
       const elapsed = minsSince(table.dataset.bcCleaningAt);
-      small.textContent = elapsed >= 10 ? 'CHECK' : 'CLEANING';
-      table.dataset.bcOperationalLabel = elapsed >= 10 ? `Cleaning ${elapsed} minutes, check table` : `Cleaning ${elapsed} minutes`;
+      small.textContent = `CLEANING · ${elapsed}m`;
+      table.dataset.bcOperationalLabel = `Cleaning ${elapsed} minutes`;
       return;
     }
     if (state === 'seated') {
       const elapsed = minsSince(table.dataset.bcSeatedAt);
       const remaining = remainingFor(table);
       if (remaining <= 0) {
-        small.textContent = 'CHECK';
+        small.textContent = 'CHECK TABLE';
         table.dataset.bcOperationalLabel = `Seated ${elapsed} minutes, check table`;
       } else if (remaining <= 15) {
-        small.textContent = 'OPEN SOON';
+        small.textContent = `OPEN ~${clamp(Math.ceil(remaining/5)*5,5,15)}m`;
         table.dataset.bcOperationalLabel = `Likely open in about ${clamp(Math.ceil(remaining/5)*5,5,15)} minutes`;
       } else {
-        small.textContent = 'SEATED';
+        small.textContent = `SEATED · ${elapsed}m`;
         table.dataset.bcOperationalLabel = `Seated ${elapsed} minutes`;
       }
     }
   };
+
   const renderAll = () => {
     tables().forEach(renderTable);
     const rec = document.getElementById('hostRecommendation');
@@ -2783,9 +2782,6 @@ window.__bcHostRuntimeRecoveryV100_2_20 = { ok:true, observer:'guarded', seating
     }
   };
   window.__bcHostTableTrustV100_2_22 = api;
-  window.__bcHostGlanceModeV100_2_23 = { ok:true, motto:'aim small miss small', floor:'glance', queue:'decision-only' };
-  window.__bcHostServiceFunnelV100_2_24 = { ok:true, motto:'aim small miss small', waitlist:'name-party-wait-need-action', arrivals:'near-term-action-queue', scale:'bounded-scroll' };
-  window.__bcHostAdaptiveLabelsV100_2_25 = { ok:true, motto:'aim small miss small', labels:'adaptive-centered', floor:'fit-content-status' };
   renderAll();
   setInterval(renderAll, 30000);
 })();
@@ -5614,247 +5610,3 @@ queueMicrotask(() => {
   window.blueCurrent.startup = report;
   console.info(`[Blue Current V${report.build}] startup complete in ${report.durationMs}ms`, report);
 });
-
-
-// V100.2.26 — Dynamic Wait Quote + Functional Reserved Table Tools
-(() => {
-  const workspace = document.querySelector('.host-workspace');
-  const floorMap = document.querySelector('.host-floor-map');
-  const waitlist = document.getElementById('waitlistQueue');
-  const arrivals = document.getElementById('arrivalQueue');
-  const queueTabs = document.querySelector('.queue-tabs');
-  const legacyDetail = document.getElementById('hostTableDetail');
-  const trust = window.__bcHostTableTrustV100_2_22;
-  if (!workspace || !floorMap || !waitlist || !arrivals || !queueTabs || !trust) return;
-
-  const normalize = (value) => String(value || '').replace(/\s+/g,' ').trim();
-  const lower = (value) => normalize(value).toLowerCase();
-  const tableNumber = (table) => normalize(table?.dataset?.table);
-  const stateOf = (table) => trust.stateOf?.(table) || ['available','reserved','seated','cleaning'].find((s)=>table?.classList.contains(s)) || 'unknown';
-  const partySizeOf = (row) => Number(normalize(row?.querySelector('small')?.textContent || row?.textContent).match(/party\s+of\s+(\d+)/i)?.[1] || 2);
-  const rowName = (row) => normalize(row?.querySelector('strong')?.textContent);
-  const readyRows = () => [...waitlist.querySelectorAll('.queue-item')].filter((row)=>!lower(row.textContent).includes('seated'));
-  const arrivalRows = () => [...arrivals.querySelectorAll('.queue-item')].filter((row)=>!lower(row.textContent).includes('seated'));
-  const round5 = (n) => Math.max(0, Math.ceil(Number(n || 0) / 5) * 5);
-
-  const estimatedMinutesForPosition = (partySize, position) => {
-    const pos = Math.max(1, Number(position || 1));
-    const candidates = trust.nextFits?.(partySize, 8) || [];
-    const open = candidates.filter((item)=>Number(item.minutes) <= 0).length;
-    if (pos <= open) return 0;
-    const timed = candidates.filter((item)=>Number(item.minutes) > 0).map((item)=>Number(item.minutes)).sort((a,b)=>a-b);
-    const waitingAheadAfterOpen = Math.max(0, pos - open - 1);
-    let base = timed[Math.min(waitingAheadAfterOpen, Math.max(0,timed.length-1))];
-    if (!Number.isFinite(base)) base = 10;
-    if (waitingAheadAfterOpen >= timed.length && timed.length) base += (waitingAheadAfterOpen - timed.length + 1) * 10;
-    if (!timed.length && waitingAheadAfterOpen > 0) base += waitingAheadAfterOpen * 10;
-    return round5(base + 2);
-  };
-
-  const positionForRow = (row) => Math.max(1, readyRows().indexOf(row) + 1);
-  const estimateForRow = (row) => estimatedMinutesForPosition(partySizeOf(row), positionForRow(row));
-  const currentQuote = (partySize=4) => estimatedMinutesForPosition(partySize, readyRows().length + 1);
-
-  let quote = document.getElementById('bcHostCurrentWaitQuoteV100_2_26');
-  if (!quote) {
-    quote = document.createElement('div');
-    quote.id = 'bcHostCurrentWaitQuoteV100_2_26';
-    quote.className = 'bc-host-current-wait-quote-v100-2-26';
-    quote.innerHTML = '<small>CURRENT WAIT</small><strong>—</strong><span>New party · updates with the queue</span>';
-    queueTabs.insertAdjacentElement('afterend', quote);
-  }
-
-  const renderQuote = () => {
-    const minutes = currentQuote(4);
-    const strong = quote.querySelector('strong');
-    const nextText = minutes <= 0 ? 'Seat now' : `~${minutes} min`;
-    if (strong && strong.textContent !== nextText) strong.textContent = nextText;
-    readyRows().forEach((row, index) => {
-      row.dataset.bcQueuePosition = String(index + 1);
-      row.dataset.bcEstimatedSeatMinutes = String(estimateForRow(row));
-    });
-  };
-
-  let reservedCard = document.getElementById('bcReservedTableToolV100_2_26');
-  if (!reservedCard) {
-    reservedCard = document.createElement('section');
-    reservedCard.id = 'bcReservedTableToolV100_2_26';
-    reservedCard.className = 'bc-reserved-table-tool-v100-2-26';
-    reservedCard.hidden = true;
-    reservedCard.innerHTML = `
-      <header><div><small>RESERVED TABLE</small><strong></strong><span class="bc-reserved-time-v100-2-26"></span></div><button type="button" class="bc-reserved-close-v100-2-26" aria-label="Close reserved table detail">×</button></header>
-      <div class="bc-reserved-linked-v100-2-26"></div>
-      <label class="bc-reserved-guest-label-v100-2-26">Guest<select class="bc-reserved-guest-select-v100-2-26"></select></label>
-      <button type="button" class="bc-reserved-primary-v100-2-26"></button>
-      <button type="button" class="bc-reserved-release-v100-2-26">Release table</button>
-    `;
-    floorMap.appendChild(reservedCard);
-  }
-
-  let activeReservedTable = null;
-  const select = reservedCard.querySelector('.bc-reserved-guest-select-v100-2-26');
-  const linked = reservedCard.querySelector('.bc-reserved-linked-v100-2-26');
-  const primary = reservedCard.querySelector('.bc-reserved-primary-v100-2-26');
-
-  const candidateRows = () => {
-    const rows = [...readyRows(), ...arrivalRows()];
-    const seen = new Set();
-    return rows.filter((row) => {
-      const name = rowName(row);
-      if (!name || seen.has(name)) return false;
-      seen.add(name); return true;
-    });
-  };
-  const findCandidate = (name) => candidateRows().find((row)=>rowName(row) === name) || null;
-  const findReady = (name) => readyRows().find((row)=>rowName(row) === name) || null;
-  const findArrival = (name) => arrivalRows().find((row)=>rowName(row) === name) || null;
-
-  const reservedTime = (table) => {
-    const text = normalize(table?.querySelector('small')?.textContent);
-    return /^\d{1,2}:\d{2}$/.test(text) ? text : normalize(table?.dataset?.bcReservationLabel || 'Reserved');
-  };
-  const linkedName = (table) => normalize(table?.dataset?.bcGuestName);
-
-  const closeReserved = () => {
-    reservedCard.hidden = true;
-    activeReservedTable = null;
-    document.querySelectorAll('.host-table.bc-reserved-tool-selected-v100-2-26').forEach((table)=>table.classList.remove('bc-reserved-tool-selected-v100-2-26'));
-    if (legacyDetail) { legacyDetail.hidden = true; legacyDetail.setAttribute('aria-hidden','true'); }
-  };
-
-  const syncReservedCard = () => {
-    const table = activeReservedTable;
-    if (!table) return;
-    const num = tableNumber(table);
-    const guest = linkedName(table);
-    reservedCard.querySelector('header strong').textContent = `Table ${num}`;
-    reservedCard.querySelector('.bc-reserved-time-v100-2-26').textContent = reservedTime(table);
-
-    const rows = candidateRows();
-    const previous = guest || select.value;
-    select.innerHTML = '<option value="">Choose guest</option>' + rows.map((row)=>{
-      const name = rowName(row); const detail = normalize(row.querySelector('small')?.textContent);
-      return `<option value="${name.replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">${name} · ${detail}</option>`;
-    }).join('');
-    if (previous && rows.some((row)=>rowName(row)===previous)) select.value = previous;
-
-    const chosen = guest || select.value;
-    const ready = chosen ? findReady(chosen) : null;
-    const arrival = chosen ? findArrival(chosen) : null;
-    if (guest) {
-      const source = ready ? 'Ready to seat' : arrival ? 'Expected arrival' : 'Linked reservation';
-      linked.innerHTML = `<strong>${guest}</strong><span>${source}</span>`;
-    } else {
-      linked.innerHTML = '<strong>No guest linked</strong><span>Choose a guest to make this reservation useful.</span>';
-    }
-
-    if (!chosen) { primary.textContent = `Link guest to Table ${num}`; primary.disabled = true; primary.dataset.action = 'link'; }
-    else if (!guest || guest !== chosen) { primary.textContent = `Link ${chosen} to Table ${num}`; primary.disabled = false; primary.dataset.action = 'link'; }
-    else if (ready) { primary.textContent = `Seat ${chosen} at Table ${num}`; primary.disabled = false; primary.dataset.action = 'seat'; }
-    else if (arrival) { primary.textContent = `Mark ${chosen} arrived`; primary.disabled = false; primary.dataset.action = 'arrive'; }
-    else { primary.textContent = `Keep Table ${num} reserved`; primary.disabled = true; primary.dataset.action = 'hold'; }
-  };
-
-  const showReserved = (table) => {
-    closeReserved();
-    activeReservedTable = table;
-    table.classList.add('bc-reserved-tool-selected-v100-2-26');
-    if (legacyDetail) { legacyDetail.hidden = true; legacyDetail.setAttribute('aria-hidden','true'); }
-    reservedCard.hidden = false;
-    syncReservedCard();
-  };
-
-  const setCount = (id, delta) => {
-    const node = document.getElementById(id);
-    if (node) node.textContent = String(Math.max(0, Number(node.textContent || 0) + delta));
-  };
-
-  const removeReadyRow = (row) => {
-    if (!row) return;
-    row.remove();
-    const badge = document.getElementById('waitlistBadge');
-    const hostWaiting = document.getElementById('hostWaiting');
-    const count = readyRows().length;
-    if (badge) badge.textContent = String(count);
-    if (hostWaiting) hostWaiting.textContent = String(count);
-  };
-
-  const seatLinkedReady = (table, row, name) => {
-    const prior = stateOf(table);
-    table.classList.remove('reserved','available','cleaning');
-    table.classList.add('seated');
-    table.dataset.bcGuestName = name;
-    table.dataset.bcGuestStatus = 'seated';
-    table.dataset.bcPartySize = String(partySizeOf(row));
-    setCount('reservedCount', prior === 'reserved' ? -1 : 0);
-    setCount('seatedCount', 1);
-    setCount('hostSeated', 1);
-    trust.markSeated?.(table, partySizeOf(row), name);
-    removeReadyRow(row);
-    const rec = document.getElementById('hostRecommendation');
-    if (rec) rec.textContent = `${name} seated at Table ${tableNumber(table)}`;
-    closeReserved();
-    trust.renderAll?.();
-    renderQuote();
-  };
-
-  const markArrival = (row) => {
-    if (!row) return false;
-    const button = [...row.querySelectorAll('button')].find((b)=>/mark\s+arrived/i.test(normalize(b.textContent)));
-    if (!button) return false;
-    button.click();
-    return true;
-  };
-
-  select.addEventListener('change', syncReservedCard);
-  reservedCard.querySelector('.bc-reserved-close-v100-2-26').addEventListener('click', closeReserved);
-  reservedCard.querySelector('.bc-reserved-release-v100-2-26').addEventListener('click', () => {
-    const table = activeReservedTable; if (!table) return;
-    if (stateOf(table) !== 'reserved') return closeReserved();
-    table.classList.remove('reserved','selected'); table.classList.add('available');
-    delete table.dataset.bcGuestName; delete table.dataset.bcGuestStatus; delete table.dataset.bcPriorTableState; delete table.dataset.bcReservationLabel;
-    setCount('reservedCount', -1); setCount('availableCount', 1); setCount('hostOpen', 1);
-    closeReserved(); trust.renderAll?.(); renderQuote();
-  });
-  primary.addEventListener('click', () => {
-    const table = activeReservedTable; if (!table) return;
-    const chosen = select.value || linkedName(table); if (!chosen) return;
-    const action = primary.dataset.action;
-    if (action === 'link') {
-      table.dataset.bcGuestName = chosen; table.dataset.bcGuestStatus = findReady(chosen) ? 'arrived' : 'assigned';
-      syncReservedCard(); return;
-    }
-    if (action === 'seat') {
-      const ready = findReady(chosen); if (ready) seatLinkedReady(table, ready, chosen); return;
-    }
-    if (action === 'arrive') {
-      const arrival = findArrival(chosen);
-      if (markArrival(arrival)) { table.dataset.bcGuestStatus = 'arrived'; closeReserved(); setTimeout(()=>{ renderQuote(); trust.renderAll?.(); },0); }
-    }
-  });
-
-  document.addEventListener('click', (event) => {
-    const table = event.target.closest?.('.host-table');
-    if (!table || stateOf(table) !== 'reserved') return;
-    const unified = window.__bcUnifiedSeatingFlowV100_2_20;
-    if (unified?.active) return;
-    event.preventDefault(); event.stopImmediatePropagation();
-    if (activeReservedTable === table && !reservedCard.hidden) closeReserved(); else showReserved(table);
-  }, true);
-
-  document.querySelectorAll('.host-nav button, .queue-tabs button').forEach((button)=>button.addEventListener('click', closeReserved));
-
-  const observer = new MutationObserver(() => requestAnimationFrame(renderQuote));
-  observer.observe(waitlist,{childList:true,subtree:true,characterData:true});
-  renderQuote();
-  setInterval(renderQuote,30000);
-
-  window.__bcHostWaitQuoteV100_2_26 = {
-    currentQuote,
-    forParty: estimatedMinutesForPosition,
-    forRow: estimateForRow,
-    positionForRow,
-    refresh: renderQuote
-  };
-  window.__bcReservedTableToolsV100_2_26 = { show: showReserved, close: closeReserved, version:'100.2.26' };
-})();

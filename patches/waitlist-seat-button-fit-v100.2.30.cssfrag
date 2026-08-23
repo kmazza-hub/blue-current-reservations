@@ -1,0 +1,73 @@
+/* V100.2.30 — Waitlist Seat Button Fit
+   Aim small, miss small: the Seat action must remain fully visible inside the host rail. */
+
+/* V100.2.27/29 reserved too much minimum width for the middle column.
+   Let the information column flex instead of forcing the action off the rail. */
+#host-stand #waitlistQueue .queue-item {
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  grid-template-columns:44px minmax(0,1fr) 76px !important;
+  gap:9px !important;
+  padding:11px 10px !important;
+  overflow:hidden !important;
+}
+
+#host-stand #waitlistQueue .queue-item > div {
+  min-width:0 !important;
+  max-width:100% !important;
+}
+
+/* Keep the action entirely inside its dedicated column. */
+#host-stand #waitlistQueue .queue-item > button {
+  justify-self:stretch !important;
+  width:76px !important;
+  min-width:76px !important;
+  max-width:76px !important;
+  min-height:46px !important;
+  margin:0 !important;
+  padding:0 8px !important;
+  box-sizing:border-box !important;
+  overflow:visible !important;
+  white-space:nowrap !important;
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+  font-size:.9rem !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  text-align:center !important;
+}
+
+/* Preserve the polished priority pill without letting it determine grid width. */
+#host-stand #waitlistQueue .bc-ready-priority-v100-2-17,
+#host-stand #waitlistQueue .bc-special-badge-v100-2-17 {
+  width:max-content !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  padding:5px 9px !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+/* Give the vertical scrollbar a small internal gutter so it never sits on the action. */
+#host-stand #waitlistQueue {
+  box-sizing:border-box !important;
+  padding-right:8px !important;
+}
+
+@media (max-width:1100px) {
+  #host-stand #waitlistQueue .queue-item {
+    grid-template-columns:42px minmax(0,1fr) 72px !important;
+    gap:8px !important;
+    padding:10px 8px !important;
+  }
+  #host-stand #waitlistQueue .queue-item > button {
+    width:72px !important;
+    min-width:72px !important;
+    max-width:72px !important;
+    padding-inline:6px !important;
+    font-size:.86rem !important;
+  }
+}

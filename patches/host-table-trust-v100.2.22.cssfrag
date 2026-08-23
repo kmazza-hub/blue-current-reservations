@@ -1,0 +1,44 @@
+/* V100.2.22 — Host Table Trust + Readability */
+#host-stand .bc-unified-seat-instruction-v100-2-18 {
+  background:#0d4d58 !important;
+  color:#fff !important;
+  border-color:#54e0cf !important;
+}
+#host-stand .bc-unified-seat-instruction-v100-2-18 strong,
+#host-stand .bc-unified-seat-instruction-v100-2-18 span { color:#fff !important; opacity:1 !important; }
+#host-stand .bc-unified-seat-instruction-v100-2-18 span { color:#e7fbf8 !important; }
+#host-stand .bc-unified-cancel-v100-2-18,
+#host-stand .bc-unified-seat-confirm-v100-2-18 .bc-unified-cancel-v100-2-18 {
+  background:#fff7e8 !important;
+  color:#082f3a !important;
+  border:2px solid #557b84 !important;
+  opacity:1 !important;
+  font-weight:950 !important;
+  text-shadow:none !important;
+}
+#host-stand .bc-unified-seat-confirm-v100-2-18 {
+  background:#fff !important;
+  color:#082f3a !important;
+  border-color:#43d4c2 !important;
+}
+#host-stand .bc-unified-seat-confirm-v100-2-18 small { color:#315d67 !important; opacity:1 !important; font-weight:950 !important; }
+#host-stand .bc-unified-seat-confirm-v100-2-18 strong { color:#082f3a !important; opacity:1 !important; }
+#host-stand .bc-unified-seat-confirm-v100-2-18 p { color:#244b55 !important; opacity:1 !important; font-weight:850 !important; }
+#host-stand .bc-unified-confirm-v100-2-18 { background:#087b99 !important; color:#fff !important; border:2px solid #04596e !important; opacity:1 !important; }
+#host-stand .host-table small { font-weight:900 !important; line-height:1.05 !important; letter-spacing:0 !important; }
+#host-stand .host-table.available small { color:#073541 !important; }
+#host-stand .host-table.seated small { color:#f5ffff !important; }
+#host-stand .host-table.cleaning small { color:#183e48 !important; }
+#host-stand .host-table.reserved small { color:#5b3c00 !important; }
+#host-stand .bc-table-lifecycle-card-v100-2-22 {
+  position:absolute; z-index:55; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(430px,calc(100% - 32px)); padding:24px; border-radius:20px;
+  border:2px solid #54d7c8; background:#fff; color:#082f3a; box-shadow:0 24px 58px rgba(0,0,0,.28);
+}
+#host-stand .bc-table-lifecycle-card-v100-2-22[hidden] { display:none !important; }
+#host-stand .bc-table-lifecycle-card-v100-2-22 small { color:#416a73; font-weight:950; letter-spacing:.08em; }
+#host-stand .bc-table-lifecycle-card-v100-2-22 strong { display:block; margin:6px 0 8px; color:#082f3a; font-size:28px; }
+#host-stand .bc-table-lifecycle-card-v100-2-22 p { margin:0; color:#173f49; font-size:19px; font-weight:850; }
+#host-stand .bc-table-lifecycle-prediction-v100-2-22 { margin:14px 0 18px; padding:13px 14px; border-radius:12px; background:#eef8f6; color:#173f49; font-size:16px; line-height:1.35; font-weight:800; }
+#host-stand .bc-table-lifecycle-primary-v100-2-22 { width:100%; min-height:58px; border:2px solid #04596e; border-radius:14px; background:#087b99; color:#fff; font-size:18px; font-weight:950; }
+#host-stand .bc-table-lifecycle-close-v100-2-22 { width:100%; min-height:52px; margin-top:10px; border:2px solid #75959c; border-radius:14px; background:#fff7e8; color:#082f3a; font-size:17px; font-weight:950; }
