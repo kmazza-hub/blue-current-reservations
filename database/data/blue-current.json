@@ -1438,23 +1438,6 @@
       "updatedAt": "2026-08-17T04:50:59.751Z"
     },
     {
-      "id": "ses_1787482136935_1t7bqz",
-      "tokenHash": "1244db7464032687ba97194a3f67db384759a382467d91c4ceecd3e6ba629680",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-23T10:48:56.935Z",
-      "lastSeenAt": "2026-08-23T22:47:29.802Z",
-      "idleExpiresAt": "2026-08-24T00:47:29.802Z",
-      "expiresAt": "2026-08-23T22:48:56.935Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-23T22:47:29.803Z"
-    },
-    {
       "id": "ses_1787525347168_uv5ndp",
       "tokenHash": "1534d31da43a6bc8aa03f1f4a725c9376e0e07e3f0a04cc4662c7a9353b14e8b",
       "userId": "usr_keith",
@@ -1464,12 +1447,12 @@
         "*"
       ],
       "createdAt": "2026-08-23T22:49:07.168Z",
-      "lastSeenAt": "2026-08-24T02:12:48.424Z",
-      "idleExpiresAt": "2026-08-24T04:12:48.424Z",
+      "lastSeenAt": "2026-08-24T02:40:08.756Z",
+      "idleExpiresAt": "2026-08-24T04:40:08.756Z",
       "expiresAt": "2026-08-24T10:49:07.168Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-24T02:12:48.425Z"
+      "updatedAt": "2026-08-24T02:40:08.757Z"
     }
   ],
   "invitations": [

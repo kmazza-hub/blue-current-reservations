@@ -13,6 +13,7 @@ ready(()=>{
  const dialogSubmit=document.getElementById("bcHostDialogSubmit");
  let dialogMode=null;
  let activeReservationArticle=null;
+ let activeGuestProfile=null;
 
  function setView(view){
    navButtons.forEach(b=>{const on=b.dataset.hostView===view;b.classList.toggle("active",on);b.setAttribute("aria-current",on?"page":"false");});
@@ -63,6 +64,19 @@ ready(()=>{
        <label><span>Quoted wait</span><input name="quotedWait" type="number" min="0" max="180" value="15"><small>minutes</small></label>
      </div>`;
      dialogSubmit.textContent="Add to waitlist";
+   }else if(mode==="edit-guest"){
+     activeGuestProfile=payload||{};
+     dialogEyebrow.textContent="GUEST PROFILE";
+     dialogTitle.textContent=`Edit ${payload.name||"guest"}`;
+     dialogBody.innerHTML=`<div class="bc-dialog-grid bc-guest-edit-v245">
+       <label><span>Guest name</span><input name="guestName" required value="${escapeAttr(payload.name||"")}"></label>
+       <label><span>Phone</span><input name="phone" inputmode="tel" placeholder="(555) 555-5555" value="${escapeAttr(payload.phone||"")}"></label>
+       <label><span>Email</span><input name="email" type="email" placeholder="guest@example.com" value="${escapeAttr(payload.email||"")}"></label>
+       <label><span>Seating preference</span><input name="preference" placeholder="Waterfront, booth, bar okay…" value="${escapeAttr(payload.preference||"")}"></label>
+       <label class="wide"><span>Hospitality notes</span><textarea name="guestNotes" rows="4" placeholder="Allergies, accessibility, celebrations, service preferences…">${escapeHtml(payload.guestNotes||payload.note||"")}</textarea></label>
+     </div>`;
+     dialogSubmit.hidden=false;
+     dialogSubmit.textContent="Save guest profile";
    }else if(mode==="reservation-details"){
      activeReservationArticle=payload.article||null;
      dialogSubmit.hidden=false;
@@ -87,11 +101,21 @@ ready(()=>{
    }else{
      dialogTitle.textContent=payload.name||"Guest details";
      const visits=Array.isArray(payload.visits)?payload.visits.slice().reverse().slice(0,6):[];
+     const recognition=guestRecognitionSummary(payload);
      dialogBody.innerHTML=`<div class="bc-guest-detail bc-guest-profile-v244">
        <div class="bc-guest-profile-v244__head"><div><strong>${escapeHtml(payload.name||"Guest")}</strong><span>${escapeHtml(payload.detail||"Tonight's guest")}</span></div><em>${escapeHtml(guestStatusLabel(payload))}</em></div>
-       <div class="bc-guest-profile-v244__focus"><small>What matters now</small><p>${escapeHtml(payload.note||"No special preference or service note is recorded yet.")}</p></div>
+       <div class="bc-guest-profile-v246__recognition"><div><small>Recognition</small><strong>${escapeHtml(recognition.intel.recognition)}</strong><span>${escapeHtml(recognition.intel.cue)}</span></div><div class="bc-guest-profile-v246__tags">${recognition.tags.map(tag=>`<em>${escapeHtml(tag)}</em>`).join("")}</div></div>
+       <div class="bc-guest-profile-v245__facts">
+         <div><small>Phone</small><strong>${escapeHtml(payload.phone||"Not saved")}</strong></div>
+         <div><small>Email</small><strong>${escapeHtml(payload.email||"Not saved")}</strong></div>
+         <div><small>Preference</small><strong>${escapeHtml(payload.preference||"Flexible")}</strong></div>
+         <div><small>Visits</small><strong>${escapeHtml(String(recognition.intel.visitCount))}</strong></div>
+       </div>
+       <div class="bc-guest-profile-v244__focus"><small>What matters now</small><p>${escapeHtml(payload.guestNotes||payload.note||recognition.intel.cue||"No special preference or service note is recorded yet.")}</p></div>
        <div class="bc-guest-profile-v244__history"><small>Visit history</small>${visits.length?visits.map(v=>`<article><strong>${escapeHtml(v.detail||"Host Stand activity")}</strong><span>${escapeHtml(v.at?new Date(v.at).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Saved visit")}</span></article>`).join(""):`<p>First recorded visit in Blue Current.</p>`}</div>
+       <div class="bc-guest-profile-v245__actions"><button type="button" data-guest-profile-edit>Edit guest profile</button></div>
      </div>`;
+     dialogBody.querySelector("[data-guest-profile-edit]")?.addEventListener("click",()=>openDialog("edit-guest",payload));
    }
    if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
  }
@@ -138,6 +162,10 @@ ready(()=>{
      updateReservationArticle(activeReservationArticle,{name,time,party,preference,notes});reservationArticle=activeReservationArticle;
    }
    if(mode==="walkin")addWalkin(String(data.get("guestName")||"Walk-in"),String(data.get("partySize")||"2"),String(data.get("preference")||"Flexible"),String(data.get("quotedWait")||"15"));
+   if(mode==="edit-guest"&&activeGuestProfile){
+     const originalName=activeGuestProfile.name;
+     updateGuestProfile(originalName,{name:String(data.get("guestName")||originalName),phone:String(data.get("phone")||""),email:String(data.get("email")||""),preference:String(data.get("preference")||""),guestNotes:String(data.get("guestNotes")||"")});
+   }
    if(mode==="reservation-details"&&activeReservationArticle)handoffReservationToFloor(activeReservationArticle);
 
    // V100.2.3: own the post-dialog transition explicitly. Native <dialog> focus
@@ -147,7 +175,10 @@ ready(()=>{
    // deterministically on the completed workflow.
    if(document.activeElement instanceof HTMLElement)document.activeElement.blur();
    closeDialog();
-   if(mode==="reservation"||mode==="edit-reservation"){
+   if(mode==="edit-guest"){
+     setView("guests");
+     requestAnimationFrame(()=>document.getElementById("bcGuestSearchInput")?.focus());
+   }else if(mode==="reservation"||mode==="edit-reservation"){
      setView("reservations");
      const panel=document.getElementById("bcHostReservationsPanel");
      panel?.scrollIntoView({behavior:"smooth",block:"nearest"});
@@ -272,6 +303,14 @@ ready(()=>{
    const next={...previous,...record,name,lastSeenAt:now,source:record.source||previous.source||"history",visits};
    if(index>=0)records.splice(index,1);records.push(next);saveGuestRegistry(records);
  }
+ function updateGuestProfile(originalName,changes={}){
+   const records=loadGuestRegistry(),key=guestKey(originalName),index=records.findIndex(x=>guestKey(x.name)===key);
+   const previous=index>=0?records[index]:{name:originalName,visits:[]};
+   const next={...previous,...changes,name:normalizeGuestName(changes.name||originalName),lastSeenAt:previous.lastSeenAt||Date.now(),source:previous.source||"history"};
+   if(index>=0)records.splice(index,1);records.push(next);saveGuestRegistry(records);
+   activeGuestProfile=next;
+   renderGuestSearch();
+ }
  function historicalGuestData(){
    return loadGuestRegistry().map(x=>({...x,name:x.name,detail:x.detail||"Guest history",note:x.note||"Saved guest profile from Host Stand activity.",source:x.source||"history"}));
  }
@@ -281,6 +320,28 @@ ready(()=>{
  function guestStatusLabel(guest){
    const source=String(guest.source||"history");
    return ({waitlist:"Waiting",arrival:"Arriving",reservation:"Reserved",seated:"Seated",profile:"Known guest",history:"Guest"})[source]||"Guest";
+ }
+ function guestRecognition(guest){
+   const visits=Array.isArray(guest.visits)?guest.visits:[];
+   const visitCount=Math.max(visits.length,1);
+   const context=[guest.guestNotes,guest.note,guest.detail,...visits.map(v=>`${v.detail||""} ${v.note||""}`)].filter(Boolean).join(" ").toLowerCase();
+   const occasions=[];
+   if(/anniversary/.test(context))occasions.push("Anniversary");
+   if(/birthday/.test(context))occasions.push("Birthday");
+   if(/vip|regular|preferred guest/.test(context))occasions.push("VIP");
+   const care=[];
+   if(/allerg|gluten|celiac|nut|dairy|shellfish/.test(context))care.push("Dietary note");
+   if(/accessible|wheelchair|mobility/.test(context))care.push("Accessibility");
+   if(/high chair|highchair|booster/.test(context))care.push("Child seating");
+   const repeat=visitCount>=2;
+   const recognition=visitCount>=5?"Regular":repeat?"Returning":"First visit";
+   const cue=care[0]||occasions[0]||(guest.preference&&guest.preference!=="Flexible"?`${guest.preference} preferred`:(repeat?"Welcome back":"New guest"));
+   return {visitCount,repeat,recognition,cue,occasions:[...new Set(occasions)],care:[...new Set(care)]};
+ }
+ function guestRecognitionSummary(guest){
+   const intel=guestRecognition(guest);
+   const tags=[intel.recognition,...intel.occasions,...intel.care];
+   return {intel,tags:[...new Set(tags)].slice(0,4)};
  }
  function guestLastSeen(guest){
    if(!guest.lastSeenAt)return "Tonight";
@@ -323,12 +384,12 @@ ready(()=>{
    const q=guestKey(search.value);
    if(!q){
      const recent=searchableGuestData().slice().sort((a,b)=>(b.lastSeenAt||0)-(a.lastSeenAt||0)).slice(0,20);
-     results.innerHTML=recent.length?recent.map((x,i)=>`<button type="button" class="bc-guest-result-v244" data-guest-result="${i}"><span><strong>${escapeHtml(x.name)}</strong><small>${escapeHtml(x.detail||"Guest profile")}</small></span><em>${escapeHtml(guestStatusLabel(x))} · ${escapeHtml(guestLastSeen(x))}</em></button>`).join(""):"<p>No guests saved yet.</p>";
+     results.innerHTML=recent.length?recent.map((x,i)=>{const r=guestRecognition(x);return `<button type="button" class="bc-guest-result-v244" data-guest-result="${i}"><span><strong>${escapeHtml(x.name)}</strong><small>${escapeHtml(x.detail||"Guest profile")}</small></span><em>${escapeHtml(r.repeat?r.recognition:guestStatusLabel(x))} · ${escapeHtml(guestLastSeen(x))}</em></button>`;}).join(""):"<p>No guests saved yet.</p>";
      results.querySelectorAll("[data-guest-result]").forEach((b,i)=>b.addEventListener("click",()=>openDialog("details",recent[i])));
      return;
    }
    const matches=searchableGuestData().filter(x=>guestSearchText(x).includes(q));
-   results.innerHTML=matches.length?matches.map((x,i)=>`<button type="button" class="bc-guest-result-v244" data-guest-result="${i}"><span><strong>${escapeHtml(x.name)}</strong><small>${escapeHtml(x.detail||"Guest profile")}</small></span><em>${escapeHtml(guestStatusLabel(x))} · ${escapeHtml(guestLastSeen(x))}</em></button>`).join(""):"<p>No matching guest found.</p>";
+   results.innerHTML=matches.length?matches.map((x,i)=>{const r=guestRecognition(x);return `<button type="button" class="bc-guest-result-v244" data-guest-result="${i}"><span><strong>${escapeHtml(x.name)}</strong><small>${escapeHtml(x.detail||"Guest profile")}</small></span><em>${escapeHtml(r.repeat?r.recognition:guestStatusLabel(x))} · ${escapeHtml(guestLastSeen(x))}</em></button>`;}).join(""):"<p>No matching guest found.</p>";
    results.querySelectorAll("[data-guest-result]").forEach((b,i)=>b.addEventListener("click",()=>openDialog("details",matches[i])));
  }
  const search=document.getElementById("bcGuestSearchInput"),results=document.getElementById("bcGuestSearchResults");
@@ -339,4 +400,78 @@ ready(()=>{
  // Make queue tabs intentionally switch the visible queue inside Floor, while sidebar nav changes workspaces.
  host.querySelectorAll(".queue-tabs button").forEach(button=>button.setAttribute("aria-label",button.dataset.queue==="waitlist"?"Show live waitlist":"Show upcoming arrivals"));
 });
+})();
+// V100.2.47 — Floor Layout Restoration
+(() => {
+  const map=document.getElementById('hostFloorMap');
+  if(!map || map.dataset.bcFloorRestoredV100247==='true') return;
+  map.dataset.bcFloorRestoredV100247='true';
+
+  const zones={
+    main:new Set(['1','2','3','4','5','6','7','9','10','11','12','13','15','17','19','21']),
+    waterfront:new Set(['8','14','16','24','26','28','30','32','34','36','38','40']),
+    private:new Set(['18','20','22','42','44','46','48','50'])
+  };
+  const labels={main:'Main floor',waterfront:'Waterfront',private:'Private dining'};
+
+  const zoneFor=(number)=>Object.entries(zones).find(([,set])=>set.has(String(number)))?.[0]||'main';
+  const tables=()=>[...map.querySelectorAll('.host-table')];
+
+  function restoreArchitecture(){
+    map.querySelectorAll('.bc-world-decor-v100-2-37').forEach(node=>node.remove());
+    let arch=map.querySelector('.bc-floor-architecture-v100-2-35');
+    if(!arch){arch=document.createElement('div');arch.className='bc-floor-architecture-v100-2-35';map.prepend(arch);}
+    arch.innerHTML=`
+      <span class="bc-room-name-v100-2-35 bc-main-only-v100-2-35">Main dining room</span>
+      <span class="bc-room-name-v100-2-35 bc-water-only-v100-2-35">Waterfront dining</span>
+      <span class="bc-room-name-v100-2-35 bc-private-only-v100-2-35">Private dining room</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-main-only-v100-2-35 bc-main-host-v100-2-35">Host / Entry</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-main-only-v100-2-35 bc-main-bar-v100-2-35">Bar</span>
+      <span class="bc-floor-line-v100-2-35 bc-main-only-v100-2-35 bc-main-aisle-v100-2-35"></span>
+      <span class="bc-floor-fixture-v100-2-35 bc-water-only-v100-2-35 bc-water-window-v100-2-35">Waterfront windows</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-water-only-v100-2-35 bc-water-service-v100-2-35">Service station</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-room-v100-2-35"></span>
+      <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-banquette-v100-2-47">Banquette</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-credenza-v100-2-35">Credenza</span>
+      <span class="bc-floor-zone-note-v100-2-35 bc-main-note-v100-2-35">Main aisle · host entrance</span>
+      <span class="bc-floor-zone-note-v100-2-35 bc-water-note-v100-2-35">Window wall · waterfront</span>
+      <span class="bc-floor-zone-note-v100-2-35 bc-private-note-v100-2-35">Private event room</span>`;
+  }
+
+  function applyZone(zone){
+    if(!zones[zone]) zone='main';
+    map.dataset.bcActiveZone=zone;
+    tables().forEach(table=>{
+      const tableZone=zoneFor(table.dataset.table);
+      table.dataset.bcZone=tableZone;
+      const show=tableZone===zone;
+      table.classList.toggle('bc-zone-hidden-v100-2-47',!show);
+      if(show){table.style.removeProperty('display');table.removeAttribute('aria-hidden');}
+      else {table.style.setProperty('display','none','important');table.setAttribute('aria-hidden','true');}
+    });
+    document.querySelectorAll('[data-host-zone]').forEach(button=>{
+      const active=button.dataset.hostZone===zone;
+      button.classList.toggle('active',active);button.setAttribute('aria-pressed',active?'true':'false');
+    });
+    map.querySelectorAll('.bc-main-only-v100-2-35').forEach(n=>n.style.setProperty('display',zone==='main'?'flex':'none','important'));
+    map.querySelectorAll('.bc-water-only-v100-2-35').forEach(n=>n.style.setProperty('display',zone==='waterfront'?'flex':'none','important'));
+    map.querySelectorAll('.bc-private-only-v100-2-35').forEach(n=>n.style.setProperty('display',zone==='private'?'flex':'none','important'));
+    map.querySelectorAll('.bc-floor-zone-note-v100-2-35').forEach(n=>n.style.setProperty('display','none','important'));
+    const note=map.querySelector(zone==='main'?'.bc-main-note-v100-2-35':zone==='waterfront'?'.bc-water-note-v100-2-35':'.bc-private-note-v100-2-35');
+    note?.style.setProperty('display','block','important');
+    const rec=document.getElementById('hostRecommendation');
+    if(rec&&!document.querySelector('.bc-unified-seat-instruction-v100-2-18:not([hidden])')){
+      const visible=tables().filter(t=>zoneFor(t.dataset.table)===zone);
+      const open=visible.filter(t=>t.classList.contains('available')).length;
+      rec.textContent=`${labels[zone]} · ${open} open now · ${visible.length} tables`;
+    }
+  }
+
+  restoreArchitecture();
+  tables().forEach(t=>{t.dataset.bcZone=zoneFor(t.dataset.table);});
+  document.querySelectorAll('[data-host-zone]').forEach(button=>button.addEventListener('click',()=>requestAnimationFrame(()=>applyZone(button.dataset.hostZone))));
+  const observer=new MutationObserver(()=>requestAnimationFrame(()=>applyZone(map.dataset.bcActiveZone||'main')));
+  observer.observe(map,{childList:true,subtree:false});
+  window.__bcHostFloorRestorationV100_2_47={version:'100.2.47',show:applyZone,refresh:()=>applyZone(map.dataset.bcActiveZone||'main')};
+  applyZone(map.dataset.bcActiveZone||'main');
 })();
