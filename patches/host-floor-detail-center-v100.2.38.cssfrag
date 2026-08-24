@@ -1,0 +1,100 @@
+/* V100.2.38 — Centered Table Detail + Floor Collision Polish */
+
+/* Neutral table details belong in the visual center of the active floor, never tucked under chrome. */
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  width: min(360px, calc(100% - 40px)) !important;
+  max-width: 360px !important;
+  max-height: calc(100% - 40px) !important;
+  overflow: auto !important;
+  padding: 22px !important;
+  border: 1px solid rgba(13,52,64,.16) !important;
+  border-radius: 18px !important;
+  background: #ffffff !important;
+  box-shadow: 0 24px 64px rgba(8,38,47,.24) !important;
+  z-index: 80 !important;
+}
+
+/* Explicit readable hierarchy inside the white detail card. */
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-head small,
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-grid span {
+  color: #647d84 !important;
+  -webkit-text-fill-color: #647d84 !important;
+}
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-head strong,
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-grid strong,
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open p {
+  color: #0d3440 !important;
+  -webkit-text-fill-color: #0d3440 !important;
+}
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-head strong {
+  font-size: 18px !important;
+}
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-grid strong {
+  font-size: 12px !important;
+}
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open p {
+  margin: 14px 0 0 !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+  font-weight: 700 !important;
+}
+#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .cleaning-chip {
+  color: #38565e !important;
+  -webkit-text-fill-color: #38565e !important;
+  background: #edf2f2 !important;
+}
+#host-stand #hostFloorMap #hostTableDetail .bc-neutral-detail-close-v100-2-33 {
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 90 !important;
+}
+
+/* World-class floor should orient, not annotate. Remove construction-line noise. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .bc-main-service-path-v100-2-37,
+#hostFloorMap[data-bc-world-class-v100237="true"] .bc-water-service-path-v100-2-37,
+#hostFloorMap[data-bc-world-class-v100237="true"] .bc-private-event-center-v100-2-37,
+#hostFloorMap[data-bc-world-class-v100237="true"] .bc-main-booth-wall-v100-2-37 {
+  display: none !important;
+}
+
+/* Keep only quiet, useful architectural anchors. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .bc-water-window-rail-v100-2-37 {
+  left: 10% !important;
+  right: 10% !important;
+  bottom: 4% !important;
+  height: 16px !important;
+  color: #6f8d92 !important;
+  border-bottom-width: 4px !important;
+  opacity: .75 !important;
+}
+#hostFloorMap[data-bc-world-class-v100237="true"] .bc-private-banquette-v100-2-37 {
+  left: 14% !important;
+  right: 14% !important;
+  top: 11% !important;
+  height: 16px !important;
+  color: #7b8f92 !important;
+  opacity: .72 !important;
+}
+
+/* Capacity labels stay attached to the table, centered, and clear of neighboring furniture. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before {
+  top: -18px !important;
+  min-width: max-content;
+  text-align: center;
+  line-height: 1 !important;
+  pointer-events: none;
+}
+
+@media (max-width: 1100px) {
+  #host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open {
+    width: min(340px, calc(100% - 28px)) !important;
+    max-height: calc(100% - 28px) !important;
+    padding: 20px !important;
+  }
+}

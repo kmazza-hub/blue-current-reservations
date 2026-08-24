@@ -65,8 +65,6 @@ ready(()=>{
      dialogSubmit.textContent="Add to waitlist";
    }else if(mode==="reservation-details"){
      activeReservationArticle=payload.article||null;
-     dialogSubmit.hidden=false;
-     dialogSubmit.textContent="Add to waitlist";
      dialogTitle.textContent=payload.name||"Reservation details";
      dialogBody.innerHTML=`<div class="bc-reservation-detail">
        <div class="bc-reservation-detail__identity"><strong>${escapeHtml(payload.name||"Guest")}</strong><span>${escapeHtml(payload.status||"Expected")}</span></div>
@@ -77,8 +75,9 @@ ready(()=>{
          <div><dt>Status</dt><dd>${escapeHtml(payload.status||"Expected")}</dd></div>
          <div class="wide"><dt>Occasion / notes</dt><dd>${escapeHtml(payload.notes||"None recorded")}</dd></div>
        </dl>
-       <div class="bc-reservation-detail__focus"><small>Host focus</small><p>Review seating preference and notes, then add the party to the waitlist when they are ready to be seated.</p></div>
+       <div class="bc-reservation-detail__focus"><small>Host focus</small><p>Confirm arrival status, seating preference, and celebration notes before assigning a table.</p></div>
        <div class="bc-reservation-detail__actions">
+         <button type="button" data-reservation-detail-action="arrived">Mark arrived</button>
          <button type="button" data-reservation-detail-action="edit">Edit reservation</button>
          <button type="button" data-reservation-detail-action="cancel" class="danger">Cancel reservation</button>
        </div>
@@ -86,11 +85,10 @@ ready(()=>{
      wireReservationDetailActions(payload);
    }else{
      dialogTitle.textContent=payload.name||"Guest details";
-     const visits=Array.isArray(payload.visits)?payload.visits.slice().reverse().slice(0,6):[];
-     dialogBody.innerHTML=`<div class="bc-guest-detail bc-guest-profile-v244">
-       <div class="bc-guest-profile-v244__head"><div><strong>${escapeHtml(payload.name||"Guest")}</strong><span>${escapeHtml(payload.detail||"Tonight's guest")}</span></div><em>${escapeHtml(guestStatusLabel(payload))}</em></div>
-       <div class="bc-guest-profile-v244__focus"><small>What matters now</small><p>${escapeHtml(payload.note||"No special preference or service note is recorded yet.")}</p></div>
-       <div class="bc-guest-profile-v244__history"><small>Visit history</small>${visits.length?visits.map(v=>`<article><strong>${escapeHtml(v.detail||"Host Stand activity")}</strong><span>${escapeHtml(v.at?new Date(v.at).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"Saved visit")}</span></article>`).join(""):`<p>First recorded visit in Blue Current.</p>`}</div>
+     dialogBody.innerHTML=`<div class="bc-guest-detail">
+       <strong>${escapeHtml(payload.name||"Guest")}</strong>
+       <span>${escapeHtml(payload.detail||"Tonight's guest")}</span>
+       <div><small>Host focus</small><p>${escapeHtml(payload.note||"Confirm timing, table preference, and any special occasion before seating.")}</p></div>
      </div>`;
    }
    if(typeof dialog.showModal==="function")dialog.showModal();else dialog.setAttribute("open","");
@@ -104,7 +102,6 @@ ready(()=>{
    const item=document.createElement("article");item.className="queue-item";
    item.innerHTML=`<span class="queue-time">0m</span><div><strong>${name}</strong><small>Party of ${party} · ${preference}</small></div><button type="button">Seat</button>`;
    list.appendChild(item);wireSeatButton(item.querySelector("button"));
-   registerGuest({name,detail:`Waitlist · Party of ${party} · ${preference}`,note:`Walk-in guest. Quoted wait ${wait} min.`,source:"waitlist"});
    const badge=document.getElementById("waitlistBadge"), waiting=document.getElementById("hostWaiting"), bc=document.getElementById("bcWaitCount");
    const next=Number(badge?.textContent||0)+1;
    if(badge)badge.textContent=String(next);if(waiting)waiting.textContent=String(next);if(bc)bc.textContent=String(next);
@@ -116,7 +113,6 @@ ready(()=>{
    const article=document.createElement("article");article.dataset.reservationName=name;article.dataset.reservationTime=time;article.dataset.reservationParty=party;article.dataset.reservationPreference=preference;article.dataset.reservationNotes=notes||"";article.dataset.reservationStatus="Expected";
    article.innerHTML=`<time>${readable}</time><div><strong>${escapeHtml(name)}</strong><span>Party of ${escapeHtml(party)} · ${escapeHtml(preference)}${notes?` · ${escapeHtml(notes)}`:""}</span></div><b data-tone="expected">Expected</b><button type="button" data-reservation-action="details">Details</button>`;
    list.appendChild(article);wireReservation(article);
-   registerGuest({name,detail:`${readable} · Party of ${party} · ${preference}${notes?` · ${notes}`:""}`,note:"Saved from a Host Stand reservation.",source:"reservation"});
    return article;
  }
 
@@ -138,7 +134,6 @@ ready(()=>{
      updateReservationArticle(activeReservationArticle,{name,time,party,preference,notes});reservationArticle=activeReservationArticle;
    }
    if(mode==="walkin")addWalkin(String(data.get("guestName")||"Walk-in"),String(data.get("partySize")||"2"),String(data.get("preference")||"Flexible"),String(data.get("quotedWait")||"15"));
-   if(mode==="reservation-details"&&activeReservationArticle)handoffReservationToFloor(activeReservationArticle);
 
    // V100.2.3: own the post-dialog transition explicitly. Native <dialog> focus
    // restoration can otherwise return focus to a control inside a workspace that
@@ -155,7 +150,7 @@ ready(()=>{
        const focusTarget=reservationArticle?.querySelector('[data-reservation-action="details"]')||document.getElementById("bcReservationQuickAdd");
        focusTarget?.focus({preventScroll:true});
      });
-   }else if(mode==="walkin"||mode==="reservation-details"){
+   }else if(mode==="walkin"){
      setView("floor");
    }
  });
@@ -165,8 +160,6 @@ ready(()=>{
    button.addEventListener("click",()=>{
      const item=button.closest(".queue-item");if(!item)return;
      const guest=item.querySelector("strong")?.textContent||"Guest";
-     const guestDetail=normalizeGuestName(item.querySelector("small")?.textContent)||"Seated guest";
-     registerGuest({name:guest,detail:`Seated · ${guestDetail}`,note:"Guest reached the live floor and was seated.",source:"seated"});
      button.textContent="Seated";button.disabled=true;item.classList.add("bc-seated");
      const badge=document.getElementById("waitlistBadge"),waiting=document.getElementById("hostWaiting"),bc=document.getElementById("bcWaitCount");
      const next=Math.max(0,Number(badge?.textContent||0)-1);
@@ -192,46 +185,12 @@ ready(()=>{
    article.dataset.reservationName=record.name;article.dataset.reservationTime=record.time;article.dataset.reservationParty=record.party;article.dataset.reservationPreference=record.preference;article.dataset.reservationNotes=record.notes||"";
    article.querySelector("time").textContent=readable;article.querySelector("strong").textContent=record.name;article.querySelector("span").textContent=`Party of ${record.party} · ${record.preference}${record.notes?` · ${record.notes}`:""}`;
  }
- function handoffReservationToFloor(article){
-   if(!article)return false;
-   const record=reservationRecord(article);
-   article.dataset.reservationStatus="Arrived";
-   const badge=article.querySelector("b");
-   if(badge){badge.textContent="Arrived";badge.dataset.tone="arrived";}
-
-   const priorityApi=window.__bcArrivalPriorityQueueV100_2_17;
-   if(priorityApi?.moveArrivalToReady){
-     priorityApi.moveArrivalToReady(article);
-   }else{
-     const list=document.getElementById("waitlistQueue");
-     if(list){
-       const name=record.name;
-       const exists=Array.from(list.querySelectorAll(".queue-item")).some(item=>normalizeGuestName(item.querySelector("strong")?.textContent)===normalizeGuestName(name));
-       if(!exists){
-         const item=document.createElement("article");
-         item.className="queue-item bc-arrived-reservation-ready-v100-2-40";
-         item.dataset.bcGuestStatus="waiting";
-         item.dataset.bcSourceType="reservation";
-         item.innerHTML=`<span class="queue-time">0m</span><div><strong>${escapeHtml(name)}</strong><small>Party of ${escapeHtml(record.party)} · ${escapeHtml(record.preference)}${record.notes?` · ${escapeHtml(record.notes)}`:""}</small></div><button type="button">Seat</button>`;
-         list.appendChild(item);
-         wireSeatButton(item.querySelector("button"));
-       }
-       const count=Array.from(list.querySelectorAll(".queue-item")).filter(item=>!item.classList.contains("bc-seated")).length;
-       const badgeNode=document.getElementById("waitlistBadge"),waiting=document.getElementById("hostWaiting"),bc=document.getElementById("bcWaitCount");
-       if(badgeNode)badgeNode.textContent=String(count);if(waiting)waiting.textContent=String(count);if(bc)bc.textContent=String(count);
-     }
-   }
-
-   registerGuest({name:record.name,detail:`Waitlist · Party of ${record.party} · ${record.preference}${record.notes?` · ${record.notes}`:""}`,note:"Reservation arrived and entered the live seating queue.",source:"waitlist"});
-   article.remove();
-   setView("floor");
-   const waitTab=host.querySelector('.queue-tabs [data-queue="waitlist"]');
-   waitTab?.click();
-   return true;
- }
-
  function wireReservationDetailActions(payload){
    const article=payload.article;if(!article)return;
+   dialogBody.querySelector('[data-reservation-detail-action="arrived"]')?.addEventListener("click",()=>{
+     article.dataset.reservationStatus="Arrived";const badge=article.querySelector("b");if(badge){badge.textContent="Arrived";badge.dataset.tone="arrived";}
+     if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeDialog();setView("reservations");article.querySelector('[data-reservation-action="details"]')?.focus({preventScroll:true});
+   });
    dialogBody.querySelector('[data-reservation-detail-action="edit"]')?.addEventListener("click",()=>{
      const record=reservationRecord(article);if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeDialog();openDialog("edit-reservation",record);
    });
@@ -255,38 +214,6 @@ ready(()=>{
 
  function normalizeGuestName(value){return String(value||"").trim().replace(/\s+/g," ");}
  function guestKey(value){return normalizeGuestName(value).toLowerCase();}
- const guestRegistryStorageKey="bcHostGuestRegistryV100_2_43"; // schema upgraded in V100.2.44 without breaking stored profiles
- function loadGuestRegistry(){
-   try{const parsed=JSON.parse(localStorage.getItem(guestRegistryStorageKey)||"[]");return Array.isArray(parsed)?parsed:[];}catch(_){return [];}
- }
- function saveGuestRegistry(records){try{localStorage.setItem(guestRegistryStorageKey,JSON.stringify(records.slice(-200)));}catch(_){/* storage is best-effort */}}
- function registerGuest(record={}){
-   const name=normalizeGuestName(record.name);if(!name)return;
-   const records=loadGuestRegistry(),key=guestKey(name),index=records.findIndex(x=>guestKey(x.name)===key);
-   const previous=index>=0?records[index]:{};
-   const now=Date.now();
-   const visit={at:now,detail:record.detail||previous.detail||"Host Stand activity",note:record.note||"",source:record.source||previous.source||"history"};
-   const visits=Array.isArray(previous.visits)?previous.visits.slice(-11):[];
-   const last=visits[visits.length-1];
-   if(!last||last.detail!==visit.detail||last.source!==visit.source)visits.push(visit);
-   const next={...previous,...record,name,lastSeenAt:now,source:record.source||previous.source||"history",visits};
-   if(index>=0)records.splice(index,1);records.push(next);saveGuestRegistry(records);
- }
- function historicalGuestData(){
-   return loadGuestRegistry().map(x=>({...x,name:x.name,detail:x.detail||"Guest history",note:x.note||"Saved guest profile from Host Stand activity.",source:x.source||"history"}));
- }
- function guestSearchText(guest){
-   return guestKey([guest.name,guest.phone,guest.email,guest.detail,guest.note,...(guest.visits||[]).map(v=>`${v.detail||""} ${v.note||""}`)].filter(Boolean).join(" "));
- }
- function guestStatusLabel(guest){
-   const source=String(guest.source||"history");
-   return ({waitlist:"Waiting",arrival:"Arriving",reservation:"Reserved",seated:"Seated",profile:"Known guest",history:"Guest"})[source]||"Guest";
- }
- function guestLastSeen(guest){
-   if(!guest.lastSeenAt)return "Tonight";
-   const d=new Date(guest.lastSeenAt);
-   return Number.isNaN(d.getTime())?"Tonight":d.toLocaleDateString([],{month:"short",day:"numeric"});
- }
  function liveGuestData(){
    const live=[];
    host.querySelectorAll("#waitlistQueue .queue-item").forEach(item=>{
@@ -310,7 +237,7 @@ ready(()=>{
  }
  function searchableGuestData(){
    const merged=new Map();
-   [...historicalGuestData(),...profileGuestData,...liveGuestData()].forEach(guest=>{
+   [...profileGuestData,...liveGuestData()].forEach(guest=>{
      const key=guestKey(guest.name);if(!key)return;
      const existing=merged.get(key);
      // Live operating state wins over static profile/demo context for the same guest.
@@ -321,14 +248,9 @@ ready(()=>{
  function renderGuestSearch(){
    if(!search||!results)return;
    const q=guestKey(search.value);
-   if(!q){
-     const recent=searchableGuestData().slice().sort((a,b)=>(b.lastSeenAt||0)-(a.lastSeenAt||0)).slice(0,20);
-     results.innerHTML=recent.length?recent.map((x,i)=>`<button type="button" class="bc-guest-result-v244" data-guest-result="${i}"><span><strong>${escapeHtml(x.name)}</strong><small>${escapeHtml(x.detail||"Guest profile")}</small></span><em>${escapeHtml(guestStatusLabel(x))} · ${escapeHtml(guestLastSeen(x))}</em></button>`).join(""):"<p>No guests saved yet.</p>";
-     results.querySelectorAll("[data-guest-result]").forEach((b,i)=>b.addEventListener("click",()=>openDialog("details",recent[i])));
-     return;
-   }
-   const matches=searchableGuestData().filter(x=>guestSearchText(x).includes(q));
-   results.innerHTML=matches.length?matches.map((x,i)=>`<button type="button" class="bc-guest-result-v244" data-guest-result="${i}"><span><strong>${escapeHtml(x.name)}</strong><small>${escapeHtml(x.detail||"Guest profile")}</small></span><em>${escapeHtml(guestStatusLabel(x))} · ${escapeHtml(guestLastSeen(x))}</em></button>`).join(""):"<p>No matching guest found.</p>";
+   if(!q){results.innerHTML="<p>Search tonight’s waitlist, arrivals, reservations, and recent profiles.</p>";return;}
+   const matches=searchableGuestData().filter(x=>guestKey(x.name).includes(q));
+   results.innerHTML=matches.length?matches.map((x,i)=>`<button type="button" data-guest-result="${i}"><strong>${x.name}</strong><span>${x.detail}</span></button>`).join(""):"<p>No matching guest found.</p>";
    results.querySelectorAll("[data-guest-result]").forEach((b,i)=>b.addEventListener("click",()=>openDialog("details",matches[i])));
  }
  const search=document.getElementById("bcGuestSearchInput"),results=document.getElementById("bcGuestSearchResults");

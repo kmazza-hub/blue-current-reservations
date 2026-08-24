@@ -1,0 +1,93 @@
+// V100.2.34 — Zoned Host Floor Plans
+(() => {
+  const map = document.getElementById('hostFloorMap');
+  const toolbar = document.querySelector('.host-floor-toolbar');
+  const zoneButtons = [...document.querySelectorAll('[data-host-zone]')];
+  if (!map || !toolbar || zoneButtons.length < 3) return;
+  if (map.dataset.bcZonesV100234 === 'true') return;
+  map.dataset.bcZonesV100234 = 'true';
+
+  const zones = {
+    main: { label:'Main floor', tables:['2','4','6'] },
+    waterfront: { label:'Waterfront', tables:['8','14','16'] },
+    private: { label:'Private dining', tables:['18','20','22'] }
+  };
+  const positions = [
+    ['22%','30%'], ['50%','30%'], ['78%','30%']
+  ];
+  const allTables = [...map.querySelectorAll('.host-table')];
+  const waterLine = map.querySelector('.host-water-line');
+  const detail = document.getElementById('hostTableDetail');
+  const recommendation = document.getElementById('hostRecommendation');
+
+  Object.entries(zones).forEach(([zone, config]) => {
+    config.tables.forEach((number) => {
+      const table = allTables.find((node) => String(node.dataset.table) === number);
+      if (table) table.dataset.bcZone = zone;
+    });
+  });
+
+  const closeNeutralDetail = () => {
+    if (!detail) return;
+    detail.classList.remove('bc-detail-open');
+    detail.hidden = true;
+    detail.setAttribute('aria-hidden','true');
+    allTables.forEach((table) => table.classList.remove('selected'));
+  };
+
+  const openCount = (zone) => zones[zone].tables.reduce((count, number) => {
+    const table = allTables.find((node) => String(node.dataset.table) === number);
+    return count + (table?.classList.contains('available') ? 1 : 0);
+  }, 0);
+
+  const renderZone = (zone, {closeDetail=true} = {}) => {
+    if (!zones[zone]) zone = 'main';
+    if (closeDetail) closeNeutralDetail();
+    map.dataset.bcActiveZone = zone;
+
+    zoneButtons.forEach((button) => {
+      const active = button.dataset.hostZone === zone;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    });
+
+    const visible = allTables.filter((table) => table.dataset.bcZone === zone);
+    allTables.forEach((table) => {
+      const show = table.dataset.bcZone === zone;
+      table.classList.toggle('bc-zone-hidden-v100-2-34', !show);
+      table.setAttribute('aria-hidden', show ? 'false' : 'true');
+      if (!show) table.setAttribute('tabindex','-1');
+      else table.removeAttribute('tabindex');
+    });
+    visible.forEach((table, index) => {
+      const [x,y] = positions[index] || ['50%','50%'];
+      table.style.setProperty('--x', x);
+      table.style.setProperty('--y', y);
+    });
+
+    if (waterLine) {
+      waterLine.hidden = zone !== 'waterfront';
+      waterLine.textContent = 'Waterfront windows';
+    }
+    if (recommendation && !document.querySelector('.bc-seat-instruction-v100-2-15')) {
+      const count = openCount(zone);
+      recommendation.textContent = `${zones[zone].label} · ${count} open now`;
+    }
+  };
+
+  zoneButtons.forEach((button) => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      renderZone(button.dataset.hostZone);
+    });
+  });
+
+  // Public helper lets seating and later host workflows move the operator to a room without duplicating logic.
+  window.__bcHostZonesV100_2_34 = {
+    show: (zone) => renderZone(zone),
+    active: () => map.dataset.bcActiveZone || 'main',
+    zones
+  };
+
+  renderZone(zoneButtons.find((button) => button.classList.contains('active'))?.dataset.hostZone || 'main', {closeDetail:false});
+})();

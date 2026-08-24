@@ -1,0 +1,30 @@
+/* V100.2.33 — Neutral Table Detail Dismiss */
+#hostTableDetail { position: relative; }
+#hostTableDetail .bc-neutral-detail-close-v100-2-33 {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(6,39,52,.18);
+  background: #f3f7f6;
+  color: #082f3d;
+  -webkit-text-fill-color: #082f3d;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+}
+#hostTableDetail .bc-neutral-detail-close-v100-2-33:hover,
+#hostTableDetail .bc-neutral-detail-close-v100-2-33:focus-visible {
+  background: #e4efec;
+  outline: 2px solid #58d7cb;
+  outline-offset: 2px;
+}

@@ -1,0 +1,66 @@
+
+// V100.2.32 — Authoritative Arrived -> Seating Queue Handoff
+(() => {
+  const workspace = document.querySelector('.host-workspace');
+  const waitlist = document.getElementById('waitlistQueue');
+  const arrivals = document.getElementById('arrivalQueue');
+  if (!workspace || !waitlist || !arrivals) return;
+
+  const normalize = (value) => String(value || '').replace(/\s+/g, ' ').trim();
+  const lower = (value) => normalize(value).toLowerCase();
+  const guestName = (row) => normalize(row?.querySelector('strong')?.textContent);
+  const hasReadyGuest = (name) => [...waitlist.querySelectorAll('.queue-item')]
+    .some((row) => guestName(row) === name && !lower(row.dataset.bcGuestStatus).includes('seated'));
+
+  const waitlistTab = [...document.querySelectorAll('.queue-tabs button')]
+    .find((button) => lower(button.dataset.queue || button.textContent).includes('wait'));
+
+  const handoff = (row) => {
+    const name = guestName(row);
+    if (!name) return false;
+    const api = window.__bcArrivalPriorityQueueV100_2_17;
+    if (!api?.moveArrivalToReady) return false;
+
+    // The V100.2.17 queue builder is the single source of truth for row shape,
+    // special-note decoration, de-duplication, priority sorting, and counts.
+    if (!hasReadyGuest(name)) api.moveArrivalToReady(row);
+    else api.syncCounts?.();
+
+    // A reservation that is physically here belongs in the active seating queue,
+    // never in Arrivals. Remove any duplicate arrival card left by older handlers.
+    [...arrivals.querySelectorAll('.queue-item.arrival')].forEach((arrival) => {
+      if (guestName(arrival) === name) arrival.remove();
+    });
+    api.sortReadyQueue?.();
+    api.syncCounts?.();
+    window.__bcHostWaitQuoteV100_2_26?.refresh?.();
+    return true;
+  };
+
+  // Capture before legacy target handlers can stop after changing only the status pill.
+  document.addEventListener('click', (event) => {
+    const button = event.target.closest?.('.bc-mark-arrived-v100-2-17, .bc-arrival-action-v100-2-13');
+    if (!button || !lower(button.textContent).includes('mark arrived')) return;
+    const row = button.closest('article, .queue-item, .bc-guest-result');
+    if (!row || !workspace.contains(row)) return;
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (handoff(row)) waitlistTab?.click();
+  }, true);
+
+  // Repair an arrived reservation left stranded by a prior V100.2.31 interaction
+  // during the same browser session. This is intentionally conservative: only
+  // explicit arrived rows are reconciled, and existing waitlist rows are de-duped.
+  const reconcileArrived = () => {
+    [...workspace.querySelectorAll('article[data-bc-guest-status="arrived"], .bc-guest-result[data-bc-guest-status="arrived"]')]
+      .filter((row) => !row.closest('#waitlistQueue'))
+      .forEach((row) => {
+        const name = guestName(row);
+        if (name && !hasReadyGuest(name)) handoff(row);
+      });
+  };
+  queueMicrotask(reconcileArrived);
+
+  window.__bcArrivalQueueHandoffV100_2_32 = { handoff, reconcileArrived, version:'100.2.32' };
+})();

@@ -5688,7 +5688,7 @@ queueMicrotask(() => {
       <button type="button" class="bc-reserved-primary-v100-2-26"></button>
       <button type="button" class="bc-reserved-release-v100-2-26">Release table</button>
     `;
-    document.body.appendChild(reservedCard);
+    floorMap.appendChild(reservedCard);
   }
 
   let activeReservedTable = null;

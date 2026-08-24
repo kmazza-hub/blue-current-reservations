@@ -18698,6 +18698,212 @@ body.bc-hospitality-os #main > #blueCurrentCommand.bc-os-shell.bc-rush-hide{
     font-size:.79rem !important;
   }
 }
+
+
+/* V100.2.33 — Neutral Table Detail Dismiss */
+#hostTableDetail { position: relative; }
+#hostTableDetail .bc-neutral-detail-close-v100-2-33 {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(6,39,52,.18);
+  background: #f3f7f6;
+  color: #082f3d;
+  -webkit-text-fill-color: #082f3d;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+}
+#hostTableDetail .bc-neutral-detail-close-v100-2-33:hover,
+#hostTableDetail .bc-neutral-detail-close-v100-2-33:focus-visible {
+  background: #e4efec;
+  outline: 2px solid #58d7cb;
+  outline-offset: 2px;
+}
+
+
+/* V100.2.34 — Zoned Host Floor Plans */
+#host-stand #hostFloorMap .host-table.bc-zone-hidden-v100-2-34 {
+  display:none !important;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="main"],
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"],
+#host-stand #hostFloorMap[data-bc-active-zone="private"] {
+  min-height:520px;
+}
+#host-stand .host-floor-toolbar [data-host-zone] {
+  white-space:nowrap;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-water-line {
+  display:block;
+}
+
+
+/* V100.2.35 — Premium Restaurant Floor Map
+   Visual-only architectural treatment for zoned Host Stand floor plans. */
+#host-stand #hostFloorMap{
+  border:1px solid rgba(14,48,57,.14) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.72), inset 0 18px 42px rgba(255,255,255,.22) !important;
+  background:
+    linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.16)),
+    repeating-linear-gradient(0deg,transparent 0 74px,rgba(25,55,58,.035) 75px),
+    repeating-linear-gradient(90deg,transparent 0 74px,rgba(25,55,58,.035) 75px),
+    #f5f1e8 !important;
+}
+#host-stand #hostFloorMap .bc-floor-architecture-v100-2-35{
+  position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+#host-stand #hostFloorMap .bc-room-name-v100-2-35{
+  position:absolute; top:18px; left:22px;
+  font-size:11px; line-height:1; font-weight:950; letter-spacing:.16em;
+  text-transform:uppercase; color:rgba(18,59,66,.42);
+}
+#host-stand #hostFloorMap .bc-floor-fixture-v100-2-35{
+  position:absolute; display:flex; align-items:center; justify-content:center;
+  box-sizing:border-box; border:1px solid rgba(20,62,68,.16); border-radius:10px;
+  background:rgba(224,232,227,.58); color:rgba(20,62,68,.58);
+  font-size:9px; font-weight:900; letter-spacing:.08em; text-transform:uppercase;
+}
+#host-stand #hostFloorMap .bc-floor-line-v100-2-35{
+  position:absolute; background:rgba(22,64,70,.10); border-radius:999px;
+}
+#host-stand #hostFloorMap .bc-floor-zone-note-v100-2-35{
+  position:absolute; right:20px; bottom:18px; font-size:9px; font-weight:850;
+  letter-spacing:.08em; text-transform:uppercase; color:rgba(25,72,77,.42);
+}
+
+/* Main dining room: entry/host, bar edge, and a generous central service aisle. */
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-only-v100-2-35{display:flex!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-water-only-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-private-only-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-host-v100-2-35{left:24px;bottom:26px;width:112px;height:46px}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-bar-v100-2-35{right:24px;top:74px;width:116px;height:54px;border-radius:16px 16px 4px 4px;background:rgba(221,211,185,.62)}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-aisle-v100-2-35{left:49.7%;top:82px;width:2px;height:360px}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-note-v100-2-35{display:block!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-water-note-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-private-note-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .host-table[data-table="2"]{--x:27%!important;--y:34%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .host-table[data-table="4"]{--x:56%!important;--y:35%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .host-table[data-table="6"]{--x:73%!important;--y:67%!important}
+
+/* Waterfront: window wall, lounge/service edge, staggered tables facing the view. */
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"]{
+  background:
+    linear-gradient(to bottom,rgba(255,255,255,.20) 0 72%,rgba(190,226,226,.20) 72% 100%),
+    repeating-linear-gradient(0deg,transparent 0 74px,rgba(25,55,58,.03) 75px),
+    repeating-linear-gradient(90deg,transparent 0 74px,rgba(25,55,58,.03) 75px),
+    #f5f1e8 !important;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-only-v100-2-35{display:flex!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-main-only-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-private-only-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-window-v100-2-35{left:6%;right:6%;bottom:24px;height:12px;border-radius:4px;background:linear-gradient(90deg,rgba(103,188,196,.20),rgba(103,188,196,.42),rgba(103,188,196,.20));border-color:rgba(93,157,165,.22)}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-service-v100-2-35{right:28px;top:78px;width:104px;height:42px}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-note-v100-2-35{display:block!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-main-note-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-private-note-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-table[data-table="8"]{--x:25%!important;--y:36%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-table[data-table="14"]{--x:52%!important;--y:52%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-table[data-table="16"]{--x:76%!important;--y:35%!important}
+
+/* Private dining: enclosed room, credenza, and a centered event-table arrangement. */
+#host-stand #hostFloorMap[data-bc-active-zone="private"]{
+  background:
+    linear-gradient(rgba(255,252,244,.36),rgba(255,252,244,.36)),
+    repeating-linear-gradient(90deg,transparent 0 88px,rgba(90,69,34,.025) 89px),
+    #f4efe4 !important;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-only-v100-2-35{display:flex!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-main-only-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-water-only-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-room-v100-2-35{left:7%;right:7%;top:66px;bottom:72px;border:2px solid rgba(133,103,54,.13);border-radius:20px;background:transparent}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-credenza-v100-2-35{left:50%;transform:translateX(-50%);bottom:92px;width:150px;height:38px;background:rgba(226,216,193,.62)}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-note-v100-2-35{display:block!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-main-note-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-water-note-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .host-table[data-table="18"]{--x:27%!important;--y:42%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .host-table[data-table="20"]{--x:50%!important;--y:42%!important;min-width:92px!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .host-table[data-table="22"]{--x:73%!important;--y:42%!important}
+
+/* Keep real operational markers visually above the architecture. */
+#host-stand #hostFloorMap .host-table,
+#host-stand #hostFloorMap .host-table-detail,
+#host-stand #hostFloorMap .bc-reserved-table-tool-v100-2-26{z-index:4!important}
+#host-stand #hostFloorMap .host-water-line{display:none!important}
+
+@media(max-width:900px){
+  #host-stand #hostFloorMap .bc-floor-fixture-v100-2-35{font-size:8px}
+  #host-stand #hostFloorMap .bc-room-name-v100-2-35{font-size:9px}
+  #host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-bar-v100-2-35{width:88px;height:44px}
+  #host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-host-v100-2-35{width:92px;height:40px}
+}
+
+
+/* V100.2.36 — Production-Scale Restaurant Floor Plans */
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table {
+  z-index:6;
+  min-width:62px;
+  min-height:62px;
+  width:auto;
+  height:auto;
+  padding:8px 10px;
+  transform:translate(-50%,-50%);
+  box-sizing:border-box;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.round {
+  width:62px;
+  height:62px;
+  padding:6px;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.bc-six-top-v100-2-36 {
+  min-width:76px;
+  border-radius:18px;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.bc-eight-top-v100-2-36 {
+  min-width:92px;
+  border-radius:18px;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table span {
+  font-size:14px !important;
+  line-height:1 !important;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table small {
+  max-width:100%;
+  font-size:15px !important;
+  line-height:1.02 !important;
+  text-align:center;
+  white-space:normal;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .bc-floor-architecture-v100-2-35 { z-index:1; }
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="main"] .bc-main-bar-v100-2-35 {
+  width:18%; right:3%; top:8%; height:8%;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="main"] .bc-main-aisle-v100-2-35 {
+  left:45%; top:16%; height:68%;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="waterfront"] .bc-water-service-v100-2-35 {
+  right:2.5%; top:8%;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="private"] .bc-private-credenza-v100-2-35 {
+  left:50%; bottom:5%; transform:translateX(-50%);
+}
+@media (max-width:1100px) {
+  #hostFloorMap[data-bc-production-scale-v100236="true"] .host-table { min-width:56px; min-height:56px; padding:6px 8px; }
+  #hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.round { width:56px; height:56px; }
+  #hostFloorMap[data-bc-production-scale-v100236="true"] .host-table small { font-size:13px !important; }
+}
+
+
 /* V100.2.37 — World-Class Floor Map Design System */
 #hostFloorMap[data-bc-world-class-v100237="true"] {
   --bc-floor-ink:#0d3440;
@@ -18846,339 +19052,3 @@ body.bc-hospitality-os #main > #blueCurrentCommand.bc-os-shell.bc-rush-hide{
   #hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before { font-size:8px; top:-14px; }
   #hostFloorMap[data-bc-world-class-v100237="true"] .host-table small { font-size:12px !important; }
 }
-
-
-/* V100.2.38 — Centered Table Detail + Floor Collision Polish */
-
-/* Neutral table details belong in the visual center of the active floor, never tucked under chrome. */
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open {
-  position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translate(-50%, -50%) !important;
-  width: min(360px, calc(100% - 40px)) !important;
-  max-width: 360px !important;
-  max-height: calc(100% - 40px) !important;
-  overflow: auto !important;
-  padding: 22px !important;
-  border: 1px solid rgba(13,52,64,.16) !important;
-  border-radius: 18px !important;
-  background: #ffffff !important;
-  box-shadow: 0 24px 64px rgba(8,38,47,.24) !important;
-  z-index: 80 !important;
-}
-
-/* Explicit readable hierarchy inside the white detail card. */
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-head small,
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-grid span {
-  color: #647d84 !important;
-  -webkit-text-fill-color: #647d84 !important;
-}
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-head strong,
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-grid strong,
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open p {
-  color: #0d3440 !important;
-  -webkit-text-fill-color: #0d3440 !important;
-}
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-head strong {
-  font-size: 18px !important;
-}
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .host-table-detail-grid strong {
-  font-size: 12px !important;
-}
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open p {
-  margin: 14px 0 0 !important;
-  font-size: 15px !important;
-  line-height: 1.45 !important;
-  font-weight: 700 !important;
-}
-#host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open .cleaning-chip {
-  color: #38565e !important;
-  -webkit-text-fill-color: #38565e !important;
-  background: #edf2f2 !important;
-}
-#host-stand #hostFloorMap #hostTableDetail .bc-neutral-detail-close-v100-2-33 {
-  top: 14px !important;
-  right: 14px !important;
-  z-index: 90 !important;
-}
-
-/* World-class floor should orient, not annotate. Remove construction-line noise. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-main-service-path-v100-2-37,
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-water-service-path-v100-2-37,
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-private-event-center-v100-2-37,
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-main-booth-wall-v100-2-37 {
-  display: none !important;
-}
-
-/* Keep only quiet, useful architectural anchors. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-water-window-rail-v100-2-37 {
-  left: 10% !important;
-  right: 10% !important;
-  bottom: 4% !important;
-  height: 16px !important;
-  color: #6f8d92 !important;
-  border-bottom-width: 4px !important;
-  opacity: .75 !important;
-}
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-private-banquette-v100-2-37 {
-  left: 14% !important;
-  right: 14% !important;
-  top: 11% !important;
-  height: 16px !important;
-  color: #7b8f92 !important;
-  opacity: .72 !important;
-}
-
-/* Capacity labels stay attached to the table, centered, and clear of neighboring furniture. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before {
-  top: -18px !important;
-  min-width: max-content;
-  text-align: center;
-  line-height: 1 !important;
-  pointer-events: none;
-}
-
-@media (max-width: 1100px) {
-  #host-stand #hostFloorMap #hostTableDetail.bc-neutral-table-detail-v100-2-16.bc-detail-open {
-    width: min(340px, calc(100% - 28px)) !important;
-    max-height: calc(100% - 28px) !important;
-    padding: 20px !important;
-  }
-}
-
-
-/* V100.2.39 — Collision-Safe Premium Floor Layout */
-/* Aim small, miss small: every visible table owns a distinct physical slot. */
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table {
-  z-index: 10 !important;
-}
-
-/* MAIN FLOOR — 16 tables / four clean rows. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="1"]  { --x:14% !important; --y:24% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="3"]  { --x:38% !important; --y:24% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="4"]  { --x:62% !important; --y:24% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="9"]  { --x:82% !important; --y:24% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="2"]  { --x:14% !important; --y:43% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="5"]  { --x:38% !important; --y:43% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="7"]  { --x:62% !important; --y:43% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="6"]  { --x:82% !important; --y:43% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="10"] { --x:14% !important; --y:62% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="11"] { --x:38% !important; --y:62% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="12"] { --x:62% !important; --y:62% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="13"] { --x:82% !important; --y:62% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="15"] { --x:14% !important; --y:81% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="17"] { --x:38% !important; --y:81% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="19"] { --x:62% !important; --y:81% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="21"] { --x:82% !important; --y:81% !important; }
-
-/* WATERFRONT — 12 tables / three rows, clear of service station and window rail. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="8"]  { --x:15% !important; --y:31% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="16"] { --x:39% !important; --y:31% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="24"] { --x:63% !important; --y:31% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="26"] { --x:84% !important; --y:31% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="28"] { --x:15% !important; --y:54% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="14"] { --x:39% !important; --y:54% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="30"] { --x:63% !important; --y:54% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="32"] { --x:84% !important; --y:54% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="34"] { --x:15% !important; --y:77% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="36"] { --x:39% !important; --y:77% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="38"] { --x:63% !important; --y:77% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="40"] { --x:84% !important; --y:77% !important; }
-
-/* PRIVATE DINING — eight tables / two deliberate rows inside the room. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="18"] { --x:18% !important; --y:43% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="20"] { --x:40% !important; --y:43% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="22"] { --x:62% !important; --y:43% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="42"] { --x:83% !important; --y:43% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="44"] { --x:18% !important; --y:70% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="46"] { --x:40% !important; --y:70% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="48"] { --x:62% !important; --y:70% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="50"] { --x:83% !important; --y:70% !important; }
-
-/* Capacity captions cannot steal space from neighboring tables. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before {
-  top:-16px !important;
-  font-size:9px !important;
-  line-height:1 !important;
-  max-width:110px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-
-/* Keep the strongest table geometry inside its assigned slot. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-8-v100-2-37 {
-  --bc-table-w:92px !important;
-}
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-6-v100-2-37 {
-  --bc-table-w:80px !important;
-}
-
-/* Selected emphasis must not physically collide with neighbors. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.selected {
-  transform:translate(-50%,-50%) scale(1.04) !important;
-  outline-width:3px !important;
-  outline-offset:3px !important;
-}
-
-@media (max-width:1100px) {
-  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-8-v100-2-37 { --bc-table-w:84px !important; }
-  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-6-v100-2-37 { --bc-table-w:74px !important; }
-  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before { top:-14px !important; font-size:8px !important; }
-}
-
-
-/* V100.2.40 — Reserved Modal Portal + Reservation-to-Floor Handoff */
-/* Reserved-table tools are application-level overlays. Keep them above every table/floor stacking context. */
-body > .bc-reserved-table-tool-v100-2-26 {
-  position: fixed !important;
-  left: 50vw !important;
-  top: 50vh !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: translate(-50%, -50%) !important;
-  width: min(520px, calc(100vw - 40px)) !important;
-  max-height: calc(100vh - 48px) !important;
-  overflow: auto !important;
-  z-index: 2147483000 !important;
-  isolation: isolate !important;
-}
-body > .bc-reserved-table-tool-v100-2-26::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(4, 24, 31, .42);
-  backdrop-filter: blur(2px);
-  z-index: -1;
-  pointer-events: none;
-}
-@media (max-width: 700px) {
-  body > .bc-reserved-table-tool-v100-2-26 {
-    width: calc(100vw - 24px) !important;
-    max-height: calc(100vh - 24px) !important;
-  }
-}
-
-
-/* V100.2.41 — Host Focus Simplification */
-/* Reservation details keep one operational handoff: Add to waitlist. */
-.bc-reservation-detail__actions {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-}
-@media (max-width: 700px) {
-  .bc-reservation-detail__actions { grid-template-columns: 1fr !important; }
-}
-
-
-/* V100.2.42 — Zero-Overlap Restaurant Floor Spacing */
-/* Direct coordinates intentionally override legacy --x/--y positioning so every table owns clear physical space. */
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table {
-  transform: translate(-50%,-50%) !important;
-  z-index: 10 !important;
-}
-
-/* MAIN FLOOR — four evenly spaced columns and four rows. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="1"]  { left:13% !important; top:24% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="3"]  { left:38% !important; top:24% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="4"]  { left:63% !important; top:24% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="9"]  { left:87% !important; top:24% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="2"]  { left:13% !important; top:44% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="5"]  { left:38% !important; top:44% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="7"]  { left:63% !important; top:44% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="6"]  { left:87% !important; top:44% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="10"] { left:13% !important; top:64% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="11"] { left:38% !important; top:64% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="12"] { left:63% !important; top:64% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="13"] { left:87% !important; top:64% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="15"] { left:13% !important; top:84% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="17"] { left:38% !important; top:84% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="19"] { left:63% !important; top:84% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="21"] { left:87% !important; top:84% !important; }
-
-/* WATERFRONT — four columns / three rows, clear of the service station and window rail. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="8"]  { left:13% !important; top:31% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="16"] { left:38% !important; top:31% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="24"] { left:63% !important; top:31% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="26"] { left:87% !important; top:31% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="28"] { left:13% !important; top:56% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="14"] { left:38% !important; top:56% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="30"] { left:63% !important; top:56% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="32"] { left:87% !important; top:56% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="34"] { left:13% !important; top:81% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="36"] { left:38% !important; top:81% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="38"] { left:63% !important; top:81% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="40"] { left:87% !important; top:81% !important; }
-
-/* PRIVATE DINING — two generous rows. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="18"] { left:12% !important; top:42% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="20"] { left:37% !important; top:42% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="22"] { left:63% !important; top:42% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="42"] { left:88% !important; top:42% !important; }
-
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="44"] { left:12% !important; top:72% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="46"] { left:37% !important; top:72% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="48"] { left:63% !important; top:72% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="50"] { left:88% !important; top:72% !important; }
-
-/* Selected emphasis remains visible without expanding into another table's slot. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.selected {
-  transform: translate(-50%,-50%) scale(1.02) !important;
-  outline-width: 3px !important;
-  outline-offset: 3px !important;
-}
-
-/* Keep larger footprints bounded and captions attached to their own table. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-6-v100-2-37 { --bc-table-w:78px !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-8-v100-2-37 { --bc-table-w:90px !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before {
-  top:-16px !important;
-  max-width:100px !important;
-  text-align:center !important;
-  pointer-events:none !important;
-}
-
-/* Architectural landmarks stay behind the table field. */
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-world-decor-v100-2-37 { z-index:1 !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-water-window-rail-v100-2-37 { bottom:1.5% !important; }
-#hostFloorMap[data-bc-world-class-v100237="true"] .bc-private-banquette-v100-2-37 { top:8% !important; }
-
-@media (max-width:1100px) {
-  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-6-v100-2-37 { --bc-table-w:72px !important; }
-  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-8-v100-2-37 { --bc-table-w:82px !important; }
-  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before { top:-14px !important; font-size:8px !important; }
-}
-
-/* V100.2.44 — Guest workspace foundation */
-#bcHostGuestsPanel .bc-host-search span{display:block;margin-bottom:8px;color:#9fc5cb;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
-#bcGuestSearchResults{display:grid;gap:10px;margin-top:18px}
-#bcGuestSearchResults .bc-guest-result-v244{width:100%;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;text-align:left;padding:16px 18px;border:1px solid rgba(131,197,187,.28);border-radius:16px;background:#123f4d;color:#fff;cursor:pointer}
-#bcGuestSearchResults .bc-guest-result-v244:hover,#bcGuestSearchResults .bc-guest-result-v244:focus-visible{border-color:#55d6c2;outline:none;box-shadow:0 0 0 3px rgba(85,214,194,.14)}
-#bcGuestSearchResults .bc-guest-result-v244 strong{display:block;font-size:19px;line-height:1.15}
-#bcGuestSearchResults .bc-guest-result-v244 small{display:block;margin-top:4px;color:#c0dadd;font-size:14px}
-#bcGuestSearchResults .bc-guest-result-v244 em{font-style:normal;white-space:nowrap;border-radius:999px;background:#edf5f1;color:#15343c;padding:7px 10px;font-size:12px;font-weight:800}
-.bc-guest-profile-v244{display:grid;gap:16px}
-.bc-guest-profile-v244__head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}
-.bc-guest-profile-v244__head strong{display:block;font-size:26px;color:#102a36}
-.bc-guest-profile-v244__head span{display:block;margin-top:4px;color:#466371}
-.bc-guest-profile-v244__head em{font-style:normal;border-radius:999px;background:#edf5f1;color:#31596a;padding:7px 11px;font-weight:800;font-size:13px}
-.bc-guest-profile-v244__focus{padding:16px 18px;border-radius:15px;background:#eaf4f7;color:#244a5b}
-.bc-guest-profile-v244__focus small,.bc-guest-profile-v244__history>small{display:block;margin-bottom:6px;color:#087b99;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
-.bc-guest-profile-v244__focus p{margin:0;font-size:16px;line-height:1.45}
-.bc-guest-profile-v244__history{display:grid;gap:8px}
-.bc-guest-profile-v244__history article{display:flex;justify-content:space-between;gap:16px;padding:11px 13px;border:1px solid #d7e4e8;border-radius:12px;background:#f7fafb}
-.bc-guest-profile-v244__history article strong{font-size:14px;color:#173443}.bc-guest-profile-v244__history article span{font-size:12px;color:#67808b;white-space:nowrap}

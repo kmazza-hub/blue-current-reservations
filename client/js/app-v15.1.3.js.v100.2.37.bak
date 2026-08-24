@@ -5688,7 +5688,7 @@ queueMicrotask(() => {
       <button type="button" class="bc-reserved-primary-v100-2-26"></button>
       <button type="button" class="bc-reserved-release-v100-2-26">Release table</button>
     `;
-    document.body.appendChild(reservedCard);
+    floorMap.appendChild(reservedCard);
   }
 
   let activeReservedTable = null;
@@ -6248,68 +6248,4 @@ queueMicrotask(() => {
   const hostSeated=document.getElementById('hostSeated'); if(hostSeated) hostSeated.textContent=String(counts.seated);
 
   renderZone(map.dataset.bcActiveZone || 'main',{close:false});
-})();
-
-
-// V100.2.37 — World-Class Floor Map Design System
-(() => {
-  const map = document.getElementById('hostFloorMap');
-  if (!map || map.dataset.bcWorldClassV100237 === 'true') return;
-  map.dataset.bcWorldClassV100237 = 'true';
-
-  const tables = () => [...map.querySelectorAll('.host-table')];
-  const zoneName = {main:'Main dining', waterfront:'Waterfront', private:'Private dining'};
-
-  const decorateTable = (table) => {
-    const capacity = Math.max(2, Number(table.dataset.capacity || 4));
-    table.dataset.bcTopLabel = `${capacity} top`;
-    table.classList.remove('bc-top-2-v100-2-37','bc-top-4-v100-2-37','bc-top-6-v100-2-37','bc-top-8-v100-2-37');
-    table.classList.add(`bc-top-${capacity >= 8 ? 8 : capacity >= 6 ? 6 : capacity <= 2 ? 2 : 4}-v100-2-37`);
-    table.setAttribute('aria-label', `Table ${table.dataset.table}, ${capacity} seats`);
-  };
-  tables().forEach(decorateTable);
-
-  const addDecor = (zone, cls, text) => {
-    if (map.querySelector(`.${cls}`)) return;
-    const node = document.createElement('div');
-    node.className = `bc-world-decor-v100-2-37 ${cls}`;
-    node.dataset.bcWorldZone = zone;
-    node.setAttribute('aria-hidden','true');
-    node.textContent = text || '';
-    map.appendChild(node);
-  };
-
-  // Quiet architectural anchors: enough spatial information to build muscle memory,
-  // without turning the host stand into a CAD drawing.
-  addDecor('main','bc-main-booth-wall-v100-2-37','BOOTHS');
-  addDecor('main','bc-main-service-path-v100-2-37','SERVICE PATH');
-  addDecor('waterfront','bc-water-window-rail-v100-2-37','WINDOW TABLES');
-  addDecor('waterfront','bc-water-service-path-v100-2-37','SERVICE PATH');
-  addDecor('private','bc-private-banquette-v100-2-37','BANQUETTE');
-  addDecor('private','bc-private-event-center-v100-2-37','EVENT TABLE ZONE');
-
-  const updateZoneDecor = () => {
-    const zone = map.dataset.bcActiveZone || 'main';
-    map.querySelectorAll('[data-bc-world-zone]').forEach((node) => {
-      node.hidden = node.dataset.bcWorldZone !== zone;
-    });
-    map.dataset.bcWorldZoneLabel = zoneName[zone] || zoneName.main;
-  };
-
-  document.querySelectorAll('[data-host-zone]').forEach((button) => {
-    button.addEventListener('click', () => requestAnimationFrame(updateZoneDecor));
-  });
-
-  // Newly created/re-rendered tables inherit the same permanent visual language.
-  const observer = new MutationObserver(() => {
-    tables().forEach((table) => { if (!table.dataset.bcTopLabel) decorateTable(table); });
-    updateZoneDecor();
-  });
-  observer.observe(map,{childList:true,subtree:true});
-
-  window.__bcHostWorldClassFloorV100_2_37 = {
-    version:'100.2.37',
-    refresh:() => { tables().forEach(decorateTable); updateZoneDecor(); }
-  };
-  updateZoneDecor();
 })();
