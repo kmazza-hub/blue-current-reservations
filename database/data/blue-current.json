@@ -1438,12 +1438,12 @@
         "*"
       ],
       "createdAt": "2026-08-23T22:49:07.168Z",
-      "lastSeenAt": "2026-08-24T04:16:06.348Z",
-      "idleExpiresAt": "2026-08-24T06:16:06.348Z",
+      "lastSeenAt": "2026-08-24T04:36:58.026Z",
+      "idleExpiresAt": "2026-08-24T06:36:58.026Z",
       "expiresAt": "2026-08-24T10:49:07.168Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-24T04:16:06.353Z"
+      "updatedAt": "2026-08-24T04:36:58.028Z"
     },
     {
       "id": "ses_1787544955905_faaguy",
