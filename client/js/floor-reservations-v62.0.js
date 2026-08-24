@@ -402,6 +402,23 @@ ready(()=>{
  // Keep search results synchronized with local Host Stand mutations without inventing a second guest store.
  document.getElementById("bcHostDialogForm")?.addEventListener("submit",()=>setTimeout(()=>{if(search?.value.trim())renderGuestSearch();},0));
 
+ // V100.2.50 — Service Intake Queue. Host seating is the authoritative transition into service.
+ const SERVICE_HANDOFF_KEY="blueCurrent.service.activeParties.v100";
+ function readServiceParties(){try{const x=JSON.parse(localStorage.getItem(SERVICE_HANDOFF_KEY)||"[]");return Array.isArray(x)?x:[];}catch{return [];}}
+ function writeServiceParties(rows){try{localStorage.setItem(SERVICE_HANDOFF_KEY,JSON.stringify(rows));}catch{}}
+ function servicePartyKey(x){return `${guestKey(x?.guest||"")}|${Number(x?.partySize||0)}|${String(x?.tableId||x?.table||"")}`;}
+ function acceptServiceHandoff(detail={}){
+   const guest=String(detail.guest||"").trim(); if(!guest)return;
+   const next={guest,partySize:Number(detail.partySize||0),guestDetail:String(detail.guestDetail||""),source:String(detail.source||"host"),tableId:String(detail.tableId||detail.table||""),seatedAt:Date.now(),status:"seated"};
+   const key=servicePartyKey(next), rows=readServiceParties().filter(x=>servicePartyKey(x)!==key);
+   rows.unshift(next); writeServiceParties(rows.slice(0,100));
+   window.dispatchEvent(new CustomEvent("bc:service-party-received",{detail:next}));
+ }
+ window.addEventListener("bc:host-guest-seated",e=>acceptServiceHandoff(e.detail||{}));
+ window.BlueCurrentServiceHandoff={
+   getActive:()=>readServiceParties().slice(),
+   clear:(match)=>{const rows=readServiceParties();const keep=typeof match==="function"?rows.filter(x=>!match(x)):rows.filter(x=>servicePartyKey(x)!==String(match||""));writeServiceParties(keep);return keep.slice();}
+ };
  // Make queue tabs intentionally switch the visible queue inside Floor, while sidebar nav changes workspaces.
  host.querySelectorAll(".queue-tabs button").forEach(button=>button.setAttribute("aria-label",button.dataset.queue==="waitlist"?"Show live waitlist":"Show upcoming arrivals"));
 });
