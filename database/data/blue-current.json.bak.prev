@@ -1412,52 +1412,18 @@
   ],
   "sessions": [
     {
-      "id": "ses_1786934924985_ehiyh5",
-      "tokenHash": "920213b2acd683d7bced0b58b9f634084ede79a87cc690fb221c98c67d223e7c",
+      "id": "ses_1787613515054_1z5rm2",
+      "tokenHash": "be7164e3dfe6a7b1856ab1c2a6bda97c74c86885565b9e36923ec761162a5b99",
       "userId": "usr_keith",
       "organizationId": "org_chefs",
       "role": "owner",
       "locationIds": [
         "*"
       ],
-      "createdAt": "2026-08-17T02:48:44.985Z",
-      "lastSeenAt": "2026-08-17T03:29:06.137Z",
-      "idleExpiresAt": "2026-08-17T05:29:06.137Z",
-      "expiresAt": "2026-08-17T14:48:44.985Z",
-      "revokedAt": "2026-08-17T04:50:59.751Z",
-      "revokedReason": "concurrent-session-limit",
-      "updatedAt": "2026-08-17T04:50:59.751Z"
-    },
-    {
-      "id": "ses_1787525347168_uv5ndp",
-      "tokenHash": "1534d31da43a6bc8aa03f1f4a725c9376e0e07e3f0a04cc4662c7a9353b14e8b",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-23T22:49:07.168Z",
-      "lastSeenAt": "2026-08-24T04:36:58.026Z",
-      "idleExpiresAt": "2026-08-24T06:36:58.026Z",
-      "expiresAt": "2026-08-24T10:49:07.168Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-24T04:36:58.028Z"
-    },
-    {
-      "id": "ses_1787544955905_faaguy",
-      "tokenHash": "ab315ce47bf1f84a449295c2a02406d5429591a8279af3af801949b3fdf7395e",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-24T04:15:55.905Z",
-      "lastSeenAt": "2026-08-24T04:15:55.905Z",
-      "idleExpiresAt": "2026-08-24T06:15:55.905Z",
-      "expiresAt": "2026-08-24T16:15:55.905Z",
+      "createdAt": "2026-08-24T23:18:35.054Z",
+      "lastSeenAt": "2026-08-24T23:18:35.054Z",
+      "idleExpiresAt": "2026-08-25T01:18:35.054Z",
+      "expiresAt": "2026-08-25T11:18:35.054Z",
       "revokedAt": null,
       "revokedReason": null
     }
