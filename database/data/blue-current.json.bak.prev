@@ -1296,6 +1296,14 @@
       "category": "security",
       "createdAt": "2026-08-23T22:49:07.319Z",
       "id": "audit_1787525347319_yusxt9"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-24T04:15:56.043Z",
+      "id": "audit_1787544956043_s7zjzf"
     }
   ],
   "reservations": [
@@ -1404,23 +1412,6 @@
   ],
   "sessions": [
     {
-      "id": "ses_1786930479550_k3u3i7",
-      "tokenHash": "245d38cbbd1a2f267ef9904cc856a143be7582b7b9fcbdaa2e6cf882d643c96d",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-17T01:34:39.549Z",
-      "lastSeenAt": "2026-08-17T02:39:47.601Z",
-      "idleExpiresAt": "2026-08-17T04:39:47.601Z",
-      "expiresAt": "2026-08-17T13:34:39.549Z",
-      "revokedAt": "2026-08-17T04:15:11.899Z",
-      "revokedReason": "concurrent-session-limit",
-      "updatedAt": "2026-08-17T04:15:11.899Z"
-    },
-    {
       "id": "ses_1786934924985_ehiyh5",
       "tokenHash": "920213b2acd683d7bced0b58b9f634084ede79a87cc690fb221c98c67d223e7c",
       "userId": "usr_keith",
@@ -1447,12 +1438,28 @@
         "*"
       ],
       "createdAt": "2026-08-23T22:49:07.168Z",
-      "lastSeenAt": "2026-08-24T04:03:16.729Z",
-      "idleExpiresAt": "2026-08-24T06:03:16.729Z",
+      "lastSeenAt": "2026-08-24T04:16:06.348Z",
+      "idleExpiresAt": "2026-08-24T06:16:06.348Z",
       "expiresAt": "2026-08-24T10:49:07.168Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-24T04:03:16.730Z"
+      "updatedAt": "2026-08-24T04:16:06.353Z"
+    },
+    {
+      "id": "ses_1787544955905_faaguy",
+      "tokenHash": "ab315ce47bf1f84a449295c2a02406d5429591a8279af3af801949b3fdf7395e",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-24T04:15:55.905Z",
+      "lastSeenAt": "2026-08-24T04:15:55.905Z",
+      "idleExpiresAt": "2026-08-24T06:15:55.905Z",
+      "expiresAt": "2026-08-24T16:15:55.905Z",
+      "revokedAt": null,
+      "revokedReason": null
     }
   ],
   "invitations": [

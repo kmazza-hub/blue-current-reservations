@@ -417,52 +417,133 @@ ready(()=>{
  window.addEventListener("bc:host-guest-seated",e=>acceptServiceHandoff(e.detail||{}));
  window.BlueCurrentServiceHandoff={
    getActive:()=>readServiceParties().slice(),
-   clear:(match)=>{const rows=readServiceParties();const keep=typeof match==="function"?rows.filter(x=>!match(x)):rows.filter(x=>servicePartyKey(x)!==String(match||""));writeServiceParties(keep);return keep.slice();}
+   update:(match,updates={})=>{const rows=readServiceParties();const key=typeof match==="string"?match:null;const next=rows.map(row=>{const hit=typeof match==="function"?match(row):servicePartyKey(row)===key;return hit?{...row,...updates,updatedAt:Date.now()}:row;});writeServiceParties(next);window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return next.slice();},
+   clear:(match)=>{const rows=readServiceParties();const keep=typeof match==="function"?rows.filter(x=>!match(x)):rows.filter(x=>servicePartyKey(x)!==String(match||""));writeServiceParties(keep);window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return keep.slice();}
  };
  // V100.2.51 — Service Active Tables. Make the Service handoff visible without changing the Host Stand floor lifecycle.
+ // V100.2.52 — Service Milestones. One table, one current state, one obvious next action.
  function injectServiceWorkspaceStyles(){
-   if(document.getElementById("bcServiceWorkspaceStylesV100251"))return;
+   if(document.getElementById("bcServiceWorkspaceStylesV100251"))document.getElementById("bcServiceWorkspaceStylesV100251").remove();
    const style=document.createElement("style");style.id="bcServiceWorkspaceStylesV100251";
    style.textContent=`
    .bc-service-workspace-v251{position:fixed;inset:0;z-index:2147482000;background:rgba(7,33,43,.66);backdrop-filter:blur(8px);display:grid;place-items:center;padding:28px}
    .bc-service-workspace-v251[hidden]{display:none!important}
    .bc-service-shell-v251{width:min(1120px,94vw);max-height:88vh;overflow:hidden;background:#0d3440;border:1px solid rgba(117,210,218,.32);border-radius:28px;box-shadow:0 30px 90px rgba(0,0,0,.34);color:#fff;display:flex;flex-direction:column}
    .bc-service-head-v251{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 30px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
-   .bc-service-head-v251 small{display:block;color:#8ed8e3;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}.bc-service-head-v251 h2{margin:0;font-size:32px;line-height:1.05}.bc-service-head-v251 p{margin:8px 0 0;color:#c9e4e8;font-size:17px}
-   .bc-service-close-v251{appearance:none;border:1px solid #b9c9cc;background:#fff;color:#092a34;width:54px;height:54px;border-radius:18px;font-size:30px;font-weight:900;cursor:pointer}
+   .bc-service-head-v251 small{display:block;color:#8ed8e3;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}.bc-service-head-v251 h2{margin:0;font-size:32px;line-height:1.05}.bc-service-head-v251 p{margin:8px 0 0;color:#c9e4e8;font-size:17px}.bc-service-close-v251{appearance:none;border:1px solid #b9c9cc;background:#fff;color:#092a34;width:54px;height:54px;border-radius:18px;font-size:30px;font-weight:900;cursor:pointer}
    .bc-service-summary-v251{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:20px 30px}.bc-service-summary-v251 div{background:#f4fbfc;color:#0b2b35;border-radius:18px;padding:16px 18px}.bc-service-summary-v251 span{display:block;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#54717a}.bc-service-summary-v251 strong{display:block;font-size:28px;margin-top:4px}
-   .bc-service-list-v251{overflow:auto;padding:0 30px 30px;display:grid;gap:12px}.bc-service-party-v251{display:grid;grid-template-columns:minmax(0,1.6fr) .7fr .7fr auto;gap:16px;align-items:center;background:#154653;border:1px solid rgba(133,217,225,.24);border-radius:20px;padding:18px 20px}.bc-service-party-v251 strong{font-size:20px}.bc-service-party-v251 small{display:block;color:#c5e4e8;margin-top:4px;font-size:14px}.bc-service-party-v251 .meta span{display:block;color:#8fd6df;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.bc-service-party-v251 .meta b{display:block;font-size:18px;margin-top:2px}.bc-service-party-v251 button{border:1px solid #55c7d8;background:#0d7590;color:#fff;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer}.bc-service-empty-v251{background:#f4fbfc;color:#0b2b35;border-radius:22px;padding:34px;text-align:center;font-size:18px}.bc-service-empty-v251 strong{display:block;font-size:24px;margin-bottom:8px}
+   .bc-service-list-v251{overflow:auto;padding:0 30px 30px;display:grid;gap:12px}.bc-service-party-v251{display:grid;grid-template-columns:minmax(0,1.5fr) .65fr .8fr minmax(190px,.9fr);gap:16px;align-items:center;background:#154653;border:1px solid rgba(133,217,225,.24);border-radius:20px;padding:18px 20px}.bc-service-party-v251 strong{font-size:20px}.bc-service-party-v251 small{display:block;color:#c5e4e8;margin-top:4px;font-size:14px}.bc-service-party-v251 .meta span{display:block;color:#8fd6df;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}.bc-service-party-v251 .meta b{display:block;font-size:18px;margin-top:2px}.bc-service-stage-v252{display:inline-flex;align-items:center;gap:8px;font-weight:900}.bc-service-stage-v252::before{content:"";width:9px;height:9px;border-radius:999px;background:#80d7c6;box-shadow:0 0 0 4px rgba(128,215,198,.12)}.bc-service-party-v251[data-needs-attention="true"]{border-color:#f3c965;box-shadow:inset 4px 0 0 #f3c965}.bc-service-party-v251 button{border:1px solid #55c7d8;background:#0d7590;color:#fff;border-radius:14px;padding:13px 16px;font-size:15px;font-weight:900;cursor:pointer;min-height:48px}.bc-service-party-v251 button[data-final="true"]{background:#f5fbfc;color:#0b2b35;border-color:#d0e4e8}.bc-service-empty-v251{background:#f4fbfc;color:#0b2b35;border-radius:22px;padding:34px;text-align:center;font-size:18px}.bc-service-empty-v251 strong{display:block;font-size:24px;margin-bottom:8px}
    @media(max-width:760px){.bc-service-workspace-v251{padding:10px}.bc-service-shell-v251{width:100%;max-height:96vh;border-radius:20px}.bc-service-summary-v251{grid-template-columns:1fr}.bc-service-party-v251{grid-template-columns:1fr 1fr}.bc-service-party-v251>div:first-child{grid-column:1/-1}.bc-service-party-v251 button{grid-column:1/-1}.bc-service-head-v251 h2{font-size:26px}}
    `;document.head.appendChild(style);
  }
  function serviceElapsed(at){const mins=Math.max(0,Math.floor((Date.now()-Number(at||Date.now()))/60000));return mins<1?"Now":`${mins}m`;}
  function serviceTableLabel(p){return p.tableId||p.table||"Assigned table";}
+ const SERVICE_STAGES={
+   seated:{label:"Just seated",action:"Mark greeted",next:"greeted"},
+   greeted:{label:"Greeted",action:"Order started",next:"ordering"},
+   ordering:{label:"Ordering",action:"Food delivered",next:"dining"},
+   dining:{label:"Dining",action:"Check dropped",next:"check"},
+   check:{label:"Check down",action:"Complete service",next:"complete"}
+ };
+ function serviceStage(p){return SERVICE_STAGES[p?.status]||SERVICE_STAGES.seated;}
+ function serviceNeedsAttention(p){return (p?.status||"seated")==="seated"&&Math.max(0,Date.now()-Number(p?.seatedAt||Date.now()))>=3*60000;}
  function renderServiceWorkspace(){
    injectServiceWorkspaceStyles();
    let overlay=document.getElementById("bcServiceWorkspaceV100251");
    if(!overlay){
      overlay=document.createElement("section");overlay.id="bcServiceWorkspaceV100251";overlay.className="bc-service-workspace-v251";overlay.hidden=true;overlay.setAttribute("role","dialog");overlay.setAttribute("aria-modal","true");overlay.setAttribute("aria-labelledby","bcServiceWorkspaceTitleV100251");
-     overlay.innerHTML=`<div class="bc-service-shell-v251"><header class="bc-service-head-v251"><div><small>Service · live</small><h2 id="bcServiceWorkspaceTitleV100251">Active tables</h2><p>Who was just seated and what service owns now.</p></div><button type="button" class="bc-service-close-v251" aria-label="Close Service">×</button></header><div class="bc-service-summary-v251"></div><div class="bc-service-list-v251"></div></div>`;
-     document.body.appendChild(overlay);
-     overlay.querySelector(".bc-service-close-v251")?.addEventListener("click",()=>{overlay.hidden=true;});
-     overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.hidden=true;});
-     document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!overlay.hidden)overlay.hidden=true;});
+     overlay.innerHTML=`<div class="bc-service-shell-v251"><header class="bc-service-head-v251"><div><small>Service · live</small><h2 id="bcServiceWorkspaceTitleV100251">Run the floor</h2><p>One table. One current state. One obvious next action.</p></div><button type="button" class="bc-service-close-v251" aria-label="Close Service">×</button></header><div class="bc-service-summary-v251"></div><div class="bc-service-list-v251"></div></div>`;
+     document.body.appendChild(overlay);overlay.querySelector(".bc-service-close-v251")?.addEventListener("click",()=>{overlay.hidden=true;});overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.hidden=true;});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!overlay.hidden)overlay.hidden=true;});
    }
    const rows=readServiceParties().filter(p=>p&&p.status!=="cleared");
-   const covers=rows.reduce((n,p)=>n+Number(p.partySize||0),0);
-   const oldest=rows.length?Math.max(...rows.map(p=>Math.max(0,Math.floor((Date.now()-Number(p.seatedAt||Date.now()))/60000)))):0;
+   const covers=rows.reduce((n,p)=>n+Number(p.partySize||0),0),needs=rows.filter(serviceNeedsAttention).length;
    const summary=overlay.querySelector(".bc-service-summary-v251"),list=overlay.querySelector(".bc-service-list-v251");
-   summary.innerHTML=`<div><span>Active tables</span><strong>${rows.length}</strong></div><div><span>Active covers</span><strong>${covers}</strong></div><div><span>Longest seated</span><strong>${rows.length?`${oldest}m`:"—"}</strong></div>`;
-   list.innerHTML=rows.length?rows.map((p,i)=>`<article class="bc-service-party-v251" data-service-row="${i}"><div><strong>${escapeHtml(p.guest||"Guest")}</strong><small>${escapeHtml(p.guestDetail||`Party of ${p.partySize||"—"}`)}</small></div><div class="meta"><span>Table</span><b>${escapeHtml(serviceTableLabel(p))}</b></div><div class="meta"><span>Seated</span><b>${escapeHtml(serviceElapsed(p.seatedAt))}</b></div><button type="button" data-service-action="complete">Complete service</button></article>`).join(""):`<div class="bc-service-empty-v251"><strong>No active service handoffs</strong>Seat a party from the Host Stand and it will appear here automatically.</div>`;
-   list.querySelectorAll('[data-service-action="complete"]').forEach((button,i)=>button.addEventListener("click",()=>{const row=rows[i];if(!row)return;window.BlueCurrentServiceHandoff?.clear?.(servicePartyKey(row));renderServiceWorkspace();}));
+   summary.innerHTML=`<div><span>Active tables</span><strong>${rows.length}</strong></div><div><span>Active covers</span><strong>${covers}</strong></div><div><span>Needs greeting</span><strong>${needs}</strong></div>`;
+   list.innerHTML=rows.length?rows.map((p,i)=>{const stage=serviceStage(p),attention=serviceNeedsAttention(p);return `<article class="bc-service-party-v251" data-service-row="${i}" data-needs-attention="${attention}"><div><strong>${escapeHtml(p.guest||"Guest")}</strong><small>${escapeHtml(p.guestDetail||`Party of ${p.partySize||"—"}`)}</small></div><div class="meta"><span>Table</span><b>${escapeHtml(serviceTableLabel(p))}</b></div><div class="meta"><span>Service</span><b class="bc-service-stage-v252">${escapeHtml(stage.label)}</b><small>Seated ${escapeHtml(serviceElapsed(p.seatedAt))}</small></div><button type="button" data-service-action="advance" data-final="${stage.next==="complete"}">${escapeHtml(stage.action)}</button></article>`;}).join(""):`<div class="bc-service-empty-v251"><strong>No active tables</strong>Seat a party from the Host Stand and Service will receive it here automatically.</div>`;
+   list.querySelectorAll('[data-service-action="advance"]').forEach((button,i)=>button.addEventListener("click",()=>{const row=rows[i];if(!row)return;const stage=serviceStage(row),key=servicePartyKey(row);if(stage.next==="complete")window.BlueCurrentServiceHandoff?.clear?.(key);else window.BlueCurrentServiceHandoff?.update?.(key,{status:stage.next});renderServiceWorkspace();}));
    return overlay;
  }
  function openServiceWorkspace(){const overlay=renderServiceWorkspace();overlay.hidden=false;requestAnimationFrame(()=>overlay.querySelector(".bc-service-close-v251")?.focus());}
  const serviceQuickButton=Array.from(host.querySelectorAll("button,a")).find(el=>/\bservice\b/i.test((el.textContent||"").trim())&&/run floor/i.test((el.textContent||"").trim()));
  if(serviceQuickButton&&!serviceQuickButton.dataset.bcServiceV251){serviceQuickButton.dataset.bcServiceV251="true";serviceQuickButton.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();openServiceWorkspace();});}
- window.addEventListener("bc:service-party-received",()=>{const overlay=document.getElementById("bcServiceWorkspaceV100251");if(overlay&&!overlay.hidden)renderServiceWorkspace();});
+ ["bc:service-party-received","bc:service-party-updated"].forEach(name=>window.addEventListener(name,()=>{const overlay=document.getElementById("bcServiceWorkspaceV100251");if(overlay&&!overlay.hidden)renderServiceWorkspace();}));
  window.BlueCurrentServiceWorkspace={open:openServiceWorkspace,render:renderServiceWorkspace};
  // Make queue tabs intentionally switch the visible queue inside Floor, while sidebar nav changes workspaces.
  host.querySelectorAll(".queue-tabs button").forEach(button=>button.setAttribute("aria-label",button.dataset.queue==="waitlist"?"Show live waitlist":"Show upcoming arrivals"));
 });
+})();
+
+// V100.2.47 — Floor Layout Restoration
+(() => {
+  const map=document.getElementById('hostFloorMap');
+  if(!map || map.dataset.bcFloorRestoredV100247==='true') return;
+  map.dataset.bcFloorRestoredV100247='true';
+
+  const zones={
+    main:new Set(['1','2','3','4','5','6','7','9','10','11','12','13','15','17','19','21']),
+    waterfront:new Set(['8','14','16','24','26','28','30','32','34','36','38','40']),
+    private:new Set(['18','20','22','42','44','46','48','50'])
+  };
+  const labels={main:'Main floor',waterfront:'Waterfront',private:'Private dining'};
+
+  const zoneFor=(number)=>Object.entries(zones).find(([,set])=>set.has(String(number)))?.[0]||'main';
+  const tables=()=>[...map.querySelectorAll('.host-table')];
+
+  function restoreArchitecture(){
+    map.querySelectorAll('.bc-world-decor-v100-2-37').forEach(node=>node.remove());
+    let arch=map.querySelector('.bc-floor-architecture-v100-2-35');
+    if(!arch){arch=document.createElement('div');arch.className='bc-floor-architecture-v100-2-35';map.prepend(arch);}
+    arch.innerHTML=`
+      <span class="bc-room-name-v100-2-35 bc-main-only-v100-2-35">Main dining room</span>
+      <span class="bc-room-name-v100-2-35 bc-water-only-v100-2-35">Waterfront dining</span>
+      <span class="bc-room-name-v100-2-35 bc-private-only-v100-2-35">Private dining room</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-main-only-v100-2-35 bc-main-host-v100-2-35">Host / Entry</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-main-only-v100-2-35 bc-main-bar-v100-2-35">Bar</span>
+      <span class="bc-floor-line-v100-2-35 bc-main-only-v100-2-35 bc-main-aisle-v100-2-35"></span>
+      <span class="bc-floor-fixture-v100-2-35 bc-water-only-v100-2-35 bc-water-window-v100-2-35">Waterfront windows</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-water-only-v100-2-35 bc-water-service-v100-2-35">Service station</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-room-v100-2-35"></span>
+      <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-banquette-v100-2-47">Banquette</span>
+      <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-credenza-v100-2-35">Credenza</span>
+      <span class="bc-floor-zone-note-v100-2-35 bc-main-note-v100-2-35">Main aisle · host entrance</span>
+      <span class="bc-floor-zone-note-v100-2-35 bc-water-note-v100-2-35">Window wall · waterfront</span>
+      <span class="bc-floor-zone-note-v100-2-35 bc-private-note-v100-2-35">Private event room</span>`;
+  }
+
+  function applyZone(zone){
+    if(!zones[zone]) zone='main';
+    map.dataset.bcActiveZone=zone;
+    tables().forEach(table=>{
+      const tableZone=zoneFor(table.dataset.table);
+      table.dataset.bcZone=tableZone;
+      const show=tableZone===zone;
+      table.classList.toggle('bc-zone-hidden-v100-2-47',!show);
+      if(show){table.style.removeProperty('display');table.removeAttribute('aria-hidden');}
+      else {table.style.setProperty('display','none','important');table.setAttribute('aria-hidden','true');}
+    });
+    document.querySelectorAll('[data-host-zone]').forEach(button=>{
+      const active=button.dataset.hostZone===zone;
+      button.classList.toggle('active',active);button.setAttribute('aria-pressed',active?'true':'false');
+    });
+    map.querySelectorAll('.bc-main-only-v100-2-35').forEach(n=>n.style.setProperty('display',zone==='main'?'flex':'none','important'));
+    map.querySelectorAll('.bc-water-only-v100-2-35').forEach(n=>n.style.setProperty('display',zone==='waterfront'?'flex':'none','important'));
+    map.querySelectorAll('.bc-private-only-v100-2-35').forEach(n=>n.style.setProperty('display',zone==='private'?'flex':'none','important'));
+    map.querySelectorAll('.bc-floor-zone-note-v100-2-35').forEach(n=>n.style.setProperty('display','none','important'));
+    const note=map.querySelector(zone==='main'?'.bc-main-note-v100-2-35':zone==='waterfront'?'.bc-water-note-v100-2-35':'.bc-private-note-v100-2-35');
+    note?.style.setProperty('display','block','important');
+    const rec=document.getElementById('hostRecommendation');
+    if(rec&&!document.querySelector('.bc-unified-seat-instruction-v100-2-18:not([hidden])')){
+      const visible=tables().filter(t=>zoneFor(t.dataset.table)===zone);
+      const open=visible.filter(t=>t.classList.contains('available')).length;
+      rec.textContent=`${labels[zone]} · ${open} open now · ${visible.length} tables`;
+    }
+  }
+
+  restoreArchitecture();
+  tables().forEach(t=>{t.dataset.bcZone=zoneFor(t.dataset.table);});
+  document.querySelectorAll('[data-host-zone]').forEach(button=>button.addEventListener('click',()=>requestAnimationFrame(()=>applyZone(button.dataset.hostZone))));
+  const observer=new MutationObserver(()=>requestAnimationFrame(()=>applyZone(map.dataset.bcActiveZone||'main')));
+  observer.observe(map,{childList:true,subtree:false});
+  window.__bcHostFloorRestorationV100_2_47={version:'100.2.47',show:applyZone,refresh:()=>applyZone(map.dataset.bcActiveZone||'main')};
+  applyZone(map.dataset.bcActiveZone||'main');
 })();
