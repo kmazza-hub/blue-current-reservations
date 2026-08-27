@@ -1,0 +1,14 @@
+{
+  "version": "100.2.60",
+  "requires": "V100.2.59",
+  "adds": [
+    "client/js/kitchen-truth-v100.2.60.js",
+    "scripts/maintenance/test-v100.2.60-kitchen-truth-foundation.js"
+  ],
+  "modifies": [
+    "client/index.html"
+  ],
+  "protected": [
+    "client/js/floor-reservations-v62.0.js"
+  ]
+}
