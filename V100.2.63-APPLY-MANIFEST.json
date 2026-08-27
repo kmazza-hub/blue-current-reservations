@@ -1,0 +1,16 @@
+{
+  "version": "100.2.63",
+  "requires": "V100.2.62",
+  "wave": "Kitchen / Service Rush Handoff Certification",
+  "runtimeFilesModified": [],
+  "adds": [
+    "scripts/maintenance/test-v100.2.63-kitchen-service-rush-certification.js"
+  ],
+  "protected": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/kitchen-truth-v100.2.60.js",
+    "client/js/kitchen-service-handoff-v100.2.61.js",
+    "client/js/kitchen-priority-v100.2.62.js",
+    "client/index.html"
+  ]
+}
