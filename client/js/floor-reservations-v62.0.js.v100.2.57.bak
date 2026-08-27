@@ -408,24 +408,17 @@ ready(()=>{
  function writeServiceParties(rows){try{localStorage.setItem(SERVICE_HANDOFF_KEY,JSON.stringify(rows));}catch{}}
  function servicePartyKey(x){return `${guestKey(x?.guest||"")}|${Number(x?.partySize||0)}|${String(x?.tableId||x?.table||"")}`;}
  function acceptServiceHandoff(detail={}){
-   const guest=String(detail.guest||"").trim(); if(!guest)return null;
-   const incomingTable=String(detail.tableId||detail.table||"").trim(),incomingParty=Number(detail.partySize||0),incomingGuestKey=guestKey(guest);
-   const current=readServiceParties();
-   const existing=current.find(x=>servicePartyKey(x)===servicePartyKey({guest,partySize:incomingParty,tableId:incomingTable}))||current.find(x=>incomingTable&&guestKey(x?.guest||"")===incomingGuestKey&&Number(x?.partySize||0)===incomingParty&&!String(x?.tableId||x?.table||"").trim());
-   const next={...(existing||{}),guest,partySize:incomingParty||Number(existing?.partySize||0),guestDetail:String(detail.guestDetail||existing?.guestDetail||""),source:String(detail.source||existing?.source||"host"),tableId:incomingTable||String(existing?.tableId||existing?.table||""),seatedAt:Number(detail.seatedAt||existing?.seatedAt||Date.now()),status:String(existing?.status||"seated")};
-   const nextKey=servicePartyKey(next),rows=current.filter(x=>servicePartyKey(x)!==nextKey&&x!==existing);
-   rows.unshift(next);writeServiceParties(rows.slice(0,100));
+   const guest=String(detail.guest||"").trim(); if(!guest)return;
+   const next={guest,partySize:Number(detail.partySize||0),guestDetail:String(detail.guestDetail||""),source:String(detail.source||"host"),tableId:String(detail.tableId||detail.table||""),seatedAt:Date.now(),status:"seated"};
+   const key=servicePartyKey(next), rows=readServiceParties().filter(x=>servicePartyKey(x)!==key);
+   rows.unshift(next); writeServiceParties(rows.slice(0,100));
    window.dispatchEvent(new CustomEvent("bc:service-party-received",{detail:next}));
-   return next;
  }
  window.addEventListener("bc:host-guest-seated",e=>acceptServiceHandoff(e.detail||{}));
- // V100.2.57 — Service Completion / Table Turn Handoff. Table state remains human-owned: completion moves SEATED → CLEANING, never directly to OPEN.
  window.BlueCurrentServiceHandoff={
    getActive:()=>readServiceParties().slice(),
-   accept:(detail)=>acceptServiceHandoff(detail),
    update:(match,updates={})=>{const rows=readServiceParties();const key=typeof match==="string"?match:null;const next=rows.map(row=>{const hit=typeof match==="function"?match(row):servicePartyKey(row)===key;return hit?{...row,...updates,updatedAt:Date.now()}:row;});writeServiceParties(next);window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return next.slice();},
-   clear:(match)=>{const rows=readServiceParties();const keep=typeof match==="function"?rows.filter(x=>!match(x)):rows.filter(x=>servicePartyKey(x)!==String(match||""));writeServiceParties(keep);window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return keep.slice();},
-   complete:(match)=>{const rows=readServiceParties(),key=typeof match==="string"?match:null,row=rows.find(x=>typeof match==="function"?match(x):servicePartyKey(x)===key);if(!row)return{ok:false,reason:"service-party-not-found"};const result=window.BlueCurrentServiceTableLifecycle?.completeTable?.(row);if(!result?.ok)return result||{ok:false,reason:"table-lifecycle-bridge-unavailable"};const keep=rows.filter(x=>x!==row);writeServiceParties(keep);window.dispatchEvent(new CustomEvent("bc:service-party-completed",{detail:{...row,completedAt:Date.now(),tableState:result.status||"cleaning"}}));window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return{ok:true,...result};}
+   clear:(match)=>{const rows=readServiceParties();const keep=typeof match==="function"?rows.filter(x=>!match(x)):rows.filter(x=>servicePartyKey(x)!==String(match||""));writeServiceParties(keep);window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return keep.slice();}
  };
  // V100.2.51 — Service Active Tables. Make the Service handoff visible without changing the Host Stand floor lifecycle.
  // V100.2.52 — Service Milestones. One table, one current state, one obvious next action.
@@ -469,7 +462,7 @@ ready(()=>{
    check:{reason:"The check has been down longer than expected",action:"Close out the table when payment is complete"}
  };
  function serviceRecoveryException(p){const status=p?.status||"seated",limit=SERVICE_PACE_MINUTES[status],guide=SERVICE_RECOVERY_GUIDANCE[status];if(!Number.isFinite(limit)||!guide)return null;const ageMs=serviceStageAgeMs(p),recoveryAt=limit*SERVICE_RECOVERY_MULTIPLIER*60000;if(ageMs<recoveryAt)return null;return{status,minutes:Math.max(1,Math.floor(ageMs/60000)),reason:guide.reason,action:guide.action};}
- function serviceRecoveryReason(p){const x=serviceRecoveryException(p);return x?`${x.reason} · ${x.minutes}m in this stage`:"";}
+ function serviceRecoveryReason(p){const x=serviceRecoveryException(p);return x?`4{x.reason} · 4{x.minutes}m in this stage`:"";}
  function renderServiceWorkspace(){
    injectServiceWorkspaceStyles();
    let overlay=document.getElementById("bcServiceWorkspaceV100251");
@@ -487,7 +480,7 @@ ready(()=>{
    if(focus){focus.dataset.urgent=String(firstUrgent);focus.dataset.recovery=String(!!firstRecovery);focus.innerHTML=first?`<div><small>First priority</small><strong>${escapeHtml(firstRecovery?"Recovery needed":firstUrgent?(serviceAttentionLabel(first)||"Needs attention"):"Service on pace")}</strong></div><span>${escapeHtml(first.guest||"Guest")} · ${escapeHtml(serviceTableLabel(first))} · ${escapeHtml(firstRecovery?`${serviceRecoveryReason(first)} · ${firstRecovery.action}`:(firstStage?.action||"Continue service"))}</span>`:`<div><small>First priority</small><strong>No active tables</strong></div><span>Service is clear.</span>`;}
    summary.innerHTML=`<div><span>Active tables</span><strong>${rows.length}</strong></div><div><span>Active covers</span><strong>${covers}</strong></div><div><span>Needs attention</span><strong>${needs}</strong></div>`;
    list.innerHTML=rows.length?rows.map((p,i)=>{const stage=serviceStage(p),attention=serviceNeedsAttention(p),attentionLabel=serviceAttentionLabel(p);return `<article class="bc-service-party-v251" data-service-row="${i}" data-needs-attention="${attention}"><div><strong>${escapeHtml(p.guest||"Guest")}</strong><small>${escapeHtml(p.guestDetail||`Party of ${p.partySize||"—"}`)}</small>${attentionLabel?`<small><b>${escapeHtml(attentionLabel)}</b></small>`:""}</div><div class="meta"><span>Table</span><b>${escapeHtml(serviceTableLabel(p))}</b></div><div class="meta"><span>Service</span><b class="bc-service-stage-v252">${escapeHtml(stage.label)}</b><small>Seated ${escapeHtml(serviceElapsed(p.seatedAt))}</small></div><button type="button" data-service-action="advance" data-final="${stage.next==="complete"}">${escapeHtml(stage.action)}</button></article>`;}).join(""):`<div class="bc-service-empty-v251"><strong>No active tables</strong>Seat a party from the Host Stand and Service will receive it here automatically.</div>`;
-   list.querySelectorAll('[data-service-action="advance"]').forEach((button,i)=>button.addEventListener("click",()=>{const row=rows[i];if(!row)return;const stage=serviceStage(row),key=servicePartyKey(row);if(stage.next==="complete"){const result=window.BlueCurrentServiceHandoff?.complete?.(key);if(!result?.ok){button.textContent="Check table link";button.setAttribute("aria-label",`Cannot complete service: ${result?.reason||"table handoff unavailable"}`);return;}}else window.BlueCurrentServiceHandoff?.update?.(key,{status:stage.next});renderServiceWorkspace();}));
+   list.querySelectorAll('[data-service-action="advance"]').forEach((button,i)=>button.addEventListener("click",()=>{const row=rows[i];if(!row)return;const stage=serviceStage(row),key=servicePartyKey(row);if(stage.next==="complete")window.BlueCurrentServiceHandoff?.clear?.(key);else window.BlueCurrentServiceHandoff?.update?.(key,{status:stage.next});renderServiceWorkspace();}));
    return overlay;
  }
  function openServiceWorkspace(){const overlay=renderServiceWorkspace();overlay.hidden=false;requestAnimationFrame(()=>overlay.querySelector(".bc-service-close-v251")?.focus());}
