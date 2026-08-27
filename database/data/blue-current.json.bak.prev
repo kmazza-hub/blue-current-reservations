@@ -1304,6 +1304,30 @@
       "category": "security",
       "createdAt": "2026-08-24T04:15:56.043Z",
       "id": "audit_1787544956043_s7zjzf"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-24T23:18:35.159Z",
+      "id": "audit_1787613515159_v0qqz4"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-27T09:37:59.282Z",
+      "id": "audit_1787823479282_qo276v"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-27T20:32:00.771Z",
+      "id": "audit_1787862720771_l4fixi"
     }
   ],
   "reservations": [
@@ -1424,6 +1448,38 @@
       "lastSeenAt": "2026-08-24T23:18:35.054Z",
       "idleExpiresAt": "2026-08-25T01:18:35.054Z",
       "expiresAt": "2026-08-25T11:18:35.054Z",
+      "revokedAt": null,
+      "revokedReason": null
+    },
+    {
+      "id": "ses_1787823479173_6ka4fa",
+      "tokenHash": "bc9be759b9dcd81ef8d679186856e73b96ee8f35719bef6c87d187bc6bede095",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-27T09:37:59.172Z",
+      "lastSeenAt": "2026-08-27T09:37:59.172Z",
+      "idleExpiresAt": "2026-08-27T11:37:59.172Z",
+      "expiresAt": "2026-08-27T21:37:59.172Z",
+      "revokedAt": null,
+      "revokedReason": null
+    },
+    {
+      "id": "ses_1787862720486_591k4r",
+      "tokenHash": "40f8c0789d686c9471ea513f10620f7a392102104511567dced530fb359e8419",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-27T20:32:00.486Z",
+      "lastSeenAt": "2026-08-27T20:32:00.486Z",
+      "idleExpiresAt": "2026-08-27T22:32:00.486Z",
+      "expiresAt": "2026-08-28T08:32:00.486Z",
       "revokedAt": null,
       "revokedReason": null
     }
