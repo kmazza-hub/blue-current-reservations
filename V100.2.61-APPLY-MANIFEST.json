@@ -1,0 +1,15 @@
+{
+  "version": "100.2.61",
+  "requires": "V100.2.60",
+  "adds": [
+    "client/js/kitchen-service-handoff-v100.2.61.js",
+    "scripts/maintenance/test-v100.2.61-kitchen-service-handoff.js"
+  ],
+  "modifies": [
+    "client/index.html"
+  ],
+  "protected": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/kitchen-truth-v100.2.60.js"
+  ]
+}
