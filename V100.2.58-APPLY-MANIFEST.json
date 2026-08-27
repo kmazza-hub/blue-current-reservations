@@ -1,0 +1,11 @@
+{
+  "version": "100.2.58",
+  "name": "Completed Visit Memory / Table Turn Certification",
+  "requires": "100.2.57",
+  "adds": [
+    "client/js/completed-visit-turn-certification-v100.2.58.js",
+    "scripts/maintenance/test-v100.2.58-completed-visit-turn-certification.js"
+  ],
+  "modifies": ["client/index.html"],
+  "protected": ["client/js/floor-reservations-v62.0.js", "client/js/app-v15.1.3.js"]
+}

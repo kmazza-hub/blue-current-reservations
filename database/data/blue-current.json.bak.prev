@@ -1453,12 +1453,12 @@
         "*"
       ],
       "createdAt": "2026-08-27T20:32:00.486Z",
-      "lastSeenAt": "2026-08-27T20:48:39.962Z",
-      "idleExpiresAt": "2026-08-27T22:48:39.962Z",
+      "lastSeenAt": "2026-08-27T20:56:19.459Z",
+      "idleExpiresAt": "2026-08-27T22:56:19.459Z",
       "expiresAt": "2026-08-28T08:32:00.486Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-27T20:48:39.965Z"
+      "updatedAt": "2026-08-27T20:56:19.461Z"
     },
     {
       "id": "ses_1787863810019_q7mglj",

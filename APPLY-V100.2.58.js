@@ -1,0 +1,27 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=process.cwd();
+const htmlFile=path.join(root,"client","index.html");
+const floorFile=path.join(root,"client","js","floor-reservations-v62.0.js");
+const appFile=path.join(root,"client","js","app-v15.1.3.js");
+const priorBridge=path.join(root,"client","js","service-table-lifecycle-v100.2.57.js");
+const moduleDst=path.join(root,"client","js","completed-visit-turn-certification-v100.2.58.js");
+if(![htmlFile,floorFile,appFile,priorBridge].every(fs.existsSync)) throw new Error("V100.2.58 requires the applied V100.2.57 baseline.");
+const floor=fs.readFileSync(floorFile,"utf8");
+const app=fs.readFileSync(appFile,"utf8");
+let html=fs.readFileSync(htmlFile,"utf8");
+if(!floor.includes("V100.2.57 — Service Completion / Table Turn Handoff")) throw new Error("V100.2.58 requires V100.2.57 Service Completion / Table Turn Handoff.");
+if(!floor.includes("V100.2.47 — Floor Layout Restoration")) throw new Error("Protected Floor restoration marker missing; refusing to apply.");
+if(!app.includes("primary.textContent = 'Mark table open'")) throw new Error("Human-owned CLEANING → OPEN action missing; refusing to apply.");
+const priorScript='<script src="js/service-table-lifecycle-v100.2.57.js?v=100.2.57"></script>';
+const nextScript='<script src="js/completed-visit-turn-certification-v100.2.58.js?v=100.2.58"></script>';
+if(!html.includes(priorScript)) throw new Error("V100.2.58 guard failed: V100.2.57 bridge script tag missing.");
+if(html.includes(nextScript)&&fs.existsSync(moduleDst)){console.log(JSON.stringify({ok:true,version:"100.2.58",status:"already-applied"},null,2));process.exit(0);}
+html=html.replace(priorScript,`${priorScript}\n${nextScript}`);
+fs.copyFileSync(htmlFile,htmlFile+".v100.2.58.bak");
+fs.writeFileSync(htmlFile,html);
+fs.copyFileSync(path.join(__dirname,"patches","client","js","completed-visit-turn-certification-v100.2.58.js"),moduleDst);
+const testSrc=path.join(__dirname,"patches","scripts","maintenance","test-v100.2.58-completed-visit-turn-certification.js");
+const testDst=path.join(root,"scripts","maintenance","test-v100.2.58-completed-visit-turn-certification.js");
+fs.mkdirSync(path.dirname(testDst),{recursive:true});fs.copyFileSync(testSrc,testDst);
+console.log(JSON.stringify({ok:true,version:"100.2.58",wave:"Completed Visit Memory / Table Turn Certification",architecture:"isolated event-driven lifecycle certification module",guestMemory:"existing Host guest registry",completion:"service completion records completed visit",tableTurn:"manual CLEANING -> OPEN remains human-owned",staleOwnership:"bcPartySize cleared on confirmed open",protectedFloor:"no Floor controller or renderer code modified"},null,2));
