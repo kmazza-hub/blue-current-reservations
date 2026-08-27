@@ -1,0 +1,20 @@
+{
+  "version": "100.2.67",
+  "requires": "V100.2.66",
+  "wave": "Staffing Rush-Condition Certification",
+  "runtimeFilesModified": [],
+  "adds": [
+    "scripts/maintenance/test-v100.2.67-staffing-rush-certification.js"
+  ],
+  "protected": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/staff-truth-v100.2.64.js",
+    "client/js/staff-role-coverage-v100.2.65.js",
+    "client/js/staff-attendance-v100.2.66.js",
+    "client/js/modules/scheduling.js",
+    "server/services/schedulingService.js",
+    "client/js/modules/timeClock.js",
+    "server/services/timeClockService.js",
+    "client/index.html"
+  ]
+}
