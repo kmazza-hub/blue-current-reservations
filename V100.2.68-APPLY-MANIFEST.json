@@ -1,0 +1,19 @@
+{
+  "version": "100.2.68",
+  "requires": "V100.2.67",
+  "adds": [
+    "client/js/manager-operations-truth-v100.2.68.js",
+    "scripts/maintenance/test-v100.2.68-manager-operations-truth.js"
+  ],
+  "modifies": [
+    "client/index.html"
+  ],
+  "protected": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/command-live-v61.50.js",
+    "server/services/actionListService.js",
+    "server/services/operationsFeedService.js",
+    "server/services/commandCenterService.js",
+    "client/js/cloud/cloudApi.js"
+  ]
+}
