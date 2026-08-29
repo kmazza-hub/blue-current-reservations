@@ -1442,41 +1442,7 @@
       ]
     }
   ],
-  "sessions": [
-    {
-      "id": "ses_1787862720486_591k4r",
-      "tokenHash": "40f8c0789d686c9471ea513f10620f7a392102104511567dced530fb359e8419",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-27T20:32:00.486Z",
-      "lastSeenAt": "2026-08-27T21:03:36.133Z",
-      "idleExpiresAt": "2026-08-27T23:03:36.133Z",
-      "expiresAt": "2026-08-28T08:32:00.486Z",
-      "revokedAt": null,
-      "revokedReason": null,
-      "updatedAt": "2026-08-27T21:03:36.135Z"
-    },
-    {
-      "id": "ses_1787863810019_q7mglj",
-      "tokenHash": "79a503443631ed68f7f2aabb8364155ddd32b123363935845e1491c7cd278200",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-27T20:50:10.019Z",
-      "lastSeenAt": "2026-08-27T20:50:10.019Z",
-      "idleExpiresAt": "2026-08-27T22:50:10.019Z",
-      "expiresAt": "2026-08-28T08:50:10.019Z",
-      "revokedAt": null,
-      "revokedReason": null
-    }
-  ],
+  "sessions": [],
   "invitations": [
     {
       "id": "inv_demo",
