@@ -12,11 +12,13 @@ const GROUPS=Object.freeze({
   staff:[
     "js/staff-truth-v100.2.64.js?v=100.2.64",
     "js/staff-role-coverage-v100.2.65.js?v=100.2.65",
-    "js/staff-attendance-v100.2.66.js?v=100.2.66"
+    "js/staff-attendance-v100.2.66.js?v=100.2.66",
+    "js/scheduling-truth-v100.2.73.js?v=100.2.73"
   ],
   manager:[
     "js/manager-operations-truth-v100.2.68.js?v=100.2.68",
-    "js/manager-action-ownership-v100.2.69.js?v=100.2.69"
+    "js/manager-action-ownership-v100.2.69.js?v=100.2.69",
+    "js/manager-action-followup-v100.2.71.js?v=100.2.71"
   ]
 });
 const loaded=new Set(),loading=new Map();
@@ -88,6 +90,7 @@ function init(){
   window.addEventListener("hashchange",()=>loadFromLocation("hashchange"));
   observeWorkspace("kitchenThroughputCenter","kitchen");
   observeWorkspace("workforce-intelligence","staff");
+  observeWorkspace("scheduling","staff");
   observeWorkspace("command-center","manager");
   loadFromLocation("initial-route");
   if(new URLSearchParams(location.search).get("full")==="1"){
