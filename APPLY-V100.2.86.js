@@ -1,0 +1,11 @@
+"use strict";
+const fs=require("fs"),path=require("path"),crypto=require("crypto");
+const root=process.cwd(),rel="client/index.html",dst=path.join(root,rel),src=path.join(__dirname,"patches","client","index.html");
+const sourceHash="ed43c965c75dc5ad6c84c86e8c1b192efc9247a75f96380d54789b29813e913e",targetHash="6ef6328a6118bf1d8dfebd03823ed4694e66e6835be17e7f2ef55ef92ad0e065",sha=p=>crypto.createHash("sha256").update(fs.readFileSync(p)).digest("hex");
+if(!fs.existsSync(dst))throw new Error("Missing client/index.html");
+const current=sha(dst);
+if(current!==sourceHash&&current!==targetHash)throw new Error(`Refusing unexpected client/index.html SHA256: ${current}`);
+if(current===sourceHash)fs.copyFileSync(src,dst);
+const addRel="client/js/ipad-resume-truth-v100.2.86.js",addDst=path.join(root,addRel),addSrc=path.join(__dirname,"patches",addRel);
+fs.copyFileSync(addSrc,addDst);
+console.log(current===targetHash?"V100.2.86 already applied.":"Applied V100.2.86 — iPad Resume Truth Foundation.");
