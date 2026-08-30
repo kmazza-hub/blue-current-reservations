@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const VERSION="100.2.87";
+const VERSION="100.2.88";
 let wasHidden=document.hidden;
 let lastResumeAt=0;
 let inFlight=null;
@@ -21,8 +21,30 @@ function snapshot(extra={}){
   });
 }
 
+function cloudFoundation(){
+  return window.BlueCurrentStartupRegistry?.get?.("cloudFoundation")||null;
+}
+
 function cloudApi(){
-  return window.BlueCurrentStartupRegistry?.get?.("cloudFoundation")?.api||null;
+  return cloudFoundation()?.api||null;
+}
+
+async function refreshSharedState(reason="resume"){
+  const foundation=cloudFoundation();
+  if(!foundation?.refreshBootstrap){
+    return {refreshed:false,status:"unavailable",reason:"bootstrap-refresh-unavailable"};
+  }
+  try{
+    await foundation.refreshBootstrap();
+    return {refreshed:true,status:"fresh",reason};
+  }catch(error){
+    return {
+      refreshed:false,
+      status:"failed",
+      reason:"bootstrap-refresh-failed",
+      error:String(error?.message||error)
+    };
+  }
 }
 
 async function verifySession(reason="resume"){
@@ -66,12 +88,14 @@ async function resume(reason="foreground"){
 
     let session={verified:false,status:"not-checked",reason:"server-unverified"};
     let replayed=false;
+    let sharedState={refreshed:false,status:"not-checked",reason:"resume-not-verified"};
 
     if(connectivity?.state==="connected"){
       session=await verifySession(reason);
       if(session.verified&&window.BlueCurrentAuthSession?.snapshot?.().authenticated&&window.BlueCurrentOfflineSync?.replay){
         await window.BlueCurrentOfflineSync.replay();
         replayed=true;
+        sharedState=await refreshSharedState(reason);
       }
     }
 
@@ -80,7 +104,10 @@ async function resume(reason="foreground"){
       replayed,
       sessionVerified:Boolean(session.verified),
       sessionResumeStatus:session.status,
-      sessionResumeReason:session.reason
+      sessionResumeReason:session.reason,
+      sharedStateRefreshed:Boolean(sharedState.refreshed),
+      sharedStateResumeStatus:sharedState.status,
+      sharedStateResumeReason:sharedState.reason
     });
     window.dispatchEvent(new CustomEvent("bluecurrent:app-resumed",{detail}));
     return detail;
@@ -96,5 +123,5 @@ document.addEventListener("visibilitychange",()=>{
 window.addEventListener("pageshow",event=>{
   if(event.persisted||document.visibilityState==="visible")resume(event.persisted?"pageshow-bfcache":"pageshow");
 });
-window.BlueCurrentResumeTruth={version:VERSION,snapshot,resume,verifySession};
+window.BlueCurrentResumeTruth={version:VERSION,snapshot,resume,verifySession,refreshSharedState};
 })();
