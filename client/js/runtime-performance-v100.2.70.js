@@ -13,7 +13,8 @@ const GROUPS=Object.freeze({
     "js/staff-truth-v100.2.64.js?v=100.2.64",
     "js/staff-role-coverage-v100.2.65.js?v=100.2.65",
     "js/staff-attendance-v100.2.66.js?v=100.2.66",
-    "js/scheduling-truth-v100.2.73.js?v=100.2.73"
+    "js/scheduling-truth-v100.2.73.js?v=100.2.73",
+    "js/timeclock-truth-v100.2.76.js?v=100.2.76"
   ],
   manager:[
     "js/manager-operations-truth-v100.2.68.js?v=100.2.68",

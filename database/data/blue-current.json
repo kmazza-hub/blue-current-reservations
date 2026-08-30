@@ -1493,12 +1493,12 @@
         "*"
       ],
       "createdAt": "2026-08-30T11:42:34.057Z",
-      "lastSeenAt": "2026-08-30T11:56:08.358Z",
-      "idleExpiresAt": "2026-08-30T13:56:08.358Z",
+      "lastSeenAt": "2026-08-30T12:03:13.371Z",
+      "idleExpiresAt": "2026-08-30T14:03:13.371Z",
       "expiresAt": "2026-08-30T23:42:34.057Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-08-30T11:56:08.360Z"
+      "updatedAt": "2026-08-30T12:03:13.372Z"
     }
   ],
   "invitations": [
