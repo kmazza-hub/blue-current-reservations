@@ -1,0 +1,16 @@
+{
+  "version": "100.2.89",
+  "name": "iPad Resume Interaction Guard",
+  "baseline": "V100.2.88",
+  "runtimeFilesChanged": [
+    "client/js/ipad-resume-truth-v100.2.86.js"
+  ],
+  "sourceSha256": "bf937007c3d2b7f767940ae382198bf64fd24cc1c49d40ae96ecf45b9280e5d6",
+  "targetSha256": "2d42cc4fa39a449f671bb4d7ccaf8909c0ee5663908266c13b90ee4cc71b23eb",
+  "regressionTestUpdated": "scripts/maintenance/test-v100.2.88-ipad-resume-state-rehydration-integrity.js",
+  "regressionTestSourceSha256": "1df8ff129472316347f63b3b8824b63955263cb894a822090bbb97a1feea7e16",
+  "regressionTestTargetSha256": "11e2313fba20bfa700d234820f22b77ef57ab45463d4c1878c6373157b5b5b7f",
+  "additionalRegressionTestUpdated": "scripts/maintenance/test-v100.2.87-ipad-session-resume-integrity.js",
+  "additionalRegressionTestSourceSha256": "8869010bc54f688917291ee3c01571dff59e274fe8dfee8e01d9b246cf9ea500",
+  "additionalRegressionTestTargetSha256": "8ac0100174a81bcb3ec373ce1b629d8707f781dd1fb8a546f947fb4b670aac13"
+}

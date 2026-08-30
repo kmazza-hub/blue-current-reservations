@@ -1,9 +1,11 @@
 (function(){
 "use strict";
-const VERSION="100.2.88";
+const VERSION="100.2.89";
 let wasHidden=document.hidden;
 let lastResumeAt=0;
 let inFlight=null;
+let guardStatus="idle";
+let guardReason=null;
 
 function snapshot(extra={}){
   const sync=window.BlueCurrentOfflineSync?.snapshot?.();
@@ -17,6 +19,9 @@ function snapshot(extra={}){
     sessionStatus:auth?.status||"unknown",
     queuedWrites:Number(sync?.queueDepth||0),
     openConflicts:Number(sync?.openConflicts||0),
+    interactionGuardActive:guardStatus!=="idle",
+    interactionGuardStatus:guardStatus,
+    interactionGuardReason:guardReason,
     ...extra
   });
 }
@@ -27,6 +32,76 @@ function cloudFoundation(){
 
 function cloudApi(){
   return cloudFoundation()?.api||null;
+}
+
+function mainSurface(){
+  return document.getElementById?.("main")||null;
+}
+
+function ensureGuardBanner(){
+  if(!document.body?.appendChild||!document.createElement)return null;
+  let banner=document.getElementById?.("bcResumeStateGuard");
+  if(banner)return banner;
+  banner=document.createElement("aside");
+  banner.id="bcResumeStateGuard";
+  banner.className="bc-recovery-banner";
+  banner.hidden=true;
+  banner.setAttribute("role","status");
+  banner.setAttribute("aria-live","polite");
+  banner.innerHTML=`<div><strong>Refreshing live restaurant state</strong><span>Blue Current is verifying this iPad before accepting new actions.</span></div><button type="button" id="bcResumeStateRetry">Retry now</button>`;
+  document.body.appendChild(banner);
+  banner.querySelector?.("button")?.addEventListener?.("click",()=>resume("operator-retry",{force:true}));
+  return banner;
+}
+
+function setInteractionGuard(status="checking",reason="resume"){
+  guardStatus=status;
+  guardReason=reason;
+  const main=mainSurface();
+  if(main){
+    main.setAttribute?.("inert","");
+    main.setAttribute?.("aria-busy","true");
+    main.dataset&&(main.dataset.bcResumeGuard=status);
+  }
+  document.documentElement?.setAttribute?.("data-bc-resume-guard",status);
+  const banner=ensureGuardBanner();
+  if(banner){
+    banner.hidden=false;
+    const title=banner.querySelector?.("strong");
+    const body=banner.querySelector?.("span");
+    const button=banner.querySelector?.("button");
+    if(status==="checking"){
+      if(title)title.textContent="Refreshing live restaurant state";
+      if(body)body.textContent="Blue Current is verifying this iPad before accepting new actions.";
+      if(button){button.hidden=true;button.disabled=true;}
+    }else if(status==="auth-required"){
+      if(title)title.textContent="Session verification required";
+      if(body)body.textContent="Sign in again to verify the operator session before live actions resume.";
+      if(button){button.hidden=true;button.disabled=true;}
+    }else{
+      if(title)title.textContent="Live restaurant state is not ready";
+      if(body)body.textContent="Blue Current has kept the operating surface protected. Retry verification before continuing.";
+      if(button){button.hidden=false;button.disabled=false;}
+    }
+  }
+  window.dispatchEvent?.(new CustomEvent("bluecurrent:resume-interaction-guard",{detail:snapshot({guarded:true})}));
+  return snapshot();
+}
+
+function releaseInteractionGuard(reason="fresh-state"){
+  guardStatus="idle";
+  guardReason=reason;
+  const main=mainSurface();
+  if(main){
+    main.removeAttribute?.("inert");
+    main.removeAttribute?.("aria-busy");
+    if(main.dataset)delete main.dataset.bcResumeGuard;
+  }
+  document.documentElement?.removeAttribute?.("data-bc-resume-guard");
+  const banner=document.getElementById?.("bcResumeStateGuard");
+  if(banner)banner.hidden=true;
+  window.dispatchEvent?.(new CustomEvent("bluecurrent:resume-interaction-guard",{detail:snapshot({guarded:false})}));
+  return snapshot();
 }
 
 async function refreshSharedState(reason="resume"){
@@ -75,11 +150,13 @@ async function verifySession(reason="resume"){
   }
 }
 
-async function resume(reason="foreground"){
+async function resume(reason="foreground",options={}){
   const now=Date.now();
   if(inFlight)return inFlight;
-  if(now-lastResumeAt<750)return snapshot({reason,coalesced:true});
+  if(!options.force&&now-lastResumeAt<750)return snapshot({reason,coalesced:true});
   lastResumeAt=now;
+  const authAtStart=window.BlueCurrentAuthSession?.snapshot?.();
+  if(authAtStart?.authenticated)setInteractionGuard("checking",reason);
   inFlight=(async()=>{
     let connectivity=window.BlueCurrentConnectivityTruth?.snapshot?.()||null;
     if(window.BlueCurrentConnectivityTruth?.verify){
@@ -97,6 +174,14 @@ async function resume(reason="foreground"){
         replayed=true;
         sharedState=await refreshSharedState(reason);
       }
+    }
+
+    if(sharedState.refreshed){
+      releaseInteractionGuard("fresh-state");
+    }else if(session.status==="expired"||session.status==="anonymous"){
+      setInteractionGuard("auth-required",session.reason);
+    }else if(authAtStart?.authenticated){
+      setInteractionGuard("blocked",sharedState.reason||session.reason||connectivity?.state||"resume-incomplete");
     }
 
     const detail=snapshot({
@@ -123,5 +208,10 @@ document.addEventListener("visibilitychange",()=>{
 window.addEventListener("pageshow",event=>{
   if(event.persisted||document.visibilityState==="visible")resume(event.persisted?"pageshow-bfcache":"pageshow");
 });
-window.BlueCurrentResumeTruth={version:VERSION,snapshot,resume,verifySession,refreshSharedState};
+window.addEventListener("bluecurrent:auth-session-state",event=>{
+  if(guardStatus==="auth-required"&&event.detail?.snapshot?.authenticated&&document.visibilityState==="visible"){
+    resume("session-restored",{force:true});
+  }
+});
+window.BlueCurrentResumeTruth={version:VERSION,snapshot,resume,verifySession,refreshSharedState,setInteractionGuard,releaseInteractionGuard};
 })();
