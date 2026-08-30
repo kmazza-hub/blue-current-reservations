@@ -44,6 +44,7 @@ function render(actionsPayload,feedPayload){
  <div class="bc-mgr-source">Source: Manager Actions API + Operations Feed API · human completion remains explicit · no legacy readiness score or financial forecast used</div>`;
  view.querySelector("[data-bc-mgr-refresh]")?.addEventListener("click",load);
  view.querySelectorAll("[data-bc-mgr-complete]").forEach(button=>button.addEventListener("click",()=>complete(button.dataset.bcMgrComplete,button)));
+ window.dispatchEvent(new CustomEvent("bluecurrent:manager-operations-rendered",{detail:{version:"100.2.68",openActions:open.length}}));
 }
 async function complete(id,button){
  if(!id||!api)return;

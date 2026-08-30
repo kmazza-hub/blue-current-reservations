@@ -1,0 +1,20 @@
+{
+  "version": "100.2.71",
+  "requires": "V100.2.70",
+  "wave": "Manager Action Follow-Up Intelligence",
+  "adds": [
+    "client/js/manager-action-followup-v100.2.71.js",
+    "scripts/maintenance/test-v100.2.71-manager-action-followup.js"
+  ],
+  "modifies": [
+    "client/index.html",
+    "client/js/manager-operations-truth-v100.2.68.js",
+    "client/js/runtime-performance-v100.2.70.js"
+  ],
+  "truthRule": "An action is a follow-up review candidate only when it is still open, has a valid createdAt timestamp, and was created at least 30 minutes ago.",
+  "doesNotInfer": ["overdue", "ignored", "failed", "manager negligence"],
+  "protected": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/manager-action-ownership-v100.2.69.js"
+  ]
+}

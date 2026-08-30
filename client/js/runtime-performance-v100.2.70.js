@@ -16,7 +16,8 @@ const GROUPS=Object.freeze({
   ],
   manager:[
     "js/manager-operations-truth-v100.2.68.js?v=100.2.68",
-    "js/manager-action-ownership-v100.2.69.js?v=100.2.69"
+    "js/manager-action-ownership-v100.2.69.js?v=100.2.69",
+    "js/manager-action-followup-v100.2.71.js?v=100.2.71"
   ]
 });
 const loaded=new Set(),loading=new Map();
