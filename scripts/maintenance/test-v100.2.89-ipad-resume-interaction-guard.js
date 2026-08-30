@@ -3,7 +3,7 @@ const fs=require("fs"),path=require("path"),vm=require("vm");
 let p=0,t=0;function ok(c,m){t++;if(c){p++;console.log("PASS:",m)}else{console.error("FAIL:",m);process.exitCode=1}}
 (async()=>{
 const root=process.cwd(),f=path.join(root,"client","js","ipad-resume-truth-v100.2.86.js"),src=fs.readFileSync(f,"utf8");
-ok(/const VERSION="100\.2\.(89|90)"/.test(src),"resume lifecycle hardened to V100.2.89");
+ok(/const VERSION="100\.2\.(89|90|91)"/.test(src),"resume lifecycle hardened to V100.2.89");
 ok(src.includes('setInteractionGuard'),"resume interaction guard present");
 ok(src.includes('releaseInteractionGuard'),"resume interaction release present");
 ok(src.includes('main.setAttribute?.("inert","")'),"live main surface becomes inert while state is unverified");
@@ -47,7 +47,7 @@ ok(typeof window.BlueCurrentResumeTruth?.setInteractionGuard==="function","inter
 hidden=false;visible="visible";dl.visibilitychange();
 ok(main.attrs.inert==="","main is guarded synchronously when authenticated iPad resumes");
 ok(main.attrs["aria-busy"]==="true","main is marked busy during resume");
-await new Promise(r=>setTimeout(r,0));
+await new Promise(r=>setTimeout(r,5));
 ok(verifyCalls===1&&meCalls===1&&replays===1&&refreshes===1,"resume completes verify -> session -> replay -> refresh once");
 ok(!("inert" in main.attrs),"fresh shared state releases main interaction guard");
 ok(!("aria-busy" in main.attrs),"fresh shared state clears busy state");

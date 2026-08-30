@@ -1360,6 +1360,22 @@
       "category": "security",
       "createdAt": "2026-08-30T11:42:34.158Z",
       "id": "audit_1788090154158_5wi096"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Signed in to Blue Current Cloud",
+      "category": "security",
+      "createdAt": "2026-08-30T22:00:46.574Z",
+      "id": "audit_1788127246574_qd4jeh"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Command priority acknowledged: Kitchen throughput needs attention",
+      "category": "command_action",
+      "createdAt": "2026-08-30T22:03:00.978Z",
+      "id": "audit_1788127380978_b918h9"
     }
   ],
   "reservations": [
@@ -1466,7 +1482,24 @@
       ]
     }
   ],
-  "sessions": [],
+  "sessions": [
+    {
+      "id": "ses_1788127246473_kmymt4",
+      "tokenHash": "0ae99f37cd4d7de267e76044f4c505424dddd22167d4c3e4d69c122de5f90db1",
+      "userId": "usr_keith",
+      "organizationId": "org_chefs",
+      "role": "owner",
+      "locationIds": [
+        "*"
+      ],
+      "createdAt": "2026-08-30T22:00:46.473Z",
+      "lastSeenAt": "2026-08-30T22:00:46.473Z",
+      "idleExpiresAt": "2026-08-31T00:00:46.473Z",
+      "expiresAt": "2026-08-31T10:00:46.473Z",
+      "revokedAt": null,
+      "revokedReason": null
+    }
+  ],
   "invitations": [
     {
       "id": "inv_demo",
@@ -3012,5 +3045,85 @@
       "build": "42.23.0-provider-launch-control"
     }
   },
-  "authSecurityStates": []
+  "authSecurityStates": [],
+  "commandManagerActions": [
+    {
+      "id": "cma_1788127380933_ye21xq",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "locationName": "Marina Grille",
+      "priorityId": "priority_1",
+      "priorityFingerprint": "loc_marina|kitchen|Kitchen throughput needs attention",
+      "priorityRank": 1,
+      "priorityScore": 89,
+      "domain": "kitchen",
+      "workspace": "kitchen",
+      "severity": "high",
+      "title": "Kitchen throughput needs attention",
+      "detail": "1 priority/held ticket requires review. 5 items are ready at expo.",
+      "recommendation": "Open Kitchen, confirm expo ownership of ready food, identify the constrained or held ticket, and rebalance only after a manager reviews the queue.",
+      "owner": "Manager + Expo",
+      "status": "acknowledged",
+      "acknowledgedBy": "Keith Mazza",
+      "acknowledgedAt": "2026-08-30T22:03:00.933Z",
+      "createdBy": "Keith Mazza",
+      "createdAt": "2026-08-30T22:03:00.933Z",
+      "updatedAt": "2026-08-30T22:03:00.933Z",
+      "resolvedAt": null,
+      "resolvedBy": null,
+      "outcome": null,
+      "timeline": [
+        {
+          "action": "acknowledged",
+          "actor": "Keith Mazza",
+          "note": "Acknowledged from Blue Current Command.",
+          "createdAt": "2026-08-30T22:03:00.933Z"
+        }
+      ],
+      "source": {
+        "type": "command-priority",
+        "dataMode": "historical-demo",
+        "confidence": {
+          "score": 55,
+          "label": "DEMO",
+          "reason": "Historical seed data limits time-sensitive confidence."
+        }
+      },
+      "baseline": {
+        "capturedAt": "2026-08-30T22:03:00.933Z",
+        "dataMode": "historical-demo",
+        "metric": {
+          "name": "kitchen_pressure_index",
+          "value": 112,
+          "lowerIsBetter": true,
+          "context": {
+            "activeKitchenTickets": 4,
+            "foodReadyItems": 5,
+            "kitchenTargetMinutes": 17
+          }
+        },
+        "priorityScore": 89,
+        "service": {
+          "activeCovers": 9,
+          "activeTables": 2,
+          "totalTables": 13,
+          "occupancyPercent": 5,
+          "waitlistParties": 2,
+          "averageQuotedWaitMinutes": 15,
+          "activeStaff": 4,
+          "activeKitchenTickets": 4,
+          "foodReadyItems": 5,
+          "kitchenTargetMinutes": 17,
+          "upcomingReservations": 4,
+          "upcomingReservationCovers": 17
+        },
+        "inventory": {
+          "items": 8,
+          "lowStockItems": 2
+        }
+      },
+      "verification": null,
+      "automaticAction": false
+    }
+  ]
 }

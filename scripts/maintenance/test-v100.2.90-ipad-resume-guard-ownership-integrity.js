@@ -3,7 +3,7 @@ const fs=require("fs"),path=require("path"),vm=require("vm");
 let p=0,t=0;function ok(c,m){t++;if(c){p++;console.log("PASS:",m)}else{console.error("FAIL:",m);process.exitCode=1}}
 (async()=>{
 const root=process.cwd(),f=path.join(root,"client","js","ipad-resume-truth-v100.2.86.js"),src=fs.readFileSync(f,"utf8");
-ok(src.includes('const VERSION="100.2.90"'),"resume lifecycle hardened to V100.2.90");
+ok(/const VERSION="100\.2\.(90|91)"/.test(src),"V100.2.90 guard ownership lifecycle preserved or hardened");
 ok(src.includes("captureGuardOwnership"),"guard captures pre-existing interaction ownership");
 ok(src.includes("restoreGuardOwnership"),"guard restores pre-existing interaction ownership");
 ok(src.includes('mainHasInert'),"pre-existing inert ownership recorded");
@@ -33,7 +33,7 @@ ok(typeof window.BlueCurrentResumeTruth?.resume==="function","resume API preserv
 // Pre-existing lock owned by another subsystem must survive a successful resume.
 main.setAttribute("inert","");main.setAttribute("aria-busy","mixed");main.dataset.bcResumeGuard="other-owner";rootNode.setAttribute("data-bc-resume-guard","other-root-owner");
 hidden=false;visible="visible";dl.visibilitychange();
-await new Promise(r=>setTimeout(r,0));
+await new Promise(r=>setTimeout(r,5));
 ok(replays===1&&refreshes===1&&meCalls===1,"normal resume lifecycle still executes once");
 ok(main.hasAttribute("inert"),"pre-existing inert lock survives resume release");
 ok(main.getAttribute("aria-busy")==="mixed","pre-existing aria-busy value restored exactly");

@@ -3,7 +3,7 @@ const fs=require("fs"),path=require("path"),vm=require("vm");
 let p=0,t=0;function ok(c,m){t++;if(c){p++;console.log("PASS:",m)}else{console.error("FAIL:",m);process.exitCode=1}}
 (async()=>{
 const root=process.cwd(),f=path.join(root,"client","js","ipad-resume-truth-v100.2.86.js"),src=fs.readFileSync(f,"utf8");
-ok(src.includes('const VERSION="100.2.87"')||src.includes('const VERSION="100.2.88"')||src.includes('const VERSION="100.2.89"')||src.includes('const VERSION="100.2.90"'),"session-resume integrity version recognized");
+ok(src.includes('const VERSION="100.2.87"')||src.includes('const VERSION="100.2.88"')||src.includes('const VERSION="100.2.89"')||src.includes('const VERSION="100.2.90"')||src.includes('const VERSION="100.2.91"'),"session-resume integrity version recognized");
 ok(src.includes('return cloudFoundation()?.api||null;')||src.includes('BlueCurrentStartupRegistry?.get?.("cloudFoundation")?.api'),"existing Cloud API instance reused");
 ok(src.includes('await api.me()'),"resume validates authenticated session");
 ok(src.includes('coordinator?.updateSession?.(session)'),"verified session refreshes coordinator truth");
@@ -37,7 +37,7 @@ const sandbox={window,document,CustomEvent:CE,Date,Number,Object,Promise,console
 vm.runInNewContext(src,sandbox);
 ok(typeof window.BlueCurrentResumeTruth?.verifySession==="function","session verifier API exposed");
 hidden=false;visible="visible";dl.visibilitychange();
-await new Promise(r=>setTimeout(r,0));
+await new Promise(r=>setTimeout(r,5));
 ok(verifyCalls===1,"foreground resume verifies server once");
 ok(meCalls===1,"foreground resume verifies session once");
 ok(updates===1,"valid session refreshes coordinator once");

@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const VERSION="100.2.90";
+const VERSION="100.2.91";
 let wasHidden=document.hidden;
 let lastResumeAt=0;
 let inFlight=null;
@@ -137,6 +137,15 @@ function releaseInteractionGuard(reason="fresh-state"){
   return snapshot();
 }
 
+async function waitForRenderCommit(){
+  if(typeof window.requestAnimationFrame!=="function"){
+    await new Promise(resolve=>setTimeout(resolve,0));
+    return {committed:true,mode:"task-fallback"};
+  }
+  await new Promise(resolve=>window.requestAnimationFrame(()=>resolve()));
+  return {committed:true,mode:"animation-frame"};
+}
+
 async function refreshSharedState(reason="resume"){
   const foundation=cloudFoundation();
   if(!foundation?.refreshBootstrap){
@@ -209,8 +218,10 @@ async function resume(reason="foreground",options={}){
       }
     }
 
+    let renderCommit={committed:false,mode:"not-checked"};
     if(sharedState.refreshed){
-      releaseInteractionGuard("fresh-state");
+      renderCommit=await waitForRenderCommit();
+      releaseInteractionGuard("fresh-state-rendered");
     }else if(session.status==="expired"||session.status==="anonymous"){
       setInteractionGuard("auth-required",session.reason);
     }else if(authAtStart?.authenticated){
@@ -225,7 +236,9 @@ async function resume(reason="foreground",options={}){
       sessionResumeReason:session.reason,
       sharedStateRefreshed:Boolean(sharedState.refreshed),
       sharedStateResumeStatus:sharedState.status,
-      sharedStateResumeReason:sharedState.reason
+      sharedStateResumeReason:sharedState.reason,
+      renderCommitVerified:Boolean(renderCommit.committed),
+      renderCommitMode:renderCommit.mode
     });
     window.dispatchEvent(new CustomEvent("bluecurrent:app-resumed",{detail}));
     return detail;
@@ -246,5 +259,5 @@ window.addEventListener("bluecurrent:auth-session-state",event=>{
     resume("session-restored",{force:true});
   }
 });
-window.BlueCurrentResumeTruth={version:VERSION,snapshot,resume,verifySession,refreshSharedState,setInteractionGuard,releaseInteractionGuard};
+window.BlueCurrentResumeTruth={version:VERSION,snapshot,resume,verifySession,refreshSharedState,waitForRenderCommit,setInteractionGuard,releaseInteractionGuard};
 })();

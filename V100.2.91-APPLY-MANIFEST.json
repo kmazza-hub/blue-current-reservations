@@ -1,0 +1,17 @@
+{
+  "version": "100.2.91",
+  "name": "iPad Resume Render Commit Integrity",
+  "baseline": "V100.2.90 \u2014 iPad Resume Guard Ownership Integrity",
+  "runtimeFilesChanged": [
+    "client/js/ipad-resume-truth-v100.2.86.js"
+  ],
+  "sourceSha256": "5c3c1bc31d0ff297c195d292aac8142adaa114570b715ce95f14aa361a728847",
+  "targetSha256": "6ef3bc0b65fa3878038114802d4880d671dadfb82f19b9a0be398853b39a2de3",
+  "regressionTestsUpdated": [
+    "scripts/maintenance/test-v100.2.87-ipad-session-resume-integrity.js",
+    "scripts/maintenance/test-v100.2.88-ipad-resume-state-rehydration-integrity.js",
+    "scripts/maintenance/test-v100.2.89-ipad-resume-interaction-guard.js",
+    "scripts/maintenance/test-v100.2.90-ipad-resume-guard-ownership-integrity.js"
+  ],
+  "newTest": "scripts/maintenance/test-v100.2.91-ipad-resume-render-commit-integrity.js"
+}
