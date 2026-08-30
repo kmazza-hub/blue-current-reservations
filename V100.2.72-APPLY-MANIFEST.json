@@ -1,0 +1,18 @@
+{
+  "version": "100.2.72",
+  "wave": "Manager Operations Rush-Condition Certification",
+  "requires": "V100.2.71",
+  "runtimeChanges": false,
+  "adds": [
+    "scripts/maintenance/test-v100.2.72-manager-operations-rush-certification.js"
+  ],
+  "protects": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/manager-operations-truth-v100.2.68.js",
+    "client/js/manager-action-ownership-v100.2.69.js",
+    "client/js/runtime-performance-v100.2.70.js",
+    "client/js/manager-action-followup-v100.2.71.js",
+    "server/services/actionListService.js",
+    "client/index.html"
+  ]
+}
