@@ -1,0 +1,8 @@
+{
+  "version": "100.2.79",
+  "wave": "Time Clock Rush-Condition Certification",
+  "architecture": "certification-only; zero runtime application changes",
+  "runtimeApplicationChanges": 0,
+  "test": "scripts/maintenance/test-v100.2.79-timeclock-rush-certification.js",
+  "testSha256": "188f2a7760611fa647d05253f25cc82938e67d8538275f75d27e3eeb23468fce"
+}
