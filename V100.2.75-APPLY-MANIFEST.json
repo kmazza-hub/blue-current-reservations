@@ -1,0 +1,9 @@
+{
+  "version": "100.2.75",
+  "name": "Scheduling Rush-Condition Certification",
+  "architecture": "certification-only",
+  "runtimeApplicationChanges": 0,
+  "files": [
+    "scripts/maintenance/test-v100.2.75-scheduling-rush-certification.js"
+  ]
+}
