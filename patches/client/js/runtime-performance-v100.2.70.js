@@ -20,6 +20,9 @@ const GROUPS=Object.freeze({
     "js/manager-operations-truth-v100.2.68.js?v=100.2.68",
     "js/manager-action-ownership-v100.2.69.js?v=100.2.69",
     "js/manager-action-followup-v100.2.71.js?v=100.2.71"
+  ],
+  inventory:[
+    "js/inventory-truth-v100.2.80.js?v=100.2.80"
   ]
 });
 const loaded=new Set(),loading=new Map();
@@ -66,6 +69,7 @@ function classify(value=""){
   if(/kitchen|expo/.test(text))return "kitchen";
   if(/staff|workforce|schedule|time[- ]?clock|labor/.test(text))return "staff";
   if(/manager|command/.test(text))return "manager";
+  if(/inventory/.test(text))return "inventory";
   return null;
 }
 function loadFromLocation(reason){
@@ -93,9 +97,10 @@ function init(){
   observeWorkspace("workforce-intelligence","staff");
   observeWorkspace("scheduling","staff");
   observeWorkspace("command-center","manager");
+  observeWorkspace("inventory-intelligence","inventory");
   loadFromLocation("initial-route");
   if(new URLSearchParams(location.search).get("full")==="1"){
-    ["kitchen","staff","manager"].reduce((p,name)=>p.then(()=>loadGroup(name,"full-startup")),Promise.resolve());
+    ["kitchen","staff","manager","inventory"].reduce((p,name)=>p.then(()=>loadGroup(name,"full-startup")),Promise.resolve());
   }
   report.readyAt=Date.now();
   report.initialDeferredGroups=Object.keys(GROUPS).length;
