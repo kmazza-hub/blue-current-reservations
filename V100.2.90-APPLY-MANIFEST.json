@@ -1,0 +1,15 @@
+{
+  "version": "100.2.90",
+  "name": "iPad Resume Guard Ownership Integrity",
+  "runtimeFilesChanged": [
+    "client/js/ipad-resume-truth-v100.2.86.js"
+  ],
+  "regressionTestUpdated": "scripts/maintenance/test-v100.2.89-ipad-resume-interaction-guard.js",
+  "sourceSha256": "2d42cc4fa39a449f671bb4d7ccaf8909c0ee5663908266c13b90ee4cc71b23eb",
+  "targetSha256": "5c3c1bc31d0ff297c195d292aac8142adaa114570b715ce95f14aa361a728847",
+  "regressionTestsUpdated": [
+    "scripts/maintenance/test-v100.2.89-ipad-resume-interaction-guard.js",
+    "scripts/maintenance/test-v100.2.88-ipad-resume-state-rehydration-integrity.js",
+    "scripts/maintenance/test-v100.2.87-ipad-session-resume-integrity.js"
+  ]
+}

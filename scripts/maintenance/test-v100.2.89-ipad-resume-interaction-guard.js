@@ -3,7 +3,7 @@ const fs=require("fs"),path=require("path"),vm=require("vm");
 let p=0,t=0;function ok(c,m){t++;if(c){p++;console.log("PASS:",m)}else{console.error("FAIL:",m);process.exitCode=1}}
 (async()=>{
 const root=process.cwd(),f=path.join(root,"client","js","ipad-resume-truth-v100.2.86.js"),src=fs.readFileSync(f,"utf8");
-ok(src.includes('const VERSION="100.2.89"'),"resume lifecycle hardened to V100.2.89");
+ok(/const VERSION="100\.2\.(89|90)"/.test(src),"resume lifecycle hardened to V100.2.89");
 ok(src.includes('setInteractionGuard'),"resume interaction guard present");
 ok(src.includes('releaseInteractionGuard'),"resume interaction release present");
 ok(src.includes('main.setAttribute?.("inert","")'),"live main surface becomes inert while state is unverified");

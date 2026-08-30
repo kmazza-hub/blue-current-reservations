@@ -1,11 +1,12 @@
 (function(){
 "use strict";
-const VERSION="100.2.89";
+const VERSION="100.2.90";
 let wasHidden=document.hidden;
 let lastResumeAt=0;
 let inFlight=null;
 let guardStatus="idle";
 let guardReason=null;
+let guardOwnership=null;
 
 function snapshot(extra={}){
   const sync=window.BlueCurrentOfflineSync?.snapshot?.();
@@ -38,6 +39,43 @@ function mainSurface(){
   return document.getElementById?.("main")||null;
 }
 
+function captureGuardOwnership(){
+  if(guardOwnership)return guardOwnership;
+  const main=mainSurface();
+  const root=document.documentElement||null;
+  const mainHasInert=Boolean(main?.hasAttribute?.("inert"));
+  const mainHasBusy=Boolean(main?.hasAttribute?.("aria-busy"));
+  const mainBusy=mainHasBusy?main.getAttribute?.("aria-busy"):null;
+  const mainDatasetHad=Boolean(main?.dataset&&Object.prototype.hasOwnProperty.call(main.dataset,"bcResumeGuard"));
+  const mainDatasetValue=mainDatasetHad?main.dataset.bcResumeGuard:null;
+  const rootHad=Boolean(root?.hasAttribute?.("data-bc-resume-guard"));
+  const rootValue=rootHad?root.getAttribute?.("data-bc-resume-guard"):null;
+  guardOwnership={main,mainHasInert,mainHasBusy,mainBusy,mainDatasetHad,mainDatasetValue,root,rootHad,rootValue};
+  return guardOwnership;
+}
+
+function restoreGuardOwnership(){
+  const prior=guardOwnership;
+  guardOwnership=null;
+  if(!prior)return;
+  const main=prior.main;
+  if(main){
+    if(prior.mainHasInert)main.setAttribute?.("inert","");
+    else main.removeAttribute?.("inert");
+    if(prior.mainHasBusy)main.setAttribute?.("aria-busy",prior.mainBusy??"");
+    else main.removeAttribute?.("aria-busy");
+    if(main.dataset){
+      if(prior.mainDatasetHad)main.dataset.bcResumeGuard=prior.mainDatasetValue;
+      else delete main.dataset.bcResumeGuard;
+    }
+  }
+  const root=prior.root;
+  if(root){
+    if(prior.rootHad)root.setAttribute?.("data-bc-resume-guard",prior.rootValue??"");
+    else root.removeAttribute?.("data-bc-resume-guard");
+  }
+}
+
 function ensureGuardBanner(){
   if(!document.body?.appendChild||!document.createElement)return null;
   let banner=document.getElementById?.("bcResumeStateGuard");
@@ -55,6 +93,7 @@ function ensureGuardBanner(){
 }
 
 function setInteractionGuard(status="checking",reason="resume"){
+  if(guardStatus==="idle")captureGuardOwnership();
   guardStatus=status;
   guardReason=reason;
   const main=mainSurface();
@@ -91,13 +130,7 @@ function setInteractionGuard(status="checking",reason="resume"){
 function releaseInteractionGuard(reason="fresh-state"){
   guardStatus="idle";
   guardReason=reason;
-  const main=mainSurface();
-  if(main){
-    main.removeAttribute?.("inert");
-    main.removeAttribute?.("aria-busy");
-    if(main.dataset)delete main.dataset.bcResumeGuard;
-  }
-  document.documentElement?.removeAttribute?.("data-bc-resume-guard");
+  restoreGuardOwnership();
   const banner=document.getElementById?.("bcResumeStateGuard");
   if(banner)banner.hidden=true;
   window.dispatchEvent?.(new CustomEvent("bluecurrent:resume-interaction-guard",{detail:snapshot({guarded:false})}));
