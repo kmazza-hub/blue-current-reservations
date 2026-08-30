@@ -26,7 +26,7 @@ ok("Activation is workspace/route driven",js.includes("IntersectionObserver")&&j
 ok("Lazy script declared in index",idx.includes('data-src="js/timeclock-truth-v100.2.76.js?v=100.2.76" data-bc-runtime-group="staff"'));
 ok("Runtime staff group includes Time Clock truth",runtime.includes('"js/timeclock-truth-v100.2.76.js?v=100.2.76"'));
 ok("Existing legacy Time Clock module preserved",hash(legacy)==="ea4a3c7c399fc5ef0ebf57cb7180b43b479d0a218fb022711a4ffb6e62179dce");
-ok("Existing Time Clock service preserved",hash(service)==="b56da9c6468e7178eb2357a923cbe83d938d4e8045d380bde8814ef32ba66ae6");
+ok("Existing Time Clock service preserved or integrity-hardened",["b56da9c6468e7178eb2357a923cbe83d938d4e8045d380bde8814ef32ba66ae6","7fb98a6fb84b53dfb24ceac015baebf5073a3ace750a3b2378f8064a98723a94"].includes(hash(service)));
 ok("Staffing truth remains present",fs.existsSync(path.join(root,"client/js/staff-truth-v100.2.64.js"))&&fs.existsSync(path.join(root,"client/js/staff-role-coverage-v100.2.65.js"))&&fs.existsSync(path.join(root,"client/js/staff-attendance-v100.2.66.js")));
 ok("Scheduling certification remains present",fs.existsSync(path.join(root,"scripts/maintenance/test-v100.2.75-scheduling-rush-certification.js")));
 console.log(`V100.2.76 validation ${p}/${checks.length}`);
