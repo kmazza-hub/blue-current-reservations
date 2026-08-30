@@ -1,6 +1,5 @@
-"use strict";
-const fs=require("fs"),path=require("path"),vm=require("vm");
-let p=0,t=0;function ok(c,m){t++;if(c){p++;console.log("PASS:",m)}else{console.error("FAIL:",m);process.exitCode=1}}
+"use strict";const fs=require("fs"),path=require("path"),vm=require("vm");
+let p=0,t=0;function ok(c,m){t++;if(!c){console.error("FAIL:",m);process.exitCode=1}else{p++;console.log("PASS:",m)}}
 (async()=>{
 const root=process.cwd(),html=fs.readFileSync(path.join(root,"client","index.html"),"utf8"),f=path.join(root,"client","js","ipad-resume-truth-v100.2.86.js"),src=fs.readFileSync(f,"utf8");
 ok(html.includes("ipad-resume-truth-v100.2.86.js?v=100.2.86"),"resume truth module loaded");
@@ -17,15 +16,19 @@ ok(!src.includes("MutationObserver"),"no observer introduced");
 ok(!src.includes("location.reload"),"resume does not reload operator workspace");
 ok(!src.includes("serviceWorker"),"resume adds no offline caching claim");
 
-let visible="hidden",hidden=true,verifyCalls=0,replayCalls=0,resumeEvents=0;
+let visible="hidden",hidden=true,verifyCalls=0,replayCalls=0,resumeEvents=0,meCalls=0;
 const docListeners={},winListeners={};
 const document={get hidden(){return hidden},get visibilityState(){return visible},addEventListener(n,fn){docListeners[n]=fn}};
 class CE{constructor(type,opt={}){this.type=type;this.detail=opt.detail}}
+let authState={authenticated:true,status:"authenticated",session:{user:{id:"u1"}}};
+const api={async me(){meCalls++;return{organizationId:"org",role:"manager",user:{id:"u1"}}}};
 const window={
  addEventListener(n,fn){winListeners[n]=fn},
  dispatchEvent(e){if(e.type==="bluecurrent:app-resumed")resumeEvents++},
  BlueCurrentConnectivityTruth:{snapshot(){return{state:"connected"}},async verify(){verifyCalls++;return{state:"connected"}}},
- BlueCurrentOfflineSync:{snapshot(){return{queueDepth:2,openConflicts:0}},async replay(){replayCalls++}}
+ BlueCurrentOfflineSync:{snapshot(){return{queueDepth:2,openConflicts:0}},async replay(){replayCalls++}},
+ BlueCurrentAuthSession:{snapshot(){return authState},updateSession(session){authState={authenticated:true,status:"authenticated",session}},expire(){authState={authenticated:false,status:"anonymous",session:null}}},
+ BlueCurrentStartupRegistry:{get(name){return name==="cloudFoundation"?{api}:null}}
 };
 const sandbox={window,document,CustomEvent:CE,Date,Number,Object,Promise,console,setTimeout,clearTimeout};
 vm.runInNewContext(src,sandbox);
@@ -33,7 +36,8 @@ ok(typeof window.BlueCurrentResumeTruth?.resume==="function","resume API exposed
 hidden=false;visible="visible";docListeners.visibilitychange();
 await new Promise(r=>setTimeout(r,0));
 ok(verifyCalls===1,"hidden-to-visible transition triggers one server verification");
-ok(replayCalls===1,"verified resume triggers queued-write replay");
+ok(meCalls===1,"hidden-to-visible transition verifies authenticated session");
+ok(replayCalls===1,"verified server and session trigger queued-write replay");
 ok(resumeEvents===1,"verified resume emits one lifecycle event");
 await window.BlueCurrentResumeTruth.resume("manual-immediate");
 ok(verifyCalls===1,"immediate duplicate resume is coalesced");

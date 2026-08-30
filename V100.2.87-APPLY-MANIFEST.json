@@ -1,0 +1,12 @@
+{
+  "version": "100.2.87",
+  "name": "iPad Session Resume Integrity",
+  "runtimeFilesChanged": [
+    "client/js/ipad-resume-truth-v100.2.86.js"
+  ],
+  "sourceSha256": "3fac9f6f8c19fd92600808828dd08aa38c3877accad11bf4a2791e95723cb8af",
+  "targetSha256": "dbfa762bb537899739c5c772148d46243f6ac3f0f65a35a11423678612ffdbac",
+  "regressionTestUpdated": "scripts/maintenance/test-v100.2.86-ipad-resume-truth.js",
+  "regressionTestSourceSha256": "debc522490e7b2a85071f01e3f94c5b02753460e7eb61b4c7f3bb77fb6309eb0",
+  "regressionTestTargetSha256": "73f0716592a3e71a24360889f4a8dd4bf8a8abee5a61c4d6b7a46342e95d8596"
+}
