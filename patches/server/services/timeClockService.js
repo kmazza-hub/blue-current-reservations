@@ -1,5 +1,7 @@
 "use strict";
 
+const crypto = require("crypto");
+
 class TimeClockService {
   constructor(database, auditService, realtimeHub) {
     this.database = database;
@@ -8,6 +10,7 @@ class TimeClockService {
   }
 
   round(value, precision = 2) { const factor = 10 ** precision; return Math.round(Number(value || 0) * factor) / factor; }
+  recordId(prefix) { return `${prefix}_${Date.now()}_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`; }
   hoursBetween(start, end) { return Math.max(0, (new Date(end) - new Date(start)) / 3600000); }
 
   async snapshot(organizationId, locationId = "loc_marina") {
@@ -51,7 +54,7 @@ class TimeClockService {
       if (!employee) throw new Error("Employee not found");
       if (input.pin !== undefined && String(employee.pin) !== String(input.pin)) throw new Error("Invalid PIN");
       if ((db.employeeTimecards || []).some(item => item.employeeId === employee.id && item.status === "active" && !item.clockOut)) throw new Error("Employee is already clocked in");
-      result = { id: `tc_${Date.now()}`, organizationId, locationId: input.locationId || employee.locationId, employeeId: employee.id, clockIn: new Date().toISOString(), clockOut: null, status: "active", source: input.source || "kiosk", createdAt: new Date().toISOString() };
+      result = { id: this.recordId("tc"), organizationId, locationId: input.locationId || employee.locationId, employeeId: employee.id, clockIn: new Date().toISOString(), clockOut: null, status: "active", source: input.source || "kiosk", createdAt: new Date().toISOString() };
       db.employeeTimecards ||= []; db.employeeTimecards.push(result); return result;
     });
     await this.auditService.record({ organizationId, actor, action: `Clocked in ${result.employeeId}`, category: "timeclock" });
@@ -77,7 +80,7 @@ class TimeClockService {
       const card = (db.employeeTimecards || []).find(item => item.employeeId === input.employeeId && item.organizationId === organizationId && item.status === "active" && !item.clockOut);
       if (!card) throw new Error("No active timecard");
       if ((db.employeeBreaks || []).some(item => item.timecardId === card.id && item.status === "active" && !item.end)) throw new Error("Break already active");
-      result = { id: `break_${Date.now()}`, organizationId, locationId: card.locationId, timecardId: card.id, employeeId: input.employeeId, start: new Date().toISOString(), end: null, paid: Boolean(input.paid), status: "active" };
+      result = { id: this.recordId("break"), organizationId, locationId: card.locationId, timecardId: card.id, employeeId: input.employeeId, start: new Date().toISOString(), end: null, paid: Boolean(input.paid), status: "active" };
       db.employeeBreaks ||= []; db.employeeBreaks.push(result); return result;
     });
     await this.auditService.record({ organizationId, actor, action: `Break started ${result.employeeId}`, category: "timeclock" });
@@ -128,7 +131,7 @@ class TimeClockService {
       }
 
       card.updatedAt = new Date().toISOString();
-      result = { id: `tcc_${Date.now()}`, organizationId, locationId: card.locationId, timecardId, employeeId: card.employeeId, before, after: { clockIn: card.clockIn, clockOut: card.clockOut, status: card.status }, reason: String(input.reason || "Manager correction"), actor, createdAt: new Date().toISOString() };
+      result = { id: this.recordId("tcc"), organizationId, locationId: card.locationId, timecardId, employeeId: card.employeeId, before, after: { clockIn: card.clockIn, clockOut: card.clockOut, status: card.status }, reason: String(input.reason || "Manager correction"), actor, createdAt: new Date().toISOString() };
       db.timeClockCorrections ||= []; db.timeClockCorrections.push(result); return result;
     });
     await this.auditService.record({ organizationId, actor, action: `Timecard corrected ${timecardId}`, category: "timeclock" });
