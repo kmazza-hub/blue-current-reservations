@@ -19428,3 +19428,43 @@ body > .bc-reserved-table-tool-v100-2-26::before {
   #host-stand #hostFloorMap[data-bc-floor-restored-v100247="true"] .host-table small { font-size:15px !important; }
   #host-stand #hostFloorMap[data-bc-floor-restored-v100247="true"] .host-table.cleaning small { font-size:14px !important; }
 }
+
+
+/* ==========================================================================\n   V100.2.93 · iPad Touch Target Foundation\n   Coarse-pointer tablets get touch-safe controls without inheriting the\n   phone layout. Desktop/mouse layout remains unchanged.\n   ========================================================================== */
+@media (pointer:coarse) and (max-width:1366px){
+  button,
+  .button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"]{
+    min-height:44px;
+    touch-action:manipulation;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea{
+    font-size:16px;
+  }
+
+  #host-stand .host-nav button,
+  #host-stand .queue-item button,
+  #host-stand .bc-rush-dock button,
+  #host-stand .bc-mobile-action-row > button,
+  #host-stand .bc-mobile-action-row > .button{
+    min-height:44px !important;
+  }
+
+  .bc-mobile-scroll,
+  #host-stand #waitlistQueue,
+  #host-stand #arrivalQueue{
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+  }
+
+  .bc-host-dialog-card,
+  [role="dialog"]{
+    max-height:min(92vh,92dvh);
+  }
+}

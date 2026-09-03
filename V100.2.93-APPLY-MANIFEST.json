@@ -1,0 +1,10 @@
+{
+  "version": "100.2.93",
+  "name": "iPad Touch Target Foundation",
+  "runtimeFilesChanged": [
+    "client/styles.css"
+  ],
+  "sourceStylesSha256": "b85d3de0546d8663c21d8fc54d90495485e2e289d1e339c780340b4b74a865c7",
+  "targetStylesSha256": "c33b62febce584646d7eee5d099968a811f5837f7e8b95e85db168aa270e89d6",
+  "scope": "coarse-pointer tablet touch ergonomics only"
+}
