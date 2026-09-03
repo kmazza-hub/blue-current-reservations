@@ -1,0 +1,13 @@
+{
+  "version": "100.3.2",
+  "name": "Human Operator Review Protocol",
+  "requires": "100.3.1",
+  "runtimeFilesChanged": [],
+  "reviewArtifacts": [
+    "config/operator-review-v100.3.2.json",
+    "V100.3.2-OPERATOR-REVIEW-WORKSHEET.md"
+  ],
+  "humanObservationRequired": true,
+  "automaticApproval": false,
+  "scope": "twelve current V100 restaurant workflows and explicit human READY, REVISE, or HOLD decision"
+}
