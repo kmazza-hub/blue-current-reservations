@@ -1482,24 +1482,7 @@
       ]
     }
   ],
-  "sessions": [
-    {
-      "id": "ses_1788127246473_kmymt4",
-      "tokenHash": "0ae99f37cd4d7de267e76044f4c505424dddd22167d4c3e4d69c122de5f90db1",
-      "userId": "usr_keith",
-      "organizationId": "org_chefs",
-      "role": "owner",
-      "locationIds": [
-        "*"
-      ],
-      "createdAt": "2026-08-30T22:00:46.473Z",
-      "lastSeenAt": "2026-08-30T22:00:46.473Z",
-      "idleExpiresAt": "2026-08-31T00:00:46.473Z",
-      "expiresAt": "2026-08-31T10:00:46.473Z",
-      "revokedAt": null,
-      "revokedReason": null
-    }
-  ],
+  "sessions": [],
   "invitations": [
     {
       "id": "inv_demo",
