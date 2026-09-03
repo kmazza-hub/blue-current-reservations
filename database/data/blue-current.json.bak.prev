@@ -1509,12 +1509,12 @@
         "*"
       ],
       "createdAt": "2026-09-03T01:14:57.023Z",
-      "lastSeenAt": "2026-09-03T01:31:44.928Z",
-      "idleExpiresAt": "2026-09-03T03:31:44.928Z",
+      "lastSeenAt": "2026-09-03T01:50:53.195Z",
+      "idleExpiresAt": "2026-09-03T03:50:53.195Z",
       "expiresAt": "2026-09-03T13:14:57.023Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-09-03T01:31:44.932Z"
+      "updatedAt": "2026-09-03T01:50:53.198Z"
     },
     {
       "id": "ses_1788398387567_hlolx1",
