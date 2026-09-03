@@ -1,0 +1,278 @@
+{
+  "version": "100.3.3",
+  "name": "Blue Current Human Operator Review Protocol",
+  "status": "IN_REVIEW",
+  "principle": "Aim small, miss small — one job, one screen, one obvious next action.",
+  "reviewer": "Keith Mazza",
+  "restaurant": "Test 1",
+  "device": "Main",
+  "startedAt": "2026-09-03T02:38:49.526Z",
+  "completedAt": null,
+  "decision": null,
+  "allowedDecisions": [
+    "READY",
+    "REVISE",
+    "HOLD"
+  ],
+  "rules": {
+    "realDeviceRequired": true,
+    "humanObservationRequired": true,
+    "allScenariosRequired": true,
+    "criticalFindingBlocksReady": true,
+    "highFindingRequiresResolutionOrExplicitAcceptance": true,
+    "automaticApproval": false,
+    "automaticWorkflowChange": false,
+    "profitClaimsRequireMeasuredEvidence": true
+  },
+  "ratingScale": {
+    "CLEAR": "The operator understood and completed the task without coaching.",
+    "FRICTION": "The task completed, but hesitation, extra explanation, or avoidable taps were observed.",
+    "BLOCKED": "The operator could not complete the task accurately or safely."
+  },
+  "scenarios": [
+    {
+      "id": "AUTH_RESUME",
+      "role": "All operators",
+      "job": "Sign in, leave the app, and return to the same usable workspace.",
+      "start": "Authenticated session on an iPad or equivalent touch device.",
+      "expected": "Connectivity and session recover before interaction unlocks; no forced reload or duplicate action.",
+      "observe": [
+        "time to usable screen",
+        "unexpected login prompt",
+        "stale data",
+        "first tap accepted once"
+      ],
+      "profitabilityLens": "Lost operator time and service interruption.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "RESERVATION_ARRIVAL",
+      "role": "Host",
+      "job": "Find an expected guest and mark the party arrived.",
+      "start": "Guest appears in the current reservations or arrivals workflow.",
+      "expected": "The guest leaves the prior state once and appears in the correct active Host queue.",
+      "observe": [
+        "search speed",
+        "guest identity clarity",
+        "single-tap response",
+        "duplicate or stuck card"
+      ],
+      "profitabilityLens": "Missed reservations, guest wait, and host labor.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "WALKIN_WAITLIST",
+      "role": "Host",
+      "job": "Add a walk-in and understand the party's place in line.",
+      "start": "Active Host Stand during normal service.",
+      "expected": "Name and party size create one waitlist record with readable wait context.",
+      "observe": [
+        "required fields",
+        "tap count",
+        "priority clarity",
+        "wait-time trust"
+      ],
+      "profitabilityLens": "Captured demand and walk-away risk.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "HOST_SEATING",
+      "role": "Host",
+      "job": "Choose an appropriate table and seat one party.",
+      "start": "Arrived or waitlisted party and at least one available table.",
+      "expected": "One guest and one table commit once; the Host card clears and the table becomes seated.",
+      "observe": [
+        "table availability trust",
+        "dialog readability",
+        "repeat-tap behavior",
+        "party and table identity after seating"
+      ],
+      "profitabilityLens": "Seat utilization, turn time, and mis-seat recovery.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "SERVICE_INTAKE",
+      "role": "Server",
+      "job": "Recognize the newly seated party and begin service.",
+      "start": "Host has completed seating.",
+      "expected": "Service receives the same guest, party size, table, and seated time without re-entry.",
+      "observe": [
+        "handoff delay",
+        "identity accuracy",
+        "active covers accuracy",
+        "first action clarity"
+      ],
+      "profitabilityLens": "Greeting speed, labor coordination, and guest retention.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "SERVICE_MILESTONES",
+      "role": "Server",
+      "job": "Advance one table through greeting, ordering, dining, and check milestones.",
+      "start": "Active seated party in Service.",
+      "expected": "Only the selected table advances one human-confirmed stage per action.",
+      "observe": [
+        "current state clarity",
+        "next action clarity",
+        "wrong-table risk",
+        "pace visibility"
+      ],
+      "profitabilityLens": "Throughput, check timing, and server capacity.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "KITCHEN_READY_HANDOFF",
+      "role": "Kitchen and Server",
+      "job": "Mark an ordering handoff ready and deliver the correct food.",
+      "start": "Known Service party in Ordering with a matching Kitchen handoff.",
+      "expected": "Kitchen Ready promotes the matching table without advancing Service automatically.",
+      "observe": [
+        "ticket-to-table identity",
+        "priority clarity",
+        "ready acknowledgment",
+        "wrong-run risk"
+      ],
+      "profitabilityLens": "Food quality, remake exposure, and table pace.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "TABLE_TURN",
+      "role": "Server and Host",
+      "job": "Complete service, clean the table, and return it to available.",
+      "start": "Party at the final Service milestone on a seated table.",
+      "expected": "Service completion moves seated to cleaning; a human reset moves cleaning to available.",
+      "observe": [
+        "guest card clears",
+        "cleaning state visibility",
+        "premature-open risk",
+        "availability count accuracy"
+      ],
+      "profitabilityLens": "Table turns, sanitation control, and available capacity.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "SERVICE_RECOVERY",
+      "role": "Server",
+      "job": "Identify and act on the first real Service recovery exception.",
+      "start": "Known Service stage exceeds its configured recovery threshold.",
+      "expected": "The actual party and table appear first with one concrete recovery action and no invented cause.",
+      "observe": [
+        "priority accuracy",
+        "reason clarity",
+        "action usefulness",
+        "alert fatigue"
+      ],
+      "profitabilityLens": "Guest recovery cost, comps, and repeat-visit risk.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "MANAGER_OWNERSHIP",
+      "role": "Manager",
+      "job": "See, own, follow up, and complete a Service recovery action.",
+      "start": "An active Service recovery exception has synchronized.",
+      "expected": "One high-priority live action appears; ownership and completion affect only that action.",
+      "observe": [
+        "time to awareness",
+        "owner visibility",
+        "next-action clarity",
+        "feed continuity"
+      ],
+      "profitabilityLens": "Recovery follow-through and management span of control.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "STAFF_ATTENDANCE",
+      "role": "Manager",
+      "job": "Identify the first attendance exception and record follow-up.",
+      "start": "Live time-clock data contains a late or missing clock-in condition.",
+      "expected": "The first real exception, employee identity, and one follow-up action are visible.",
+      "observe": [
+        "source trust",
+        "priority accuracy",
+        "employee identity",
+        "resolution clarity"
+      ],
+      "profitabilityLens": "Labor deployment, overtime exposure, and service coverage.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    },
+    {
+      "id": "RUSH_READABILITY",
+      "role": "Host, Server, Kitchen, and Manager",
+      "job": "Run the primary workflow under a simulated rush on the target iPad.",
+      "start": "Multiple active parties, exceptions, and simultaneous workspace activity.",
+      "expected": "Text remains readable, touch targets remain reliable, scrolling remains controlled, and the first priority stays obvious.",
+      "observe": [
+        "portrait and landscape",
+        "keyboard obstruction",
+        "modal overlap",
+        "missed taps",
+        "freeze or long task",
+        "first-day employee comprehension"
+      ],
+      "profitabilityLens": "Peak throughput, training time, mistakes, and abandoned demand.",
+      "rating": null,
+      "severity": null,
+      "evidence": [],
+      "notes": "",
+      "reviewedAt": null
+    }
+  ],
+  "findings": [],
+  "summary": {
+    "total": 12,
+    "reviewed": 0,
+    "remaining": 12,
+    "clear": 0,
+    "friction": 0,
+    "blocked": 0,
+    "critical": 0,
+    "high": 0,
+    "readyEligible": false
+  },
+  "protocolVersion": "100.3.2",
+  "decisionRationale": ""
+}
