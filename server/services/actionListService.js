@@ -191,7 +191,7 @@ class ActionListService {
     const desired = supplied.map(item => {
       const exceptionKey = String(item?.exceptionKey || "").trim().slice(0, 240);
       if (!exceptionKey) return null;
-      const sourceRecordId = crypto.createHash("sha256").update(exceptionKey).digest("hex").slice(0, 24);
+      const sourceRecordId = crypto.createHash("sha256").update(`${organizationId}|${locationId}|${exceptionKey}`).digest("hex").slice(0, 24);
       const guest = String(item?.guest || "Guest").trim().slice(0, 80) || "Guest";
       const table = String(item?.table || "Assigned table").trim().slice(0, 40) || "Assigned table";
       const reason = String(item?.reason || "Service recovery needed").trim().slice(0, 160);
