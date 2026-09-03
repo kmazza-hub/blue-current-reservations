@@ -1,0 +1,17 @@
+{
+  "version": "100.3.3",
+  "name": "Operator Review Evidence Integrity",
+  "requires": "100.3.2",
+  "runtimeFilesChanged": [],
+  "reviewTools": [
+    "scripts/maintenance/operator-review-recorder-v100.3.3.js",
+    "scripts/maintenance/test-v100.3.3-operator-review-evidence-integrity.js"
+  ],
+  "outputs": [
+    "evidence/operator-review-v100.3.3.json",
+    "evidence/operator-review-v100.3.3-report.md"
+  ],
+  "humanObservationRequired": true,
+  "automaticApproval": false,
+  "scope": "resumable human evidence capture, guarded review decision, and immutable completed record"
+}
