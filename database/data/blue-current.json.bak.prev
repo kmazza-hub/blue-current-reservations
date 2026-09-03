@@ -1509,12 +1509,12 @@
         "*"
       ],
       "createdAt": "2026-09-03T01:14:57.023Z",
-      "lastSeenAt": "2026-09-03T01:59:54.370Z",
-      "idleExpiresAt": "2026-09-03T03:59:54.370Z",
+      "lastSeenAt": "2026-09-03T02:13:49.890Z",
+      "idleExpiresAt": "2026-09-03T04:13:49.890Z",
       "expiresAt": "2026-09-03T13:14:57.023Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-09-03T01:59:54.372Z"
+      "updatedAt": "2026-09-03T02:13:49.892Z"
     },
     {
       "id": "ses_1788398387567_hlolx1",
@@ -3157,6 +3157,68 @@
       },
       "verification": null,
       "automaticAction": false
+    }
+  ],
+  "managerActions": [
+    {
+      "id": "action_loc_marina_pto_pto_1785380502529",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "title": "Review Maria Santos’s pending PTO request",
+      "source": "Workforce",
+      "priority": "high",
+      "due": "Due today",
+      "completed": false,
+      "automatic": true,
+      "sourceRecordId": "pto_1785380502529",
+      "sourceRecordType": "pto_request",
+      "createdAt": "2026-07-30T03:01:42.529Z",
+      "updatedAt": "2026-09-03T02:17:30.809Z"
+    },
+    {
+      "id": "action_loc_marina_inventory_inv_greens",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "title": "Confirm replenishment for Romaine Hearts",
+      "source": "Inventory",
+      "priority": "high",
+      "due": "Before dinner service",
+      "completed": false,
+      "automatic": true,
+      "sourceRecordId": "inv_greens",
+      "sourceRecordType": "inventory_item",
+      "createdAt": "2026-09-03T02:14:30.809Z",
+      "updatedAt": "2026-09-03T02:17:30.809Z"
+    },
+    {
+      "id": "action_loc_marina_inventory_inv_salmon",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "title": "Confirm replenishment for Atlantic Salmon",
+      "source": "Inventory",
+      "priority": "high",
+      "due": "Before dinner service",
+      "completed": false,
+      "automatic": true,
+      "sourceRecordId": "inv_salmon",
+      "sourceRecordType": "inventory_item",
+      "createdAt": "2026-09-03T02:14:30.809Z",
+      "updatedAt": "2026-09-03T02:17:30.809Z"
+    },
+    {
+      "id": "action_loc_marina_shift_handoff",
+      "organizationId": "org_chefs",
+      "locationId": "loc_marina",
+      "title": "Post the first shift handoff",
+      "source": "Handoffs",
+      "priority": "medium",
+      "due": "Before the next manager arrives",
+      "completed": false,
+      "automatic": true,
+      "sourceRecordId": null,
+      "sourceRecordType": "shift_handoff",
+      "createdAt": "2026-09-03T02:14:30.809Z",
+      "updatedAt": "2026-09-03T02:17:30.809Z"
     }
   ]
 }

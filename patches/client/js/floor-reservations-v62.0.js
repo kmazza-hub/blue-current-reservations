@@ -482,6 +482,19 @@ ready(()=>{
  };
  function serviceRecoveryException(p){const status=p?.status||"seated",limit=SERVICE_PACE_MINUTES[status],guide=SERVICE_RECOVERY_GUIDANCE[status];if(!Number.isFinite(limit)||!guide)return null;const ageMs=serviceStageAgeMs(p),recoveryAt=limit*SERVICE_RECOVERY_MULTIPLIER*60000;if(ageMs<recoveryAt)return null;return{status,minutes:Math.max(1,Math.floor(ageMs/60000)),reason:guide.reason,action:guide.action};}
  function serviceRecoveryReason(p){const x=serviceRecoveryException(p);return x?`${x.reason} · ${x.minutes}m in this stage`:"";}
+ // V100.3.0 — Service → Manager Exception Visibility. Sync only current recovery truth into the existing Manager Actions ledger.
+ let serviceManagerApi=null,serviceManagerSyncing=false,serviceManagerDigest="";
+ async function syncServiceManagerExceptions(rows=readServiceParties()){
+   if(serviceManagerSyncing||document.visibilityState==="hidden"||!window.BlueCurrentCloudApi)return;
+   serviceManagerApi||=new window.BlueCurrentCloudApi("");
+   if(!serviceManagerApi?.token||!serviceManagerApi?.hasCapability?.("syncServiceExceptions"))return;
+   const exceptions=rows.map(p=>({party:p,recovery:serviceRecoveryException(p)})).filter(x=>x.recovery).map(({party,recovery})=>({exceptionKey:`${servicePartyKey(party)}|${recovery.status}`,guest:String(party.guest||"Guest"),table:serviceTableLabel(party),status:recovery.status,minutes:recovery.minutes,reason:recovery.reason,action:recovery.action}));
+   const digest=JSON.stringify(exceptions.map(x=>[x.exceptionKey,x.minutes,x.reason,x.action]));if(digest===serviceManagerDigest)return;
+   serviceManagerSyncing=true;
+   try{await serviceManagerApi.syncServiceExceptions({locationId:"loc_marina",exceptions});serviceManagerDigest=digest;window.dispatchEvent(new CustomEvent("bc:service-manager-exceptions-synced",{detail:{count:exceptions.length}}));}
+   catch(error){window.dispatchEvent(new CustomEvent("bc:service-manager-exceptions-sync-failed",{detail:{message:error?.message||"Service exception sync failed"}}));}
+   finally{serviceManagerSyncing=false;}
+ }
  function renderServiceWorkspace(){
    injectServiceWorkspaceStyles();
    let overlay=document.getElementById("bcServiceWorkspaceV100251");
@@ -491,6 +504,7 @@ ready(()=>{
      document.body.appendChild(overlay);overlay.querySelector(".bc-service-close-v251")?.addEventListener("click",()=>{overlay.hidden=true;});overlay.addEventListener("click",e=>{if(e.target===overlay)overlay.hidden=true;});document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!overlay.hidden)overlay.hidden=true;});
    }
    const rows=readServiceParties().filter(p=>p&&p.status!=="cleared").sort((a,b)=>servicePriorityScore(b)-servicePriorityScore(a)||Number(a.seatedAt||0)-Number(b.seatedAt||0));
+   syncServiceManagerExceptions(rows);
    const covers=rows.reduce((n,p)=>n+Number(p.partySize||0),0),needs=rows.filter(serviceNeedsAttention).length;
    // V100.2.55 — Service First Priority
    const summary=overlay.querySelector(".bc-service-summary-v251"),focus=overlay.querySelector(".bc-service-focus-v255"),list=overlay.querySelector(".bc-service-list-v251");
@@ -505,7 +519,8 @@ ready(()=>{
  function openServiceWorkspace(){const overlay=renderServiceWorkspace();overlay.hidden=false;requestAnimationFrame(()=>overlay.querySelector(".bc-service-close-v251")?.focus());}
  const serviceQuickButton=Array.from(host.querySelectorAll("button,a")).find(el=>/\bservice\b/i.test((el.textContent||"").trim())&&/run floor/i.test((el.textContent||"").trim()));
  if(serviceQuickButton&&!serviceQuickButton.dataset.bcServiceV251){serviceQuickButton.dataset.bcServiceV251="true";serviceQuickButton.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();openServiceWorkspace();});}
- ["bc:service-party-received","bc:service-party-updated"].forEach(name=>window.addEventListener(name,()=>{const overlay=document.getElementById("bcServiceWorkspaceV100251");if(overlay&&!overlay.hidden)renderServiceWorkspace();}));
+ ["bc:service-party-received","bc:service-party-updated","bc:service-party-completed"].forEach(name=>window.addEventListener(name,()=>{const rows=readServiceParties();syncServiceManagerExceptions(rows);const overlay=document.getElementById("bcServiceWorkspaceV100251");if(overlay&&!overlay.hidden)renderServiceWorkspace();}));
+ setInterval(()=>syncServiceManagerExceptions(readServiceParties()),30000);
  window.BlueCurrentServiceWorkspace={open:openServiceWorkspace,render:renderServiceWorkspace};
  // Make queue tabs intentionally switch the visible queue inside Floor, while sidebar nav changes workspaces.
  host.querySelectorAll(".queue-tabs button").forEach(button=>button.setAttribute("aria-label",button.dataset.queue==="waitlist"?"Show live waitlist":"Show upcoming arrivals"));
