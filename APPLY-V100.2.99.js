@@ -1,0 +1,12 @@
+"use strict";
+const fs=require("fs"),path=require("path"),crypto=require("crypto");
+const rel="server/server.js";
+const before="981ae42521a26039067813f6f99bae1ad046368bf8130235a6d084da381c1d54";
+const after="e64415ce50baf6ab012b07ebce3683cc1062f0bda936e385cff8d253327b0dd3";
+const dst=path.join(process.cwd(),rel),src=path.join(__dirname,"patches",rel);
+const sha=file=>crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+if(!fs.existsSync(dst))throw new Error(`Missing ${rel}`);
+const current=sha(dst);
+if(current!==before&&current!==after)throw new Error(`Refusing unexpected ${rel} SHA256: ${current}`);
+if(current===before)fs.copyFileSync(src,dst);
+console.log(current===after?"V100.2.99 already applied.":"Applied V100.2.99 — Manager Actions Runtime Wiring Integrity.");
