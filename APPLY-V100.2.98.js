@@ -1,0 +1,12 @@
+"use strict";
+const fs=require("fs"),path=require("path"),crypto=require("crypto");
+const rel="client/js/app-v15.1.3.js";
+const before="08d09c1e766342f1646cbae7d5388e22e296e7e8ef2ba88b78dfbcbd23e3418c";
+const after="920d28dbe761d56413632e6c64efe9deb75b0e97573b756855e9cb41df293d32";
+const dst=path.join(process.cwd(),rel),src=path.join(__dirname,"patches",rel);
+const sha=file=>crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+if(!fs.existsSync(dst))throw new Error(`Missing ${rel}`);
+const current=sha(dst);
+if(current!==before&&current!==after)throw new Error(`Refusing unexpected ${rel} SHA256: ${current}`);
+if(current===before)fs.copyFileSync(src,dst);
+console.log(current===after?"V100.2.98 already applied.":"Applied V100.2.98 — Host → Service Party Identity Integrity.");

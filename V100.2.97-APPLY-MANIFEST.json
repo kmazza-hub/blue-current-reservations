@@ -1,0 +1,13 @@
+{
+  "version": "100.2.97",
+  "name": "iPad Device Hardening Certification",
+  "runtimeFilesChanged": [],
+  "certifies": [
+    "V100.2.92 iPad Recovery Rush Certification",
+    "V100.2.93 iPad Touch Target Foundation",
+    "V100.2.94 Runtime Observer Loop Guard",
+    "V100.2.95 iPad Safe Area + Keyboard Viewport Integrity",
+    "V100.2.96 iPad Host Repeat-Tap Integrity"
+  ],
+  "physicalDeviceEvidenceRequired": true
+}
