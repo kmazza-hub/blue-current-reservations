@@ -81,27 +81,32 @@ function decorate(){
  if(decorating)return;
  const root=byId("kitchenThroughputCenter");
  if(!root||root.dataset.bcKitchenTruth!=="100.2.60")return;
- decorating=true;ensureStyles();
- root.querySelector(".bc-kitchen-priority-v262")?.remove();
- root.querySelectorAll(".bc-kt-row").forEach(row=>{
-   delete row.dataset.kitchenTone;
-   row.querySelector(".bc-kitchen-exception-v262")?.remove();
- });
- const rows=kitchenRows(),first=rows[0]||null,copy=priorityCopy(first);
- const priority=document.createElement("div");
- priority.className="bc-kitchen-priority-v262";
- priority.dataset.tone=copy.tone;
- priority.innerHTML=`<div><small>First priority</small><strong>${escapeHTML(copy.title)}</strong></div><span>${escapeHTML(copy.detail)}</span>`;
- root.querySelector(".bc-kt-summary")?.insertAdjacentElement("beforebegin",priority);
- rows.forEach(p=>{
-   const row=rowFor(root,p);if(!row)return;
-   row.dataset.kitchenTone=p.level;
-   if(p.level==="pace")return;
-   const badge=document.createElement("small");badge.className="bc-kitchen-exception-v262";badge.dataset.tone=p.level;
-   badge.textContent=p.level==="ready"?"Ready · run now":p.level==="recovery"?"Recovery needed":"Needs check";
-   row.querySelector("div")?.appendChild(badge);
- });
- decorating=false;
+ decorating=true;observer?.disconnect();
+ try{
+   ensureStyles();
+   root.querySelector(".bc-kitchen-priority-v262")?.remove();
+   root.querySelectorAll(".bc-kt-row").forEach(row=>{
+     delete row.dataset.kitchenTone;
+     row.querySelector(".bc-kitchen-exception-v262")?.remove();
+   });
+   const rows=kitchenRows(),first=rows[0]||null,copy=priorityCopy(first);
+   const priority=document.createElement("div");
+   priority.className="bc-kitchen-priority-v262";
+   priority.dataset.tone=copy.tone;
+   priority.innerHTML=`<div><small>First priority</small><strong>${escapeHTML(copy.title)}</strong></div><span>${escapeHTML(copy.detail)}</span>`;
+   root.querySelector(".bc-kt-summary")?.insertAdjacentElement("beforebegin",priority);
+   rows.forEach(p=>{
+     const row=rowFor(root,p);if(!row)return;
+     row.dataset.kitchenTone=p.level;
+     if(p.level==="pace")return;
+     const badge=document.createElement("small");badge.className="bc-kitchen-exception-v262";badge.dataset.tone=p.level;
+     badge.textContent=p.level==="ready"?"Ready · run now":p.level==="recovery"?"Recovery needed":"Needs check";
+     row.querySelector("div")?.appendChild(badge);
+   });
+ }finally{
+   observer?.observe(root,{childList:true,subtree:true});
+   decorating=false;
+ }
 }
 function init(){
  ensureStyles();

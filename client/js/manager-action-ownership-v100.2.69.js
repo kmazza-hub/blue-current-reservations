@@ -90,14 +90,19 @@ function decorate(){
  if(decorating)return;
  const view=document.querySelector("#command-center > .bc-manager-truth-v268");
  if(!view)return;
- decorating=true;ensureStyles();addSummary(view);
- view.querySelectorAll(".bc-mgr-action").forEach(row=>addOwner(row,actionForElement(row)));
- const priority=view.querySelector(".bc-mgr-priority");
- if(priority){
-   const action=actionForElement(priority);
-   if(action)addOwner(priority,action);
+ decorating=true;observer?.disconnect();
+ try{
+   ensureStyles();addSummary(view);
+   view.querySelectorAll(".bc-mgr-action").forEach(row=>addOwner(row,actionForElement(row)));
+   const priority=view.querySelector(".bc-mgr-priority");
+   if(priority){
+     const action=actionForElement(priority);
+     if(action)addOwner(priority,action);
+   }
+ }finally{
+   observer?.observe(view,{childList:true,subtree:true});
+   decorating=false;
  }
- decorating=false;
 }
 function init(){
  ensureStyles();

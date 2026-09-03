@@ -1,0 +1,12 @@
+{
+  "version": "100.2.94",
+  "name": "Runtime Observer Loop Guard",
+  "runtimeFilesChanged": [
+    "client/js/kitchen-priority-v100.2.62.js",
+    "client/js/kitchen-service-handoff-v100.2.61.js",
+    "client/js/manager-action-ownership-v100.2.69.js"
+  ],
+  "scope": "observer self-feedback prevention only",
+  "restaurantLifecycleChanges": false,
+  "backgroundWorkAdded": false
+}

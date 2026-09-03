@@ -48,30 +48,35 @@ function decorate(){
  if(decorating)return;
  const overlay=byId("bcServiceWorkspaceV100251");
  if(!overlay)return;
- decorating=true;ensureStyles();
- overlay.querySelectorAll(".bc-service-party-v251").forEach(row=>{
-   row.dataset.kitchenReady="false";
-   row.querySelector(".bc-kitchen-ready-v261")?.remove();
- });
- const ready=readyRows();
- ready.forEach(p=>{
-   const row=rowForParty(overlay,p);if(!row)return;
-   row.dataset.kitchenReady="true";
-   const badge=document.createElement("small");badge.className="bc-kitchen-ready-v261";badge.textContent="Food ready · run now";
-   row.querySelector("div")?.appendChild(badge);
- });
- const focus=overlay.querySelector(".bc-service-focus-v255");
- if(focus){
-   const first=ready[0]||null;
-   focus.dataset.kitchenReady=String(Boolean(first));
-   if(first){
-     const table=String(first.tableId||first.table||"Assigned table"),guest=String(first.guest||"Guest");
-     focus.dataset.urgent="true";
-     focus.dataset.recovery="false";
-     focus.innerHTML=`<div><small>First priority</small><strong>Food ready</strong></div><span>${escapeHtml(guest)} · ${escapeHtml(table)} · Run this table now, then mark Food delivered.</span>`;
+ decorating=true;observer?.disconnect();
+ try{
+   ensureStyles();
+   overlay.querySelectorAll(".bc-service-party-v251").forEach(row=>{
+     row.dataset.kitchenReady="false";
+     row.querySelector(".bc-kitchen-ready-v261")?.remove();
+   });
+   const ready=readyRows();
+   ready.forEach(p=>{
+     const row=rowForParty(overlay,p);if(!row)return;
+     row.dataset.kitchenReady="true";
+     const badge=document.createElement("small");badge.className="bc-kitchen-ready-v261";badge.textContent="Food ready · run now";
+     row.querySelector("div")?.appendChild(badge);
+   });
+   const focus=overlay.querySelector(".bc-service-focus-v255");
+   if(focus){
+     const first=ready[0]||null;
+     focus.dataset.kitchenReady=String(Boolean(first));
+     if(first){
+       const table=String(first.tableId||first.table||"Assigned table"),guest=String(first.guest||"Guest");
+       focus.dataset.urgent="true";
+       focus.dataset.recovery="false";
+       focus.innerHTML=`<div><small>First priority</small><strong>Food ready</strong></div><span>${escapeHtml(guest)} · ${escapeHtml(table)} · Run this table now, then mark Food delivered.</span>`;
+     }
    }
+ }finally{
+   observer?.observe(overlay,{childList:true,subtree:true});
+   decorating=false;
  }
- decorating=false;
 }
 function escapeHtml(value){
  return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
