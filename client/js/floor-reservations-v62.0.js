@@ -12,6 +12,7 @@ ready(()=>{
  const dialogBody=document.getElementById("bcHostDialogBody");
  const dialogSubmit=document.getElementById("bcHostDialogSubmit");
  let dialogMode=null;
+ let dialogSubmitting=false;
  let activeReservationArticle=null;
  let activeGuestProfile=null;
 
@@ -39,6 +40,8 @@ ready(()=>{
    return `${String(hour).padStart(2,"0")}:${minute}`;
  }
  function openDialog(mode,payload={}){
+   dialogSubmitting=false;
+   if(dialogSubmit){dialogSubmit.disabled=false;dialogSubmit.removeAttribute("aria-busy");}
    dialogMode=mode;
    dialogEyebrow.textContent=mode==="reservation"?"RESERVATION":mode==="walkin"?"WALK-IN":"GUEST";
    dialogSubmit.hidden=mode==="details";
@@ -152,6 +155,10 @@ ready(()=>{
 
  document.getElementById("bcHostDialogForm")?.addEventListener("submit",event=>{
    event.preventDefault();
+   if(dialogSubmitting)return;
+   dialogSubmitting=true;
+   if(dialogSubmit){dialogSubmit.disabled=true;dialogSubmit.setAttribute("aria-busy","true");}
+   try{
    if(dialogMode==="details"){closeDialog();return;}
    const mode=dialogMode;
    const data=new FormData(event.currentTarget);
@@ -188,6 +195,11 @@ ready(()=>{
      });
    }else if(mode==="walkin"||mode==="reservation-details"){
      setView("floor");
+   }
+   }catch(error){
+     dialogSubmitting=false;
+     if(dialogSubmit){dialogSubmit.disabled=false;dialogSubmit.removeAttribute("aria-busy");}
+     throw error;
    }
  });
 

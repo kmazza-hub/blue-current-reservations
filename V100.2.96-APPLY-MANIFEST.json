@@ -1,0 +1,10 @@
+{
+  "version": "100.2.96",
+  "name": "iPad Host Repeat-Tap Integrity",
+  "runtimeFilesChanged": [
+    "client/js/floor-reservations-v62.0.js"
+  ],
+  "sourceControllerSha256": "35e658b4b0cf76cf19ee34cb05ce9a59e0317774bcdc16ecc2654e23c4b7179b",
+  "targetControllerSha256": "526d152c4f0010b449760937119eeb13cea5a93fdbbad1dea10e1b7f3226862b",
+  "scope": "Host dialog repeat-submit protection and seating repeat-tap certification"
+}
