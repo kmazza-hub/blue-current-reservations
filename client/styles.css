@@ -19509,3 +19509,25 @@ body > .bc-reserved-table-tool-v100-2-26::before {
     }
   }
 }
+
+/* V100.3.4 — physical iPad operator focus + safe viewport */
+:root{--bc-ipad-safe-top:calc(env(safe-area-inset-top, 0px) + 12px);--bc-ipad-safe-bottom:calc(env(safe-area-inset-bottom, 0px) + 12px)}
+@supports (-webkit-touch-callout:none){
+  html{scroll-padding-top:var(--bc-ipad-safe-top);scroll-padding-bottom:calc(88px + var(--bc-ipad-safe-bottom))}
+  #host-stand,#service-coordination,#serviceCoordination,#kitchenThroughputCenter,#workforce-intelligence{scroll-margin-top:var(--bc-ipad-safe-top)}
+}
+.bc-ipad-floor-focus-close{display:none}
+html.bc-ipad-floor-focus{overflow:hidden}
+html.bc-ipad-floor-focus body{overflow:hidden}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel{
+  position:fixed!important;inset:0!important;z-index:2147482500!important;margin:0!important;padding:calc(var(--bc-ipad-safe-top) + 8px) 18px calc(92px + var(--bc-ipad-safe-bottom))!important;
+  width:100vw!important;height:100dvh!important;max-width:none!important;background:#082b35!important;overflow:auto!important;box-sizing:border-box!important
+}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .bc-ipad-floor-focus-close{
+  display:inline-flex;position:sticky;top:0;z-index:8;align-items:center;justify-content:center;min-height:52px;padding:0 22px;margin:0 0 12px;
+  border:1px solid rgba(114,230,215,.55);border-radius:14px;background:#0b3a46;color:#fff;font-weight:800;font-size:1rem
+}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-floor-toolbar{position:sticky;top:64px;z-index:7;background:#082b35;padding:8px 0 12px}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-floor-map{width:min(1180px,100%)!important;min-height:calc(100dvh - 190px)!important;height:auto!important;margin:0 auto!important}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-table{transform:scale(1.12);transform-origin:center}
+html.bc-ipad-floor-focus .bc-rush-dock{z-index:2147483000!important}
