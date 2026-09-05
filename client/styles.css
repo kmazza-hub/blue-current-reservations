@@ -19838,3 +19838,28 @@ html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-fl
 .bc-floor-status-done-v100-3-10{width:100%!important;min-height:58px!important;border:0!important;border-radius:15px!important;background:#0f91a7!important;color:#fff!important;font-size:1.05rem!important;font-weight:950!important}
 
 @media(max-width:900px){html.bc-ipad-floor-focus #bcFloorFocusStage .host-floor-toolbar button[data-host-zone]{min-height:58px!important;font-size:1rem!important}.bc-floor-table-status-dialog-v100-3-10{width:min(520px,calc(100vw - 28px))!important}}
+
+/* ==========================================================================
+   V100.3.10.2 · Seating Floor Focus render repair
+   A visible seating instruction adds a third direct child to the focused
+   floor panel. Give instruction, toolbar, and map explicit rows so the map
+   cannot collapse after the panel is portaled into the full-screen stage.
+   ========================================================================== */
+html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]{
+  grid-template-rows:auto auto minmax(440px,1fr)!important;
+  overflow:auto!important;
+}
+html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]>.bc-unified-seat-instruction-v100-2-18{
+  grid-row:1!important;margin:0 0 10px!important;position:relative!important;z-index:24!important;
+}
+html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]>.host-floor-toolbar{
+  grid-row:2!important;
+}
+html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]>#hostFloorMap{
+  grid-row:3!important;display:block!important;visibility:visible!important;opacity:1!important;
+  min-height:440px!important;height:100%!important;align-self:stretch!important;
+}
+@media(max-width:900px){
+  html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]{grid-template-rows:auto auto minmax(390px,1fr)!important}
+  html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]>#hostFloorMap{min-height:390px!important}
+}
