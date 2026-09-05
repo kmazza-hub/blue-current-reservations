@@ -43,9 +43,13 @@
     const actualGuest = normalize(table.dataset.bcGuestName);
     if (expectedGuest && actualGuest && expectedGuest !== actualGuest) return { ok:false, reason:"guest-table-mismatch", tableId };
 
-    table.classList.remove("seated","reserved","available");
+    table.classList.remove("seated","reserved","available","check");
     table.classList.add("cleaning");
     table.dataset.bcCleaningAt = String(Date.now());
+    delete table.dataset.bcGuestName;
+    delete table.dataset.bcGuestStatus;
+    delete table.dataset.bcServiceStage;
+    delete table.dataset.bcSeatedAt;
     const small = table.querySelector("small");
     if (small) small.textContent = "CLEANING";
     setCount("seatedCount", -1);

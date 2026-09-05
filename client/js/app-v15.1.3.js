@@ -2742,7 +2742,7 @@ window.__bcHostRuntimeRecoveryV100_2_20 = { ok:true, observer:'guarded', seating
     const action = lifecycleCard.querySelector('.bc-table-lifecycle-primary-v100-2-22').dataset.action;
     const before = stateOf(activeTable);
     if (action === 'left' && before === 'seated') {
-      activeTable.classList.remove('seated','reserved','available');
+      activeTable.classList.remove('seated','reserved','available','check');
       activeTable.classList.add('cleaning');
       activeTable.dataset.bcCleaningAt = String(now());
       updateCounts('seated','cleaning');
@@ -2751,12 +2751,13 @@ window.__bcHostRuntimeRecoveryV100_2_20 = { ok:true, observer:'guarded', seating
       if (rec) rec.textContent = `Table ${numOf(activeTable)} needs reset · Mark open when ready`;
       showCard(activeTable);
     } else if (action === 'open' && before === 'cleaning') {
-      activeTable.classList.remove('cleaning','reserved','seated');
+      activeTable.classList.remove('cleaning','reserved','seated','check');
       activeTable.classList.add('available');
       delete activeTable.dataset.bcGuestName;
       delete activeTable.dataset.bcGuestStatus;
       delete activeTable.dataset.bcCleaningAt;
       delete activeTable.dataset.bcSeatedAt;
+      delete activeTable.dataset.bcServiceStage;
       updateCounts('cleaning','available');
       renderTable(activeTable);
       const rec = document.getElementById('hostRecommendation');
