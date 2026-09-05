@@ -2208,6 +2208,9 @@ $("#addWalkIn")?.addEventListener("click", () => {
     const ready = buildReadyRow(row);
     markMatchingReservationRowsArrived(name);
     if (row.closest('#arrivalQueue')) row.remove();
+    [...document.querySelectorAll('#bcReservationList article')].forEach((reservation) => {
+      if (firstStrong(reservation) === name) reservation.remove();
+    });
     if (ready) ready.dataset.bcGuestStatus = 'waiting';
     sortReadyQueue();
     syncCounts();
@@ -2215,6 +2218,7 @@ $("#addWalkIn")?.addEventListener("click", () => {
       waitlistTab.classList.add('bc-has-ready-v100-2-17');
       waitlistTab.setAttribute('aria-label', `${waitlistBadge?.textContent || ''} guests ready to seat`);
     }
+    window.dispatchEvent(new CustomEvent('bc:host-reservation-entered-waitlist',{detail:{guest:name,readyRow:ready,source:'arrival-handoff'}}));
   };
 
   const ensureMarkArrivedButtons = () => {
@@ -5788,16 +5792,20 @@ queueMicrotask(() => {
 
   const seatLinkedReady = (table, row, name) => {
     const prior = stateOf(table);
+    const partySize = partySizeOf(row);
+    const seatedAt = Date.now();
     table.classList.remove('reserved','available','cleaning');
     table.classList.add('seated');
     table.dataset.bcGuestName = name;
     table.dataset.bcGuestStatus = 'seated';
-    table.dataset.bcPartySize = String(partySizeOf(row));
+    table.dataset.bcPartySize = String(partySize);
+    table.dataset.bcSeatedAt = String(seatedAt);
     setCount('reservedCount', prior === 'reserved' ? -1 : 0);
     setCount('seatedCount', 1);
     setCount('hostSeated', 1);
-    trust.markSeated?.(table, partySizeOf(row), name);
+    trust.markSeated?.(table, partySize, name);
     removeReadyRow(row);
+    window.dispatchEvent(new CustomEvent('bc:host-guest-seated',{detail:{guest:name,partySize,guestDetail:`Party of ${partySize}`,source:'reserved-table',tableId:tableNumber(table),seatedAt}}));
     const rec = document.getElementById('hostRecommendation');
     if (rec) rec.textContent = `${name} seated at Table ${tableNumber(table)}`;
     closeReserved();
