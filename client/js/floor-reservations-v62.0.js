@@ -416,7 +416,20 @@ ready(()=>{
 
  // V100.2.50 — Service Intake Queue. Host seating is the authoritative transition into service.
  const SERVICE_HANDOFF_KEY="blueCurrent.service.activeParties.v100";
- function readServiceParties(){try{const x=JSON.parse(localStorage.getItem(SERVICE_HANDOFF_KEY)||"[]");return Array.isArray(x)?x:[];}catch{return [];}}
+ const LIVE_SERVICE_WINDOW_MS=18*60*60*1000;
+ function servicePartyAnchor(row){return Number(row?.updatedAt||row?.seatedAt||0);}
+ function isLiveServiceParty(row,now=Date.now()){const anchor=servicePartyAnchor(row);return Number.isFinite(anchor)&&anchor>0&&anchor<=now+5*60*1000&&now-anchor<=LIVE_SERVICE_WINDOW_MS;}
+ function readServiceParties(){
+   try{
+     const x=JSON.parse(localStorage.getItem(SERVICE_HANDOFF_KEY)||"[]"),rows=Array.isArray(x)?x:[];
+     // V100.3.16 — this cache is live handoff state, not permanent history.
+     // A party untouched beyond one extended restaurant operating window must
+     // not reopen as an active Service/Kitchen emergency on a later day.
+     const live=rows.filter(row=>isLiveServiceParty(row));
+     if(live.length!==rows.length){localStorage.setItem(SERVICE_HANDOFF_KEY,JSON.stringify(live));window.dispatchEvent(new CustomEvent("bc:service-stale-pruned",{detail:{removed:rows.length-live.length}}));}
+     return live;
+   }catch{return [];}
+ }
  function writeServiceParties(rows){try{localStorage.setItem(SERVICE_HANDOFF_KEY,JSON.stringify(rows));}catch{}}
  function servicePartyKey(x){return `${guestKey(x?.guest||"")}|${Number(x?.partySize||0)}|${String(x?.tableId||x?.table||"")}`;}
  function acceptServiceHandoff(detail={}){
@@ -434,6 +447,8 @@ ready(()=>{
  // V100.2.57 — Service Completion / Table Turn Handoff. Table state remains human-owned: completion moves SEATED → CLEANING, never directly to OPEN.
  window.BlueCurrentServiceHandoff={
    getActive:()=>readServiceParties().slice(),
+   isLive:(row,now)=>isLiveServiceParty(row,now),
+   liveWindowMs:LIVE_SERVICE_WINDOW_MS,
    accept:(detail)=>acceptServiceHandoff(detail),
    update:(match,updates={})=>{const rows=readServiceParties();const key=typeof match==="string"?match:null;const next=rows.map(row=>{const hit=typeof match==="function"?match(row):servicePartyKey(row)===key;return hit?{...row,...updates,updatedAt:Date.now()}:row;});writeServiceParties(next);window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return next.slice();},
    clear:(match)=>{const rows=readServiceParties();const keep=typeof match==="function"?rows.filter(x=>!match(x)):rows.filter(x=>servicePartyKey(x)!==String(match||""));writeServiceParties(keep);window.dispatchEvent(new CustomEvent("bc:service-party-updated"));return keep.slice();},

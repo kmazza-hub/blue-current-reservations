@@ -10,7 +10,7 @@ const readJSON=(key,fallback)=>{try{const x=JSON.parse(localStorage.getItem(key)
 const writeJSON=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value));}catch{}};
 const guestKey=value=>String(value||"").trim().toLowerCase().replace(/\s+/g," ");
 const partyKey=p=>`${guestKey(p?.guest)}|${Number(p?.partySize||0)}|${String(p?.tableId||p?.table||"")}`;
-const active=()=>{const x=readJSON(SERVICE_KEY,[]);return Array.isArray(x)?x:[];};
+const active=()=>{const x=window.BlueCurrentServiceHandoff?.getActive?.()||readJSON(SERVICE_KEY,[]);return Array.isArray(x)?x:[];};
 const readyMap=()=>{const x=readJSON(READY_KEY,{});return x&&typeof x==="object"&&!Array.isArray(x)?x:{};};
 const stageAge=p=>Math.max(0,Math.floor((Date.now()-Number(p?.updatedAt||p?.seatedAt||Date.now()))/60000));
 const escapeHTML=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -68,7 +68,7 @@ function init(){
  render();
  observer=new MutationObserver(()=>{if(!rendering&&root.dataset.bcKitchenTruth!=="100.2.60")render();});
  observer.observe(root,{childList:true,subtree:false});
- ["bc:service-party-received","bc:service-party-updated","bc:service-party-completed"].forEach(name=>window.addEventListener(name,render));
+ ["bc:service-party-received","bc:service-party-updated","bc:service-party-completed","bc:service-stale-pruned"].forEach(name=>window.addEventListener(name,render));
  window.addEventListener("storage",e=>{if(e.key===SERVICE_KEY)render();});
  setInterval(render,60000);
  window.BlueCurrentKitchenTruthV100_2_60={render,getOrders:()=>rows().map(x=>({...x}))};

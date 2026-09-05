@@ -1,0 +1,24 @@
+"use strict";
+const fs=require("fs"),path=require("path"),vm=require("vm");
+const root=path.resolve(__dirname,"../..");let passed=0;
+function ok(name,value){if(!value)throw new Error(`FAIL: ${name}`);console.log(`PASS ${++passed}: ${name}`)}
+const floor=fs.readFileSync(path.join(root,"client/js/floor-reservations-v62.0.js"),"utf8"),kitchen=fs.readFileSync(path.join(root,"client/js/kitchen-truth-v100.2.60.js"),"utf8"),index=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),runtime=fs.readFileSync(path.join(root,"client/js/runtime-performance-v100.2.70.js"),"utf8");
+const block=floor.match(/const SERVICE_HANDOFF_KEY=[\s\S]*?function writeServiceParties\(rows\)\{[^\n]+/)[0];
+const now=Date.now(),store=new Map(),events=[];
+store.set("blueCurrent.service.activeParties.v100",JSON.stringify([{guest:"Current",tableId:"1",seatedAt:now-60*60000,status:"ordering"},{guest:"Old",tableId:"2",seatedAt:now-30*60*60000,status:"ordering"}]));
+const context={Date:{now:()=>now},Number,JSON,Array,localStorage:{getItem:key=>store.get(key)||null,setItem:(key,value)=>store.set(key,value)},window:{dispatchEvent:event=>events.push(event)},CustomEvent:function(name,options){this.type=name;this.detail=options.detail}};
+vm.runInNewContext(`${block};globalThis.result={rows:readServiceParties(),windowMs:LIVE_SERVICE_WINDOW_MS,current:isLiveServiceParty({seatedAt:${now-60000}},${now}),old:isLiveServiceParty({seatedAt:${now-30*60*60000}},${now})}`,context);
+ok("Live Service window is declared",floor.includes("V100.3.16 — this cache is live handoff state"));
+ok("Window allows an extended restaurant day",context.result.windowMs===18*60*60*1000);
+ok("Current party remains active",context.result.current&&context.result.rows.length===1&&context.result.rows[0].guest==="Current");
+ok("Prior-day stale party is excluded",context.result.old===false);
+ok("Pruned cache is persisted",JSON.parse(store.get("blueCurrent.service.activeParties.v100")).length===1);
+ok("Prune lifecycle event is published",events.some(event=>event.type==="bc:service-stale-pruned"&&event.detail.removed===1));
+ok("Service API exposes live predicate",floor.includes("isLive:(row,now)=>isLiveServiceParty(row,now)"));
+ok("Kitchen consumes certified Service active state",kitchen.includes("window.BlueCurrentServiceHandoff?.getActive?.()"));
+ok("Kitchen responds to stale pruning",kitchen.includes('"bc:service-stale-pruned"'));
+ok("Floor cache key advances",index.includes("floor-reservations-v62.0.js?v=100.3.16"));
+ok("Kitchen cache key advances",index.includes("kitchen-truth-v100.2.60.js?v=100.3.16"));
+ok("Runtime loader cache key advances",runtime.includes("kitchen-truth-v100.2.60.js?v=100.3.16"));
+ok("Permanent backend service records are untouched",!floor.includes("/api/serviceFlows")&&!kitchen.includes("/api/serviceFlows"));
+console.log(`V100.3.16 validation ${passed}/13`);
