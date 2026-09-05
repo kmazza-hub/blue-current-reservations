@@ -1,0 +1,22 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const district=read("client/js/modules/districtCommandCenter.js"),brief=read("client/js/modules/executiveMorningBrief.js"),index=read("client/index.html");
+check("District visibility consumes authorized restaurant list",district.includes("BlueCurrentFrontlineLocation?.authorized?.()"));
+check("Authorized list filters district cards",district.includes("locations.filter(location => authorized.includes(location.id))"));
+check("District KPIs use visible restaurants only",district.includes("const rows = visibleLocations()")&&district.includes("rows.reduce"));
+check("District selection accepts visible restaurants only",district.includes("visibleLocations().find(item => item.id === locationId)"));
+check("District alert handles no authorized restaurants",district.includes("No authorized district locations available")&&district.includes("button.disabled = true"));
+check("District alert never defaults a click to Marina",!district.includes('dataset.locationId || "loc_marina"'));
+check("District rerenders on shared authority change",district.includes('"bluecurrent:frontline-location-changed"')&&district.includes("renderDistrictAlert()"));
+check("Morning Brief filters locationless cards",brief.includes(".filter(location => location.id)"));
+check("Morning Brief removes built-in fallback portfolio",brief.includes("return [];")&&!brief.includes('return [\n      { id:"loc_marina"'));
+check("Morning Brief names unavailable verified truth",brief.includes("District brief is waiting for verified locations.")&&brief.includes("will not substitute illustrative restaurants"));
+check("Morning Brief clears and disables unavailable focus",brief.includes('focus.dataset.locationId = ""')&&brief.includes("focus.disabled = true"));
+check("Morning Brief valid focus uses exact risk identity",brief.includes("dataset.locationId = summary.topRisk.id")&&!brief.includes('summary.topRisk.id || "loc_asbury"'));
+check("Morning Brief blocks empty navigation",brief.includes("if (!locationId) return"));
+check("District Command cache key advances",index.includes("js/modules/districtCommandCenter.js?v=100.3.26"));
+check("Executive Morning Brief cache key advances",index.includes("js/modules/executiveMorningBrief.js?v=100.3.26"));
+console.log(`V100.3.26 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;
