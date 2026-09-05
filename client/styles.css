@@ -19739,3 +19739,54 @@ html.bc-ipad-floor-focus #hostFloorMap .host-table small{
   html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar>div:first-child{gap:8px!important}
   html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar button[data-host-zone]{min-height:54px!important;font-size:1rem!important;padding:0 10px!important}
 }
+
+/* ==========================================================================
+   V100.3.9 · Focused workspace stabilization
+   Repeatable portal lifecycle, deterministic Back, fixed Quick Jobs geometry,
+   and explicit Kitchen visibility on the focused canvas.
+   ========================================================================== */
+html.bc-operator-focus-mode #bcRushDock{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  width:min(1000px,calc(100vw - 40px))!important;
+  min-width:0!important;
+  max-width:1000px!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:max(12px,env(safe-area-inset-bottom,0px))!important;
+  transform:translateX(-50%)!important;
+  padding:8px!important;
+  gap:7px!important;
+  box-sizing:border-box!important;
+}
+html.bc-operator-focus-mode #bcRushDock [data-rush-job]{
+  width:100%!important;
+  min-width:0!important;
+  min-height:58px!important;
+  padding:8px 10px!important;
+  box-sizing:border-box!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  min-height:100%!important;
+  padding:28px clamp(22px,4vw,58px) 38px!important;
+  background:#082f39!important;
+  color:#f5fbff!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target>header,
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target>.v3620-headline,
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target>.v3620-kpis,
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target>.kt-grid{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target>.v3620-headline{display:block!important}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target>.v3620-kpis{display:grid!important}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target>.kt-grid{display:grid!important}
+@media(max-width:719px){
+  html.bc-operator-focus-mode #bcRushDock{grid-template-columns:repeat(3,minmax(0,1fr))!important;width:calc(100vw - 16px)!important;max-width:none!important;gap:5px!important;padding:6px!important}
+  html.bc-operator-focus-mode #bcRushDock [data-rush-job]{min-height:50px!important}
+}
