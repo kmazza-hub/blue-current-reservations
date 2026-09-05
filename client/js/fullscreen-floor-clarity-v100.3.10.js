@@ -1,8 +1,10 @@
 (function(){
 "use strict";
-const VERSION="100.3.10";
+const VERSION="100.3.10.1";
 const q=s=>document.querySelector(s);
 let detailDialog=null;
+let floorObserver=null;
+let floorObserverRoot=null;
 
 function inFocusedFloor(){return document.documentElement.classList.contains("bc-ipad-floor-focus");}
 function floorPanel(){return q("#bcFloorFocusStage .host-floor-panel")||q("#host-stand .host-floor-panel");}
@@ -53,32 +55,73 @@ function focusReservedTool(){
   tool.dataset.bcFullscreenFloorModal="true";
 }
 function hideMapNoise(){
+  if(!inFocusedFloor())return;
   const map=q("#bcFloorFocusStage #hostFloorMap");
   if(!map)return;
   Array.from(map.children).forEach(el=>{
     if(el.classList.contains("host-table"))return;
     if(el.classList.contains("bc-reserved-table-tool-v100-2-26"))return;
-    el.classList.add("bc-floor-map-nonessential-v100-3-10");
+    if(!el.classList.contains("bc-floor-map-nonessential-v100-3-10")){
+      el.classList.add("bc-floor-map-nonessential-v100-3-10");
+    }
   });
 }
-function refreshFloorPresentation(){if(!inFocusedFloor())return;hideMapNoise();focusReservedTool();}
+function refreshFloorPresentation(){
+  if(!inFocusedFloor())return;
+  hideMapNoise();
+  focusReservedTool();
+}
+function disconnectFloorObserver(){
+  if(floorObserver){floorObserver.disconnect();floorObserver=null;}
+  floorObserverRoot=null;
+}
+function connectFloorObserver(){
+  if(!inFocusedFloor()){disconnectFloorObserver();return;}
+  const root=q("#bcFloorFocusStage #hostFloorMap");
+  if(!root){disconnectFloorObserver();return;}
+  if(floorObserver&&floorObserverRoot===root)return;
+  disconnectFloorObserver();
+  floorObserverRoot=root;
+  floorObserver=new MutationObserver(()=>{
+    if(!inFocusedFloor())return;
+    // Coalesce floor-only mutations; never observe the rest of the application.
+    requestAnimationFrame(refreshFloorPresentation);
+  });
+  floorObserver.observe(root,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
+}
+function syncFloorLifecycle(){
+  if(inFocusedFloor()){
+    connectFloorObserver();
+    requestAnimationFrame(refreshFloorPresentation);
+  }else{
+    disconnectFloorObserver();
+  }
+}
 function bind(){
   document.addEventListener("click",e=>{
     if(!inFocusedFloor())return;
     const table=e.target.closest("#bcFloorFocusStage #hostFloorMap .host-table");
     if(!table)return;
-    if(seatingMode())return; // preserve the real seat-assignment lifecycle unchanged
+    if(seatingMode())return;
     const status=rawStatus(table);
     if(status==="reserved"){
-      setTimeout(focusReservedTool,0);setTimeout(focusReservedTool,40);return; // preserve existing reservation controls
+      setTimeout(focusReservedTool,0);setTimeout(focusReservedTool,40);return;
     }
     e.preventDefault();e.stopImmediatePropagation();openStatusDialog(table);
   },true);
-  const observer=new MutationObserver(()=>refreshFloorPresentation());
-  observer.observe(document.documentElement,{attributes:true,attributeFilter:["class"]});
-  observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden","class"]});
-  document.addEventListener("click",e=>{if(e.target.closest("[data-host-zone]"))setTimeout(refreshFloorPresentation,30);},true);
-  refreshFloorPresentation();
+
+  // Critical freeze repair: observe only the single root class that enters/exits
+  // Floor Focus. V100.3.10 observed every class/hidden mutation in document.body,
+  // which caused mutation storms when Guest and other workspaces rendered.
+  const rootObserver=new MutationObserver(syncFloorLifecycle);
+  rootObserver.observe(document.documentElement,{attributes:true,attributeFilter:["class"]});
+
+  document.addEventListener("click",e=>{
+    if(!inFocusedFloor())return;
+    if(e.target.closest("[data-host-zone]"))setTimeout(()=>{connectFloorObserver();refreshFloorPresentation();},30);
+  },true);
+
+  syncFloorLifecycle();
   window.BlueCurrentFloorClarityV100310={version:VERSION,refresh:refreshFloorPresentation};
   document.documentElement.dataset.bcFloorClarityVersion=VERSION;
 }
