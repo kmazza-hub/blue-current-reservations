@@ -19790,3 +19790,51 @@ html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc
   html.bc-operator-focus-mode #bcRushDock{grid-template-columns:repeat(3,minmax(0,1fr))!important;width:calc(100vw - 16px)!important;max-width:none!important;gap:5px!important;padding:6px!important}
   html.bc-operator-focus-mode #bcRushDock [data-rush-job]{min-height:50px!important}
 }
+
+/* ========================================================================== 
+   V100.3.10 · Full-screen Floor interaction clarity
+   Remove redundant room copy, center table tools above the room, make every
+   non-seating table state respond, and normalize reserved-table contrast.
+   ========================================================================== */
+html.bc-ipad-floor-focus #bcFloorFocusStage #hostFloorMap>.bc-floor-map-nonessential-v100-3-10{display:none!important}
+
+/* Room tabs: equal, large, high-contrast touch targets across the entire floor. */
+html.bc-ipad-floor-focus #bcFloorFocusStage .host-floor-toolbar>div:first-child{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;width:100%!important}
+html.bc-ipad-floor-focus #bcFloorFocusStage .host-floor-toolbar button[data-host-zone]{width:100%!important;min-height:64px!important;border-radius:16px!important;font-size:1.12rem!important;font-weight:950!important;color:#d9f3f0!important;background:#0b3944!important;border:1px solid rgba(111,225,211,.28)!important}
+html.bc-ipad-floor-focus #bcFloorFocusStage .host-floor-toolbar button[data-host-zone].active,
+html.bc-ipad-floor-focus #bcFloorFocusStage .host-floor-toolbar button[data-host-zone][aria-pressed="true"]{background:#eff7f5!important;color:#0b5961!important;border-color:#eff7f5!important}
+
+/* The legacy reserved-table tool is useful; make it a true viewport modal. */
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"]{
+  position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;
+  z-index:2147483646!important;width:min(620px,calc(100vw - 48px))!important;max-height:min(760px,calc(100dvh - 72px))!important;overflow:auto!important;
+  padding:26px!important;border:2px solid #73ded1!important;border-radius:24px!important;background:#0d3b46!important;color:#f7fffe!important;
+  box-shadow:0 0 0 100vmax rgba(2,20,25,.64),0 28px 90px rgba(0,0,0,.5)!important
+}
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] header{border-bottom-color:rgba(255,255,255,.2)!important}
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] header small{color:#ffd36f!important}
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] header strong,
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] .bc-reserved-linked-v100-2-26 strong,
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] .bc-reserved-time-v100-2-26,
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] .bc-reserved-guest-label-v100-2-26{color:#fff!important}
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] .bc-reserved-linked-v100-2-26{background:#eaf7f4!important}
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] .bc-reserved-linked-v100-2-26 strong{color:#0d3440!important}
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] .bc-reserved-linked-v100-2-26 span{color:#355b63!important}
+html.bc-ipad-floor-focus .bc-reserved-table-tool-v100-2-26[data-bc-fullscreen-floor-modal="true"] .bc-reserved-close-v100-2-26{background:#f5fbfa!important;color:#0a3340!important;border-color:#d1e6e3!important}
+
+/* Read-only status modal for Available / Seated / Check / Cleaning. Native
+   dialog top-layer guarantees it always sits above the full-screen floor. */
+.bc-floor-table-status-dialog-v100-3-10{margin:auto!important;padding:0!important;border:0!important;border-radius:24px!important;width:min(560px,calc(100vw - 48px))!important;background:transparent!important;color:#fff!important;overflow:visible!important}
+.bc-floor-table-status-dialog-v100-3-10::backdrop{background:rgba(2,20,25,.66)!important;backdrop-filter:blur(2px)}
+.bc-floor-table-status-card-v100-3-10{margin:0!important;padding:0!important;border:2px solid #73ded1!important;border-radius:24px!important;background:#0d3b46!important;box-shadow:0 28px 90px rgba(0,0,0,.5)!important;overflow:hidden!important;color:#f7fffe!important}
+.bc-floor-table-status-card-v100-3-10 header{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:18px!important;padding:24px 24px 18px!important;border-bottom:1px solid rgba(255,255,255,.17)!important}
+.bc-floor-table-status-card-v100-3-10 header small{display:block!important;color:#78e2d5!important;font-size:.78rem!important;font-weight:950!important;letter-spacing:.12em!important}
+.bc-floor-table-status-card-v100-3-10 header strong{display:block!important;margin-top:4px!important;color:#fff!important;font-size:2rem!important;line-height:1!important;font-weight:950!important}
+.bc-floor-status-close-v100-3-10{width:52px!important;height:52px!important;border:1px solid #d5e7e4!important;border-radius:50%!important;background:#f5fbfa!important;color:#0a3340!important;font-size:1.8rem!important;font-weight:950!important}
+.bc-floor-table-status-card-v100-3-10 section{padding:24px!important}
+.bc-floor-table-status-card-v100-3-10 section>strong{display:block!important;color:#fff!important;font-size:1.55rem!important;font-weight:950!important}
+.bc-floor-table-status-card-v100-3-10 section>p{margin:8px 0 0!important;color:#c8e0e3!important;font-size:1.05rem!important;line-height:1.55!important;font-weight:700!important}
+.bc-floor-table-status-card-v100-3-10 footer{padding:0 24px 24px!important}
+.bc-floor-status-done-v100-3-10{width:100%!important;min-height:58px!important;border:0!important;border-radius:15px!important;background:#0f91a7!important;color:#fff!important;font-size:1.05rem!important;font-weight:950!important}
+
+@media(max-width:900px){html.bc-ipad-floor-focus #bcFloorFocusStage .host-floor-toolbar button[data-host-zone]{min-height:58px!important;font-size:1rem!important}.bc-floor-table-status-dialog-v100-3-10{width:min(520px,calc(100vw - 28px))!important}}
