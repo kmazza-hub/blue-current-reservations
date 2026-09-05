@@ -1,0 +1,21 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const workforce=read("client/js/modules/workforceIntelligence.js"),client=read("client/index.html"),site=read("index.html"),styles=read("styles.css");
+check("Workforce Intelligence uses shared location authority",workforce.includes("BlueCurrentFrontlineLocation?.get?.()")&&workforce.includes('||"loc_marina"'));
+check("Workforce Intelligence reads selected restaurant",workforce.includes("workforceIntelligence(locationId())"));
+check("Workforce decisions write selected restaurant",workforce.includes("locationId:locationId(),decision:"));
+check("Labor planning writes selected restaurant",workforce.includes("updateLaborPlan(locationId(),"));
+check("No Workforce request retains a fixed Marina argument",!workforce.includes('locationId:"loc_marina"')&&!workforce.includes('updateLaborPlan("loc_marina"')&&!workforce.includes("workforceIntelligence();"));
+check("Workforce Intelligence cache key advances",client.includes("js/modules/workforceIntelligence.js?v=100.3.22"));
+check("Public site identifies the complete working platform",site.includes("Reservations, Host and Floor, Service, Kitchen, Staffing, Scheduling, Time Clock, Manager action, Inventory"));
+check("Public site accurately names current pilot-hardening phase",site.includes("Pilot readiness and hardening"));
+check("Public site reserves private app address without claiming launch",site.includes("app.bluecurrentco.com")&&site.includes("Not publicly open yet."));
+check("Public site names private staging as next environment",site.includes("NEXT ENVIRONMENT")&&site.includes("Private staging"));
+check("Public status is reachable from desktop and mobile navigation",(site.match(/href="#pilot-status"/g)||[]).length===2);
+check("Public status section has one unique target",(site.match(/id="pilot-status"/g)||[]).length===1);
+check("Public pilot status has responsive presentation",styles.includes(".public-pilot-status-cards")&&styles.includes("@media(max-width:850px)"));
+check("Illustrative-product disclosure remains present",site.includes("Illustrative product demonstration. Names, numbers, and performance data are sample content."));
+console.log(`V100.3.22 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;
