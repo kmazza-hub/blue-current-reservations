@@ -3,7 +3,7 @@
 // V100.2.80 — Inventory Truth Foundation.
 // Primary Inventory surface shows recorded on-hand state against configured par.
 // Predictive reorder, modeled food cost, recipe margin, and vendor recommendations stay outside this truth view.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const num=v=>Number.isFinite(Number(v))?Number(v):null;

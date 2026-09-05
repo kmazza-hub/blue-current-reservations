@@ -5,7 +5,7 @@
   function createLiveFloorOperationsModule(eventBus, appState, cloudFoundationModule) {
     const api = cloudFoundationModule?.api || new window.BlueCurrentCloudApi("");
     const $ = id => document.getElementById(id);
-    const locationId = "loc_marina";
+    const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
     let state = { tables: [], waitlist: [], seatingEvents: [] };
     let selectedTableId = null;
     let drag = null;
@@ -134,10 +134,10 @@
     async function load() {
       if (!api.token) return;
       try {
-        state = await api.floor(locationId);
+        state = await api.floor(locationId());
         if (!selectedTableId && state.tables[0]) selectedTableId = state.tables[0].id;
         renderAll();
-        eventBus.emit("floor:loaded", { locationId, tableCount: state.tables.length });
+        eventBus.emit("floor:loaded", { locationId: locationId(), tableCount: state.tables.length });
       } catch (error) {
         $("floorConnection").textContent = error.message;
       }

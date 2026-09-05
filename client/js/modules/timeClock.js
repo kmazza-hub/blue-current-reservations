@@ -3,6 +3,7 @@
   function createBlueCurrentTimeClockModule(eventBus, appState, cloudFoundationModule) {
     const api = cloudFoundationModule?.api || new window.BlueCurrentCloudApi("");
     const byId = id => document.getElementById(id);
+    const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
     const money = value => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(value || 0));
     let state = { summary: {}, employees: [], active: [], timecards: [], corrections: [] };
 
@@ -18,13 +19,13 @@
       appState.update({ employeesWorking: summary.employeesWorking || 0, employeesOnBreak: summary.onBreak || 0, laborHoursToday: summary.laborHours || 0, laborCostToday: summary.laborCost || 0, overtimeRisk: summary.overtimeRisk || 0 });
     }
 
-    async function load() { if (!api.token) return; state = await api.timeClock(); render(); }
+    async function load() { if (!api.token) return; state = await api.timeClock(locationId()); render(); }
     async function kiosk(action) {
       const employeeId = byId("tcEmployee")?.value, pin = byId("tcPin")?.value;
       if (!employeeId) return;
       try {
-        if (action === "clock-in") await api.clockIn({ employeeId, pin, locationId: "loc_marina", source: "kiosk" });
-        else await api.clockOut({ employeeId, locationId: "loc_marina" });
+        if (action === "clock-in") await api.clockIn({ employeeId, pin, locationId: locationId(), source: "kiosk" });
+        else await api.clockOut({ employeeId, locationId: locationId() });
         if (byId("tcPin")) byId("tcPin").value = "";
         await load();
       } catch (error) { alert(error.message || "Time-clock action failed"); }
@@ -36,9 +37,9 @@
     byId("tcActive")?.addEventListener("click", async event => {
       const button = event.target.closest("[data-tc]"); if (!button) return;
       try {
-        if (button.dataset.tc === "clock-out") await api.clockOut({ employeeId: button.dataset.employee, locationId: "loc_marina" });
-        if (button.dataset.tc === "break-start") await api.startBreak({ employeeId: button.dataset.employee, locationId: "loc_marina", paid: false });
-        if (button.dataset.tc === "break-end") await api.endBreak({ employeeId: button.dataset.employee, locationId: "loc_marina" });
+        if (button.dataset.tc === "clock-out") await api.clockOut({ employeeId: button.dataset.employee, locationId: locationId() });
+        if (button.dataset.tc === "break-start") await api.startBreak({ employeeId: button.dataset.employee, locationId: locationId(), paid: false });
+        if (button.dataset.tc === "break-end") await api.endBreak({ employeeId: button.dataset.employee, locationId: locationId() });
         await load();
       } catch (error) { alert(error.message || "Action failed"); }
     });

@@ -5,7 +5,7 @@
   function createReservationOperationsModule(eventBus, appState, cloudFoundationModule, floorModule) {
     const api = cloudFoundationModule?.api || new window.BlueCurrentCloudApi("");
     const $ = id => document.getElementById(id);
-    const locationId = "loc_marina";
+    const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
     let reservations = [];
     let floor = { tables: [], waitlist: [] };
     let selectedReservationId = null;
@@ -132,12 +132,12 @@
       if (!api.token) return;
       try {
         [reservations, floor] = await Promise.all([
-          api.reservationOperations(locationId),
-          api.floor(locationId)
+          api.reservationOperations(locationId()),
+          api.floor(locationId())
         ]);
         if (!selectedReservationId && reservations[0]) selectedReservationId = reservations[0].id;
         renderAll();
-        eventBus.emit("reservations:loaded", { count: reservations.length, locationId });
+        eventBus.emit("reservations:loaded", { count: reservations.length, locationId: locationId() });
       } catch (error) {
         $("reservationList").innerHTML = `<p class="reservation-empty">${error.message}</p>`;
       }

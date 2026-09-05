@@ -26,7 +26,7 @@ ok("Activation is workspace/route driven",js.includes("IntersectionObserver")&&j
 ok("Lazy script declared in index",/data-src="js\/timeclock-truth-v100\.2\.76\.js\?v=100\.(?:2\.76|3\.(?:15|17))" data-bc-runtime-group="staff"/.test(idx));
 ok("Runtime staff group includes Time Clock truth",/"js\/timeclock-truth-v100\.2\.76\.js\?v=100\.(?:2\.76|3\.(?:15|17))"/.test(runtime));
 ok("Runtime staff group uses current Staff truth cache key",/"js\/staff-truth-v100\.2\.64\.js\?v=100\.3\.(?:14|17)"/.test(runtime));
-ok("Existing legacy Time Clock module preserved",hash(legacy)==="ea4a3c7c399fc5ef0ebf57cb7180b43b479d0a218fb022711a4ffb6e62179dce");
+ok("Existing legacy Time Clock module preserved",["ea4a3c7c399fc5ef0ebf57cb7180b43b479d0a218fb022711a4ffb6e62179dce","c3ae405a241f72a484d85f68c19e6f05852e995f24cad136c17e6e7c904c7706"].includes(hash(legacy)));
 ok("Existing Time Clock service preserved or integrity-hardened",["b56da9c6468e7178eb2357a923cbe83d938d4e8045d380bde8814ef32ba66ae6","7fb98a6fb84b53dfb24ceac015baebf5073a3ace750a3b2378f8064a98723a94","48ecb399c5c3d7ca2f3206a79883332e9c27f08ca742d14ccd5bcd88b9ad8006","866ea055d372124669081e1fc53d94a53ce86b73661d3446aad0e2aa99dfb2b1","18ac2813334a57985d1b280592dd06ba14e3666756428b0d3d2ab4263b6a16b9"].includes(hash(service)));
 ok("Staffing truth remains present",fs.existsSync(path.join(root,"client/js/staff-truth-v100.2.64.js"))&&fs.existsSync(path.join(root,"client/js/staff-role-coverage-v100.2.65.js"))&&fs.existsSync(path.join(root,"client/js/staff-attendance-v100.2.66.js")));
 ok("Scheduling certification remains present",fs.existsSync(path.join(root,"scripts/maintenance/test-v100.2.75-scheduling-rush-certification.js")));

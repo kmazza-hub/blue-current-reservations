@@ -3,7 +3,7 @@
 // V100.2.68 — Manager Operations Truth Foundation.
 // Primary manager command uses the live Manager Actions + Operations Feed APIs.
 // It intentionally avoids the legacy Command Center readiness/forecast layer.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 let api=null,loading=false,timer=null,last=null;

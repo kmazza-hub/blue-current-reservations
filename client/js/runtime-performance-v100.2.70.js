@@ -17,12 +17,12 @@ const GROUPS=Object.freeze({
     "js/timeclock-truth-v100.2.76.js?v=100.3.17"
   ],
   manager:[
-    "js/manager-operations-truth-v100.2.68.js?v=100.2.68",
-    "js/manager-action-ownership-v100.2.69.js?v=100.2.69",
+    "js/manager-operations-truth-v100.2.68.js?v=100.3.18",
+    "js/manager-action-ownership-v100.2.69.js?v=100.3.18",
     "js/manager-action-followup-v100.2.71.js?v=100.2.71"
   ],
   inventory:[
-    "js/inventory-truth-v100.2.80.js?v=100.2.80"
+    "js/inventory-truth-v100.2.80.js?v=100.3.18"
   ]
 });
 const loaded=new Set(),loading=new Map();

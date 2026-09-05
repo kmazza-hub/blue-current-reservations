@@ -3,7 +3,7 @@
 // V100.2.69 — Manager Action Ownership / Accountability.
 // Adds explicit human ownership to the existing V100.2.68 live Manager Actions view.
 // It does not create a second action system and does not infer task status.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 let api=null,currentUser=null,decorating=false,observer=null;

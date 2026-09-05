@@ -6,7 +6,7 @@ const legacy=["idlePackWarmupEngine","idlePackWarmupCenter","eventStormGuardEngi
 const runtime=[
  "js/kitchen-truth-v100.2.60.js?v=100.3.16","js/kitchen-service-handoff-v100.2.61.js?v=100.2.61","js/kitchen-priority-v100.2.62.js?v=100.2.62",
  "js/staff-truth-v100.2.64.js?v=100.3.17","js/staff-role-coverage-v100.2.65.js?v=100.3.17","js/staff-attendance-v100.2.66.js?v=100.3.17",
- "js/manager-operations-truth-v100.2.68.js?v=100.2.68","js/manager-action-ownership-v100.2.69.js?v=100.2.69"
+ "js/manager-operations-truth-v100.2.68.js?v=100.3.18","js/manager-action-ownership-v100.2.69.js?v=100.3.18"
 ];
 const activeRuntime=runtime.filter(src=>html.includes(`<script src="${src}"></script>`));
 const deferredLegacy=legacy.filter(name=>new RegExp(`type="text/bluecurrent-deferred" data-src="js/modules/${name}\\.js\\?v=[^"]+" data-pack="diagnostics"`).test(html));
