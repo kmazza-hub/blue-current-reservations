@@ -7408,6 +7408,30 @@
       "category": "synchronization",
       "createdAt": "2026-09-05T14:41:03.102Z",
       "id": "audit_1788619263102_j69g2x"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 739 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T14:54:20.919Z",
+      "id": "audit_1788620060919_hk0c31"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 740 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T14:57:48.112Z",
+      "id": "audit_1788620268113_mt60n7"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 741 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T14:58:21.257Z",
+      "id": "audit_1788620301257_0jmd8r"
     }
   ],
   "reservations": [
@@ -7525,12 +7549,12 @@
         "*"
       ],
       "createdAt": "2026-09-05T11:43:57.517Z",
-      "lastSeenAt": "2026-09-05T14:46:02.013Z",
-      "idleExpiresAt": "2026-09-05T16:46:02.013Z",
+      "lastSeenAt": "2026-09-05T15:03:49.978Z",
+      "idleExpiresAt": "2026-09-05T17:03:49.978Z",
       "expiresAt": "2026-09-05T23:43:57.517Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-09-05T14:46:02.024Z"
+      "updatedAt": "2026-09-05T15:03:49.987Z"
     },
     {
       "id": "ses_1788618934610_in1sh2",
@@ -7574,11 +7598,12 @@
         "*"
       ],
       "createdAt": "2026-09-05T14:38:11.200Z",
-      "lastSeenAt": "2026-09-05T14:38:11.200Z",
-      "idleExpiresAt": "2026-09-05T16:38:11.200Z",
+      "lastSeenAt": "2026-09-05T14:57:11.631Z",
+      "idleExpiresAt": "2026-09-05T16:57:11.631Z",
       "expiresAt": "2026-09-06T02:38:11.200Z",
       "revokedAt": null,
-      "revokedReason": null
+      "revokedReason": null,
+      "updatedAt": "2026-09-05T14:57:11.645Z"
     }
   ],
   "invitations": [
@@ -9019,13 +9044,13 @@
       "organizationId": "org_chefs",
       "path": "/api/manager-actions/service-exceptions",
       "entityId": "service-exceptions",
-      "version": 738,
+      "version": 741,
       "createdAt": "2026-09-03T03:02:11.516Z",
-      "updatedAt": "2026-09-05T14:41:02.961Z",
+      "updatedAt": "2026-09-05T14:58:21.134Z",
       "lastPayload": {
-        "exceptions": 0,
+        "exceptions": 7,
         "transitions": 0,
-        "synchronizedAt": "2026-09-05T14:41:02.951Z"
+        "synchronizedAt": "2026-09-05T14:58:21.125Z"
       },
       "lastActor": "Keith Mazza"
     }
@@ -9403,7 +9428,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-04T22:32:27.381Z",
-      "updatedAt": "2026-09-05T11:51:31.327Z",
+      "updatedAt": "2026-09-05T14:58:19.555Z",
       "completedAt": "2026-09-05T11:01:56.009Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9425,10 +9450,10 @@
         "table": "5",
         "reason": "Still waiting for a greeting",
         "recoveryAction": "Greet this table now",
-        "minutes": 999
+        "minutes": 821
       },
       "createdAt": "2026-09-05T01:22:13.537Z",
-      "updatedAt": "2026-09-05T14:38:25.651Z",
+      "updatedAt": "2026-09-05T14:58:19.555Z",
       "completedAt": "2026-09-05T11:44:42.806Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9450,10 +9475,10 @@
         "table": "12",
         "reason": "Still waiting for a greeting",
         "recoveryAction": "Greet this table now",
-        "minutes": 632
+        "minutes": 818
       },
       "createdAt": "2026-09-05T01:24:13.558Z",
-      "updatedAt": "2026-09-05T11:51:31.327Z",
+      "updatedAt": "2026-09-05T14:58:19.555Z",
       "completedAt": "2026-09-05T11:01:56.009Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9475,10 +9500,10 @@
         "table": "5",
         "reason": "Still waiting for a greeting",
         "recoveryAction": "Greet this table now",
-        "minutes": 630
+        "minutes": 817
       },
       "createdAt": "2026-09-05T01:25:43.579Z",
-      "updatedAt": "2026-09-05T11:51:31.327Z",
+      "updatedAt": "2026-09-05T14:58:19.555Z",
       "completedAt": "2026-09-05T11:01:56.009Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9500,10 +9525,10 @@
         "table": "11",
         "reason": "Still waiting for a greeting",
         "recoveryAction": "Greet this table now",
-        "minutes": 630
+        "minutes": 817
       },
       "createdAt": "2026-09-05T01:25:43.579Z",
-      "updatedAt": "2026-09-05T11:51:31.327Z",
+      "updatedAt": "2026-09-05T14:58:19.555Z",
       "completedAt": "2026-09-05T11:01:56.009Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9525,10 +9550,10 @@
         "table": "3",
         "reason": "Still waiting for a greeting",
         "recoveryAction": "Greet this table now",
-        "minutes": 630
+        "minutes": 817
       },
       "createdAt": "2026-09-05T01:25:43.579Z",
-      "updatedAt": "2026-09-05T11:51:31.327Z",
+      "updatedAt": "2026-09-05T14:58:19.555Z",
       "completedAt": "2026-09-05T11:01:56.009Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9550,10 +9575,10 @@
         "table": "6",
         "reason": "Still waiting for a greeting",
         "recoveryAction": "Greet this table now",
-        "minutes": 626
+        "minutes": 813
       },
       "createdAt": "2026-09-05T01:29:29.856Z",
-      "updatedAt": "2026-09-05T11:51:31.327Z",
+      "updatedAt": "2026-09-05T14:58:19.555Z",
       "completedAt": "2026-09-05T11:01:56.009Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -23881,6 +23906,63 @@
       "createdAt": "2026-09-05T14:41:01.895Z",
       "updatedAt": "2026-09-05T14:41:03.270Z",
       "finalizedAt": "2026-09-05T14:41:03.270Z"
+    },
+    {
+      "id": "mut_7464217d-9edb-4e1a-9e2d-371ab78e60c9",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 739,
+      "error": null,
+      "createdAt": "2026-09-05T14:54:19.792Z",
+      "updatedAt": "2026-09-05T14:54:21.045Z",
+      "finalizedAt": "2026-09-05T14:54:21.045Z"
+    },
+    {
+      "id": "mut_7eeb3bd7-af57-470b-9755-ab1dac2c8993",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 740,
+      "error": null,
+      "createdAt": "2026-09-05T14:57:47.484Z",
+      "updatedAt": "2026-09-05T14:57:48.544Z",
+      "finalizedAt": "2026-09-05T14:57:48.544Z"
+    },
+    {
+      "id": "mut_788e2ecc-c05a-4400-b1d2-fa342d8ee686",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 741,
+      "error": null,
+      "createdAt": "2026-09-05T14:58:19.260Z",
+      "updatedAt": "2026-09-05T14:58:21.404Z",
+      "finalizedAt": "2026-09-05T14:58:21.404Z"
     }
   ],
   "operationsEvents": [

@@ -1,0 +1,13 @@
+const fs=require("fs");
+const assert=(ok,msg)=>{if(!ok){console.error("FAIL:",msg);process.exitCode=1}else console.log("PASS:",msg)};
+const js=fs.readFileSync("client/js/focused-operator-workspaces-v100.3.9.js","utf8");
+const css=fs.readFileSync("client/styles.css","utf8");
+const html=fs.readFileSync("client/index.html","utf8");
+assert(js.includes('reason==="seating"')&&js.includes('dataset.bcFocusReason="seating"'),"already-open floor focus upgrades to seating reason");
+assert(js.includes('window.__bcHostZonesV100_2_34?.show?.'),"active zone is re-rendered after focus move");
+assert(js.includes('map.hidden=false')&&js.includes('map.removeAttribute("aria-hidden")'),"floor map visibility is restored defensively");
+assert(css.includes('V100.3.10.2 · Seating Floor Focus render repair'),"seating render repair CSS present");
+assert(css.includes('grid-template-rows:auto auto minmax(440px,1fr)'),"seating panel has explicit instruction toolbar map rows");
+assert(css.includes('[data-bc-focus-reason="seating"]>#hostFloorMap'),"seating map has explicit focused-stage rule");
+assert(html.includes('focused-operator-workspaces-v100.3.9.js?v=100.3.10.2'),"browser cache key advanced");
+if(!process.exitCode)console.log("V100.3.10.2 seating floor render repair gate passed 7/7");

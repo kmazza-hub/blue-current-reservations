@@ -123,13 +123,30 @@ function addFloorControls(){const panel=floorPanel(),toolbar=panel?.querySelecto
 function ensureFloorStage(){let s=q("bcFloorFocusStage");if(!s){s=document.createElement("main");s.id="bcFloorFocusStage";s.className="bc-floor-focus-stage";s.hidden=true;document.body.appendChild(s);}return s;}
 function focusFloor(reason="manual"){
   if(currentJob)exitOperatorFocus({returnHome:false});
-  if(document.documentElement.classList.contains("bc-ipad-floor-focus"))return true;
+  if(document.documentElement.classList.contains("bc-ipad-floor-focus")){
+    const activePanel=floorPanel();
+    if(activePanel&&reason==="seating")activePanel.dataset.bcFocusReason="seating";
+    requestAnimationFrame(()=>{
+      const map=q("hostFloorMap");
+      if(map){map.hidden=false;map.removeAttribute("aria-hidden");map.style.removeProperty("display");}
+      try{window.__bcHostZonesV100_2_34?.show?.(window.__bcHostZonesV100_2_34?.active?.()||"main");}catch{}
+    });
+    return true;
+  }
   const panel=floorPanel();if(!panel)return false;
   const stage=ensureFloorStage();floorTarget=panel;floorParent=panel.parentNode;floorNextSibling=panel.nextSibling;floorPlaceholder=document.createComment("bc-floor-focus-placeholder");floorParent?.insertBefore(floorPlaceholder,panel);
   document.documentElement.classList.add("bc-ipad-floor-focus");panel.classList.add("bc-ipad-floor-focus-panel");panel.dataset.bcFocusReason=reason;
   stage.hidden=false;stage.replaceChildren();
   const fh=document.createElement("div");fh.id="bcIpadFloorFocusHeader";fh.className="bc-ipad-floor-focus-header";fh.innerHTML='<button type="button" class="bc-ipad-floor-focus-close">← Back</button><div><small>LIVE DINING ROOM</small><strong>Floor</strong><span>One screen for the room. Tap a table to work it.</span></div><button type="button" class="bc-ipad-floor-focus-exit">Exit full screen</button>';fh.querySelector(".bc-ipad-floor-focus-close").addEventListener("click",()=>exitFloor({returnHome:true}));fh.querySelector(".bc-ipad-floor-focus-exit").addEventListener("click",()=>exitFloor({returnHome:true}));
-  stage.append(fh,panel);q("bcFloorFullscreenButton")?.setAttribute("aria-pressed","true");document.body.dataset.bcFloorFocus="true";requestAnimationFrame(()=>stage.scrollTop=0);return true;
+  stage.append(fh,panel);q("bcFloorFullscreenButton")?.setAttribute("aria-pressed","true");document.body.dataset.bcFloorFocus="true";
+  requestAnimationFrame(()=>{
+    stage.scrollTop=0;
+    const map=q("hostFloorMap");
+    if(map){map.hidden=false;map.removeAttribute("aria-hidden");map.style.removeProperty("display");}
+    try{window.__bcHostZonesV100_2_34?.show?.(window.__bcHostZonesV100_2_34?.active?.()||"main");}catch{}
+  });
+  [80,180].forEach(ms=>setTimeout(()=>{try{window.__bcHostZonesV100_2_34?.show?.(window.__bcHostZonesV100_2_34?.active?.()||"main");}catch{}},ms));
+  return true;
 }
 function exitFloor({returnHome=false}={}){
   const stage=ensureFloorStage(),panel=floorTarget||floorPanel();

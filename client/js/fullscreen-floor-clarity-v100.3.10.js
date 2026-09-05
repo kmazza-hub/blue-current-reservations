@@ -105,6 +105,7 @@ function bind(){
     if(seatingMode())return;
     const status=rawStatus(table);
     if(status==="reserved"){
+      // preserve existing reservation controls; only promote their presentation layer.
       setTimeout(focusReservedTool,0);setTimeout(focusReservedTool,40);return;
     }
     e.preventDefault();e.stopImmediatePropagation();openStatusDialog(table);
