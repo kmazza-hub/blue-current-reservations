@@ -3019,7 +3019,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (url.pathname === "/api/operations-feed" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       const category = url.searchParams.get("category") || "all";
       const limit = Number(url.searchParams.get("limit") || 40);
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
@@ -3027,14 +3028,16 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (url.pathname === "/api/manager-actions" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       return sendJson(response, 200, await actionListService.list(organizationId, locationId));
     }
 
     if (url.pathname === "/api/manager-actions" && request.method === "POST") {
       const body = await readJson(request);
-      const locationId = body.locationId || "loc_marina";
+      const locationId = String(body.locationId || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       const created = await actionListService.create(organizationId, locationId, body, auth.user);
       return sendJson(response, 201, created);
@@ -3042,7 +3045,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/manager-actions/service-exceptions" && request.method === "POST") {
       const body = await readJson(request);
-      const locationId = body.locationId || "loc_marina";
+      const locationId = String(body.locationId || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       return sendJson(response, 200, await actionListService.synchronizeServiceExceptions(
         organizationId,
@@ -3055,7 +3059,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const managerActionMatch = url.pathname.match(/^\/api\/manager-actions\/([^/]+)$/);
     if (managerActionMatch && request.method === "PATCH") {
       const body = await readJson(request);
-      const locationId = body.locationId || "loc_marina";
+      const locationId = String(body.locationId || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       const updated = await actionListService.update(
         organizationId,
@@ -3070,7 +3075,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (managerActionMatch && request.method === "DELETE") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       const deleted = await actionListService.delete(
         organizationId,
@@ -3084,7 +3090,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (url.pathname === "/api/command-center" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       const snapshot = await commandCenterService.snapshot(organizationId, locationId);
       return snapshot ? sendJson(response, 200, snapshot) : sendJson(response, 404, { error: "Location not found." });
@@ -3092,7 +3099,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/command-center/handoffs" && request.method === "POST") {
       const body = await readJson(request);
-      const locationId = body.locationId || "loc_marina";
+      const locationId = String(body.locationId || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       try {
         const handoff = await commandCenterService.createHandoff(organizationId, locationId, auth.user, body);
@@ -3104,7 +3112,11 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     const handoffAckMatch = url.pathname.match(/^\/api\/command-center\/handoffs\/([^/]+)\/acknowledge$/);
     if (handoffAckMatch && request.method === "PATCH") {
-      const handoff = await commandCenterService.acknowledgeHandoff(organizationId, decodeURIComponent(handoffAckMatch[1]), auth.user);
+      const handoffId = decodeURIComponent(handoffAckMatch[1]);
+      const existingHandoff = await database.get("shiftHandoffs", handoffId);
+      if (!existingHandoff || existingHandoff.organizationId !== organizationId) return sendJson(response, 404, { error: "Shift handoff not found." });
+      if (!canAccessLocation(existingHandoff.locationId)) return sendJson(response, 403, { error: "Location access denied." });
+      const handoff = await commandCenterService.acknowledgeHandoff(organizationId, handoffId, auth.user);
       return handoff ? sendJson(response, 200, handoff) : sendJson(response, 404, { error: "Shift handoff not found." });
     }
 
