@@ -19532,3 +19532,73 @@ html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-table:focu
 html.bc-ipad-floor-focus .bc-rush-dock{display:none!important}
 html.bc-ipad-floor-focus #bcOperatorUtilityBar{display:none!important}
 @media(max-width:900px){html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel{padding-left:10px!important;padding-right:10px!important}html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-header{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px}html.bc-ipad-floor-focus .bc-ipad-floor-focus-header span{display:none}html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-table{transform:scale(1.1)}}
+
+/* ==========================================================================
+   V100.3.6 · Focused Operator Workspaces
+   Quick Jobs are fixed workspaces, not scroll destinations. This removes
+   iPad Safari layout/reflow drift from Find Guest, Service, Kitchen and Staff.
+   ========================================================================== */
+.bc-operator-focus-backdrop,.bc-operator-focus-header{display:none}
+html.bc-operator-focus-mode,html.bc-operator-focus-mode body{overflow:hidden!important;overscroll-behavior:none!important}
+html.bc-operator-focus-mode .bc-operator-focus-backdrop{
+  display:block!important;position:fixed!important;inset:0!important;z-index:2147481000!important;
+  background:#071f28!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-header{
+  display:grid!important;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:16px;
+  position:fixed!important;top:0!important;left:0!important;right:0!important;height:76px!important;
+  z-index:2147481800!important;padding:calc(env(safe-area-inset-top,0px) + 8px) 20px 8px!important;
+  box-sizing:border-box!important;background:rgba(6,36,45,.985)!important;border-bottom:1px solid rgba(112,225,211,.24)!important;
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+}
+html.bc-operator-focus-mode .bc-operator-focus-header>div{min-width:0}
+html.bc-operator-focus-mode .bc-operator-focus-header small{display:block;color:#72ded1;font-size:.68rem;font-weight:950;letter-spacing:.12em}
+html.bc-operator-focus-mode .bc-operator-focus-header strong{display:block;color:#fff;font-size:1.32rem;line-height:1.05;margin-top:2px}
+html.bc-operator-focus-mode .bc-operator-focus-header span{display:block;color:#abc7cd;font-size:.78rem;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.bc-operator-focus-mode .bc-operator-focus-back,html.bc-operator-focus-mode .bc-operator-focus-close{
+  min-height:48px!important;padding:0 17px!important;border:1px solid rgba(114,230,215,.48)!important;border-radius:14px!important;
+  background:#0b3f4b!important;color:#fff!important;font-weight:900!important;font-size:.94rem!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-target{
+  display:block!important;visibility:visible!important;position:fixed!important;
+  top:76px!important;left:0!important;right:0!important;bottom:94px!important;
+  z-index:2147481600!important;width:100vw!important;max-width:none!important;height:auto!important;max-height:none!important;
+  margin:0!important;box-sizing:border-box!important;overflow:auto!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;
+  transform:none!important;opacity:1!important;
+}
+html.bc-operator-focus-mode .bc-rush-dock{display:flex!important;z-index:2147481900!important}
+html.bc-operator-focus-mode #bcOperatorUtilityBar{display:none!important}
+html.bc-operator-focus-mode #bcRushDock [data-rush-job].bc-focus-active{background:#dff8f5!important;border-color:#4dcdbf!important;box-shadow:0 0 0 2px rgba(77,205,191,.20) inset!important}
+
+/* Guest search: preserve Host visual language while giving the search one screen. */
+html.bc-operator-focus-mode #host-stand #bcHostGuestsPanel.bc-operator-focus-target{
+  padding:clamp(28px,5vh,58px) clamp(24px,6vw,90px)!important;background:#082d37!important;color:#fff!important;
+}
+html.bc-operator-focus-mode #host-stand #bcHostGuestsPanel.bc-operator-focus-target .bc-host-panel-head{margin:0 auto 24px!important;max-width:1100px!important}
+html.bc-operator-focus-mode #host-stand #bcHostGuestsPanel.bc-operator-focus-target .bc-host-search,
+html.bc-operator-focus-mode #host-stand #bcHostGuestsPanel.bc-operator-focus-target .bc-guest-results{display:block!important;max-width:1100px!important;margin-left:auto!important;margin-right:auto!important}
+html.bc-operator-focus-mode #host-stand #bcHostGuestsPanel.bc-operator-focus-target input{min-height:64px!important;font-size:1.18rem!important}
+
+/* Service: the live twin becomes the whole working canvas; intro/marketing never enters view. */
+html.bc-operator-focus-mode #digital-twin .twin-app.bc-operator-focus-target{
+  padding:18px 22px 28px!important;background:#082b35!important;border:0!important;border-radius:0!important;
+}
+html.bc-operator-focus-mode #digital-twin .twin-app.bc-operator-focus-target .twin-grid{min-height:calc(100% - 84px)!important}
+
+/* Kitchen: isolate the throughput coach, not governance or learning surfaces. */
+html.bc-operator-focus-mode #kitchenThroughputCenter.bc-operator-focus-target{
+  padding:24px clamp(20px,4vw,54px) 34px!important;background:#082f39!important;color:#fff!important;border-radius:0!important;
+}
+html.bc-operator-focus-mode #kitchenThroughputCenter.bc-operator-focus-target>header{position:sticky!important;top:0!important;z-index:4!important;background:#082f39!important;padding-top:4px!important}
+
+/* Staff: live truth is the focused white workspace, not the larger workforce page. */
+html.bc-operator-focus-mode #workforce-intelligence .bc-staff-truth-v264.bc-operator-focus-target{
+  padding:30px clamp(22px,4vw,54px) 34px!important;background:#f7fbfc!important;color:#15333c!important;
+}
+
+@media(max-width:900px){
+  html.bc-operator-focus-mode .bc-operator-focus-header{height:70px!important;padding-left:12px!important;padding-right:12px!important;gap:10px!important}
+  html.bc-operator-focus-mode .bc-operator-focus-header span{display:none!important}
+  html.bc-operator-focus-mode .bc-operator-focus-target{top:70px!important;bottom:90px!important}
+  html.bc-operator-focus-mode .bc-operator-focus-back,html.bc-operator-focus-mode .bc-operator-focus-close{padding:0 13px!important}
+}
