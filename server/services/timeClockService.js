@@ -42,7 +42,12 @@ class TimeClockService {
       return { ...card, employeeName: employee.name || card.employeeId, role: employee.role || "Team member", department: employee.department || "Operations", hourlyRate: Number(employee.hourlyRate || 0), onBreak: Boolean(activeBreak), activeBreakId: activeBreak ? activeBreak.id : null, workedHours, laborCost: this.round(workedHours * Number(employee.hourlyRate || 0)), projectedWeeklyHours, overtimeRisk: !requiresReview && projectedWeeklyHours >= Number(policy.weeklyOvertimeHours || 40) - 1, requiresReview, reviewReason: requiresReview ? "Open punch began before today" : null };
     };
 
-    const active = cards.filter(item => item.status === "active" && !item.clockOut).map(item => enrich(item, now));
+    const openCards = cards.filter(item => item.status === "active" && !item.clockOut).map(item => enrich(item, now));
+    // V100.3.15 — an unresolved prior-day punch is a review record, not proof
+    // that the employee is working now. Keep it available for correction while
+    // excluding it from live staffing, coverage, attendance, and labor totals.
+    const review = openCards.filter(item => item.requiresReview);
+    const active = openCards.filter(item => !item.requiresReview);
     const todaysCards = cards.filter(item => new Date(item.clockIn).getTime() <= now.getTime() && (!item.clockOut || new Date(item.clockOut).getTime() >= todayStart.getTime()));
     const completed = todaysCards.filter(item => item.clockOut).map(item => enrich(item, new Date(item.clockOut)));
     const laborHours = this.round([...active, ...completed].reduce((sum, item) => sum + item.workedHours, 0));
@@ -50,8 +55,8 @@ class TimeClockService {
 
     return {
       generatedAt: now.toISOString(), locationId,
-      summary: { employeesWorking: active.length, onBreak: active.filter(item => item.onBreak).length, laborHours, laborCost, overtimeRisk: active.filter(item => item.overtimeRisk).length, missedPunches: cards.filter(item => item.status === "needs_review").length + active.filter(item => item.requiresReview).length },
-      employees, active, completed, timecards: todaysCards.slice().reverse(), policy,
+      summary: { employeesWorking: active.length, onBreak: active.filter(item => item.onBreak).length, laborHours, laborCost, overtimeRisk: active.filter(item => item.overtimeRisk).length, missedPunches: cards.filter(item => item.status === "needs_review").length + review.length },
+      employees, active, review, completed, timecards: todaysCards.map(card => openCards.find(item => item.id === card.id) || card).reverse(), policy,
       corrections: (db.timeClockCorrections || []).filter(item => item.organizationId === organizationId && item.locationId === locationId).slice(-20).reverse()
     };
   }
