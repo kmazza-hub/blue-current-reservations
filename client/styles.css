@@ -19510,24 +19510,25 @@ body > .bc-reserved-table-tool-v100-2-26::before {
   }
 }
 
-/* V100.3.4 — physical iPad operator focus + safe viewport */
-:root{--bc-ipad-safe-top:calc(env(safe-area-inset-top, 0px) + 12px);--bc-ipad-safe-bottom:calc(env(safe-area-inset-bottom, 0px) + 12px)}
+/* V100.3.5 — deterministic iPad viewport + full-screen floor workspace */
+:root{--bc-ipad-safe-top:calc(env(safe-area-inset-top,0px) + 12px);--bc-ipad-safe-bottom:calc(env(safe-area-inset-bottom,0px) + 12px)}
 @supports (-webkit-touch-callout:none){
-  html{scroll-padding-top:var(--bc-ipad-safe-top);scroll-padding-bottom:calc(88px + var(--bc-ipad-safe-bottom))}
-  #host-stand,#service-coordination,#serviceCoordination,#kitchenThroughputCenter,#workforce-intelligence{scroll-margin-top:var(--bc-ipad-safe-top)}
+  html{scroll-padding-top:var(--bc-ipad-safe-top);scroll-padding-bottom:calc(96px + var(--bc-ipad-safe-bottom))}
+  #bcHostGuestsPanel,#bcHostReservationsPanel,#bcHostWaitlistPanel,#digital-twin .twin-app,#kitchenThroughputCenter,#workforce-intelligence{scroll-margin-top:var(--bc-ipad-safe-top)}
 }
-.bc-ipad-floor-focus-close{display:none}
-html.bc-ipad-floor-focus{overflow:hidden}
-html.bc-ipad-floor-focus body{overflow:hidden}
-html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel{
-  position:fixed!important;inset:0!important;z-index:2147482500!important;margin:0!important;padding:calc(var(--bc-ipad-safe-top) + 8px) 18px calc(92px + var(--bc-ipad-safe-bottom))!important;
-  width:100vw!important;height:100dvh!important;max-width:none!important;background:#082b35!important;overflow:auto!important;box-sizing:border-box!important
-}
-html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .bc-ipad-floor-focus-close{
-  display:inline-flex;position:sticky;top:0;z-index:8;align-items:center;justify-content:center;min-height:52px;padding:0 22px;margin:0 0 12px;
-  border:1px solid rgba(114,230,215,.55);border-radius:14px;background:#0b3a46;color:#fff;font-weight:800;font-size:1rem
-}
-html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-floor-toolbar{position:sticky;top:64px;z-index:7;background:#082b35;padding:8px 0 12px}
-html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-floor-map{width:min(1180px,100%)!important;min-height:calc(100dvh - 190px)!important;height:auto!important;margin:0 auto!important}
-html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-table{transform:scale(1.12);transform-origin:center}
-html.bc-ipad-floor-focus .bc-rush-dock{z-index:2147483000!important}
+.bc-floor-fullscreen-button{display:inline-flex!important;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 16px!important;margin-left:auto;border:1px solid rgba(110,226,211,.48)!important;border-radius:14px!important;background:#0b4a58!important;color:#fff!important;font-weight:900!important;white-space:nowrap}
+.bc-floor-fullscreen-button span{font-size:1.18em}.bc-floor-fullscreen-button[aria-pressed="true"]{background:#127187!important}
+.bc-ipad-floor-focus-header{display:none}
+html.bc-ipad-floor-focus,html.bc-ipad-floor-focus body{overflow:hidden!important;overscroll-behavior:none!important}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel{position:fixed!important;inset:0!important;z-index:2147482500!important;margin:0!important;padding:0 18px calc(18px + env(safe-area-inset-bottom,0px))!important;width:100vw!important;height:100dvh!important;max-width:none!important;background:#082b35!important;overflow:auto!important;box-sizing:border-box!important;display:grid!important;grid-template-rows:auto auto minmax(0,1fr)!important;gap:10px!important}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-header{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;position:sticky;top:0;z-index:20;margin:0 -18px;padding:calc(env(safe-area-inset-top,0px) + 10px) 18px 10px;background:rgba(6,39,49,.98);border-bottom:1px solid rgba(116,226,212,.22);backdrop-filter:blur(12px)}
+html.bc-ipad-floor-focus .bc-ipad-floor-focus-header>div{min-width:0}html.bc-ipad-floor-focus .bc-ipad-floor-focus-header small{display:block;color:#72ded1;font-weight:900;letter-spacing:.12em;font-size:.68rem}html.bc-ipad-floor-focus .bc-ipad-floor-focus-header strong{display:block;color:#fff;font-size:1.5rem;line-height:1.05;margin-top:2px}html.bc-ipad-floor-focus .bc-ipad-floor-focus-header span{display:block;color:#a9c4ca;font-size:.78rem;margin-top:3px}
+html.bc-ipad-floor-focus .bc-ipad-floor-focus-close,html.bc-ipad-floor-focus .bc-ipad-floor-focus-exit{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 18px;border:1px solid rgba(114,230,215,.48);border-radius:14px;background:#0b3a46;color:#fff;font-weight:900;font-size:.95rem}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-floor-toolbar{position:sticky;top:82px;z-index:18;margin:0!important;padding:10px 0!important;background:#082b35!important;box-shadow:0 8px 14px rgba(3,25,32,.22)}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .bc-floor-fullscreen-button{display:none!important}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-floor-map{width:min(1320px,100%)!important;height:100%!important;min-height:0!important;max-height:none!important;margin:0 auto!important;align-self:stretch!important;box-sizing:border-box!important}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-table{transform:scale(1.18);transform-origin:center;transition:transform .12s ease,box-shadow .12s ease!important}
+html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-table:focus-visible{outline:4px solid #fff!important;outline-offset:4px!important}
+html.bc-ipad-floor-focus .bc-rush-dock{display:none!important}
+html.bc-ipad-floor-focus #bcOperatorUtilityBar{display:none!important}
+@media(max-width:900px){html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel{padding-left:10px!important;padding-right:10px!important}html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-header{margin-left:-10px;margin-right:-10px;padding-left:10px;padding-right:10px}html.bc-ipad-floor-focus .bc-ipad-floor-focus-header span{display:none}html.bc-ipad-floor-focus #host-stand .bc-ipad-floor-focus-panel .host-table{transform:scale(1.1)}}
