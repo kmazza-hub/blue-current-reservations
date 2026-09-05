@@ -1,6 +1,6 @@
 (() => {
 "use strict";
-// V100.2.64 — Staffing Truth Foundation.
+// V100.3.14 — Staff Data Credibility refinement of the Staffing Truth Foundation.
 // Primary staffing view is backed by the Time Clock API only.
 // It does not present synthetic demand, scheduled coverage, or callout risk as live truth.
 const LOCATION_ID="loc_marina";
@@ -55,11 +55,11 @@ function render(state){
  lastState=state;
  const view=shell();if(!view)return;
  const summary=state?.summary||{},active=Array.isArray(state?.active)?state.active:[],priority=firstPriority(summary);
- const sorted=[...active].sort((a,b)=>Number(b.overtimeRisk)-Number(a.overtimeRisk)||Number(b.onBreak)-Number(a.onBreak)||String(a.employeeName||"").localeCompare(String(b.employeeName||"")));
+ const sorted=[...active].sort((a,b)=>Number(b.requiresReview)-Number(a.requiresReview)||Number(b.overtimeRisk)-Number(a.overtimeRisk)||Number(b.onBreak)-Number(a.onBreak)||String(a.employeeName||"").localeCompare(String(b.employeeName||"")));
  view.innerHTML=`<div class="bc-staff-head"><div><small>Staff · live truth</small><h2>Who is actually working right now?</h2><p>Blue Current is using clocked-in Time & Attendance records here. Forecast demand, scheduled coverage, and callout risk stay out of the primary view until those inputs are certified.</p></div><button type="button" data-bc-staff-refresh>Refresh</button></div>
  <div class="bc-staff-kpis"><article><span>Working now</span><strong>${Number(summary.employeesWorking||0)}</strong></article><article><span>On break</span><strong>${Number(summary.onBreak||0)}</strong></article><article><span>Overtime risk</span><strong>${Number(summary.overtimeRisk||0)}</strong></article><article><span>Missed punches</span><strong>${Number(summary.missedPunches||0)}</strong></article></div>
  <div class="bc-staff-priority" data-tone="${priority.tone}"><div><small>First priority</small><strong>${esc(priority.title)}</strong><p>${esc(priority.detail)}</p></div><button type="button" data-bc-open-timeclock>Open time clock</button></div>
- <div class="bc-staff-list">${sorted.length?sorted.map(item=>`<article class="bc-staff-row"><div><small>${esc(item.role||"Team member")}</small><strong>${esc(item.employeeName||item.employeeId||"Employee")}</strong></div><div><small>Status</small><strong>${item.onBreak?"On break":"Working"}</strong></div><div><small>Today</small><strong>${Number(item.workedHours||0).toFixed(1)}h${item.overtimeRisk?" · OT risk":""}</strong></div></article>`).join(""):`<div class="bc-staff-empty"><strong>No one is clocked in.</strong><div>That is the current Time & Attendance record—not a staffing recommendation.</div></div>`}</div>
+ <div class="bc-staff-list">${sorted.length?sorted.map(item=>`<article class="bc-staff-row"><div><small>${esc(item.role||"Team member")}</small><strong>${esc(item.employeeName||item.employeeId||"Employee")}</strong></div><div><small>Status</small><strong>${item.requiresReview?"Needs punch review":item.onBreak?"On break":"Working"}</strong></div><div><small>Today</small><strong>${Number(item.workedHours||0).toFixed(1)}h${item.requiresReview?" · review":item.overtimeRisk?" · OT risk":""}</strong></div></article>`).join(""):`<div class="bc-staff-empty"><strong>No one is clocked in.</strong><div>That is the current Time & Attendance record—not a staffing recommendation.</div></div>`}</div>
  <div class="bc-staff-source">Source: Blue Current Time Clock API · Updated ${state?.generatedAt?new Date(state.generatedAt).toLocaleTimeString():"now"} · No synthetic staffing demand</div>`;
  view.querySelector("[data-bc-staff-refresh]")?.addEventListener("click",load);
  view.querySelector("[data-bc-open-timeclock]")?.addEventListener("click",openTimeClock);

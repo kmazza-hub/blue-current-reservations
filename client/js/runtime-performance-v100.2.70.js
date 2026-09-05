@@ -10,7 +10,7 @@ const GROUPS=Object.freeze({
     "js/kitchen-priority-v100.2.62.js?v=100.2.62"
   ],
   staff:[
-    "js/staff-truth-v100.2.64.js?v=100.2.64",
+    "js/staff-truth-v100.2.64.js?v=100.3.14",
     "js/staff-role-coverage-v100.2.65.js?v=100.2.65",
     "js/staff-attendance-v100.2.66.js?v=100.2.66",
     "js/scheduling-truth-v100.2.73.js?v=100.2.73",

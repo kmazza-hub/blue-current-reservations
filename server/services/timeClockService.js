@@ -12,10 +12,16 @@ class TimeClockService {
   round(value, precision = 2) { const factor = 10 ** precision; return Math.round(Number(value || 0) * factor) / factor; }
   recordId(prefix) { return `${prefix}_${Date.now()}_${crypto.randomUUID().replace(/-/g, "").slice(0, 12)}`; }
   hoursBetween(start, end) { return Math.max(0, (new Date(end) - new Date(start)) / 3600000); }
+  overlapHours(start, end, windowStart, windowEnd) {
+    const from = Math.max(new Date(start).getTime(), new Date(windowStart).getTime());
+    const to = Math.min(new Date(end).getTime(), new Date(windowEnd).getTime());
+    return Number.isFinite(from) && Number.isFinite(to) ? Math.max(0, (to - from) / 3600000) : 0;
+  }
 
   async snapshot(organizationId, locationId = "loc_marina") {
     const db = await this.database.read();
     const now = new Date();
+    const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
     const employees = (db.employees || []).filter(item => item.organizationId === organizationId && item.locationId === locationId && item.status !== "inactive");
     const cards = (db.employeeTimecards || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
     const breaks = (db.employeeBreaks || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
@@ -25,23 +31,26 @@ class TimeClockService {
       const employee = employees.find(item => item.id === card.employeeId) || {};
       const cardBreaks = breaks.filter(item => item.timecardId === card.id);
       const activeBreak = cardBreaks.find(item => item.status === "active" && !item.end);
-      const completedBreakHours = cardBreaks.filter(item => item.end && !item.paid).reduce((sum, item) => sum + this.hoursBetween(item.start, item.end), 0);
-      const currentBreakHours = activeBreak && !activeBreak.paid ? this.hoursBetween(activeBreak.start, endTime) : 0;
-      const workedHours = this.round(this.hoursBetween(card.clockIn, endTime) - completedBreakHours - currentBreakHours);
+      // V100.3.14 — "Today" is the overlap with the current local service day.
+      // Old open punches stay visible as review exceptions without inflating live
+      // labor hours, cost, or overtime exposure across multiple calendar days.
+      const completedBreakHours = cardBreaks.filter(item => item.end && !item.paid).reduce((sum, item) => sum + this.overlapHours(item.start, item.end, todayStart, endTime), 0);
+      const currentBreakHours = activeBreak && !activeBreak.paid ? this.overlapHours(activeBreak.start, endTime, todayStart, endTime) : 0;
+      const workedHours = this.round(Math.max(0, this.overlapHours(card.clockIn, endTime, todayStart, endTime) - completedBreakHours - currentBreakHours));
+      const requiresReview = !card.clockOut && new Date(card.clockIn).getTime() < todayStart.getTime();
       const projectedWeeklyHours = this.round(Number(employee.weeklyHours || 0) + workedHours);
-      return { ...card, employeeName: employee.name || card.employeeId, role: employee.role || "Team member", department: employee.department || "Operations", hourlyRate: Number(employee.hourlyRate || 0), onBreak: Boolean(activeBreak), activeBreakId: activeBreak ? activeBreak.id : null, workedHours, laborCost: this.round(workedHours * Number(employee.hourlyRate || 0)), projectedWeeklyHours, overtimeRisk: projectedWeeklyHours >= Number(policy.weeklyOvertimeHours || 40) - 1 };
+      return { ...card, employeeName: employee.name || card.employeeId, role: employee.role || "Team member", department: employee.department || "Operations", hourlyRate: Number(employee.hourlyRate || 0), onBreak: Boolean(activeBreak), activeBreakId: activeBreak ? activeBreak.id : null, workedHours, laborCost: this.round(workedHours * Number(employee.hourlyRate || 0)), projectedWeeklyHours, overtimeRisk: !requiresReview && projectedWeeklyHours >= Number(policy.weeklyOvertimeHours || 40) - 1, requiresReview, reviewReason: requiresReview ? "Open punch began before today" : null };
     };
 
     const active = cards.filter(item => item.status === "active" && !item.clockOut).map(item => enrich(item, now));
-    const today = now.toISOString().slice(0, 10);
-    const todaysCards = cards.filter(item => String(item.clockIn || "").slice(0, 10) === today);
+    const todaysCards = cards.filter(item => new Date(item.clockIn).getTime() <= now.getTime() && (!item.clockOut || new Date(item.clockOut).getTime() >= todayStart.getTime()));
     const completed = todaysCards.filter(item => item.clockOut).map(item => enrich(item, new Date(item.clockOut)));
     const laborHours = this.round([...active, ...completed].reduce((sum, item) => sum + item.workedHours, 0));
     const laborCost = this.round([...active, ...completed].reduce((sum, item) => sum + item.laborCost, 0));
 
     return {
       generatedAt: now.toISOString(), locationId,
-      summary: { employeesWorking: active.length, onBreak: active.filter(item => item.onBreak).length, laborHours, laborCost, overtimeRisk: active.filter(item => item.overtimeRisk).length, missedPunches: cards.filter(item => item.status === "needs_review").length },
+      summary: { employeesWorking: active.length, onBreak: active.filter(item => item.onBreak).length, laborHours, laborCost, overtimeRisk: active.filter(item => item.overtimeRisk).length, missedPunches: cards.filter(item => item.status === "needs_review").length + active.filter(item => item.requiresReview).length },
       employees, active, completed, timecards: todaysCards.slice().reverse(), policy,
       corrections: (db.timeClockCorrections || []).filter(item => item.organizationId === organizationId && item.locationId === locationId).slice(-20).reverse()
     };
