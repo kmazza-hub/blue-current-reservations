@@ -19630,3 +19630,112 @@ html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel{positi
 html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar{position:sticky!important;top:0!important;z-index:18!important;margin:0!important;padding:10px 0!important;background:#082b35!important}
 html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-map{width:min(1380px,100%)!important;min-height:0!important;height:100%!important;max-height:none!important;margin:0 auto!important}
 @media(max-width:900px){html.bc-operator-focus-mode .bc-operator-focus-stage{top:70px!important;bottom:90px!important}}
+
+/* ==========================================================================
+   V100.3.8 · Physical iPad readability + full-floor control refinement
+   Evidence-driven refinement from the physical-device acceptance pass.
+   No workflow, seating, service, kitchen, staffing, auth, or persistence logic.
+   ========================================================================== */
+
+/* Focused Find Guest: the result names and context must read instantly on the
+   dark operator canvas after the live guest panel is body-portaled. */
+html.bc-operator-focus-mode .bc-operator-focus-stage>#bcHostGuestsPanel.bc-operator-focus-target #bcGuestSearchResults > button{
+  background:#124b58!important;
+  border:1px solid rgba(129,222,218,.34)!important;
+  color:#f7ffff!important;
+  box-shadow:none!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#bcHostGuestsPanel.bc-operator-focus-target #bcGuestSearchResults > button strong{
+  color:#ffffff!important;
+  opacity:1!important;
+  font-size:1.16rem!important;
+  font-weight:950!important;
+  letter-spacing:.005em!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#bcHostGuestsPanel.bc-operator-focus-target #bcGuestSearchResults > button span,
+html.bc-operator-focus-mode .bc-operator-focus-stage>#bcHostGuestsPanel.bc-operator-focus-target #bcGuestSearchResults > button small{
+  color:#d5eef2!important;
+  opacity:1!important;
+  font-weight:800!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#bcHostGuestsPanel.bc-operator-focus-target #bcGuestSearchResults > button:hover,
+html.bc-operator-focus-mode .bc-operator-focus-stage>#bcHostGuestsPanel.bc-operator-focus-target #bcGuestSearchResults > button:focus-visible{
+  border-color:#79e0d4!important;
+  box-shadow:0 0 0 3px rgba(121,224,212,.20)!important;
+}
+
+/* Full-screen floor: the three room tabs own the entire toolbar width. */
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar{
+  display:block!important;
+  width:100%!important;
+  padding:12px 0 14px!important;
+}
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar>div:first-child{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:12px!important;
+  width:100%!important;
+  max-width:none!important;
+}
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar button[data-host-zone]{
+  width:100%!important;
+  min-width:0!important;
+  min-height:58px!important;
+  padding:0 18px!important;
+  border-radius:15px!important;
+  font-size:1.08rem!important;
+  font-weight:950!important;
+  letter-spacing:.005em!important;
+  text-align:center!important;
+}
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel #hostRecommendation,
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .bc-floor-fullscreen-button{
+  display:none!important;
+}
+
+/* The map is the information. Remove low-value room/fixture copy that becomes
+   visual noise in full-screen mode while preserving the physical guide shapes. */
+html.bc-ipad-floor-focus #hostFloorMap .host-water-line,
+html.bc-ipad-floor-focus #hostFloorMap .bc-floor-zone-note-v100-2-35,
+html.bc-ipad-floor-focus #hostFloorMap .bc-main-host-v100-2-35,
+html.bc-ipad-floor-focus #hostFloorMap .bc-main-bar-v100-2-35,
+html.bc-ipad-floor-focus #hostFloorMap .bc-water-service-v100-2-35,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-room-v100-2-35,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-banquette-v100-2-47,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-credenza-v100-2-35{
+  color:transparent!important;
+  font-size:0!important;
+  line-height:0!important;
+  text-shadow:none!important;
+}
+html.bc-ipad-floor-focus #hostFloorMap .host-water-line::before,
+html.bc-ipad-floor-focus #hostFloorMap .host-water-line::after,
+html.bc-ipad-floor-focus #hostFloorMap .bc-floor-zone-note-v100-2-35::before,
+html.bc-ipad-floor-focus #hostFloorMap .bc-floor-zone-note-v100-2-35::after,
+html.bc-ipad-floor-focus #hostFloorMap .bc-main-host-v100-2-35::before,
+html.bc-ipad-floor-focus #hostFloorMap .bc-main-host-v100-2-35::after,
+html.bc-ipad-floor-focus #hostFloorMap .bc-main-bar-v100-2-35::before,
+html.bc-ipad-floor-focus #hostFloorMap .bc-main-bar-v100-2-35::after,
+html.bc-ipad-floor-focus #hostFloorMap .bc-water-service-v100-2-35::before,
+html.bc-ipad-floor-focus #hostFloorMap .bc-water-service-v100-2-35::after,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-room-v100-2-35::before,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-room-v100-2-35::after,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-banquette-v100-2-47::before,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-banquette-v100-2-47::after,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-credenza-v100-2-35::before,
+html.bc-ipad-floor-focus #hostFloorMap .bc-private-credenza-v100-2-35::after{
+  content:""!important;
+}
+
+/* Keep table identity dominant when the room is enlarged. */
+html.bc-ipad-floor-focus #hostFloorMap .host-table span{
+  font-weight:950!important;
+}
+html.bc-ipad-floor-focus #hostFloorMap .host-table small{
+  font-weight:900!important;
+}
+
+@media(max-width:900px){
+  html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar>div:first-child{gap:8px!important}
+  html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar button[data-host-zone]{min-height:54px!important;font-size:1rem!important;padding:0 10px!important}
+}

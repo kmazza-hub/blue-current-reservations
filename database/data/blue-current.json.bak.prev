@@ -6856,6 +6856,206 @@
       "category": "synchronization",
       "createdAt": "2026-09-05T11:12:56.144Z",
       "id": "audit_1788606776144_ela2oo"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 674 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:20:58.475Z",
+      "id": "audit_1788607258475_3m16u7"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 675 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:21:37.245Z",
+      "id": "audit_1788607297245_g74n2m"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 676 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:22:16.535Z",
+      "id": "audit_1788607336535_i0v92y"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 677 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:23:01.477Z",
+      "id": "audit_1788607381477_dp5693"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 678 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:23:30.825Z",
+      "id": "audit_1788607410825_v3v10b"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 679 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:24:00.799Z",
+      "id": "audit_1788607440799_2ybk01"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 680 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:24:30.689Z",
+      "id": "audit_1788607470689_x0co2a"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 681 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:25:00.839Z",
+      "id": "audit_1788607500839_6ljyld"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 682 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:25:30.660Z",
+      "id": "audit_1788607530660_9l3o69"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 683 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:26:01.358Z",
+      "id": "audit_1788607561359_1gxd1j"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 684 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:26:31.335Z",
+      "id": "audit_1788607591335_i59ckg"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 685 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:27:00.689Z",
+      "id": "audit_1788607620689_kwjdlw"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 686 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:27:30.800Z",
+      "id": "audit_1788607650800_0jwjqp"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 687 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:28:00.835Z",
+      "id": "audit_1788607680835_w3o9nz"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 688 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:28:30.687Z",
+      "id": "audit_1788607710687_49wj4r"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 689 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:29:01.000Z",
+      "id": "audit_1788607741000_olx0r2"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 690 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:29:30.691Z",
+      "id": "audit_1788607770691_x5n58g"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 691 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:30:01.261Z",
+      "id": "audit_1788607801261_4ulhut"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 692 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:30:31.032Z",
+      "id": "audit_1788607831032_lkt1n0"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 693 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:31:00.714Z",
+      "id": "audit_1788607860714_n83noc"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 694 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:31:30.816Z",
+      "id": "audit_1788607890816_vn6stw"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 695 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:32:00.680Z",
+      "id": "audit_1788607920680_mjx1v8"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 696 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:32:30.667Z",
+      "id": "audit_1788607950667_uu8syi"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 697 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:33:00.670Z",
+      "id": "audit_1788607980670_c86glg"
+    },
+    {
+      "organizationId": "org_chefs",
+      "actor": "Keith Mazza",
+      "action": "Version 698 committed for /api/manager-actions/service-exceptions",
+      "category": "synchronization",
+      "createdAt": "2026-09-05T11:33:30.681Z",
+      "id": "audit_1788608010681_802zou"
     }
   ],
   "reservations": [
@@ -6990,12 +7190,12 @@
         "*"
       ],
       "createdAt": "2026-09-05T11:00:32.151Z",
-      "lastSeenAt": "2026-09-05T11:10:34.363Z",
-      "idleExpiresAt": "2026-09-05T13:10:34.363Z",
+      "lastSeenAt": "2026-09-05T11:31:00.706Z",
+      "idleExpiresAt": "2026-09-05T13:31:00.706Z",
       "expiresAt": "2026-09-05T23:00:32.151Z",
       "revokedAt": null,
       "revokedReason": null,
-      "updatedAt": "2026-09-05T11:10:34.369Z"
+      "updatedAt": "2026-09-05T11:31:00.723Z"
     },
     {
       "id": "ses_1788606047844_2nuj9g",
@@ -8452,13 +8652,13 @@
       "organizationId": "org_chefs",
       "path": "/api/manager-actions/service-exceptions",
       "entityId": "service-exceptions",
-      "version": 673,
+      "version": 698,
       "createdAt": "2026-09-03T03:02:11.516Z",
-      "updatedAt": "2026-09-05T11:12:56.036Z",
+      "updatedAt": "2026-09-05T11:33:30.577Z",
       "lastPayload": {
         "exceptions": 13,
         "transitions": 0,
-        "synchronizedAt": "2026-09-05T11:12:56.029Z"
+        "synchronizedAt": "2026-09-05T11:33:30.570Z"
       },
       "lastActor": "Keith Mazza"
     }
@@ -8669,7 +8869,7 @@
       "sourceRecordId": "pto_1785380502529",
       "sourceRecordType": "pto_request",
       "createdAt": "2026-07-30T03:01:42.529Z",
-      "updatedAt": "2026-09-05T01:06:05.905Z"
+      "updatedAt": "2026-09-05T11:33:22.336Z"
     },
     {
       "id": "action_loc_marina_inventory_inv_greens",
@@ -8684,7 +8884,7 @@
       "sourceRecordId": "inv_greens",
       "sourceRecordType": "inventory_item",
       "createdAt": "2026-09-03T02:14:30.809Z",
-      "updatedAt": "2026-09-05T01:06:05.905Z"
+      "updatedAt": "2026-09-05T11:33:22.336Z"
     },
     {
       "id": "action_loc_marina_inventory_inv_salmon",
@@ -8699,7 +8899,7 @@
       "sourceRecordId": "inv_salmon",
       "sourceRecordType": "inventory_item",
       "createdAt": "2026-09-03T02:14:30.809Z",
-      "updatedAt": "2026-09-05T01:06:05.905Z"
+      "updatedAt": "2026-09-05T11:33:22.336Z"
     },
     {
       "id": "action_loc_marina_shift_handoff",
@@ -8714,7 +8914,7 @@
       "sourceRecordId": null,
       "sourceRecordType": "shift_handoff",
       "createdAt": "2026-09-03T02:14:30.809Z",
-      "updatedAt": "2026-09-05T01:06:05.905Z"
+      "updatedAt": "2026-09-05T11:33:22.336Z"
     },
     {
       "id": "action_loc_marina_service_010cf7cd283b3de336b0ded3",
@@ -8861,7 +9061,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T01:22:13.537Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z"
+      "updatedAt": "2026-09-05T11:33:30.470Z"
     },
     {
       "id": "action_loc_marina_service_a0e961fdd8cb30106c3e3c0b",
@@ -9008,7 +9208,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9033,7 +9233,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9058,7 +9258,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9083,7 +9283,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9108,7 +9308,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9133,7 +9333,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9158,7 +9358,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9183,7 +9383,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9208,7 +9408,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.997Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9233,7 +9433,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.998Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9258,7 +9458,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.998Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -9283,7 +9483,7 @@
         "minutes": 999
       },
       "createdAt": "2026-09-05T11:01:55.998Z",
-      "updatedAt": "2026-09-05T11:12:55.934Z",
+      "updatedAt": "2026-09-05T11:33:30.470Z",
       "completedAt": "2026-09-05T11:04:13.545Z",
       "completedBy": "Blue Current",
       "autoResolved": true
@@ -22076,6 +22276,481 @@
       "createdAt": "2026-09-05T11:12:55.267Z",
       "updatedAt": "2026-09-05T11:12:56.261Z",
       "finalizedAt": "2026-09-05T11:12:56.261Z"
+    },
+    {
+      "id": "mut_31e9e108-aaeb-407b-a4ae-f9c601a728df",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 674,
+      "error": null,
+      "createdAt": "2026-09-05T11:20:57.372Z",
+      "updatedAt": "2026-09-05T11:20:58.601Z",
+      "finalizedAt": "2026-09-05T11:20:58.601Z"
+    },
+    {
+      "id": "mut_4881f311-4344-4ceb-99f1-65a8d679ac32",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 675,
+      "error": null,
+      "createdAt": "2026-09-05T11:21:36.905Z",
+      "updatedAt": "2026-09-05T11:21:37.905Z",
+      "finalizedAt": "2026-09-05T11:21:37.905Z"
+    },
+    {
+      "id": "mut_4a442bb4-0a24-4353-93ae-54f3dfe9b9b2",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 676,
+      "error": null,
+      "createdAt": "2026-09-05T11:22:16.089Z",
+      "updatedAt": "2026-09-05T11:22:17.097Z",
+      "finalizedAt": "2026-09-05T11:22:17.097Z"
+    },
+    {
+      "id": "mut_a6dfae1f-58a3-487a-9a38-311b3da634a0",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 677,
+      "error": null,
+      "createdAt": "2026-09-05T11:23:00.376Z",
+      "updatedAt": "2026-09-05T11:23:01.583Z",
+      "finalizedAt": "2026-09-05T11:23:01.583Z"
+    },
+    {
+      "id": "mut_e9f312e4-c639-4d0a-acfe-4da632fd668d",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 678,
+      "error": null,
+      "createdAt": "2026-09-05T11:23:30.358Z",
+      "updatedAt": "2026-09-05T11:23:31.377Z",
+      "finalizedAt": "2026-09-05T11:23:31.377Z"
+    },
+    {
+      "id": "mut_7ad491df-80be-4fcf-9034-23e4b0195391",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 679,
+      "error": null,
+      "createdAt": "2026-09-05T11:24:00.367Z",
+      "updatedAt": "2026-09-05T11:24:01.369Z",
+      "finalizedAt": "2026-09-05T11:24:01.369Z"
+    },
+    {
+      "id": "mut_1834dd0d-cf9e-4518-8ace-88189ac076eb",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 680,
+      "error": null,
+      "createdAt": "2026-09-05T11:24:30.357Z",
+      "updatedAt": "2026-09-05T11:24:31.349Z",
+      "finalizedAt": "2026-09-05T11:24:31.349Z"
+    },
+    {
+      "id": "mut_f96f6b1c-df66-44d5-98b7-e441090a4a07",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 681,
+      "error": null,
+      "createdAt": "2026-09-05T11:25:00.363Z",
+      "updatedAt": "2026-09-05T11:25:01.412Z",
+      "finalizedAt": "2026-09-05T11:25:01.412Z"
+    },
+    {
+      "id": "mut_347b7828-aced-4cba-bed6-755dc76b6607",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 682,
+      "error": null,
+      "createdAt": "2026-09-05T11:25:30.355Z",
+      "updatedAt": "2026-09-05T11:25:31.399Z",
+      "finalizedAt": "2026-09-05T11:25:31.399Z"
+    },
+    {
+      "id": "mut_2ecaab6e-d74c-4809-9162-6446951eef6d",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 683,
+      "error": null,
+      "createdAt": "2026-09-05T11:26:00.488Z",
+      "updatedAt": "2026-09-05T11:26:01.465Z",
+      "finalizedAt": "2026-09-05T11:26:01.465Z"
+    },
+    {
+      "id": "mut_cfba66b0-3641-4863-a6cc-86f1e881f299",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 684,
+      "error": null,
+      "createdAt": "2026-09-05T11:26:30.364Z",
+      "updatedAt": "2026-09-05T11:26:31.446Z",
+      "finalizedAt": "2026-09-05T11:26:31.446Z"
+    },
+    {
+      "id": "mut_1b9ef6bb-1b45-448f-9c3c-2c57900d64f4",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 685,
+      "error": null,
+      "createdAt": "2026-09-05T11:27:00.358Z",
+      "updatedAt": "2026-09-05T11:27:01.440Z",
+      "finalizedAt": "2026-09-05T11:27:01.440Z"
+    },
+    {
+      "id": "mut_27ae12e9-a6b0-46a7-9988-3eee01aeaaff",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 686,
+      "error": null,
+      "createdAt": "2026-09-05T11:27:30.355Z",
+      "updatedAt": "2026-09-05T11:27:31.425Z",
+      "finalizedAt": "2026-09-05T11:27:31.425Z"
+    },
+    {
+      "id": "mut_b4941ff3-5de7-4937-9743-d3043c6341ee",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 687,
+      "error": null,
+      "createdAt": "2026-09-05T11:28:00.357Z",
+      "updatedAt": "2026-09-05T11:28:01.480Z",
+      "finalizedAt": "2026-09-05T11:28:01.480Z"
+    },
+    {
+      "id": "mut_01e7a253-63c4-4a0e-8b9f-b9d5bb0763a5",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 688,
+      "error": null,
+      "createdAt": "2026-09-05T11:28:30.357Z",
+      "updatedAt": "2026-09-05T11:28:31.411Z",
+      "finalizedAt": "2026-09-05T11:28:31.411Z"
+    },
+    {
+      "id": "mut_2108b9a7-8544-46e4-9763-3841cff79d4c",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 689,
+      "error": null,
+      "createdAt": "2026-09-05T11:29:00.356Z",
+      "updatedAt": "2026-09-05T11:29:01.405Z",
+      "finalizedAt": "2026-09-05T11:29:01.405Z"
+    },
+    {
+      "id": "mut_ebd758dc-f4d1-447a-8cdf-00bf9a9e04ab",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 690,
+      "error": null,
+      "createdAt": "2026-09-05T11:29:30.356Z",
+      "updatedAt": "2026-09-05T11:29:31.392Z",
+      "finalizedAt": "2026-09-05T11:29:31.392Z"
+    },
+    {
+      "id": "mut_2b558f46-bb46-41c8-b867-f0839e12b41d",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 691,
+      "error": null,
+      "createdAt": "2026-09-05T11:30:00.356Z",
+      "updatedAt": "2026-09-05T11:30:01.390Z",
+      "finalizedAt": "2026-09-05T11:30:01.390Z"
+    },
+    {
+      "id": "mut_f5bc1bc5-dd4a-4c56-9195-e5b725627e2a",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 692,
+      "error": null,
+      "createdAt": "2026-09-05T11:30:30.357Z",
+      "updatedAt": "2026-09-05T11:30:31.440Z",
+      "finalizedAt": "2026-09-05T11:30:31.440Z"
+    },
+    {
+      "id": "mut_c1ceddc9-164e-4aa2-9871-c4b925d80ecb",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 693,
+      "error": null,
+      "createdAt": "2026-09-05T11:31:00.360Z",
+      "updatedAt": "2026-09-05T11:31:01.511Z",
+      "finalizedAt": "2026-09-05T11:31:01.511Z"
+    },
+    {
+      "id": "mut_adadb67e-5645-4069-8db5-d81a3029ae0d",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 694,
+      "error": null,
+      "createdAt": "2026-09-05T11:31:30.359Z",
+      "updatedAt": "2026-09-05T11:31:31.404Z",
+      "finalizedAt": "2026-09-05T11:31:31.404Z"
+    },
+    {
+      "id": "mut_9c6c040c-9025-4bd3-97b2-6287d2842254",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 695,
+      "error": null,
+      "createdAt": "2026-09-05T11:32:00.357Z",
+      "updatedAt": "2026-09-05T11:32:01.366Z",
+      "finalizedAt": "2026-09-05T11:32:01.366Z"
+    },
+    {
+      "id": "mut_19f12e8f-0f88-45dd-8b33-5eea947e070c",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 696,
+      "error": null,
+      "createdAt": "2026-09-05T11:32:30.357Z",
+      "updatedAt": "2026-09-05T11:32:31.350Z",
+      "finalizedAt": "2026-09-05T11:32:31.350Z"
+    },
+    {
+      "id": "mut_ee08c321-2661-4fe4-87af-c3b6195afa0f",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "finalized",
+      "outcome": "committed",
+      "responseStatus": 200,
+      "resourceVersion": 697,
+      "error": null,
+      "createdAt": "2026-09-05T11:33:00.361Z",
+      "updatedAt": "2026-09-05T11:33:01.364Z",
+      "finalizedAt": "2026-09-05T11:33:01.364Z"
+    },
+    {
+      "id": "mut_50243ee5-d9f0-43fa-a879-2ea3e609e7b7",
+      "organizationId": "org_chefs",
+      "method": "POST",
+      "path": "/api/manager-actions/service-exceptions",
+      "entityId": "service-exceptions",
+      "userId": "usr_keith",
+      "actor": "Keith Mazza",
+      "idempotencyKey": null,
+      "expectedVersion": null,
+      "status": "prepared",
+      "outcome": null,
+      "responseStatus": null,
+      "resourceVersion": null,
+      "error": null,
+      "createdAt": "2026-09-05T11:33:30.358Z",
+      "updatedAt": "2026-09-05T11:33:30.358Z",
+      "finalizedAt": null
     }
   ],
   "operationsEvents": [
