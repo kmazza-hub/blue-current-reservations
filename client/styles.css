@@ -19602,3 +19602,31 @@ html.bc-operator-focus-mode #workforce-intelligence .bc-staff-truth-v264.bc-oper
   html.bc-operator-focus-mode .bc-operator-focus-target{top:70px!important;bottom:90px!important}
   html.bc-operator-focus-mode .bc-operator-focus-back,html.bc-operator-focus-mode .bc-operator-focus-close{padding:0 13px!important}
 }
+
+/* ==========================================================================
+   V100.3.7 · Body-portaled operator workspaces
+   Targets are physically moved under <body> while focused so transformed,
+   clipped, hidden, or reflowing ancestors cannot blank or reposition them.
+   ========================================================================== */
+.bc-operator-focus-stage,.bc-floor-focus-stage{display:none}
+html.bc-operator-focus-mode .bc-operator-focus-stage{
+  display:block!important;position:fixed!important;top:76px!important;left:0!important;right:0!important;bottom:94px!important;
+  z-index:2147481600!important;overflow:auto!important;background:#071f28!important;overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>.bc-operator-focus-target{
+  position:relative!important;inset:auto!important;display:block!important;width:100%!important;min-width:0!important;max-width:none!important;
+  min-height:100%!important;height:auto!important;max-height:none!important;margin:0!important;overflow:visible!important;transform:none!important;opacity:1!important;
+}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#bcHostGuestsPanel.bc-operator-focus-target{padding:clamp(28px,5vh,58px) clamp(24px,6vw,90px)!important;background:#082d37!important;color:#fff!important}
+html.bc-operator-focus-mode .bc-operator-focus-stage>.twin-app.bc-operator-focus-target{padding:18px 22px 28px!important;background:#082b35!important;border:0!important;border-radius:0!important}
+html.bc-operator-focus-mode .bc-operator-focus-stage>#kitchenThroughputCenter.bc-operator-focus-target{padding:24px clamp(20px,4vw,54px) 34px!important;background:#082f39!important;color:#fff!important;border-radius:0!important}
+html.bc-operator-focus-mode .bc-operator-focus-stage>.bc-staff-truth-v264.bc-operator-focus-target{padding:30px clamp(22px,4vw,54px) 34px!important;background:#f7fbfc!important;color:#15333c!important}
+html.bc-ipad-floor-focus .bc-floor-focus-stage{
+  display:grid!important;grid-template-rows:auto minmax(0,1fr)!important;position:fixed!important;inset:0!important;z-index:2147482500!important;
+  width:100vw!important;height:100dvh!important;background:#082b35!important;overflow:hidden!important;box-sizing:border-box!important;
+}
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-header{display:grid!important;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 10px) 18px 10px;background:rgba(6,39,49,.98);border-bottom:1px solid rgba(116,226,212,.22)}
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel{position:relative!important;inset:auto!important;display:grid!important;grid-template-rows:auto minmax(0,1fr)!important;width:100%!important;height:100%!important;max-width:none!important;margin:0!important;padding:0 18px calc(18px + env(safe-area-inset-bottom,0px))!important;overflow:auto!important;background:#082b35!important;box-sizing:border-box!important}
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-toolbar{position:sticky!important;top:0!important;z-index:18!important;margin:0!important;padding:10px 0!important;background:#082b35!important}
+html.bc-ipad-floor-focus .bc-floor-focus-stage>.bc-ipad-floor-focus-panel .host-floor-map{width:min(1380px,100%)!important;min-height:0!important;height:100%!important;max-height:none!important;margin:0 auto!important}
+@media(max-width:900px){html.bc-operator-focus-mode .bc-operator-focus-stage{top:70px!important;bottom:90px!important}}
