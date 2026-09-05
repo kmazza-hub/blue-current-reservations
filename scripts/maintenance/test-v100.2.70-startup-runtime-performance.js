@@ -5,7 +5,7 @@ const html=read("client/index.html"),loader=read("client/js/runtime-performance-
 const legacy=["idlePackWarmupEngine","idlePackWarmupCenter","eventStormGuardEngine","eventStormGuardCenter","renderBudgetEngine","renderBudgetCenter","adaptivePackEngine","adaptivePackCenter","memoryPressureEngine","memoryPressureCenter","centerSuspensionEngine","centerSuspensionCenter","networkRequestEngine","networkRequestCenter","stateChurnEngine","stateChurnCenter","runtimeCircuitBreakerEngine","runtimeCircuitBreakerCenter","subscriptionLifecycleEngine","subscriptionLifecycleCenter","storageFootprintEngine","storageFootprintCenter","runtimeReadinessEngine","runtimeReadinessCenter","performanceBaselineEngine","performanceBaselineCenter","performanceRegressionEngine","performanceRegressionCenter","productionRuntimeEngine","productionRuntimeCenter","releaseCandidateEngine","releaseCandidateCenter","rollbackCheckpointEngine","rollbackCheckpointCenter","productionSmokeTestEngine","productionSmokeTestCenter","deploymentRehearsalEngine","deploymentRehearsalCenter","environmentGateEngine","environmentGateCenter","acceptanceSignoffEngine","acceptanceSignoffCenter","v37CertificationEngine","v37CertificationCenter"];
 const runtime=[
  "js/kitchen-truth-v100.2.60.js?v=100.3.16","js/kitchen-service-handoff-v100.2.61.js?v=100.2.61","js/kitchen-priority-v100.2.62.js?v=100.2.62",
- "js/staff-truth-v100.2.64.js?v=100.3.14","js/staff-role-coverage-v100.2.65.js?v=100.2.65","js/staff-attendance-v100.2.66.js?v=100.2.66",
+ "js/staff-truth-v100.2.64.js?v=100.3.17","js/staff-role-coverage-v100.2.65.js?v=100.3.17","js/staff-attendance-v100.2.66.js?v=100.3.17",
  "js/manager-operations-truth-v100.2.68.js?v=100.2.68","js/manager-action-ownership-v100.2.69.js?v=100.2.69"
 ];
 const activeRuntime=runtime.filter(src=>html.includes(`<script src="${src}"></script>`));
@@ -14,7 +14,7 @@ const checks=[
  ["V100.2.70 loader marker",/V100\.2\.70 — Startup \/ Runtime Performance Hardening/.test(loader)],
  ["all 44 nonessential V37 diagnostics deferred",deferredLegacy.length===44],
  ["all 8 recent domain modules removed from immediate startup",activeRuntime.length===0],
- ["8 recent domain modules preserved as lazy placeholders",runtime.every(src=>html.includes(`type="text/bluecurrent-runtime-lazy" data-src="${src}"`))&&html.includes('type="text/bluecurrent-runtime-lazy" data-src="js/timeclock-truth-v100.2.76.js?v=100.3.15"')],
+["8 recent domain modules preserved as lazy placeholders",runtime.every(src=>html.includes(`type="text/bluecurrent-runtime-lazy" data-src="${src}"`))&&/type="text\/bluecurrent-runtime-lazy" data-src="js\/timeclock-truth-v100\.2\.76\.js\?v=100\.3\.(?:15|17)"/.test(html)],
  ["new runtime loader is active",html.includes('<script src="js/runtime-performance-v100.2.70.js?v=100.2.70"></script>')],
  ["runtime loader follows existing startup loader",html.indexOf("runtime-performance-v100.2.70.js")>html.indexOf("startup-loader.js?v=67.0.0")],
  ["Kitchen group preserves .60→.61→.62 order",loader.indexOf("kitchen-truth-v100.2.60.js")<loader.indexOf("kitchen-service-handoff-v100.2.61.js")&&loader.indexOf("kitchen-service-handoff-v100.2.61.js")<loader.indexOf("kitchen-priority-v100.2.62.js")],

@@ -10,11 +10,11 @@ const GROUPS=Object.freeze({
     "js/kitchen-priority-v100.2.62.js?v=100.2.62"
   ],
   staff:[
-    "js/staff-truth-v100.2.64.js?v=100.3.14",
-    "js/staff-role-coverage-v100.2.65.js?v=100.2.65",
-    "js/staff-attendance-v100.2.66.js?v=100.2.66",
-    "js/scheduling-truth-v100.2.73.js?v=100.2.73",
-    "js/timeclock-truth-v100.2.76.js?v=100.3.15"
+    "js/staff-truth-v100.2.64.js?v=100.3.17",
+    "js/staff-role-coverage-v100.2.65.js?v=100.3.17",
+    "js/staff-attendance-v100.2.66.js?v=100.3.17",
+    "js/scheduling-truth-v100.2.73.js?v=100.3.17",
+    "js/timeclock-truth-v100.2.76.js?v=100.3.17"
   ],
   manager:[
     "js/manager-operations-truth-v100.2.68.js?v=100.2.68",

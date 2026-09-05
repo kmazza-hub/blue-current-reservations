@@ -506,7 +506,7 @@ ready(()=>{
    const exceptions=rows.map(p=>({party:p,recovery:serviceRecoveryException(p)})).filter(x=>x.recovery).map(({party,recovery})=>({exceptionKey:`${servicePartyKey(party)}|${recovery.status}`,guest:String(party.guest||"Guest"),table:serviceTableLabel(party),status:recovery.status,minutes:recovery.minutes,reason:recovery.reason,action:recovery.action}));
    const digest=JSON.stringify(exceptions.map(x=>[x.exceptionKey,x.minutes,x.reason,x.action]));if(digest===serviceManagerDigest)return;
    serviceManagerSyncing=true;
-   try{await serviceManagerApi.syncServiceExceptions({locationId:"loc_marina",exceptions});serviceManagerDigest=digest;window.dispatchEvent(new CustomEvent("bc:service-manager-exceptions-synced",{detail:{count:exceptions.length}}));}
+   try{await serviceManagerApi.syncServiceExceptions({locationId:window.BlueCurrentFrontlineLocation?.get?.()||"loc_marina",exceptions});serviceManagerDigest=digest;window.dispatchEvent(new CustomEvent("bc:service-manager-exceptions-synced",{detail:{count:exceptions.length}}));}
    catch(error){window.dispatchEvent(new CustomEvent("bc:service-manager-exceptions-sync-failed",{detail:{message:error?.message||"Service exception sync failed"}}));}
    finally{serviceManagerSyncing=false;}
  }

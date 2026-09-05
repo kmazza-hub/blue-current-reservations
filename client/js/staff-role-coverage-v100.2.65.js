@@ -4,7 +4,7 @@
 // Coverage is certified only when the current week's schedule has been published.
 // Expected roles come from scheduled shifts active at the current local time.
 // Actual roles come from clocked-in Time Clock records.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 const normalizeRole=value=>String(value||"Team member").trim().toLowerCase().replace(/\s+/g," ");

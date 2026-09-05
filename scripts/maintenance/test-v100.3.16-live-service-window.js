@@ -17,7 +17,7 @@ ok("Prune lifecycle event is published",events.some(event=>event.type==="bc:serv
 ok("Service API exposes live predicate",floor.includes("isLive:(row,now)=>isLiveServiceParty(row,now)"));
 ok("Kitchen consumes certified Service active state",kitchen.includes("window.BlueCurrentServiceHandoff?.getActive?.()"));
 ok("Kitchen responds to stale pruning",kitchen.includes('"bc:service-stale-pruned"'));
-ok("Floor cache key advances",index.includes("floor-reservations-v62.0.js?v=100.3.16"));
+ok("Floor cache key advances",/floor-reservations-v62\.0\.js\?v=100\.3\.(?:16|17)/.test(index));
 ok("Kitchen cache key advances",index.includes("kitchen-truth-v100.2.60.js?v=100.3.16"));
 ok("Runtime loader cache key advances",runtime.includes("kitchen-truth-v100.2.60.js?v=100.3.16"));
 ok("Permanent backend service records are untouched",!floor.includes("/api/serviceFlows")&&!kitchen.includes("/api/serviceFlows"));

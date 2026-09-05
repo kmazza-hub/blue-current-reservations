@@ -3,7 +3,7 @@
 // V100.2.73 — Scheduling Truth Foundation.
 // Primary schedule surface uses the Scheduling API's recorded shifts/publication state only.
 // AI recommendations, reservation-demand assumptions, and synthetic staffing guidance stay out of this view.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 let api=null,state=null,weekStart="",loading=false;

@@ -5,7 +5,7 @@
 // 1) a published shift active right now, and
 // 2) a matching Time Clock active record.
 // Blue Current does not infer callout/no-show cause.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const GRACE_MINUTES=10;
 const byId=id=>document.getElementById(id);
 const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));

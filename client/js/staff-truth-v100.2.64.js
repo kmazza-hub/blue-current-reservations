@@ -3,7 +3,7 @@
 // V100.3.14 — Staff Data Credibility refinement of the Staffing Truth Foundation.
 // Primary staffing view is backed by the Time Clock API only.
 // It does not present synthetic demand, scheduled coverage, or callout risk as live truth.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 let api=null,timer=null,loading=false,lastState=null;

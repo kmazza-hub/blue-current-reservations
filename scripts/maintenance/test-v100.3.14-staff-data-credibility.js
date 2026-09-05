@@ -31,8 +31,8 @@ const seed={employees:[
  ok("Labor totals use bounded today hours",snapshot.summary.laborHours<=26);
  ok("Staff view surfaces review summary as first priority",staff.includes('summary.missedPunches')&&staff.includes("Review missed punches"));
  ok("Staff view labels punch review truthfully",staff.includes("Needs punch review")&&staff.includes('item.requiresReview?" · review"'));
- ok("Staff runtime cache key advances",index.includes('staff-truth-v100.2.64.js?v=100.3.14'));
- ok("Runtime loader uses advanced Staff cache key",runtime.includes('staff-truth-v100.2.64.js?v=100.3.14'));
+ ok("Staff runtime cache key advances",/staff-truth-v100\.2\.64\.js\?v=100\.3\.(?:14|17)/.test(index));
+ ok("Runtime loader uses advanced Staff cache key",/staff-truth-v100\.2\.64\.js\?v=100\.3\.(?:14|17)/.test(runtime));
  ok("No runtime database mutation is introduced",!source.includes("card.status = requiresReview"));
  console.log(`V100.3.14 validation ${passed}/13`);
 })().catch(error=>{console.error(error);process.exit(1)});

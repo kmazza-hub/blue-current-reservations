@@ -20,8 +20,8 @@ const data={employees:[{id:"old",organizationId:"org",locationId:"loc",status:"a
  ok("Open review punch remains correctable in timecards",snapshot.timecards.some(x=>x.id==="old-card"&&x.requiresReview));
  ok("Time Clock names open review state",clockUi.includes("Open punch — not counted working"));
  ok("Time Clock review KPI uses service summary",clockUi.includes("state.summary?.missedPunches"));
- ok("Index advances Time Clock cache key",index.includes("timeclock-truth-v100.2.76.js?v=100.3.15"));
- ok("Runtime loader advances Time Clock cache key",runtime.includes("timeclock-truth-v100.2.76.js?v=100.3.15"));
+ ok("Index advances Time Clock cache key",/timeclock-truth-v100\.2\.76\.js\?v=100\.3\.(?:15|17)/.test(index));
+ ok("Runtime loader advances Time Clock cache key",/timeclock-truth-v100\.2\.76\.js\?v=100\.3\.(?:15|17)/.test(runtime));
  ok("Snapshot remains read-only",!service.includes("card.status = requiresReview"));
  console.log(`V100.3.15 validation ${passed}/13`);
 })().catch(error=>{console.error(error);process.exit(1)});

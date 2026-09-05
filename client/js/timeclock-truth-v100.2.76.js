@@ -3,7 +3,7 @@
 // V100.3.15 — Active Staffing Truth Isolation refinement.
 // Primary Time Clock surface is limited to recorded punch/break state from the Time Clock API.
 // Labor-cost projections, overtime predictions, and synthetic attendance diagnoses stay out of this primary view.
-const LOCATION_ID="loc_marina";
+const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmtTime=value=>{if(!value)return "—";const d=new Date(value);return Number.isNaN(d.getTime())?"—":d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})};
