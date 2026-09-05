@@ -21,11 +21,12 @@
     if (state.actions.length) return;
     [...document.querySelectorAll(".executive-recommendation-card")].slice(0, 2).forEach((card, i) => {
       const title = card.querySelector(".executive-recommendation-top strong")?.textContent?.trim();
-      if (!title) return;
+      const locationId = card.dataset.locationId || "";
+      if (!title || !locationId) return;
       state.actions.push({
         id: `exec_seed_${Date.now()}_${i}`,
         title,
-        locationId: "loc_marina",
+        locationId,
         locationName: card.querySelector(".executive-recommendation-top small")?.textContent?.trim() || "Portfolio",
         priority: card.dataset.priority || "medium",
         owner: card.querySelector(".executive-recommendation-impact div:nth-child(2) strong")?.textContent?.trim() || "District Leadership",
@@ -164,10 +165,11 @@
     window.addEventListener("bluecurrent:manager-action-created", event => {
       const action = event.detail?.action;
       if (!action || action.source !== "Executive Intelligence") return;
+      if (!action.locationId) return;
       state.actions.unshift({
         id: `exec_${action.id || Date.now()}`,
         title: action.title,
-        locationId: action.locationId || "loc_marina",
+        locationId: action.locationId,
         locationName: "Executive Intelligence",
         priority: action.priority || "medium",
         owner: "District Leadership",

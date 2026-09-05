@@ -26,7 +26,7 @@
       }));
 
       return {
-        id: card.querySelector("button")?.dataset?.locationId || "loc_marina",
+        id: card.querySelector("button")?.dataset?.locationId || "",
         name: card.querySelector(".district-location-top strong")?.textContent?.trim() || "Location",
         city: card.querySelector(".district-location-top small")?.textContent?.trim() || "",
         health: Number.parseFloat(card.querySelector(".district-health-badge")?.textContent || "0"),
@@ -35,7 +35,7 @@
         alerts: Number.parseInt(metricMap.alerts || "0", 10) || 0,
         status: card.querySelector(".district-location-status")?.textContent?.trim() || ""
       };
-    });
+    }).filter(location => location.id);
   }
 
   function recommendationFor(location) {
@@ -122,6 +122,11 @@
 
     if (!status || !button) return;
 
+    if (!recommendation.locationId) {
+      status.textContent = "Select a verified restaurant before creating an action.";
+      return;
+    }
+
     if (!api?.hasCapability?.("createManagerAction") || !api.token) {
       status.textContent = "Sign in to save an executive recommendation.";
       return;
@@ -132,7 +137,7 @@
 
     try {
       const action = await api.createManagerAction({
-        locationId: recommendation.locationId || "loc_marina",
+        locationId: recommendation.locationId,
         title: recommendation.title,
         source: "Executive Intelligence",
         priority: recommendation.priority,
@@ -142,7 +147,7 @@
       if (api?.hasCapability?.("updateManagerAction")) {
         try {
           await api.updateManagerAction(action.id, {
-            locationId: recommendation.locationId || "loc_marina",
+            locationId: recommendation.locationId,
             noteUpdate: true,
             note: `${recommendation.detail} Suggested owner: ${recommendation.owner}.`
           });
@@ -194,6 +199,7 @@
       const card = document.createElement("article");
       card.className = "executive-recommendation-card";
       card.dataset.priority = recommendation.priority;
+      card.dataset.locationId = recommendation.locationId;
 
       const top = document.createElement("div");
       top.className = "executive-recommendation-top";
