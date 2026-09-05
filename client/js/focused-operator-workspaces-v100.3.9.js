@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const VERSION="100.3.9";
+const VERSION="100.3.13";
 const q=id=>document.getElementById(id);
 const JOBS={
   guests:{title:"Find guest",subtitle:"Search tonight's guests and recent profiles."},
@@ -88,9 +88,11 @@ function returnToHostHome(){
   [80,180,360].forEach(ms=>setTimeout(settle,ms));
 }
 function exitOperatorFocus({returnHome=false}={}){
+  const closedJob=currentJob;
   focusToken++;clearTarget();currentJob=null;
   document.documentElement.classList.remove("bc-operator-focus-mode");delete document.body.dataset.bcOperatorFocus;
   const {backdrop,stage,header}=ensureChrome();backdrop.hidden=true;stage.hidden=true;header.hidden=true;stage.replaceChildren();markDock("");
+  if(closedJob)window.dispatchEvent(new CustomEvent("bc:operator-workspace-closed",{detail:{job:closedJob,version:VERSION}}));
   if(returnHome)returnToHostHome();
 }
 function mountFocusedTarget(key,target){
@@ -109,14 +111,19 @@ function mountFocusedTarget(key,target){
   q("bcOperatorFocusTitle").textContent=JOBS[key].title;q("bcOperatorFocusSubtitle").textContent=JOBS[key].subtitle;
   target.classList.add("bc-operator-focus-target",`bc-focus-${key}`);target.dataset.bcFocusedJob=key;
   stage.replaceChildren(target);markDock(key);keepTargetUsable(target,key);
+  window.dispatchEvent(new CustomEvent("bc:operator-workspace-opened",{detail:{job:key,version:VERSION}}));
   requestAnimationFrame(()=>{stage.scrollTop=0;target.scrollTop=0;if(key==="guests")setTimeout(()=>q("bcGuestSearchInput")?.focus({preventScroll:true}),80);});
   return true;
 }
 function focusOperatorJob(key){
   if(!JOBS[key])return false;
   const token=++focusToken;
-  const tryMount=(attempt=0)=>{if(token!==focusToken)return;const t=targetFor(key);if(t){mountFocusedTarget(key,t);return;}if(attempt<40)setTimeout(()=>tryMount(attempt+1),50);};
+  const tryMount=(attempt=0)=>{if(token!==focusToken)return;const t=targetFor(key);if(t){mountFocusedTarget(key,t);return;}if(attempt<120)setTimeout(()=>tryMount(attempt+1),50);else window.dispatchEvent(new CustomEvent("bc:operator-workspace-unavailable",{detail:{job:key,version:VERSION}}));};
   tryMount();return true;
+}
+function workspaceSnapshot(){
+  const stage=q("bcOperatorFocusStage");
+  return {version:VERSION,job:currentJob,targetConnected:Boolean(currentTarget?.isConnected),stageContainsTarget:Boolean(currentTarget&&stage?.contains(currentTarget)),placementPreserved:Boolean(currentPlacement?.placeholder?.isConnected)};
 }
 function floorPanel(){return q("host-stand")?.querySelector(".host-floor-panel")||document.querySelector("#bcFloorFocusStage .host-floor-panel");}
 function addFloorControls(){const panel=floorPanel(),toolbar=panel?.querySelector(".host-floor-toolbar");if(!panel||!toolbar)return;let btn=q("bcFloorFullscreenButton");if(!btn){btn=document.createElement("button");btn.type="button";btn.id="bcFloorFullscreenButton";btn.className="bc-floor-fullscreen-button";btn.innerHTML='<span aria-hidden="true">⛶</span> Full screen floor';btn.setAttribute("aria-pressed","false");btn.addEventListener("click",e=>{e.preventDefault();e.stopPropagation();focusFloor("button");});toolbar.appendChild(btn);}}
@@ -180,7 +187,7 @@ function bind(){
   },true);
   window.addEventListener("bc:host-guest-seated",()=>setTimeout(()=>exitFloor({returnHome:true}),120));
   document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(currentJob)exitOperatorFocus({returnHome:true});else if(document.documentElement.classList.contains("bc-ipad-floor-focus"))exitFloor({returnHome:true});});
-  window.BlueCurrentFocusedWorkspaces={version:VERSION,focus:focusOperatorJob,exit:exitOperatorFocus,focusFloor,exitFloor,targetFor};
+  window.BlueCurrentFocusedWorkspaces={version:VERSION,focus:focusOperatorJob,exit:exitOperatorFocus,focusFloor,exitFloor,targetFor,snapshot:workspaceSnapshot};
   document.documentElement.dataset.bcFocusedWorkspaceVersion=VERSION;document.documentElement.dataset.bcQuickJobNavigation="stable-body-portal-workspace";
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",()=>setTimeout(bind,0),{once:true});else setTimeout(bind,0);

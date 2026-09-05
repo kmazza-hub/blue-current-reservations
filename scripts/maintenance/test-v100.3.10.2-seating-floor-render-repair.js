@@ -9,5 +9,5 @@ assert(js.includes('map.hidden=false')&&js.includes('map.removeAttribute("aria-h
 assert(css.includes('V100.3.10.2 · Seating Floor Focus render repair'),"seating render repair CSS present");
 assert(css.includes('grid-template-rows:auto auto minmax(440px,1fr)'),"seating panel has explicit instruction toolbar map rows");
 assert(css.includes('[data-bc-focus-reason="seating"]>#hostFloorMap'),"seating map has explicit focused-stage rule");
-assert(html.includes('focused-operator-workspaces-v100.3.9.js?v=100.3.10.2'),"browser cache key advanced");
+assert(/focused-operator-workspaces-v100\.3\.9\.js\?v=100\.3\.(?:1[0-9]|[2-9][0-9])(?:\.[0-9]+)?/.test(html),"browser cache key is V100.3.10 or later");
 if(!process.exitCode)console.log("V100.3.10.2 seating floor render repair gate passed 7/7");
