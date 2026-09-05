@@ -416,28 +416,37 @@ ready(()=>{
 
  // V100.2.50 — Service Intake Queue. Host seating is the authoritative transition into service.
  const SERVICE_HANDOFF_KEY="blueCurrent.service.activeParties.v100";
+ const currentServiceLocation=()=>String(window.BlueCurrentFrontlineLocation?.get?.()||"loc_marina").trim()||"loc_marina";
+ const serviceHandoffKey=(locationId=currentServiceLocation())=>`${SERVICE_HANDOFF_KEY}.${locationId}`;
  const LIVE_SERVICE_WINDOW_MS=18*60*60*1000;
  function servicePartyAnchor(row){return Number(row?.updatedAt||row?.seatedAt||0);}
  function isLiveServiceParty(row,now=Date.now()){const anchor=servicePartyAnchor(row);return Number.isFinite(anchor)&&anchor>0&&anchor<=now+5*60*1000&&now-anchor<=LIVE_SERVICE_WINDOW_MS;}
  function readServiceParties(){
    try{
-     const x=JSON.parse(localStorage.getItem(SERVICE_HANDOFF_KEY)||"[]"),rows=Array.isArray(x)?x:[];
+     const locationId=currentServiceLocation(),key=serviceHandoffKey(locationId);
+     let raw=localStorage.getItem(key);
+     // V100.3.19 — migrate the former unscoped development cache only into Marina.
+     if(raw===null&&locationId==="loc_marina"){
+       raw=localStorage.getItem(SERVICE_HANDOFF_KEY);
+       if(raw!==null){localStorage.setItem(key,raw);localStorage.removeItem(SERVICE_HANDOFF_KEY);}
+     }
+     const x=JSON.parse(raw||"[]"),rows=(Array.isArray(x)?x:[]).filter(row=>!row?.locationId||String(row.locationId)===locationId);
      // V100.3.16 — this cache is live handoff state, not permanent history.
      // A party untouched beyond one extended restaurant operating window must
      // not reopen as an active Service/Kitchen emergency on a later day.
      const live=rows.filter(row=>isLiveServiceParty(row));
-     if(live.length!==rows.length){localStorage.setItem(SERVICE_HANDOFF_KEY,JSON.stringify(live));window.dispatchEvent(new CustomEvent("bc:service-stale-pruned",{detail:{removed:rows.length-live.length}}));}
+     if(live.length!==rows.length){localStorage.setItem(key,JSON.stringify(live));window.dispatchEvent(new CustomEvent("bc:service-stale-pruned",{detail:{removed:rows.length-live.length,locationId}}));}
      return live;
    }catch{return [];}
  }
- function writeServiceParties(rows){try{localStorage.setItem(SERVICE_HANDOFF_KEY,JSON.stringify(rows));}catch{}}
- function servicePartyKey(x){return `${guestKey(x?.guest||"")}|${Number(x?.partySize||0)}|${String(x?.tableId||x?.table||"")}`;}
+ function writeServiceParties(rows){try{localStorage.setItem(serviceHandoffKey(),JSON.stringify(rows));}catch{}}
+ function servicePartyKey(x){return `${String(x?.locationId||currentServiceLocation())}|${guestKey(x?.guest||"")}|${Number(x?.partySize||0)}|${String(x?.tableId||x?.table||"")}`;}
  function acceptServiceHandoff(detail={}){
    const guest=String(detail.guest||"").trim(); if(!guest)return null;
    const incomingTable=String(detail.tableId||detail.table||"").trim(),incomingParty=Number(detail.partySize||0),incomingGuestKey=guestKey(guest);
    const current=readServiceParties();
    const existing=current.find(x=>servicePartyKey(x)===servicePartyKey({guest,partySize:incomingParty,tableId:incomingTable}))||current.find(x=>incomingTable&&guestKey(x?.guest||"")===incomingGuestKey&&Number(x?.partySize||0)===incomingParty&&!String(x?.tableId||x?.table||"").trim());
-   const next={...(existing||{}),guest,partySize:incomingParty||Number(existing?.partySize||0),guestDetail:String(detail.guestDetail||existing?.guestDetail||""),source:String(detail.source||existing?.source||"host"),tableId:incomingTable||String(existing?.tableId||existing?.table||""),seatedAt:Number(detail.seatedAt||existing?.seatedAt||Date.now()),status:String(existing?.status||"seated")};
+   const next={...(existing||{}),locationId:currentServiceLocation(),guest,partySize:incomingParty||Number(existing?.partySize||0),guestDetail:String(detail.guestDetail||existing?.guestDetail||""),source:String(detail.source||existing?.source||"host"),tableId:incomingTable||String(existing?.tableId||existing?.table||""),seatedAt:Number(detail.seatedAt||existing?.seatedAt||Date.now()),status:String(existing?.status||"seated")};
    const nextKey=servicePartyKey(next),rows=current.filter(x=>servicePartyKey(x)!==nextKey&&x!==existing);
    rows.unshift(next);writeServiceParties(rows.slice(0,100));
    window.dispatchEvent(new CustomEvent("bc:service-party-received",{detail:next}));
@@ -447,6 +456,8 @@ ready(()=>{
  // V100.2.57 — Service Completion / Table Turn Handoff. Table state remains human-owned: completion moves SEATED → CLEANING, never directly to OPEN.
  window.BlueCurrentServiceHandoff={
    getActive:()=>readServiceParties().slice(),
+   locationId:()=>currentServiceLocation(),
+   storageKey:()=>serviceHandoffKey(),
    isLive:(row,now)=>isLiveServiceParty(row,now),
    liveWindowMs:LIVE_SERVICE_WINDOW_MS,
    accept:(detail)=>acceptServiceHandoff(detail),
@@ -535,6 +546,7 @@ ready(()=>{
  const serviceQuickButton=Array.from(host.querySelectorAll("button,a")).find(el=>/\bservice\b/i.test((el.textContent||"").trim())&&/run floor/i.test((el.textContent||"").trim()));
  if(serviceQuickButton&&!serviceQuickButton.dataset.bcServiceV251){serviceQuickButton.dataset.bcServiceV251="true";serviceQuickButton.addEventListener("click",event=>{event.preventDefault();event.stopPropagation();openServiceWorkspace();});}
  ["bc:service-party-received","bc:service-party-updated","bc:service-party-completed"].forEach(name=>window.addEventListener(name,()=>{const rows=readServiceParties();syncServiceManagerExceptions(rows);const overlay=document.getElementById("bcServiceWorkspaceV100251");if(overlay&&!overlay.hidden)renderServiceWorkspace();}));
+ window.addEventListener("bluecurrent:frontline-location-changed",()=>{serviceManagerDigest="";const rows=readServiceParties();syncServiceManagerExceptions(rows);const overlay=document.getElementById("bcServiceWorkspaceV100251");if(overlay&&!overlay.hidden)renderServiceWorkspace();});
  setInterval(()=>syncServiceManagerExceptions(readServiceParties()),30000);
  window.BlueCurrentServiceWorkspace={open:openServiceWorkspace,render:renderServiceWorkspace};
  // Make queue tabs intentionally switch the visible queue inside Floor, while sidebar nav changes workspaces.

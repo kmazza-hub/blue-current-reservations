@@ -5,7 +5,7 @@
 // No restaurant lifecycle state is mutated by this loader.
 const GROUPS=Object.freeze({
   kitchen:[
-    "js/kitchen-truth-v100.2.60.js?v=100.3.16",
+    "js/kitchen-truth-v100.2.60.js?v=100.3.19",
     "js/kitchen-service-handoff-v100.2.61.js?v=100.2.61",
     "js/kitchen-priority-v100.2.62.js?v=100.2.62"
   ],

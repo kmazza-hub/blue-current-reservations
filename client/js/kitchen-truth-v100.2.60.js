@@ -5,13 +5,23 @@
 // ticket time, item, or POS/KDS claim is created without a real kitchen source.
 const SERVICE_KEY="blueCurrent.service.activeParties.v100";
 const READY_KEY="blueCurrent.kitchen.truth.ready.v100.2.60";
+const currentLocation=()=>String(window.BlueCurrentFrontlineLocation?.get?.()||"loc_marina").trim()||"loc_marina";
+const scopedKey=(base,locationId=currentLocation())=>`${base}.${locationId}`;
 const byId=id=>document.getElementById(id);
 const readJSON=(key,fallback)=>{try{const x=JSON.parse(localStorage.getItem(key)||"null");return x??fallback;}catch{return fallback;}};
 const writeJSON=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value));}catch{}};
 const guestKey=value=>String(value||"").trim().toLowerCase().replace(/\s+/g," ");
 const partyKey=p=>`${guestKey(p?.guest)}|${Number(p?.partySize||0)}|${String(p?.tableId||p?.table||"")}`;
-const active=()=>{const x=window.BlueCurrentServiceHandoff?.getActive?.()||readJSON(SERVICE_KEY,[]);return Array.isArray(x)?x:[];};
-const readyMap=()=>{const x=readJSON(READY_KEY,{});return x&&typeof x==="object"&&!Array.isArray(x)?x:{};};
+const active=()=>{const x=window.BlueCurrentServiceHandoff?.getActive?.()||readJSON(scopedKey(SERVICE_KEY),[]);return Array.isArray(x)?x:[];};
+const readyMap=()=>{
+ const key=scopedKey(READY_KEY);let x=readJSON(key,null);
+ // V100.3.19 — migrate the former unscoped ready map only into Marina.
+ if(x===null&&currentLocation()==="loc_marina"){
+   x=readJSON(READY_KEY,null);
+   if(x!==null){writeJSON(key,x);try{localStorage.removeItem(READY_KEY);}catch{}}
+ }
+ return x&&typeof x==="object"&&!Array.isArray(x)?x:{};
+};
 const stageAge=p=>Math.max(0,Math.floor((Date.now()-Number(p?.updatedAt||p?.seatedAt||Date.now()))/60000));
 const escapeHTML=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
 let observer=null,rendering=false;
@@ -44,13 +54,13 @@ function rows(){
    .sort((a,b)=>Number(b.ready)-Number(a.ready)||b.age-a.age);
 }
 function markReady(key){
- const map=readyMap();map[key]={readyAt:Date.now()};writeJSON(READY_KEY,map);
+ const map=readyMap();map[key]={readyAt:Date.now()};writeJSON(scopedKey(READY_KEY),map);
  window.dispatchEvent(new CustomEvent("bc:kitchen-order-ready",{detail:{partyKey:key,readyAt:map[key].readyAt}}));render();
 }
 function prune(){
  const valid=new Set(active().filter(p=>p.status==="ordering").map(partyKey)),map=readyMap();let changed=false;
  Object.keys(map).forEach(key=>{if(!valid.has(key)){delete map[key];changed=true;}});
- if(changed)writeJSON(READY_KEY,map);
+ if(changed)writeJSON(scopedKey(READY_KEY),map);
 }
 function render(){
  const root=byId("kitchenThroughputCenter");if(!root||rendering)return;
@@ -69,9 +79,10 @@ function init(){
  observer=new MutationObserver(()=>{if(!rendering&&root.dataset.bcKitchenTruth!=="100.2.60")render();});
  observer.observe(root,{childList:true,subtree:false});
  ["bc:service-party-received","bc:service-party-updated","bc:service-party-completed","bc:service-stale-pruned"].forEach(name=>window.addEventListener(name,render));
- window.addEventListener("storage",e=>{if(e.key===SERVICE_KEY)render();});
+ window.addEventListener("storage",e=>{if(e.key===scopedKey(SERVICE_KEY)||e.key===scopedKey(READY_KEY))render();});
+ window.addEventListener("bluecurrent:frontline-location-changed",render);
  setInterval(render,60000);
- window.BlueCurrentKitchenTruthV100_2_60={render,getOrders:()=>rows().map(x=>({...x}))};
+ window.BlueCurrentKitchenTruthV100_2_60={render,getOrders:()=>rows().map(x=>({...x})),locationId:currentLocation,serviceKey:()=>scopedKey(SERVICE_KEY),readyKey:()=>scopedKey(READY_KEY)};
 }
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init,{once:true}):init();
 })();
