@@ -3,6 +3,7 @@
   function createBlueCurrentWorkforceFoundationModule(eventBus, appState, cloudFoundationModule) {
     const api = cloudFoundationModule?.api || new window.BlueCurrentCloudApi("");
     const byId = id => document.getElementById(id);
+    const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
     let state = { employees: [], availability: [], ptoRequests: [], shiftTemplates: [], summary: {} };
     const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const esc = value => String(value ?? "").replace(/[&<>\"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -26,12 +27,12 @@
       if (byId("wffTemplateList")) byId("wffTemplateList").innerHTML = state.shiftTemplates.map(t => `<article><strong>${esc(t.name)}</strong><span>${esc(t.role)} · ${esc(t.startTime)}–${esc(t.endTime)}</span><b>${Number(t.requiredEmployees||1)} needed</b></article>`).join("") || "<p>No templates yet.</p>";
       if (byId("wffAvailabilityList")) byId("wffAvailabilityList").innerHTML = state.availability.slice().sort((a,b)=>a.dayOfWeek-b.dayOfWeek).map(a => {const e=state.employees.find(x=>x.id===a.employeeId); return `<article><strong>${esc(e?.name||a.employeeId)}</strong><span>${days[a.dayOfWeek]} ${esc(a.startTime)}–${esc(a.endTime)}</span><b>${a.preferred ? "Preferred" : "Available"}</b></article>`;}).join("") || "<p>No availability saved.</p>";
     }
-    async function load(){ if(!api.token) return; state=await api.workforceFoundation(); render(); }
+    async function load(){ if(!api.token) return; state=await api.workforceFoundation(locationId()); render(); }
     async function run(action){ try { await action(); await load(); } catch(error){ alert(error.message || "Workforce action failed"); } }
-    byId("wffAddEmployee")?.addEventListener("click",()=>run(()=>api.createWorkforceEmployee({locationId:"loc_marina",name:byId("wffName").value,role:byId("wffRole").value,department:byId("wffDepartment").value,hourlyRate:byId("wffRate").value,preferredHours:byId("wffPreferredHours").value})));
+    byId("wffAddEmployee")?.addEventListener("click",()=>run(()=>api.createWorkforceEmployee({locationId:locationId(),name:byId("wffName").value,role:byId("wffRole").value,department:byId("wffDepartment").value,hourlyRate:byId("wffRate").value,preferredHours:byId("wffPreferredHours").value})));
     byId("wffSaveAvailability")?.addEventListener("click",()=>run(()=>api.saveEmployeeAvailability({employeeId:byId("wffEmployeeSelect").value,dayOfWeek:Number(byId("wffDay").value),startTime:byId("wffStart").value,endTime:byId("wffEnd").value,preferred:byId("wffPreferred").checked})));
     byId("wffRequestPto")?.addEventListener("click",()=>run(()=>api.createPtoRequest({employeeId:byId("wffEmployeeSelect").value,startDate:byId("wffPtoStart").value,endDate:byId("wffPtoEnd").value,reason:byId("wffPtoReason").value})));
-    byId("wffAddTemplate")?.addEventListener("click",()=>run(()=>api.createShiftTemplate({locationId:"loc_marina",name:byId("wffTemplateName").value,role:byId("wffTemplateRole").value,department:byId("wffTemplateDepartment").value,startTime:byId("wffTemplateStart").value,endTime:byId("wffTemplateEnd").value,requiredEmployees:byId("wffTemplateCount").value})));
+    byId("wffAddTemplate")?.addEventListener("click",()=>run(()=>api.createShiftTemplate({locationId:locationId(),name:byId("wffTemplateName").value,role:byId("wffTemplateRole").value,department:byId("wffTemplateDepartment").value,startTime:byId("wffTemplateStart").value,endTime:byId("wffTemplateEnd").value,requiredEmployees:byId("wffTemplateCount").value})));
     byId("wffPtoList")?.addEventListener("click", async event => {
       const button = event.target.closest("[data-pto][data-status]");
       if (!button || button.disabled) return;

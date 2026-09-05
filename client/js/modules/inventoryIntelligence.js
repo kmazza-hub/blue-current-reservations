@@ -1,6 +1,6 @@
 (function(){"use strict";
 function createBlueCurrentInventoryIntelligenceModule(eventBus,appState,cloudFoundationModule){
- const api=cloudFoundationModule?.api||new window.BlueCurrentCloudApi(""),$=id=>document.getElementById(id);
+ const api=cloudFoundationModule?.api||new window.BlueCurrentCloudApi(""),$=id=>document.getElementById(id),locationId=()=>window.BlueCurrentFrontlineLocation?.get?.()||"loc_marina";
  let state={summary:{},items:[],recipeCosts:[],draftOrders:[],recommendations:[],waste:[],actions:[],policy:{}};
  const money=v=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:2}).format(Number(v||0));
  function render(){
@@ -21,11 +21,11 @@ function createBlueCurrentInventoryIntelligenceModule(eventBus,appState,cloudFou
   $("inventoryActions").innerHTML=state.actions.map(item=>`<article><strong>${item.decision}</strong><span>${item.recommendationId}</span><small>${new Date(item.createdAt).toLocaleTimeString()}</small></article>`).join("")||"<p>No inventory decisions yet.</p>";
   appState.update({inventoryValue:s.inventoryValue||0,inventoryCriticalItems:s.criticalItems||0,inventoryFoodCost:s.actualFoodCost||0});
  }
- async function load(){if(!api.token)return;state=await api.inventoryIntelligence();render();eventBus.emit("inventory:loaded",state.summary);}
+ async function load(){if(!api.token)return;state=await api.inventoryIntelligence(locationId());render();eventBus.emit("inventory:loaded",state.summary);}
  $("inventoryRefresh")?.addEventListener("click",load);
- $("inventoryRecommendations")?.addEventListener("click",async e=>{const b=e.target.closest("[data-inv-action]");if(!b)return;await api.decideInventoryRecommendation(b.dataset.invAction,{decision:b.dataset.decision,locationId:"loc_marina"});await load();});
- $("inventoryOrders")?.addEventListener("click",async e=>{const b=e.target.closest("[data-create-order]");if(!b)return;const order=state.draftOrders.find(x=>x.vendorId===b.dataset.createOrder);if(order){await api.createInventoryPurchaseOrder({locationId:"loc_marina",vendorId:order.vendorId,items:order.items,total:order.total});await load();}});
- $("inventoryPolicy")?.addEventListener("click",async()=>{const current=state.policy||{},target=prompt("Target food cost %",current.targetFoodCostPercent||29);if(target===null||Number.isNaN(Number(target)))return;await api.updateInventoryPolicy("loc_marina",{targetFoodCostPercent:Number(target),criticalDaysRemaining:current.criticalDaysRemaining||1.5,autoDraftOrders:current.autoDraftOrders});await load();});
+ $("inventoryRecommendations")?.addEventListener("click",async e=>{const b=e.target.closest("[data-inv-action]");if(!b)return;await api.decideInventoryRecommendation(b.dataset.invAction,{decision:b.dataset.decision,locationId:locationId()});await load();});
+ $("inventoryOrders")?.addEventListener("click",async e=>{const b=e.target.closest("[data-create-order]");if(!b)return;const order=state.draftOrders.find(x=>x.vendorId===b.dataset.createOrder);if(order){await api.createInventoryPurchaseOrder({locationId:locationId(),vendorId:order.vendorId,items:order.items,total:order.total});await load();}});
+ $("inventoryPolicy")?.addEventListener("click",async()=>{const current=state.policy||{},target=prompt("Target food cost %",current.targetFoodCostPercent||29);if(target===null||Number.isNaN(Number(target)))return;await api.updateInventoryPolicy(locationId(),{targetFoodCostPercent:Number(target),criticalDaysRemaining:current.criticalDaysRemaining||1.5,autoDraftOrders:current.autoDraftOrders});await load();});
  ["inventory:action-recorded","inventory:purchase-order-created","inventory:policy-updated"].forEach(type=>eventBus.on?.(type,load));
  eventBus.on?.("auth:signed-in",load);eventBus.on?.("auth:restored",load);setInterval(load,60000);load();
  return{reload:load,getState:()=>JSON.parse(JSON.stringify(state))};

@@ -1,6 +1,7 @@
 (() => {
   "use strict";
   const byId = id => document.getElementById(id);
+  const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
   const money = value => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(Number(value || 0));
   const text = (id, value) => { const el = byId(id); if (el && value !== undefined && value !== null) el.textContent = value; };
   let currentHandoff = null;
@@ -113,7 +114,7 @@
 
   async function loadOperationsFeed() {
     if (!activeApi?.token || typeof activeApi.operationsFeed !== "function") return renderOperationsFeed({events:[]});
-    try { renderOperationsFeed(await activeApi.operationsFeed("loc_marina", activeFeedCategory, activeFeedLimit)); }
+    try { renderOperationsFeed(await activeApi.operationsFeed(locationId(), activeFeedCategory, activeFeedLimit)); }
     catch (error) { text("operationsFeedStatus", "Feed unavailable"); }
   }
 
@@ -150,7 +151,7 @@
     try {
       activeApi = window.BlueCurrentCloudApi ? new window.BlueCurrentCloudApi("") : null;
       if (!activeApi?.token) throw new Error("Sign in to load live operating data");
-      const snapshot = await activeApi.commandCenter("loc_marina");
+      const snapshot = await activeApi.commandCenter(locationId());
       render(snapshot);
       await loadOperationsFeed();
       await loadWeather(snapshot.location).catch(()=>text("weatherImpact","Live weather could not be reached; operating data is current."));
@@ -180,7 +181,7 @@
     if (!activeApi?.token) { if(status) status.textContent="Sign in before posting a handoff."; return; }
     button.disabled = true; button.textContent = "Posting…"; if(status) status.textContent="";
     try {
-      await activeApi.createShiftHandoff({ locationId:"loc_marina", shift:byId("handoffShift")?.value, summary, highlights:byId("handoffHighlightInput")?.value, needsAttention:byId("handoffAttentionInput")?.value });
+      await activeApi.createShiftHandoff({ locationId:locationId(), shift:byId("handoffShift")?.value, summary, highlights:byId("handoffHighlightInput")?.value, needsAttention:byId("handoffAttentionInput")?.value });
       event.target.reset(); byId("handoffShift").value="closing"; setComposer(false); await loadBrief();
     } catch(error) { if(status) status.textContent=error.message; }
     finally { button.disabled=false; button.textContent="Post handoff"; }

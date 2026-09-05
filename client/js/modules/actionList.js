@@ -1,8 +1,9 @@
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "blueCurrent.managerActions.v34.0.5b";
-  const LOCATION_ID = "loc_marina";
+  const STORAGE_KEY_BASE = "blueCurrent.managerActions.v34.0.5b";
+  const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
+  const storageKey = () => `${STORAGE_KEY_BASE}.${locationId()}`;
 
   const fallbackActions = [
     { id:"fallback_pto", title:"Review Sarah’s pending PTO request", source:"Workforce", priority:"high", due:"Due today", completed:false },
@@ -27,7 +28,16 @@
 
   function loadLocal() {
     try {
-      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      const key = storageKey();
+      let raw = localStorage.getItem(key);
+      if (raw === null && locationId() === "loc_marina") {
+        raw = localStorage.getItem(STORAGE_KEY_BASE);
+        if (raw !== null) {
+          localStorage.setItem(key, raw);
+          localStorage.removeItem(STORAGE_KEY_BASE);
+        }
+      }
+      const stored = JSON.parse(raw);
       if (Array.isArray(stored)) return stored;
     } catch (error) {
       console.warn("[ActionList] Local data could not be read.", error);
@@ -37,7 +47,7 @@
 
   function saveLocal() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.actions));
+      localStorage.setItem(storageKey(), JSON.stringify(state.actions));
     } catch (error) {
       console.warn("[ActionList] Local changes could not be saved.", error);
     }
@@ -50,7 +60,7 @@
     const api = apiClient();
     if (api?.hasCapability?.("managerActions") && api.token) {
       try {
-        const payload = await api.managerActions(LOCATION_ID);
+        const payload = await api.managerActions(locationId());
         state.actions = Array.isArray(payload.actions) ? payload.actions : [];
         state.source = "server";
         state.loading = false;
@@ -72,7 +82,7 @@
 
     if (state.source === "server" && api?.hasCapability?.("createManagerAction")) {
       const created = await api.createManagerAction({
-        locationId: LOCATION_ID,
+        locationId: locationId(),
         ...input
       });
       state.actions.unshift(created);
@@ -110,7 +120,7 @@
       const api = apiClient();
       try {
         const updated = await api.updateManagerAction(action.id, {
-          locationId: LOCATION_ID,
+          locationId: locationId(),
           noteUpdate: true,
           note: action.note || ""
         });
@@ -145,7 +155,7 @@
       const api = apiClient();
       try {
         const updated = await api.updateManagerAction(action.id, {
-          locationId: LOCATION_ID,
+          locationId: locationId(),
           assign: true,
           assignedTo: action.assignedTo || ""
         });
@@ -197,7 +207,7 @@
       const api = apiClient();
       try {
         const updated = await api.updateManagerAction(action.id, {
-          locationId: LOCATION_ID,
+          locationId: locationId(),
           edit: true,
           title: action.title,
           due: action.due,
@@ -229,7 +239,7 @@
     if (state.source === "server") {
       const api = apiClient();
       try {
-        await api.deleteManagerAction(action.id, LOCATION_ID);
+        await api.deleteManagerAction(action.id, locationId());
       } catch (error) {
         action.isSaving = false;
         setStatus(error.message || "Could not remove action.");
@@ -253,7 +263,7 @@
       const api = apiClient();
       try {
         const updated = await api.updateManagerAction(action.id, {
-          locationId: LOCATION_ID,
+          locationId: locationId(),
           completed
         });
         Object.assign(action, updated, { isSaving:false });
