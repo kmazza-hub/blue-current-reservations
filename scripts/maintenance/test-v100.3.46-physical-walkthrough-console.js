@@ -19,8 +19,9 @@ check("Touch controls exceed the 44px minimum",source.includes("min-height:48px"
 check("iPad safe areas are respected",source.includes("safe-area-inset-top")&&source.includes("safe-area-inset-bottom"));
 check("Operator can move between the walkthrough and live app",source.includes("bcPaOpenApp")&&source.includes("Return to walkthrough")&&source.includes("root.hidden=true"));
 check("Walkthrough uses the V100.3.46 cache key",html.includes('pilot-physical-acceptance-v100.3.46.js?v=100.3.46'));
-check("Browser build marker identifies V100.3.46",html.includes('name="blue-current-build" content="100.3.46"'));
-check("Runtime identifies V100.3.46",pkg.version==="100.3.46");
+const buildPatch=Number(html.match(/name="blue-current-build" content="100\.3\.(\d+)"/)?.[1]);
+check("Browser build marker retains or advances beyond V100.3.46",buildPatch>=46);
+check("Runtime retains or advances beyond V100.3.46",Number(pkg.version.split(".").at(-1))>=46);
 const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.46-physical-walkthrough-console.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
 check("Certification includes LAN launch and walkthrough",manifest?.gates.includes("test-v100.3.45-ipad-lan-acceptance-launch.js")&&manifest?.gates.includes("test-v100.3.46-physical-walkthrough-console.js"));
 check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.46.json")));

@@ -1,0 +1,26 @@
+"use strict";
+const fs=require("fs"),path=require("path"),{spawnSync}=require("child_process");
+const root=path.resolve(__dirname,"../.."),source=fs.readFileSync(path.join(root,"client/js/pilot-setup-console-v100.3.47.js"),"utf8"),html=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),pkg=require(path.join(root,"package.json"));
+let passed=0,total=0;function check(name,value){total+=1;if(value){passed+=1;console.log(`PASS ${total}: ${name}`);}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1;}}
+check("Setup console is opt-in by URL",source.includes('get("pilotSetup")!=="1"'));
+check("Normal operator screens remain untouched",source.indexOf("pilotSetup")<source.indexOf('document.createElement("style")'));
+check("Four prerequisites are ordered",["1 Restaurant","2 Certify","3 Bind","4 Simulate"].every(value=>source.includes(value)));
+check("Configuration reads and writes protected API",source.includes('/api/configuration/restaurant')&&source.includes('method:"PUT"'));
+check("Named actual-data confirmation is required",source.includes("confirmedBy")&&source.includes("confirmationSource")&&source.includes("actualRestaurantDataConfirmed:true"));
+check("Pilot safety remains locked",source.includes("writeBackEnabled:false")&&source.includes("autonomousProductionChanges:false"));
+check("Dining areas and tables remain explicit human-reviewed JSON",source.includes("bcPsAreas")&&source.includes("bcPsTables")&&source.includes("JSON.parse"));
+check("Read-only POS assignment is declared",source.includes('domain:"POS"')&&source.includes("MANUAL_READ_ONLY"));
+check("Configuration certification is explicit",source.includes('/api/configuration/pilot-certification/certify'));
+check("Workflow binding occurs only after certification",source.indexOf('current==="certify"')<source.indexOf('current==="bind"'));
+check("Simulation occurs only after binding",source.indexOf('current==="bind"')<source.indexOf('current==="simulate"'));
+check("Simulation is disclosed as non-physical evidence",source.includes("does not count as physical iPad evidence"));
+check("Ready setup hands into physical walkthrough",source.includes('url.searchParams.set("pilotAcceptance","1")'));
+check("Touch controls exceed minimum size",source.includes("min-height:48px"));
+check("Safe areas are respected",source.includes("safe-area-inset-top")&&source.includes("safe-area-inset-bottom"));
+check("Setup console uses V100.3.47 cache key",html.includes('pilot-setup-console-v100.3.47.js?v=100.3.47'));
+check("Browser build marker identifies V100.3.47",html.includes('name="blue-current-build" content="100.3.47"'));
+check("Runtime identifies V100.3.47",pkg.version==="100.3.47");
+const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.47-pilot-setup-console.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
+check("Certification includes walkthrough and setup",manifest?.gates.includes("test-v100.3.46-physical-walkthrough-console.js")&&manifest?.gates.includes("test-v100.3.47-pilot-setup-console.js"));
+check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.47.json")));
+console.log(`V100.3.47 pilot setup console ${passed}/${total}`);if(passed!==total)process.exitCode=1;
