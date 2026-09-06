@@ -21,7 +21,7 @@ check("Source and target identity is forbidden",run(["--source",source,"--target
 check("No implicit seed or demo source exists",sourceText.includes('if(!source)fail("--source is required'));
 check("No overwrite option is implemented",!sourceText.includes("--force")&&!sourceText.includes("--replace"));
 check("Hosted provisioning command is registered",pkg.scripts["hosted:provision"]==="node scripts/hosted-provision.js");
-check("Runtime identifies V100.3.49",pkg.version==="100.3.49");
+check("Runtime retains or advances beyond V100.3.49",Number(pkg.version.split(".").at(-1))>=49);
 const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.49-hosted-data-provisioning.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
 check("Certification includes hosted handoff and provisioning",manifest?.gates.includes("test-v100.3.48-hosted-deployment-handoff.js")&&manifest?.gates.includes("test-v100.3.49-hosted-data-provisioning.js"));
 check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.49.json")));

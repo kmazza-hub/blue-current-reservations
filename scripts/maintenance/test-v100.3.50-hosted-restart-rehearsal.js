@@ -1,0 +1,27 @@
+"use strict";
+const fs=require("fs"),os=require("os"),path=require("path"),{spawnSync}=require("child_process");
+const root=path.resolve(__dirname,"../.."),script=path.join(root,"scripts/hosted-rehearsal.js"),sourceText=fs.readFileSync(script,"utf8"),pkg=require(path.join(root,"package.json")),seed=path.join(root,"database/seed/seed.json");
+let passed=0,total=0;function check(name,value){total+=1;if(value){passed+=1;console.log(`PASS ${total}: ${name}`);}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1;}}
+const rehearsal=spawnSync(process.execPath,[script,"--source",seed,"--public-url","https://app.bluecurrentco.com"],{cwd:root,encoding:"utf8",timeout:30000}),report=rehearsal.status===0?JSON.parse(rehearsal.stdout):null;
+check("Certified source completes production-mode rehearsal",report?.status==="HOSTED_RESTART_REHEARSAL_PASSED"&&report.productionMode===true);
+check("Both production starts return current runtime",report?.firstHealthVersion===pkg.version&&report?.secondHealthVersion===pkg.version);
+check("Graceful shutdown creates verified backup",report?.gracefulBackupVerified===true);
+check("Core organization count survives restart",report?.coreCountsBefore?.organizations===report?.coreCountsAfter?.organizations);
+check("Core location count survives restart",report?.coreCountsBefore?.locations===report?.coreCountsAfter?.locations);
+check("Core user count survives restart",report?.coreCountsBefore?.users===report?.coreCountsAfter?.users);
+check("Core table count survives restart",report?.coreCountsBefore?.tables===report?.coreCountsAfter?.tables);
+check("Rehearsal declares source unmodified",report?.sourceMutated===false);
+check("Rehearsal declares no external deployment",report?.externalDeploymentPerformed===false&&report?.dnsChanged===false);
+check("Database source is always explicit",sourceText.includes('if(!source)fail("--source is required'));
+check("Rehearsal uses a disposable temporary database",sourceText.includes("blue-current-hosted-rehearsal-")&&sourceText.includes("copyFile(sourcePath,databasePath)"));
+check("Production public origin is explicit",sourceText.includes("BLUE_CURRENT_PUBLIC_URL:publicUrl")&&sourceText.includes("BLUE_CURRENT_ALLOWED_ORIGINS:publicUrl"));
+check("Graceful SIGTERM is exercised",sourceText.includes('child.kill("SIGTERM")'));
+check("Health is verified before and after restart",sourceText.includes("firstHealth")&&sourceText.includes("secondHealth"));
+const missing=spawnSync(process.execPath,[script],{cwd:root,encoding:"utf8"});check("Missing source fails closed",missing.status!==0);
+const badDir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v350-")),bad=path.join(badDir,"bad.json");fs.writeFileSync(bad,"not json");const invalid=spawnSync(process.execPath,[script,"--source",bad],{cwd:root,encoding:"utf8"});check("Invalid source fails before startup",invalid.status!==0);fs.rmSync(badDir,{recursive:true,force:true});
+check("Hosted rehearsal command is registered",pkg.scripts["hosted:rehearse"]==="node scripts/hosted-rehearsal.js");
+check("Runtime identifies V100.3.50",pkg.version==="100.3.50");
+const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.50-hosted-restart-rehearsal.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
+check("Certification includes provisioning and rehearsal",manifest?.gates.includes("test-v100.3.49-hosted-data-provisioning.js")&&manifest?.gates.includes("test-v100.3.50-hosted-restart-rehearsal.js"));
+check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.50.json")));
+console.log(`V100.3.50 hosted restart rehearsal ${passed}/${total}`);if(passed!==total)process.exitCode=1;
