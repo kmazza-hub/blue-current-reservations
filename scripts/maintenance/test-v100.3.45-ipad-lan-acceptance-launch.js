@@ -20,7 +20,7 @@ async function stop(){if(server&&server.exitCode===null){server.kill();await Pro
   const response=await fetch(`${origin}/api/auth/login`,{method:"POST",headers:{Origin:"http://192.168.1.25:8787","Content-Type":"application/json"},body:JSON.stringify({email:"keith@bluecurrent.demo",password:"BlueCurrent23!"})});
   check("LAN-origin mutation reaches authentication",response.status===200);
   check("LAN-origin response exposes matching CORS origin",response.headers.get("access-control-allow-origin")==="http://192.168.1.25:8787");
-  const pkg=require(path.join(root,"package.json"));check("Runtime identifies V100.3.45",pkg.version==="100.3.45");
+  const pkg=require(path.join(root,"package.json"));check("Runtime retains or advances beyond V100.3.45",Number(pkg.version.split(".").at(-1))>=45);
   check("One-command LAN launcher is registered",pkg.scripts?.["pilot:lan"]==="node scripts/pilot-lan.js"&&fs.existsSync(path.join(root,"scripts/pilot-lan.js")));
   check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.45.json")));
   console.log(`V100.3.45 iPad LAN acceptance launch ${passed}/${total}`);if(passed!==total)process.exitCode=1;

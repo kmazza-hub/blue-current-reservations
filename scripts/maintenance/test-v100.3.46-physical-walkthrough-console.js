@@ -1,0 +1,27 @@
+"use strict";
+const fs=require("fs"),path=require("path"),{spawnSync}=require("child_process");
+const root=path.resolve(__dirname,"../.."),source=fs.readFileSync(path.join(root,"client/js/pilot-physical-acceptance-v100.3.46.js"),"utf8"),html=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),pkg=require(path.join(root,"package.json"));
+let passed=0,total=0;function check(name,value){total+=1;if(value){passed+=1;console.log(`PASS ${total}: ${name}`);}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1;}}
+const requiredSteps=["launch","reservation","arrival","waitlist","seating","floor","service","kitchen","staff","interruption-recovery"];
+check("Walkthrough is opt-in by URL",source.includes('get("pilotAcceptance")!=="1"'));
+check("Normal screens remain untouched until requested",source.indexOf("pilotAcceptance")<source.indexOf('document.createElement("style")'));
+check("All ten frontline workflow steps are guided",requiredSteps.every(step=>source.includes(`\"${step}\"`)));
+check("Physical device identity is collected",["operatorName","deviceId","deviceModel","osVersion","network"].every(field=>source.includes(field)));
+check("LAN and hosted environments remain distinct",source.includes('value="LAN"')&&source.includes('value="HOSTED_PILOT"'));
+check("Only physical iPad evidence is submitted",source.includes('evidenceType:"PHYSICAL_IPAD"'));
+check("Clear, friction, and blocked outcomes are explicit",["CLEAR","FRICTION","BLOCKED"].every(outcome=>source.includes(outcome)));
+check("Blocked outcomes persist as blockers",source.includes('blocker:outcome.dataset.outcome==="BLOCKED"'));
+check("Device timestamp is captured",source.includes("capturedAt:new Date().toISOString()"));
+check("Exact bound pilot location is submitted",source.includes("binding.binding.locationId"));
+check("Unbound walkthrough is blocked",source.includes("if(!binding.ready)"));
+check("Final acceptance requires physical and hosted confirmation",source.includes("physicalDeviceConfirmed:true")&&source.includes("hostedEnvironmentConfirmed:true"));
+check("Touch controls exceed the 44px minimum",source.includes("min-height:48px")&&source.includes("min-width:44px"));
+check("iPad safe areas are respected",source.includes("safe-area-inset-top")&&source.includes("safe-area-inset-bottom"));
+check("Operator can move between the walkthrough and live app",source.includes("bcPaOpenApp")&&source.includes("Return to walkthrough")&&source.includes("root.hidden=true"));
+check("Walkthrough uses the V100.3.46 cache key",html.includes('pilot-physical-acceptance-v100.3.46.js?v=100.3.46'));
+check("Browser build marker identifies V100.3.46",html.includes('name="blue-current-build" content="100.3.46"'));
+check("Runtime identifies V100.3.46",pkg.version==="100.3.46");
+const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.46-physical-walkthrough-console.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
+check("Certification includes LAN launch and walkthrough",manifest?.gates.includes("test-v100.3.45-ipad-lan-acceptance-launch.js")&&manifest?.gates.includes("test-v100.3.46-physical-walkthrough-console.js"));
+check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.46.json")));
+console.log(`V100.3.46 physical walkthrough console ${passed}/${total}`);if(passed!==total)process.exitCode=1;
