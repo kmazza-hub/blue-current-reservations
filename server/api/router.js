@@ -3214,21 +3214,22 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
 
     if (url.pathname === "/api/scheduling" && request.method === "GET") {
-      const locationId=url.searchParams.get("locationId")||"loc_marina"; if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      const locationId=String(url.searchParams.get("locationId")||"").trim(); if(!locationId)return sendJson(response,400,{error:"Location is required."}); if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
       return sendJson(response,200,await schedulingService.snapshot(organizationId,locationId,url.searchParams.get("weekStart")));
     }
     if (url.pathname === "/api/scheduling/shifts" && request.method === "POST") {
       if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Scheduling write permission required."});
       const body=await readJson(request);if(!canAccessLocation(body.locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,201,await schedulingService.create(body,auth.user.name,organizationId));
     }
-    if (url.pathname.startsWith("/api/scheduling/shifts/") && request.method === "PATCH") {const id=decodeURIComponent(url.pathname.split("/").pop());const result=await schedulingService.update(id,await readJson(request),auth.user.name,organizationId);return result?sendJson(response,200,result):sendJson(response,404,{error:"Shift not found."});}
-    if (url.pathname.startsWith("/api/scheduling/shifts/") && request.method === "DELETE") {const id=decodeURIComponent(url.pathname.split("/").pop());return (await schedulingService.remove(id,auth.user.name,organizationId))?sendJson(response,200,{ok:true}):sendJson(response,404,{error:"Shift not found."});}
+    if (url.pathname.startsWith("/api/scheduling/shifts/") && request.method === "PATCH") {const id=decodeURIComponent(url.pathname.split("/").pop()),existing=await database.get("scheduleShifts",id);if(!existing||existing.organizationId!==organizationId||!canAccessLocation(existing.locationId))return sendJson(response,404,{error:"Shift not found."});const result=await schedulingService.update(id,await readJson(request),auth.user.name,organizationId);return result?sendJson(response,200,result):sendJson(response,404,{error:"Shift not found."});}
+    if (url.pathname.startsWith("/api/scheduling/shifts/") && request.method === "DELETE") {const id=decodeURIComponent(url.pathname.split("/").pop()),existing=await database.get("scheduleShifts",id);if(!existing||existing.organizationId!==organizationId||!canAccessLocation(existing.locationId))return sendJson(response,404,{error:"Shift not found."});return (await schedulingService.remove(id,auth.user.name,organizationId))?sendJson(response,200,{ok:true}):sendJson(response,404,{error:"Shift not found."});}
     if (url.pathname === "/api/scheduling/publish" && request.method === "POST") {const body=await readJson(request);if(!canAccessLocation(body.locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await schedulingService.publish(body,auth.user.name,organizationId));}
     if (url.pathname === "/api/scheduling/copy-previous" && request.method === "POST") {const body=await readJson(request);if(!canAccessLocation(body.locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await schedulingService.copyPrevious(body,auth.user.name,organizationId));}
-    if (url.pathname === "/api/scheduling/ai/smart-fill" && request.method === "POST") {const result=await schedulingService.smartFill(await readJson(request),auth.user.name,organizationId);return result?sendJson(response,200,result):sendJson(response,404,{error:"Shift not found."});}
+    if (url.pathname === "/api/scheduling/ai/smart-fill" && request.method === "POST") {const body=await readJson(request),existing=await database.get("scheduleShifts",body.shiftId);if(!existing||existing.organizationId!==organizationId||!canAccessLocation(existing.locationId))return sendJson(response,404,{error:"Shift not found."});const result=await schedulingService.smartFill(body,auth.user.name,organizationId);return result?sendJson(response,200,result):sendJson(response,404,{error:"Shift not found."});}
 
     if (url.pathname === "/api/workforce-foundation" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       return sendJson(response, 200, await workforceFoundationService.snapshot(organizationId, locationId));
     }
@@ -3240,20 +3241,31 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
     if (url.pathname.startsWith("/api/workforce-foundation/employees/") && request.method === "PATCH") {
       const id = decodeURIComponent(url.pathname.split("/").pop());
+      const employee = await database.get("staff", id);
+      if (!employee || employee.organizationId !== organizationId || !canAccessLocation(employee.locationId)) return sendJson(response, 404, { error: "Employee not found." });
       const updated = await workforceFoundationService.updateEmployee(id, await readJson(request), auth.user.name, organizationId);
       return updated ? sendJson(response, 200, updated) : sendJson(response, 404, { error: "Employee not found." });
     }
     if (url.pathname === "/api/workforce-foundation/availability" && request.method === "POST") {
-      const result = await workforceFoundationService.saveAvailability(await readJson(request), auth.user.name, organizationId);
+      const body = await readJson(request);
+      const employee = await database.get("staff", body.employeeId);
+      if (!employee || employee.organizationId !== organizationId || !canAccessLocation(employee.locationId)) return sendJson(response, 404, { error: "Employee not found." });
+      const result = await workforceFoundationService.saveAvailability(body, auth.user.name, organizationId);
       return result ? sendJson(response, 200, result) : sendJson(response, 404, { error: "Employee not found." });
     }
     if (url.pathname === "/api/workforce-foundation/pto" && request.method === "POST") {
-      const result = await workforceFoundationService.requestPto(await readJson(request), auth.user.name, organizationId);
+      const body = await readJson(request);
+      const employee = await database.get("staff", body.employeeId);
+      if (!employee || employee.organizationId !== organizationId || !canAccessLocation(employee.locationId)) return sendJson(response, 404, { error: "Employee not found." });
+      const result = await workforceFoundationService.requestPto(body, auth.user.name, organizationId);
       return result ? sendJson(response, 201, result) : sendJson(response, 404, { error: "Employee not found." });
     }
     if (url.pathname.startsWith("/api/workforce-foundation/pto/") && request.method === "PATCH") {
       const id = decodeURIComponent(url.pathname.split("/").pop());
       const body = await readJson(request);
+      const requestRecord = await database.get("ptoRequests", id);
+      const employee = requestRecord ? await database.get("staff", requestRecord.employeeId) : null;
+      if (!requestRecord || !employee || employee.organizationId !== organizationId || !canAccessLocation(employee.locationId)) return sendJson(response, 404, { error: "PTO request not found." });
       const result = await workforceFoundationService.decidePto(id, body.status, body.managerComment, auth.user.name, organizationId);
       return result ? sendJson(response, 200, result) : sendJson(response, 404, { error: "PTO request not found." });
     }
@@ -3264,20 +3276,25 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (url.pathname === "/api/timeclock" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       return sendJson(response, 200, await timeClockService.snapshot(organizationId, locationId));
     }
     if (url.pathname === "/api/timeclock/clock-in" && request.method === "POST") {
       const body = await readJson(request);
-      if (!canAccessLocation(body.locationId || "loc_marina")) return sendJson(response, 403, { error: "Location access denied." });
+      const employee = await database.get("employees", body.employeeId);
+      if (!employee || employee.organizationId !== organizationId || !canAccessLocation(employee.locationId)) return sendJson(response, 404, { error: "Employee not found." });
+      if (String(body.locationId || "").trim() !== employee.locationId) return sendJson(response, 400, { error: "Employee and location do not match." });
       return sendJson(response, 201, await timeClockService.clockIn(body, auth.user.name, organizationId));
     }
-    if (url.pathname === "/api/timeclock/clock-out" && request.method === "POST") return sendJson(response, 200, await timeClockService.clockOut(await readJson(request), auth.user.name, organizationId));
-    if (url.pathname === "/api/timeclock/break-start" && request.method === "POST") return sendJson(response, 201, await timeClockService.startBreak(await readJson(request), auth.user.name, organizationId));
-    if (url.pathname === "/api/timeclock/break-end" && request.method === "POST") return sendJson(response, 200, await timeClockService.endBreak(await readJson(request), auth.user.name, organizationId));
+    if (url.pathname === "/api/timeclock/clock-out" && request.method === "POST") {const body=await readJson(request),employee=await database.get("employees",body.employeeId);if(!employee||employee.organizationId!==organizationId||!canAccessLocation(employee.locationId))return sendJson(response,404,{error:"Employee not found."});return sendJson(response,200,await timeClockService.clockOut(body,auth.user.name,organizationId));}
+    if (url.pathname === "/api/timeclock/break-start" && request.method === "POST") {const body=await readJson(request),employee=await database.get("employees",body.employeeId);if(!employee||employee.organizationId!==organizationId||!canAccessLocation(employee.locationId))return sendJson(response,404,{error:"Employee not found."});return sendJson(response,201,await timeClockService.startBreak(body,auth.user.name,organizationId));}
+    if (url.pathname === "/api/timeclock/break-end" && request.method === "POST") {const body=await readJson(request),employee=await database.get("employees",body.employeeId);if(!employee||employee.organizationId!==organizationId||!canAccessLocation(employee.locationId))return sendJson(response,404,{error:"Employee not found."});return sendJson(response,200,await timeClockService.endBreak(body,auth.user.name,organizationId));}
     if (url.pathname.startsWith("/api/timeclock/timecards/") && request.method === "PATCH") {
       const timecardId = decodeURIComponent(url.pathname.split("/").pop());
+      const timecard = await database.get("employeeTimecards", timecardId);
+      if (!timecard || timecard.organizationId !== organizationId || !canAccessLocation(timecard.locationId)) return sendJson(response, 404, { error: "Timecard not found." });
       return sendJson(response, 200, await timeClockService.correct(timecardId, await readJson(request), auth.user.name, organizationId));
     }
 

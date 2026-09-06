@@ -57,11 +57,12 @@ class WorkforceFoundationService {
   }
 
   async updateEmployee(id, patch, actor, organizationId) {
+    const existing = await this.database.get("staff", id);
+    if (!existing || existing.organizationId !== organizationId) return null;
     const allowed = ["name","email","phone","role","department","hourlyRate","employmentStatus","skills","certifications","preferredHours"];
     const clean = Object.fromEntries(Object.entries(patch || {}).filter(([key]) => allowed.includes(key)));
     if (clean.hourlyRate !== undefined) clean.hourlyRate = Math.max(0, Number(clean.hourlyRate || 0));
     const updated = await this.database.update("staff", id, clean);
-    if (!updated || updated.organizationId !== organizationId) return null;
     await this.record(organizationId, actor, `Updated employee ${updated.name}`);
     this.realtimeHub.publish("workforce-foundation:employee-updated", updated);
     return updated;

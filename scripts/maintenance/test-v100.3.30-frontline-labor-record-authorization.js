@@ -1,0 +1,23 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const router=read("server/api/router.js"),workforce=read("server/services/workforceFoundationService.js");
+const routes=router.slice(router.indexOf('if (url.pathname === "/api/scheduling"'),router.indexOf('if (url.pathname === "/api/inventory-intelligence"'));
+check("Scheduling reads require explicit location",routes.includes('const locationId=String(url.searchParams.get("locationId")||"").trim()'));
+check("Shift updates authorize the stored shift location",routes.includes('database.get("scheduleShifts",id)')&&routes.includes('canAccessLocation(existing.locationId)'));
+check("Shift deletes authorize the stored shift location",(routes.match(/database.get\("scheduleShifts",id\)/g)||[]).length>=2);
+check("Smart Fill authorizes its stored shift",routes.includes('database.get("scheduleShifts",body.shiftId)'));
+check("Workforce reads require explicit location",routes.includes('String(url.searchParams.get("locationId") || "").trim()'));
+check("Employee updates authorize the stored employee",routes.includes('database.get("staff", id)')&&routes.includes('canAccessLocation(employee.locationId)'));
+check("Availability changes authorize the employee",routes.includes('saveAvailability(body')&&(routes.match(/database.get\("staff", body.employeeId\)/g)||[]).length>=2);
+check("PTO requests authorize the employee",routes.includes('requestPto(body'));
+check("PTO decisions resolve employee location",routes.includes('database.get("ptoRequests", id)')&&routes.includes('requestRecord.employeeId'));
+check("Time-clock reads require explicit location",routes.includes('/api/timeclock\" && request.method === \"GET'));
+check("Clock-in requires exact employee-location match",routes.includes('Employee and location do not match.'));
+check("Clock-out and breaks authorize the employee",(routes.match(/database.get\("employees",body.employeeId\)/g)||[]).length>=3);
+check("Timecard correction authorizes stored location",routes.includes('database.get("employeeTimecards", timecardId)')&&routes.includes('canAccessLocation(timecard.locationId)'));
+check("Employee service checks ownership before update",workforce.indexOf('const existing = await this.database.get("staff", id)')<workforce.indexOf('this.database.update("staff", id, clean)'));
+check("No database payload is included",!fs.existsSync(path.join(root,"database/data/V100.3.30.json")));
+console.log(`V100.3.30 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;
