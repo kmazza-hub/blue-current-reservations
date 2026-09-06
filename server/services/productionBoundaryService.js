@@ -133,6 +133,13 @@ class ProductionBoundaryService {
       try {
         const url = new URL(origin);
         if (url.hostname === "localhost" || url.hostname === "127.0.0.1") return origin;
+        const octets=url.hostname.split(".").map(Number);
+        const privateIpv4=octets.length===4&&octets.every(value=>Number.isInteger(value)&&value>=0&&value<=255)&&(
+          octets[0]===10||octets[0]===127||
+          (octets[0]===192&&octets[1]===168)||
+          (octets[0]===172&&octets[1]>=16&&octets[1]<=31)
+        );
+        if(privateIpv4&&["http:","https:"].includes(url.protocol))return origin;
         if (url.hostname === "bluecurrentco.com" || url.hostname.endsWith(".bluecurrentco.com")) return origin;
         if (url.hostname.endsWith(".trycloudflare.com")) return origin;
       } catch {}

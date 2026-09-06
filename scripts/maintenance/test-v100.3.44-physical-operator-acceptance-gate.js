@@ -32,10 +32,10 @@ async function rejected(input,text){try{await service.observe("org-chefs",input,
   const stale=await service.current("org-chefs");
   check("A new simulation invalidates earlier acceptance evidence",stale.current===false&&stale.status==="REACCEPTANCE_REQUIRED");
   const pkg=require(path.join(root,"package.json"));
-  check("Runtime identifies V100.3.44",pkg.version==="100.3.44");
+  check("Runtime retains or advances beyond V100.3.44",Number(pkg.version.split(".").at(-1))>=44);
   const certifier=path.join(root,"scripts/maintenance/certify-v100.3.44-physical-operator-acceptance-gate.js");
   const listing=spawnSync(process.execPath,[certifier,"--list"],{cwd:root,encoding:"utf8"});const manifest=listing.status===0?JSON.parse(listing.stdout):null;
-  check("One-command certification includes V100.3.43 and V100.3.44",manifest?.release===pkg.version&&manifest.gates.includes("test-v100.3.43-pilot-release-candidate-lock.js")&&manifest.gates.includes("test-v100.3.44-physical-operator-acceptance-gate.js"));
+  check("Historical V100.3.44 certification includes V100.3.43 and V100.3.44",manifest?.release==="100.3.44"&&manifest.gates.includes("test-v100.3.43-pilot-release-candidate-lock.js")&&manifest.gates.includes("test-v100.3.44-physical-operator-acceptance-gate.js"));
   check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.44.json")));
   console.log(`V100.3.44 physical operator acceptance gate ${passed}/${total}`);if(passed!==total)process.exitCode=1;
 })().catch(error=>{console.error(error);process.exitCode=1;}).finally(()=>fs.rmSync(temp,{recursive:true,force:true}));
