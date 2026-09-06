@@ -1,0 +1,28 @@
+"use strict";
+const fs=require("fs"),os=require("os"),path=require("path"),{spawnSync}=require("child_process");
+const root=path.resolve(__dirname,"../.."),docker=fs.readFileSync(path.join(root,"deploy/hosted-pilot/Dockerfile"),"utf8"),ignore=fs.readFileSync(path.join(root,".dockerignore"),"utf8"),envExample=fs.readFileSync(path.join(root,"deploy/hosted-pilot/environment.example"),"utf8"),pkg=require(path.join(root,"package.json"));
+let passed=0,total=0;function check(name,value){total+=1;if(value){passed+=1;console.log(`PASS ${total}: ${name}`);}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1;}}
+check("Container uses supported Node LTS",docker.includes("FROM node:22-bookworm-slim"));
+check("Container runs in production mode",docker.includes("BLUE_CURRENT_ENV=production")&&docker.includes("NODE_ENV=production"));
+check("Persistent database is outside application tree",docker.includes("BLUE_CURRENT_DB=/var/lib/blue-current/blue-current.json")&&docker.includes('VOLUME ["/var/lib/blue-current"]'));
+check("Container exposes one application port",docker.includes("EXPOSE 8787"));
+check("Container runs as non-root node user",docker.includes("USER node"));
+check("Health check uses public health contract",docker.includes("/api/health")&&docker.includes("HEALTHCHECK"));
+check("Graceful Node server is the container command",docker.includes('CMD ["node","server/server.js"]'));
+check("Live database is excluded from build context",ignore.split(/\r?\n/).includes("database/data"));
+check("Secrets and environment files are excluded",ignore.includes(".env")&&ignore.includes(".env.*"));
+check("Recovery backups are excluded from images",ignore.includes("**/*.bak")&&ignore.includes("**/*.bak.*"));
+check("Professional application hostname is the explicit example",envExample.includes("https://app.bluecurrentco.com")&&!envExample.includes("trycloudflare.com"));
+check("Production origin matches public URL",envExample.includes("BLUE_CURRENT_PUBLIC_URL=https://app.bluecurrentco.com")&&envExample.includes("BLUE_CURRENT_ALLOWED_ORIGINS=https://app.bluecurrentco.com"));
+check("Single-writer JSON persistence is declared",envExample.includes("BLUE_CURRENT_PERSISTENCE_DRIVER=json"));
+check("Hosted preflight command is registered",pkg.scripts["hosted:preflight"]==="node scripts/hosted-preflight.js");
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v348-")),db=path.join(temp,"blue-current.json"),validEnv={...process.env,BLUE_CURRENT_ENV:"production",NODE_ENV:"production",BLUE_CURRENT_PUBLIC_URL:"https://app.bluecurrentco.com",BLUE_CURRENT_ALLOWED_ORIGINS:"https://app.bluecurrentco.com",BLUE_CURRENT_DB:db,BLUE_CURRENT_PERSISTENCE_DRIVER:"json",PORT:"8787"};
+const valid=spawnSync(process.execPath,[path.join(root,"scripts/hosted-preflight.js")],{cwd:root,env:validEnv,encoding:"utf8"}),validReport=valid.status===0?JSON.parse(valid.stdout):null;
+check("Valid hosted contract passes preflight",validReport?.status==="HOSTED_PREFLIGHT_READY"&&validReport.singleWriterRequired===true);
+const invalid=spawnSync(process.execPath,[path.join(root,"scripts/hosted-preflight.js")],{cwd:root,env:{...validEnv,BLUE_CURRENT_PUBLIC_URL:"http://app.bluecurrentco.com",BLUE_CURRENT_ALLOWED_ORIGINS:"*"},encoding:"utf8"});
+check("Insecure or wildcard hosted contract fails closed",invalid.status!==0);
+check("Runtime identifies V100.3.48",pkg.version==="100.3.48");
+const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.48-hosted-deployment-handoff.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
+check("Certification includes setup and hosted handoff",manifest?.gates.includes("test-v100.3.47-pilot-setup-console.js")&&manifest?.gates.includes("test-v100.3.48-hosted-deployment-handoff.js"));
+check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.48.json")));
+fs.rmSync(temp,{recursive:true,force:true});console.log(`V100.3.48 hosted deployment handoff ${passed}/${total}`);if(passed!==total)process.exitCode=1;

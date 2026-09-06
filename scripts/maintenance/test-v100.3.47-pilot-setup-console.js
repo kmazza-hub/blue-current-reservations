@@ -18,8 +18,9 @@ check("Ready setup hands into physical walkthrough",source.includes('url.searchP
 check("Touch controls exceed minimum size",source.includes("min-height:48px"));
 check("Safe areas are respected",source.includes("safe-area-inset-top")&&source.includes("safe-area-inset-bottom"));
 check("Setup console uses V100.3.47 cache key",html.includes('pilot-setup-console-v100.3.47.js?v=100.3.47'));
-check("Browser build marker identifies V100.3.47",html.includes('name="blue-current-build" content="100.3.47"'));
-check("Runtime identifies V100.3.47",pkg.version==="100.3.47");
+const buildPatch=Number(html.match(/name="blue-current-build" content="100\.3\.(\d+)"/)?.[1]);
+check("Browser build marker retains or advances beyond V100.3.47",buildPatch>=47);
+check("Runtime retains or advances beyond V100.3.47",Number(pkg.version.split(".").at(-1))>=47);
 const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.47-pilot-setup-console.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
 check("Certification includes walkthrough and setup",manifest?.gates.includes("test-v100.3.46-physical-walkthrough-console.js")&&manifest?.gates.includes("test-v100.3.47-pilot-setup-console.js"));
 check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.47.json")));
