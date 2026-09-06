@@ -3168,7 +3168,9 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         auth.user.name,
         organizationId
       );
-      return sendJson(response, 200, updated);
+      return updated
+        ? sendJson(response, 200, updated)
+        : sendJson(response, 409, { error: "Unable to update this table." });
     }
 
     if (url.pathname === "/api/floor/waitlist" && request.method === "POST") {
@@ -3506,8 +3508,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
     if (url.pathname === "/api/kitchen-operations" && request.method === "GET") {const locationId=String(url.searchParams.get("locationId")||"").trim();if(!locationId)return sendJson(response,400,{error:"Location is required."});if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await kitchenOperationsService.snapshot(locationId));}
     if (url.pathname === "/api/kitchen-operations" && request.method === "POST") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request),locationId=String(body.locationId||"").trim();if(!locationId)return sendJson(response,400,{error:"Location is required."});if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});body.locationId=locationId;return sendJson(response,201,await kitchenOperationsService.createTicket(body,auth.user.name,organizationId));}
-    if (url.pathname.startsWith("/api/kitchen-operations/tickets/") && request.method === "PATCH") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const id=decodeURIComponent(url.pathname.split("/").pop()),ticket=await database.get("kitchenTickets",id);if(!ticket||ticket.organizationId!==organizationId||!canAccessLocation(ticket.locationId))return sendJson(response,404,{error:"Kitchen ticket not found."});const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateTicket(id,body,auth.user.name,organizationId));}
-    if (url.pathname === "/api/kitchen-operations/item" && request.method === "PATCH") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request),ticket=await database.get("kitchenTickets",body.ticketId);if(!ticket||ticket.organizationId!==organizationId||!canAccessLocation(ticket.locationId))return sendJson(response,404,{error:"Kitchen ticket not found."});return sendJson(response,200,await kitchenOperationsService.updateItem(body.ticketId,body.itemId,body.patch||{},auth.user.name,organizationId));}
+    if (url.pathname.startsWith("/api/kitchen-operations/tickets/") && request.method === "PATCH") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const id=decodeURIComponent(url.pathname.split("/").pop()),ticket=await database.get("kitchenTickets",id);if(!ticket||ticket.organizationId!==organizationId||!canAccessLocation(ticket.locationId))return sendJson(response,404,{error:"Kitchen ticket not found."});const body=await readJson(request),updated=await kitchenOperationsService.updateTicket(id,body,auth.user.name,organizationId);return updated?sendJson(response,200,updated):sendJson(response,409,{error:"Unable to update this kitchen ticket."});}
+    if (url.pathname === "/api/kitchen-operations/item" && request.method === "PATCH") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request),ticket=await database.get("kitchenTickets",body.ticketId);if(!ticket||ticket.organizationId!==organizationId||!canAccessLocation(ticket.locationId))return sendJson(response,404,{error:"Kitchen ticket not found."});const updated=await kitchenOperationsService.updateItem(body.ticketId,body.itemId,body.patch||{},auth.user.name,organizationId);return updated?sendJson(response,200,updated):sendJson(response,404,{error:"Kitchen item not found."});}
 
     if (url.pathname === "/api/staff-operations" && request.method === "GET") {
       const locationId = String(url.searchParams.get("locationId") || "").trim();
@@ -3524,9 +3526,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const staff = await database.get("staff", staffId);
       if (!staff || staff.organizationId !== organizationId || !canAccessLocation(staff.locationId)) return sendJson(response, 404, { error: "Staff member not found." });
       const body = await readJson(request);
-      return sendJson(response, 200, await staffOperationsService.updateStaff(
+      const updated = await staffOperationsService.updateStaff(
         staffId, body, auth.user.name, organizationId
-      ));
+      );
+      return updated
+        ? sendJson(response, 200, updated)
+        : sendJson(response, 409, { error: "Unable to update this staff member." });
     }
 
     if (url.pathname === "/api/staff-operations/assign-section" && request.method === "POST") {
@@ -3600,7 +3605,9 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         auth.user.name,
         organizationId
       );
-      return sendJson(response, 200, updated);
+      return updated
+        ? sendJson(response, 200, updated)
+        : sendJson(response, 409, { error: "Unable to update this reservation." });
     }
 
     if (url.pathname === "/api/reservation-operations/seat" && request.method === "POST") {

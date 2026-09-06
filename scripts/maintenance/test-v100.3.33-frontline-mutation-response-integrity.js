@@ -1,0 +1,22 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const router=read("server/api/router.js");
+const floor=router.slice(router.indexOf('if (url.pathname === "/api/floor"'),router.indexOf('if (url.pathname === "/api/scheduling"'));
+const live=router.slice(router.indexOf('if (url.pathname === "/api/service-coordination"'),router.indexOf('if (url.pathname === "/api/audit"'));
+check("Table updates return success only with a stored result",floor.includes('return updated\n        ? sendJson(response, 200, updated)'));
+check("Failed table updates return conflict",floor.includes('Unable to update this table.')&&floor.includes('sendJson(response, 409'));
+check("Kitchen ticket updates capture the service result",live.includes('updated=await kitchenOperationsService.updateTicket'));
+check("Kitchen ticket updates never return a null success",live.includes('Unable to update this kitchen ticket.'));
+check("Kitchen item updates capture the service result",live.includes('updated=await kitchenOperationsService.updateItem'));
+check("Missing kitchen items return not found",live.includes('Kitchen item not found.'));
+check("Staff updates capture the service result",live.includes('const updated = await staffOperationsService.updateStaff'));
+check("Staff updates never return a null success",live.includes('Unable to update this staff member.'));
+check("Reservation updates capture the service result",live.includes('const updated = await reservationOperationsService.update'));
+check("Reservation updates never return a null success",live.includes('Unable to update this reservation.'));
+check("Successful mutations retain HTTP 200",(live.match(/sendJson\(response,\s*200,\s*updated\)/g)||[]).length>=4);
+check("Missing stored resources retain HTTP 404",live.includes('Kitchen ticket not found.')&&live.includes('Staff member not found.')&&live.includes('Reservation not found.'));
+check("No database payload is included",!fs.existsSync(path.join(root,"database/data/V100.3.33.json")));
+console.log(`V100.3.33 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;
