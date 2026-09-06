@@ -1,11 +1,12 @@
 {
   "name": "blue-current-cloud",
-  "version": "100.0.0",
+  "version": "100.3.43",
   "private": true,
   "description": "Blue Current Hospitality OS \u2014 Commercial V1 certification baseline",
   "scripts": {
     "start": "node server/server.js",
-    "check": "node scripts/validate.js"
+    "check": "node scripts/validate.js",
+    "certify:pilot": "node scripts/maintenance/certify-v100.3.43-pilot-release-candidate.js"
   },
   "engines": {
     "node": ">=18"
