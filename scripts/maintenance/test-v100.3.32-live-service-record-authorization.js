@@ -1,0 +1,25 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const router=read("server/api/router.js"),service=read("server/services/serviceCoordinationService.js");
+const routes=router.slice(router.indexOf('if (url.pathname === "/api/service-coordination"'),router.indexOf('if (url.pathname === "/api/reservation-operations"'));
+check("Service reads require explicit location",routes.includes('/api/service-coordination\" && request.method === \"GET')&&routes.includes('Location is required.'));
+check("Service creation requires authorized location",routes.includes('body.locationId=locationId')&&routes.includes('canAccessLocation(locationId)'));
+check("Service-flow updates authorize stored records",routes.includes('database.get("serviceFlows",id)')&&routes.includes('canAccessLocation(existing.locationId)'));
+check("Service delivery requires write permission",routes.includes('Service write permission required.')&&(routes.match(/authService.can\(auth,"write_operations"\)/g)||[]).length>=3);
+check("Kitchen reads require explicit location",routes.includes('/api/kitchen-operations\" && request.method === \"GET'));
+check("Kitchen creation requires authorized location",routes.includes('kitchenOperationsService.createTicket')&&routes.includes('body.locationId=locationId'));
+check("Ticket updates authorize stored ticket",routes.includes('database.get("kitchenTickets",id)')&&routes.includes('canAccessLocation(ticket.locationId)'));
+check("Item updates authorize stored ticket",routes.includes('database.get("kitchenTickets",body.ticketId)'));
+check("Kitchen update routes require write permission",(routes.match(/Kitchen write permission required\./g)||[]).length>=3);
+check("Staff reads require explicit location",routes.includes('/api/staff-operations\" && request.method === \"GET'));
+check("Staff updates verify organization",routes.includes('staff.organizationId !== organizationId'));
+check("Section assignment verifies matched location",routes.includes('section.locationId !== server.locationId'));
+check("Table reassignment verifies matched location",routes.includes('table.locationId !== server.locationId'));
+check("Service layer verifies flow organization",service.includes('flow.organizationId!==organizationId'));
+check("Service layer verifies table location",service.includes('table.locationId!==input.locationId'));
+check("Service layer verifies staff location",service.includes('server.locationId!==input.locationId'));
+check("No database payload is included",!fs.existsSync(path.join(root,"database/data/V100.3.32.json")));
+console.log(`V100.3.32 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;

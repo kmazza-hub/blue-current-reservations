@@ -3481,33 +3481,37 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (url.pathname === "/api/service-coordination" && request.method === "GET") {
-      const locationId=url.searchParams.get("locationId")||"loc_marina";
+      const locationId=String(url.searchParams.get("locationId")||"").trim();
+      if(!locationId) return sendJson(response,400,{error:"Location is required."});
       if(!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."});
       return sendJson(response,200,await serviceCoordinationService.snapshot(locationId));
     }
     if (url.pathname === "/api/service-coordination" && request.method === "POST") {
       if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Service write permission required."});
-      const body=await readJson(request); if(!canAccessLocation(body.locationId)) return sendJson(response,403,{error:"Location access denied."});
+      const body=await readJson(request),locationId=String(body.locationId||"").trim(); if(!locationId)return sendJson(response,400,{error:"Location is required."}); if(!canAccessLocation(locationId)) return sendJson(response,403,{error:"Location access denied."}); body.locationId=locationId;
       return sendJson(response,201,await serviceCoordinationService.createFromTable(body,auth.user.name,organizationId));
     }
     if (url.pathname.startsWith("/api/service-coordination/flows/") && request.method === "PATCH") {
       if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Service write permission required."});
       const id=decodeURIComponent(url.pathname.split("/").pop()); const body=await readJson(request);
+      const existing=await database.get("serviceFlows",id); if(!existing||existing.organizationId!==organizationId||!canAccessLocation(existing.locationId))return sendJson(response,404,{error:"Service flow not found."});
       const flow=await serviceCoordinationService.updateFlow(id,body,auth.user.name,organizationId);
       return flow?sendJson(response,200,flow):sendJson(response,404,{error:"Service flow not found."});
     }
     if (url.pathname.startsWith("/api/service-coordination/deliver/") && request.method === "POST") {
-      const id=decodeURIComponent(url.pathname.split("/").pop()); const flow=await serviceCoordinationService.markDelivered(id,auth.user.name,organizationId);
+      if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Service write permission required."});
+      const id=decodeURIComponent(url.pathname.split("/").pop()); const existing=await database.get("serviceFlows",id); if(!existing||existing.organizationId!==organizationId||!canAccessLocation(existing.locationId))return sendJson(response,404,{error:"Service flow not found."}); const flow=await serviceCoordinationService.markDelivered(id,auth.user.name,organizationId);
       return flow?sendJson(response,200,flow):sendJson(response,404,{error:"Service flow not found."});
     }
 
-    if (url.pathname === "/api/kitchen-operations" && request.method === "GET") {const locationId=url.searchParams.get("locationId")||"loc_marina";if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await kitchenOperationsService.snapshot(locationId));}
-    if (url.pathname === "/api/kitchen-operations" && request.method === "POST") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request);return sendJson(response,201,await kitchenOperationsService.createTicket(body,auth.user.name,organizationId));}
-    if (url.pathname.startsWith("/api/kitchen-operations/tickets/") && request.method === "PATCH") {const id=decodeURIComponent(url.pathname.split("/").pop());const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateTicket(id,body,auth.user.name,organizationId));}
-    if (url.pathname === "/api/kitchen-operations/item" && request.method === "PATCH") {const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateItem(body.ticketId,body.itemId,body.patch||{},auth.user.name,organizationId));}
+    if (url.pathname === "/api/kitchen-operations" && request.method === "GET") {const locationId=String(url.searchParams.get("locationId")||"").trim();if(!locationId)return sendJson(response,400,{error:"Location is required."});if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});return sendJson(response,200,await kitchenOperationsService.snapshot(locationId));}
+    if (url.pathname === "/api/kitchen-operations" && request.method === "POST") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request),locationId=String(body.locationId||"").trim();if(!locationId)return sendJson(response,400,{error:"Location is required."});if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});body.locationId=locationId;return sendJson(response,201,await kitchenOperationsService.createTicket(body,auth.user.name,organizationId));}
+    if (url.pathname.startsWith("/api/kitchen-operations/tickets/") && request.method === "PATCH") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const id=decodeURIComponent(url.pathname.split("/").pop()),ticket=await database.get("kitchenTickets",id);if(!ticket||ticket.organizationId!==organizationId||!canAccessLocation(ticket.locationId))return sendJson(response,404,{error:"Kitchen ticket not found."});const body=await readJson(request);return sendJson(response,200,await kitchenOperationsService.updateTicket(id,body,auth.user.name,organizationId));}
+    if (url.pathname === "/api/kitchen-operations/item" && request.method === "PATCH") {if(!authService.can(auth,"write")&&!authService.can(auth,"write_operations"))return sendJson(response,403,{error:"Kitchen write permission required."});const body=await readJson(request),ticket=await database.get("kitchenTickets",body.ticketId);if(!ticket||ticket.organizationId!==organizationId||!canAccessLocation(ticket.locationId))return sendJson(response,404,{error:"Kitchen ticket not found."});return sendJson(response,200,await kitchenOperationsService.updateItem(body.ticketId,body.itemId,body.patch||{},auth.user.name,organizationId));}
 
     if (url.pathname === "/api/staff-operations" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       return sendJson(response, 200, await staffOperationsService.snapshot(locationId));
     }
@@ -3518,7 +3522,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       }
       const staffId = decodeURIComponent(url.pathname.split("/").pop());
       const staff = await database.get("staff", staffId);
-      if (!staff || !canAccessLocation(staff.locationId)) return sendJson(response, 404, { error: "Staff member not found." });
+      if (!staff || staff.organizationId !== organizationId || !canAccessLocation(staff.locationId)) return sendJson(response, 404, { error: "Staff member not found." });
       const body = await readJson(request);
       return sendJson(response, 200, await staffOperationsService.updateStaff(
         staffId, body, auth.user.name, organizationId
@@ -3530,6 +3534,9 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Staff write permission required." });
       }
       const body = await readJson(request);
+      const section = await database.get("sections", body.sectionId);
+      const server = await database.get("staff", body.serverId);
+      if (!section || !server || section.organizationId !== organizationId || server.organizationId !== organizationId || section.locationId !== server.locationId || !canAccessLocation(section.locationId)) return sendJson(response, 404, { error: "Section or staff member not found." });
       const result = await staffOperationsService.assignSection(
         body.sectionId, body.serverId, auth.user.name, organizationId
       );
@@ -3541,6 +3548,9 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Staff write permission required." });
       }
       const body = await readJson(request);
+      const table = await database.get("tables", body.tableId);
+      const server = await database.get("staff", body.serverId);
+      if (!table || !server || table.organizationId !== organizationId || server.organizationId !== organizationId || table.locationId !== server.locationId || !canAccessLocation(table.locationId)) return sendJson(response, 404, { error: "Table or staff member not found." });
       const result = await staffOperationsService.reassignTable(
         body.tableId, body.serverId, auth.user.name, organizationId
       );
