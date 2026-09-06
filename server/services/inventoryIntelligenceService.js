@@ -67,7 +67,15 @@ class InventoryIntelligenceService {
     };
   }
   async act(recommendationId,input,actor,organizationId){
-    const record={id:this.uniqueId("inventory_action"),organizationId,locationId:input.locationId||"loc_marina",recommendationId,decision:input.decision||"approved",note:String(input.note||""),actor,createdAt:new Date().toISOString()};
+    const locationId=String(input.locationId||"").trim();
+    const location=locationId ? await this.database.get("locations",locationId) : null;
+    if(!location || location.organizationId!==organizationId){const error=new Error("Location is not available to this organization.");error.statusCode=404;throw error;}
+    if(recommendationId.startsWith("inv_reorder_")){
+      const inventoryId=recommendationId.replace("inv_reorder_","");
+      const item=await this.database.get("inventoryItems",inventoryId);
+      if(!item || item.organizationId!==organizationId || item.locationId!==locationId){const error=new Error("Inventory recommendation is not available at this location.");error.statusCode=404;throw error;}
+    }
+    const record={id:this.uniqueId("inventory_action"),organizationId,locationId,recommendationId,decision:input.decision||"approved",note:String(input.note||""),actor,createdAt:new Date().toISOString()};
     await this.database.mutate(db=>{db.inventoryActions||=[];db.purchaseOrders||=[];db.inventoryActions.push(record);if(record.decision==="approved"&&recommendationId.startsWith("inv_reorder_")){const inventoryId=recommendationId.replace("inv_reorder_",""),item=(db.inventoryItems||[]).find(x=>x.id===inventoryId);if(item)db.purchaseOrders.push({id:this.uniqueId("po"),organizationId,locationId:record.locationId,vendorId:item.vendorId,status:"draft",createdAt:record.createdAt,items:[{inventoryId:item.id,name:item.name,quantity:Math.max(0,item.par-item.onHand),unit:item.unit,unitCost:item.unitCost}]});}return record;});
     await this.auditService.record({organizationId,actor,action:`Inventory recommendation ${record.decision}: ${recommendationId}`,category:"inventory"});
     this.realtimeHub.publish("inventory:action-recorded",record);

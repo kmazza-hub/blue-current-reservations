@@ -3281,23 +3281,54 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       return sendJson(response, 200, await timeClockService.correct(timecardId, await readJson(request), auth.user.name, organizationId));
     }
 
-    if (url.pathname === "/api/inventory-intelligence" && request.method === "GET") return sendJson(response,200,await inventoryIntelligenceService.snapshot(organizationId,url.searchParams.get("locationId")||"loc_marina"));
+    if (url.pathname === "/api/inventory-intelligence" && request.method === "GET") {
+      const locationId=String(url.searchParams.get("locationId")||"").trim();
+      if(!locationId)return sendJson(response,400,{error:"Location is required."});
+      if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,200,await inventoryIntelligenceService.snapshot(organizationId,locationId));
+    }
     if (url.pathname.startsWith("/api/inventory-intelligence/recommendations/") && request.method === "POST") {
       const id=decodeURIComponent(url.pathname.split("/").pop()), body=await readJson(request);
+      const locationId=String(body.locationId||"").trim();
+      if(!locationId)return sendJson(response,400,{error:"Location is required."});
+      if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      body.locationId=locationId;
       return sendJson(response,200,await inventoryIntelligenceService.act(id,body,auth.user.name,organizationId));
     }
     if (url.pathname === "/api/inventory-intelligence/purchase-orders" && request.method === "POST") {
       const body=await readJson(request);
+      const locationId=String(body.locationId||"").trim();
+      if(!locationId)return sendJson(response,400,{error:"Location is required."});
+      if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      body.locationId=locationId;
       return sendJson(response,201,await inventoryIntelligenceService.createPurchaseOrder(body,auth.user.name,organizationId));
     }
     if (url.pathname.startsWith("/api/inventory-intelligence/policies/") && request.method === "PATCH") {
       const locationId=decodeURIComponent(url.pathname.split("/").pop()), body=await readJson(request);
+      if(!locationId)return sendJson(response,400,{error:"Location is required."});
+      if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
       return sendJson(response,200,await inventoryIntelligenceService.updatePolicy(locationId,body,auth.user.name,organizationId));
     }
 
-    if (url.pathname === "/api/workforce-intelligence" && request.method === "GET") return sendJson(response,200,await workforceIntelligenceService.snapshot(organizationId,url.searchParams.get("locationId")||"loc_marina"));
-    if (url.pathname.startsWith("/api/workforce-intelligence/recommendations/") && request.method === "POST") { const id=decodeURIComponent(url.pathname.split("/").pop()),body=await readJson(request); return sendJson(response,200,await workforceIntelligenceService.act(id,body,auth.user.name,organizationId)); }
-    if (url.pathname.startsWith("/api/workforce-intelligence/plans/") && request.method === "PATCH") { const locationId=decodeURIComponent(url.pathname.split("/").pop()),body=await readJson(request); return sendJson(response,200,await workforceIntelligenceService.updatePlan(locationId,body,auth.user.name,organizationId)); }
+    if (url.pathname === "/api/workforce-intelligence" && request.method === "GET") {
+      const locationId=String(url.searchParams.get("locationId")||"").trim();
+      if(!locationId)return sendJson(response,400,{error:"Location is required."});
+      if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,200,await workforceIntelligenceService.snapshot(organizationId,locationId));
+    }
+    if (url.pathname.startsWith("/api/workforce-intelligence/recommendations/") && request.method === "POST") {
+      const id=decodeURIComponent(url.pathname.split("/").pop()),body=await readJson(request),locationId=String(body.locationId||"").trim();
+      if(!locationId)return sendJson(response,400,{error:"Location is required."});
+      if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      body.locationId=locationId;
+      return sendJson(response,200,await workforceIntelligenceService.act(id,body,auth.user.name,organizationId));
+    }
+    if (url.pathname.startsWith("/api/workforce-intelligence/plans/") && request.method === "PATCH") {
+      const locationId=decodeURIComponent(url.pathname.split("/").pop()),body=await readJson(request);
+      if(!locationId)return sendJson(response,400,{error:"Location is required."});
+      if(!canAccessLocation(locationId))return sendJson(response,403,{error:"Location access denied."});
+      return sendJson(response,200,await workforceIntelligenceService.updatePlan(locationId,body,auth.user.name,organizationId));
+    }
 
     if (url.pathname === "/api/guest-intelligence" && request.method === "GET") return sendJson(response,200,await guestIntelligenceService.snapshot(organizationId));
     if (url.pathname.startsWith("/api/guest-intelligence/campaigns/") && url.pathname.endsWith("/launch") && request.method === "POST") { const id=url.pathname.split("/")[4]; const result=await guestIntelligenceService.launchCampaign(id,auth.user.name,organizationId); return result?sendJson(response,200,result):sendJson(response,404,{error:"Campaign not found."}); }
