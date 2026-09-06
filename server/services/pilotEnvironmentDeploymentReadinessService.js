@@ -11,6 +11,7 @@ class PilotEnvironmentDeploymentReadinessService {
     const required = [
       "node-runtime","runtime-mode","persistence-driver","port","cors-no-wildcard",
       "cors-origin-format","production-origins-explicit","production-origins-https",
+      "production-public-url","production-public-url-allowed","production-database-absolute","production-database-outside-repository",
       "production-database-not-cloud-sync","no-plaintext-user-passwords",
       "live-connector-secret-readiness","no-obvious-plaintext-secrets"
     ];
@@ -27,6 +28,7 @@ class PilotEnvironmentDeploymentReadinessService {
       productionReady:configuration.productionReady===true,
       persistence:{driver:configuration.persistenceDriver,topology:configuration.databaseTopology,databasePath:configuration.databasePath},
       origins:configuration.explicitOrigins,
+      publicUrl:configuration.publicUrl,
       checks,
       blockers:failed.map(check => ({id:check.id,detail:check.detail})),
       deploymentBoundary:{

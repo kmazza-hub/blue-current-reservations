@@ -87,6 +87,7 @@ const ProductionBoundaryService=require(path.join(root,"server/services/producti
   const prodEnv={
     ...process.env,
     BLUE_CURRENT_ENV:"production",
+    BLUE_CURRENT_PUBLIC_URL:"https://app.bluecurrentco.com",
     BLUE_CURRENT_ALLOWED_ORIGINS:"https://bluecurrentco.com,https://app.bluecurrentco.com"
   };
   const production=new ProductionConfigurationService({

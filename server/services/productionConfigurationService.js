@@ -44,6 +44,10 @@ class ProductionConfigurationService {
       .filter(Boolean);
   }
 
+  _publicUrl() {
+    return String(this.environment.BLUE_CURRENT_PUBLIC_URL || "").trim();
+  }
+
   _isCloudSyncedDatabase() {
     return /(?:^|[\\/])(OneDrive|Dropbox|Google Drive)(?:[\\/]|$)/i.test(
       String(this.databasePath || "")
@@ -123,6 +127,43 @@ class ProductionConfigurationService {
     );
 
     if (this.mode === "production") {
+      const publicUrl=this._publicUrl();
+      let parsedPublicUrl=null;
+      try { parsedPublicUrl=publicUrl?new URL(publicUrl):null; } catch {}
+      const publicUrlValid=Boolean(
+        parsedPublicUrl && parsedPublicUrl.protocol==="https:" &&
+        parsedPublicUrl.origin===publicUrl.replace(/\/$/,"") &&
+        !parsedPublicUrl.username && !parsedPublicUrl.password
+      );
+      push(
+        "production-public-url",
+        publicUrlValid,
+        "error",
+        publicUrlValid ? `Public application URL is ${parsedPublicUrl.origin}.` : "BLUE_CURRENT_PUBLIC_URL must be one HTTPS origin without credentials or a path."
+      );
+      push(
+        "production-public-url-allowed",
+        publicUrlValid && origins.includes(parsedPublicUrl.origin),
+        "error",
+        publicUrlValid && origins.includes(parsedPublicUrl.origin)
+          ? "Public application URL is present in the explicit origin allowlist."
+          : "BLUE_CURRENT_PUBLIC_URL must be included exactly in BLUE_CURRENT_ALLOWED_ORIGINS."
+      );
+      const absoluteDatabase=path.isAbsolute(String(this.databasePath||""));
+      const relativeDatabase=absoluteDatabase?path.relative(this.root,String(this.databasePath)):"";
+      const repositoryDatabase=absoluteDatabase && relativeDatabase && !relativeDatabase.startsWith("..") && !path.isAbsolute(relativeDatabase);
+      push(
+        "production-database-absolute",
+        absoluteDatabase,
+        "error",
+        absoluteDatabase ? "Production database path is absolute." : "BLUE_CURRENT_DB must be an absolute persistent-storage path in production."
+      );
+      push(
+        "production-database-outside-repository",
+        absoluteDatabase&&!repositoryDatabase,
+        "error",
+        repositoryDatabase ? "Production database path is inside the application repository." : "Production database path is outside the application repository."
+      );
       push(
         "production-origins-explicit",
         origins.length > 0,
@@ -264,6 +305,7 @@ class ProductionConfigurationService {
       persistenceDriver: this.persistenceDriver,
       databaseTopology: this.persistenceTopology,
       explicitOrigins: this._configuredOrigins(),
+      publicUrl: this._publicUrl()||null,
       checks
     };
     this.lastReport = report;
@@ -297,6 +339,7 @@ class ProductionConfigurationService {
       persistenceDriver: this.persistenceDriver,
       databaseTopology: this.persistenceTopology,
       explicitOrigins: this._configuredOrigins(),
+      publicUrl: this._publicUrl()||null,
       checks: []
     };
   }
