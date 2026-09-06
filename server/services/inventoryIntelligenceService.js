@@ -7,12 +7,14 @@ class InventoryIntelligenceService {
   round(value,places=1){const p=10**places;return Math.round(Number(value||0)*p)/p;}
   uniqueId(prefix){const token=typeof crypto.randomUUID==="function"?crypto.randomUUID():crypto.randomBytes(16).toString("hex");return `${prefix}_${Date.now()}_${token}`;}
   finiteNumber(value,label,{min=null}={}){const number=Number(value);if(!Number.isFinite(number)){const error=new Error(`${label} must be a finite number.`);error.statusCode=400;throw error;}if(min!==null&&number<min){const error=new Error(`${label} cannot be below ${min}.`);error.statusCode=400;throw error;}return number;}
-  async snapshot(organizationId,locationId="loc_marina"){
+  async snapshot(organizationId,locationId){
     const db=await this.database.read();
+    const location=(db.locations||[]).find(x=>x.id===locationId&&x.organizationId===organizationId);
+    if(!location){const error=new Error("Location is not available to this organization.");error.statusCode=404;throw error;}
     const items=(db.inventoryItems||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
     const vendors=(db.vendors||[]).filter(x=>x.organizationId===organizationId);
     const recipes=(db.recipes||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
-    const tickets=(db.kitchenTickets||[]).filter(x=>x.locationId===locationId&&!["cancelled"].includes(x.status));
+    const tickets=(db.kitchenTickets||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["cancelled"].includes(x.status));
     const waste=(db.wasteEvents||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
     const policy=(db.inventoryPolicies||[]).find(x=>x.organizationId===organizationId&&x.locationId===locationId)||{targetFoodCostPercent:29,criticalDaysRemaining:1.5,autoDraftOrders:true};
     const itemMap=new Map(items.map(x=>[x.id,x]));
@@ -82,7 +84,7 @@ class InventoryIntelligenceService {
     return record;
   }
   async createPurchaseOrder(input,actor,organizationId){
-    const locationId=input.locationId||"loc_marina";
+    const locationId=String(input.locationId||"").trim();
     const location=await this.database.get("locations",locationId);
     if(!location || location.organizationId!==organizationId){
       const error=new Error("Location is not available to this organization.");
