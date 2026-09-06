@@ -72,6 +72,7 @@ class PilotDataWorkflowBindingService {
       id:`pdwb-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
       version:"88.50.0",
       organizationId,
+      locationId:configuration.location?.id||null,
       configurationUpdatedAt:configuration.updatedAt,
       locationCertificationId:currentCert.certification.id,
       bindings,
