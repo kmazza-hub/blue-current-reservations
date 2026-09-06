@@ -1,0 +1,24 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const router=read("server/api/router.js"),floor=read("server/services/floorService.js"),reservations=read("server/services/reservationOperationsService.js");
+const floorRoutes=router.slice(router.indexOf('if (url.pathname === "/api/floor"'),router.indexOf('if (url.pathname === "/api/scheduling"'));
+const reservationRoutes=router.slice(router.indexOf('if (url.pathname === "/api/reservation-operations"'),router.indexOf('if (url.pathname === "/api/audit"'));
+check("Floor reads require explicit location",floorRoutes.includes('String(url.searchParams.get("locationId") || "").trim()')&&floorRoutes.includes('Location is required.'));
+check("Waitlist creation requires explicit location",floorRoutes.includes('const locationId = String(body.locationId || "").trim()'));
+check("Waitlist seating resolves both party and table",floorRoutes.includes('database.get("waitlist", body.waitlistId)')&&floorRoutes.includes('database.get("tables", body.tableId)'));
+check("Waitlist seating verifies both organizations",floorRoutes.includes('guest.organizationId !== organizationId')&&floorRoutes.includes('table.organizationId !== organizationId'));
+check("Waitlist seating requires matching restaurants",floorRoutes.includes('guest.locationId !== table.locationId'));
+check("Waitlist seating enforces operator location access",floorRoutes.includes('canAccessLocation(guest.locationId)'));
+check("Reservation reads require explicit location",reservationRoutes.includes('String(url.searchParams.get("locationId") || "").trim()'));
+check("Reservation creation requires explicit location",reservationRoutes.includes('const locationId = String(body.locationId || "").trim()'));
+check("Reservation seating verifies both organizations",reservationRoutes.includes('reservation.organizationId !== organizationId')&&reservationRoutes.includes('table.organizationId !== organizationId'));
+check("Reservation seating requires matching restaurants",reservationRoutes.includes('reservation.locationId !== table.locationId'));
+check("Floor service independently enforces party/table location match",floor.includes('guest.locationId !== table.locationId'));
+check("Reservation service independently enforces reservation/table location match",reservations.includes('reservation.locationId!==table.locationId'));
+check("Reservation service still requires an actual seatable table",reservations.includes('["available","reserved"].includes'));
+check("Reservation service still enforces table capacity",reservations.includes('Number(table.seats)<Number(reservation.partySize)'));
+check("No database payload is included",!fs.existsSync(path.join(root,"database/data/V100.3.31.json")));
+console.log(`V100.3.31 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;

@@ -3146,7 +3146,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
 
 
     if (url.pathname === "/api/floor" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) return sendJson(response, 403, { error: "Location access denied." });
       return sendJson(response, 200, await floorService.snapshot(locationId));
     }
@@ -3175,9 +3176,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Waitlist write permission required." });
       }
       const body = await readJson(request);
-      if (!canAccessLocation(body.locationId)) {
+      const locationId = String(body.locationId || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
+      if (!canAccessLocation(locationId)) {
         return sendJson(response, 403, { error: "Location access denied." });
       }
+      body.locationId = locationId;
       return sendJson(response, 201, await floorService.addWaitlist(
         body,
         auth.user.name,
@@ -3190,9 +3194,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Seating permission required." });
       }
       const body = await readJson(request);
+      const guest = await database.get("waitlist", body.waitlistId);
       const table = await database.get("tables", body.tableId);
-      if (!table || !canAccessLocation(table.locationId)) {
-        return sendJson(response, 404, { error: "Table not found." });
+      if (!guest || !table || guest.organizationId !== organizationId || table.organizationId !== organizationId || guest.locationId !== table.locationId || !canAccessLocation(guest.locationId)) {
+        return sendJson(response, 404, { error: "Waiting party or table not found." });
       }
       const result = await floorService.seatWaitlist(
         body.waitlistId,
@@ -3543,7 +3548,8 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     }
 
     if (url.pathname === "/api/reservation-operations" && request.method === "GET") {
-      const locationId = url.searchParams.get("locationId") || "loc_marina";
+      const locationId = String(url.searchParams.get("locationId") || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
       if (!canAccessLocation(locationId)) {
         return sendJson(response, 403, { error: "Location access denied." });
       }
@@ -3555,9 +3561,12 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
         return sendJson(response, 403, { error: "Reservation write permission required." });
       }
       const body = await readJson(request);
-      if (!canAccessLocation(body.locationId)) {
+      const locationId = String(body.locationId || "").trim();
+      if (!locationId) return sendJson(response, 400, { error: "Location is required." });
+      if (!canAccessLocation(locationId)) {
         return sendJson(response, 403, { error: "Location access denied." });
       }
+      body.locationId = locationId;
       return sendJson(response, 201, await reservationOperationsService.create(
         body,
         auth.user.name,
@@ -3591,7 +3600,7 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       const body = await readJson(request);
       const reservation = await database.get("reservations", body.reservationId);
       const table = await database.get("tables", body.tableId);
-      if (!reservation || !table || !canAccessLocation(reservation.locationId)) {
+      if (!reservation || !table || reservation.organizationId !== organizationId || table.organizationId !== organizationId || reservation.locationId !== table.locationId || !canAccessLocation(reservation.locationId)) {
         return sendJson(response, 404, { error: "Reservation or table not found." });
       }
       const result = await reservationOperationsService.seat(
