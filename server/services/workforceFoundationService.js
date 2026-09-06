@@ -11,7 +11,18 @@ class WorkforceFoundationService {
     this.realtimeHub = realtimeHub;
   }
 
+  async requireLocation(organizationId, locationId) {
+    const location = locationId ? await this.database.get("locations", locationId) : null;
+    if (!location || location.organizationId !== organizationId) {
+      const error = new Error("Location is not available to this organization.");
+      error.statusCode = 404;
+      throw error;
+    }
+    return location;
+  }
+
   async snapshot(organizationId, locationId) {
+    await this.requireLocation(organizationId, locationId);
     const db = await this.database.read();
     const staff = (db.staff || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
     const portalEmployees = (db.employees || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
@@ -35,6 +46,7 @@ class WorkforceFoundationService {
 
   async createEmployee(input, actor, organizationId) {
     if (!input.locationId || !input.name || !input.role) throw new Error("locationId, name, and role are required");
+    await this.requireLocation(organizationId, input.locationId);
     const employee = models.employee({
       organizationId,
       locationId: input.locationId,
@@ -131,6 +143,7 @@ class WorkforceFoundationService {
 
   async createShiftTemplate(input, actor, organizationId) {
     if (!input.locationId || !input.name || !input.role || !input.startTime || !input.endTime) throw new Error("locationId, name, role, startTime, and endTime are required");
+    await this.requireLocation(organizationId, input.locationId);
     const template = models.shiftTemplate({ organizationId, locationId: input.locationId, name: String(input.name), department: input.department || "Service", role: String(input.role), startTime: input.startTime, endTime: input.endTime, requiredEmployees: Math.max(1, Number(input.requiredEmployees || 1)), days: Array.isArray(input.days) ? input.days : [], createdAt: new Date().toISOString() });
     await this.database.create("shiftTemplates", template);
     await this.record(organizationId, actor, `Created shift template ${template.name}`);

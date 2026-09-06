@@ -18,8 +18,10 @@ class TimeClockService {
     return Number.isFinite(from) && Number.isFinite(to) ? Math.max(0, (to - from) / 3600000) : 0;
   }
 
-  async snapshot(organizationId, locationId = "loc_marina") {
+  async snapshot(organizationId, locationId) {
     const db = await this.database.read();
+    const location = (db.locations || []).find(item => item.id === locationId && item.organizationId === organizationId);
+    if (Array.isArray(db.locations) && !location) { const error = new Error("Location is not available to this organization."); error.statusCode = 404; throw error; }
     const now = new Date();
     const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
     const employees = (db.employees || []).filter(item => item.organizationId === organizationId && item.locationId === locationId && item.status !== "inactive");
@@ -66,9 +68,10 @@ class TimeClockService {
     await this.database.mutate(db => {
       const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
       if (!employee) throw new Error("Employee not found");
+      if (!input.locationId || input.locationId !== employee.locationId) throw new Error("Employee and location do not match");
       if (input.pin !== undefined && String(employee.pin) !== String(input.pin)) throw new Error("Invalid PIN");
-      if ((db.employeeTimecards || []).some(item => item.employeeId === employee.id && item.status === "active" && !item.clockOut)) throw new Error("Employee is already clocked in");
-      result = { id: this.recordId("tc"), organizationId, locationId: input.locationId || employee.locationId, employeeId: employee.id, clockIn: new Date().toISOString(), clockOut: null, status: "active", source: input.source || "kiosk", createdAt: new Date().toISOString() };
+      if ((db.employeeTimecards || []).some(item => item.employeeId === employee.id && item.organizationId === organizationId && item.locationId === employee.locationId && item.status === "active" && !item.clockOut)) throw new Error("Employee is already clocked in");
+      result = { id: this.recordId("tc"), organizationId, locationId: employee.locationId, employeeId: employee.id, clockIn: new Date().toISOString(), clockOut: null, status: "active", source: input.source || "kiosk", createdAt: new Date().toISOString() };
       db.employeeTimecards ||= []; db.employeeTimecards.push(result); return result;
     });
     await this.auditService.record({ organizationId, actor, action: `Clocked in ${result.employeeId}`, category: "timeclock" });
@@ -78,7 +81,9 @@ class TimeClockService {
   async clockOut(input, actor, organizationId) {
     let result;
     await this.database.mutate(db => {
-      const card = (db.employeeTimecards || []).find(item => item.employeeId === input.employeeId && item.organizationId === organizationId && item.status === "active" && !item.clockOut);
+      const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
+      if (!employee) throw new Error("Employee not found");
+      const card = (db.employeeTimecards || []).find(item => item.employeeId === input.employeeId && item.organizationId === organizationId && item.locationId === employee.locationId && item.status === "active" && !item.clockOut);
       if (!card) throw new Error("No active timecard");
       const activeBreak = (db.employeeBreaks || []).find(item => item.timecardId === card.id && item.status === "active" && !item.end);
       if (activeBreak) { activeBreak.end = new Date().toISOString(); activeBreak.status = "completed"; }
@@ -91,7 +96,9 @@ class TimeClockService {
   async startBreak(input, actor, organizationId) {
     let result;
     await this.database.mutate(db => {
-      const card = (db.employeeTimecards || []).find(item => item.employeeId === input.employeeId && item.organizationId === organizationId && item.status === "active" && !item.clockOut);
+      const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
+      if (!employee) throw new Error("Employee not found");
+      const card = (db.employeeTimecards || []).find(item => item.employeeId === input.employeeId && item.organizationId === organizationId && item.locationId === employee.locationId && item.status === "active" && !item.clockOut);
       if (!card) throw new Error("No active timecard");
       if ((db.employeeBreaks || []).some(item => item.timecardId === card.id && item.status === "active" && !item.end)) throw new Error("Break already active");
       result = { id: this.recordId("break"), organizationId, locationId: card.locationId, timecardId: card.id, employeeId: input.employeeId, start: new Date().toISOString(), end: null, paid: Boolean(input.paid), status: "active" };
@@ -104,7 +111,9 @@ class TimeClockService {
   async endBreak(input, actor, organizationId) {
     let result;
     await this.database.mutate(db => {
-      const item = (db.employeeBreaks || []).find(entry => entry.employeeId === input.employeeId && entry.organizationId === organizationId && entry.status === "active" && !entry.end);
+      const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
+      if (!employee) throw new Error("Employee not found");
+      const item = (db.employeeBreaks || []).find(entry => entry.employeeId === input.employeeId && entry.organizationId === organizationId && entry.locationId === employee.locationId && entry.status === "active" && !entry.end);
       if (!item) throw new Error("No active break");
       item.end = new Date().toISOString(); item.status = "completed"; result = item; return item;
     });
