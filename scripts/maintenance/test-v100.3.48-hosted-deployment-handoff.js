@@ -21,7 +21,7 @@ const valid=spawnSync(process.execPath,[path.join(root,"scripts/hosted-preflight
 check("Valid hosted contract passes preflight",validReport?.status==="HOSTED_PREFLIGHT_READY"&&validReport.singleWriterRequired===true);
 const invalid=spawnSync(process.execPath,[path.join(root,"scripts/hosted-preflight.js")],{cwd:root,env:{...validEnv,BLUE_CURRENT_PUBLIC_URL:"http://app.bluecurrentco.com",BLUE_CURRENT_ALLOWED_ORIGINS:"*"},encoding:"utf8"});
 check("Insecure or wildcard hosted contract fails closed",invalid.status!==0);
-check("Runtime identifies V100.3.48",pkg.version==="100.3.48");
+check("Runtime retains or advances beyond V100.3.48",Number(pkg.version.split(".").at(-1))>=48);
 const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.48-hosted-deployment-handoff.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
 check("Certification includes setup and hosted handoff",manifest?.gates.includes("test-v100.3.47-pilot-setup-console.js")&&manifest?.gates.includes("test-v100.3.48-hosted-deployment-handoff.js"));
 check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.48.json")));

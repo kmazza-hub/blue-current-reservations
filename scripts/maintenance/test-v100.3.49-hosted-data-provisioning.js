@@ -1,0 +1,28 @@
+"use strict";
+const fs=require("fs"),os=require("os"),path=require("path"),{spawnSync}=require("child_process");
+const root=path.resolve(__dirname,"../.."),script=path.join(root,"scripts/hosted-provision.js"),sourceText=fs.readFileSync(script,"utf8"),pkg=require(path.join(root,"package.json")),temp=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v349-"));
+let passed=0,total=0;function check(name,value){total+=1;if(value){passed+=1;console.log(`PASS ${total}: ${name}`);}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1;}}
+const source=path.join(temp,"certified-source.json"),target=path.join(temp,"volume","blue-current.json"),fixture={meta:{version:"test"},organizations:[{id:"org1"}],locations:[{id:"loc1",organizationId:"org1"}],users:[{id:"user1",passwordHash:"hash"}],tables:[{id:"table1",locationId:"loc1"}]};fs.writeFileSync(source,JSON.stringify(fixture,null,2));
+const run=args=>spawnSync(process.execPath,[script,...args],{cwd:root,encoding:"utf8"});
+const provision=run(["--source",source,"--target",target]),report=provision.status===0?JSON.parse(provision.stdout):null;
+check("Certified source provisions a fresh external target",report?.status==="HOSTED_DATA_PROVISIONED"&&fs.existsSync(target));
+check("Provisioning manifest is written beside target",fs.existsSync(`${target}.provision.meta.json`));
+check("Manifest records checksum, bytes, and collection counts",Boolean(report?.sha256)&&report?.bytes>0&&report?.counts?.tables===1);
+check("Provisioned bytes exactly match selected source",fs.readFileSync(target,"utf8")===fs.readFileSync(source,"utf8"));
+check("Second provisioning attempt refuses overwrite",run(["--source",source,"--target",target]).status!==0);
+const verify=run(["--verify","--target",target]),verified=verify.status===0?JSON.parse(verify.stdout):null;
+check("Untouched provisioned data verifies",verified?.status==="HOSTED_DATA_VERIFIED"&&verified.sha256===report.sha256);
+const mode=fs.statSync(target).mode&0o777;check("Provisioned database is owner-only",mode===0o600);
+fs.appendFileSync(target,"\n");check("Checksum drift fails verification",run(["--verify","--target",target]).status!==0);
+const secretSource=path.join(temp,"secret.json"),secretTarget=path.join(temp,"secret-target.json");fs.writeFileSync(secretSource,JSON.stringify({...fixture,connector:{secret:"do-not-store"}}));
+check("Plaintext credentials block provisioning",run(["--source",secretSource,"--target",secretTarget]).status!==0&&!fs.existsSync(secretTarget));
+check("Repository-local targets are forbidden",run(["--source",source,"--target",path.join(root,"database/data/V100.3.49.json")]).status!==0);
+check("Source and target identity is forbidden",run(["--source",source,"--target",source]).status!==0);
+check("No implicit seed or demo source exists",sourceText.includes('if(!source)fail("--source is required'));
+check("No overwrite option is implemented",!sourceText.includes("--force")&&!sourceText.includes("--replace"));
+check("Hosted provisioning command is registered",pkg.scripts["hosted:provision"]==="node scripts/hosted-provision.js");
+check("Runtime identifies V100.3.49",pkg.version==="100.3.49");
+const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.49-hosted-data-provisioning.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
+check("Certification includes hosted handoff and provisioning",manifest?.gates.includes("test-v100.3.48-hosted-deployment-handoff.js")&&manifest?.gates.includes("test-v100.3.49-hosted-data-provisioning.js"));
+check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.49.json")));
+fs.rmSync(temp,{recursive:true,force:true});console.log(`V100.3.49 hosted data provisioning ${passed}/${total}`);if(passed!==total)process.exitCode=1;
