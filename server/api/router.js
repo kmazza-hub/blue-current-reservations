@@ -119,6 +119,10 @@ async function readJson(request) {
   return request._jsonBody;
 }
 
+// Compatibility name retained by the pilot and integration route groups.
+// Both names must use the same cached, size-limited request parser.
+const readJsonBody = readJson;
+
 function bearerToken(request) {
   const header = request.headers.authorization || "";
   return header.startsWith("Bearer ") ? header.slice(7) : null;

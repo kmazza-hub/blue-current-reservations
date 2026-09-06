@@ -42,7 +42,11 @@ class RestaurantConfigurationService {
         enabled:true,
         mode:"PILOT",
         writeBackEnabled:false,
-        autonomousProductionChanges:false
+        autonomousProductionChanges:false,
+        actualRestaurantDataConfirmed:false,
+        confirmedBy:"",
+        confirmedAt:null,
+        confirmationSource:""
       },
       updatedAt:this.now(),
       updatedBy:"system-default"
@@ -78,6 +82,11 @@ class RestaurantConfigurationService {
     }
     if(cfg.pilot?.writeBackEnabled===true) errors.push("Pilot foundation cannot enable provider write-back.");
     if(cfg.pilot?.autonomousProductionChanges===true) errors.push("Autonomous production changes are prohibited.");
+    if(cfg.pilot?.actualRestaurantDataConfirmed===true){
+      if(!this.clean(cfg.pilot?.confirmedBy)) errors.push("pilot.confirmedBy is required when actual restaurant data is confirmed");
+      if(!this.clean(cfg.pilot?.confirmationSource)) errors.push("pilot.confirmationSource is required when actual restaurant data is confirmed");
+      if(!cfg.pilot?.confirmedAt || Number.isNaN(new Date(cfg.pilot.confirmedAt).getTime())) errors.push("pilot.confirmedAt must be a valid timestamp when actual restaurant data is confirmed");
+    }
     return {valid:errors.length===0,errors};
   }
 
@@ -93,18 +102,20 @@ class RestaurantConfigurationService {
       configured:Boolean(stored),
       configuration,
       validation,
-      readiness:this.readiness(configuration,validation)
+      readiness:this.readiness(configuration,validation,Boolean(stored))
     };
   }
 
-  readiness(configuration,validation=this.validate(configuration)){
+  readiness(configuration,validation=this.validate(configuration),configured=false){
     const checks={
+      configurationPersisted:configured===true,
       validConfiguration:validation.valid,
       locationConfigured:Boolean(configuration.location?.name&&configuration.location?.timezone),
       servicePeriodsConfigured:(configuration.servicePeriods||[]).some(x=>x.enabled!==false),
       diningAreasConfigured:(configuration.diningAreas||[]).some(x=>x.enabled!==false),
       rolesConfigured:(configuration.roles||[]).some(x=>x.enabled!==false),
-      pilotSafetyLocked:configuration.pilot?.writeBackEnabled===false&&configuration.pilot?.autonomousProductionChanges===false
+      pilotSafetyLocked:configuration.pilot?.writeBackEnabled===false&&configuration.pilot?.autonomousProductionChanges===false,
+      actualRestaurantDataConfirmed:configuration.pilot?.actualRestaurantDataConfirmed===true
     };
     const blocking=Object.entries(checks).filter(([,v])=>!v).map(([k])=>k);
     return {
