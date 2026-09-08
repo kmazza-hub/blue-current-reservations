@@ -1,0 +1,30 @@
+// V100.2.35 — Premium Restaurant Floor Map
+(() => {
+  const map = document.getElementById('hostFloorMap');
+  if (!map || map.dataset.bcPremiumFloorV100235 === 'true') return;
+  map.dataset.bcPremiumFloorV100235 = 'true';
+
+  const architecture = document.createElement('div');
+  architecture.className = 'bc-floor-architecture-v100-2-35';
+  architecture.setAttribute('aria-hidden','true');
+  architecture.innerHTML = `
+    <span class="bc-room-name-v100-2-35 bc-main-only-v100-2-35">Main dining room</span>
+    <span class="bc-room-name-v100-2-35 bc-water-only-v100-2-35">Waterfront dining</span>
+    <span class="bc-room-name-v100-2-35 bc-private-only-v100-2-35">Private dining room</span>
+
+    <span class="bc-floor-fixture-v100-2-35 bc-main-only-v100-2-35 bc-main-host-v100-2-35">Host / Entry</span>
+    <span class="bc-floor-fixture-v100-2-35 bc-main-only-v100-2-35 bc-main-bar-v100-2-35">Bar</span>
+    <span class="bc-floor-line-v100-2-35 bc-main-only-v100-2-35 bc-main-aisle-v100-2-35"></span>
+
+    <span class="bc-floor-fixture-v100-2-35 bc-water-only-v100-2-35 bc-water-window-v100-2-35">Waterfront windows</span>
+    <span class="bc-floor-fixture-v100-2-35 bc-water-only-v100-2-35 bc-water-service-v100-2-35">Service station</span>
+
+    <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-room-v100-2-35"></span>
+    <span class="bc-floor-fixture-v100-2-35 bc-private-only-v100-2-35 bc-private-credenza-v100-2-35">Credenza</span>
+
+    <span class="bc-floor-zone-note-v100-2-35 bc-main-note-v100-2-35">Main aisle · host entrance</span>
+    <span class="bc-floor-zone-note-v100-2-35 bc-water-note-v100-2-35">Window wall · waterfront</span>
+    <span class="bc-floor-zone-note-v100-2-35 bc-private-note-v100-2-35">Private event room</span>
+  `;
+  map.prepend(architecture);
+})();

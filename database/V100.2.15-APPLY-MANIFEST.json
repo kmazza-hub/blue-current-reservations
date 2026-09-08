@@ -1,0 +1,8 @@
+{
+  "version": "100.2.15",
+  "name": "Host Stand Readability + Guided Waitlist Seating",
+  "baseline": "100.2.14",
+  "type": "forward-only client interaction/readability patch",
+  "touches": ["client/js host-stand runtime"],
+  "doesNotTouch": ["server", "database", "auth", "RBAC", "persistence"]
+}

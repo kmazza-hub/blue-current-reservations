@@ -1,0 +1,8 @@
+{
+  "version": "100.2.92",
+  "name": "iPad Recovery Rush Certification",
+  "type": "certification-only",
+  "baseline": "V100.2.91",
+  "runtimeFilesChanged": [],
+  "test": "scripts/maintenance/test-v100.2.92-ipad-recovery-rush-certification.js"
+}

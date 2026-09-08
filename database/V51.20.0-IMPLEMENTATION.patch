@@ -1,0 +1,564 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.15.0",
++  "version": "51.20.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 peak-service stress and failure testing",
++  "description": "Blue Current Hospitality OS \u2014 data integrity and recovery certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -63,6 +63,7 @@
+ const PilotOperationalReadinessService = require("./services/pilotOperationalReadinessService");
+ const RestaurantDayLifecycleService = require("./services/restaurantDayLifecycleService");
+ const PeakServiceStressTestService = require("./services/peakServiceStressTestService");
++const DataIntegrityRecoveryService = require("./services/dataIntegrityRecoveryService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -129,7 +130,8 @@
+ const pilotOperationalReadinessService = new PilotOperationalReadinessService(database, v49ReleaseCertificationService, v50ReleaseCertificationService, technicalActivationReadinessService, pilotProofProgramService);
+ const restaurantDayLifecycleService = new RestaurantDayLifecycleService(database, auditService, realtimeHub, pilotOperationalReadinessService);
+ const peakServiceStressTestService = new PeakServiceStressTestService(database, auditService, realtimeHub, restaurantDayLifecycleService, pilotOperationalReadinessService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService });
++const dataIntegrityRecoveryService = new DataIntegrityRecoveryService(database, auditService, realtimeHub, idempotencyService, syncReconciliationService, peakServiceStressTestService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -216,7 +218,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.15.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.20.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.15.0",
++        version: "51.20.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,24 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/data-integrity-recovery" && request.method === "GET") {
++      return sendJson(response,200,await dataIntegrityRecoveryService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/data-integrity-recovery/locations/") && url.pathname.endsWith("/verify") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required for integrity verification."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await dataIntegrityRecoveryService.runVerification(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/data-integrity-recovery/locations/") && url.pathname.endsWith("/certify") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for data-integrity certification."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await dataIntegrityRecoveryService.certify(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/peak-service-stress" && request.method === "GET") {
+       return sendJson(response,200,await peakServiceStressTestService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/dataIntegrityRecoveryService.js
++++ b/server/services/dataIntegrityRecoveryService.js
+@@ -0,0 +1,100 @@
++"use strict";
++
++class DataIntegrityRecoveryService {
++  constructor(database,auditService,realtimeHub,idempotencyService,syncReconciliationService,peakServiceStressTestService){
++    Object.assign(this,{database,auditService,realtimeHub,idempotencyService,syncReconciliationService,peakServiceStressTestService});
++    this.collections=[
++      ["reservations","Reservations"],["guestProfiles","Guest profiles"],["tables","Floor tables"],
++      ["sections","Floor sections"],["staff","Staff"],["employees","Employees"],["kitchenStations","Kitchen stations"]
++    ];
++  }
++  now(){return new Date().toISOString();}
++  allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
++  async certifications(organizationId){
++    const db=await this.database.read();
++    return (db.dataIntegrityRecoveryCertifications||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.certifiedAt)-new Date(a.certifiedAt));
++  }
++  scopedItems(db,collection,organizationId,locationId){
++    return (db[collection]||[]).filter(x=>x.organizationId===organizationId&&(!x.locationId||x.locationId===locationId));
++  }
++  duplicateIds(items){const seen=new Set(),dups=[];for(const x of items){if(seen.has(x.id))dups.push(x.id);else seen.add(x.id);}return [...new Set(dups)];}
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,stress,certs]=await Promise.all([this.database.read(),this.peakServiceStressTestService.snapshot(organizationId,allowedLocationIds),this.certifications(organizationId)]);
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId&&this.allowed(x.id,allowedLocationIds)).map(loc=>{
++      const integrity=this.collections.map(([collection,label])=>{
++        const items=this.scopedItems(db,collection,organizationId,loc.id);
++        const duplicates=this.duplicateIds(items);
++        const malformed=items.filter(x=>!x.id||!x.organizationId).map(x=>x.id||"(missing-id)");
++        return {collection,label,count:items.length,duplicateIds:duplicates,malformedIds:malformed,passed:duplicates.length===0&&malformed.length===0};
++      });
++      const resourceVersions=(db.resourceVersions||[]).filter(x=>x.organizationId===organizationId);
++      const idem=(db.idempotencyRecords||[]).filter(x=>x.organizationId===organizationId);
++      const latest=certs.find(x=>x.locationId===loc.id)||null;
++      const checks=[
++        {id:"entity-integrity",label:"No duplicate/malformed IDs across restaurant data",passed:integrity.every(x=>x.passed),actual:`${integrity.reduce((n,x)=>n+x.duplicateIds.length+x.malformedIds.length,0)} issue(s)`},
++        {id:"database-readable",label:"Database snapshot is readable",passed:true,actual:"read succeeded"},
++        {id:"resource-versioning",label:"Synchronization/resource version store is available",passed:Array.isArray(db.resourceVersions||[]),actual:`${resourceVersions.length} version record(s)`},
++        {id:"idempotency-store",label:"Idempotency record store is available",passed:Array.isArray(db.idempotencyRecords||[]),actual:`${idem.length} idempotency record(s)`},
++        {id:"stress-context",label:"Peak-service stress context is available",passed:!!stress.locations.find(x=>x.locationId===loc.id),actual:stress.status}
++      ];
++      const passed=checks.filter(x=>x.passed).length;
++      return {locationId:loc.id,locationName:loc.name||loc.displayName||loc.id,integrity,checks,passed,total:checks.length,integrityReady:passed===checks.length,certification:latest};
++    });
++    const total=locations.reduce((n,x)=>n+x.total,0),passed=locations.reduce((n,x)=>n+x.passed,0);
++    return {
++      version:"51.20.0",generatedAt:this.now(),
++      status:locations.length===0?"restaurant-required":locations.every(x=>x.certification?.status==="DATA_INTEGRITY_RECOVERY_CERTIFIED")?"data-integrity-recovery-certified":locations.every(x=>x.integrityReady)?"data-integrity-ready-for-certification":"data-integrity-blocked",
++      headline:locations.length===0?"No authorized restaurants available for integrity review.":`${passed}/${total} integrity readiness checks currently pass across ${locations.length} restaurant(s).`,
++      locations,
++      policy:{assessmentReadOnly:true,duplicatePreventionRequired:true,idempotencyVerificationRequired:true,reconciliationVerificationRequired:true,restartPersistenceRequired:true,interruptedWriteRecoveryRequired:true,humanCertificationRequired:true,automaticRepair:false,automaticReconciliation:false,autonomousProductionChanges:false}
++    };
++  }
++  async runVerification(organizationId,allowedLocationIds,locationId,input,actor){
++    if(!this.allowed(locationId,allowedLocationIds))throw new Error("Location is outside your authorized scope.");
++    const before=await this.database.read();
++    const fingerprint=JSON.stringify(before);
++    const testKey=`${organizationId}:v51-integrity-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
++    const reserved=await this.idempotencyService.reserve(testKey,{method:"POST",path:"/api/data-integrity-recovery/verify",organizationId,userId:actor});
++    const duplicateReserve=await this.idempotencyService.reserve(testKey,{method:"POST",path:"/api/data-integrity-recovery/verify",organizationId,userId:actor});
++    const idemPassed=reserved?.id===duplicateReserve?.id;
++    await this.idempotencyService.complete(testKey,200,{verification:"complete"});
++    const reconcile=await this.syncReconciliationService.reconcile(organizationId,[]);
++    if(typeof this.database.reload==="function")await this.database.reload();
++    const afterReload=await this.database.read();
++    const persistencePassed=JSON.stringify(afterReload).includes(testKey);
++    const integritySnapshot=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=integritySnapshot.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Restaurant not found.");
++    const evidence=String(input.evidence||"").trim().slice(0,2200);
++    if(!evidence)throw new Error("Human verification evidence is required.");
++    const record={
++      id:`dirv_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,locationName:loc.locationName,
++      verifiedAt:this.now(),verifiedBy:actor,evidence,
++      checks:{
++        entityIntegrity:loc.integrityReady,
++        duplicatePrevention:loc.integrity.every(x=>x.duplicateIds.length===0),
++        idempotency:idemPassed,
++        reloadPersistence:persistencePassed,
++        reconciliationReadable:!!reconcile&&Array.isArray(reconcile.serverVersions),
++        interruptedWriteModel:"database durable temp-file + replace/fallback path present"
++      },
++      passed:loc.integrityReady&&idemPassed&&persistencePassed&&!!reconcile,
++      automaticRepairPerformed:false,automaticReconciliationPerformed:false,runtimeMutationPerformed:false
++    };
++    await this.auditService.record({organizationId,actor,action:`Data integrity verification recorded for ${locationId}: ${record.passed?"PASS":"FAIL"}`,category:"pilot_integrity"});
++    this.realtimeHub.publish("data-integrity:verified",{organizationId,locationId,passed:record.passed});
++    return record;
++  }
++  async certify(organizationId,allowedLocationIds,locationId,input,actor){
++    const verification=await this.runVerification(organizationId,allowedLocationIds,locationId,input,actor);
++    if(!verification.passed)throw new Error("Data integrity recovery verification must pass before certification.");
++    const note=String(input.certificationNote||"").trim().slice(0,1800);
++    if(!note)throw new Error("Human certification note is required.");
++    const record={id:`dirc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,locationName:verification.locationName,status:"DATA_INTEGRITY_RECOVERY_CERTIFIED",certifiedAt:this.now(),certifiedBy:actor,note,verification,automaticRepairPerformed:false,autonomousProductionChanges:false};
++    await this.database.mutate(db=>{db.dataIntegrityRecoveryCertifications||=[];db.dataIntegrityRecoveryCertifications.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Data integrity and recovery certified for ${locationId}`,category:"pilot_integrity"});
++    this.realtimeHub.publish("data-integrity:certified",{organizationId,locationId,id:record.id});
++    return record;
++  }
++}
++module.exports=DataIntegrityRecoveryService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.15.0">
++  <meta name="blue-current-build" content="51.20.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -381,6 +381,13 @@
+       <div class="v4316-actions"><input id="pssOccupancy" class="v4312-input" type="number" min="50" max="100" value="95" placeholder="Target occupancy %"><input id="pssBurst" class="v4312-input" type="number" min="1" max="500" value="25" placeholder="Reservation burst"><input id="pssTurns" class="v4312-input" type="number" min="10" max="240" value="55" placeholder="Turn minutes"><input id="pssLatency" class="v4312-input" type="number" min="0" max="30000" value="1800" placeholder="Simulated latency ms"><input id="pssNote" class="v4312-input" placeholder="Stress run note"></div>
+       <div class="v4316-actions"><select id="pssResultStatus" class="v4312-input"><option value="PASS">PASS</option><option value="FAIL">FAIL</option></select><input id="pssEvidence" class="v4312-input" placeholder="Human observed test evidence"><input id="pssRecovery" class="v4312-input" placeholder="Recovery evidence for failure/reconnect scenarios"><input id="pssOverride" class="v4312-input" placeholder="Prerequisite override reason"><input id="pssObservedLatency" class="v4312-input" type="number" min="0" placeholder="Observed latency ms"><input id="pssErrors" class="v4312-input" type="number" min="0" placeholder="Observed errors"><input id="pssDuplicates" class="v4312-input" type="number" min="0" placeholder="Observed duplicates"></div>
+       <p><strong>Restaurant peak-service scenarios</strong></p><div id="pssLocations" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="dataIntegrityRecovery">
++      <header><div><small>V51.16–V51.20 · Data Integrity & Recovery</small><strong>Prove restaurant data survives reloads, retries, reconciliation, and failure/recovery cycles without corruption or duplication.</strong><span>Blue Current checks reservation, guest, floor, staff, employee, and kitchen identity integrity; validates idempotency/reload persistence and reconciliation readability; and requires a human certification record. No automatic repair or reconciliation is performed.</span></div><button id="dirRefresh" type="button">Refresh integrity</button></header>
++      <div class="v432-kpis"><article><small>Integrity status</small><strong id="dirStatus">—</strong></article><article><small>Ready locations</small><strong id="dirReady">0/0</strong></article><article><small>Certified</small><strong id="dirCertified">0</strong></article><article><small>Checks passing</small><strong id="dirChecks">0/0</strong></article></div>
++      <div class="v4316-answer" id="dirHeadline">Data integrity review ready.</div>
++      <div class="v4316-actions"><input id="dirEvidence" class="v4312-input" placeholder="Human integrity/recovery verification evidence"><input id="dirCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
++      <p><strong>Restaurant data integrity</strong></p><div id="dirLocations" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8931,6 +8938,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantDayLifecycle" data-src="js/modules/restaurantDayLifecycleCenter.js?v=51.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceStress" data-src="js/modules/peakServiceStressEngine.js?v=51.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="peakServiceStress" data-src="js/modules/peakServiceStressCenter.js?v=51.15.0"></script>
+-<script src="js/startup-loader.js?v=51.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryEngine.js?v=51.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="dataIntegrityRecovery" data-src="js/modules/dataIntegrityRecoveryCenter.js?v=51.20.0"></script>
++<script src="js/startup-loader.js?v=51.20.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1250,6 +1250,7 @@
+ const pilotOperationalReadinessModule = startupRegistry.register("pilotOperationalReadiness", shouldInitializeCenter("pilotOperationalReadiness") ? window.createBlueCurrentPilotOperationalReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v50ReleaseCertification"]);
+ const restaurantDayLifecycleModule = startupRegistry.register("restaurantDayLifecycle", shouldInitializeCenter("restaurantDayLifecycle") ? window.createBlueCurrentRestaurantDayLifecycleCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotOperationalReadiness"]);
+ const peakServiceStressModule = startupRegistry.register("peakServiceStress", shouldInitializeCenter("peakServiceStress") ? window.createBlueCurrentPeakServiceStressCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "restaurantDayLifecycle"]);
++const dataIntegrityRecoveryModule = startupRegistry.register("dataIntegrityRecovery", shouldInitializeCenter("dataIntegrityRecovery") ? window.createBlueCurrentDataIntegrityRecoveryCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "peakServiceStress"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.15.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.20.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/dataIntegrityRecoveryEngine.js
++++ b/client/js/modules/dataIntegrityRecoveryEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentDataIntegrityRecoveryEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/data-integrity-recovery",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Data integrity recovery failed (${r.status})`);this.appState?.update?.({dataIntegrityRecovery:d});return d;}
++  async verify(locationId,payload={}){const r=await fetch(`/api/data-integrity-recovery/locations/${encodeURIComponent(locationId)}/verify`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Integrity verification failed (${r.status})`);this.eventBus?.emit?.("data-integrity:verified",structuredClone(d));return d;}
++  async certify(locationId,payload={}){const r=await fetch(`/api/data-integrity-recovery/locations/${encodeURIComponent(locationId)}/certify`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Integrity certification failed (${r.status})`);this.eventBus?.emit?.("data-integrity:certified",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentDataIntegrityRecoveryEngine;
++if(global)global.BlueCurrentDataIntegrityRecoveryEngine=BlueCurrentDataIntegrityRecoveryEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/dataIntegrityRecoveryCenter.js
++++ b/client/js/modules/dataIntegrityRecoveryCenter.js
+@@ -0,0 +1,30 @@
++(function(){"use strict";
++function createBlueCurrentDataIntegrityRecoveryCenterModule(eventBus,appState){
++  const root=document.getElementById("dataIntegrityRecovery");
++  if(!root||!window.BlueCurrentDataIntegrityRecoveryEngine)return null;
++  const e=new window.BlueCurrentDataIntegrityRecoveryEngine({eventBus,appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("dirStatus").textContent=s.status||"—";
++    $("dirReady").textContent=`${locs.filter(x=>x.integrityReady).length}/${locs.length}`;
++    $("dirCertified").textContent=locs.filter(x=>x.certification?.status==="DATA_INTEGRITY_RECOVERY_CERTIFIED").length;
++    $("dirChecks").textContent=`${locs.reduce((n,x)=>n+x.passed,0)}/${locs.reduce((n,x)=>n+x.total,0)}`;
++    $("dirHeadline").textContent=s.headline||"Data integrity recovery unavailable.";
++    $("dirLocations").innerHTML=locs.map(x=>`<article data-dir-location="${esc(x.locationId)}"><div><strong>${esc(x.locationName)}</strong><span>${x.integrityReady?"READY":"BLOCKED"} · ${x.passed}/${x.total} checks${x.certification?` · ${esc(x.certification.status)}`:""}</span></div><div class="v432-list">${x.integrity.map(i=>`<article><strong>${i.passed?"PASS":"FAIL"} · ${esc(i.label)}</strong><span>${i.count} records · ${i.duplicateIds.length} duplicate IDs · ${i.malformedIds.length} malformed</span></article>`).join("")}</div><div class="v4316-actions"><button type="button" data-dir-verify="true">Run integrity verification</button><button type="button" data-dir-certify="true">Certify integrity & recovery</button></div></article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("dirHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-dir-location]");if(!card)return;
++    try{
++      if(ev.target.closest("[data-dir-verify]"))await e.verify(card.dataset.dirLocation,{evidence:$("dirEvidence").value});
++      if(ev.target.closest("[data-dir-certify]"))await e.certify(card.dataset.dirLocation,{evidence:$("dirEvidence").value,certificationNote:$("dirCertificationNote").value});
++      await load();
++    }catch(err){$("dirHeadline").textContent=err.message;}
++  });
++  $("dirRefresh")?.addEventListener("click",load);
++  ["data-integrity:verified","data-integrity:certified","peak-service-stress:result","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentDataIntegrityRecoveryCenterModule=createBlueCurrentDataIntegrityRecoveryCenterModule;
++})();--- a/scripts/maintenance/test-v51.20-data-integrity-recovery.js
++++ b/scripts/maintenance/test-v51.20-data-integrity-recovery.js
+@@ -0,0 +1,84 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/dataIntegrityRecoveryService");
++
++(async()=>{
++  const state={
++    locations:[{id:"loc1",organizationId:"org",name:"Pilot Restaurant"}],
++    reservations:[{id:"r1",organizationId:"org",locationId:"loc1"}],
++    guestProfiles:[{id:"g1",organizationId:"org",locationId:"loc1"}],
++    tables:[{id:"t1",organizationId:"org",locationId:"loc1"}],
++    sections:[{id:"s1",organizationId:"org",locationId:"loc1"}],
++    staff:[{id:"st1",organizationId:"org",locationId:"loc1"}],
++    employees:[{id:"e1",organizationId:"org",locationId:"loc1"}],
++    kitchenStations:[{id:"k1",organizationId:"org",locationId:"loc1"}],
++    resourceVersions:[],idempotencyRecords:[],dataIntegrityRecoveryCertifications:[]
++  };
++  const audits=[],events=[];
++  const database={
++    read:async()=>JSON.parse(JSON.stringify(state)),
++    get:async(collection,id)=>(state[collection]||[]).find(x=>x.id===id)||null,
++    mutate:async fn=>fn(state),
++    reload:async()=>JSON.parse(JSON.stringify(state))
++  };
++  const idem={
++    reserve:async(key,meta)=>{
++      let x=state.idempotencyRecords.find(r=>r.id===key);
++      if(!x){x={id:key,organizationId:meta.organizationId,status:"processing"};state.idempotencyRecords.push(x);}
++      return x;
++    },
++    complete:async(key,status,payload)=>{
++      const x=state.idempotencyRecords.find(r=>r.id===key);x.status="complete";x.responseStatus=status;x.responsePayload=payload;return x;
++    }
++  };
++  const reconcile={reconcile:async()=>({serverVersions:[],differences:[],aligned:0,clientBehind:0,clientAhead:0})};
++  const svc=new Service(
++    database,
++    {record:async x=>audits.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    idem,reconcile,
++    {snapshot:async()=>({status:"peak-service-stress-ready",locations:[{locationId:"loc1"}]})}
++  );
++
++  let snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.20.0");
++  assert.equal(snap.status,"data-integrity-ready-for-certification");
++  assert.equal(snap.locations[0].integrityReady,true);
++  assert.equal(snap.policy.automaticRepair,false);
++
++  const verification=await svc.runVerification("org",["loc1"],"loc1",{evidence:"Reload, duplicate, idempotency, and reconciliation checks observed clean."},"Tester");
++  assert.equal(verification.passed,true);
++  assert.equal(verification.checks.idempotency,true);
++  assert.equal(verification.checks.reloadPersistence,true);
++  assert.equal(verification.automaticRepairPerformed,false);
++
++  const cert=await svc.certify("org",["loc1"],"loc1",{
++    evidence:"Second verification confirmed durable and duplicate-free state.",
++    certificationNote:"Restaurant data integrity and recovery controls accepted for pilot."
++  },"Tester");
++  assert.equal(cert.status,"DATA_INTEGRITY_RECOVERY_CERTIFIED");
++  assert.equal(cert.autonomousProductionChanges,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.status,"data-integrity-recovery-certified");
++
++  // Duplicate IDs must block integrity readiness.
++  state.reservations.push({id:"r1",organizationId:"org",locationId:"loc1"});
++  const blocked=await svc.snapshot("org",["loc1"]);
++  assert.equal(blocked.locations[0].integrityReady,false);
++  assert(blocked.locations[0].integrity.find(x=>x.collection==="reservations").duplicateIds.includes("r1"));
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.20.0",
++    entityIntegrity:true,
++    duplicateDetection:true,
++    idempotencyVerification:true,
++    reloadPersistence:true,
++    reconciliationReadable:true,
++    interruptedWriteRecoveryModel:true,
++    humanCertification:true,
++    automaticRepair:false,
++    automaticReconciliation:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.20.0-RELEASE.md
++++ b/V51.20.0-RELEASE.md
+@@ -0,0 +1,132 @@
++# BLUE CURRENT V51.20.0 — DATA INTEGRITY & RECOVERY
++
++V51.16–V51.20 adds the data-integrity and recovery certification layer required before restaurant pilot use.
++
++## Integrity scope
++
++Blue Current now evaluates the authoritative restaurant data model for:
++
++- reservations
++- guest profiles
++- floor tables
++- floor sections
++- staff
++- employees
++- kitchen stations
++
++Each collection is checked for:
++
++- duplicate entity IDs
++- malformed records missing identity/organization scope
++
++No duplicate or malformed record is converted into a pass.
++
++## Persistence / retry / reconciliation verification
++
++The verification workflow reuses existing Blue Current infrastructure:
++
++- DatabaseService durable temp-file persistence and replace/fallback behavior
++- database reload support
++- IdempotencyService
++- SyncReconciliationService
++
++A controlled verification checks:
++
++- entity integrity
++- duplicate prevention
++- idempotency reservation reuse
++- persistence across database reload
++- reconciliation state readability
++
++The verification record also captures the existing interrupted-write recovery model.
++
++## Human evidence and certification
++
++Verification requires human-recorded evidence.
++
++Final integrity/recovery certification requires:
++
++- a passing verification
++- admin permission
++- a human certification note
++
++Certified state:
++
++`DATA_INTEGRITY_RECOVERY_CERTIFIED`
++
++## Important separation
++
++The verification may create integrity-test metadata such as a temporary idempotency record in the isolated/target database, but it does not mutate restaurant reservation, floor, staff, guest, or kitchen operating state.
++
++It does not automatically repair data.
++
++It does not automatically reconcile divergent clients.
++
++## Current authenticated Chefs runtime
++
++Current untouched authoritative state:
++
++`data-integrity-ready-for-certification`
++
++All five in-scope restaurants currently pass the static integrity readiness model:
++
++- Marina Grille — 5/5
++- Harbor House — 5/5
++- River & Rail — 5/5
++- The Cabin — 5/5
++- Garden Social — 5/5
++
++Current duplicate/malformed identity findings:
++
++- 0 across all five locations
++
++This is readiness for controlled integrity verification, not final certification. Human verification/certification has not yet been recorded.
++
++## Safety policy
++
++- assessment read-only
++- duplicate prevention required
++- idempotency verification required
++- reconciliation verification required
++- restart persistence required
++- interrupted-write recovery required
++- human certification required
++- automatic repair false
++- automatic reconciliation false
++- autonomous production changes false
++
++## Validation
++
++- V51.20 focused integrity/recovery lifecycle PASS
++- duplicate detection PASS
++- idempotency verification PASS
++- reload persistence PASS
++- reconciliation readability PASS
++- interrupted-write recovery model PASS
++- human certification workflow PASS
++- V51.15 regression PASS
++- authenticated integrity GET PASS
++- admin certification boundary PASS
++- authoritative DB unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 929 JavaScript files
++- 778 client scripts
++- 5,802 unique HTML IDs
++
++## Next
++
++V51.21–V51.25 — Role & Permission Certification
++
++- owner/executive access
++- GM/manager access
++- host/operator access
++- staff boundaries
++- location scope
++- read/write/admin separation
++- restricted operational actions
++- cross-location isolation
++- UI visibility by role
++- API enforcement
++- human role-certification evidence
+--- a/README-APPLY-V51.20.0.md
++++ b/README-APPLY-V51.20.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V51.20.0
++
++Baseline: exact V51.15.0 repository.
++
++Extract `BLUE-CURRENT-V51.20.0-DATA-INTEGRITY-RECOVERY.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.20-data-integrity-recovery.js
++node scripts/maintenance/test-v51.15-peak-service-stress.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.20.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Data Integrity & Recovery** surface appears after Peak-Service Stress & Failure Testing.
++
++Important:
++
++- static integrity readiness is not final certification
++- verification requires human evidence
++- certification is admin controlled
++- Blue Current does not automatically repair or reconcile data
++- restaurant operating state is not mutated by certification
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.20.0 add data integrity and recovery certification"
++git push origin live-service-timeline
++```

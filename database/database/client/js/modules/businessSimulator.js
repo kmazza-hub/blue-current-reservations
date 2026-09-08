@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Business Simulator v35.2.4'));

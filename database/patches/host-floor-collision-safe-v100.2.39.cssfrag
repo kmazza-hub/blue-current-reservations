@@ -1,0 +1,85 @@
+/* V100.2.39 — Collision-Safe Premium Floor Layout */
+/* Aim small, miss small: every visible table owns a distinct physical slot. */
+
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table {
+  z-index: 10 !important;
+}
+
+/* MAIN FLOOR — 16 tables / four clean rows. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="1"]  { --x:14% !important; --y:24% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="3"]  { --x:38% !important; --y:24% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="4"]  { --x:62% !important; --y:24% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="9"]  { --x:82% !important; --y:24% !important; }
+
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="2"]  { --x:14% !important; --y:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="5"]  { --x:38% !important; --y:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="7"]  { --x:62% !important; --y:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="6"]  { --x:82% !important; --y:43% !important; }
+
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="10"] { --x:14% !important; --y:62% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="11"] { --x:38% !important; --y:62% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="12"] { --x:62% !important; --y:62% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="13"] { --x:82% !important; --y:62% !important; }
+
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="15"] { --x:14% !important; --y:81% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="17"] { --x:38% !important; --y:81% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="19"] { --x:62% !important; --y:81% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="21"] { --x:82% !important; --y:81% !important; }
+
+/* WATERFRONT — 12 tables / three rows, clear of service station and window rail. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="8"]  { --x:15% !important; --y:31% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="16"] { --x:39% !important; --y:31% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="24"] { --x:63% !important; --y:31% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="26"] { --x:84% !important; --y:31% !important; }
+
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="28"] { --x:15% !important; --y:54% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="14"] { --x:39% !important; --y:54% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="30"] { --x:63% !important; --y:54% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="32"] { --x:84% !important; --y:54% !important; }
+
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="34"] { --x:15% !important; --y:77% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="36"] { --x:39% !important; --y:77% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="38"] { --x:63% !important; --y:77% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="40"] { --x:84% !important; --y:77% !important; }
+
+/* PRIVATE DINING — eight tables / two deliberate rows inside the room. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="18"] { --x:18% !important; --y:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="20"] { --x:40% !important; --y:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="22"] { --x:62% !important; --y:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="42"] { --x:83% !important; --y:43% !important; }
+
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="44"] { --x:18% !important; --y:70% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="46"] { --x:40% !important; --y:70% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="48"] { --x:62% !important; --y:70% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="50"] { --x:83% !important; --y:70% !important; }
+
+/* Capacity captions cannot steal space from neighboring tables. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before {
+  top:-16px !important;
+  font-size:9px !important;
+  line-height:1 !important;
+  max-width:110px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* Keep the strongest table geometry inside its assigned slot. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-8-v100-2-37 {
+  --bc-table-w:92px !important;
+}
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-6-v100-2-37 {
+  --bc-table-w:80px !important;
+}
+
+/* Selected emphasis must not physically collide with neighbors. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.selected {
+  transform:translate(-50%,-50%) scale(1.04) !important;
+  outline-width:3px !important;
+  outline-offset:3px !important;
+}
+
+@media (max-width:1100px) {
+  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-8-v100-2-37 { --bc-table-w:84px !important; }
+  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table.bc-top-6-v100-2-37 { --bc-table-w:74px !important; }
+  #hostFloorMap[data-bc-world-class-v100237="true"] .host-table::before { top:-14px !important; font-size:8px !important; }
+}

@@ -1,0 +1,420 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "48.5.0",
++  "version": "48.10.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 pilot value scorecard and commercial proof layer",
++  "description": "Blue Current Hospitality OS \u2014 structured pilot proof program and executive commercial decision layer",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -43,6 +43,7 @@
+ const ManagerOperatingRhythmService = require("./services/managerOperatingRhythmService");
+ const MultiLocationPerformanceService = require("./services/multiLocationPerformanceService");
+ const PilotValueScorecardService = require("./services/pilotValueScorecardService");
++const PilotProofProgramService = require("./services/pilotProofProgramService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -89,7 +90,8 @@
+ const managerOperatingRhythmService = new ManagerOperatingRhythmService(database, auditService, realtimeHub, commandCenterService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService);
+ const multiLocationPerformanceService = new MultiLocationPerformanceService(database, auditService, realtimeHub, managerOperatingRhythmService);
+ const pilotValueScorecardService = new PilotValueScorecardService(database, auditService, realtimeHub, multiLocationPerformanceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService });
++const pilotProofProgramService = new PilotProofProgramService(database, auditService, realtimeHub, pilotValueScorecardService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -176,7 +178,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V48.5.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V48.10.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "48.5.0",
++        version: "48.10.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,17 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/pilot-proof-program" && request.method === "GET") {
++      return sendJson(response,200,await pilotProofProgramService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname === "/api/pilot-proof-program/configure" && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Pilot success-criteria permission required."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await pilotProofProgramService.configure(auth.membership.organizationId,auth.membership.locationIds||[],body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/pilot-value-scorecard" && request.method === "GET") {
+       return sendJson(response,200,await pilotValueScorecardService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/pilotProofProgramService.js
++++ b/server/services/pilotProofProgramService.js
+@@ -0,0 +1,118 @@
++"use strict";
++
++class PilotProofProgramService {
++  constructor(database,auditService,realtimeHub,pilotValueScorecardService){
++    Object.assign(this,{database,auditService,realtimeHub,pilotValueScorecardService});
++  }
++  now(){return new Date().toISOString();}
++  round(n,d=0){const p=10**d;return Math.round((Number(n)||0)*p)/p;}
++  async program(organizationId){return this.pilotValueScorecardService.activeProgram(organizationId);}
++  async configure(organizationId,allowedLocationIds,input,actor){
++    const program=await this.program(organizationId);
++    if(!program)throw new Error("Capture the pilot value baseline before configuring success criteria.");
++    const snapshot=await this.pilotValueScorecardService.snapshot(organizationId,allowedLocationIds);
++    const supplied=Array.isArray(input.locationObjectives)?input.locationObjectives:[];
++    const objectives=snapshot.portfolio.locations.map(row=>{
++      const custom=supplied.find(x=>x.locationId===row.locationId)||{};
++      return {
++        locationId:row.locationId,locationName:row.locationName,
++        objective:String(custom.objective||`Improve operating rhythm and reduce the highest modeled controllable constraint at ${row.locationName}.`).slice(0,500),
++        owner:String(custom.owner||input.defaultOwner||program.sponsor||actor).slice(0,120),
++        readinessTarget:Number(custom.readinessTarget||Math.min(100,row.readinessScore+5)),
++        rhythmTarget:Number(custom.rhythmTarget||Math.min(100,row.rhythmScore+20)),
++        leakageReductionTargetPercent:Number(custom.leakageReductionTargetPercent||10)
++      };
++    });
++    const criteria={
++      minimumOverallScore:Number(input.minimumOverallScore||65),
++      minimumAdoptionScore:Number(input.minimumAdoptionScore||65),
++      minimumOperatingScore:Number(input.minimumOperatingScore||65),
++      minimumValueScore:Number(input.minimumValueScore||50),
++      maximumHighAttentionLocations:Number.isFinite(Number(input.maximumHighAttentionLocations))?Number(input.maximumHighAttentionLocations):0
++    };
++    const config={configuredAt:this.now(),configuredBy:actor,criteria,locationObjectives:objectives};
++    await this.database.mutate(db=>{const p=(db.pilotValuePrograms||[]).find(x=>x.id===program.id);p.proofProgram=config;return config;});
++    await this.auditService.record({organizationId,actor,action:`Pilot proof success criteria configured: ${program.id}`,category:"pilot_value"});
++    this.realtimeHub.publish("pilot-proof:configured",{programId:program.id,...config});
++    return config;
++  }
++  trend(program,current){
++    const points=[{
++      id:"baseline",capturedAt:program.baseline.capturedAt,label:"Baseline",
++      readiness:program.baseline.metrics.averageReadiness,rhythm:program.baseline.metrics.averageRhythmScore,
++      leakage:program.baseline.metrics.modeledLeakageDollars,verifiedValue:0,overall:null
++    },...(program.checkpoints||[]).map((x,i)=>({
++      id:x.id,capturedAt:x.capturedAt,label:`Checkpoint ${i+1}`,
++      readiness:x.current?.averageReadiness||0,rhythm:x.current?.averageRhythmScore||0,
++      leakage:x.current?.modeledLeakageDollars||0,verifiedValue:x.evidence?.verifiedRealizedImpactDollars||0,overall:x.scorecard?.overall??null
++    }))];
++    points.push({id:"current",capturedAt:current.generatedAt,label:"Current",readiness:current.current.averageReadiness,rhythm:current.current.averageRhythmScore,leakage:current.current.modeledLeakageDollars,verifiedValue:current.evidence.verifiedRealizedImpactDollars,overall:current.scorecard.overall});
++    return points;
++  }
++  locationEvidence(program,current){
++    const baseline=new Map((program.baseline.locations||[]).map(x=>[x.locationId,x]));
++    const objectives=new Map((program.proofProgram?.locationObjectives||[]).map(x=>[x.locationId,x]));
++    return current.portfolio.locations.map(row=>{
++      const b=baseline.get(row.locationId)||{},o=objectives.get(row.locationId)||{};
++      const leakageBase=Number(b.modeledLeakageDollars||0);
++      const leakageReduction=leakageBase>0?Math.max(0,(leakageBase-Number(row.modeledLeakageDollars||0))/leakageBase*100):0;
++      const readinessLift=Number(row.readinessScore||0)-Number(b.readinessScore||0);
++      const rhythmLift=Number(row.rhythmScore||0)-Number(b.rhythmScore||0);
++      const targetChecks=[
++        o.readinessTarget==null?null:Number(row.readinessScore||0)>=Number(o.readinessTarget),
++        o.rhythmTarget==null?null:Number(row.rhythmScore||0)>=Number(o.rhythmTarget),
++        o.leakageReductionTargetPercent==null?null:leakageReduction>=Number(o.leakageReductionTargetPercent)
++      ].filter(x=>x!==null);
++      return {
++        locationId:row.locationId,locationName:row.locationName,owner:o.owner||program.sponsor,
++        objective:o.objective||"Success criteria not yet configured.",
++        readiness:{baseline:Number(b.readinessScore||0),current:Number(row.readinessScore||0),lift:this.round(readinessLift,1),target:o.readinessTarget??null},
++        rhythm:{baseline:Number(b.rhythmScore||0),current:Number(row.rhythmScore||0),lift:this.round(rhythmLift,1),target:o.rhythmTarget??null},
++        leakage:{baseline:leakageBase,current:Number(row.modeledLeakageDollars||0),reductionPercent:this.round(leakageReduction,1),targetReductionPercent:o.leakageReductionTargetPercent??null},
++        activeActions:Number(row.activeActions||0),attentionLevel:row.attentionLevel,
++        targetsMet:targetChecks.filter(Boolean).length,targetsMeasured:targetChecks.length
++      };
++    });
++  }
++  recommendation(current,config,locations){
++    if(!config)return {decision:"CONFIGURE",confidence:"high",reason:"Executive success criteria have not been committed yet.",nextAction:"Configure pilot success criteria before making a continuation or expansion decision."};
++    const c=config.criteria,sc=current.scorecard;
++    const gates={
++      overall:sc.overall>=c.minimumOverallScore,
++      adoption:sc.adoption>=c.minimumAdoptionScore,
++      operating:sc.operating>=c.minimumOperatingScore,
++      value:sc.value>=c.minimumValueScore,
++      attention:current.current.highAttentionLocations<=c.maximumHighAttentionLocations
++    };
++    const passed=Object.values(gates).filter(Boolean).length;
++    const age=current.program.ageDays,duration=current.program.pilotDays;
++    let decision,reason;
++    if(passed===5&&age>=Math.min(7,Math.floor(duration*.25))){decision="EXPAND";reason="Committed executive success gates are currently satisfied with sufficient pilot observation time.";}
++    else if(passed>=3){decision="CONTINUE";reason="The pilot is showing material progress, but not every committed success gate is satisfied yet.";}
++    else {decision="INTERVENE";reason="Multiple committed success gates are currently below target and require leadership intervention before expansion.";}
++    if(age>=duration&&passed<5){decision="INTERVENE";reason="The configured pilot period has reached its target duration without satisfying all executive success gates.";}
++    return {decision,confidence:current.program.checkpointCount>=2?"high":"moderate",reason,gates,passed,total:5,nextAction:decision==="EXPAND"?"Prepare the expansion decision packet and confirm rollout scope.":decision==="CONTINUE"?"Continue the pilot and capture the next evidence checkpoint.":"Review stalled adoption and location exceptions before the next checkpoint."};
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const program=await this.program(organizationId);
++    if(!program)return {version:"48.10.0",status:"baseline-required",headline:"Capture the V48 pilot baseline first.",program:null};
++    const current=await this.pilotValueScorecardService.snapshot(organizationId,allowedLocationIds);
++    const locations=this.locationEvidence(program,current),config=program.proofProgram||null,recommendation=this.recommendation(current,config,locations);
++    const exceptions=locations.filter(x=>x.attentionLevel!=="healthy"||(x.targetsMeasured&&x.targetsMet<x.targetsMeasured)).map(x=>({
++      locationId:x.locationId,locationName:x.locationName,owner:x.owner,
++      type:x.attentionLevel!=="healthy"?"operating-attention":"success-target-gap",
++      reason:x.attentionLevel!=="healthy"?`${x.attentionLevel} leadership attention state`:`${x.targetsMet}/${x.targetsMeasured} configured location targets currently met`
++    }));
++    return {
++      version:"48.10.0",generatedAt:this.now(),status:config?"proof-program-active":"criteria-required",
++      headline:config?`${recommendation.decision}: ${recommendation.reason}`:"Baseline is active. Commit executive success criteria before evaluating the pilot.",
++      program:{id:program.id,name:program.name,sponsor:program.sponsor,pilotDays:program.pilotDays,ageDays:current.program.ageDays,configured:!!config},
++      successCriteria:config?.criteria||null,
++      locationObjectives:locations,trend:this.trend(program,current),
++      valueLedger:{verifiedRealizedImpactDollars:current.evidence.verifiedRealizedImpactDollars,definition:current.evidence.attribution.verifiedValueDefinition,checkpointCount:current.program.checkpointCount},
++      scorecard:current.scorecard,recommendation,exceptions,
++      policy:{humanCommercialDecisionRequired:true,automaticExpansion:false,automaticAttribution:false}
++    };
++  }
++}
++module.exports=PilotProofProgramService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="48.5.0">
++  <meta name="blue-current-build" content="48.10.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -211,6 +211,17 @@
+       <div id="pvsScores" class="v432-kpis"></div>
+       <div id="pvsPortfolio" class="v432-kpis"></div>
+       <div id="pvsEvidence" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="pilotProofProgram">
++      <header><div><small>V48.06–V48.10 · Pilot Proof Program</small><strong>Turn pilot telemetry into a committed executive success plan—and a defensible continue, intervene, or expand decision.</strong><span>Success gates are committed before the decision. Verified value remains limited to measured action outcomes; observed operating movement remains separately labeled.</span></div><button id="pppRefresh" type="button">Refresh proof program</button></header>
++      <div class="v432-kpis"><article><small>Recommendation</small><strong id="pppDecision">CONFIGURE</strong></article><article><small>Overall score</small><strong id="pppOverall">—</strong></article><article><small>Verified value</small><strong id="pppValue">$0</strong></article><article><small>Exceptions</small><strong id="pppExceptions">0</strong></article></div>
++      <div class="v4316-answer" id="pppHeadline">Commit executive success criteria before evaluating the pilot.</div>
++      <div class="v4316-actions"><input id="pppOwner" class="v4312-input" placeholder="Default location objective owner"><input id="pppMinOverall" class="v4312-input" type="number" min="0" max="100" value="65" placeholder="Minimum overall score"><button id="pppConfigure" type="button">Commit success criteria</button></div>
++      <p><strong id="pppProgram">Pilot baseline required.</strong></p>
++      <div id="pppGates" class="v432-kpis"></div>
++      <div id="pppLocations" class="v432-list"></div>
++      <div id="pppTrend" class="v432-list"></div>
++      <div id="pppExceptionList" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8721,6 +8732,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="multiLocationPerformance" data-src="js/modules/multiLocationPerformanceCenter.js?v=47.35.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardEngine.js?v=48.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotValueScorecard" data-src="js/modules/pilotValueScorecardCenter.js?v=48.5.0"></script>
+-<script src="js/startup-loader.js?v=48.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramEngine.js?v=48.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramCenter.js?v=48.10.0"></script>
++<script src="js/startup-loader.js?v=48.10.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1230,6 +1230,7 @@
+ const managerOperatingRhythmModule = startupRegistry.register("managerOperatingRhythm", shouldInitializeCenter("managerOperatingRhythm") ? window.createBlueCurrentManagerOperatingRhythmCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "predictiveShiftControl"]);
+ const multiLocationPerformanceModule = startupRegistry.register("multiLocationPerformance", shouldInitializeCenter("multiLocationPerformance") ? window.createBlueCurrentMultiLocationPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managerOperatingRhythm"]);
+ const pilotValueScorecardModule = startupRegistry.register("pilotValueScorecard", shouldInitializeCenter("pilotValueScorecard") ? window.createBlueCurrentPilotValueScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "multiLocationPerformance"]);
++const pilotProofProgramModule = startupRegistry.register("pilotProofProgram", shouldInitializeCenter("pilotProofProgram") ? window.createBlueCurrentPilotProofProgramCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotValueScorecard"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V48.5.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V48.10.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/pilotProofProgramEngine.js
++++ b/client/js/modules/pilotProofProgramEngine.js
+@@ -0,0 +1,8 @@
++(function(global){"use strict";
++class BlueCurrentPilotProofProgramEngine{
++ constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++ token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++ async snapshot(){const r=await fetch("/api/pilot-proof-program",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot proof program failed (${r.status})`);this.appState?.update?.({pilotProofProgram:d});return d;}
++ async configure(payload={}){const r=await fetch("/api/pilot-proof-program/configure",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Success criteria failed (${r.status})`);this.eventBus?.emit?.("pilot-proof:configured",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotProofProgramEngine;if(global)global.BlueCurrentPilotProofProgramEngine=BlueCurrentPilotProofProgramEngine;})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/pilotProofProgramCenter.js
++++ b/client/js/modules/pilotProofProgramCenter.js
+@@ -0,0 +1,11 @@
++(function(){"use strict";
++function createBlueCurrentPilotProofProgramCenterModule(eventBus,appState){const root=document.getElementById("pilotProofProgram");if(!root||!window.BlueCurrentPilotProofProgramEngine)return null;const e=new window.BlueCurrentPilotProofProgramEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c])),money=n=>`$${Number(n||0).toLocaleString()}`;
++function render(s){$("pppDecision").textContent=s.recommendation?.decision||"CONFIGURE";$("pppOverall").textContent=s.scorecard?.overall??"—";$("pppValue").textContent=money(s.valueLedger?.verifiedRealizedImpactDollars||0);$("pppExceptions").textContent=(s.exceptions||[]).length;$("pppHeadline").textContent=s.headline||"Pilot proof program loading…";$("pppProgram").textContent=s.program?`${s.program.name} · ${s.program.sponsor} · Day ${s.program.ageDays}/${s.program.pilotDays}`:"Pilot baseline required.";
++$("pppGates").innerHTML=s.recommendation?.gates?Object.entries(s.recommendation.gates).map(([k,v])=>`<article><small>${esc(k)}</small><strong>${v?"PASS":"OPEN"}</strong></article>`).join(""):"";
++$("pppLocations").innerHTML=(s.locationObjectives||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.owner||"Unassigned")}</strong><p>${esc(x.objective)}</p><div class="hpc-meta"><span>Readiness ${x.readiness.current}${x.readiness.target!=null?` / ${x.readiness.target}`:""}</span><span>Rhythm ${x.rhythm.current}%${x.rhythm.target!=null?` / ${x.rhythm.target}%`:""}</span><span>Leakage ${money(x.leakage.current)}</span><span>Reduction ${x.leakage.reductionPercent}%</span><span>Targets ${x.targetsMet}/${x.targetsMeasured}</span></div></article>`).join("")||"<article><span>No location objectives available.</span></article>";
++$("pppTrend").innerHTML=(s.trend||[]).map(x=>`<article><strong>${esc(x.label)}</strong><span>Readiness ${x.readiness} · Rhythm ${x.rhythm}% · Leakage ${money(x.leakage)} · Verified ${money(x.verifiedValue)}${x.overall==null?"":` · Score ${x.overall}`}</span></article>`).join("");
++$("pppExceptionList").innerHTML=(s.exceptions||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.type)}</strong><span>${esc(x.reason)} · Owner ${esc(x.owner||"Unassigned")}</span></article>`).join("")||"<article><strong>No current proof-program exceptions.</strong></article>";}
++async function load(){try{render(await e.snapshot());}catch(err){$("pppHeadline").textContent=err.message;}}
++$("pppRefresh")?.addEventListener("click",load);$("pppConfigure")?.addEventListener("click",async()=>{try{await e.configure({defaultOwner:$("pppOwner").value||"Executive Sponsor",minimumOverallScore:Number($("pppMinOverall").value||65),minimumAdoptionScore:65,minimumOperatingScore:65,minimumValueScore:50,maximumHighAttentionLocations:0});await load();}catch(err){$("pppHeadline").textContent=err.message;}});
++["pilot-value:started","pilot-value:checkpoint","pilot-value:updated","multi-location-performance:updated","auth:restored"].forEach(evt=>eventBus?.on?.(evt,load));load();return{engine:e,load};}
++window.createBlueCurrentPilotProofProgramCenterModule=createBlueCurrentPilotProofProgramCenterModule;})();--- a/scripts/maintenance/test-v48.10-pilot-proof-program.js
++++ b/scripts/maintenance/test-v48.10-pilot-proof-program.js
+@@ -0,0 +1,12 @@
++"use strict";
++const assert=require("assert"),Service=require("../../server/services/pilotProofProgramService");
++(async()=>{
++ const state={pilotValuePrograms:[{id:"p1",organizationId:"org",status:"active",name:"Pilot",sponsor:"Owner",pilotDays:30,createdAt:new Date(Date.now()-10*86400000).toISOString(),baseline:{capturedAt:new Date().toISOString(),metrics:{averageReadiness:80,averageRhythmScore:50,modeledLeakageDollars:4000},locations:[{locationId:"a",locationName:"A",readinessScore:80,rhythmScore:50,modeledLeakageDollars:3000},{locationId:"b",locationName:"B",readinessScore:80,rhythmScore:50,modeledLeakageDollars:1000}]},checkpoints:[]}]};
++ const current={generatedAt:new Date().toISOString(),program:{ageDays:10,pilotDays:30,checkpointCount:2},current:{averageReadiness:87,averageRhythmScore:75,modeledLeakageDollars:3000,highAttentionLocations:0},evidence:{verifiedRealizedImpactDollars:1200,attribution:{verifiedValueDefinition:"measured outcomes"}},scorecard:{overall:78,adoption:80,operating:82,value:72},portfolio:{locations:[{locationId:"a",locationName:"A",readinessScore:88,rhythmScore:76,modeledLeakageDollars:2100,activeActions:0,attentionLevel:"healthy"},{locationId:"b",locationName:"B",readinessScore:86,rhythmScore:74,modeledLeakageDollars:900,activeActions:0,attentionLevel:"healthy"}]}};
++ const audit=[],events=[],svc=new Service({read:async()=>state,mutate:async fn=>fn(state)},{record:async x=>audit.push(x)},{publish:(n,p)=>events.push([n,p])},{activeProgram:async()=>state.pilotValuePrograms[0],snapshot:async()=>current});
++ let snap=await svc.snapshot("org",["*"]);assert.equal(snap.status,"criteria-required");assert.equal(snap.recommendation.decision,"CONFIGURE");
++ await svc.configure("org",["*"],{defaultOwner:"Area Director",minimumOverallScore:65,minimumAdoptionScore:65,minimumOperatingScore:65,minimumValueScore:50,maximumHighAttentionLocations:0},"Tester");
++ snap=await svc.snapshot("org",["*"]);
++ assert.equal(snap.status,"proof-program-active");assert.equal(snap.recommendation.decision,"EXPAND");assert.equal(snap.locationObjectives.length,2);assert.equal(snap.valueLedger.verifiedRealizedImpactDollars,1200);assert.equal(snap.policy.automaticExpansion,false);assert.equal(snap.policy.automaticAttribution,false);assert.equal(audit.length,1);assert.equal(events[0][0],"pilot-proof:configured");
++ console.log(JSON.stringify({ok:true,version:"48.10.0",criteriaCommitted:true,locationObjectives:2,recommendation:snap.recommendation.decision,verifiedValue:snap.valueLedger.verifiedRealizedImpactDollars,automaticExpansion:false,automaticAttribution:false},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V48.10.0-RELEASE.md
++++ b/V48.10.0-RELEASE.md
+@@ -0,0 +1,88 @@
++# BLUE CURRENT V48.10.0 — PILOT PROOF PROGRAM
++
++## V48.06–V48.10
++
++This wave converts the V48.5 Pilot Value Scorecard into a structured executive proof program.
++
++### V48.06 — Executive Success Criteria
++Success gates are committed before a commercial recommendation:
++- minimum overall score
++- minimum adoption score
++- minimum operating score
++- minimum value-evidence score
++- maximum high-attention locations
++
++### V48.07 — Per-Location Pilot Objectives
++Every authorized pilot location receives:
++- objective
++- accountable owner
++- readiness target
++- Manager Operating Rhythm target
++- modeled leakage-reduction target
++
++### V48.08 — Trend + Value Ledger
++The proof program presents baseline → checkpoint(s) → current state for:
++- readiness
++- operating rhythm
++- modeled leakage
++- verified realized value
++- overall score
++
++Verified value remains limited to measured completed-action outcomes.
++
++### V48.09 — Pilot Exceptions
++Locations enter the proof-program exception queue when:
++- operating attention is Watch/High/Critical, or
++- configured location targets are not currently satisfied.
++
++### V48.10 — Commercial Recommendation
++Blue Current produces one of four states:
++- CONFIGURE
++- INTERVENE
++- CONTINUE
++- EXPAND
++
++The recommendation is evaluated against the success gates committed by leadership. It never automatically expands a pilot.
++
++Policy:
++- `humanCommercialDecisionRequired: true`
++- `automaticExpansion: false`
++- `automaticAttribution: false`
++
++## Current authenticated integration result
++
++Against an isolated copy of the current Chefs runtime:
++- authorized locations: 5
++- proof program: active
++- current recommendation: INTERVENE
++- current exceptions: 5
++- verified realized value: $0
++- automatic expansion: false
++
++This is the correct conservative result immediately after establishing the pilot baseline and success criteria: there is not yet enough measured evidence to justify expansion.
++
++## API
++GET `/api/pilot-proof-program`
++
++POST `/api/pilot-proof-program/configure`
++
++## Validation
++- focused V48.10 proof-program test passed
++- success-criteria persistence passed
++- per-location objectives passed
++- trend construction passed
++- verified-value ledger passed
++- exception generation passed
++- EXPAND path passed under fully satisfied synthetic evidence
++- authenticated real-data lifecycle passed
++- real-data initial recommendation correctly returned INTERVENE
++- automatic expansion remained false
++- automatic attribution remained false
++- authoritative database unchanged
++- npm validation passed:
++  - 869 JavaScript files
++  - 738 client scripts
++  - 5,504 unique HTML ids
++
++## Next
++V48.11–V48.15 should build the Executive Pilot Review Packet: a decision-ready, exportable narrative that explains the baseline, progress, verified value, location exceptions, success-gate status, and the evidence behind the recommendation.
+--- a/README-APPLY-V48.10.0.md
++++ b/README-APPLY-V48.10.0.md
+@@ -0,0 +1,27 @@
++# APPLY BLUE CURRENT V48.10.0
++
++Baseline: exact V48.5.0 repository.
++
++Extract `BLUE-CURRENT-V48.10.0-PATCH.zip` into the repository root, preserving directories and replacing matching files.
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v48.10-pilot-proof-program.js
++npm run start
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected version: `48.10.0`.
++
++Then `Ctrl+F5`.
++
++The new **Pilot Proof Program** appears directly below the Pilot Value Scorecard.
++
++If the pilot baseline has not been captured yet, capture it in Pilot Value Scorecard first. Then use **Commit success criteria** in Pilot Proof Program.
++
++```powershell
++git add -A
++git commit -m "V48.10.0 add pilot proof program"
++git push origin live-service-timeline
++```

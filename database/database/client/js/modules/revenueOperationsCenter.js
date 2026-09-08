@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Revenue Operations Center v35.4.3'));

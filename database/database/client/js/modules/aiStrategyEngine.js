@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('AI Strategy Engine v35.2.3'));

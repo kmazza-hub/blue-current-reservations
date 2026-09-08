@@ -1,0 +1,66 @@
+/* V100.2.27 — Host Stand Special Note Pill Polish
+   Aim small, miss small: priority pills always fully contain and center their label. */
+
+/* The queue's information column may render a max-content pill; do not clip it. */
+#host-stand #waitlistQueue .queue-item > div,
+#host-stand #arrivalQueue .queue-item.arrival > div {
+  overflow:visible !important;
+}
+
+/* One note, one pill. The surface grows around the complete label. */
+#host-stand #waitlistQueue .bc-ready-priority-v100-2-17,
+#host-stand #waitlistQueue .bc-special-badge-v100-2-17,
+#host-stand #arrivalQueue .bc-ready-priority-v100-2-17,
+#host-stand #arrivalQueue .bc-special-badge-v100-2-17 {
+  display:inline-flex !important;
+  flex:0 0 auto !important;
+  width:max-content !important;
+  min-width:max-content !important;
+  max-width:none !important;
+  min-height:28px !important;
+  margin:6px 0 0 !important;
+  padding:5px 11px !important;
+  box-sizing:border-box !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  border-radius:999px !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+  color:#5c3f00 !important;
+  background:#fff0c7 !important;
+  font-size:.78rem !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  text-align:center !important;
+}
+
+#host-stand #waitlistQueue .bc-special-badge-v100-2-17::before,
+#host-stand #arrivalQueue .bc-special-badge-v100-2-17::before {
+  flex:0 0 auto !important;
+  margin:0 !important;
+  line-height:1 !important;
+}
+
+/* Keep enough room for common operational notes before they can meet the Seat button. */
+#host-stand #waitlistQueue .queue-item {
+  grid-template-columns:46px minmax(118px,1fr) 92px !important;
+}
+
+/* On narrower iPad widths, retain a complete pill and slightly tighten the action column. */
+@media (max-width:1100px) {
+  #host-stand #waitlistQueue .queue-item {
+    grid-template-columns:42px minmax(108px,1fr) 84px !important;
+    gap:10px !important;
+  }
+  #host-stand #waitlistQueue .queue-item > button {
+    min-width:82px !important;
+    padding-inline:10px !important;
+  }
+  #host-stand #waitlistQueue .bc-ready-priority-v100-2-17,
+  #host-stand #waitlistQueue .bc-special-badge-v100-2-17 {
+    padding:5px 10px !important;
+    font-size:.75rem !important;
+  }
+}

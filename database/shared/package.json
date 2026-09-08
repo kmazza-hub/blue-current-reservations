@@ -1,0 +1,13 @@
+{
+  "name": "blue-current-cloud",
+  "version": "98.0.0",
+  "private": true,
+  "description": "Blue Current Hospitality OS \u2014 pilot learning to controlled product decisions",
+  "scripts": {
+    "start": "node server/server.js",
+    "check": "node scripts/validate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

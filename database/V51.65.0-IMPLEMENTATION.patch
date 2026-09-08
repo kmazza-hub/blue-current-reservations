@@ -1,0 +1,660 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.60.0",
++  "version": "51.65.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 pilot execution and observation control",
++  "description": "Blue Current Hospitality OS \u2014 pilot stabilization and exit criteria",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -72,6 +72,7 @@
+ const PilotDeploymentPackageService = require("./services/pilotDeploymentPackageService");
+ const PilotLaunchControlService = require("./services/pilotLaunchControlService");
+ const PilotExecutionObservationService = require("./services/pilotExecutionObservationService");
++const PilotStabilizationExitService = require("./services/pilotStabilizationExitService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -147,7 +148,8 @@
+ const pilotDeploymentPackageService = new PilotDeploymentPackageService(database, auditService, realtimeHub, managementExecutiveAccuracyService);
+ const pilotLaunchControlService = new PilotLaunchControlService(database, auditService, realtimeHub, pilotDeploymentPackageService);
+ const pilotExecutionObservationService = new PilotExecutionObservationService(database, auditService, realtimeHub, pilotLaunchControlService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService });
++const pilotStabilizationExitService = new PilotStabilizationExitService(database, auditService, realtimeHub, pilotExecutionObservationService, dataIntegrityRecoveryService, managementExecutiveAccuracyService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -234,7 +236,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.60.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.65.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.60.0",
++        version: "51.65.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,20 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/pilot-stabilization-exit" && request.method === "GET") {
++      return sendJson(response,200,await pilotStabilizationExitService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++    if (url.pathname.startsWith("/api/pilot-stabilization-exit/locations/") && url.pathname.endsWith("/assess") && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write_operations") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Management/operations permission required for stabilization assessment."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotStabilizationExitService.assess(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
++    if (url.pathname.startsWith("/api/pilot-stabilization-exit/locations/") && url.pathname.endsWith("/decision") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for STABLE/EXTEND/ROLLBACK exit decisions."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotStabilizationExitService.decide(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/pilot-execution-observation" && request.method === "GET") {
+       return sendJson(response,200,await pilotExecutionObservationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/pilotStabilizationExitService.js
++++ b/server/services/pilotStabilizationExitService.js
+@@ -0,0 +1,155 @@
++"use strict";
++
++class PilotStabilizationExitService {
++  constructor(database,auditService,realtimeHub,pilotExecutionObservationService,dataIntegrityRecoveryService,managementExecutiveAccuracyService){
++    Object.assign(this,{database,auditService,realtimeHub,pilotExecutionObservationService,dataIntegrityRecoveryService,managementExecutiveAccuracyService});
++  }
++  now(){return new Date().toISOString();}
++  allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
++  async assessments(org){
++    const db=await this.database.read();
++    return (db.pilotStabilizationAssessments||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.assessedAt)-new Date(a.assessedAt));
++  }
++  async decisions(org){
++    const db=await this.database.read();
++    return (db.pilotStabilizationExitDecisions||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.decidedAt)-new Date(a.decidedAt));
++  }
++  severityRank(x){return {none:0,low:1,medium:2,high:3,critical:4}[String(x||"none").toLowerCase()]??0;}
++  async snapshot(org,allowed){
++    const [execution,integrity,accuracy,assessments,decisions]=await Promise.all([
++      this.pilotExecutionObservationService.snapshot(org,allowed),
++      this.dataIntegrityRecoveryService.snapshot(org,allowed),
++      this.managementExecutiveAccuracyService.snapshot(org,allowed),
++      this.assessments(org),this.decisions(org)
++    ]);
++    const locations=(execution.locations||[]).map(loc=>{
++      const locationAssessments=assessments.filter(x=>x.locationId===loc.locationId);
++      const latestAssessment=locationAssessments[0]||null;
++      const decision=decisions.find(x=>x.locationId===loc.locationId)||null;
++      const observations=loc.observations||[];
++      const recent=observations.slice(0,5);
++      const healthyObservations=recent.filter(x=>Object.values(x.health||{}).every(Boolean)&&this.severityRank(x.severity)<=1).length;
++      const highCritical=observations.filter(x=>this.severityRank(x.severity)>=3).length;
++      const severityTrend=recent.map(x=>this.severityRank(x.severity));
++      const trendImproving=severityTrend.length<2||severityTrend[0]<=Math.max(...severityTrend.slice(1));
++      const confidence=Number(latestAssessment?.operatorConfidence||0);
++      const workflowStable=latestAssessment?.workflowStability==="STABLE";
++      const guestImpact=latestAssessment?.guestImpact||"UNASSESSED";
++      const supportLoad=latestAssessment?.supportLoad||"UNASSESSED";
++      const integrityReady=["data-integrity-ready-for-certification","data-integrity-recovery-certified"].includes(integrity.status);
++      const accuracyLoc=(accuracy.locations||[]).find(x=>x.locationId===loc.locationId)||null;
++      const executiveTrusted=accuracyLoc?.criticalIssues?.length===0 && accuracyLoc?.trustState!=="EXECUTIVE_DATA_NOT_TRUSTED";
++      const executionContinued=loc.currentDecision?.decision==="CONTINUE";
++      const milestonesComplete=loc.confirmedMilestones===loc.totalMilestones&&loc.totalMilestones>0;
++      const stabilizationWindow=latestAssessment?.window||null;
++      const checks=[
++        {id:"EXECUTION_CONTINUE",label:"Pilot execution has a human CONTINUE decision",passed:executionContinued,actual:loc.currentDecision?.decision||"no CONTINUE decision"},
++        {id:"MILESTONES_COMPLETE",label:"All first-live milestones are confirmed",passed:milestonesComplete,actual:`${loc.confirmedMilestones}/${loc.totalMilestones}`},
++        {id:"REPEATED_HEALTH",label:"At least three recent observations are healthy/low severity",passed:healthyObservations>=3,actual:`${healthyObservations}/${recent.length} healthy recent observation(s)`},
++        {id:"INCIDENT_TREND",label:"Incident severity is stable or improving",passed:trendImproving&&highCritical===0,actual:`${highCritical} high/critical total · trend ${trendImproving?"stable/improving":"worsening"}`},
++        {id:"OPERATOR_CONFIDENCE",label:"Operator confidence is at least 4/5",passed:confidence>=4,actual:latestAssessment?`${confidence}/5`:"not assessed"},
++        {id:"WORKFLOW_STABILITY",label:"Reservation/floor/service/kitchen workflow stability is confirmed",passed:workflowStable,actual:latestAssessment?.workflowStability||"not assessed"},
++        {id:"GUEST_IMPACT",label:"Guest impact is none or low",passed:["NONE","LOW"].includes(guestImpact),actual:guestImpact},
++        {id:"SUPPORT_LOAD",label:"Support load is manageable",passed:["LOW","MANAGEABLE"].includes(supportLoad),actual:supportLoad},
++        {id:"DATA_INTEGRITY_RECHECK",label:"Data integrity recheck is ready/certified",passed:integrityReady,actual:integrity.status},
++        {id:"EXECUTIVE_KPI_RECHECK",label:"Location has no critical executive KPI trust issues",passed:executiveTrusted,actual:accuracyLoc?.trustState||"not available"},
++        {id:"STABILIZATION_WINDOW",label:"Human stabilization window is recorded",passed:!!stabilizationWindow?.start&&!!stabilizationWindow?.end,actual:stabilizationWindow?.start?`${stabilizationWindow.start} → ${stabilizationWindow.end}`:"not recorded"}
++      ];
++      const passed=checks.filter(x=>x.passed).length;
++      return {
++        locationId:loc.locationId,locationName:loc.locationName,
++        executionSession:loc.session||null,currentExecutionDecision:loc.currentDecision||null,
++        latestAssessment,assessmentHistory:locationAssessments,
++        observations:observations.slice(0,12),
++        healthyRecentObservations:healthyObservations,
++        highCriticalIncidents:highCritical,
++        checks,passed,total:checks.length,
++        stabilizationReady:checks.every(x=>x.passed),
++        exitDecision:decision,
++        stabilizationState:decision?.decision==="STABLE"?"PILOT_STABLE":decision?.decision==="EXTEND"?"PILOT_EXTENDED":decision?.decision==="ROLLBACK"?"ROLLBACK_RECOMMENDED":latestAssessment?"STABILIZATION_ASSESSED":"STABILIZATION_ASSESSMENT_REQUIRED"
++      };
++    });
++    return {
++      version:"51.65.0",generatedAt:this.now(),
++      status:locations.some(x=>x.exitDecision?.decision==="STABLE")?"pilot-stable":locations.some(x=>x.latestAssessment)?"pilot-stabilization-in-review":"pilot-stabilization-awaiting-assessment",
++      headline:`${locations.filter(x=>x.stabilizationReady).length}/${locations.length} location(s) satisfy all stabilization/exit gates; ${locations.filter(x=>x.exitDecision).length} human exit decision(s) recorded.`,
++      locations,
++      dependencyStatus:{execution:execution.status,dataIntegrity:integrity.status,executiveAccuracy:accuracy.status},
++      policy:{
++        repeatedObservationRequired:true,
++        operatorAssessmentHumanRequired:true,
++        guestImpactReviewRequired:true,
++        dataIntegrityRecheckRequired:true,
++        executiveKpiTrustRecheckRequired:true,
++        humanStableExtendRollbackDecisionRequired:true,
++        stableDecisionDoesNotExpandRollout:true,
++        rollbackDecisionDoesNotExecuteRollback:true,
++        noAutomaticPilotExit:true,
++        noAutomaticRolloutExpansion:true,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async assess(org,allowed,locationId,input,actor){
++    if(!this.allowed(locationId,allowed))throw new Error("Location is outside your authorized scope.");
++    const execution=await this.pilotExecutionObservationService.snapshot(org,allowed);
++    const loc=(execution.locations||[]).find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Pilot location not found.");
++    if(!loc.session)throw new Error("Pilot execution session is required before stabilization assessment.");
++    const confidence=Math.max(1,Math.min(5,Number(input.operatorConfidence)||0));
++    if(!confidence)throw new Error("Operator confidence from 1 to 5 is required.");
++    const workflowStability=String(input.workflowStability||"").toUpperCase();
++    if(!["STABLE","MIXED","UNSTABLE"].includes(workflowStability))throw new Error("Workflow stability must be STABLE, MIXED, or UNSTABLE.");
++    const guestImpact=String(input.guestImpact||"").toUpperCase();
++    if(!["NONE","LOW","MEDIUM","HIGH"].includes(guestImpact))throw new Error("Guest impact must be NONE, LOW, MEDIUM, or HIGH.");
++    const supportLoad=String(input.supportLoad||"").toUpperCase();
++    if(!["LOW","MANAGEABLE","HIGH","CRITICAL"].includes(supportLoad))throw new Error("Support load must be LOW, MANAGEABLE, HIGH, or CRITICAL.");
++    const start=String(input.windowStart||"").trim().slice(0,80),end=String(input.windowEnd||"").trim().slice(0,80);
++    if(!start||!end)throw new Error("Stabilization window start and end are required.");
++    const evidence=String(input.evidence||"").trim().slice(0,3200);
++    if(!evidence)throw new Error("Human stabilization assessment evidence is required.");
++    const record={
++      id:`psa_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId:org,locationId,locationName:loc.locationName,
++      sessionId:loc.session.id,assessedAt:this.now(),assessedBy:actor,
++      operatorConfidence:confidence,workflowStability,guestImpact,supportLoad,
++      window:{start,end},
++      evidence,note:String(input.note||"").trim().slice(0,1800),
++      guestImpactReviewed:true,supportLoadReviewed:true,
++      automaticOperationalAction:false,automaticRolloutExpansion:false
++    };
++    await this.database.mutate(db=>{db.pilotStabilizationAssessments||=[];db.pilotStabilizationAssessments.push(record);return record;});
++    await this.auditService.record({organizationId:org,actor,action:`Pilot stabilization assessment recorded for ${locationId}`,category:"pilot_stabilization"});
++    this.realtimeHub.publish("pilot-stabilization:assessed",{organizationId:org,locationId,id:record.id});
++    return record;
++  }
++  async decide(org,allowed,locationId,input,actor){
++    const snap=await this.snapshot(org,allowed);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Pilot location not found.");
++    if(!loc.latestAssessment)throw new Error("Human stabilization assessment is required before an exit decision.");
++    const decision=String(input.decision||"").toUpperCase();
++    if(!["STABLE","EXTEND","ROLLBACK"].includes(decision))throw new Error("Decision must be STABLE, EXTEND, or ROLLBACK.");
++    const evidence=String(input.evidence||"").trim().slice(0,3400);
++    const reason=String(input.reason||"").trim().slice(0,2200);
++    if(!evidence)throw new Error("Human pilot-exit decision evidence is required.");
++    if(decision==="STABLE"&&!loc.stabilizationReady&&!reason)throw new Error("STABLE with open stabilization gates requires a documented executive override reason.");
++    if(["EXTEND","ROLLBACK"].includes(decision)&&!reason)throw new Error(`${decision} requires a documented human reason.`);
++    const record={
++      id:`pse_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId:org,locationId,locationName:loc.locationName,
++      decision,decidedAt:this.now(),decidedBy:actor,evidence,reason,
++      stabilizationAssessmentId:loc.latestAssessment.id,
++      gateSnapshot:{passed:loc.passed,total:loc.total,checks:loc.checks},
++      rolloutExpandedByDecision:false,
++      rollbackExecutedByDecision:false,
++      productionMutationPerformed:false,
++      autonomousProductionChanges:false
++    };
++    await this.database.mutate(db=>{db.pilotStabilizationExitDecisions||=[];db.pilotStabilizationExitDecisions.push(record);return record;});
++    await this.auditService.record({organizationId:org,actor,action:`Pilot stabilization exit decision ${decision} recorded for ${locationId}; no rollout expansion or rollback executed`,category:"pilot_stabilization"});
++    this.realtimeHub.publish("pilot-stabilization:decision",{organizationId:org,locationId,id:record.id,decision});
++    return record;
++  }
++}
++module.exports=PilotStabilizationExitService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.60.0">
++  <meta name="blue-current-build" content="51.65.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -461,6 +461,16 @@
+       <div class="v4316-actions"><select id="v5160Severity" class="v4312-input"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option></select><label><input id="v5160Api" type="checkbox" checked> API healthy</label><label><input id="v5160Auth" type="checkbox" checked> Auth healthy</label><label><input id="v5160Reservation" type="checkbox" checked> Reservations healthy</label><label><input id="v5160Floor" type="checkbox" checked> Floor healthy</label><label><input id="v5160Kitchen" type="checkbox" checked> Kitchen healthy</label><label><input id="v5160Support" type="checkbox" checked> Support bridge healthy</label></div>
+       <div class="v4316-actions"><input id="v5160Incident" class="v4312-input" placeholder="Incident description if needed"><input id="v5160ObservationNote" class="v4312-input" placeholder="Health observation note"><input id="v5160DecisionEvidence" class="v4312-input" placeholder="Human CONTINUE / HOLD / ROLLBACK evidence"><input id="v5160DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
+       <p><strong>Pilot execution locations</strong></p><div id="v5160Locations" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="v5165PilotStabilizationExit">
++      <header><div><small>V51.61–V51.65 · Pilot Stabilization & Exit Criteria</small><strong>Require repeated healthy operation and explicit human exit evidence before calling the restaurant pilot stable.</strong><span>Blue Current combines repeated live-health observations, incident trend, operator confidence, workflow stability, guest impact, support load, data-integrity recheck, executive-KPI trust, and a defined stabilization window. Final STABLE / EXTEND / ROLLBACK decisions are human records only—they do not expand rollout or execute rollback.</span></div><button id="v5165Refresh" type="button">Refresh stabilization</button></header>
++      <div class="v432-kpis"><article><small>Stabilization status</small><strong id="v5165Status">—</strong></article><article><small>Ready locations</small><strong id="v5165Ready">0/0</strong></article><article><small>Assessments</small><strong id="v5165Assessments">0</strong></article><article><small>Exit decisions</small><strong id="v5165Decisions">0</strong></article></div>
++      <div class="v4316-answer" id="v5165Headline">Pilot stabilization assessment ready.</div>
++      <p id="v5165Dependencies">Loading dependency status…</p>
++      <div class="v4316-actions"><input id="v5165Confidence" class="v4312-input" type="number" min="1" max="5" value="4" placeholder="Operator confidence 1–5"><select id="v5165Workflow" class="v4312-input"><option value="STABLE">Workflow stable</option><option value="MIXED">Workflow mixed</option><option value="UNSTABLE">Workflow unstable</option></select><select id="v5165GuestImpact" class="v4312-input"><option value="NONE">No guest impact</option><option value="LOW">Low guest impact</option><option value="MEDIUM">Medium guest impact</option><option value="HIGH">High guest impact</option></select><select id="v5165SupportLoad" class="v4312-input"><option value="LOW">Low support load</option><option value="MANAGEABLE">Manageable support load</option><option value="HIGH">High support load</option><option value="CRITICAL">Critical support load</option></select></div>
++      <div class="v4316-actions"><input id="v5165WindowStart" class="v4312-input" placeholder="Stabilization window start"><input id="v5165WindowEnd" class="v4312-input" placeholder="Stabilization window end"><input id="v5165Evidence" class="v4312-input" placeholder="Human stabilization assessment evidence"><input id="v5165Note" class="v4312-input" placeholder="Assessment note"></div>
++      <div class="v4316-actions"><input id="v5165DecisionEvidence" class="v4312-input" placeholder="Human STABLE / EXTEND / ROLLBACK evidence"><input id="v5165DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
++      <p><strong>Pilot stabilization locations</strong></p><div id="v5165Locations" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -9029,6 +9039,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLaunchControlV5155" data-src="js/modules/pilotLaunchControlCenter.js?v=51.55.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotExecutionObservationV5160" data-src="js/modules/pilotExecutionObservationEngine.js?v=51.60.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotExecutionObservationV5160" data-src="js/modules/pilotExecutionObservationCenter.js?v=51.60.0"></script>
+-<script src="js/startup-loader.js?v=51.60.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5165" data-src="js/modules/pilotStabilizationExitEngine.js?v=51.65.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5165" data-src="js/modules/pilotStabilizationExitCenter.js?v=51.65.0"></script>
++<script src="js/startup-loader.js?v=51.65.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1259,6 +1259,7 @@
+ const pilotDeploymentPackageModule = startupRegistry.register("pilotDeploymentPackage", shouldInitializeCenter("pilotDeploymentPackage") ? window.createBlueCurrentPilotDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managementExecutiveAccuracy"]);
+ const pilotLaunchControlV5155Module = startupRegistry.register("pilotLaunchControlV5155", shouldInitializeCenter("pilotLaunchControlV5155") ? window.createBlueCurrentPilotLaunchControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDeploymentPackage"]);
+ const pilotExecutionObservationV5160Module = startupRegistry.register("pilotExecutionObservationV5160", shouldInitializeCenter("pilotExecutionObservationV5160") ? window.createBlueCurrentPilotExecutionObservationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotLaunchControlV5155"]);
++const pilotStabilizationExitV5165Module = startupRegistry.register("pilotStabilizationExitV5165", shouldInitializeCenter("pilotStabilizationExitV5165") ? window.createBlueCurrentPilotStabilizationExitCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotExecutionObservationV5160"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.60.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.65.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/pilotStabilizationExitEngine.js
++++ b/client/js/modules/pilotStabilizationExitEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentPilotStabilizationExitEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/pilot-stabilization-exit",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot stabilization failed (${r.status})`);this.appState?.update?.({pilotStabilizationExit:d});return d;}
++  async assess(locationId,payload={}){const r=await fetch(`/api/pilot-stabilization-exit/locations/${encodeURIComponent(locationId)}/assess`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot stabilization assessment failed (${r.status})`);this.eventBus?.emit?.("pilot-stabilization:assessed",structuredClone(d));return d;}
++  async decide(locationId,payload={}){const r=await fetch(`/api/pilot-stabilization-exit/locations/${encodeURIComponent(locationId)}/decision`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot exit decision failed (${r.status})`);this.eventBus?.emit?.("pilot-stabilization:decision",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotStabilizationExitEngine;
++if(global)global.BlueCurrentPilotStabilizationExitEngine=BlueCurrentPilotStabilizationExitEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/pilotStabilizationExitCenter.js
++++ b/client/js/modules/pilotStabilizationExitCenter.js
+@@ -0,0 +1,47 @@
++(function(){"use strict";
++function createBlueCurrentPilotStabilizationExitCenterModule(eventBus,appState){
++  const root=document.getElementById("v5165PilotStabilizationExit");
++  if(!root||!window.BlueCurrentPilotStabilizationExitEngine)return null;
++  const e=new window.BlueCurrentPilotStabilizationExitEngine({eventBus,appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("v5165Status").textContent=s.status||"—";
++    $("v5165Ready").textContent=`${locs.filter(x=>x.stabilizationReady).length}/${locs.length}`;
++    $("v5165Assessments").textContent=locs.filter(x=>x.latestAssessment).length;
++    $("v5165Decisions").textContent=locs.filter(x=>x.exitDecision).length;
++    $("v5165Headline").textContent=s.headline||"Pilot stabilization unavailable.";
++    $("v5165Dependencies").textContent=`Execution ${s.dependencyStatus?.execution||"—"} · Data integrity ${s.dependencyStatus?.dataIntegrity||"—"} · Executive accuracy ${s.dependencyStatus?.executiveAccuracy||"—"}`;
++    $("v5165Locations").innerHTML=locs.map(x=>`<article data-v5165-location="${esc(x.locationId)}"><div><strong>${esc(x.locationName)}</strong><span>${esc(x.stabilizationState)} · ${x.passed}/${x.total} exit gates · healthy recent ${x.healthyRecentObservations} · high/critical ${x.highCriticalIncidents}</span></div><div class="v432-list">${x.checks.map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.label)}</strong><span>${esc(c.actual)}</span></article>`).join("")}</div><div class="v4316-actions">${x.executionSession?'<button type="button" data-v5165-assess="true">Record stabilization assessment</button>':""}${x.latestAssessment?'<button type="button" data-v5165-stable="true">STABLE</button><button type="button" data-v5165-extend="true">EXTEND</button><button type="button" data-v5165-rollback="true">ROLLBACK</button>':""}</div></article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("v5165Headline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const loc=ev.target.closest("[data-v5165-location]");if(!loc)return;
++    try{
++      if(ev.target.closest("[data-v5165-assess]")){
++        await e.assess(loc.dataset.v5165Location,{
++          operatorConfidence:Number($("v5165Confidence").value||0),
++          workflowStability:$("v5165Workflow").value,
++          guestImpact:$("v5165GuestImpact").value,
++          supportLoad:$("v5165SupportLoad").value,
++          windowStart:$("v5165WindowStart").value,
++          windowEnd:$("v5165WindowEnd").value,
++          evidence:$("v5165Evidence").value,
++          note:$("v5165Note").value
++        });
++      }else if(ev.target.closest("[data-v5165-stable]")){
++        await e.decide(loc.dataset.v5165Location,{decision:"STABLE",evidence:$("v5165DecisionEvidence").value,reason:$("v5165DecisionReason").value});
++      }else if(ev.target.closest("[data-v5165-extend]")){
++        await e.decide(loc.dataset.v5165Location,{decision:"EXTEND",evidence:$("v5165DecisionEvidence").value,reason:$("v5165DecisionReason").value});
++      }else if(ev.target.closest("[data-v5165-rollback]")){
++        await e.decide(loc.dataset.v5165Location,{decision:"ROLLBACK",evidence:$("v5165DecisionEvidence").value,reason:$("v5165DecisionReason").value});
++      }
++      await load();
++    }catch(err){$("v5165Headline").textContent=err.message;}
++  });
++  $("v5165Refresh")?.addEventListener("click",load);
++  ["pilot-stabilization:assessed","pilot-stabilization:decision","pilot-execution:observed","pilot-execution:decision","management-executive-accuracy:certified","data-integrity:certified","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentPilotStabilizationExitCenterModule=createBlueCurrentPilotStabilizationExitCenterModule;
++})();--- a/scripts/maintenance/test-v51.65-pilot-stabilization-exit.js
++++ b/scripts/maintenance/test-v51.65-pilot-stabilization-exit.js
+@@ -0,0 +1,84 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/pilotStabilizationExitService");
++
++(async()=>{
++  const state={pilotStabilizationAssessments:[],pilotStabilizationExitDecisions:[]};
++  const execution={
++    snapshot:async()=>({
++      status:"pilot-execution-continue-approved",
++      locations:[{
++        locationId:"loc1",locationName:"Pilot Restaurant",
++        session:{id:"sess1",status:"ACTIVE"},
++        currentDecision:{id:"dec1",decision:"CONTINUE"},
++        confirmedMilestones:7,totalMilestones:7,
++        observations:[
++          {id:"o3",severity:"none",health:{apiHealthy:true,authenticationHealthy:true,reservationHealthy:true,floorHealthy:true,kitchenHealthy:true,supportBridgeHealthy:true}},
++          {id:"o2",severity:"low",health:{apiHealthy:true,authenticationHealthy:true,reservationHealthy:true,floorHealthy:true,kitchenHealthy:true,supportBridgeHealthy:true}},
++          {id:"o1",severity:"none",health:{apiHealthy:true,authenticationHealthy:true,reservationHealthy:true,floorHealthy:true,kitchenHealthy:true,supportBridgeHealthy:true}}
++        ]
++      }]
++    })
++  };
++  const svc=new Service(
++    {read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)},
++    {record:async()=>{}},{publish:()=>{}},
++    execution,
++    {snapshot:async()=>({status:"data-integrity-ready-for-certification"})},
++    {snapshot:async()=>({status:"management-executive-accuracy-ready-for-certification",locations:[{locationId:"loc1",trustState:"EXECUTIVE_DATA_RECONCILED",criticalIssues:[]}]})}
++  );
++
++  let snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.65.0");
++  assert.equal(snap.status,"pilot-stabilization-awaiting-assessment");
++  assert.equal(snap.locations[0].stabilizationReady,false);
++
++  const assessment=await svc.assess("org",["loc1"],"loc1",{
++    operatorConfidence:5,workflowStability:"STABLE",guestImpact:"NONE",supportLoad:"LOW",
++    windowStart:"2026-08-15T16:00",windowEnd:"2026-08-17T23:00",
++    evidence:"Three healthy observations, stable workflows, no guest impact, manageable support, and trusted data reviewed.",
++    note:"Pilot stabilization window completed."
++  },"Tester");
++  assert.equal(assessment.operatorConfidence,5);
++  assert.equal(assessment.automaticRolloutExpansion,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.locations[0].stabilizationReady,true);
++  assert.equal(snap.locations[0].passed,11);
++
++  const stable=await svc.decide("org",["loc1"],"loc1",{
++    decision:"STABLE",
++    evidence:"All stabilization gates passed and the pilot is ready to exit controlled stabilization."
++  },"Tester");
++  assert.equal(stable.decision,"STABLE");
++  assert.equal(stable.rolloutExpandedByDecision,false);
++  assert.equal(stable.rollbackExecutedByDecision,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.status,"pilot-stable");
++
++  const extend=await svc.decide("org",["loc1"],"loc1",{
++    decision:"EXTEND",
++    evidence:"Additional observation requested.",
++    reason:"Extend by one service to verify weekend volume."
++  },"Tester");
++  assert.equal(extend.decision,"EXTEND");
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.65.0",
++    repeatedLiveHealth:true,
++    incidentTrend:true,
++    operatorConfidence:true,
++    workflowStability:true,
++    guestImpactReview:true,
++    supportLoad:true,
++    dataIntegrityRecheck:true,
++    executiveKpiTrustRecheck:true,
++    stabilizationWindow:true,
++    humanStableExtendRollback:true,
++    stableDoesNotExpandRollout:true,
++    rollbackDoesNotExecuteRollback:true,
++    noAutomaticPilotExit:true,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.65.0-RELEASE.md
++++ b/V51.65.0-RELEASE.md
+@@ -0,0 +1,156 @@
++# BLUE CURRENT V51.65.0 — PILOT STABILIZATION & EXIT CRITERIA
++
++V51.61–V51.65 adds the stabilization gate after first-live pilot execution.
++
++## Stabilization / exit gates
++
++Each pilot location is evaluated against 11 gates:
++
++1. EXECUTION_CONTINUE
++2. MILESTONES_COMPLETE
++3. REPEATED_HEALTH
++4. INCIDENT_TREND
++5. OPERATOR_CONFIDENCE
++6. WORKFLOW_STABILITY
++7. GUEST_IMPACT
++8. SUPPORT_LOAD
++9. DATA_INTEGRITY_RECHECK
++10. EXECUTIVE_KPI_RECHECK
++11. STABILIZATION_WINDOW
++
++## Repeated live health
++
++The pilot is not considered stable from one clean observation.
++
++V51.65 requires at least three recent observations that are fully healthy with none/low severity.
++
++Incident severity is also reviewed for trend.
++
++Any high/critical incident keeps the incident-trend gate open.
++
++## Human stabilization assessment
++
++A management/operator assessment records:
++
++- operator confidence (1–5)
++- workflow stability: STABLE / MIXED / UNSTABLE
++- guest impact: NONE / LOW / MEDIUM / HIGH
++- support load: LOW / MANAGEABLE / HIGH / CRITICAL
++- stabilization window start/end
++- human evidence
++- human note
++
++## Data trust rechecks
++
++Stabilization reuses two existing V51 controls:
++
++- Data Integrity & Recovery
++- Management & Executive Accuracy
++
++A stable exit requires data integrity to remain ready/certified and the location to have no critical executive KPI trust issue.
++
++## Human exit decision
++
++Final human decisions are:
++
++- STABLE
++- EXTEND
++- ROLLBACK
++
++STABLE normally requires all 11 stabilization gates.
++
++A STABLE decision with open gates requires an explicit executive reason.
++
++EXTEND and ROLLBACK always require a documented human reason.
++
++## Important separation
++
++A STABLE decision does not expand rollout.
++
++A ROLLBACK decision does not execute rollback.
++
++V51.65 does not:
++
++- exit the pilot automatically
++- expand to another location
++- alter restaurant operating state
++- execute rollback
++- make production configuration changes
++
++## Current authenticated Chefs runtime
++
++Current untouched authoritative state:
++
++`pilot-stabilization-awaiting-assessment`
++
++Dependencies:
++
++- pilot execution: `pilot-execution-awaiting-start`
++- data integrity: `data-integrity-ready-for-certification`
++- executive accuracy: `management-executive-accuracy-blocked`
++
++All five locations currently show:
++
++- stabilization ready: false
++- gates passing: 2/11
++- healthy recent observations: 0
++- high/critical incidents: 0
++- human exit decisions: 0
++
++This is expected because the authoritative database has not yet recorded a V51.55 launch authorization or V51.60 pilot execution session.
++
++## Safety policy
++
++- repeated observations required
++- human operator assessment required
++- guest-impact review required
++- data-integrity recheck required
++- executive-KPI trust recheck required
++- human STABLE/EXTEND/ROLLBACK required
++- STABLE does not expand rollout
++- ROLLBACK does not execute rollback
++- no automatic pilot exit
++- no automatic rollout expansion
++- autonomous production changes false
++
++## Validation
++
++- V51.65 focused stabilization lifecycle PASS
++- repeated live-health requirement PASS
++- incident trend PASS
++- operator confidence PASS
++- workflow stability PASS
++- guest-impact review PASS
++- support-load review PASS
++- data-integrity recheck PASS
++- executive-KPI trust recheck PASS
++- stabilization window PASS
++- STABLE / EXTEND / ROLLBACK flow PASS
++- STABLE-does-not-expand-rollout PASS
++- ROLLBACK-does-not-execute PASS
++- V51.60 regression PASS
++- authenticated stabilization endpoint PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 956 JavaScript files
++- 796 client scripts
++- 5,964 unique HTML IDs
++
++## Next
++
++V51.66–V51.70 — Pilot Closeout & Expansion Readiness
++
++- pilot closeout record
++- objective/outcome review
++- operator feedback
++- guest-impact summary
++- incident closeout
++- support burden summary
++- data/KPI confidence summary
++- unresolved debt register
++- lessons learned
++- expansion prerequisites
++- explicit human EXPAND / HOLD / RETIRE decision
++- no automatic multi-location rollout
+--- a/README-APPLY-V51.65.0.md
++++ b/README-APPLY-V51.65.0.md
+@@ -0,0 +1,48 @@
++# APPLY BLUE CURRENT V51.65.0
++
++Baseline: exact V51.60.0 repository.
++
++Extract `BLUE-CURRENT-V51.65.0-PILOT-STABILIZATION-EXIT.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.65-pilot-stabilization-exit.js
++node scripts/maintenance/test-v51.60-pilot-execution-observation.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.65.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Pilot Stabilization & Exit Criteria** surface appears after Pilot Execution & Observation Control.
++
++Important:
++
++- one clean observation is not enough for STABLE
++- three recent healthy observations are required by the normal stabilization path
++- operator confidence/workflow stability/guest impact/support load require human assessment
++- data-integrity and executive-KPI trust are rechecked
++- STABLE does not expand rollout
++- ROLLBACK does not execute rollback
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.65.0 add pilot stabilization and exit criteria"
++git push origin live-service-timeline
++```

@@ -1,0 +1,951 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.40.0",
++  "version": "51.45.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 live floor and service certification",
++  "description": "Blue Current Hospitality OS \u2014 management and executive accuracy certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -68,6 +68,7 @@
+ const OperatorUxHardeningService = require("./services/operatorUxHardeningService");
+ const ReservationGuestJourneyCertificationService = require("./services/reservationGuestJourneyCertificationService");
+ const LiveFloorServiceCertificationService = require("./services/liveFloorServiceCertificationService");
++const ManagementExecutiveAccuracyService = require("./services/managementExecutiveAccuracyService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -139,7 +140,8 @@
+ const operatorUxHardeningService = new OperatorUxHardeningService(database, auditService, realtimeHub, rolePermissionCertificationService);
+ const reservationGuestJourneyCertificationService = new ReservationGuestJourneyCertificationService(database, auditService, realtimeHub, guestIntelligenceService, operatorUxHardeningService);
+ const liveFloorServiceCertificationService = new LiveFloorServiceCertificationService(database, auditService, realtimeHub, reservationGuestJourneyCertificationService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService });
++const managementExecutiveAccuracyService = new ManagementExecutiveAccuracyService(database, auditService, realtimeHub, executiveCommandCenterService, liveFloorServiceCertificationService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -226,7 +228,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.40.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.45.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.40.0",
++        version: "51.45.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,17 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/management-executive-accuracy" && request.method === "GET") {
++      return sendJson(response,200,await managementExecutiveAccuracyService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname === "/api/management-executive-accuracy/certify" && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for management/executive accuracy certification."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await managementExecutiveAccuracyService.certify(auth.membership.organizationId,auth.membership.locationIds||[],body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/live-floor-service-certification" && request.method === "GET") {
+       return sendJson(response,200,await liveFloorServiceCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/executiveCommandCenterService.js
++++ b/server/services/executiveCommandCenterService.js
+@@ -3,80 +3,111 @@
+   constructor(database,auditService,realtimeHub,aiRestaurantBrainService){
+     Object.assign(this,{database,auditService,realtimeHub,aiRestaurantBrainService});
+   }
+-  deterministic(id,seed,min,max){
+-    let h=seed;
+-    for(const c of id) h=(h*31+c.charCodeAt(0))%100000;
+-    return min+(h%(max-min+1));
++  latestFinancial(db,organizationId,locationId){
++    const candidates=[
++      ...(db.financialSnapshots||[]),
++      ...(db.locationFinancials||[]),
++      ...(db.revenueSnapshots||[])
++    ].filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    return [...candidates].sort((a,b)=>new Date(b.generatedAt||b.createdAt||b.date||0)-new Date(a.generatedAt||a.createdAt||a.date||0))[0]||null;
++  }
++  numericFinancial(record,keyCandidates){
++    if(!record)return null;
++    for(const key of keyCandidates){
++      const v=Number(record[key]);
++      if(Number.isFinite(v))return v;
++    }
++    return null;
+   }
+   async locationSnapshot(location){
+-    const db=await this.database.read(), id=location.id;
+-    const tables=(db.tables||[]).filter(x=>x.locationId===id);
+-    const activeTables=tables.filter(x=>["occupied","seated","dining"].includes(x.status)).length;
+-    const reservations=(db.reservations||[]).filter(x=>x.locationId===id&&!["cancelled","completed"].includes(x.status)).length;
+-    const waitlist=(db.waitlist||[]).filter(x=>x.locationId===id&&!["seated","cancelled"].includes(x.status)).length;
+-    const tickets=(db.kitchenTickets||[]).filter(x=>x.locationId===id&&!["served","cancelled"].includes(x.status));
+-    const staff=(db.staff||[]).filter(x=>x.locationId===id&&x.status!=="off").length;
++    const db=await this.database.read(),id=location.id,org=location.organizationId;
++    const tables=(db.tables||[]).filter(x=>x.organizationId===org&&x.locationId===id);
++    const activeTables=tables.filter(x=>["occupied","seated","dining"].includes(String(x.status||"").toLowerCase())).length;
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===org&&x.locationId===id&&!["cancelled","canceled","completed"].includes(String(x.status||"").toLowerCase()));
++    const waitlist=(db.waitlist||[]).filter(x=>x.organizationId===org&&x.locationId===id&&!["seated","cancelled","canceled"].includes(String(x.status||"").toLowerCase()));
++    const tickets=(db.kitchenTickets||[]).filter(x=>x.organizationId===org&&x.locationId===id&&!["served","cancelled","canceled"].includes(String(x.status||"").toLowerCase()));
++    const staff=(db.staff||[]).filter(x=>x.organizationId===org&&x.locationId===id&&x.status!=="off");
+     let health=null;
+-    if(id==="loc_marina"){try{health=(await this.aiRestaurantBrainService.snapshot(id)).health.overall}catch{}}
+-    const revenue=id==="loc_marina"?18420:this.deterministic(id,71,11800,22600);
+-    const yesterday=Math.round(revenue/(1+this.deterministic(id,19,-7,12)/100));
+-    const total=tables.length||this.deterministic(id,7,20,38);
+-    const active=activeTables||this.deterministic(id,5,8,Math.max(9,total-2));
+-    const avgTicket=id==="loc_marina"
+-      ? Math.max(8,Math.round(tickets.reduce((s,t)=>s+Math.max(0,Math.floor((Date.now()-new Date(t.createdAt).getTime())/60000)),0)/Math.max(1,tickets.length)))
+-      : this.deterministic(id,29,12,23);
++    if(id==="loc_marina"){try{const h=(await this.aiRestaurantBrainService.snapshot(id))?.health?.overall;health=Number.isFinite(Number(h))?Number(h):null;}catch{}}
++    const financial=this.latestFinancial(db,org,id);
++    const revenue=this.numericFinancial(financial,["revenue","netSales","sales"]);
++    const yesterday=this.numericFinancial(financial,["yesterdayRevenue","priorDayRevenue","previousDaySales"]);
++    const total=tables.length||null;
++    const occupancy=total?Math.round(activeTables/total*100):null;
++    const guestCount=reservations.filter(r=>["arrived","seated","completed"].includes(String(r.status||"").toLowerCase())).reduce((n,r)=>n+Number(r.partySize||0),0)||null;
++    const ticketMinutes=tickets.map(t=>Math.max(0,Math.floor((Date.now()-new Date(t.createdAt||t.updatedAt||Date.now()).getTime())/60000))).filter(Number.isFinite);
++    const avgTicket=ticketMinutes.length?Math.round(ticketMinutes.reduce((a,b)=>a+b,0)/ticketMinutes.length):null;
++    const revenueTrend=Number.isFinite(revenue)&&Number.isFinite(yesterday)&&yesterday!==0?Math.round((revenue-yesterday)/yesterday*1000)/10:null;
++    const risk=Number.isFinite(health)&&health<82||Number.isFinite(avgTicket)&&avgTicket>20?"high":Number.isFinite(health)&&health<90||Number.isFinite(avgTicket)&&avgTicket>17?"medium":"unknown";
+     return {
+       locationId:id,name:location.name,city:location.city,state:location.state,status:location.status||"open",
+-      health:health||this.deterministic(id,43,78,96),revenue,yesterdayRevenue:yesterday,
+-      revenueTrend:Math.round((revenue-yesterday)/yesterday*1000)/10,
+-      guestCount:id==="loc_marina"?active*3+reservations*2:this.deterministic(id,83,78,184),
+-      occupancy:Math.round(active/total*100),activeTables:active,totalTables:total,reservations,waitlist,
+-      activeTickets:tickets.length||this.deterministic(id,31,3,13),
+-      readyTickets:tickets.filter(x=>x.status==="ready").length,
+-      averageTicketMinutes:avgTicket,activeStaff:staff||this.deterministic(id,67,8,21),
+-      acceptedAiDecisions:(db.aiDecisionHistory||[]).filter(x=>x.locationId===id&&x.status==="accepted").length,
+-      risk:(health||90)<82||avgTicket>20?"high":(health||90)<90||avgTicket>17?"medium":"low"
++      health,revenue,yesterdayRevenue:yesterday,revenueTrend,guestCount,
++      occupancy,activeTables,totalTables:total,reservations:reservations.length,waitlist:waitlist.length,
++      activeTickets:tickets.length,readyTickets:tickets.filter(x=>x.status==="ready").length,
++      averageTicketMinutes:avgTicket,activeStaff:staff.length,
++      acceptedAiDecisions:(db.aiDecisionHistory||[]).filter(x=>x.organizationId===org&&x.locationId===id&&x.status==="accepted").length,
++      risk,
++      provenance:{
++        revenue:financial?"authoritative-financial-record":"unavailable",
++        occupancy:tables.length?"tables":"unavailable",
++        reservations:"reservations",
++        waitlist:"waitlist",
++        activeTickets:"kitchenTickets",
++        activeStaff:"staff",
++        guestCount:guestCount!==null?"reservation-party-size":"unavailable",
++        health:health!==null?"ai-restaurant-brain":"unavailable"
++      },
++      syntheticFallbackUsed:false
+     };
+   }
+   portfolio(ls){
+-    const sum=k=>ls.reduce((s,x)=>s+x[k],0), rev=sum("revenue"), y=sum("yesterdayRevenue"),
+-      active=sum("activeTables"), total=sum("totalTables");
++    const values=k=>ls.map(x=>x[k]).filter(Number.isFinite);
++    const sumNullable=k=>{const v=values(k);return v.length?v.reduce((a,b)=>a+b,0):null;};
++    const avgNullable=k=>{const v=values(k);return v.length?Math.round(v.reduce((a,b)=>a+b,0)/v.length):null;};
++    const rev=sumNullable("revenue"),y=sumNullable("yesterdayRevenue");
++    const active=sumNullable("activeTables"),total=sumNullable("totalTables");
+     return {
+-      health:Math.round(sum("health")/ls.length),revenue:rev,yesterdayRevenue:y,
+-      revenueTrend:Math.round((rev-y)/y*1000)/10,guestCount:sum("guestCount"),
+-      occupancy:Math.round(active/total*100),activeTables:active,totalTables:total,
++      health:avgNullable("health"),revenue:rev,yesterdayRevenue:y,
++      revenueTrend:Number.isFinite(rev)&&Number.isFinite(y)&&y!==0?Math.round((rev-y)/y*1000)/10:null,
++      guestCount:sumNullable("guestCount"),
++      occupancy:Number.isFinite(active)&&Number.isFinite(total)&&total>0?Math.round(active/total*100):null,
++      activeTables:active,totalTables:total,
+       activeLocations:ls.filter(x=>x.status==="open").length,
+       atRiskLocations:ls.filter(x=>x.risk==="high").length,
+-      averageTicketMinutes:Math.round(sum("averageTicketMinutes")/ls.length),
+-      acceptedAiDecisions:sum("acceptedAiDecisions")
++      averageTicketMinutes:avgNullable("averageTicketMinutes"),
++      acceptedAiDecisions:sumNullable("acceptedAiDecisions"),
++      dataComplete:ls.every(x=>x.syntheticFallbackUsed===false&&Number.isFinite(x.revenue)&&Number.isFinite(x.occupancy))
+     };
+   }
+   alerts(ls){
+     const out=[];
+     for(const x of ls){
+-      if(x.health<82) out.push({id:`a_${x.locationId}_h`,locationId:x.locationId,locationName:x.name,severity:"critical",title:"Restaurant health below threshold",detail:`${x.name} is operating at ${x.health}.`,action:"Open location"});
+-      if(x.averageTicketMinutes>20) out.push({id:`a_${x.locationId}_t`,locationId:x.locationId,locationName:x.name,severity:"high",title:"Kitchen timing intervention needed",detail:`Average ticket time is ${x.averageTicketMinutes} minutes.`,action:"Review kitchen"});
+-      if(x.revenueTrend<=-5) out.push({id:`a_${x.locationId}_r`,locationId:x.locationId,locationName:x.name,severity:"medium",title:"Revenue pacing below yesterday",detail:`${x.name} is pacing ${Math.abs(x.revenueTrend)}% below yesterday.`,action:"Review demand"});
++      if(Number.isFinite(x.health)&&x.health<82)out.push({id:`a_${x.locationId}_h`,locationId:x.locationId,locationName:x.name,severity:"critical",title:"Restaurant health below threshold",detail:`${x.name} is operating at ${x.health}.`,action:"Open location"});
++      if(Number.isFinite(x.averageTicketMinutes)&&x.averageTicketMinutes>20)out.push({id:`a_${x.locationId}_t`,locationId:x.locationId,locationName:x.name,severity:"high",title:"Kitchen timing intervention needed",detail:`Average ticket time is ${x.averageTicketMinutes} minutes.`,action:"Review kitchen"});
++      if(Number.isFinite(x.revenueTrend)&&x.revenueTrend<=-5)out.push({id:`a_${x.locationId}_r`,locationId:x.locationId,locationName:x.name,severity:"medium",title:"Revenue pacing below yesterday",detail:`${x.name} is pacing ${Math.abs(x.revenueTrend)}% below yesterday.`,action:"Review demand"});
+     }
+     return out;
+   }
+   async snapshot(org){
+-    const db=await this.database.read(), raw=(db.locations||[]).filter(x=>x.organizationId===org), ls=[];
+-    for(const x of raw) ls.push(await this.locationSnapshot(x));
+-    const p=this.portfolio(ls), alerts=this.alerts(ls), top=[...ls].sort((a,b)=>b.revenue-a.revenue)[0];
++    const db=await this.database.read(),raw=(db.locations||[]).filter(x=>x.organizationId===org),ls=[];
++    for(const x of raw)ls.push(await this.locationSnapshot(x));
++    const p=this.portfolio(ls),alerts=this.alerts(ls);
++    const ranked=[...ls].filter(x=>Number.isFinite(x.revenue)).sort((a,b)=>b.revenue-a.revenue),top=ranked[0]||null;
+     return {
+-      generatedAt:new Date().toISOString(),portfolio:p,locations:ls.sort((a,b)=>b.revenue-a.revenue),alerts,
+-      goals:(db.executiveGoals||[]).filter(x=>x.organizationId===org),
++      generatedAt:new Date().toISOString(),portfolio:p,
++      locations:ls.sort((a,b)=>(Number.isFinite(b.revenue)?b.revenue:-Infinity)-(Number.isFinite(a.revenue)?a.revenue:-Infinity)),
++      alerts,goals:(db.executiveGoals||[]).filter(x=>x.organizationId===org),
++      dataPolicy:{syntheticFallbacks:false,missingAuthoritativeMetricsRemainNull:true,financialMetricsRequireFinancialSource:true},
+       brief:{
+-        headline:`Portfolio revenue is pacing ${p.revenueTrend>=0?p.revenueTrend+"% above":Math.abs(p.revenueTrend)+"% below"} yesterday.`,
+-        summary:`${p.activeLocations} locations are open with ${p.guestCount} modeled guests and portfolio health ${p.health}.`,
+-        highlights:[`${top.name} leads revenue at $${top.revenue.toLocaleString()}.`,alerts[0]?`${alerts[0].locationName} needs attention: ${alerts[0].title.toLowerCase()}.`:"No material portfolio alerts are active."]
++        headline:Number.isFinite(p.revenueTrend)?`Portfolio revenue is pacing ${p.revenueTrend>=0?p.revenueTrend+"% above":Math.abs(p.revenueTrend)+"% below"} yesterday.`:"Portfolio revenue pacing is unavailable until authoritative financial data is connected.",
++        summary:`${p.activeLocations} locations are open. Missing executive KPIs remain visibly unavailable rather than being modeled.`,
++        highlights:[top?`${top.name} leads sourced revenue at $${top.revenue.toLocaleString()}.`:"No authoritative location revenue source is currently available.",alerts[0]?`${alerts[0].locationName} needs attention: ${alerts[0].title.toLowerCase()}.`:"No source-backed material portfolio alerts are active."]
+       }
+     };
+   }
+   async updateGoal(id,patch,actor,org){
+     const goal=await this.database.update("executiveGoals",id,{target:Number(patch.target),updatedAt:new Date().toISOString()});
+-    if(!goal) return null;
++    if(!goal)return null;
+     await this.auditService.record({organizationId:org,actor,action:`Executive goal updated: ${goal.label}`,category:"executive"});
+     this.realtimeHub.publish("executive:goal-updated",{...goal,organizationId:org});
+     return goal;
+--- a/server/services/managementExecutiveAccuracyService.js
++++ b/server/services/managementExecutiveAccuracyService.js
+@@ -0,0 +1,195 @@
++"use strict";
++
++class ManagementExecutiveAccuracyService {
++  constructor(database,auditService,realtimeHub,executiveCommandCenterService,liveFloorServiceCertificationService){
++    Object.assign(this,{database,auditService,realtimeHub,executiveCommandCenterService,liveFloorServiceCertificationService});
++    this.metricDefinitions=[
++      {id:"occupancy",label:"Occupancy",critical:true},
++      {id:"reservations",label:"Active reservations",critical:true},
++      {id:"waitlist",label:"Active waitlist",critical:true},
++      {id:"activeStaff",label:"Active staff",critical:false},
++      {id:"activeTickets",label:"Active kitchen tickets",critical:false},
++      {id:"guestCount",label:"Guest / cover count",critical:false},
++      {id:"revenue",label:"Revenue",critical:true}
++    ];
++  }
++  now(){return new Date().toISOString();}
++  allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
++  async certifications(organizationId){
++    const db=await this.database.read();
++    return (db.managementExecutiveAccuracyCertifications||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.certifiedAt)-new Date(a.certifiedAt));
++  }
++  activeReservation(r){return !["cancelled","canceled","completed"].includes(String(r.status||"").toLowerCase());}
++  activeWait(w){return !["seated","cancelled","canceled"].includes(String(w.status||"").toLowerCase());}
++  sourceMetrics(db,organizationId,locationId){
++    const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const waitlist=(db.waitlist||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const staff=(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const tickets=(db.kitchenTickets||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const occupied=tables.filter(x=>["occupied","seated","dining"].includes(String(x.status||"").toLowerCase()));
++    const total=tables.length;
++    const activeReservations=reservations.filter(r=>this.activeReservation(r));
++    const activeWait=waitlist.filter(w=>this.activeWait(w));
++    const activeStaff=staff.filter(x=>x.status!=="off");
++    const activeTickets=tickets.filter(x=>!["served","cancelled","canceled"].includes(String(x.status||"").toLowerCase()));
++    const seatedCovers=reservations.filter(r=>["arrived","seated","completed"].includes(String(r.status||"").toLowerCase())).reduce((n,r)=>n+Number(r.partySize||0),0);
++    const financialCandidates=[
++      ...(db.financialSnapshots||[]),
++      ...(db.locationFinancials||[]),
++      ...(db.revenueSnapshots||[])
++    ].filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const latestFinancial=[...financialCandidates].sort((a,b)=>new Date(b.generatedAt||b.createdAt||b.date||0)-new Date(a.generatedAt||a.createdAt||a.date||0))[0]||null;
++    const revenueValue=latestFinancial?Number(latestFinancial.revenue??latestFinancial.netSales??latestFinancial.sales):null;
++    return {
++      occupancy:total?Math.round(occupied.length/total*100):null,
++      reservations:activeReservations.length,
++      waitlist:activeWait.length,
++      activeStaff:activeStaff.length,
++      activeTickets:activeTickets.length,
++      guestCount:seatedCovers||null,
++      revenue:Number.isFinite(revenueValue)?revenueValue:null,
++      sources:{
++        occupancy:{collection:"tables",records:tables.length},
++        reservations:{collection:"reservations",records:reservations.length},
++        waitlist:{collection:"waitlist",records:waitlist.length},
++        activeStaff:{collection:"staff",records:staff.length},
++        activeTickets:{collection:"kitchenTickets",records:tickets.length},
++        guestCount:{collection:"reservations.partySize",records:reservations.length},
++        revenue:latestFinancial?{collection:"financialSnapshots/locationFinancials/revenueSnapshots",records:financialCandidates.length,recordId:latestFinancial.id||null}:null
++      }
++    };
++  }
++  compare(metric,authoritative,displayed,source){
++    if(authoritative===null||authoritative===undefined){
++      return {metric,status:"UNVERIFIED",authoritative:null,displayed,source,delta:null,reason:"No authoritative source record is available for this metric."};
++    }
++    const a=Number(authoritative),d=Number(displayed);
++    if(!Number.isFinite(d)){
++      return {metric,status:"MISSING_DISPLAY_VALUE",authoritative:a,displayed,source,delta:null,reason:"Executive surface did not return a numeric value."};
++    }
++    const delta=d-a;
++    return {metric,status:delta===0?"MATCH":"DISCREPANCY",authoritative:a,displayed:d,source,delta,reason:delta===0?"Executive value matches authoritative source.":"Executive value does not match authoritative source."};
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,executive,floor,certs]=await Promise.all([
++      this.database.read(),
++      this.executiveCommandCenterService.snapshot(organizationId),
++      this.liveFloorServiceCertificationService.snapshot(organizationId,allowedLocationIds),
++      this.certifications(organizationId)
++    ]);
++    const executiveMap=new Map((executive.locations||[]).map(x=>[x.locationId,x]));
++    const floorMap=new Map((floor.locations||[]).map(x=>[x.locationId,x]));
++    const locations=(db.locations||[]).filter(x=>x.organizationId===organizationId&&this.allowed(x.id,allowedLocationIds)).map(loc=>{
++      const source=this.sourceMetrics(db,organizationId,loc.id);
++      const shown=executiveMap.get(loc.id)||{};
++      const comparisons=[
++        this.compare("occupancy",source.occupancy,shown.occupancy,source.sources.occupancy),
++        this.compare("reservations",source.reservations,shown.reservations,source.sources.reservations),
++        this.compare("waitlist",source.waitlist,shown.waitlist,source.sources.waitlist),
++        this.compare("activeStaff",source.activeStaff,shown.activeStaff,source.sources.activeStaff),
++        this.compare("activeTickets",source.activeTickets,shown.activeTickets,source.sources.activeTickets),
++        this.compare("guestCount",source.guestCount,shown.guestCount,source.sources.guestCount),
++        this.compare("revenue",source.revenue,shown.revenue,source.sources.revenue)
++      ];
++      const criticalIds=new Set(this.metricDefinitions.filter(x=>x.critical).map(x=>x.id));
++      const criticalIssues=comparisons.filter(x=>criticalIds.has(x.metric)&&x.status!=="MATCH");
++      const discrepancies=comparisons.filter(x=>x.status==="DISCREPANCY");
++      const unverified=comparisons.filter(x=>x.status==="UNVERIFIED");
++      return {
++        locationId:loc.id,locationName:loc.name||loc.displayName||loc.id,
++        displayedExecutive:shown,
++        authoritative:source,
++        comparisons,
++        matched:comparisons.filter(x=>x.status==="MATCH").length,
++        discrepancies:discrepancies.length,
++        unverified:unverified.length,
++        criticalIssues,
++        floorCertificationState:floorMap.get(loc.id)?.floorServiceState||null,
++        trustState:criticalIssues.length?"EXECUTIVE_DATA_NOT_TRUSTED":comparisons.every(x=>x.status==="MATCH")?"EXECUTIVE_DATA_RECONCILED":"EXECUTIVE_DATA_PARTIALLY_VERIFIED"
++      };
++    });
++
++    const comparisons=locations.flatMap(x=>x.comparisons);
++    const criticalIssues=locations.flatMap(x=>x.criticalIssues.map(issue=>({locationId:x.locationId,locationName:x.locationName,...issue})));
++    const latest=certs[0]||null;
++    const portfolioDisplayed=executive.portfolio||{};
++    const authoritativeLocations=locations;
++    const authoritativePortfolio={
++      occupancy:(()=>{const vals=authoritativeLocations.map(x=>x.authoritative.occupancy).filter(Number.isFinite);return vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;})(),
++      reservations:authoritativeLocations.reduce((n,x)=>n+x.authoritative.reservations,0),
++      waitlist:authoritativeLocations.reduce((n,x)=>n+x.authoritative.waitlist,0),
++      activeStaff:authoritativeLocations.reduce((n,x)=>n+x.authoritative.activeStaff,0),
++      activeTickets:authoritativeLocations.reduce((n,x)=>n+x.authoritative.activeTickets,0),
++      guestCount:(()=>{const vals=authoritativeLocations.map(x=>x.authoritative.guestCount).filter(Number.isFinite);return vals.length?vals.reduce((a,b)=>a+b,0):null;})(),
++      revenue:(()=>{const vals=authoritativeLocations.map(x=>x.authoritative.revenue);return vals.length&&vals.every(Number.isFinite)?vals.reduce((a,b)=>a+b,0):null;})()
++    };
++    const portfolioComparisons=[
++      this.compare("occupancy",authoritativePortfolio.occupancy,portfolioDisplayed.occupancy,{rollup:"location authoritative occupancy"}),
++      this.compare("guestCount",authoritativePortfolio.guestCount,portfolioDisplayed.guestCount,{rollup:"location authoritative covers"}),
++      this.compare("revenue",authoritativePortfolio.revenue,portfolioDisplayed.revenue,{rollup:"authoritative financial source"})
++    ];
++    const portfolioCritical=portfolioComparisons.filter(x=>["occupancy","revenue"].includes(x.metric)&&x.status!=="MATCH");
++    const allCritical=[...criticalIssues,...portfolioCritical.map(x=>({locationId:"portfolio",locationName:"Portfolio",...x}))];
++
++    return {
++      version:"51.45.0",generatedAt:this.now(),
++      status:allCritical.length===0?(latest?.status==="MANAGEMENT_EXECUTIVE_ACCURACY_CERTIFIED"?"management-executive-accuracy-certified":"management-executive-accuracy-ready-for-certification"):"management-executive-accuracy-blocked",
++      headline:`${comparisons.filter(x=>x.status==="MATCH").length}/${comparisons.length} location metric comparisons match authoritative data; ${allCritical.length} critical trust issue(s) remain.`,
++      metricDefinitions:this.metricDefinitions,
++      locations,
++      portfolio:{displayed:portfolioDisplayed,authoritative:authoritativePortfolio,comparisons:portfolioComparisons},
++      totals:{
++        comparisons:comparisons.length,
++        matched:comparisons.filter(x=>x.status==="MATCH").length,
++        discrepancies:comparisons.filter(x=>x.status==="DISCREPANCY").length,
++        unverified:comparisons.filter(x=>x.status==="UNVERIFIED").length,
++        criticalIssues:allCritical.length
++      },
++      criticalIssues:allCritical,
++      certification:latest,
++      provenance:{
++        authoritativeCollections:["tables","reservations","waitlist","staff","kitchenTickets"],
++        financialSourceRequiredForRevenue:true,
++        modeledOrDeterministicValuesNeverCountAsAuthoritative:true
++      },
++      policy:{
++        sourceTracingRequired:true,
++        discrepanciesBlockCriticalTrust:true,
++        unverifiedRevenueBlocksCertification:true,
++        staleOrMissingSourceMustRemainVisible:true,
++        humanCertificationRequired:true,
++        noSyntheticExecutivePass:true,
++        noAutomaticMetricCorrection:true,
++        noAutomaticFinancialInference:true,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async certify(organizationId,allowedLocationIds,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    if(snap.criticalIssues.length)throw new Error("Critical executive-data trust issues must be resolved before certification.");
++    const evidence=String(input.evidence||"").trim().slice(0,3000);
++    const note=String(input.note||"").trim().slice(0,1800);
++    if(!evidence)throw new Error("Human executive-accuracy evidence is required.");
++    if(!note)throw new Error("Human executive-accuracy certification note is required.");
++    const record={
++      id:`mea_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,status:"MANAGEMENT_EXECUTIVE_ACCURACY_CERTIFIED",
++      certifiedAt:this.now(),certifiedBy:actor,evidence,note,
++      totalComparisons:snap.totals.comparisons,matched:snap.totals.matched,
++      discrepancyCount:snap.totals.discrepancies,unverifiedCount:snap.totals.unverified,
++      criticalIssues:0,
++      metricCorrectionPerformedByCertification:false,
++      financialInferencePerformedByCertification:false,
++      autonomousProductionChanges:false
++    };
++    await this.database.mutate(db=>{db.managementExecutiveAccuracyCertifications||=[];db.managementExecutiveAccuracyCertifications.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:"V51 management/executive accuracy certified for pilot",category:"pilot_executive_accuracy"});
++    this.realtimeHub.publish("management-executive-accuracy:certified",{organizationId,id:record.id});
++    return record;
++  }
++}
++module.exports=ManagementExecutiveAccuracyService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.40.0">
++  <meta name="blue-current-build" content="51.45.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -425,6 +425,15 @@
+       <div class="v4316-actions"><input id="lfscShift" class="v4312-input" value="Dinner" placeholder="Shift label"><input id="lfscManager" class="v4312-input" placeholder="Manager / rehearsal lead"><input id="lfscTargetOccupancy" class="v4312-input" type="number" min="0" max="100" value="85" placeholder="Target occupancy %"><input id="lfscNote" class="v4312-input" placeholder="Floor/service rehearsal note"></div>
+       <div class="v4316-actions"><input id="lfscEvidence" class="v4312-input" placeholder="Human floor/service checkpoint evidence"><input id="lfscOverride" class="v4312-input" placeholder="Evidence-gap rehearsal reason"><input id="lfscCertificationEvidence" class="v4312-input" placeholder="End-to-end floor/service certification evidence"><input id="lfscCertificationNote" class="v4312-input" placeholder="Human certification note"></div>
+       <p><strong>Restaurant floor/service journeys</strong></p><div id="lfscLocations" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="managementExecutiveAccuracy">
++      <header><div><small>V51.41–V51.45 · Management & Executive Accuracy</small><strong>Trace every pilot-critical management KPI back to authoritative restaurant data before an executive trusts the dashboard.</strong><span>Blue Current reconciles executive occupancy, reservations, waitlist, staff, kitchen-ticket, guest-count, and revenue signals against source records. Modeled or deterministic values are never counted as authoritative financial truth, and critical discrepancies block certification.</span></div><button id="meaRefresh" type="button">Refresh executive accuracy</button></header>
++      <div class="v432-kpis"><article><small>Trust status</small><strong id="meaStatus">—</strong></article><article><small>Metrics matching</small><strong id="meaMatched">0/0</strong></article><article><small>Discrepancies</small><strong id="meaDiscrepancies">0</strong></article><article><small>Critical issues</small><strong id="meaCritical">0</strong></article></div>
++      <div class="v4316-answer" id="meaHeadline">Management and executive accuracy review ready.</div>
++      <div class="v4316-actions"><input id="meaEvidence" class="v4312-input" placeholder="Human management/executive accuracy evidence"><input id="meaNote" class="v4312-input" placeholder="Executive trust certification note"><button id="meaCertify" type="button">Certify executive accuracy</button></div>
++      <p><strong>Critical trust issues</strong></p><div id="meaCriticalList" class="v432-list"></div>
++      <p><strong>Location source reconciliation</strong></p><div id="meaLocations" class="v432-list"></div>
++      <p><strong>Portfolio rollup reconciliation</strong></p><div id="meaPortfolio" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8985,6 +8994,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="reservationGuestJourney" data-src="js/modules/reservationGuestJourneyCenter.js?v=51.35.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationEngine.js?v=51.40.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="liveFloorServiceCertification" data-src="js/modules/liveFloorServiceCertificationCenter.js?v=51.40.0"></script>
+-<script src="js/startup-loader.js?v=51.40.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyEngine.js?v=51.45.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="managementExecutiveAccuracy" data-src="js/modules/managementExecutiveAccuracyCenter.js?v=51.45.0"></script>
++<script src="js/startup-loader.js?v=51.45.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1255,6 +1255,7 @@
+ const operatorUxHardeningModule = startupRegistry.register("operatorUxHardening", shouldInitializeCenter("operatorUxHardening") ? window.createBlueCurrentOperatorUxHardeningCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolePermissionCertification"]);
+ const reservationGuestJourneyModule = startupRegistry.register("reservationGuestJourney", shouldInitializeCenter("reservationGuestJourney") ? window.createBlueCurrentReservationGuestJourneyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorUxHardening"]);
+ const liveFloorServiceCertificationModule = startupRegistry.register("liveFloorServiceCertification", shouldInitializeCenter("liveFloorServiceCertification") ? window.createBlueCurrentLiveFloorServiceCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "reservationGuestJourney"]);
++const managementExecutiveAccuracyModule = startupRegistry.register("managementExecutiveAccuracy", shouldInitializeCenter("managementExecutiveAccuracy") ? window.createBlueCurrentManagementExecutiveAccuracyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "liveFloorServiceCertification"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.40.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.45.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/executiveCommandCenter.js
++++ b/client/js/modules/executiveCommandCenter.js
+@@ -2,24 +2,28 @@
+ function createExecutiveCommandCenterModule(eventBus,appState,cloudFoundationModule){
+  const api=cloudFoundationModule?.api||new window.BlueCurrentCloudApi(""),$=id=>document.getElementById(id);
+  let state={portfolio:{},locations:[],alerts:[],goals:[],brief:{}},selected=null;
+- const money=v=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(v||0);
++ const present=v=>v!==null&&v!==undefined&&v!==""&&Number.isFinite(Number(v));
++ const money=v=>present(v)?new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(v)):"—";
++ const num=v=>present(v)?String(v):"—";
++ const pct=v=>present(v)?`${v}%`:"—";
++ const mins=v=>present(v)?`${v}m`:"—";
+  function render(){
+   const p=state.portfolio||{};
+   $("execHealth").textContent=p.health??"—";$("execRevenue").textContent=money(p.revenue);
+-  $("execRevenueTrend").textContent=`${p.revenueTrend>=0?"+":""}${p.revenueTrend||0}% vs yesterday`;
+-  $("execGuests").textContent=p.guestCount||0;$("execOccupancy").textContent=`${p.occupancy||0}%`;
++  $("execRevenueTrend").textContent=present(p.revenueTrend)?`${p.revenueTrend>=0?"+":""}${p.revenueTrend}% vs yesterday`:"Revenue source unavailable";
++  $("execGuests").textContent=num(p.guestCount);$("execOccupancy").textContent=pct(p.occupancy);
+   $("execLocations").textContent=p.activeLocations||0;$("execAlerts").textContent=p.atRiskLocations||0;
+-  $("execTicketTime").textContent=`${p.averageTicketMinutes||0}m`;$("execAiDecisions").textContent=p.acceptedAiDecisions||0;
++  $("execTicketTime").textContent=mins(p.averageTicketMinutes);$("execAiDecisions").textContent=p.acceptedAiDecisions||0;
+   $("execHealthRing")?.style.setProperty("--score",`${p.health||0}%`);
+   $("execBriefHeadline").textContent=state.brief?.headline||"";$("execBriefSummary").textContent=state.brief?.summary||"";
+   $("execBriefHighlights").innerHTML=(state.brief?.highlights||[]).map(x=>`<li>${x}</li>`).join("");
+   $("execLastUpdated").textContent=state.generatedAt?new Date(state.generatedAt).toLocaleTimeString():"—";
+-  $("execLocationGrid").innerHTML=state.locations.map(x=>`<button class="exec-location-card risk-${x.risk} ${x.locationId===selected?"selected":""}" data-exec-location="${x.locationId}"><div class="exec-location-head"><div><small>${x.city}, ${x.state}</small><strong>${x.name}</strong></div><span>${x.health}</span></div><div class="exec-location-metrics"><p><span>Revenue</span><b>${money(x.revenue)}</b></p><p><span>Trend</span><b>${x.revenueTrend>=0?"+":""}${x.revenueTrend}%</b></p><p><span>Occupancy</span><b>${x.occupancy}%</b></p><p><span>Ticket time</span><b>${x.averageTicketMinutes}m</b></p></div><footer><span>${x.guestCount} guests</span><b>${x.risk} risk</b></footer></button>`).join("");
++  $("execLocationGrid").innerHTML=state.locations.map(x=>`<button class="exec-location-card risk-${x.risk} ${x.locationId===selected?"selected":""}" data-exec-location="${x.locationId}"><div class="exec-location-head"><div><small>${x.city}, ${x.state}</small><strong>${x.name}</strong></div><span>${num(x.health)}</span></div><div class="exec-location-metrics"><p><span>Revenue</span><b>${money(x.revenue)}</b></p><p><span>Trend</span><b>${present(x.revenueTrend)?`${x.revenueTrend>=0?"+":""}${x.revenueTrend}%`:"—"}</b></p><p><span>Occupancy</span><b>${pct(x.occupancy)}</b></p><p><span>Ticket time</span><b>${mins(x.averageTicketMinutes)}</b></p></div><footer><span>${num(x.guestCount)} guests</span><b>${x.risk} risk</b></footer></button>`).join("");
+   const x=state.locations.find(v=>v.locationId===selected)||state.locations[0];
+-  $("execLocationDetail").innerHTML=x?`<div class="exec-detail-head"><div><small>${x.city}, ${x.state}</small><h3>${x.name}</h3></div><span>${x.health}</span></div><div class="exec-detail-grid"><article><small>Revenue</small><strong>${money(x.revenue)}</strong><span>${x.revenueTrend}% trend</span></article><article><small>Guests</small><strong>${x.guestCount}</strong><span>Today</span></article><article><small>Tables</small><strong>${x.activeTables}/${x.totalTables}</strong><span>${x.occupancy}% occupied</span></article><article><small>Reservations</small><strong>${x.reservations}</strong><span>${x.waitlist} waiting</span></article><article><small>Kitchen</small><strong>${x.activeTickets}</strong><span>${x.readyTickets} ready</span></article><article><small>Staff</small><strong>${x.activeStaff}</strong><span>Active</span></article></div>`:"";
++  $("execLocationDetail").innerHTML=x?`<div class="exec-detail-head"><div><small>${x.city}, ${x.state}</small><h3>${x.name}</h3></div><span>${num(x.health)}</span></div><div class="exec-detail-grid"><article><small>Revenue</small><strong>${money(x.revenue)}</strong><span>${present(x.revenueTrend)?`${x.revenueTrend}% trend`:"source unavailable"}</span></article><article><small>Guests</small><strong>${num(x.guestCount)}</strong><span>Today</span></article><article><small>Tables</small><strong>${x.activeTables}/${x.totalTables}</strong><span>${pct(x.occupancy)} occupied</span></article><article><small>Reservations</small><strong>${x.reservations}</strong><span>${x.waitlist} waiting</span></article><article><small>Kitchen</small><strong>${x.activeTickets}</strong><span>${x.readyTickets} ready</span></article><article><small>Staff</small><strong>${x.activeStaff}</strong><span>Active</span></article></div>`:"";
+   $("execAlertFeed").innerHTML=state.alerts.map(a=>`<article class="severity-${a.severity}"><span>${a.severity}</span><div><strong>${a.title}</strong><p>${a.locationName} · ${a.detail}</p></div><button data-exec-alert-location="${a.locationId}">${a.action}</button></article>`).join("")||"<div class='exec-empty'><strong>No material portfolio alerts</strong></div>";
+   $("execGoalList").innerHTML=state.goals.map(g=>`<article><div><small>${g.label}</small><strong>${g.unit==="currency"?money(g.target):g.target+(g.unit==="minutes"?"m":"")}</strong></div><button data-exec-goal="${g.id}">Edit</button></article>`).join("");
+-  appState.update({executivePortfolioHealth:p.health||0,executivePortfolioRevenue:p.revenue||0});
++  appState.update({executivePortfolioHealth:present(p.health)?p.health:null,executivePortfolioRevenue:present(p.revenue)?p.revenue:null});
+  }
+  async function load(){if(!api.token)return;try{state=await api.executiveCommand();if(!selected)selected=state.locations[0]?.locationId||null;render();eventBus.emit("executive:loaded",state.portfolio);}catch(err){const el=$("execLastUpdated");if(el)el.textContent="Connection interrupted — retrying";}}
+  $("execLocationGrid")?.addEventListener("click",e=>{const b=e.target.closest("[data-exec-location]");if(b){selected=b.dataset.execLocation;render();}});
+--- a/client/js/modules/managementExecutiveAccuracyEngine.js
++++ b/client/js/modules/managementExecutiveAccuracyEngine.js
+@@ -0,0 +1,11 @@
++(function(global){"use strict";
++class BlueCurrentManagementExecutiveAccuracyEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/management-executive-accuracy",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Management/executive accuracy failed (${r.status})`);this.appState?.update?.({managementExecutiveAccuracy:d});return d;}
++  async certify(payload={}){const r=await fetch("/api/management-executive-accuracy/certify",{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Management/executive accuracy certification failed (${r.status})`);this.eventBus?.emit?.("management-executive-accuracy:certified",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentManagementExecutiveAccuracyEngine;
++if(global)global.BlueCurrentManagementExecutiveAccuracyEngine=BlueCurrentManagementExecutiveAccuracyEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/managementExecutiveAccuracyCenter.js
++++ b/client/js/modules/managementExecutiveAccuracyCenter.js
+@@ -0,0 +1,24 @@
++(function(){"use strict";
++function createBlueCurrentManagementExecutiveAccuracyCenterModule(eventBus,appState){
++  const root=document.getElementById("managementExecutiveAccuracy");
++  if(!root||!window.BlueCurrentManagementExecutiveAccuracyEngine)return null;
++  const e=new window.BlueCurrentManagementExecutiveAccuracyEngine({eventBus,appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("meaStatus").textContent=s.status||"—";
++    $("meaMatched").textContent=`${s.totals?.matched||0}/${s.totals?.comparisons||0}`;
++    $("meaDiscrepancies").textContent=s.totals?.discrepancies||0;
++    $("meaCritical").textContent=s.totals?.criticalIssues||0;
++    $("meaHeadline").textContent=s.headline||"Executive accuracy unavailable.";
++    $("meaLocations").innerHTML=(s.locations||[]).map(x=>`<article><div><strong>${esc(x.trustState)} · ${esc(x.locationName)}</strong><span>${x.matched}/${x.comparisons.length} match · ${x.discrepancies} discrepancies · ${x.unverified} unverified</span></div><div class="v432-list">${x.comparisons.map(c=>`<article><strong>${esc(c.status)} · ${esc(c.metric)}</strong><span>authoritative ${esc(c.authoritative)} · executive ${esc(c.displayed)}${c.delta!==null?` · delta ${esc(c.delta)}`:""}</span><p>${esc(c.reason)}</p></article>`).join("")}</div></article>`).join("");
++    $("meaPortfolio").innerHTML=(s.portfolio?.comparisons||[]).map(c=>`<article><strong>${esc(c.status)} · Portfolio ${esc(c.metric)}</strong><span>authoritative ${esc(c.authoritative)} · executive ${esc(c.displayed)}${c.delta!==null?` · delta ${esc(c.delta)}`:""}</span><p>${esc(c.reason)}</p></article>`).join("");
++    $("meaCriticalList").innerHTML=(s.criticalIssues||[]).map(c=>`<article><strong>${esc(c.locationName)} · ${esc(c.metric)} · ${esc(c.status)}</strong><span>${esc(c.reason)}</span></article>`).join("")||"<article><strong>No critical executive-data trust issues.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("meaHeadline").textContent=err.message;}}
++  $("meaCertify")?.addEventListener("click",async()=>{try{await e.certify({evidence:$("meaEvidence").value,note:$("meaNote").value});await load();}catch(err){$("meaHeadline").textContent=err.message;}});
++  $("meaRefresh")?.addEventListener("click",load);
++  ["management-executive-accuracy:certified","live-floor-service:certified","executive:goal-updated","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentManagementExecutiveAccuracyCenterModule=createBlueCurrentManagementExecutiveAccuracyCenterModule;
++})();--- a/scripts/maintenance/test-v51.45-management-executive-accuracy.js
++++ b/scripts/maintenance/test-v51.45-management-executive-accuracy.js
+@@ -0,0 +1,108 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/managementExecutiveAccuracyService");
++const Executive=require("../../server/services/executiveCommandCenterService");
++
++(async()=>{
++  const state={
++    locations:[{id:"loc1",organizationId:"org",name:"Pilot Restaurant"}],
++    tables:[
++      {id:"t1",organizationId:"org",locationId:"loc1",status:"seated"},
++      {id:"t2",organizationId:"org",locationId:"loc1",status:"available"}
++    ],
++    reservations:[
++      {id:"r1",organizationId:"org",locationId:"loc1",status:"seated",partySize:4},
++      {id:"r2",organizationId:"org",locationId:"loc1",status:"confirmed",partySize:2}
++    ],
++    waitlist:[{id:"w1",organizationId:"org",locationId:"loc1",status:"waiting"}],
++    staff:[{id:"s1",organizationId:"org",locationId:"loc1",status:"active"}],
++    kitchenTickets:[{id:"k1",organizationId:"org",locationId:"loc1",status:"cooking"}],
++    financialSnapshots:[{id:"f1",organizationId:"org",locationId:"loc1",revenue:1200,generatedAt:"2026-08-09T12:00:00Z"}],
++    managementExecutiveAccuracyCertifications:[]
++  };
++  const audits=[],events=[];
++  const db={read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)};
++  const executive={
++    snapshot:async()=>({
++      locations:[{locationId:"loc1",occupancy:50,reservations:2,waitlist:1,activeStaff:1,activeTickets:1,guestCount:4,revenue:1200}],
++      portfolio:{occupancy:50,guestCount:4,revenue:1200}
++    })
++  };
++  const svc=new Service(
++    db,
++    {record:async x=>audits.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    executive,
++    {snapshot:async()=>({status:"live-floor-service-ready",locations:[{locationId:"loc1",floorServiceState:"FLOOR_SERVICE_REHEARSAL_NOT_STARTED"}]})}
++  );
++
++  let snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.45.0");
++  assert.equal(snap.status,"management-executive-accuracy-ready-for-certification");
++  assert.equal(snap.totals.discrepancies,0);
++  assert.equal(snap.totals.unverified,0);
++  assert.equal(snap.totals.criticalIssues,0);
++  assert.equal(snap.locations[0].trustState,"EXECUTIVE_DATA_RECONCILED");
++  assert.equal(snap.policy.noSyntheticExecutivePass,true);
++
++  const cert=await svc.certify("org",["loc1"],{
++    evidence:"Location and portfolio KPIs reconciled to authoritative restaurant and financial source records.",
++    note:"Executive dashboard metrics accepted for pilot."
++  },"Tester");
++  assert.equal(cert.status,"MANAGEMENT_EXECUTIVE_ACCURACY_CERTIFIED");
++  assert.equal(cert.metricCorrectionPerformedByCertification,false);
++  assert.equal(cert.financialInferencePerformedByCertification,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.status,"management-executive-accuracy-certified");
++
++  // Missing financial provenance must block revenue trust/certification.
++  state.financialSnapshots=[];
++  state.managementExecutiveAccuracyCertifications=[];
++  const blocked=await svc.snapshot("org",["loc1"]);
++  assert.equal(blocked.status,"management-executive-accuracy-blocked");
++  assert(blocked.criticalIssues.some(x=>x.metric==="revenue"&&x.status==="UNVERIFIED"));
++
++  let certificationBlocked=false;
++  try{
++    await svc.certify("org",["loc1"],{evidence:"test",note:"test"},"Tester");
++  }catch(e){certificationBlocked=/critical executive-data trust issues/i.test(e.message);}
++  assert(certificationBlocked);
++
++
++
++  const executiveState={
++    locations:[{id:"loc_missing",organizationId:"org",name:"No Source",status:"open"}],
++    tables:[],reservations:[],waitlist:[],staff:[],kitchenTickets:[],aiDecisionHistory:[],executiveGoals:[]
++  };
++  const hardenedExecutive=new Executive(
++    {read:async()=>executiveState,update:async()=>null},
++    {record:async()=>{}},{publish:()=>{}},{snapshot:async()=>({health:{overall:null}})}
++  );
++  const hardened=await hardenedExecutive.snapshot("org");
++  assert.equal(hardened.locations[0].revenue,null);
++  assert.equal(hardened.locations[0].occupancy,null);
++  assert.equal(hardened.locations[0].syntheticFallbackUsed,false);
++  assert.equal(hardened.dataPolicy.syntheticFallbacks,false);
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.45.0",
++    kpiSourceTracing:true,
++    syntheticExecutiveFallbacksRemoved:true,
++    dashboardSourceReconciliation:true,
++    occupancyAccuracy:true,
++    reservationAccuracy:true,
++    waitlistAccuracy:true,
++    laborSignalIntegrity:true,
++    kitchenSignalIntegrity:true,
++    guestCountProvenance:true,
++    revenueProvenanceRequired:true,
++    portfolioRollupReconciliation:true,
++    unverifiedRevenueBlocksCertification:true,
++    humanExecutiveTrustCertification:true,
++    noSyntheticExecutivePass:true,
++    noAutomaticMetricCorrection:true,
++    noAutomaticFinancialInference:true,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.45.0-RELEASE.md
++++ b/V51.45.0-RELEASE.md
+@@ -0,0 +1,203 @@
++# BLUE CURRENT V51.45.0 — MANAGEMENT & EXECUTIVE ACCURACY
++
++V51.41–V51.45 hardens management and executive reporting so pilot-critical KPIs cannot look trustworthy merely because a dashboard can display a plausible number.
++
++## Major issue found and corrected
++
++The Executive Command Center still contained deterministic/modelled fallback values for several locations when authoritative restaurant data was missing.
++
++Those fallbacks could create plausible-looking values for:
++
++- revenue
++- prior-day revenue/trend
++- table counts / occupancy
++- guest counts
++- ticket counts/timing
++- staff counts
++- health
++
++V51.45 removes those deterministic KPI fallbacks from the executive surface.
++
++Missing authoritative metrics now remain:
++
++`null / unavailable`
++
++instead of being silently modeled.
++
++The Executive UI was also hardened so unavailable metrics display as:
++
++`—`
++
++rather than being converted to zero.
++
++## Executive data policy
++
++The Executive Command Center now reports:
++
++- `syntheticFallbacks: false`
++- `missingAuthoritativeMetricsRemainNull: true`
++- `financialMetricsRequireFinancialSource: true`
++
++Every location includes provenance metadata and:
++
++- `syntheticFallbackUsed: false`
++
++## Accuracy certification layer
++
++V51.45 adds source reconciliation for:
++
++- occupancy
++- active reservations
++- active waitlist
++- active staff
++- active kitchen tickets
++- guest / cover count
++- revenue
++
++The certification compares the Executive Command Center value against authoritative source collections.
++
++Possible states:
++
++- MATCH
++- DISCREPANCY
++- UNVERIFIED
++- MISSING_DISPLAY_VALUE
++
++## Authoritative sources
++
++Current operational sources include:
++
++- tables
++- reservations
++- waitlist
++- staff
++- kitchenTickets
++
++Revenue requires an actual financial source, such as:
++
++- financialSnapshots
++- locationFinancials
++- revenueSnapshots
++
++A deterministic or modeled revenue number can never satisfy revenue provenance.
++
++## Portfolio reconciliation
++
++Portfolio occupancy, guest count, and revenue are also reconciled against location source data.
++
++Critical location/portfolio discrepancies or unverified revenue block certification.
++
++## Current authenticated Chefs runtime after hardening
++
++Status:
++
++`management-executive-accuracy-blocked`
++
++Current location metric comparisons:
++
++- 35 total
++- 22 MATCH
++- 0 DISCREPANCY
++- 13 UNVERIFIED
++- 10 critical trust issues
++
++The important change is that after synthetic fallback removal there are now:
++
++`0 discrepancies caused by fabricated fallback values`
++
++Missing metrics are explicitly UNVERIFIED instead.
++
++Current executive portfolio:
++
++- occupancy: 15%
++- guest count: 2
++- revenue: unavailable
++- data complete: false
++
++Location revenue is currently unavailable for all five restaurants because no authoritative financial source exists in the current dataset.
++
++Marina Grille:
++
++- occupancy: source-backed
++- revenue: unavailable
++
++Harbor House / River & Rail / The Cabin / Garden Social:
++
++- occupancy: unavailable because floor data is not populated
++- revenue: unavailable because financial data is not connected
++
++That is the correct pilot-safe behavior.
++
++## Human certification
++
++Adds:
++
++GET `/api/management-executive-accuracy`
++
++POST `/api/management-executive-accuracy/certify`
++
++Final certification requires:
++
++- zero critical executive-data trust issues
++- authoritative financial provenance for revenue
++- human executive-accuracy evidence
++- human certification note
++- admin permission
++
++Certified state:
++
++`MANAGEMENT_EXECUTIVE_ACCURACY_CERTIFIED`
++
++## Safety policy
++
++- source tracing required
++- critical discrepancies block trust
++- unverified revenue blocks certification
++- stale/missing source stays visible
++- human certification required
++- no synthetic executive pass
++- no automatic metric correction
++- no automatic financial inference
++- autonomous production changes false
++
++## Validation
++
++- V51.45 focused executive-accuracy lifecycle PASS
++- synthetic Executive Command Center fallbacks removed PASS
++- KPI source tracing PASS
++- dashboard/source reconciliation PASS
++- occupancy accuracy PASS
++- reservation accuracy PASS
++- waitlist accuracy PASS
++- labor signal integrity PASS
++- kitchen signal integrity PASS
++- guest-count provenance PASS
++- revenue provenance requirement PASS
++- portfolio rollup reconciliation PASS
++- unverified revenue certification guard PASS
++- V51.40 regression PASS
++- authenticated hardened executive endpoint PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 944 JavaScript files
++- 788 client scripts
++- 5,883 unique HTML IDs
++
++## Next
++
++V51.46–V51.50 — Pilot Deployment Package
++
++- pilot restaurant configuration package
++- environment/preflight checklist
++- deployment manifest
++- location configuration
++- pilot account/access package
++- connector/configuration checklist
++- backup/restore procedure
++- startup/restart procedure
++- support/escalation procedure
++- rollback procedure
++- deployment evidence
++- pilot deployment certification
+--- a/README-APPLY-V51.45.0.md
++++ b/README-APPLY-V51.45.0.md
+@@ -0,0 +1,57 @@
++# APPLY BLUE CURRENT V51.45.0
++
++Baseline: exact V51.40.0 repository.
++
++Extract `BLUE-CURRENT-V51.45.0-MANAGEMENT-EXECUTIVE-ACCURACY.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Important behavior change
++
++The existing Executive Command Center previously used deterministic fallback numbers when authoritative data was missing.
++
++V51.45 removes those fallbacks.
++
++After this wave, missing executive metrics display as unavailable rather than as plausible modeled numbers.
++
++That means you may see more `—` values in the Executive Command Center until real restaurant/financial data is connected. This is intentional and required for pilot trust.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.45-management-executive-accuracy.js
++node scripts/maintenance/test-v51.40-live-floor-service-certification.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.45.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Management & Executive Accuracy** surface appears after Live Floor & Service Certification.
++
++Current Chefs data is expected to report:
++
++`management-executive-accuracy-blocked`
++
++because authoritative financial revenue data is not yet connected and four locations still lack live floor data.
++
++This is not a regression. V51.45 intentionally stops missing source data from being disguised by synthetic values.
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.45.0 harden management and executive accuracy"
++git push origin live-service-timeline
++```

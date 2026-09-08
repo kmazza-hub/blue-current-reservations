@@ -1,0 +1,25 @@
+{
+  "version": "87.0.0",
+  "phase": "B",
+  "status": "INTEGRATION_CERTIFICATION_EXIT_GATE",
+  "requiredProviderEvidence": [
+    "REAL_PROVIDER_CREDENTIALS_VALIDATED",
+    "REAL_PROVIDER_DATA_OBSERVED",
+    "SCHEMA_CONTRACT_VERIFIED",
+    "INCREMENTAL_SYNC_PROVEN",
+    "CHECKPOINT_RECOVERY_PROVEN",
+    "DUPLICATE_SUPPRESSION_PROVEN",
+    "FRESHNESS_WITHIN_THRESHOLD",
+    "RECONCILIATION_WITHIN_TOLERANCE",
+    "FAILURE_ISOLATION_PROVEN",
+    "SOURCE_AUTHORITY_VERIFIED",
+    "AUDIT_TRAIL_VERIFIED"
+  ],
+  "truthStatements": {
+    "blueCurrentIntegrationPlatformCanBeReadyBeforeProviderCertification": true,
+    "providerCertificationRequiresRealCredentialsAndData": true,
+    "simulationCannotProduceProductionCertification": true,
+    "writeBackCertificationIsSeparate": true
+  },
+  "nextPhase": "C \u2014 RESTAURANT CONFIGURATION AND PILOT SETUP"
+}

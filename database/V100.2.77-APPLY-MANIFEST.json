@@ -1,0 +1,17 @@
+{
+  "version": "100.2.77",
+  "name": "Time Clock Record Integrity",
+  "files": [
+    "server/services/timeClockService.js",
+    "scripts/maintenance/test-v100.2.76-timeclock-truth-foundation.js",
+    "scripts/maintenance/test-v100.2.77-timeclock-record-integrity.js"
+  ],
+  "protectedBaseline": {
+    "server/services/timeClockService.js": "b56da9c6468e7178eb2357a923cbe83d938d4e8045d380bde8814ef32ba66ae6",
+    "scripts/maintenance/test-v100.2.76-timeclock-truth-foundation.js": "f4543a472ea862d8a4c656e6165284bf904e0c6a872873f7e5e64375a1d6ed59"
+  },
+  "targetHashes": {
+    "server/services/timeClockService.js": "7fb98a6fb84b53dfb24ceac015baebf5073a3ace750a3b2378f8064a98723a94",
+    "scripts/maintenance/test-v100.2.76-timeclock-truth-foundation.js": "6695f9f7fd85e0e7ed337bd2b2c7d74d8bf6bd45bc73d8cf56be90039194637a"
+  }
+}

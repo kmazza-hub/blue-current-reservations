@@ -1,0 +1,12 @@
+{
+  "version": "100.2.88",
+  "name": "iPad Resume State Rehydration Integrity",
+  "runtimeFilesChanged": [
+    "client/js/ipad-resume-truth-v100.2.86.js"
+  ],
+  "sourceSha256": "dbfa762bb537899739c5c772148d46243f6ac3f0f65a35a11423678612ffdbac",
+  "targetSha256": "bf937007c3d2b7f767940ae382198bf64fd24cc1c49d40ae96ecf45b9280e5d6",
+  "regressionTestUpdated": "scripts/maintenance/test-v100.2.87-ipad-session-resume-integrity.js",
+  "regressionTestSourceSha256": "bfc56cbf66acab0c5e2944ce0240505288f605a1b7403c9c7d7c10a1ead61ea3",
+  "regressionTestTargetSha256": "8869010bc54f688917291ee3c01571dff59e274fe8dfee8e01d9b246cf9ea500"
+}

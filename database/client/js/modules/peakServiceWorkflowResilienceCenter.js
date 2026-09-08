@@ -1,0 +1,16 @@
+(function(){"use strict";
+function createBlueCurrentPeakServiceWorkflowResilienceCenterModule(eventBus,appState){
+ const root=document.getElementById("v5350PeakServiceWorkflowResilience");if(!root||!window.BlueCurrentPeakServiceWorkflowResilienceEngine)return null;
+ const e=new window.BlueCurrentPeakServiceWorkflowResilienceEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
+ function render(s){$("v5350Status").textContent=s.status||"—";$("v5350Ready").textContent=`${(s.locations||[]).filter(x=>x.resilienceReady).length}/${(s.locations||[]).length}`;$("v5350Headline").textContent=s.headline||"Peak-service resilience unavailable.";$("v5350Locations").innerHTML=(s.locations||[]).map(x=>`<article data-v5350-location="${esc(x.locationId)}"><strong>${esc(x.locationName)}</strong><span>${esc(x.state)} · ${x.passed}/${x.total} gates · occupancy ${x.metrics.occupancyPercent}% · active service ${x.metrics.activeServiceFlows} · kitchen ${x.metrics.kitchenTickets}</span><div class="v432-list">${x.checks.map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.id)}</strong><span>${esc(c.actual)}</span></article>`).join("")}</div><div class="v4316-actions"><button data-v5350-observe="true">Record peak-service observation</button><button data-v5350-ready="true">READY</button><button data-v5350-degraded="true">DEGRADED</button><button data-v5350-hold="true">HOLD</button></div></article>`).join("");}
+ async function load(){try{render(await e.snapshot());}catch(err){$("v5350Headline").textContent=err.message;}}
+ root.addEventListener("click",async ev=>{const card=ev.target.closest("[data-v5350-location]");if(!card)return;try{
+  if(ev.target.closest("[data-v5350-observe]"))await e.observe(card.dataset.v5350Location,{handoffLatencySeconds:Number($("v5350Handoff").value),operatorWorkloadScore:Number($("v5350Workload").value),kitchenCongestionScore:Number($("v5350Kitchen").value),floorCongestionScore:Number($("v5350Floor").value),recoveryMinutes:Number($("v5350Recovery").value),serviceCompletion:$("v5350Completion").value,evidence:$("v5350Evidence").value,note:$("v5350Note").value,findings:[]});
+  else if(ev.target.closest("[data-v5350-ready]"))await e.certify(card.dataset.v5350Location,{decision:"READY",evidence:$("v5350DecisionEvidence").value,reason:$("v5350DecisionReason").value});
+  else if(ev.target.closest("[data-v5350-degraded]"))await e.certify(card.dataset.v5350Location,{decision:"DEGRADED",evidence:$("v5350DecisionEvidence").value,reason:$("v5350DecisionReason").value});
+  else if(ev.target.closest("[data-v5350-hold]"))await e.certify(card.dataset.v5350Location,{decision:"HOLD",evidence:$("v5350DecisionEvidence").value,reason:$("v5350DecisionReason").value});
+  await load();
+ }catch(err){$("v5350Headline").textContent=err.message;}});
+ $("v5350Refresh")?.addEventListener("click",load);load();return{engine:e,load};
+}
+window.createBlueCurrentPeakServiceWorkflowResilienceCenterModule=createBlueCurrentPeakServiceWorkflowResilienceCenterModule;})();

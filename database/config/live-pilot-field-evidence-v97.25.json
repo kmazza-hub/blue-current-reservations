@@ -1,0 +1,24 @@
+{
+  "version": "97.25.0",
+  "gate": "LIVE_PILOT_EXECUTION_AND_FIELD_EVIDENCE",
+  "categories": [
+    "OPERATOR_FRICTION",
+    "GUEST_IMPACT",
+    "WORKFLOW_PERFORMANCE",
+    "SYSTEM_INTERVENTION",
+    "INCIDENT",
+    "RECOVERY",
+    "OPERATIONAL_OUTCOME"
+  ],
+  "policy": {
+    "fieldEvidenceHumanObserved": true,
+    "serviceNightIdentityRequired": true,
+    "locationIdentityRequired": true,
+    "evidenceTimestampRequired": true,
+    "productionMutationFromEvidence": false,
+    "noAutomaticProductChange": true,
+    "noAutomaticReleaseDecision": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_EVIDENCE_QUALITY_AND_OUTCOME_MEASUREMENT"
+}

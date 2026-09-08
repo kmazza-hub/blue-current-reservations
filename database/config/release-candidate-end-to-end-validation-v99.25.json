@@ -1,0 +1,31 @@
+{
+  "version": "99.25.0",
+  "gate": "RELEASE_CANDIDATE_END_TO_END_VALIDATION",
+  "checks": [
+    "COMMERCIAL_RC_LOCKED",
+    "CANDIDATE_IDENTITY_STABLE",
+    "FINAL_TECHNICAL_CERTIFICATION_CLEAR",
+    "FINAL_OPERATOR_READINESS_CLEAR",
+    "PRODUCTION_HEALTH_CLEAR",
+    "CONTROLLED_RELEASE_DISCIPLINE_PRESENT",
+    "NO_OPEN_RC_RELEASE_BLOCKERS",
+    "ROLLBACK_REFERENCE_AVAILABLE",
+    "NO_UNEXPECTED_ACTIVE_RUNTIME",
+    "PERSISTENCE_READABLE",
+    "AUTHORIZATION_BOUNDARY_CERTIFIED",
+    "OPERATOR_READABILITY_CERTIFIED"
+  ],
+  "policy": {
+    "lockedCandidateOnly": true,
+    "candidateMutationInvalidatesValidation": true,
+    "releaseBlockerInvalidatesValidation": true,
+    "technicalRegressionInvalidatesValidation": true,
+    "operatorRegressionInvalidatesValidation": true,
+    "humanValidationReviewRequired": true,
+    "validationDoesNotRelease": true,
+    "noAutomaticDeployment": true,
+    "noAutomaticCommercialRelease": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "COMMERCIAL_OPERATIONS_AND_SUPPORT_READINESS"
+}

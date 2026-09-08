@@ -1,0 +1,60 @@
+{
+  "version": "91.50.0",
+  "phase": "D",
+  "gate": "COMMAND_PROGRESSIVE_DISCLOSURE_AND_NAVIGATION_SIMPLIFICATION",
+  "principles": [
+    "primaryWorkOneTapAway",
+    "secondaryToolsOnDemand",
+    "roleAwareWorkspacePriority",
+    "detailsCollapsedByDefault",
+    "mobileNavigationCompression"
+  ],
+  "workspaceHierarchy": {
+    "HOST": {
+      "primary": [
+        "guests",
+        "service"
+      ],
+      "secondary": [
+        "team"
+      ]
+    },
+    "MANAGER": {
+      "primary": [
+        "service",
+        "guests",
+        "kitchen"
+      ],
+      "secondary": [
+        "team",
+        "inventory",
+        "executive"
+      ]
+    },
+    "OPERATOR": {
+      "primary": [
+        "service",
+        "kitchen",
+        "guests"
+      ],
+      "secondary": [
+        "team",
+        "inventory",
+        "executive"
+      ]
+    },
+    "EXECUTIVE": {
+      "primary": [
+        "executive"
+      ],
+      "secondary": []
+    }
+  },
+  "safety": {
+    "presentationOnly": true,
+    "workspaceAvailabilityPreserved": true,
+    "serverAuthorizationUnchanged": true,
+    "automaticExpansion": false
+  },
+  "nextGate": "SHIFT_START_AND_HANDOFF_OPERATOR_FLOW"
+}

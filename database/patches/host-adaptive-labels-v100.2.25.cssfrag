@@ -1,0 +1,108 @@
+/* V100.2.25 — Host Stand Adaptive Labels
+   Aim small, miss small: every status and priority label must fit, center, and read cleanly. */
+
+/* Floor table markers keep their map position, but the visible marker expands to fit the state. */
+#host-stand .host-table {
+  width:max-content !important;
+  min-width:64px !important;
+  max-width:104px !important;
+  height:auto !important;
+  min-height:52px !important;
+  padding:7px 10px !important;
+  box-sizing:border-box !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:2px !important;
+  text-align:center !important;
+  overflow:visible !important;
+}
+
+/* Round tables become compact capsules when a word is longer than the old circle. */
+#host-stand .host-table.round {
+  width:max-content !important;
+  min-width:58px !important;
+  height:auto !important;
+  min-height:58px !important;
+  border-radius:999px !important;
+}
+
+#host-stand .host-table span,
+#host-stand .host-table small {
+  width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  display:block !important;
+  text-align:center !important;
+  white-space:normal !important;
+  overflow-wrap:normal !important;
+  word-break:keep-all !important;
+}
+
+#host-stand .host-table span {
+  font-size:.78rem !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+}
+
+#host-stand .host-table small {
+  font-size:.9rem !important;
+  line-height:1.02 !important;
+  font-weight:950 !important;
+}
+
+/* Long glance states such as OPEN SOON and CLEANING get enough breathing room. */
+#host-stand .host-table.bc-open-soon-v100-2-23,
+#host-stand .host-table.bc-check-table-v100-2-23,
+#host-stand .host-table.cleaning {
+  min-width:78px !important;
+}
+
+/* Priority/occasion pills size to their content and keep the label optically centered. */
+#host-stand .bc-ready-priority-v100-2-17,
+#host-stand .bc-special-badge-v100-2-17,
+#host-stand .bc-ready-seat-source-v100-2-17,
+#host-stand .bc-ready-source-v100-2-17 {
+  width:max-content !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  min-height:30px !important;
+  padding:5px 11px !important;
+  box-sizing:border-box !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  border-radius:999px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+}
+
+/* Do not resurrect provenance pills hidden by V100.2.24. */
+#host-stand .bc-ready-seat-source-v100-2-17,
+#host-stand .bc-ready-source-v100-2-17 {
+  display:none !important;
+}
+
+/* Keep selected/highlight rings centered around the adaptive marker. */
+#host-stand .host-table.selected,
+#host-stand .host-table:hover {
+  transform:translate(-50%,-50%) scale(1.05) !important;
+  transform-origin:center center !important;
+}
+
+@media (max-width:900px) {
+  #host-stand .host-table {
+    min-width:60px !important;
+    max-width:96px !important;
+    min-height:50px !important;
+    padding:6px 8px !important;
+  }
+  #host-stand .host-table.round {
+    min-width:56px !important;
+    min-height:56px !important;
+  }
+  #host-stand .host-table small { font-size:.84rem !important; }
+}

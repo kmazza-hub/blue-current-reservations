@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Shift Command Center v35.1.1'));

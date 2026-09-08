@@ -1,0 +1,15 @@
+{
+  "version": "92.0.0",
+  "phase": "D",
+  "gate": "SERVICE_EXCEPTION_AND_RECOVERY_WORKFLOW",
+  "workflow": [
+    "DETECT",
+    "OWN",
+    "RECOVER",
+    "VERIFY"
+  ],
+  "existingIncidentLedgerReused": true,
+  "resolutionRequiresRecoveryVerification": true,
+  "automaticRemediation": false,
+  "nextGate": "SERVICE_RECOVERY_EVIDENCE_AND_POST_SHIFT_REVIEW"
+}

@@ -1,0 +1,353 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "48.15.0",
++  "version": "48.20.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 executive pilot review packet and decision evidence",
++  "description": "Blue Current Hospitality OS \u2014 human pilot decision ledger and executive sign-off",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -45,6 +45,7 @@
+ const PilotValueScorecardService = require("./services/pilotValueScorecardService");
+ const PilotProofProgramService = require("./services/pilotProofProgramService");
+ const ExecutivePilotReviewService = require("./services/executivePilotReviewService");
++const PilotDecisionLedgerService = require("./services/pilotDecisionLedgerService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -93,7 +94,8 @@
+ const pilotValueScorecardService = new PilotValueScorecardService(database, auditService, realtimeHub, multiLocationPerformanceService);
+ const pilotProofProgramService = new PilotProofProgramService(database, auditService, realtimeHub, pilotValueScorecardService);
+ const executivePilotReviewService = new ExecutivePilotReviewService(database, auditService, realtimeHub, pilotProofProgramService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService });
++const pilotDecisionLedgerService = new PilotDecisionLedgerService(database, auditService, realtimeHub, executivePilotReviewService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -180,7 +182,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V48.15.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V48.20.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "48.15.0",
++        version: "48.20.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,17 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/pilot-decision-ledger" && request.method === "GET") {
++      return sendJson(response,200,await pilotDecisionLedgerService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname === "/api/pilot-decision-ledger/sign" && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to sign a pilot decision."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await pilotDecisionLedgerService.sign(auth.membership.organizationId,auth.membership.locationIds||[],body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/executive-pilot-review" && request.method === "GET") {
+       return sendJson(response,200,await executivePilotReviewService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/pilotDecisionLedgerService.js
++++ b/server/services/pilotDecisionLedgerService.js
+@@ -0,0 +1,70 @@
++"use strict";
++
++class PilotDecisionLedgerService {
++  constructor(database,auditService,realtimeHub,executivePilotReviewService){Object.assign(this,{database,auditService,realtimeHub,executivePilotReviewService});}
++  now(){return new Date().toISOString();}
++  async list(organizationId){
++    const db=await this.database.read();
++    return (db.pilotDecisionLedger||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.decidedAt)-new Date(a.decidedAt));
++  }
++  normalizeDecision(value){
++    const v=String(value||"").toUpperCase();
++    if(!["CONTINUE","INTERVENE","EXPAND","PAUSE","CLOSE"].includes(v))throw new Error("Decision must be CONTINUE, INTERVENE, EXPAND, PAUSE, or CLOSE.");
++    return v;
++  }
++  normalizeLocations(value,allowed){
++    const requested=Array.isArray(value)?[...new Set(value.map(String))]:[];
++    const allowedSet=new Set((allowed||[]).map(String));
++    if(allowedSet.has("*"))return requested;
++    const invalid=requested.filter(x=>!allowedSet.has(x));
++    if(invalid.length)throw new Error(`Rollout scope contains unauthorized location(s): ${invalid.join(", ")}`);
++    return requested;
++  }
++  async sign(organizationId,allowedLocationIds,input,actor){
++    const review=await this.executivePilotReviewService.snapshot(organizationId,allowedLocationIds);
++    if(!review.packet)throw new Error("Executive pilot review is required before recording a decision.");
++    const decision=this.normalizeDecision(input.decision);
++    const approver=String(input.approver||actor||"").trim().slice(0,160);
++    if(!approver)throw new Error("Approver is required.");
++    const conditions=String(input.conditions||"").trim().slice(0,1500);
++    const followUp=String(input.followUp||"").trim().slice(0,1000);
++    const rolloutLocationIds=this.normalizeLocations(input.rolloutLocationIds,allowedLocationIds);
++    if(decision==="EXPAND"&&!rolloutLocationIds.length)throw new Error("EXPAND requires an explicit rollout location scope.");
++    if(decision==="EXPAND"&&review.packet.decision!=="EXPAND"&&!conditions)throw new Error("Expanding against the current Blue Current recommendation requires documented executive conditions.");
++    const now=this.now();
++    const record={
++      id:`pdl_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,
++      pilotId:review.proofProgram?.program?.id||null,pilotName:review.proofProgram?.program?.name||review.packet.title,
++      decision,systemRecommendation:review.packet.decision,recommendationConfidence:review.packet.confidence,
++      approver,decidedBy:actor,decidedAt:now,conditions,followUp,rolloutLocationIds,
++      evidenceSnapshot:{
++        verifiedRealizedImpactDollars:review.packet.evidence.verifiedRealizedImpactDollars,
++        successGates:review.packet.successGates,
++        exceptions:review.packet.exceptions.map(x=>({locationId:x.locationId,locationName:x.locationName,type:x.type,reason:x.reason})),
++        baselineVsCurrent:review.packet.baselineVsCurrent
++      },
++      acknowledgment:{
++        humanDecision:true,
++        systemDidNotApprove:true,
++        recommendationWasOverridden:decision!==review.packet.decision
++      }
++    };
++    await this.database.mutate(db=>{db.pilotDecisionLedger||=[];db.pilotDecisionLedger.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Pilot decision signed: ${decision} by ${approver} (${record.id})`,category:"pilot_value"});
++    this.realtimeHub.publish("pilot-decision:signed",{id:record.id,organizationId,decision,approver});
++    return record;
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const review=await this.executivePilotReviewService.snapshot(organizationId,allowedLocationIds);
++    const decisions=await this.list(organizationId),latest=decisions[0]||null;
++    const availableLocations=(review.packet?.locationReview||[]).map(x=>({locationId:x.locationId,locationName:x.locationName}));
++    return {
++      version:"48.20.0",generatedAt:this.now(),status:review.packet?"decision-ready":"review-required",
++      headline:latest?`${latest.decision} signed by ${latest.approver}. Blue Current recommendation at signing: ${latest.systemRecommendation}.`:"No human pilot decision has been signed yet.",
++      currentRecommendation:review.packet?{decision:review.packet.decision,confidence:review.packet.confidence,reason:review.packet.recommendation.reason}:null,
++      availableLocations,latestDecision:latest,history:decisions,
++      policy:{humanSignatureRequired:true,automaticApproval:false,automaticExpansion:false,systemRecommendationIsNonBinding:true}
++    };
++  }
++}
++module.exports=PilotDecisionLedgerService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="48.15.0">
++  <meta name="blue-current-build" content="48.20.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -230,6 +230,14 @@
+       <div id="eprMovement" class="v432-kpis"></div><div id="eprGates" class="v432-list"></div><div id="eprLocations" class="v432-list"></div>
+       <p><strong>Recommended next action:</strong> <span id="eprNext"></span></p>
+       <div class="v4316-actions"><input id="eprNote" class="v4312-input" placeholder="Executive review note"><button id="eprCopy" type="button">Copy review packet</button><button id="eprArchive" type="button">Archive review packet</button></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="pilotDecisionLedger">
++      <header><div><small>V48.16–V48.20 · Pilot Decision Ledger & Executive Sign-Off</small><strong>Record the actual human commercial decision—separate from Blue Current's recommendation.</strong><span>Executive/admin sign-off captures approver, conditions, rollout scope, follow-up obligations, evidence at decision time, and whether leadership overrode the system recommendation.</span></div><button id="pdlRefresh" type="button">Refresh ledger</button></header>
++      <div class="v432-kpis"><article><small>System recommendation</small><strong id="pdlRecommendation">—</strong></article><article><small>Latest human decision</small><strong id="pdlLatest">UNSIGNED</strong></article><article><small>Approver</small><strong id="pdlApprover">—</strong></article><article><small>Decision history</small><strong id="pdlHistoryCount">0</strong></article></div>
++      <div class="v4316-answer" id="pdlHeadline">No human pilot decision has been signed yet.</div>
++      <div class="v4316-actions"><select id="pdlDecision" class="v4312-input"><option>CONTINUE</option><option>INTERVENE</option><option>EXPAND</option><option>PAUSE</option><option>CLOSE</option></select><input id="pdlApproverInput" class="v4312-input" placeholder="Executive approver"><input id="pdlConditions" class="v4312-input" placeholder="Decision conditions / rationale"><input id="pdlFollowUp" class="v4312-input" placeholder="Follow-up obligation"><button id="pdlSign" type="button">Sign human decision</button></div>
++      <p><strong>Expansion rollout scope</strong></p><div id="pdlLocations" class="v4316-actions"></div>
++      <div id="pdlHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8744,6 +8752,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotProofProgram" data-src="js/modules/pilotProofProgramCenter.js?v=48.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewEngine.js?v=48.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewCenter.js?v=48.15.0"></script>
+-<script src="js/startup-loader.js?v=48.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerEngine.js?v=48.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerCenter.js?v=48.20.0"></script>
++<script src="js/startup-loader.js?v=48.20.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1232,6 +1232,7 @@
+ const pilotValueScorecardModule = startupRegistry.register("pilotValueScorecard", shouldInitializeCenter("pilotValueScorecard") ? window.createBlueCurrentPilotValueScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "multiLocationPerformance"]);
+ const pilotProofProgramModule = startupRegistry.register("pilotProofProgram", shouldInitializeCenter("pilotProofProgram") ? window.createBlueCurrentPilotProofProgramCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotValueScorecard"]);
+ const executivePilotReviewModule = startupRegistry.register("executivePilotReview", shouldInitializeCenter("executivePilotReview") ? window.createBlueCurrentExecutivePilotReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotProofProgram"]);
++const pilotDecisionLedgerModule = startupRegistry.register("pilotDecisionLedger", shouldInitializeCenter("pilotDecisionLedger") ? window.createBlueCurrentPilotDecisionLedgerCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "executivePilotReview"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V48.15.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V48.20.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/pilotDecisionLedgerEngine.js
++++ b/client/js/modules/pilotDecisionLedgerEngine.js
+@@ -0,0 +1 @@
++(function(global){"use strict";class BlueCurrentPilotDecisionLedgerEngine{constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}token(){return localStorage.getItem("blueCurrentV3230Token")||"";}headers(){return {Authorization:`Bearer ${this.token()}`};}async snapshot(){const r=await fetch("/api/pilot-decision-ledger",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot decision ledger failed (${r.status})`);this.appState?.update?.({pilotDecisionLedger:d});return d;}async sign(payload){const r=await fetch("/api/pilot-decision-ledger/sign",{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot decision sign-off failed (${r.status})`);this.eventBus?.emit?.("pilot-decision:signed",structuredClone(d));return d;}}if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotDecisionLedgerEngine;if(global)global.BlueCurrentPilotDecisionLedgerEngine=BlueCurrentPilotDecisionLedgerEngine;})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/pilotDecisionLedgerCenter.js
++++ b/client/js/modules/pilotDecisionLedgerCenter.js
+@@ -0,0 +1,7 @@
++(function(){"use strict";function createBlueCurrentPilotDecisionLedgerCenterModule(eventBus,appState){const root=document.getElementById("pilotDecisionLedger");if(!root||!window.BlueCurrentPilotDecisionLedgerEngine)return null;const e=new window.BlueCurrentPilotDecisionLedgerEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++function render(s){$("pdlRecommendation").textContent=s.currentRecommendation?.decision||"—";$("pdlLatest").textContent=s.latestDecision?.decision||"UNSIGNED";$("pdlApprover").textContent=s.latestDecision?.approver||"—";$("pdlHistoryCount").textContent=(s.history||[]).length;$("pdlHeadline").textContent=s.headline||"No decision signed.";
++$("pdlLocations").innerHTML=(s.availableLocations||[]).map(x=>`<label><input type="checkbox" class="pdl-location" value="${esc(x.locationId)}"> ${esc(x.locationName)}</label>`).join("")||"<span>No rollout locations available.</span>";
++$("pdlHistory").innerHTML=(s.history||[]).map(x=>`<article><strong>${esc(x.decision)} · ${esc(x.approver)}</strong><span>${new Date(x.decidedAt).toLocaleString()} · System recommended ${esc(x.systemRecommendation)}${x.acknowledgment?.recommendationWasOverridden?" · OVERRIDE":""}${x.rolloutLocationIds?.length?` · ${x.rolloutLocationIds.length} rollout location(s)`:""}</span>${x.conditions?`<p>Conditions: ${esc(x.conditions)}</p>`:""}${x.followUp?`<p>Follow-up: ${esc(x.followUp)}</p>`:""}</article>`).join("")||"<article><strong>No signed pilot decisions.</strong></article>";}
++async function load(){try{render(await e.snapshot());}catch(err){$("pdlHeadline").textContent=err.message;}}
++$("pdlRefresh")?.addEventListener("click",load);$("pdlSign")?.addEventListener("click",async()=>{try{const rolloutLocationIds=[...document.querySelectorAll(".pdl-location:checked")].map(x=>x.value);const payload={decision:$("pdlDecision").value,approver:$("pdlApproverInput").value,conditions:$("pdlConditions").value,followUp:$("pdlFollowUp").value,rolloutLocationIds};const x=await e.sign(payload);$("pdlHeadline").textContent=`${x.decision} signed by ${x.approver}.`;await load();}catch(err){$("pdlHeadline").textContent=err.message;}});
++["pilot-review:archived","pilot-proof:configured","pilot-value:checkpoint","pilot-decision:signed","auth:restored"].forEach(x=>eventBus?.on?.(x,load));load();return{engine:e,load};}window.createBlueCurrentPilotDecisionLedgerCenterModule=createBlueCurrentPilotDecisionLedgerCenterModule;})();--- a/scripts/maintenance/test-v48.20-pilot-decision-ledger.js
++++ b/scripts/maintenance/test-v48.20-pilot-decision-ledger.js
+@@ -0,0 +1,45 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/pilotDecisionLedgerService");
++(async()=>{
++  const state={},audit=[],events=[];
++  const review={
++    packet:{
++      title:"Pilot Review",decision:"CONTINUE",confidence:"moderate",
++      recommendation:{reason:"More evidence",nextAction:"Checkpoint"},
++      evidence:{verifiedRealizedImpactDollars:500},
++      successGates:[{name:"overall",passed:false}],exceptions:[],
++      baselineVsCurrent:{readiness:{baseline:80,current:84}},
++      locationReview:[{locationId:"a",locationName:"A"},{locationId:"b",locationName:"B"}]
++    },
++    proofProgram:{program:{id:"p1",name:"Pilot"}}
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>review}
++  );
++  let snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.latestDecision,null);
++  let blocked=false;
++  try{
++    await svc.sign("org",["a","b"],{decision:"EXPAND",approver:"Owner",rolloutLocationIds:["a"]},"Tester");
++  }catch(e){blocked=e.message.includes("conditions");}
++  assert(blocked);
++  const rec=await svc.sign("org",["a","b"],{
++    decision:"EXPAND",approver:"Owner",conditions:"Executive accepts staged expansion risk.",
++    followUp:"Review in 14 days.",rolloutLocationIds:["a"]
++  },"Tester");
++  assert.equal(rec.decision,"EXPAND");
++  assert.equal(rec.acknowledgment.humanDecision,true);
++  assert.equal(rec.acknowledgment.systemDidNotApprove,true);
++  assert.equal(rec.acknowledgment.recommendationWasOverridden,true);
++  assert.deepEqual(rec.rolloutLocationIds,["a"]);
++  snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.latestDecision.id,rec.id);
++  assert.equal(snap.policy.automaticExpansion,false);
++  assert.equal(audit.length,1);
++  assert.equal(events[0][0],"pilot-decision:signed");
++  console.log(JSON.stringify({ok:true,version:"48.20.0",overrideGuard:true,humanSignature:true,rolloutScope:true,history:true,automaticApproval:false,automaticExpansion:false},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V48.20.0-RELEASE.md
++++ b/V48.20.0-RELEASE.md
+@@ -0,0 +1,50 @@
++# BLUE CURRENT V48.20.0 — PILOT DECISION LEDGER & EXECUTIVE SIGN-OFF
++
++## V48.16–V48.20
++This wave separates Blue Current's recommendation from the actual human commercial decision.
++
++### Added
++- persistent pilot decision ledger
++- admin-only executive sign-off API
++- human decision: CONTINUE / INTERVENE / EXPAND / PAUSE / CLOSE
++- named approver and signing actor
++- conditions / rationale
++- follow-up obligation
++- explicit rollout location scope
++- evidence snapshot at signing time
++- system recommendation captured alongside the human decision
++- override detection
++- complete decision history
++- audit + realtime event
++
++### Expansion guards
++- EXPAND requires explicit rollout locations.
++- Unauthorized rollout locations are rejected.
++- If leadership expands against a non-EXPAND Blue Current recommendation, documented executive conditions are mandatory.
++- Blue Current never approves or executes expansion automatically.
++
++Policy:
++- humanSignatureRequired: true
++- automaticApproval: false
++- automaticExpansion: false
++- systemRecommendationIsNonBinding: true
++
++### Permission boundary
++Signing is deliberately restricted to authenticated users with `admin` permission.
++The current demo account used for integration testing is not an admin; authenticated ledger reads pass and its attempted sign-off correctly returns HTTP 403. The focused service test validates the full successful signing lifecycle independently.
++
++## Validation
++- focused sign-off lifecycle PASS
++- recommendation-override guard PASS
++- rollout-scope persistence PASS
++- decision history PASS
++- non-admin signing blocked PASS
++- authenticated ledger read PASS
++- authoritative runtime DB unchanged
++- npm run check PASS
++- 875 JavaScript files
++- 742 client scripts
++- 5,533 unique HTML IDs
++
++## Next
++V48.21–V48.25: Expansion Readiness & Rollout Scope — convert an approved human decision into a staged, condition-aware rollout plan without auto-activating locations.
+--- a/README-APPLY-V48.20.0.md
++++ b/README-APPLY-V48.20.0.md
+@@ -0,0 +1,27 @@
++# APPLY BLUE CURRENT V48.20.0
++
++Baseline: exact V48.15.0 repository.
++
++Extract `BLUE-CURRENT-V48.20.0-PATCH.zip` into the repository root.
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v48.20-pilot-decision-ledger.js
++npm run start
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected version: `48.20.0`.
++
++Then `Ctrl+F5`.
++
++The new **Pilot Decision Ledger & Executive Sign-Off** appears in the V48 commercial proof stack.
++
++Important: signing is admin-only. A non-admin account can review the ledger but cannot sign a commercial decision.
++
++```powershell
++git add -A
++git commit -m "V48.20.0 add pilot decision ledger and executive sign-off"
++git push origin live-service-timeline
++```

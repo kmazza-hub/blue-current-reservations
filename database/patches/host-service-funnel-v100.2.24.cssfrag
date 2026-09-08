@@ -1,0 +1,154 @@
+/* V100.2.24 — Host Stand Scalable Service Funnel
+   Aim small, miss small: show only what changes the next decision. */
+
+/* Provenance still exists in data/history, but never consumes rush-screen attention. */
+#host-stand .bc-ready-seat-source-v100-2-17,
+#host-stand .bc-ready-source-v100-2-17 {
+  display:none !important;
+}
+
+/* The right rail is a service funnel, not a wall of oversized cards. */
+#host-stand .host-queue-panel,
+#host-stand .host-queue-rail,
+#host-stand .queue-panel {
+  min-width:0 !important;
+}
+
+#host-stand #waitlistQueue,
+#host-stand #arrivalQueue {
+  scrollbar-width:thin;
+  overscroll-behavior:contain;
+}
+
+#host-stand #waitlistQueue .queue-item {
+  min-height:82px !important;
+  padding:12px 14px !important;
+  gap:12px !important;
+  display:grid !important;
+  grid-template-columns:46px minmax(0,1fr) 92px !important;
+  align-items:center !important;
+}
+
+#host-stand #arrivalQueue .queue-item.arrival {
+  min-height:78px !important;
+  padding:12px 14px !important;
+  gap:12px !important;
+  display:grid !important;
+  grid-template-columns:58px minmax(0,1fr) 112px !important;
+  align-items:center !important;
+}
+
+#host-stand #waitlistQueue .queue-item > div,
+#host-stand #arrivalQueue .queue-item.arrival > div {
+  min-width:0 !important;
+}
+
+#host-stand #waitlistQueue .queue-item strong,
+#host-stand #arrivalQueue .queue-item.arrival strong {
+  display:block !important;
+  margin:0 !important;
+  color:#fff !important;
+  font-size:1.08rem !important;
+  line-height:1.08 !important;
+  font-weight:950 !important;
+  white-space:normal !important;
+}
+
+#host-stand #waitlistQueue .queue-item small,
+#host-stand #arrivalQueue .queue-item.arrival small {
+  display:block !important;
+  margin-top:3px !important;
+  color:#d7f0f2 !important;
+  font-size:.86rem !important;
+  line-height:1.15 !important;
+  font-weight:760 !important;
+}
+
+#host-stand #waitlistQueue .queue-time,
+#host-stand #arrivalQueue .arrival-time {
+  justify-self:start !important;
+  min-width:42px !important;
+  padding:7px 6px !important;
+  border-radius:999px !important;
+  color:#0b3540 !important;
+  background:#fff3d9 !important;
+  font-size:.85rem !important;
+  line-height:1 !important;
+  font-weight:950 !important;
+  text-align:center !important;
+}
+
+#host-stand #waitlistQueue .queue-item > button,
+#host-stand #arrivalQueue .queue-item.arrival > button,
+#host-stand .bc-mark-arrived-v100-2-17 {
+  justify-self:end !important;
+  min-width:88px !important;
+  min-height:44px !important;
+  padding:0 12px !important;
+  border-radius:12px !important;
+  font-size:.88rem !important;
+  font-weight:950 !important;
+}
+
+/* One meaningful need/occasion can pop; it should not turn into another line of UI chrome. */
+#host-stand .bc-ready-priority-v100-2-17,
+#host-stand .bc-special-badge-v100-2-17 {
+  display:inline-flex !important;
+  width:max-content !important;
+  max-width:100% !important;
+  margin-top:5px !important;
+  padding:3px 7px !important;
+  border-radius:999px !important;
+  font-size:.74rem !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+  white-space:nowrap !important;
+}
+
+#host-stand .bc-special-priority-v100-2-17 {
+  border-left:4px solid #f5be4f !important;
+}
+
+/* Keep the active queue bounded on large-volume nights. The full reservation book stays in Reservations. */
+@media (min-width:1000px) {
+  #host-stand #waitlistQueue,
+  #host-stand #arrivalQueue {
+    max-height:calc(100vh - 265px) !important;
+    overflow-y:auto !important;
+    overflow-x:hidden !important;
+    padding-right:4px !important;
+  }
+}
+
+/* The no-table state should be a two-second read, not a paragraph. */
+#host-stand .bc-no-table-v100-2-22,
+#host-stand .bc-no-fit-v100-2-22,
+#host-stand .bc-unified-seat-instruction-v100-2-18.bc-no-table-v100-2-22 {
+  padding:16px 18px !important;
+}
+#host-stand .bc-no-table-v100-2-22 strong,
+#host-stand .bc-no-fit-v100-2-22 strong {
+  font-size:1.35rem !important;
+  line-height:1.08 !important;
+}
+#host-stand .bc-no-table-v100-2-22 span,
+#host-stand .bc-no-fit-v100-2-22 span {
+  font-size:1rem !important;
+  line-height:1.25 !important;
+}
+
+/* Tablet: preserve tap targets while keeping the queue dense enough for a rush. */
+@media (max-width:900px) {
+  #host-stand #waitlistQueue .queue-item {
+    grid-template-columns:42px minmax(0,1fr) 82px !important;
+    min-height:78px !important;
+  }
+  #host-stand #arrivalQueue .queue-item.arrival {
+    grid-template-columns:52px minmax(0,1fr) 104px !important;
+    min-height:76px !important;
+  }
+  #host-stand #waitlistQueue .queue-item strong,
+  #host-stand #arrivalQueue .queue-item.arrival strong { font-size:1rem !important; }
+  #host-stand #waitlistQueue .queue-item small,
+  #host-stand #arrivalQueue .queue-item.arrival small { font-size:.8rem !important; }
+}

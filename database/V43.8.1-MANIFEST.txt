@@ -1,0 +1,15 @@
+Blue Current V43.8.1 — I/O Reliability Hotfix
+
+REPLACE:
+server/services/databaseService.js
+server/api/router.js
+server/server.js
+client/js/app-v15.1.3.js
+client/js/startup-loader.js
+client/index.html
+
+ADD:
+scripts/maintenance/test-database-read-reliability.js
+V43.8.1-RELEASE.md
+README-APPLY-V43.8.1.md
+V43.8.1-MANIFEST.txt

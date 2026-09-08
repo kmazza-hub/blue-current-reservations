@@ -1,0 +1,26 @@
+{
+  "version": "88.25.0",
+  "phase": "C",
+  "gate": "PILOT_LOCATION_CONFIGURATION_CERTIFICATION",
+  "requiredChecks": [
+    "configurationPersisted",
+    "configurationValid",
+    "locationIdentityComplete",
+    "servicePeriodsReady",
+    "diningAreasReady",
+    "tableMapReady",
+    "operatingRolesReady",
+    "turnTargetConfigured",
+    "integrationAssignmentsDeclared",
+    "pilotModeEnabled",
+    "providerWriteBackLockedOff",
+    "autonomousProductionChangesLockedOff"
+  ],
+  "certificationInvalidation": "Any restaurant configuration update requires recertification.",
+  "safety": {
+    "providerWriteBackEnabled": false,
+    "autonomousProductionChanges": false,
+    "adminCertificationRequired": true
+  },
+  "nextGate": "PILOT_DATA_AND_WORKFLOW_BINDING"
+}

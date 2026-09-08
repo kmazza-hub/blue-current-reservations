@@ -1,0 +1,28 @@
+{
+  "version": "90.75.0",
+  "phase": "D",
+  "gate": "OPERATOR_PILOT_CONTROL_ACTIONS",
+  "sessionActions": [
+    "START",
+    "PAUSE",
+    "RESUME",
+    "STOP"
+  ],
+  "incidentActions": [
+    "ACKNOWLEDGE",
+    "ESCALATE",
+    "RESOLVE"
+  ],
+  "rules": {
+    "startRequiresCurrentLaunchApproval": true,
+    "pauseAndStopRequireReason": true,
+    "resumeRequiresOperatingEnvelope": true,
+    "criticalIncidentAutoPausePreserved": true
+  },
+  "safety": {
+    "adminPermissionRequired": true,
+    "automaticSessionStart": false,
+    "automaticExpansion": false,
+    "autonomousProductionChanges": false
+  }
+}

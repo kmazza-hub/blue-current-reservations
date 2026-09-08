@@ -1,0 +1,537 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "48.30.0",
++  "version": "49.5.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V48 commercial proof release certification",
++  "description": "Blue Current Hospitality OS \u2014 rollout activation control and live preflight gating",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -48,6 +48,7 @@
+ const PilotDecisionLedgerService = require("./services/pilotDecisionLedgerService");
+ const ExpansionReadinessService = require("./services/expansionReadinessService");
+ const V48ReleaseCertificationService = require("./services/v48ReleaseCertificationService");
++const RolloutActivationControlService = require("./services/rolloutActivationControlService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -99,7 +100,8 @@
+ const pilotDecisionLedgerService = new PilotDecisionLedgerService(database, auditService, realtimeHub, executivePilotReviewService);
+ const expansionReadinessService = new ExpansionReadinessService(database, auditService, realtimeHub, pilotDecisionLedgerService, executivePilotReviewService);
+ const v48ReleaseCertificationService = new V48ReleaseCertificationService(database, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService });
++const rolloutActivationControlService = new RolloutActivationControlService(database, auditService, realtimeHub, expansionReadinessService, multiLocationPerformanceService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -186,7 +188,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V48.30.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V49.5.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "48.30.0",
++        version: "49.5.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,20 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/rollout-activation-control" && request.method === "GET") {
++      return sendJson(response,200,await rolloutActivationControlService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/rollout-activation-control/locations/") && url.pathname.endsWith("/approve") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for activation approval."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await rolloutActivationControlService.approve(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/v48-release-certification" && request.method === "GET") {
+       return sendJson(response,200,await v48ReleaseCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/rolloutActivationControlService.js
++++ b/server/services/rolloutActivationControlService.js
+@@ -0,0 +1,96 @@
++"use strict";
++
++class RolloutActivationControlService {
++  constructor(database,auditService,realtimeHub,expansionReadinessService,multiLocationPerformanceService){
++    Object.assign(this,{database,auditService,realtimeHub,expansionReadinessService,multiLocationPerformanceService});
++  }
++  now(){return new Date().toISOString();}
++  async approvals(organizationId){
++    const db=await this.database.read();
++    return (db.rolloutActivationApprovals||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.approvedAt)-new Date(a.approvedAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [expansion,portfolio,approvals]=await Promise.all([
++      this.expansionReadinessService.snapshot(organizationId,allowedLocationIds),
++      this.multiLocationPerformanceService.snapshot(organizationId,allowedLocationIds),
++      this.approvals(organizationId)
++    ]);
++    const plan=expansion.activePlan||null;
++    const portfolioMap=new Map((portfolio.locations||[]).map(x=>[x.locationId,x]));
++    const latestApprovalByLocation=new Map();
++    for(const x of approvals)if(!latestApprovalByLocation.has(x.locationId))latestApprovalByLocation.set(x.locationId,x);
++    const locations=(plan?.locations||[]).map(x=>{
++      const live=portfolioMap.get(x.locationId)||{};
++      const gates=[
++        {id:"signed-scope",label:"Included in signed human EXPAND scope",passed:expansion.signedDecision?.decision==="EXPAND"&&(expansion.signedDecision?.rolloutLocationIds||[]).includes(x.locationId)},
++        {id:"rollout-plan",label:"Included in current rollout plan",passed:true},
++        {id:"readiness-floor",label:`Readiness at or above ${plan.readinessFloor}`,passed:Number(live.readinessScore||0)>=Number(plan.readinessFloor||0),actual:Number(live.readinessScore||0)},
++        {id:"leadership-attention",label:"No High/Critical leadership attention state",passed:!["high","critical"].includes(live.attentionLevel),actual:live.attentionLevel||"unknown"},
++        {id:"urgent-predictive",label:"No urgent predictive intervention requiring immediate leadership action",passed:Number(live.urgentPredictiveInterventions||0)===0,actual:Number(live.urgentPredictiveInterventions||0)}
++      ];
++      const passed=gates.filter(g=>g.passed).length,approval=latestApprovalByLocation.get(x.locationId)||null;
++      return {
++        locationId:x.locationId,locationName:x.locationName,wave:x.wave,planState:x.state,
++        readinessScore:Number(live.readinessScore||0),attentionLevel:live.attentionLevel||"unknown",
++        urgentPredictiveInterventions:Number(live.urgentPredictiveInterventions||0),
++        gates,passed,total:gates.length,preflightPassed:passed===gates.length,
++        approval,
++        activationControlState:approval?.status==="APPROVED_FOR_ACTIVATION"?"APPROVED_NOT_DEPLOYED":"AWAITING_HUMAN_APPROVAL"
++      };
++    });
++    return {
++      version:"49.5.0",generatedAt:this.now(),
++      status:!plan?"rollout-plan-required":locations.every(x=>x.approval?.status==="APPROVED_FOR_ACTIVATION")?"activation-approvals-complete":"activation-review-required",
++      headline:!plan?"A signed expansion rollout plan is required before activation review.":`${locations.filter(x=>x.preflightPassed).length}/${locations.length} planned location(s) currently pass all live activation preflight gates.`,
++      plan:plan?{id:plan.id,status:plan.status,activationState:plan.activationState,waveSize:plan.waveSize,cadenceDays:plan.cadenceDays,readinessFloor:plan.readinessFloor,owner:plan.owner}:null,
++      locations,approvalHistory:approvals,
++      policy:{
++        explicitHumanApprovalRequired:true,
++        adminApprovalRequired:true,
++        overrideRequiresReason:true,
++        approvalDoesNotDeploy:true,
++        automaticApproval:false,
++        automaticDeployment:false,
++        automaticActivation:false
++      }
++    };
++  }
++  async approve(organizationId,allowedLocationIds,locationId,input,actor){
++    const snapshot=await this.snapshot(organizationId,allowedLocationIds);
++    if(!snapshot.plan)throw new Error("A rollout plan is required before activation approval.");
++    const location=snapshot.locations.find(x=>x.locationId===locationId);
++    if(!location)throw new Error("Location is not in the current signed rollout plan.");
++    const overrideReason=String(input.overrideReason||"").trim().slice(0,1200);
++    if(!location.preflightPassed&&!overrideReason)throw new Error("Activation preflight has open gates. A documented executive override reason is required.");
++    const approver=String(input.approver||actor||"").trim().slice(0,160);
++    if(!approver)throw new Error("Activation approver is required.");
++    const now=this.now();
++    const record={
++      id:`raa_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,planId:snapshot.plan.id,locationId,locationName:location.locationName,wave:location.wave,
++      status:"APPROVED_FOR_ACTIVATION",
++      deploymentState:"NOT_DEPLOYED",
++      approver,approvedBy:actor,approvedAt:now,
++      overrideUsed:!location.preflightPassed,overrideReason,
++      preflightAtApproval:{passed:location.passed,total:location.total,gates:location.gates},
++      note:String(input.note||"").slice(0,800)
++    };
++    await this.database.mutate(db=>{
++      db.rolloutActivationApprovals||=[];
++      db.rolloutActivationApprovals.push(record);
++      const plan=(db.expansionReadinessPlans||[]).find(x=>x.id===snapshot.plan.id);
++      const target=plan?.locations?.find(x=>x.locationId===locationId);
++      if(target){
++        target.activationApproved=true;
++        target.activationApprovedBy=approver;
++        target.activationApprovedAt=now;
++        target.state="APPROVED_FOR_ACTIVATION";
++      }
++      return record;
++    });
++    await this.auditService.record({organizationId,actor,action:`Rollout activation approved for ${locationId} by ${approver}; deployment NOT performed${record.overrideUsed?" with executive override":""}`,category:"rollout_activation"});
++    this.realtimeHub.publish("rollout-activation:approved",{id:record.id,organizationId,locationId,approver,overrideUsed:record.overrideUsed});
++    return record;
++  }
++}
++module.exports=RolloutActivationControlService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="48.30.0">
++  <meta name="blue-current-build" content="49.5.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -252,6 +252,14 @@
+       <div class="v4316-answer" id="v48certHeadline">Running V48 certification…</div>
+       <p><strong>Commercial proof chain</strong></p><div id="v48certChain" class="v432-list"></div>
+       <p><strong>Certification contracts</strong></p><div id="v48certChecks" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="rolloutActivationControl">
++      <header><div><small>V49.01–V49.05 · Rollout Activation Control</small><strong>Approve restaurant rollout activation only after live preflight review.</strong><span>Blue Current evaluates signed scope, rollout-plan inclusion, current readiness, leadership attention, and urgent predictive pressure. Approval is human and admin-only; approval does not deploy or activate the restaurant technically.</span></div><button id="racRefresh" type="button">Refresh activation review</button></header>
++      <div class="v432-kpis"><article><small>Activation status</small><strong id="racStatus">—</strong></article><article><small>Current plan</small><strong id="racPlan">NONE</strong></article><article><small>Preflight passed</small><strong id="racPassed">0/0</strong></article><article><small>Approved</small><strong id="racApproved">0</strong></article></div>
++      <div class="v4316-answer" id="racHeadline">A signed rollout plan is required before activation review.</div>
++      <div class="v4316-actions"><input id="racApprover" class="v4312-input" placeholder="Activation approver"><input id="racOverride" class="v4312-input" placeholder="Executive override reason (required if a gate is open)"><input id="racNote" class="v4312-input" placeholder="Activation approval note"></div>
++      <p><strong>Location preflight</strong></p><div id="racLocations" class="v432-list"></div>
++      <p><strong>Activation approval ledger</strong></p><div id="racHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8772,6 +8780,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessCenter.js?v=48.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationEngine.js?v=48.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationCenter.js?v=48.30.0"></script>
+-<script src="js/startup-loader.js?v=48.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlEngine.js?v=49.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlCenter.js?v=49.5.0"></script>
++<script src="js/startup-loader.js?v=49.5.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1235,6 +1235,7 @@
+ const pilotDecisionLedgerModule = startupRegistry.register("pilotDecisionLedger", shouldInitializeCenter("pilotDecisionLedger") ? window.createBlueCurrentPilotDecisionLedgerCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "executivePilotReview"]);
+ const expansionReadinessModule = startupRegistry.register("expansionReadiness", shouldInitializeCenter("expansionReadiness") ? window.createBlueCurrentExpansionReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDecisionLedger"]);
+ const v48ReleaseCertificationModule = startupRegistry.register("v48ReleaseCertification", shouldInitializeCenter("v48ReleaseCertification") ? window.createBlueCurrentV48ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "expansionReadiness"]);
++const rolloutActivationControlModule = startupRegistry.register("rolloutActivationControl", shouldInitializeCenter("rolloutActivationControl") ? window.createBlueCurrentRolloutActivationControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v48ReleaseCertification"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V48.30.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V49.5.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/rolloutActivationControlEngine.js
++++ b/client/js/modules/rolloutActivationControlEngine.js
+@@ -0,0 +1,11 @@
++(function(global){"use strict";
++class BlueCurrentRolloutActivationControlEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/rollout-activation-control",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Rollout activation control failed (${r.status})`);this.appState?.update?.({rolloutActivationControl:d});return d;}
++  async approve(locationId,payload={}){const r=await fetch(`/api/rollout-activation-control/locations/${encodeURIComponent(locationId)}/approve`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Activation approval failed (${r.status})`);this.eventBus?.emit?.("rollout-activation:approved",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentRolloutActivationControlEngine;
++if(global)global.BlueCurrentRolloutActivationControlEngine=BlueCurrentRolloutActivationControlEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/rolloutActivationControlCenter.js
++++ b/client/js/modules/rolloutActivationControlCenter.js
+@@ -0,0 +1,32 @@
++(function(){"use strict";
++function createBlueCurrentRolloutActivationControlCenterModule(eventBus,appState){
++  const root=document.getElementById("rolloutActivationControl");
++  if(!root||!window.BlueCurrentRolloutActivationControlEngine)return null;
++  const e=new window.BlueCurrentRolloutActivationControlEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("racStatus").textContent=s.status||"—";
++    $("racPlan").textContent=s.plan?.id||"NONE";
++    $("racPassed").textContent=`${(s.locations||[]).filter(x=>x.preflightPassed).length}/${(s.locations||[]).length}`;
++    $("racApproved").textContent=(s.locations||[]).filter(x=>x.approval?.status==="APPROVED_FOR_ACTIVATION").length;
++    $("racHeadline").textContent=s.headline||"Rollout activation review unavailable.";
++    $("racLocations").innerHTML=(s.locations||[]).map(x=>`<article data-rac-location="${esc(x.locationId)}"><div><strong>Wave ${x.wave} · ${esc(x.locationName)}</strong><span>${esc(x.activationControlState)} · readiness ${x.readinessScore} · ${esc(x.attentionLevel)}</span></div><div class="v432-list">${(x.gates||[]).map(g=>`<article><strong>${g.passed?"PASS":"OPEN"} · ${esc(g.label)}</strong>${g.actual!==undefined?`<span>Current: ${esc(g.actual)}</span>`:""}</article>`).join("")}</div>${x.approval?`<p><strong>Approved by ${esc(x.approval.approver)}</strong> · deployment state ${esc(x.approval.deploymentState)}${x.approval.overrideUsed?" · EXECUTIVE OVERRIDE":""}</p>`:`<div class="v4316-actions"><button type="button" data-rac-approve="true">Approve for activation</button></div>`}</article>`).join("")||"<article><strong>No rollout locations are awaiting activation review.</strong></article>";
++    $("racHistory").innerHTML=(s.approvalHistory||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.status)}</strong><span>${esc(x.approver)} · ${new Date(x.approvedAt).toLocaleString()} · ${esc(x.deploymentState)}${x.overrideUsed?" · override used":""}</span></article>`).join("")||"<article><strong>No activation approvals recorded.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("racHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const btn=ev.target.closest("[data-rac-approve]"),card=ev.target.closest("[data-rac-location]");
++    if(!btn||!card)return;
++    try{
++      btn.disabled=true;
++      await e.approve(card.dataset.racLocation,{approver:$("racApprover").value,overrideReason:$("racOverride").value,note:$("racNote").value});
++      await load();
++    }catch(err){$("racHeadline").textContent=err.message;}finally{btn.disabled=false;}
++  });
++  $("racRefresh")?.addEventListener("click",load);
++  ["expansion-readiness:drafted","pilot-decision:signed","rollout-activation:approved","multi-location-performance:updated","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentRolloutActivationControlCenterModule=createBlueCurrentRolloutActivationControlCenterModule;
++})();--- a/scripts/maintenance/test-v49.05-rollout-activation-control.js
++++ b/scripts/maintenance/test-v49.05-rollout-activation-control.js
+@@ -0,0 +1,73 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/rolloutActivationControlService");
++
++(async()=>{
++  const state={
++    expansionReadinessPlans:[{
++      id:"plan1",organizationId:"org",status:"DRAFT",activationState:"NOT_ACTIVATED",waveSize:1,cadenceDays:7,readinessFloor:75,owner:"VP Ops",
++      locations:[
++        {locationId:"a",locationName:"A",wave:1,state:"PLANNED",activationApproved:false},
++        {locationId:"b",locationName:"B",wave:2,state:"PLANNED",activationApproved:false}
++      ]
++    }],
++    rolloutActivationApprovals:[]
++  };
++  const audit=[],events=[];
++  const expansion={
++    signedDecision:{decision:"EXPAND",rolloutLocationIds:["a","b"]},
++    activePlan:state.expansionReadinessPlans[0]
++  };
++  let portfolio={
++    locations:[
++      {locationId:"a",locationName:"A",readinessScore:82,attentionLevel:"healthy",urgentPredictiveInterventions:0},
++      {locationId:"b",locationName:"B",readinessScore:70,attentionLevel:"watch",urgentPredictiveInterventions:1}
++    ]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>expansion},
++    {snapshot:async()=>portfolio}
++  );
++  let snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.version,"49.5.0");
++  assert.equal(snap.locations[0].preflightPassed,true);
++  assert.equal(snap.locations[1].preflightPassed,false);
++  assert.equal(snap.policy.automaticActivation,false);
++  assert.equal(snap.policy.approvalDoesNotDeploy,true);
++
++  const a=await svc.approve("org",["a","b"],"a",{approver:"Executive"},"Tester");
++  assert.equal(a.status,"APPROVED_FOR_ACTIVATION");
++  assert.equal(a.deploymentState,"NOT_DEPLOYED");
++  assert.equal(a.overrideUsed,false);
++
++  let blocked=false;
++  try{await svc.approve("org",["a","b"],"b",{approver:"Executive"},"Tester");}
++  catch(e){blocked=/override reason/i.test(e.message);}
++  assert(blocked);
++
++  const b=await svc.approve("org",["a","b"],"b",{approver:"Executive",overrideReason:"Leadership accepts one urgent intervention before launch."},"Tester");
++  assert.equal(b.overrideUsed,true);
++  assert.equal(b.deploymentState,"NOT_DEPLOYED");
++  assert.equal(state.expansionReadinessPlans[0].locations[0].state,"APPROVED_FOR_ACTIVATION");
++  assert.equal(state.expansionReadinessPlans[0].locations[1].state,"APPROVED_FOR_ACTIVATION");
++  assert.equal(audit.length,2);
++  assert.equal(events.length,2);
++
++  snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.status,"activation-approvals-complete");
++
++  console.log(JSON.stringify({
++    ok:true,version:"49.5.0",
++    livePreflight:true,
++    openGateBlockedWithoutOverride:true,
++    documentedOverride:true,
++    approvalState:"APPROVED_FOR_ACTIVATION",
++    deploymentState:"NOT_DEPLOYED",
++    automaticApproval:false,
++    automaticDeployment:false,
++    automaticActivation:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V49.5.0-RELEASE.md
++++ b/V49.5.0-RELEASE.md
+@@ -0,0 +1,119 @@
++# BLUE CURRENT V49.5.0 — ROLLOUT ACTIVATION CONTROL
++
++V49 begins Blue Current scale operations.
++
++## V49.01–V49.05
++
++The first V49 wave converts a V48 rollout plan into an explicit per-location activation review.
++
++Blue Current now evaluates each planned restaurant against live operating conditions before a human approves it for activation.
++
++### Live activation preflight
++Each planned location is checked for:
++
++1. inclusion in the signed human EXPAND scope
++2. inclusion in the current rollout plan
++3. current readiness at or above the rollout plan readiness floor
++4. no High/Critical leadership-attention state
++5. no urgent predictive intervention requiring immediate leadership action
++
++The preflight is recalculated from current operating data.
++
++### Human activation approval
++
++Adds:
++
++`POST /api/rollout-activation-control/locations/:locationId/approve`
++
++Approval requires:
++- authenticated admin permission
++- explicit approver
++- location inside authorized scope
++- current rollout-plan membership
++
++If all gates pass, the administrator can approve the location for activation.
++
++If one or more gates are open, approval is blocked unless a documented executive override reason is supplied.
++
++### Important state separation
++
++Approval does not mean deployment.
++
++Approved locations are written as:
++
++- `status: APPROVED_FOR_ACTIVATION`
++- `deploymentState: NOT_DEPLOYED`
++- rollout location state: `APPROVED_FOR_ACTIVATION`
++
++Blue Current records that leadership approved activation but does not perform technical deployment.
++
++### Activation ledger
++
++Each approval records:
++- organization
++- rollout plan
++- location
++- rollout wave
++- approver
++- authenticated actor
++- timestamp
++- complete preflight snapshot
++- whether an override was used
++- override reason
++- approval note
++- deployment state
++
++The event is also audited and published to realtime listeners.
++
++## Policy
++
++- `explicitHumanApprovalRequired: true`
++- `adminApprovalRequired: true`
++- `overrideRequiresReason: true`
++- `approvalDoesNotDeploy: true`
++- `automaticApproval: false`
++- `automaticDeployment: false`
++- `automaticActivation: false`
++
++## Current authenticated runtime
++
++The current untouched Chefs runtime does not yet contain a signed rollout plan.
++
++The V49 endpoint therefore correctly reports:
++
++- status: `rollout-plan-required`
++- locations under activation review: 0
++- automatic approval: false
++- automatic deployment: false
++- automatic activation: false
++
++The current demo owner account is not an admin, so an attempted activation approval correctly returns HTTP 403.
++
++## Validation
++
++- V49.5 focused activation lifecycle PASS
++- live preflight calculation PASS
++- open-gate approval blocked without override PASS
++- documented executive override PASS
++- approved-for-activation state PASS
++- deployment remains NOT_DEPLOYED PASS
++- V48.30 certification regression PASS
++- authenticated V49.5 GET PASS
++- admin-only activation approval boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 884 JavaScript files
++- 748 client scripts
++- 5,570 unique HTML IDs
++
++## Next
++
++V49.06–V49.10 should build Technical Activation Readiness:
++- integration/configuration checklist per location
++- authentication and user readiness
++- data-source connectivity state
++- reservation/floor/kitchen/workforce module readiness
++- launch blockers
++- technical activation packet
++- explicit human go-live authorization
++- no automatic production cutover
+--- a/README-APPLY-V49.5.0.md
++++ b/README-APPLY-V49.5.0.md
+@@ -0,0 +1,50 @@
++# APPLY BLUE CURRENT V49.5.0
++
++Baseline: exact certified V48.30.0 repository.
++
++Extract `BLUE-CURRENT-V49.5.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v49.05-rollout-activation-control.js
++node scripts/maintenance/test-v48.30-release-certification.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "49.5.0"
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++Press `Ctrl+F5`.
++
++The new **Rollout Activation Control** appears at the top of the V48/V49 commercial and scale-operations stack.
++
++Important:
++- activation approval is admin-only
++- an open preflight gate requires an explicit executive override reason
++- approval does not technically deploy or activate a restaurant
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V49.5.0 add rollout activation control"
++git push origin live-service-timeline
++```

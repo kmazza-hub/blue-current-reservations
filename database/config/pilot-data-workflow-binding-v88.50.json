@@ -1,0 +1,25 @@
+{
+  "version": "88.50.0",
+  "phase": "C",
+  "gate": "PILOT_DATA_AND_WORKFLOW_BINDING",
+  "domains": [
+    "GUESTS",
+    "RESERVATIONS",
+    "TABLES",
+    "SERVICE",
+    "TEAM",
+    "KITCHEN",
+    "POS"
+  ],
+  "principles": {
+    "restaurantConfigurationDrivesTableAndServiceContext": true,
+    "currentLocationCertificationRequired": true,
+    "externalProviderSourcesReadOnlyDuringPilot": true,
+    "configurationChangeRequiresRebinding": true
+  },
+  "safety": {
+    "externalProviderWriteBack": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_SCENARIO_AND_SERVICE_SIMULATION"
+}

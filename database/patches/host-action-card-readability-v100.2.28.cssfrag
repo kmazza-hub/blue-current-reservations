@@ -1,0 +1,125 @@
+/* V100.2.28 — Host Action Card Readability + Seat Button Contrast
+   Aim small, miss small: every host action reads instantly in a rush. */
+
+/* Reserved-table tool: use the same strong hierarchy as the rest of Host Stand. */
+#host-stand .bc-reserved-table-tool-v100-2-26 {
+  background:#ffffff !important;
+  color:#0b2f39 !important;
+  border-color:#d7aa48 !important;
+}
+#host-stand .bc-reserved-table-tool-v100-2-26 header small,
+#host-stand .bc-reserved-guest-label-v100-2-26 {
+  color:#345760 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+}
+#host-stand .bc-reserved-table-tool-v100-2-26 header strong,
+#host-stand .bc-reserved-time-v100-2-26,
+#host-stand .bc-reserved-linked-v100-2-26 strong,
+#host-stand .bc-reserved-linked-v100-2-26 span {
+  color:#0b2f39 !important;
+  opacity:1 !important;
+}
+#host-stand .bc-reserved-linked-v100-2-26 {
+  background:#e9f4f2 !important;
+  border:1px solid #d1e5e1 !important;
+}
+#host-stand .bc-reserved-linked-v100-2-26 strong {
+  font-size:20px !important;
+  line-height:1.15 !important;
+  font-weight:950 !important;
+}
+#host-stand .bc-reserved-linked-v100-2-26 span {
+  font-size:14px !important;
+  line-height:1.35 !important;
+  font-weight:800 !important;
+}
+
+/* Guest chooser remains obvious and readable. */
+#host-stand .bc-reserved-guest-select-v100-2-26 {
+  min-height:56px !important;
+  border:2px solid #67d9d0 !important;
+  background:#082b35 !important;
+  color:#ffffff !important;
+  font-size:16px !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+}
+#host-stand .bc-reserved-guest-select-v100-2-26 option {
+  background:#ffffff !important;
+  color:#0b2f39 !important;
+}
+
+/* Every Seat/primary action must be fully legible, centered, and touch-friendly. */
+#host-stand #waitlistQueue .queue-item > button,
+#host-stand #arrivalQueue .queue-item > button,
+#host-stand .bc-reserved-primary-v100-2-26,
+#host-stand .bc-seat-confirm-v100-2-20,
+#host-stand .bc-unified-seat-confirm-v100-2-18 {
+  min-height:56px !important;
+  padding:12px 18px !important;
+  border:2px solid #31c6e4 !important;
+  border-radius:14px !important;
+  background:#087d99 !important;
+  color:#ffffff !important;
+  opacity:1 !important;
+  -webkit-text-fill-color:#ffffff !important;
+  font-size:16px !important;
+  line-height:1.1 !important;
+  font-weight:950 !important;
+  letter-spacing:0 !important;
+  text-align:center !important;
+  text-shadow:none !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  white-space:normal !important;
+}
+#host-stand #waitlistQueue .queue-item > button:hover,
+#host-stand #arrivalQueue .queue-item > button:hover,
+#host-stand .bc-reserved-primary-v100-2-26:hover {
+  background:#066d86 !important;
+}
+
+/* Disabled actions should still explain themselves rather than disappear visually. */
+#host-stand .bc-reserved-primary-v100-2-26:disabled,
+#host-stand .bc-reserved-release-v100-2-26:disabled,
+#host-stand #waitlistQueue .queue-item > button:disabled,
+#host-stand #arrivalQueue .queue-item > button:disabled {
+  background:#dce6e5 !important;
+  border-color:#b8c9c8 !important;
+  color:#486269 !important;
+  -webkit-text-fill-color:#486269 !important;
+  opacity:1 !important;
+}
+
+/* Release is secondary, but never washed out. */
+#host-stand .bc-reserved-release-v100-2-26 {
+  min-height:54px !important;
+  border:2px solid #c99d43 !important;
+  background:#fff5df !important;
+  color:#5a3c00 !important;
+  -webkit-text-fill-color:#5a3c00 !important;
+  opacity:1 !important;
+  font-size:16px !important;
+  line-height:1.1 !important;
+  font-weight:900 !important;
+}
+
+/* Close control stays obvious on a bright card. */
+#host-stand .bc-reserved-close-v100-2-26 {
+  border:2px solid #9fb4b6 !important;
+  background:#eef4f3 !important;
+  color:#0b2f39 !important;
+  -webkit-text-fill-color:#0b2f39 !important;
+  opacity:1 !important;
+}
+
+@media (max-width:1100px) {
+  #host-stand #waitlistQueue .queue-item > button,
+  #host-stand #arrivalQueue .queue-item > button {
+    min-width:92px !important;
+    font-size:15px !important;
+    padding-inline:12px !important;
+  }
+}

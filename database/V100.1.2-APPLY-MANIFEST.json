@@ -1,0 +1,56 @@
+{
+  "package": "V100.1.2 Command Lifecycle & API Contract Hotfix",
+  "baselineVersion": "100.0.0",
+  "requires": [
+    "V100.1.0",
+    "V100.1.1"
+  ],
+  "files": [
+    {
+      "path": "README-APPLY-V100.1.2.md",
+      "sha256": "c5764143312314f8fd2d5aec146726cc6d126d9ced7ba6f271a4735197de9d80",
+      "bytes": 1580
+    },
+    {
+      "path": "V100.1.2-RELEASE.md",
+      "sha256": "dd88d1623e027ced514f31fe716f91bdf76188325a6b16488032ea30cfd846d9",
+      "bytes": 1963
+    },
+    {
+      "path": "client/js/modules/hospitalityOsShell.js",
+      "sha256": "b286772ea8a06ec3baaf9d74c6eef36385447935bb5bcb5a0fd8699e138589a1",
+      "bytes": 52973
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1-operator-shell-stabilization.js",
+      "sha256": "4441dca4a18463f7c75cda5bc26190eb9b385886b5933d7449b53b66a7e135c7",
+      "bytes": 2896
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.1-command-auth-transport.js",
+      "sha256": "0d964cb5cd722bac2cc6808566909e41b405cd180c2497a9f7a5df8600109547",
+      "bytes": 2977
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.2-command-lifecycle-api-contract.js",
+      "sha256": "dd173f4737d73552d67d2b2edd3ae27abaff186108321c8ae3b05dd5ea6753d4",
+      "bytes": 4126
+    },
+    {
+      "path": "server/api/router.js",
+      "sha256": "3f892730fc36625df467b74a5cee5f2b0f734f051cb43dd5c923322602840a1b",
+      "bytes": 294728
+    },
+    {
+      "path": "server/services/commandOperatingPictureService.js",
+      "sha256": "23bdf1ab3ad2e2cae15cf5be3ab6fd2b553bcd9a2bd49a28c777aa0960e3c17e",
+      "bytes": 8894
+    }
+  ],
+  "serverFilesChanged": [
+    "server/api/router.js",
+    "server/services/commandOperatingPictureService.js"
+  ],
+  "databaseFilesChanged": false,
+  "packageVersionChanged": false
+}

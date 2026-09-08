@@ -1,0 +1,621 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "49.10.0",
++  "version": "49.15.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 technical activation readiness and human go-live authorization",
++  "description": "Blue Current Hospitality OS \u2014 per-location deployment package and rollout runbook",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -50,6 +50,7 @@
+ const V48ReleaseCertificationService = require("./services/v48ReleaseCertificationService");
+ const RolloutActivationControlService = require("./services/rolloutActivationControlService");
+ const TechnicalActivationReadinessService = require("./services/technicalActivationReadinessService");
++const LocationDeploymentPackageService = require("./services/locationDeploymentPackageService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -103,7 +104,8 @@
+ const v48ReleaseCertificationService = new V48ReleaseCertificationService(database, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService);
+ const rolloutActivationControlService = new RolloutActivationControlService(database, auditService, realtimeHub, expansionReadinessService, multiLocationPerformanceService);
+ const technicalActivationReadinessService = new TechnicalActivationReadinessService(database, auditService, realtimeHub, rolloutActivationControlService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService });
++const locationDeploymentPackageService = new LocationDeploymentPackageService(database, auditService, realtimeHub, technicalActivationReadinessService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -190,7 +192,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V49.10.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V49.15.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "49.10.0",
++        version: "49.15.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,28 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/location-deployment-package" && request.method === "GET") {
++      return sendJson(response,200,await locationDeploymentPackageService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/location-deployment-package/locations/") && url.pathname.endsWith("/packet") && request.method === "GET") {
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      try{return sendJson(response,200,await locationDeploymentPackageService.packet(auth.membership.organizationId,allowed,locationId));}
++      catch(error){return sendJson(response,404,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/location-deployment-package/locations/") && url.pathname.endsWith("/prepare") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to prepare a deployment package."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await locationDeploymentPackageService.prepare(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/technical-activation-readiness" && request.method === "GET") {
+       return sendJson(response,200,await technicalActivationReadinessService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/locationDeploymentPackageService.js
++++ b/server/services/locationDeploymentPackageService.js
+@@ -0,0 +1,145 @@
++"use strict";
++
++class LocationDeploymentPackageService {
++  constructor(database,auditService,realtimeHub,technicalActivationReadinessService){
++    Object.assign(this,{database,auditService,realtimeHub,technicalActivationReadinessService});
++  }
++  now(){return new Date().toISOString();}
++  async packages(organizationId){
++    const db=await this.database.read();
++    return (db.locationDeploymentPackages||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++  }
++  buildManifest(location,technical,input={}){
++    const auth=location.goLiveAuthorization;
++    const moduleMatrix=(location.checks||[])
++      .filter(x=>["floor","reservations","kitchen","workforce"].includes(x.category))
++      .map(x=>({
++        module:x.category,
++        enabledForDeployment:x.passed,
++        source:x.actual,
++        required:x.required
++      }));
++    const connectorRequirements=(location.checks||[])
++      .filter(x=>x.category==="integrations"||["reservation-model","kitchen-model","workforce-model"].includes(x.id))
++      .map(x=>({id:x.id,label:x.label,current:x.actual,required:x.required,satisfied:x.passed}));
++    return {
++      locationId:location.locationId,
++      locationName:location.locationName,
++      wave:location.wave,
++      technicalReadinessPercent:location.technicalReadinessPercent,
++      technicallyReady:location.technicallyReady,
++      goLiveAuthorizationId:auth?.id||null,
++      goLiveApprover:auth?.approver||null,
++      launchWindow:String(input.launchWindow||auth?.launchWindow||"").slice(0,160),
++      deploymentOwner:String(input.deploymentOwner||auth?.approver||"").slice(0,160),
++      rollbackOwner:String(input.rollbackOwner||auth?.rollbackOwner||"").slice(0,160),
++      configurationRequirements:(location.checks||[]).filter(x=>["configuration","identity"].includes(x.category)).map(x=>({id:x.id,label:x.label,satisfied:x.passed,current:x.actual})),
++      moduleEnablementMatrix:moduleMatrix,
++      connectorRequirements,
++      blockers:location.blockers||[],
++      warnings:location.warnings||[],
++      rollbackRunbook:{
++        owner:String(input.rollbackOwner||auth?.rollbackOwner||"").slice(0,160),
++        trigger:String(input.rollbackTrigger||"Critical authentication, data integrity, integration, or service degradation after cutover.").slice(0,700),
++        actions:[
++          "Stop new production cutover actions for the affected location.",
++          "Restore the last certified application/configuration checkpoint.",
++          "Disable newly introduced external connector traffic where applicable.",
++          "Confirm reservations, floor, kitchen, workforce, and authentication data integrity.",
++          "Record incident owner, timeline, decision, and recovery evidence before resuming launch."
++        ]
++      },
++      launchRunbook:[
++        "Confirm signed human go-live authorization remains valid.",
++        "Re-run technical readiness immediately before the launch window.",
++        "Confirm deployment owner and rollback owner are available.",
++        "Verify configuration and access requirements.",
++        "Verify enabled module set and connector state.",
++        "Perform production cutover only through an explicit deployment execution workflow.",
++        "Run post-cutover health and data-integrity verification.",
++        "Enter stabilization monitoring before declaring the location live."
++      ]
++    };
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [technical,packages]=await Promise.all([
++      this.technicalActivationReadinessService.snapshot(organizationId,allowedLocationIds),
++      this.packages(organizationId)
++    ]);
++    const latestByLocation=new Map();
++    for(const p of packages)if(!latestByLocation.has(p.locationId))latestByLocation.set(p.locationId,p);
++    const locations=(technical.locations||[]).map(x=>{
++      const pkg=latestByLocation.get(x.locationId)||null;
++      return {
++        locationId:x.locationId,locationName:x.locationName,wave:x.wave,
++        technicallyReady:x.technicallyReady,
++        goLiveAuthorized:x.goLiveAuthorization?.status==="AUTHORIZED_FOR_GO_LIVE",
++        goLiveState:x.goLiveState,
++        blockers:x.blockers||[],
++        deploymentPackage:pkg,
++        packageState:pkg?.status||"NOT_PREPARED",
++        deploymentExecutionState:pkg?.deploymentExecutionState||"NOT_STARTED"
++      };
++    });
++    return {
++      version:"49.15.0",generatedAt:this.now(),
++      status:!technical.activationPlan?"technical-plan-required":locations.some(x=>x.goLiveAuthorized)?"deployment-package-review":"go-live-authorization-required",
++      headline:!technical.activationPlan?"Technical activation plan is required before deployment packaging.":`${locations.filter(x=>x.goLiveAuthorized).length}/${locations.length} location(s) have human go-live authorization and can be packaged for deployment.`,
++      locations,packageHistory:packages,
++      policy:{
++        goLiveAuthorizationRequired:true,
++        adminPackagePreparationRequired:true,
++        packagePreparationDoesNotDeploy:true,
++        deploymentExecutionSeparate:true,
++        automaticProvisioning:false,
++        automaticDeployment:false,
++        automaticCutover:false
++      }
++    };
++  }
++  async prepare(organizationId,allowedLocationIds,locationId,input,actor){
++    const technical=await this.technicalActivationReadinessService.snapshot(organizationId,allowedLocationIds);
++    const location=(technical.locations||[]).find(x=>x.locationId===locationId);
++    if(!location)throw new Error("Location is not in technical activation readiness.");
++    if(location.goLiveAuthorization?.status!=="AUTHORIZED_FOR_GO_LIVE")throw new Error("Human go-live authorization is required before preparing a deployment package.");
++    const deploymentOwner=String(input.deploymentOwner||location.goLiveAuthorization.approver||"").trim().slice(0,160);
++    const rollbackOwner=String(input.rollbackOwner||location.goLiveAuthorization.rollbackOwner||"").trim().slice(0,160);
++    if(!deploymentOwner)throw new Error("Deployment owner is required.");
++    if(!rollbackOwner)throw new Error("Rollback owner is required.");
++    const manifest=this.buildManifest(location,technical,{...input,deploymentOwner,rollbackOwner});
++    const now=this.now();
++    const record={
++      id:`ldp_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:location.locationName,wave:location.wave,
++      status:"READY_FOR_DEPLOYMENT_EXECUTION",
++      deploymentExecutionState:"NOT_STARTED",
++      productionCutoverState:"NOT_PERFORMED",
++      createdAt:now,createdBy:actor,
++      deploymentOwner,rollbackOwner,
++      launchWindow:manifest.launchWindow,
++      note:String(input.note||"").slice(0,1000),
++      manifest
++    };
++    await this.database.mutate(db=>{db.locationDeploymentPackages||=[];db.locationDeploymentPackages.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Location deployment package prepared for ${locationId}; execution NOT started; cutover NOT performed`,category:"technical_activation"});
++    this.realtimeHub.publish("location-deployment:package-prepared",{id:record.id,organizationId,locationId,deploymentOwner});
++    return record;
++  }
++  async packet(organizationId,allowedLocationIds,locationId){
++    const snapshot=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snapshot.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location is not in deployment-package review.");
++    return {
++      version:"49.15.0",generatedAt:this.now(),
++      locationId,locationName:loc.locationName,
++      goLiveAuthorized:loc.goLiveAuthorized,
++      packageState:loc.packageState,
++      deploymentExecutionState:loc.deploymentExecutionState,
++      package:loc.deploymentPackage,
++      policy:snapshot.policy
++    };
++  }
++}
++module.exports=LocationDeploymentPackageService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="49.10.0">
++  <meta name="blue-current-build" content="49.15.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -269,6 +269,15 @@
+       <p><strong>Technical activation locations</strong></p><div id="tarLocations" class="v432-list"></div>
+       <p><strong>Technical activation packet</strong></p><pre id="tarPacket" style="white-space:pre-wrap;overflow:auto;max-height:360px"></pre>
+       <p><strong>Go-live authorization ledger</strong></p><div id="tarHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="locationDeploymentPackage">
++      <header><div><small>V49.11–V49.15 · Location Deployment Package</small><strong>Turn go-live authorization into a location-specific deployment package without starting production deployment.</strong><span>Blue Current assembles configuration, access, modules, integrations, launch window, rollback ownership, and runbooks into one deployable manifest. Package preparation is admin-only and does not execute deployment or cutover.</span></div><button id="ldpRefresh" type="button">Refresh deployment packages</button></header>
++      <div class="v432-kpis"><article><small>Package status</small><strong id="ldpStatus">—</strong></article><article><small>Go-live authorized</small><strong id="ldpAuthorized">0</strong></article><article><small>Packages prepared</small><strong id="ldpPrepared">0</strong></article><article><small>Deployments started</small><strong id="ldpExecution">0</strong></article></div>
++      <div class="v4316-answer" id="ldpHeadline">Technical go-live authorization is required before deployment packaging.</div>
++      <div class="v4316-actions"><input id="ldpOwner" class="v4312-input" placeholder="Deployment owner"><input id="ldpRollbackOwner" class="v4312-input" placeholder="Rollback owner"><input id="ldpWindow" class="v4312-input" placeholder="Launch window"><input id="ldpRollbackTrigger" class="v4312-input" placeholder="Rollback trigger"><input id="ldpNote" class="v4312-input" placeholder="Deployment package note"></div>
++      <p><strong>Location deployment packages</strong></p><div id="ldpLocations" class="v432-list"></div>
++      <p><strong>Deployment manifest</strong></p><pre id="ldpPacket" style="white-space:pre-wrap;overflow:auto;max-height:420px"></pre>
++      <p><strong>Package history</strong></p><div id="ldpHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8793,6 +8802,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="rolloutActivationControl" data-src="js/modules/rolloutActivationControlCenter.js?v=49.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessEngine.js?v=49.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessCenter.js?v=49.10.0"></script>
+-<script src="js/startup-loader.js?v=49.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageEngine.js?v=49.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageCenter.js?v=49.15.0"></script>
++<script src="js/startup-loader.js?v=49.15.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1237,6 +1237,7 @@
+ const v48ReleaseCertificationModule = startupRegistry.register("v48ReleaseCertification", shouldInitializeCenter("v48ReleaseCertification") ? window.createBlueCurrentV48ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "expansionReadiness"]);
+ const rolloutActivationControlModule = startupRegistry.register("rolloutActivationControl", shouldInitializeCenter("rolloutActivationControl") ? window.createBlueCurrentRolloutActivationControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v48ReleaseCertification"]);
+ const technicalActivationReadinessModule = startupRegistry.register("technicalActivationReadiness", shouldInitializeCenter("technicalActivationReadiness") ? window.createBlueCurrentTechnicalActivationReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolloutActivationControl"]);
++const locationDeploymentPackageModule = startupRegistry.register("locationDeploymentPackage", shouldInitializeCenter("locationDeploymentPackage") ? window.createBlueCurrentLocationDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "technicalActivationReadiness"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V49.10.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V49.15.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/locationDeploymentPackageEngine.js
++++ b/client/js/modules/locationDeploymentPackageEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentLocationDeploymentPackageEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/location-deployment-package",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Location deployment package failed (${r.status})`);this.appState?.update?.({locationDeploymentPackage:d});return d;}
++  async packet(locationId){const r=await fetch(`/api/location-deployment-package/locations/${encodeURIComponent(locationId)}/packet`,{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Deployment packet failed (${r.status})`);return d;}
++  async prepare(locationId,payload={}){const r=await fetch(`/api/location-deployment-package/locations/${encodeURIComponent(locationId)}/prepare`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Deployment package preparation failed (${r.status})`);this.eventBus?.emit?.("location-deployment:package-prepared",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentLocationDeploymentPackageEngine;
++if(global)global.BlueCurrentLocationDeploymentPackageEngine=BlueCurrentLocationDeploymentPackageEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/locationDeploymentPackageCenter.js
++++ b/client/js/modules/locationDeploymentPackageCenter.js
+@@ -0,0 +1,35 @@
++(function(){"use strict";
++function createBlueCurrentLocationDeploymentPackageCenterModule(eventBus,appState){
++  const root=document.getElementById("locationDeploymentPackage");
++  if(!root||!window.BlueCurrentLocationDeploymentPackageEngine)return null;
++  const e=new window.BlueCurrentLocationDeploymentPackageEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("ldpStatus").textContent=s.status||"—";
++    $("ldpAuthorized").textContent=locs.filter(x=>x.goLiveAuthorized).length;
++    $("ldpPrepared").textContent=locs.filter(x=>x.packageState==="READY_FOR_DEPLOYMENT_EXECUTION").length;
++    $("ldpExecution").textContent=locs.filter(x=>x.deploymentExecutionState!=="NOT_STARTED").length;
++    $("ldpHeadline").textContent=s.headline||"Deployment package unavailable.";
++    $("ldpLocations").innerHTML=locs.map(x=>`<article data-ldp-location="${esc(x.locationId)}"><div><strong>Wave ${x.wave} · ${esc(x.locationName)}</strong><span>${esc(x.packageState)} · execution ${esc(x.deploymentExecutionState)}</span></div><p>Go-live authorized: <strong>${x.goLiveAuthorized?"YES":"NO"}</strong>${x.blockers?.length?` · ${x.blockers.length} technical blocker(s)`:""}</p>${x.deploymentPackage?`<p><strong>Owner:</strong> ${esc(x.deploymentPackage.deploymentOwner)} · <strong>Rollback:</strong> ${esc(x.deploymentPackage.rollbackOwner)} · <strong>Cutover:</strong> ${esc(x.deploymentPackage.productionCutoverState)}</p>`:""}<div class="v4316-actions"><button type="button" data-ldp-packet="true">Review deployment packet</button>${!x.deploymentPackage?'<button type="button" data-ldp-prepare="true">Prepare deployment package</button>':""}</div></article>`).join("")||"<article><strong>No locations are currently in deployment-package review.</strong></article>";
++    $("ldpHistory").innerHTML=(s.packageHistory||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.status)}</strong><span>${esc(x.deploymentOwner)} · ${new Date(x.createdAt).toLocaleString()} · execution ${esc(x.deploymentExecutionState)} · cutover ${esc(x.productionCutoverState)}</span></article>`).join("")||"<article><strong>No deployment packages prepared.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("ldpHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-ldp-location]"); if(!card)return;
++    const id=card.dataset.ldpLocation;
++    if(ev.target.closest("[data-ldp-packet]")){try{$("ldpPacket").textContent=JSON.stringify(await e.packet(id),null,2);}catch(err){$("ldpHeadline").textContent=err.message;}return;}
++    const btn=ev.target.closest("[data-ldp-prepare]"); if(!btn)return;
++    try{
++      btn.disabled=true;
++      await e.prepare(id,{deploymentOwner:$("ldpOwner").value,rollbackOwner:$("ldpRollbackOwner").value,launchWindow:$("ldpWindow").value,rollbackTrigger:$("ldpRollbackTrigger").value,note:$("ldpNote").value});
++      await load();
++    }catch(err){$("ldpHeadline").textContent=err.message;}finally{btn.disabled=false;}
++  });
++  $("ldpRefresh")?.addEventListener("click",load);
++  ["technical-activation:authorized","location-deployment:package-prepared","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentLocationDeploymentPackageCenterModule=createBlueCurrentLocationDeploymentPackageCenterModule;
++})();--- a/scripts/maintenance/test-v49.15-location-deployment-package.js
++++ b/scripts/maintenance/test-v49.15-location-deployment-package.js
+@@ -0,0 +1,87 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/locationDeploymentPackageService");
++
++(async()=>{
++  const state={locationDeploymentPackages:[]},audit=[],events=[];
++  const technical={
++    activationPlan:{id:"plan1"},
++    locations:[
++      {
++        locationId:"a",locationName:"A",wave:1,technicallyReady:true,technicalReadinessPercent:100,
++        goLiveAuthorization:{id:"auth1",status:"AUTHORIZED_FOR_GO_LIVE",approver:"CTO",launchWindow:"Monday 09:00",rollbackOwner:"Ops"},
++        goLiveState:"AUTHORIZED_NOT_CUT_OVER",
++        blockers:[],warnings:[{id:"external-connectivity"}],
++        checks:[
++          {id:"location-config",category:"configuration",label:"Config",required:true,passed:true,actual:"cfg_a"},
++          {id:"auth-users",category:"identity",label:"Users",required:true,passed:true,actual:2},
++          {id:"floor-model",category:"floor",label:"Floor",required:true,passed:true,actual:"10 tables"},
++          {id:"reservation-model",category:"reservations",label:"Reservations",required:true,passed:true,actual:"local"},
++          {id:"kitchen-model",category:"kitchen",label:"Kitchen",required:true,passed:true,actual:"3 stations"},
++          {id:"workforce-model",category:"workforce",label:"Workforce",required:true,passed:true,actual:"8 people"},
++          {id:"external-connectivity",category:"integrations",label:"Connectors",required:false,passed:false,actual:"none"}
++        ]
++      },
++      {
++        locationId:"b",locationName:"B",wave:2,technicallyReady:false,technicalReadinessPercent:50,
++        goLiveAuthorization:null,goLiveState:"NOT_AUTHORIZED",blockers:[{id:"config"}],warnings:[],checks:[]
++      }
++    ]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>technical}
++  );
++
++  let snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.version,"49.15.0");
++  assert.equal(snap.status,"deployment-package-review");
++  assert.equal(snap.locations[0].goLiveAuthorized,true);
++  assert.equal(snap.policy.automaticDeployment,false);
++
++  let blocked=false;
++  try{await svc.prepare("org",["a","b"],"b",{deploymentOwner:"Ops",rollbackOwner:"Ops"},"Tester");}
++  catch(e){blocked=/go-live authorization/i.test(e.message);}
++  assert(blocked);
++
++  const pkg=await svc.prepare("org",["a","b"],"a",{
++    deploymentOwner:"Deployment Lead",
++    rollbackOwner:"Rollback Lead",
++    launchWindow:"Monday 09:00–10:00",
++    rollbackTrigger:"Critical health failure",
++    note:"Staged launch"
++  },"Tester");
++
++  assert.equal(pkg.status,"READY_FOR_DEPLOYMENT_EXECUTION");
++  assert.equal(pkg.deploymentExecutionState,"NOT_STARTED");
++  assert.equal(pkg.productionCutoverState,"NOT_PERFORMED");
++  assert.equal(pkg.manifest.moduleEnablementMatrix.length,4);
++  assert.ok(pkg.manifest.launchRunbook.length>=6);
++  assert.ok(pkg.manifest.rollbackRunbook.actions.length>=4);
++  assert.equal(audit.length,1);
++  assert.equal(events[0][0],"location-deployment:package-prepared");
++
++  snap=await svc.snapshot("org",["a","b"]);
++  const a=snap.locations.find(x=>x.locationId==="a");
++  assert.equal(a.packageState,"READY_FOR_DEPLOYMENT_EXECUTION");
++  assert.equal(a.deploymentExecutionState,"NOT_STARTED");
++
++  const packet=await svc.packet("org",["a","b"],"a");
++  assert.equal(packet.package.productionCutoverState,"NOT_PERFORMED");
++  assert.equal(packet.policy.packagePreparationDoesNotDeploy,true);
++
++  console.log(JSON.stringify({
++    ok:true,version:"49.15.0",
++    goLiveAuthorizationRequired:true,
++    deploymentManifest:true,
++    moduleMatrix:true,
++    rollbackRunbook:true,
++    deploymentExecutionState:"NOT_STARTED",
++    productionCutoverState:"NOT_PERFORMED",
++    automaticProvisioning:false,
++    automaticDeployment:false,
++    automaticCutover:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V49.15.0-RELEASE.md
++++ b/V49.15.0-RELEASE.md
+@@ -0,0 +1,130 @@
++# BLUE CURRENT V49.15.0 — LOCATION DEPLOYMENT PACKAGE
++
++V49.11–V49.15 turns technical go-live authorization into a concrete, restaurant-specific deployment package while preserving a hard separation between preparation and production execution.
++
++## Location deployment manifest
++
++Each prepared package contains:
++
++- location / rollout wave
++- technical readiness at package time
++- human go-live authorization reference
++- go-live approver
++- deployment owner
++- rollback owner
++- launch window
++- configuration requirements
++- user/access requirements
++- module enablement matrix
++- connector/integration requirements
++- remaining blockers and warnings
++- launch runbook
++- rollback runbook
++- deployment note
++
++## Module enablement matrix
++
++The deployment package explicitly records readiness for:
++
++- Floor
++- Reservations
++- Kitchen
++- Workforce
++
++Blue Current does not silently enable a module because a package was created.
++
++## Launch and rollback runbooks
++
++Every package carries a launch sequence that requires:
++
++1. re-confirmed human go-live authorization
++2. current technical-readiness recheck
++3. deployment and rollback owners present
++4. configuration and access verification
++5. module/integration verification
++6. a separate explicit deployment execution workflow
++7. post-cutover health and data-integrity checks
++8. stabilization monitoring
++
++Rollback includes:
++
++- stop further cutover actions
++- restore the last certified application/configuration checkpoint
++- disable newly introduced connector traffic where applicable
++- verify reservation/floor/kitchen/workforce/auth integrity
++- record incident and recovery evidence before resuming launch
++
++## Critical separation
++
++A prepared package is stored as:
++
++- `status: READY_FOR_DEPLOYMENT_EXECUTION`
++- `deploymentExecutionState: NOT_STARTED`
++- `productionCutoverState: NOT_PERFORMED`
++
++Policy:
++
++- `goLiveAuthorizationRequired: true`
++- `adminPackagePreparationRequired: true`
++- `packagePreparationDoesNotDeploy: true`
++- `deploymentExecutionSeparate: true`
++- `automaticProvisioning: false`
++- `automaticDeployment: false`
++- `automaticCutover: false`
++
++## API
++
++GET `/api/location-deployment-package`
++
++GET `/api/location-deployment-package/locations/:locationId/packet`
++
++POST `/api/location-deployment-package/locations/:locationId/prepare`
++
++Package preparation is admin-only and respects authenticated location scope.
++
++## Current authenticated runtime
++
++The untouched Chefs runtime has not yet executed the signed rollout / activation / go-live authorization chain.
++
++V49.15 therefore correctly reports:
++
++- status: `technical-plan-required`
++- locations in deployment-package review: 0
++- automatic provisioning: false
++- automatic deployment: false
++- automatic cutover: false
++
++The current demo owner account does not hold the `admin` permission required for deployment-package preparation, and its prepare attempt correctly returns HTTP 403.
++
++## Validation
++
++- V49.15 focused deployment-package lifecycle PASS
++- go-live authorization prerequisite PASS
++- deployment manifest PASS
++- module enablement matrix PASS
++- launch runbook PASS
++- rollback runbook PASS
++- deployment execution remains NOT_STARTED PASS
++- production cutover remains NOT_PERFORMED PASS
++- V49.10 technical-readiness regression PASS
++- authenticated deployment-package GET PASS
++- admin-only preparation boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 890 JavaScript files
++- 752 client scripts
++- 5,600 unique HTML IDs
++
++## Next
++
++V49.16–V49.20 should build Go-Live Command:
++- explicit deployment execution authorization
++- launch-window command state
++- pre-cutover final check
++- deployment operator
++- rollback operator
++- cutover checklist
++- post-cutover health checks
++- launch incident state
++- ability to record a manual cutover result
++- no autonomous production deployment
+--- a/README-APPLY-V49.15.0.md
++++ b/README-APPLY-V49.15.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V49.15.0
++
++Baseline: exact V49.10.0 repository.
++
++Extract `BLUE-CURRENT-V49.15.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v49.15-location-deployment-package.js
++node scripts/maintenance/test-v49.10-technical-activation-readiness.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "49.15.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Location Deployment Package** surface appears after Technical Activation Readiness.
++
++Important:
++
++- package preparation requires human go-live authorization
++- package preparation is admin-only
++- package preparation does not provision infrastructure
++- package preparation does not start deployment
++- production cutover remains NOT_PERFORMED
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V49.15.0 add location deployment package"
++git push origin live-service-timeline
++```

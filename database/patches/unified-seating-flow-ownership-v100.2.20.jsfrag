@@ -1,0 +1,229 @@
+// V100.2.20 — Consolidated Host Runtime Recovery / Unified Seating Ownership
+(() => {
+  const workspace = document.querySelector('.host-workspace');
+  const waitlist = document.getElementById('waitlistQueue');
+  const floorMap = document.querySelector('.host-floor-map');
+  const floorPanel = document.querySelector('.host-floor-panel');
+  if (!workspace || !waitlist || !floorMap || !floorPanel) return;
+
+  const normalize = (value) => String(value || '').replace(/\s+/g, ' ').trim();
+  const lower = (value) => normalize(value).toLowerCase();
+  const number = (selector) => Number(document.querySelector(selector)?.textContent || 0);
+  const setNumber = (selector, value) => { const node = document.querySelector(selector); if (node) node.textContent = String(Math.max(0, value)); };
+  const tables = () => [...document.querySelectorAll('.host-table')];
+  const tableNumber = (table) => normalize(table?.dataset?.table);
+  const tableState = (table) => ['available','reserved','seated','cleaning'].find((s) => table?.classList.contains(s)) || 'selected';
+  const floorNav = [...document.querySelectorAll('.host-nav button')].find((button) => lower(button.textContent).replace(/[^a-z]/g,'') === 'floor');
+
+  const flow = window.__bcUnifiedSeatingFlowV100_2_20 || {
+    row: null,
+    guestName: '',
+    guestDetail: '',
+    selectedTable: null,
+    active: false
+  };
+  window.__bcUnifiedSeatingFlowV100_2_20 = flow;
+
+  let instruction = document.getElementById('bcUnifiedSeatInstructionV100_2_18');
+  if (!instruction) {
+    instruction = document.createElement('div');
+    instruction.id = 'bcUnifiedSeatInstructionV100_2_18';
+    instruction.className = 'bc-unified-seat-instruction-v100-2-18';
+    instruction.hidden = true;
+    instruction.innerHTML = '<div><strong></strong><span></span></div><button type="button" class="bc-unified-cancel-v100-2-18">Cancel</button>';
+    floorPanel.insertBefore(instruction, floorPanel.firstChild);
+  }
+
+  let confirm = document.getElementById('bcUnifiedSeatConfirmV100_2_18');
+  if (!confirm) {
+    confirm = document.createElement('div');
+    confirm.id = 'bcUnifiedSeatConfirmV100_2_18';
+    confirm.className = 'bc-unified-seat-confirm-v100-2-18';
+    confirm.hidden = true;
+    confirm.innerHTML = '<small>Seat guest</small><strong></strong><p></p><button type="button" class="bc-unified-confirm-v100-2-18"></button><button type="button" class="bc-unified-cancel-v100-2-18">Cancel</button>';
+    floorMap.appendChild(confirm);
+  }
+
+  const styleId = 'bc-unified-seating-v100-2-18';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      #bcActivePartyBannerV100_2_16,
+      #bcActivePartyConfirmV100_2_16,
+      #bcWaitlistSeatInstructionV100_2_15,
+      #bcWaitlistSeatConfirmV100_2_15 { display:none !important; }
+      .bc-unified-seat-instruction-v100-2-18 {
+        display:flex; align-items:center; justify-content:space-between; gap:18px;
+        margin:0 0 18px; padding:18px 22px; border:2px solid #55d7c7; border-radius:18px;
+        background:#114f59; color:#fff; box-shadow:0 8px 24px rgba(0,0,0,.14);
+      }
+      .bc-unified-seat-instruction-v100-2-18[hidden], .bc-unified-seat-confirm-v100-2-18[hidden] { display:none !important; }
+      .bc-unified-seat-instruction-v100-2-18 strong { display:block; font-size:26px; line-height:1.1; font-weight:950; color:#fff; }
+      .bc-unified-seat-instruction-v100-2-18 span { display:block; margin-top:6px; font-size:18px; line-height:1.25; font-weight:750; color:#dcf6f2; }
+      .bc-unified-cancel-v100-2-18 {
+        min-width:124px; min-height:56px; padding:0 20px; border:2px solid #b7c8c8; border-radius:14px;
+        background:#fff8ec; color:#15333b; font-size:18px; font-weight:950; opacity:1;
+      }
+      .host-table.bc-unified-seat-choice-v100-2-18 { outline:5px solid #62dccc !important; outline-offset:5px !important; cursor:pointer !important; opacity:1 !important; filter:none !important; }
+      .host-table.bc-unified-seat-unavailable-v100-2-18 { opacity:.34 !important; filter:saturate(.35) !important; cursor:not-allowed !important; }
+      .bc-unified-seat-confirm-v100-2-18 {
+        position:absolute; z-index:40; left:50%; top:50%; transform:translate(-50%,-50%);
+        width:min(430px,calc(100% - 32px)); padding:24px; border:2px solid #72d5c9; border-radius:20px;
+        background:#fff; color:#12333c; box-shadow:0 20px 52px rgba(0,0,0,.24);
+      }
+      .bc-unified-seat-confirm-v100-2-18 small { color:#39717a; font-size:13px; font-weight:950; text-transform:uppercase; letter-spacing:.08em; }
+      .bc-unified-seat-confirm-v100-2-18 strong { display:block; margin:7px 0 6px; color:#102f39; font-size:26px; line-height:1.15; font-weight:950; }
+      .bc-unified-seat-confirm-v100-2-18 p { margin:0 0 18px; color:#375861; font-size:17px; line-height:1.35; font-weight:750; }
+      .bc-unified-confirm-v100-2-18 { width:100%; min-height:58px; border:0; border-radius:14px; background:#087694; color:#fff; font-size:18px; font-weight:950; }
+      .bc-unified-seat-confirm-v100-2-18 .bc-unified-cancel-v100-2-18 { width:100%; margin-top:10px; }
+      @media (max-width:900px) {
+        .bc-unified-seat-instruction-v100-2-18 strong { font-size:22px; }
+        .bc-unified-seat-instruction-v100-2-18 span { font-size:16px; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const clearLegacyFlowState = () => {
+    const old = window.__bcWaitlistSeatFlowV100_2_15;
+    if (old) { old.row = null; old.guestName = ''; old.guestDetail = ''; old.selectedTable = null; }
+    const generic = window.__bcGenericGuestContextV100_2_16;
+    if (generic) { generic.activeParty = null; generic.mode = null; generic.selectedTable = null; }
+    ['bcActivePartyBannerV100_2_16','bcActivePartyConfirmV100_2_16','bcWaitlistSeatInstructionV100_2_15','bcWaitlistSeatConfirmV100_2_15'].forEach((id) => {
+      const node = document.getElementById(id);
+      if (node) node.hidden = true;
+    });
+  };
+
+  const resetTableStyles = () => tables().forEach((table) => table.classList.remove('bc-unified-seat-choice-v100-2-18','bc-unified-seat-unavailable-v100-2-18','bc-seat-choice-v100-2-15','bc-seat-unavailable-v100-2-15','bc-active-party-choice-v100-2-16','bc-active-party-unavailable-v100-2-16','selected'));
+
+  const cancel = () => {
+    flow.row = null; flow.guestName = ''; flow.guestDetail = ''; flow.selectedTable = null; flow.active = false;
+    instruction.hidden = true; confirm.hidden = true; resetTableStyles(); clearLegacyFlowState();
+  };
+
+  const begin = (row) => {
+    const guestName = normalize(row.querySelector('strong')?.textContent) || 'Guest';
+    const guestDetail = normalize(row.querySelector('small')?.textContent) || normalize(row.textContent).replace(guestName,'').replace(/\bSeat\b/ig,'').trim() || 'Ready to seat';
+    cancel();
+    flow.row = row; flow.guestName = guestName; flow.guestDetail = guestDetail; flow.active = true;
+    if (floorNav && (floorPanel.hidden || getComputedStyle(floorPanel).display === 'none')) floorNav.click();
+    clearLegacyFlowState();
+    instruction.querySelector('strong').textContent = `Choose a table for ${guestName}`;
+    instruction.querySelector('span').textContent = `${guestDetail} · Tap one highlighted table.`;
+    instruction.hidden = false;
+    tables().forEach((table) => {
+      const state = tableState(table);
+      const allowed = state === 'available' || state === 'cleaning';
+      table.classList.toggle('bc-unified-seat-choice-v100-2-18', allowed);
+      table.classList.toggle('bc-unified-seat-unavailable-v100-2-18', !allowed);
+    });
+  };
+
+  const choose = (table) => {
+    if (!flow.active || !flow.row) return;
+    const state = tableState(table);
+    if (state !== 'available' && state !== 'cleaning') return;
+    flow.selectedTable = table;
+    tables().forEach((item) => item.classList.toggle('selected', item === table));
+    const num = tableNumber(table);
+    confirm.querySelector('strong').textContent = `Seat ${flow.guestName} at Table ${num}`;
+    confirm.querySelector('p').textContent = `${flow.guestDetail} · Table ${num} is ready.`;
+    confirm.querySelector('.bc-unified-confirm-v100-2-18').textContent = `Seat ${flow.guestName.split(' ')[0]} at Table ${num}`;
+    confirm.hidden = false;
+  };
+
+  const statusNode = (row) => row?.querySelector('.arrival-chip, [data-bc-status], .status-chip, .guest-status') || [...(row?.querySelectorAll?.('span,button') || [])].find((node) => /^(expected|arrived|waiting|seated(?:\s*·.*)?)$/i.test(normalize(node.textContent)));
+  const rowsForName = (name) => [...workspace.querySelectorAll('article, .bc-guest-result')].filter((row) => normalize(row.querySelector('strong')?.textContent) === name);
+  const syncGuestSeated = (name, num) => {
+    rowsForName(name).forEach((row) => {
+      row.dataset.bcGuestStatus = 'seated';
+      row.dataset.bcTable = num;
+      const node = statusNode(row);
+      if (node) { node.textContent = `Seated · Table ${num}`; node.classList?.remove('pending'); }
+      row.querySelectorAll('button').forEach((button) => { if (/^(seat|mark arrived)$/i.test(normalize(button.textContent))) button.remove(); });
+    });
+  };
+
+  const toast = (message) => {
+    const old = document.getElementById('bcUnifiedSeatToastV100_2_18');
+    old?.remove();
+    const node = document.createElement('div');
+    node.id = 'bcUnifiedSeatToastV100_2_18';
+    node.className = 'bc-host-seat-toast-v100-2-15';
+    node.setAttribute('role','status');
+    node.textContent = message;
+    floorPanel.appendChild(node);
+    setTimeout(() => node.remove(), 2200);
+  };
+
+  const complete = () => {
+    const row = flow.row;
+    const table = flow.selectedTable;
+    if (!row || !table || !flow.active) return;
+    const guestName = flow.guestName;
+    const num = tableNumber(table);
+    const prior = tableState(table);
+
+    if (prior === 'available') { setNumber('#availableCount', number('#availableCount') - 1); setNumber('#hostOpen', number('#hostOpen') - 1); }
+    if (prior === 'cleaning') setNumber('#cleaningCount', number('#cleaningCount') - 1);
+    if (prior === 'reserved') setNumber('#reservedCount', number('#reservedCount') - 1);
+    setNumber('#seatedCount', number('#seatedCount') + 1);
+    setNumber('#hostSeated', number('#hostSeated') + 1);
+
+    table.classList.remove('available','cleaning','reserved');
+    table.classList.add('seated');
+    table.dataset.bcGuestName = guestName;
+    table.dataset.bcGuestStatus = 'seated';
+    table.dataset.bcTable = num;
+    const small = table.querySelector('small');
+    if (small) small.textContent = 'Seated';
+
+    syncGuestSeated(guestName, num);
+    if (row.isConnected) row.remove();
+    const priorityApi = window.__bcArrivalPriorityQueueV100_2_17;
+    priorityApi?.syncCounts?.();
+    const recommendation = document.getElementById('hostRecommendation');
+    if (recommendation) recommendation.textContent = `${guestName} seated at Table ${num}`;
+    cancel();
+    toast(`${guestName} seated at Table ${num}`);
+  };
+
+  // Own the entire seating transaction at document capture level, before legacy host-workspace/floor-map handlers.
+  document.addEventListener('click', (event) => {
+    if (flow.handling) return;
+    flow.handling = true;
+    try {
+    const cancelButton = event.target.closest('.bc-unified-cancel-v100-2-18');
+    if (cancelButton) {
+      event.preventDefault(); event.stopImmediatePropagation(); cancel(); return;
+    }
+
+    const confirmButton = event.target.closest('.bc-unified-confirm-v100-2-18');
+    if (confirmButton) {
+      event.preventDefault(); event.stopImmediatePropagation(); complete(); return;
+    }
+
+    if (flow.active) {
+      const table = event.target.closest('.host-table');
+      if (table) {
+        event.preventDefault(); event.stopImmediatePropagation(); choose(table); return;
+      }
+    }
+
+    const seatButton = event.target.closest('#waitlistQueue .queue-item button');
+    if (seatButton && lower(seatButton.textContent) === 'seat' && !seatButton.disabled) {
+      const row = seatButton.closest('.queue-item');
+      if (!row) return;
+      event.preventDefault(); event.stopImmediatePropagation(); begin(row); return;
+    }
+    } finally { flow.handling = false; }
+  }, true);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && flow.active) { event.preventDefault(); cancel(); }
+  }, true);
+
+  cancel();
+})();

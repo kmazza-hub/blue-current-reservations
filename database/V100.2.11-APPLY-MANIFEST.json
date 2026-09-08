@@ -1,0 +1,14 @@
+{
+  "version": "100.2.11",
+  "name": "Seated Table Detail Auto-Collapse",
+  "requires": "V100.2.10 Table Assignment & Seating Lifecycle",
+  "baselineVersion": "100.0.0",
+  "files": [
+    "APPLY-V100.2.11.js",
+    "patches/host-stand-seated-detail-lifecycle.jsfrag",
+    "scripts/maintenance/test-v100.2.11-seated-table-detail-auto-collapse.js",
+    "README-APPLY-V100.2.11.md",
+    "V100.2.11-RELEASE.md"
+  ],
+  "protectedAreas": ["auth", "command shell", "server", "database", "RBAC", "persistence"]
+}

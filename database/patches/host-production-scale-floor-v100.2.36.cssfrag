@@ -1,0 +1,53 @@
+/* V100.2.36 — Production-Scale Restaurant Floor Plans */
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table {
+  z-index:6;
+  min-width:62px;
+  min-height:62px;
+  width:auto;
+  height:auto;
+  padding:8px 10px;
+  transform:translate(-50%,-50%);
+  box-sizing:border-box;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.round {
+  width:62px;
+  height:62px;
+  padding:6px;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.bc-six-top-v100-2-36 {
+  min-width:76px;
+  border-radius:18px;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.bc-eight-top-v100-2-36 {
+  min-width:92px;
+  border-radius:18px;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table span {
+  font-size:14px !important;
+  line-height:1 !important;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .host-table small {
+  max-width:100%;
+  font-size:15px !important;
+  line-height:1.02 !important;
+  text-align:center;
+  white-space:normal;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"] .bc-floor-architecture-v100-2-35 { z-index:1; }
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="main"] .bc-main-bar-v100-2-35 {
+  width:18%; right:3%; top:8%; height:8%;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="main"] .bc-main-aisle-v100-2-35 {
+  left:45%; top:16%; height:68%;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="waterfront"] .bc-water-service-v100-2-35 {
+  right:2.5%; top:8%;
+}
+#hostFloorMap[data-bc-production-scale-v100236="true"][data-bc-active-zone="private"] .bc-private-credenza-v100-2-35 {
+  left:50%; bottom:5%; transform:translateX(-50%);
+}
+@media (max-width:1100px) {
+  #hostFloorMap[data-bc-production-scale-v100236="true"] .host-table { min-width:56px; min-height:56px; padding:6px 8px; }
+  #hostFloorMap[data-bc-production-scale-v100236="true"] .host-table.round { width:56px; height:56px; }
+  #hostFloorMap[data-bc-production-scale-v100236="true"] .host-table small { font-size:13px !important; }
+}

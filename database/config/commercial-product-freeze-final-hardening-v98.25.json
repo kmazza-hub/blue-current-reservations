@@ -1,0 +1,37 @@
+{
+  "version": "98.25.0",
+  "gate": "COMMERCIAL_PRODUCT_FREEZE_AND_FINAL_HARDENING",
+  "defaultPermittedChangeClasses": [
+    "P0_DEFECT",
+    "P1_DEFECT",
+    "SECURITY",
+    "RELIABILITY",
+    "DATA_INTEGRITY",
+    "ACCESSIBILITY",
+    "REGRESSION",
+    "CERTIFICATION_BLOCKER"
+  ],
+  "checks": [
+    "PILOT_LEARNING_CONTROLLED",
+    "FREEZE_BASELINE_RECORDED",
+    "SCOPE_FREEZE_ACKNOWLEDGED",
+    "PERMITTED_CHANGE_CLASSES_DEFINED",
+    "REGRESSION_PROTECTION_REQUIRED",
+    "NO_HIGH_RISK_FREEZE_EXCEPTIONS",
+    "FREEZE_OWNER_ASSIGNED",
+    "FINAL_HARDENING_TARGET_DEFINED"
+  ],
+  "policy": {
+    "scopeExpansionAfterFreezeProhibited": true,
+    "exceptionEvidenceRequired": true,
+    "exceptionOwnerRequired": true,
+    "exceptionRiskRequired": true,
+    "regressionProtectionRequired": true,
+    "humanFreezeApprovalRequired": true,
+    "noAutomaticScopeExpansion": true,
+    "noAutomaticExceptionApproval": true,
+    "noAutomaticProductMutation": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "FINAL_REGRESSION_SECURITY_AND_DATA_INTEGRITY_CERTIFICATION"
+}

@@ -1,0 +1,492 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "52.5.0",
++  "version": "52.10.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V52 pilot stabilization and exit criteria",
++  "description": "Blue Current Hospitality OS \u2014 pilot closeout and outcome review",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -73,6 +73,7 @@
+ const PilotLaunchControlService = require("./services/pilotLaunchControlService");
+ const PilotExecutionObservationService = require("./services/pilotExecutionObservationService");
+ const PilotStabilizationExitService = require("./services/pilotStabilizationExitService");
++const PilotCloseoutOutcomeService = require("./services/pilotCloseoutOutcomeService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -149,7 +150,8 @@
+ const pilotLaunchControlService = new PilotLaunchControlService(database, auditService, realtimeHub, pilotDeploymentPackageService);
+ const pilotExecutionObservationService = new PilotExecutionObservationService(database, auditService, realtimeHub, pilotLaunchControlService);
+ const pilotStabilizationExitService = new PilotStabilizationExitService(database, auditService, realtimeHub, pilotExecutionObservationService, dataIntegrityRecoveryService, managementExecutiveAccuracyService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService });
++const pilotCloseoutOutcomeService = new PilotCloseoutOutcomeService(database, auditService, realtimeHub, pilotStabilizationExitService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -236,7 +238,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V52.5.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V52.10.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService, pilotStabilizationExitService, pilotCloseoutOutcomeService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "52.5.0",
++        version: "52.10.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,20 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/pilot-closeout-outcome" && request.method === "GET") {
++      return sendJson(response,200,await pilotCloseoutOutcomeService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++    if (url.pathname.startsWith("/api/pilot-closeout-outcome/locations/") && url.pathname.endsWith("/review") && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Management permission required for pilot closeout review."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotCloseoutOutcomeService.review(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
++    if (url.pathname.startsWith("/api/pilot-closeout-outcome/locations/") && url.pathname.endsWith("/decision") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for EXPAND/HOLD/RETIRE decisions."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotCloseoutOutcomeService.decide(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/pilot-stabilization-exit" && request.method === "GET") {
+       return sendJson(response,200,await pilotStabilizationExitService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/pilotCloseoutOutcomeService.js
++++ b/server/services/pilotCloseoutOutcomeService.js
+@@ -0,0 +1,120 @@
++"use strict";
++
++class PilotCloseoutOutcomeService {
++  constructor(database,auditService,realtimeHub,pilotStabilizationExitService){
++    Object.assign(this,{database,auditService,realtimeHub,pilotStabilizationExitService});
++  }
++  now(){return new Date().toISOString();}
++  async reviews(org){
++    const db=await this.database.read();
++    return (db.pilotCloseoutReviews||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.reviewedAt)-new Date(a.reviewedAt));
++  }
++  async decisions(org){
++    const db=await this.database.read();
++    return (db.pilotExpansionDecisions||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.decidedAt)-new Date(a.decidedAt));
++  }
++  async snapshot(org,allowed){
++    const [stabilization,reviews,decisions]=await Promise.all([
++      this.pilotStabilizationExitService.snapshot(org,allowed),
++      this.reviews(org),this.decisions(org)
++    ]);
++    const locations=(stabilization.locations||[]).map(loc=>{
++      const review=reviews.find(x=>x.locationId===loc.locationId)||null;
++      const decision=decisions.find(x=>x.locationId===loc.locationId)||null;
++      const stable=loc.exitDecision?.decision==="STABLE";
++      const debt=(review?.unresolvedDebt||[]).filter(x=>x.status!=="CLOSED");
++      const incidentOpen=(review?.incidentCloseout||[]).filter(x=>x.status!=="CLOSED");
++      const prerequisites=review?.expansionPrerequisites||[];
++      const checks=[
++        {id:"PILOT_STABLE",passed:stable,actual:loc.exitDecision?.decision||"no STABLE decision"},
++        {id:"OBJECTIVE_REVIEW",passed:!!review?.objectiveOutcomeSummary,actual:review?.objectiveOutcomeSummary?"recorded":"not recorded"},
++        {id:"OPERATOR_FEEDBACK",passed:!!review?.operatorFeedback,actual:review?.operatorFeedback?"recorded":"not recorded"},
++        {id:"GUEST_IMPACT_SUMMARY",passed:!!review?.guestImpactSummary,actual:review?.guestImpactSummary?"recorded":"not recorded"},
++        {id:"INCIDENT_CLOSEOUT",passed:!!review&&incidentOpen.length===0,actual:review?`${incidentOpen.length} open incident(s)`:"not reviewed"},
++        {id:"SUPPORT_BURDEN",passed:!!review?.supportBurdenSummary,actual:review?.supportBurdenSummary?"recorded":"not recorded"},
++        {id:"DATA_KPI_CONFIDENCE",passed:!!review?.dataKpiConfidenceSummary,actual:review?.dataKpiConfidenceSummary?"recorded":"not recorded"},
++        {id:"DEBT_REGISTER",passed:!!review,actual:review?`${debt.length} unresolved debt item(s)`:"not recorded"},
++        {id:"LESSONS_LEARNED",passed:!!review?.lessonsLearned,actual:review?.lessonsLearned?"recorded":"not recorded"},
++        {id:"EXPANSION_PREREQUISITES",passed:prerequisites.length>0&&prerequisites.every(x=>x.status==="MET"),actual:review?`${prerequisites.filter(x=>x.status==="MET").length}/${prerequisites.length} met`:"not recorded"}
++      ];
++      return {
++        locationId:loc.locationId,locationName:loc.locationName,
++        stabilizationState:loc.stabilizationState,stabilizationDecision:loc.exitDecision||null,
++        review,decision,checks,passed:checks.filter(x=>x.passed).length,total:checks.length,
++        unresolvedDebt:debt,openIncidents:incidentOpen,
++        expansionReady:checks.every(x=>x.passed)&&debt.filter(x=>["high","critical"].includes(String(x.severity).toLowerCase())).length===0,
++        closeoutState:decision?.decision==="EXPAND"?"EXPANSION_APPROVED":decision?.decision==="HOLD"?"EXPANSION_HELD":decision?.decision==="RETIRE"?"PILOT_RETIRED":review?"CLOSEOUT_REVIEWED":"CLOSEOUT_REQUIRED"
++      };
++    });
++    return {
++      version:"52.10.0",generatedAt:this.now(),
++      status:locations.some(x=>x.decision?.decision==="EXPAND")?"pilot-expansion-approved":locations.some(x=>x.review)?"pilot-closeout-in-review":"pilot-closeout-required",
++      headline:`${locations.filter(x=>x.expansionReady).length}/${locations.length} location(s) satisfy expansion-readiness criteria; ${locations.reduce((n,x)=>n+x.unresolvedDebt.length,0)} unresolved debt item(s) remain.`,
++      locations,
++      policy:{
++        stablePilotRequiredForCloseout:true,
++        operatorFeedbackRequired:true,
++        guestImpactSummaryRequired:true,
++        incidentCloseoutRequired:true,
++        unresolvedDebtMustRemainVisible:true,
++        expansionPrerequisitesHumanReviewed:true,
++        humanExpandHoldRetireDecisionRequired:true,
++        expandDecisionDoesNotDeploy:true,
++        noAutomaticMultiLocationRollout:true,
++        noAutomaticPilotRetirement:true,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async review(org,allowed,locationId,input,actor){
++    const stabilization=await this.pilotStabilizationExitService.snapshot(org,allowed);
++    const loc=(stabilization.locations||[]).find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Pilot location not found.");
++    if(loc.exitDecision?.decision!=="STABLE")throw new Error("Pilot must have a human STABLE decision before closeout review.");
++    const req=["objectiveOutcomeSummary","operatorFeedback","guestImpactSummary","supportBurdenSummary","dataKpiConfidenceSummary","lessonsLearned"];
++    for(const key of req)if(!String(input[key]||"").trim())throw new Error(`${key} is required.`);
++    const prereq=Array.isArray(input.expansionPrerequisites)?input.expansionPrerequisites:[];
++    if(!prereq.length)throw new Error("At least one expansion prerequisite is required.");
++    const record={
++      id:`pcr_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId:org,locationId,locationName:loc.locationName,
++      reviewedAt:this.now(),reviewedBy:actor,
++      objectiveOutcomeSummary:String(input.objectiveOutcomeSummary).trim().slice(0,3500),
++      operatorFeedback:String(input.operatorFeedback).trim().slice(0,3500),
++      guestImpactSummary:String(input.guestImpactSummary).trim().slice(0,2800),
++      supportBurdenSummary:String(input.supportBurdenSummary).trim().slice(0,2800),
++      dataKpiConfidenceSummary:String(input.dataKpiConfidenceSummary).trim().slice(0,2800),
++      lessonsLearned:String(input.lessonsLearned).trim().slice(0,3500),
++      incidentCloseout:(Array.isArray(input.incidentCloseout)?input.incidentCloseout:[]).map((x,i)=>({id:String(x.id||`incident_${i+1}`),summary:String(x.summary||"").trim().slice(0,1800),status:String(x.status||"OPEN").toUpperCase()})).filter(x=>x.summary),
++      unresolvedDebt:(Array.isArray(input.unresolvedDebt)?input.unresolvedDebt:[]).map((x,i)=>({id:String(x.id||`debt_${i+1}`),summary:String(x.summary||"").trim().slice(0,1800),severity:String(x.severity||"medium").toLowerCase(),status:String(x.status||"OPEN").toUpperCase()})).filter(x=>x.summary),
++      expansionPrerequisites:prereq.map((x,i)=>({id:String(x.id||`prereq_${i+1}`),summary:String(x.summary||"").trim().slice(0,1500),status:String(x.status||"OPEN").toUpperCase()})).filter(x=>x.summary),
++      rolloutPerformed:false,productionMutationPerformed:false
++    };
++    await this.database.mutate(db=>{db.pilotCloseoutReviews||=[];db.pilotCloseoutReviews.push(record);return record;});
++    await this.auditService.record({organizationId:org,actor,action:`Pilot closeout review recorded for ${locationId}`,category:"pilot_closeout"});
++    this.realtimeHub.publish("pilot-closeout:reviewed",{organizationId:org,locationId,id:record.id});
++    return record;
++  }
++  async decide(org,allowed,locationId,input,actor){
++    const snap=await this.snapshot(org,allowed);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc?.review)throw new Error("Pilot closeout review is required before an expansion decision.");
++    const decision=String(input.decision||"").toUpperCase(),evidence=String(input.evidence||"").trim(),reason=String(input.reason||"").trim();
++    if(!["EXPAND","HOLD","RETIRE"].includes(decision))throw new Error("Decision must be EXPAND, HOLD, or RETIRE.");
++    if(!evidence)throw new Error("Human expansion decision evidence is required.");
++    if(decision==="EXPAND"&&!loc.expansionReady&&!reason)throw new Error("EXPAND with open readiness criteria requires an executive override reason.");
++    if(["HOLD","RETIRE"].includes(decision)&&!reason)throw new Error(`${decision} requires a documented reason.`);
++    const record={
++      id:`ped52_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId:org,locationId,locationName:loc.locationName,decision,
++      decidedAt:this.now(),decidedBy:actor,evidence,reason,reviewId:loc.review.id,
++      readinessSnapshot:{passed:loc.passed,total:loc.total,checks:loc.checks,unresolvedDebt:loc.unresolvedDebt},
++      rolloutPerformedByDecision:false,retirementPerformedByDecision:false,autonomousProductionChanges:false
++    };
++    await this.database.mutate(db=>{db.pilotExpansionDecisions||=[];db.pilotExpansionDecisions.push(record);return record;});
++    await this.auditService.record({organizationId:org,actor,action:`Pilot expansion decision ${decision} recorded for ${locationId}; no rollout or retirement executed`,category:"pilot_closeout"});
++    this.realtimeHub.publish("pilot-closeout:decision",{organizationId:org,locationId,id:record.id,decision});
++    return record;
++  }
++}
++module.exports=PilotCloseoutOutcomeService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="52.5.0">
++  <meta name="blue-current-build" content="52.10.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -470,6 +470,15 @@
+       <div class="v4316-actions"><input id="v5205WindowStart" class="v4312-input" placeholder="Stabilization window start"><input id="v5205WindowEnd" class="v4312-input" placeholder="Stabilization window end"><input id="v5205Evidence" class="v4312-input" placeholder="Assessment evidence"><input id="v5205Note" class="v4312-input" placeholder="Assessment note"></div>
+       <div class="v4316-actions"><input id="v5205DecisionEvidence" class="v4312-input" placeholder="STABLE / EXTEND / ROLLBACK evidence"><input id="v5205DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
+       <div id="v5205Locations" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="v5210PilotCloseoutOutcome">
++      <header><div><small>V52.6–V52.10 · Pilot Closeout & Outcome Review</small><strong>Close the pilot with evidence before Blue Current earns the right to expand.</strong><span>Review objectives and outcomes, operator feedback, guest impact, incident closeout, support burden, data/KPI confidence, unresolved debt, lessons learned, and explicit expansion prerequisites. EXPAND / HOLD / RETIRE are human decisions only and never trigger deployment.</span></div><button id="v5210Refresh" type="button">Refresh closeout</button></header>
++      <div class="v432-kpis"><article><small>Status</small><strong id="v5210Status">—</strong></article><article><small>Expansion ready</small><strong id="v5210Ready">0/0</strong></article><article><small>Closeout reviews</small><strong id="v5210Reviews">0</strong></article><article><small>Decisions</small><strong id="v5210Decisions">0</strong></article></div>
++      <div class="v4316-answer" id="v5210Headline">Pilot closeout review ready.</div>
++      <div class="v4316-actions"><input id="v5210Objectives" class="v4312-input" placeholder="Objective/outcome summary"><input id="v5210Operators" class="v4312-input" placeholder="Operator feedback"><input id="v5210Guests" class="v4312-input" placeholder="Guest-impact summary"><input id="v5210Support" class="v4312-input" placeholder="Support-burden summary"><input id="v5210Data" class="v4312-input" placeholder="Data/KPI confidence summary"><input id="v5210Lessons" class="v4312-input" placeholder="Lessons learned"></div>
++      <div class="v4316-actions"><textarea id="v5210Incidents" class="v4312-input" placeholder="Closed incidents, one per line"></textarea><textarea id="v5210Debt" class="v4312-input" placeholder="Unresolved debt, one per line"></textarea><textarea id="v5210Prereqs" class="v4312-input" placeholder="Expansion prerequisites met, one per line"></textarea></div>
++      <div class="v4316-actions"><input id="v5210DecisionEvidence" class="v4312-input" placeholder="EXPAND / HOLD / RETIRE evidence"><input id="v5210DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
++      <div id="v5210Locations" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -9040,6 +9049,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotExecutionObservationV5160" data-src="js/modules/pilotExecutionObservationCenter.js?v=51.60.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5205" data-src="js/modules/pilotStabilizationExitEngine.js?v=52.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotStabilizationExitV5205" data-src="js/modules/pilotStabilizationExitCenter.js?v=52.5.0"></script>
+-<script src="js/startup-loader.js?v=52.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotCloseoutOutcomeV5210" data-src="js/modules/pilotCloseoutOutcomeEngine.js?v=52.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotCloseoutOutcomeV5210" data-src="js/modules/pilotCloseoutOutcomeCenter.js?v=52.10.0"></script>
++<script src="js/startup-loader.js?v=52.10.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1260,6 +1260,7 @@
+ const pilotLaunchControlV5155Module = startupRegistry.register("pilotLaunchControlV5155", shouldInitializeCenter("pilotLaunchControlV5155") ? window.createBlueCurrentPilotLaunchControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDeploymentPackage"]);
+ const pilotExecutionObservationV5160Module = startupRegistry.register("pilotExecutionObservationV5160", shouldInitializeCenter("pilotExecutionObservationV5160") ? window.createBlueCurrentPilotExecutionObservationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotLaunchControlV5155"]);
+ const pilotStabilizationExitV5205Module = startupRegistry.register("pilotStabilizationExitV5205", shouldInitializeCenter("pilotStabilizationExitV5205") ? window.createBlueCurrentPilotStabilizationExitCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotExecutionObservationV5160"]);
++const pilotCloseoutOutcomeV5210Module = startupRegistry.register("pilotCloseoutOutcomeV5210", shouldInitializeCenter("pilotCloseoutOutcomeV5210") ? window.createBlueCurrentPilotCloseoutOutcomeCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotStabilizationExitV5205"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V52.5.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V52.10.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/pilotCloseoutOutcomeEngine.js
++++ b/client/js/modules/pilotCloseoutOutcomeEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentPilotCloseoutOutcomeEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return{Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/pilot-closeout-outcome",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot closeout failed (${r.status})`);this.appState?.update?.({pilotCloseoutOutcome:d});return d;}
++  async review(locationId,payload={}){const r=await fetch(`/api/pilot-closeout-outcome/locations/${encodeURIComponent(locationId)}/review`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot closeout review failed (${r.status})`);this.eventBus?.emit?.("pilot-closeout:reviewed",structuredClone(d));return d;}
++  async decide(locationId,payload={}){const r=await fetch(`/api/pilot-closeout-outcome/locations/${encodeURIComponent(locationId)}/decision`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot expansion decision failed (${r.status})`);this.eventBus?.emit?.("pilot-closeout:decision",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotCloseoutOutcomeEngine;
++if(global)global.BlueCurrentPilotCloseoutOutcomeEngine=BlueCurrentPilotCloseoutOutcomeEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/pilotCloseoutOutcomeCenter.js
++++ b/client/js/modules/pilotCloseoutOutcomeCenter.js
+@@ -0,0 +1,22 @@
++(function(){"use strict";
++function createBlueCurrentPilotCloseoutOutcomeCenterModule(eventBus,appState){
++ const root=document.getElementById("v5210PilotCloseoutOutcome");if(!root||!window.BlueCurrentPilotCloseoutOutcomeEngine)return null;
++ const e=new window.BlueCurrentPilotCloseoutOutcomeEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++ const lines=raw=>String(raw||"").split(/\n/).map(x=>x.trim()).filter(Boolean);
++ function render(s){const locs=s.locations||[];$("v5210Status").textContent=s.status||"—";$("v5210Ready").textContent=`${locs.filter(x=>x.expansionReady).length}/${locs.length}`;$("v5210Reviews").textContent=locs.filter(x=>x.review).length;$("v5210Decisions").textContent=locs.filter(x=>x.decision).length;$("v5210Headline").textContent=s.headline||"Pilot closeout unavailable.";$("v5210Locations").innerHTML=locs.map(x=>`<article data-v5210-location="${esc(x.locationId)}"><strong>${esc(x.locationName)}</strong><span>${esc(x.closeoutState)} · ${x.passed}/${x.total} closeout gates · debt ${x.unresolvedDebt.length} · open incidents ${x.openIncidents.length}</span><div class="v432-list">${x.checks.map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.id)}</strong><span>${esc(c.actual)}</span></article>`).join("")}</div><div class="v4316-actions">${x.stabilizationDecision?.decision==="STABLE"?'<button type="button" data-v5210-review="true">Record pilot closeout</button>':""}${x.review?'<button type="button" data-v5210-expand="true">EXPAND</button><button type="button" data-v5210-hold="true">HOLD</button><button type="button" data-v5210-retire="true">RETIRE</button>':""}</div></article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";}
++ async function load(){try{render(await e.snapshot());}catch(err){$("v5210Headline").textContent=err.message;}}
++ root.addEventListener("click",async ev=>{const loc=ev.target.closest("[data-v5210-location]");if(!loc)return;try{
++  if(ev.target.closest("[data-v5210-review]")){
++   const incidents=lines($("v5210Incidents").value).map((summary,i)=>({id:`incident_${i+1}`,summary,status:"CLOSED"}));
++   const debt=lines($("v5210Debt").value).map((summary,i)=>({id:`debt_${i+1}`,summary,severity:"medium",status:"OPEN"}));
++   const prereq=lines($("v5210Prereqs").value).map((summary,i)=>({id:`prereq_${i+1}`,summary,status:"MET"}));
++   await e.review(loc.dataset.v5210Location,{objectiveOutcomeSummary:$("v5210Objectives").value,operatorFeedback:$("v5210Operators").value,guestImpactSummary:$("v5210Guests").value,supportBurdenSummary:$("v5210Support").value,dataKpiConfidenceSummary:$("v5210Data").value,lessonsLearned:$("v5210Lessons").value,incidentCloseout:incidents,unresolvedDebt:debt,expansionPrerequisites:prereq});
++  }else if(ev.target.closest("[data-v5210-expand]"))await e.decide(loc.dataset.v5210Location,{decision:"EXPAND",evidence:$("v5210DecisionEvidence").value,reason:$("v5210DecisionReason").value});
++  else if(ev.target.closest("[data-v5210-hold]"))await e.decide(loc.dataset.v5210Location,{decision:"HOLD",evidence:$("v5210DecisionEvidence").value,reason:$("v5210DecisionReason").value});
++  else if(ev.target.closest("[data-v5210-retire]"))await e.decide(loc.dataset.v5210Location,{decision:"RETIRE",evidence:$("v5210DecisionEvidence").value,reason:$("v5210DecisionReason").value});
++  await load();
++ }catch(err){$("v5210Headline").textContent=err.message;}});
++ $("v5210Refresh")?.addEventListener("click",load);["pilot-closeout:reviewed","pilot-closeout:decision","pilot-stabilization:decision","auth:restored"].forEach(x=>eventBus?.on?.(x,load));load();return{engine:e,load};
++}
++window.createBlueCurrentPilotCloseoutOutcomeCenterModule=createBlueCurrentPilotCloseoutOutcomeCenterModule;
++})();--- a/scripts/maintenance/test-v52.10-pilot-closeout-outcome.js
++++ b/scripts/maintenance/test-v52.10-pilot-closeout-outcome.js
+@@ -0,0 +1,55 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/pilotCloseoutOutcomeService");
++
++(async()=>{
++ const state={pilotCloseoutReviews:[],pilotExpansionDecisions:[]};
++ const stabilization={snapshot:async()=>({status:"pilot-stable",locations:[{locationId:"loc1",locationName:"Pilot Restaurant",stabilizationState:"PILOT_STABLE",exitDecision:{decision:"STABLE"}}]})};
++ const svc=new Service({read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)},{record:async()=>{}},{publish:()=>{}},stabilization);
++
++ let s=await svc.snapshot("org",["loc1"]);
++ assert.equal(s.version,"52.10.0");
++ assert.equal(s.status,"pilot-closeout-required");
++
++ const review=await svc.review("org",["loc1"],"loc1",{
++   objectiveOutcomeSummary:"Pilot objectives met.",
++   operatorFeedback:"Operators completed the shift confidently.",
++   guestImpactSummary:"No material guest impact.",
++   supportBurdenSummary:"Support burden remained manageable.",
++   dataKpiConfidenceSummary:"Data and KPI outputs reconciled.",
++   lessonsLearned:"Preserve staged rollout and operator rehearsal.",
++   incidentCloseout:[{id:"i1",summary:"Minor login issue",status:"CLOSED"}],
++   unresolvedDebt:[],
++   expansionPrerequisites:[{id:"p1",summary:"Second-location configuration complete",status:"MET"}]
++ },"Tester");
++ assert.equal(review.rolloutPerformed,false);
++
++ s=await svc.snapshot("org",["loc1"]);
++ assert.equal(s.locations[0].expansionReady,true);
++ assert.equal(s.locations[0].passed,10);
++
++ const decision=await svc.decide("org",["loc1"],"loc1",{decision:"EXPAND",evidence:"All closeout and expansion gates passed."},"Tester");
++ assert.equal(decision.decision,"EXPAND");
++ assert.equal(decision.rolloutPerformedByDecision,false);
++ assert.equal(decision.retirementPerformedByDecision,false);
++
++ const hold=await svc.decide("org",["loc1"],"loc1",{decision:"HOLD",evidence:"Leadership review.",reason:"Wait for next operating period."},"Tester");
++ assert.equal(hold.decision,"HOLD");
++
++ console.log(JSON.stringify({
++   ok:true,version:"52.10.0",
++   objectiveOutcomeReview:true,
++   operatorFeedback:true,
++   guestImpactSummary:true,
++   incidentCloseout:true,
++   supportBurden:true,
++   dataKpiConfidence:true,
++   unresolvedDebtRegister:true,
++   lessonsLearned:true,
++   expansionPrerequisites:true,
++   humanExpandHoldRetire:true,
++   noAutomaticMultiLocationRollout:true,
++   noAutomaticPilotRetirement:true,
++   autonomousProductionChanges:false
++ },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V52.10.0-RELEASE.md
++++ b/V52.10.0-RELEASE.md
+@@ -0,0 +1,86 @@
++# BLUE CURRENT V52.10.0 — PILOT CLOSEOUT & OUTCOME REVIEW
++
++V52.6–V52.10 closes the controlled pilot with evidence before any expansion decision.
++
++## Closeout gates
++
++1. PILOT_STABLE
++2. OBJECTIVE_REVIEW
++3. OPERATOR_FEEDBACK
++4. GUEST_IMPACT_SUMMARY
++5. INCIDENT_CLOSEOUT
++6. SUPPORT_BURDEN
++7. DATA_KPI_CONFIDENCE
++8. DEBT_REGISTER
++9. LESSONS_LEARNED
++10. EXPANSION_PREREQUISITES
++
++## Closeout review
++
++A closeout review requires a prior human STABLE stabilization decision and records:
++
++- objective/outcome summary
++- operator feedback
++- guest-impact summary
++- incident closeout
++- support burden
++- data/KPI confidence
++- unresolved debt
++- lessons learned
++- expansion prerequisites
++
++High/critical unresolved debt remains visible and prevents the normal expansion-ready path.
++
++## Human expansion decision
++
++Final human decisions:
++
++- EXPAND
++- HOLD
++- RETIRE
++
++EXPAND normally requires all 10 closeout/readiness gates.
++
++HOLD and RETIRE require a documented reason.
++
++An EXPAND decision does not deploy another restaurant.
++
++A RETIRE decision does not automatically retire the pilot environment.
++
++## Current authenticated runtime
++
++Current untouched state:
++
++`pilot-closeout-required`
++
++All five locations currently show 0/10 closeout gates because no authoritative V52 stabilization STABLE decision has yet been recorded.
++
++## Safety policy
++
++- stable pilot required for closeout
++- operator feedback required
++- guest impact summary required
++- incident closeout required
++- unresolved debt remains visible
++- expansion prerequisites human reviewed
++- human EXPAND/HOLD/RETIRE required
++- EXPAND does not deploy
++- no automatic multi-location rollout
++- no automatic pilot retirement
++- autonomous production changes false
++
++## Validation
++
++- V52.10 focused lifecycle PASS
++- V52.5 regression PASS
++- authenticated V52.10 endpoint PASS
++- authoritative database unchanged
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 959 JavaScript files
++- 798 client scripts
++- 5,983 unique HTML IDs
++
++## Next
++
++V52.11–V52.15 — Expansion Readiness & Replication Package.
+--- a/README-APPLY-V52.10.0.md
++++ b/README-APPLY-V52.10.0.md
+@@ -0,0 +1,40 @@
++# APPLY BLUE CURRENT V52.10.0
++
++Baseline: V52.5.0.
++
++Extract `BLUE-CURRENT-V52.10.0-PILOT-CLOSEOUT-OUTCOME.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v52.10-pilot-closeout-outcome.js
++node scripts/maintenance/test-v52.5-pilot-stabilization-exit.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++`"version":"52.10.0"`
++
++Then Ctrl+F5.
++
++Commit:
++
++```powershell
++git add -A
++git commit -m "V52.10.0 add pilot closeout and outcome review"
++git push origin live-service-timeline
++```
++
++Important:
++- EXPAND is a human decision record only.
++- It does not deploy another location.
++- HOLD and RETIRE do not make autonomous production changes.

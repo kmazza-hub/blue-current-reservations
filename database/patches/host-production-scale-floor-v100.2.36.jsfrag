@@ -1,0 +1,146 @@
+// V100.2.36 — Production-Scale Restaurant Floor Plans
+(() => {
+  const map = document.getElementById('hostFloorMap');
+  const toolbar = document.querySelector('.host-floor-toolbar');
+  const zoneButtons = [...document.querySelectorAll('[data-host-zone]')];
+  if (!map || !toolbar || zoneButtons.length < 3) return;
+  if (map.dataset.bcProductionScaleV100236 === 'true') return;
+  map.dataset.bcProductionScaleV100236 = 'true';
+
+  const specs = {
+    main: {
+      label:'Main floor',
+      tables:[
+        ['1',2,'available'],['2',2,null],['3',4,'seated'],['4',4,null],
+        ['5',2,'available'],['6',4,null],['7',4,'reserved'],['9',2,'seated'],
+        ['10',4,'available'],['11',4,'cleaning'],['12',6,'available'],['13',4,'seated'],
+        ['15',2,'available'],['17',4,'reserved'],['19',6,'available'],['21',4,'seated']
+      ],
+      positions:[
+        ['13%','22%'],['33%','22%'],['54%','22%'],['76%','22%'],
+        ['13%','41%'],['33%','41%'],['54%','41%'],['76%','41%'],
+        ['13%','60%'],['33%','60%'],['54%','60%'],['76%','60%'],
+        ['13%','79%'],['33%','79%'],['54%','79%'],['76%','79%']
+      ]
+    },
+    waterfront: {
+      label:'Waterfront',
+      tables:[
+        ['8',4,null],['14',4,null],['16',4,null],['24',2,'available'],
+        ['26',4,'seated'],['28',4,'available'],['30',6,'reserved'],['32',2,'available'],
+        ['34',4,'cleaning'],['36',4,'available'],['38',6,'seated'],['40',4,'available']
+      ],
+      positions:[
+        ['16%','25%'],['40%','25%'],['64%','25%'],['84%','25%'],
+        ['16%','49%'],['40%','49%'],['64%','49%'],['84%','49%'],
+        ['16%','73%'],['40%','73%'],['64%','73%'],['84%','73%']
+      ]
+    },
+    private: {
+      label:'Private dining',
+      tables:[
+        ['18',2,null],['20',4,null],['22',4,null],['42',6,'available'],
+        ['44',4,'reserved'],['46',8,'available'],['48',6,'seated'],['50',4,'available']
+      ],
+      positions:[
+        ['20%','30%'],['42%','30%'],['64%','30%'],['82%','30%'],
+        ['20%','64%'],['42%','64%'],['64%','64%'],['82%','64%']
+      ]
+    }
+  };
+
+  const existing = () => [...map.querySelectorAll('.host-table')];
+  const byNumber = (number) => existing().find((node) => String(node.dataset.table) === String(number));
+  const statusOf = (table) => ['available','reserved','seated','cleaning'].find((s) => table.classList.contains(s)) || 'available';
+
+  const buildTable = (number, capacity, state) => {
+    let table = byNumber(number);
+    if (!table) {
+      table = document.createElement('div');
+      table.className = 'host-table';
+      table.dataset.table = String(number);
+      table.innerHTML = `<span>${number}</span><small>OPEN</small>`;
+      map.appendChild(table);
+    }
+    table.dataset.capacity = String(capacity);
+    table.classList.toggle('round', capacity <= 2);
+    table.classList.toggle('bc-six-top-v100-2-36', capacity >= 6 && capacity < 8);
+    table.classList.toggle('bc-eight-top-v100-2-36', capacity >= 8);
+    if (state) {
+      ['available','reserved','seated','cleaning'].forEach((name) => table.classList.remove(name));
+      table.classList.add(state);
+      const small = table.querySelector('small');
+      if (small) {
+        if (state === 'available') small.textContent = 'OPEN';
+        if (state === 'reserved') { small.textContent = '7:45'; table.dataset.bcReservationLabel = '7:45'; }
+        if (state === 'cleaning') { small.textContent = 'CLEANING'; table.dataset.bcCleaningAt = String(Date.now()); }
+        if (state === 'seated') { small.textContent = 'SEATED'; table.dataset.bcSeatedAt = String(Date.now() - (35 + (Number(number)%35))*60000); table.dataset.bcPartySize = String(Math.min(capacity,4)); }
+      }
+    }
+    return table;
+  };
+
+  Object.entries(specs).forEach(([zone, config]) => {
+    config.tables.forEach(([number,capacity,state], index) => {
+      const table = buildTable(number,capacity,state);
+      table.dataset.bcZone = zone;
+      const [x,y] = config.positions[index];
+      table.style.setProperty('--x',x);
+      table.style.setProperty('--y',y);
+    });
+  });
+
+  const allTables = () => existing();
+  const closeDetail = () => {
+    const detail = document.getElementById('hostTableDetail');
+    if (detail) { detail.hidden = true; detail.setAttribute('aria-hidden','true'); detail.classList.remove('bc-detail-open'); }
+    allTables().forEach((table) => table.classList.remove('selected'));
+  };
+  const openCount = (zone) => specs[zone].tables.reduce((count,[number]) => count + (byNumber(number)?.classList.contains('available') ? 1 : 0),0);
+  const renderZone = (zone,{close=true}={}) => {
+    if (!specs[zone]) zone='main';
+    if (close) closeDetail();
+    map.dataset.bcActiveZone = zone;
+    zoneButtons.forEach((button) => {
+      const active = button.dataset.hostZone === zone;
+      button.classList.toggle('active',active);
+      button.setAttribute('aria-pressed',active?'true':'false');
+    });
+    allTables().forEach((table) => {
+      const show = table.dataset.bcZone === zone;
+      table.classList.toggle('bc-zone-hidden-v100-2-34',!show);
+      table.setAttribute('aria-hidden',show?'false':'true');
+      if (!show) table.setAttribute('tabindex','-1'); else table.removeAttribute('tabindex');
+    });
+    const recommendation = document.getElementById('hostRecommendation');
+    if (recommendation && !document.querySelector('.bc-unified-seat-instruction-v100-2-18:not([hidden])')) {
+      const count=openCount(zone);
+      recommendation.textContent=`${specs[zone].label} · ${count} open now · ${specs[zone].tables.length} tables`;
+    }
+  };
+
+  // The older V100.2.34 handler runs first; this final handler owns the production-scale view.
+  zoneButtons.forEach((button) => button.addEventListener('click', () => renderZone(button.dataset.hostZone)));
+
+  window.__bcHostZonesV100_2_34 = {
+    show:(zone)=>renderZone(zone),
+    active:()=>map.dataset.bcActiveZone || 'main',
+    zones:Object.fromEntries(Object.entries(specs).map(([key,value])=>[key,{label:value.label,tables:value.tables.map(([number])=>number)}]))
+  };
+  window.__bcHostProductionScaleV100_2_36 = {
+    version:'100.2.36',
+    totalTables:Object.values(specs).reduce((sum,zone)=>sum+zone.tables.length,0),
+    zones:Object.fromEntries(Object.entries(specs).map(([key,value])=>[key,value.tables.length]))
+  };
+
+  // Bring the existing table intelligence up to date immediately for the newly-created tables.
+  window.__bcHostTableTrustV100_2_22?.renderAll?.();
+  const counts = {available:0,reserved:0,seated:0,cleaning:0};
+  allTables().forEach((table)=>{ const state=statusOf(table); if (counts[state] !== undefined) counts[state] += 1; });
+  const ids={available:'availableCount',reserved:'reservedCount',seated:'seatedCount',cleaning:'cleaningCount'};
+  Object.entries(ids).forEach(([state,id])=>{ const node=document.getElementById(id); if(node) node.textContent=String(counts[state]); });
+  const hostOpen=document.getElementById('hostOpen'); if(hostOpen) hostOpen.textContent=String(counts.available);
+  const hostSeated=document.getElementById('hostSeated'); if(hostSeated) hostSeated.textContent=String(counts.seated);
+
+  renderZone(map.dataset.bcActiveZone || 'main',{close:false});
+})();

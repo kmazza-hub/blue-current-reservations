@@ -5,21 +5,30 @@ const pad = value => String(value).padStart(2, "0");
 const minutes = value => { const [h,m] = String(value || "00:00").split(":").map(Number); return h * 60 + m; };
 const durationHours = shift => Math.max(0, (minutes(shift.endTime) - minutes(shift.startTime)) / 60);
 const mondayOf = value => { const date = new Date(`${value || new Date().toISOString().slice(0,10)}T12:00:00`); const day = date.getDay(); date.setDate(date.getDate() - ((day + 6) % 7)); return date.toISOString().slice(0,10); };
+const invalidRequest = message => { const error=new Error(message);error.statusCode=400;return error; };
 
 class SchedulingService {
   constructor(database, auditService, realtimeHub) { this.database=database; this.auditService=auditService; this.realtimeHub=realtimeHub; }
 
+  async requireLocation(organizationId,locationId){const location=locationId?await this.database.get("locations",locationId):null;if(!location||location.organizationId!==organizationId){const error=new Error("Location is not available to this organization.");error.statusCode=404;throw error;}return location;}
+  async requireEmployee(organizationId,locationId,employeeId){if(!employeeId)return null;const employee=await this.database.get("staff",employeeId);if(!employee||employee.organizationId!==organizationId||employee.locationId!==locationId){const error=new Error("Employee is not available at this location.");error.statusCode=400;throw error;}return employee;}
+
   async snapshot(organizationId, locationId, requestedWeek) {
+    await this.requireLocation(organizationId,locationId);
     const weekStart=mondayOf(requestedWeek); const weekEnd=new Date(new Date(`${weekStart}T12:00:00`).getTime()+6*DAY_MS).toISOString().slice(0,10);
     const db=await this.database.read();
     const employees=(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&(x.employmentStatus||"active")==="active");
     const employeeIds=new Set(employees.map(x=>x.id));
     const shifts=(db.scheduleShifts||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.date>=weekStart&&x.date<=weekEnd).sort((a,b)=>`${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`));
     const publications=(db.schedulePublications||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.weekStart===weekStart);
+    const latestPublication=publications.at(-1)||null;
+    const publishedAt=latestPublication?Date.parse(latestPublication.publishedAt||""):NaN;
+    const publicationCurrent=!!latestPublication&&shifts.every(shift=>shift.status==="published"&&(!Number.isFinite(publishedAt)||!shift.updatedAt||Date.parse(shift.updatedAt)<=publishedAt));
+    const publication=publicationCurrent?latestPublication:null;
     const validations=this.validate(shifts,employees,db.employeeAvailability||[],db.ptoRequests||[]);
     const intelligence=this.intelligence({weekStart,weekEnd,shifts,employees,availability:db.employeeAvailability||[],ptoRequests:db.ptoRequests||[],reservations:(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId)});
     const totalHours=shifts.reduce((s,x)=>s+durationHours(x),0); const projectedLabor=shifts.reduce((s,x)=>{const e=employees.find(p=>p.id===x.employeeId);return s+durationHours(x)*Number(e?.hourlyRate||0)},0);
-    return {weekStart,weekEnd,employees,shifts,validations,intelligence,publication:publications.at(-1)||null,summary:{totalShifts:shifts.length,openShifts:shifts.filter(x=>!x.employeeId).length,totalHours:Number(totalHours.toFixed(1)),projectedLabor:Math.round(projectedLabor),conflicts:validations.filter(x=>x.severity==="error").length,warnings:validations.filter(x=>x.severity==="warning").length},generatedAt:new Date().toISOString()};
+    return {weekStart,weekEnd,employees,shifts,validations,intelligence,publication,summary:{totalShifts:shifts.length,openShifts:shifts.filter(x=>!x.employeeId).length,totalHours:Number(totalHours.toFixed(1)),projectedLabor:Math.round(projectedLabor),conflicts:validations.filter(x=>x.severity==="error").length,warnings:validations.filter(x=>x.severity==="warning").length},generatedAt:new Date().toISOString()};
   }
 
   validate(shifts,employees,availability,ptoRequests){
@@ -41,20 +50,23 @@ class SchedulingService {
   }
 
   async create(input,actor,organizationId){
-    if(!input.locationId||!input.date||!input.startTime||!input.endTime||!input.role) throw new Error("locationId, date, startTime, endTime, and role are required");
-    if(minutes(input.endTime)<=minutes(input.startTime)) throw new Error("endTime must be after startTime");
+    if(!input.locationId||!input.date||!input.startTime||!input.endTime||!input.role) throw invalidRequest("locationId, date, startTime, endTime, and role are required");
+    await this.requireLocation(organizationId,input.locationId);
+    await this.requireEmployee(organizationId,input.locationId,input.employeeId);
+    if(minutes(input.endTime)<=minutes(input.startTime)) throw invalidRequest("endTime must be after startTime");
     const shift={id:`shift_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId:input.locationId,date:input.date,startTime:input.startTime,endTime:input.endTime,employeeId:input.employeeId||null,role:String(input.role),department:String(input.department||"Service"),notes:String(input.notes||""),status:"draft",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
     await this.database.create("scheduleShifts",shift); await this.record(organizationId,actor,`Created ${shift.role} shift on ${shift.date}`); this.realtimeHub.publish("scheduling:shift-created",shift); return shift;
   }
   async update(id,input,actor,organizationId){
     const existing=await this.database.get("scheduleShifts",id); if(!existing||existing.organizationId!==organizationId)return null;
     const allowed=["date","startTime","endTime","employeeId","role","department","notes"]; const patch=Object.fromEntries(Object.entries(input||{}).filter(([k])=>allowed.includes(k))); if(patch.employeeId==="")patch.employeeId=null;
-    const start=patch.startTime||existing.startTime,end=patch.endTime||existing.endTime;if(minutes(end)<=minutes(start))throw new Error("endTime must be after startTime"); patch.updatedAt=new Date().toISOString(); patch.status="draft";
+    await this.requireEmployee(organizationId,existing.locationId,patch.employeeId);
+    const start=patch.startTime||existing.startTime,end=patch.endTime||existing.endTime;if(minutes(end)<=minutes(start))throw invalidRequest("endTime must be after startTime"); patch.updatedAt=new Date().toISOString(); patch.status="draft";
     const result=await this.database.update("scheduleShifts",id,patch); await this.record(organizationId,actor,`Updated ${result.role} shift on ${result.date}`); this.realtimeHub.publish("scheduling:shift-updated",result); return result;
   }
-  async remove(id,actor,organizationId){const existing=await this.database.get("scheduleShifts",id);if(!existing||existing.organizationId!==organizationId)return false;await this.database.mutate(db=>{db.scheduleShifts=(db.scheduleShifts||[]).filter(x=>x.id!==id);return true});await this.record(organizationId,actor,`Deleted ${existing.role} shift on ${existing.date}`);this.realtimeHub.publish("scheduling:shift-deleted",{id});return true;}
-  async publish(input,actor,organizationId){const weekStart=mondayOf(input.weekStart);const record={id:`publication_${Date.now()}`,organizationId,locationId:input.locationId,weekStart,status:"published",publishedBy:actor,publishedAt:new Date().toISOString()};await this.database.mutate(db=>{db.schedulePublications||=[];db.schedulePublications.push(record);for(const x of db.scheduleShifts||[])if(x.organizationId===organizationId&&x.locationId===input.locationId&&mondayOf(x.date)===weekStart)x.status="published";return record});await this.record(organizationId,actor,`Published schedule for ${weekStart}`);this.realtimeHub.publish("scheduling:published",record);return record;}
-  async copyPrevious(input,actor,organizationId){const target=mondayOf(input.weekStart);const previous=new Date(new Date(`${target}T12:00:00`).getTime()-7*DAY_MS).toISOString().slice(0,10);let created=[];await this.database.mutate(db=>{db.scheduleShifts||=[];const source=db.scheduleShifts.filter(x=>x.organizationId===organizationId&&x.locationId===input.locationId&&mondayOf(x.date)===previous);created=source.map(x=>({...x,id:`shift_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,date:new Date(new Date(`${x.date}T12:00:00`).getTime()+7*DAY_MS).toISOString().slice(0,10),status:"draft",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}));db.scheduleShifts.push(...created);return created});await this.record(organizationId,actor,`Copied ${created.length} shifts into week ${target}`);this.realtimeHub.publish("scheduling:week-copied",{weekStart:target,count:created.length});return {weekStart:target,count:created.length};}
+  async remove(id,actor,organizationId){const existing=await this.database.get("scheduleShifts",id);if(!existing||existing.organizationId!==organizationId)return false;const weekStart=mondayOf(existing.date);await this.database.mutate(db=>{db.scheduleShifts=(db.scheduleShifts||[]).filter(x=>x.id!==id);db.schedulePublications=(db.schedulePublications||[]).filter(x=>!(x.organizationId===organizationId&&x.locationId===existing.locationId&&x.weekStart===weekStart));return true});await this.record(organizationId,actor,`Deleted ${existing.role} shift on ${existing.date}`);this.realtimeHub.publish("scheduling:shift-deleted",{id});this.realtimeHub.publish("scheduling:publication-invalidated",{locationId:existing.locationId,weekStart,reason:"shift-deleted"});return true;}
+  async publish(input,actor,organizationId){if(!input.locationId||!input.weekStart)throw invalidRequest("locationId and weekStart are required");await this.requireLocation(organizationId,input.locationId);const weekStart=mondayOf(input.weekStart);const record={id:`publication_${Date.now()}`,organizationId,locationId:input.locationId,weekStart,status:"published",publishedBy:actor,publishedAt:new Date().toISOString()};await this.database.mutate(db=>{db.schedulePublications||=[];db.schedulePublications.push(record);for(const x of db.scheduleShifts||[])if(x.organizationId===organizationId&&x.locationId===input.locationId&&mondayOf(x.date)===weekStart)x.status="published";return record});await this.record(organizationId,actor,`Published schedule for ${weekStart}`);this.realtimeHub.publish("scheduling:published",record);return record;}
+  async copyPrevious(input,actor,organizationId){if(!input.locationId||!input.weekStart)throw invalidRequest("locationId and weekStart are required");await this.requireLocation(organizationId,input.locationId);const target=mondayOf(input.weekStart);const previous=new Date(new Date(`${target}T12:00:00`).getTime()-7*DAY_MS).toISOString().slice(0,10);let created=[];await this.database.mutate(db=>{db.scheduleShifts||=[];const source=db.scheduleShifts.filter(x=>x.organizationId===organizationId&&x.locationId===input.locationId&&mondayOf(x.date)===previous);created=source.map(x=>({...x,id:`shift_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,date:new Date(new Date(`${x.date}T12:00:00`).getTime()+7*DAY_MS).toISOString().slice(0,10),status:"draft",createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}));db.scheduleShifts.push(...created);return created});await this.record(organizationId,actor,`Copied ${created.length} shifts into week ${target}`);this.realtimeHub.publish("scheduling:week-copied",{weekStart:target,count:created.length});return {weekStart:target,count:created.length};}
 
   intelligence({weekStart,weekEnd,shifts,employees,availability,ptoRequests,reservations}) {
     const recommendations=[]; const weeklyHours=new Map();

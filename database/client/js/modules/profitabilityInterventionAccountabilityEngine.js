@@ -1,0 +1,11 @@
+(function(global){"use strict";
+class BlueCurrentProfitabilityInterventionAccountabilityEngine{
+ constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
+ token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
+ headers(){return{Authorization:`Bearer ${this.token()}`};}
+ async snapshot(){const r=await fetch("/api/profitability-intervention-accountability",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Profitability accountability failed (${r.status})`);this.appState?.update?.({profitabilityInterventionAccountability:d});return d;}
+ async createIntervention(locationId,payload){const r=await fetch(`/api/profitability-intervention-accountability/locations/${encodeURIComponent(locationId)}/interventions`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Intervention creation failed (${r.status})`);this.eventBus?.emit?.("profitability-accountability:intervention-created",d);return d;}
+ async measureOutcome(interventionId,payload){const r=await fetch(`/api/profitability-intervention-accountability/interventions/${encodeURIComponent(interventionId)}/outcome`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Outcome measurement failed (${r.status})`);this.eventBus?.emit?.("profitability-accountability:outcome-measured",d);return d;}
+ async certify(locationId,payload){const r=await fetch(`/api/profitability-intervention-accountability/locations/${encodeURIComponent(locationId)}/certify`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Value certification failed (${r.status})`);return d;}
+}
+if(global)global.BlueCurrentProfitabilityInterventionAccountabilityEngine=BlueCurrentProfitabilityInterventionAccountabilityEngine;})(window);

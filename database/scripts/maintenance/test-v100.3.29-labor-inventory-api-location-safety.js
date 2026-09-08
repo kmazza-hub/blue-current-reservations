@@ -1,0 +1,22 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const router=read("server/api/router.js"),inventory=read("server/services/inventoryIntelligenceService.js");
+const routes=router.slice(router.indexOf('if (url.pathname === "/api/inventory-intelligence"'),router.indexOf('if (url.pathname === "/api/guest-intelligence"'));
+check("Inventory snapshot requires explicit location",routes.includes('/api/inventory-intelligence\" && request.method === \"GET')&&routes.includes('Location is required.'));
+check("Inventory snapshot enforces operator authorization",routes.includes('inventoryIntelligenceService.snapshot')&&routes.includes('canAccessLocation(locationId)'));
+check("Inventory decisions require explicit location",routes.includes('/api/inventory-intelligence/recommendations/')&&routes.includes('body.locationId=locationId'));
+check("Purchase orders require explicit location",routes.includes('/api/inventory-intelligence/purchase-orders'));
+check("Inventory policies enforce operator authorization",routes.includes('/api/inventory-intelligence/policies/')&&routes.includes('inventoryIntelligenceService.updatePolicy'));
+check("Workforce snapshot requires explicit location",routes.includes('/api/workforce-intelligence\" && request.method === \"GET'));
+check("Workforce snapshot enforces operator authorization",routes.includes('workforceIntelligenceService.snapshot')&&(routes.match(/canAccessLocation\(locationId\)/g)||[]).length>=7);
+check("Workforce decisions require explicit location",routes.includes('/api/workforce-intelligence/recommendations/')&&routes.includes('workforceIntelligenceService.act'));
+check("Labor-plan updates enforce path location authorization",routes.includes('/api/workforce-intelligence/plans/')&&routes.includes('workforceIntelligenceService.updatePlan'));
+check("Scoped intelligence routes do not default to Marina",!routes.includes('||"loc_marina"'));
+check("Inventory reorder decisions validate source item location",inventory.includes('item.locationId!==locationId'));
+check("Inventory reorder decisions validate source organization",inventory.includes('item.organizationId!==organizationId'));
+check("Inventory decisions validate the target restaurant",inventory.includes('location.organizationId!==organizationId'));
+check("No database payload is included by the release",!fs.existsSync(path.join(root,"database/data/V100.3.29.json")));
+console.log(`V100.3.29 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;

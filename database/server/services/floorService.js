@@ -28,28 +28,38 @@ class FloorService {
     for (const key of allowed) {
       if (Object.prototype.hasOwnProperty.call(patch, key)) safePatch[key] = patch[key];
     }
+    if (Object.prototype.hasOwnProperty.call(safePatch,"partySize") && Number(safePatch.partySize) < 0) {
+      const error=new Error("partySize cannot be negative.");
+      error.statusCode=400;
+      throw error;
+    }
 
-    const table = await this.database.update("tables", tableId, safePatch);
-    if (!table) return null;
+    const result = await this.database.transaction(tx => {
+      const table = tx.get("tables", tableId);
+      if (!table || table.organizationId !== organizationId) return null;
+      const updated = tx.update("tables", tableId, safePatch);
+      const event = models.operationalEvent({
+        organizationId,
+        locationId: updated.locationId,
+        tableId: updated.id,
+        type: "table.updated",
+        actor,
+        summary: `${updated.name} changed to ${updated.status}`,
+        payload: safePatch
+      });
+      tx.create("seatingEvents", event);
+      return { table: updated, event };
+    }, { domain:"floor", operation:"update-table", organizationId, tableId });
 
-    const event = models.operationalEvent({
-      organizationId,
-      locationId: table.locationId,
-      tableId: table.id,
-      type: "table.updated",
-      actor,
-      summary: `${table.name} changed to ${table.status}`,
-      payload: safePatch
-    });
-    await this.database.create("seatingEvents", event);
+    if (!result) return null;
     await this.auditService.record({
       organizationId,
       actor,
-      action: `${table.name} updated: ${Object.keys(safePatch).join(", ")}`,
+      action: `${result.table.name} updated: ${Object.keys(safePatch).join(", ")}`,
       category: "floor"
     });
-    this.realtimeHub.publish("floor:table-updated", { ...table, organizationId });
-    return table;
+    this.realtimeHub.publish("floor:table-updated", { ...result.table, organizationId });
+    return result.table;
   }
 
   async seatWaitlist(waitlistId, tableId, actor, organizationId) {
@@ -57,6 +67,7 @@ class FloorService {
       const guest = (database.waitlist || []).find(item => item.id === waitlistId);
       const table = (database.tables || []).find(item => item.id === tableId);
       if (!guest || !table || guest.status !== "waiting") return null;
+      if (guest.organizationId !== organizationId || table.organizationId !== organizationId) return null;
       if (guest.locationId !== table.locationId) return null;
 
       guest.status = "seated";
@@ -105,6 +116,12 @@ class FloorService {
       createdAt: new Date().toISOString()
     };
     if (!guest.guestName) throw new Error("Guest name is required");
+    const location=await this.database.get("locations",guest.locationId);
+    if(!location || location.organizationId!==organizationId){
+      const error=new Error("Location is not available to this organization.");
+      error.statusCode=404;
+      throw error;
+    }
     await this.database.create("waitlist", guest);
     await this.auditService.record({
       organizationId,

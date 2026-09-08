@@ -1,0 +1,29 @@
+{
+  "version": "93.75.0",
+  "phase": "D",
+  "gate": "PILOT_SECURITY_ACCESS_AND_AUDIT_READINESS",
+  "authentication": {
+    "passwordHash": "scrypt",
+    "timingSafeVerification": true,
+    "tokenHashing": true,
+    "idleExpiration": true,
+    "absoluteExpiration": true,
+    "revocation": true,
+    "failedLoginLockout": true
+  },
+  "authorization": {
+    "apiBoundary": true,
+    "roleMatrix": true,
+    "locationScope": true,
+    "organizationMembership": true,
+    "leastPrivilege": true,
+    "automaticEscalation": false,
+    "automaticScopeExpansion": false
+  },
+  "audit": {
+    "organizationScoped": true,
+    "securityEvents": true,
+    "privilegedActionEvidence": true
+  },
+  "nextGate": "PILOT_PERFORMANCE_CAPACITY_AND_RESILIENCE_READINESS"
+}

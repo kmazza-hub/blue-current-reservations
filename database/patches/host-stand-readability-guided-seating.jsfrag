@@ -1,0 +1,330 @@
+// V100.2.15 — Host Stand Readability + Guided Waitlist Seating
+(() => {
+  const waitlist = document.getElementById('waitlistQueue');
+  const arrivals = document.getElementById('arrivalQueue');
+  const floorPanel = document.querySelector('.host-floor-panel');
+  const floorMap = document.getElementById('hostFloorMap');
+  const detail = document.getElementById('hostTableDetail');
+  const assignButton = document.getElementById('assignTableButton');
+  const navButtons = [...document.querySelectorAll('.host-nav button')];
+  if (!waitlist || !arrivals || !floorPanel || !floorMap || !assignButton || !navButtons.length) return;
+
+  const styleId = 'bc-host-readability-guided-seating-v100-2-15';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      /* Aim small, miss small: fast scan, obvious action. */
+      #waitlistQueue .queue-item,
+      #arrivalQueue .queue-item.arrival {
+        min-height:96px !important;
+        padding:18px 20px !important;
+        gap:16px !important;
+        border-color:rgba(131,197,187,.30) !important;
+        background:#123d4b !important;
+      }
+      #waitlistQueue .queue-item strong,
+      #arrivalQueue .queue-item.arrival strong {
+        color:#fff !important;
+        font-size:20px !important;
+        line-height:1.15 !important;
+        font-weight:850 !important;
+      }
+      #waitlistQueue .queue-item small,
+      #arrivalQueue .queue-item.arrival small {
+        color:#d4e8e9 !important;
+        font-size:16px !important;
+        line-height:1.25 !important;
+        margin-top:5px !important;
+      }
+      #waitlistQueue .queue-time,
+      #arrivalQueue .arrival-time {
+        font-size:16px !important;
+        font-weight:900 !important;
+        color:#082632 !important;
+        background:#f7e7c6 !important;
+      }
+      #waitlistQueue .queue-item > button,
+      #arrivalQueue .bc-arrival-action-v100-2-13 {
+        min-width:112px !important;
+        min-height:54px !important;
+        padding:0 18px !important;
+        border-radius:14px !important;
+        border:2px solid #47bfd7 !important;
+        background:#087694 !important;
+        color:#fff !important;
+        font-size:16px !important;
+        font-weight:900 !important;
+        box-shadow:0 8px 20px rgba(0,0,0,.16) !important;
+      }
+      #waitlistQueue .queue-item > button:disabled {
+        border-color:#6f969f !important;
+        background:#365f6b !important;
+        color:#e5f0f1 !important;
+        opacity:1 !important;
+      }
+      #arrivalQueue .arrival-chip {
+        min-width:104px !important;
+        padding:10px 14px !important;
+        text-align:center !important;
+        font-size:14px !important;
+        font-weight:900 !important;
+        color:#15343c !important;
+        background:#edf5f1 !important;
+      }
+      .queue-tabs button {
+        min-height:58px !important;
+        padding:0 22px !important;
+        font-size:18px !important;
+        font-weight:900 !important;
+      }
+      .bc-waitlist-seat-instruction-v100-2-15 {
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:18px;
+        margin:0 0 16px;
+        padding:16px 18px;
+        border:2px solid #65d3c4;
+        border-radius:16px;
+        background:#0d4550;
+        color:#fff;
+        box-shadow:0 10px 28px rgba(0,0,0,.18);
+      }
+      .bc-waitlist-seat-instruction-v100-2-15 strong { display:block; font-size:21px; line-height:1.1; }
+      .bc-waitlist-seat-instruction-v100-2-15 span { display:block; margin-top:4px; color:#c9e6e6; font-size:15px; }
+      .bc-waitlist-seat-instruction-v100-2-15 button,
+      .bc-waitlist-seat-confirm-v100-2-15 button {
+        min-height:48px;
+        border-radius:12px;
+        padding:0 16px;
+        font-weight:900;
+      }
+      .host-table.bc-seat-choice-v100-2-15 {
+        outline:5px solid rgba(101,211,196,.55) !important;
+        outline-offset:5px !important;
+        cursor:pointer !important;
+        transform:scale(1.06);
+      }
+      .host-table.bc-seat-unavailable-v100-2-15 {
+        opacity:.42 !important;
+        filter:saturate(.35) !important;
+      }
+      .bc-waitlist-seat-confirm-v100-2-15 {
+        position:absolute;
+        z-index:40;
+        right:22px;
+        top:22px;
+        width:min(360px,calc(100% - 44px));
+        padding:20px;
+        border:2px solid #83c5bb;
+        border-radius:18px;
+        background:#fff;
+        color:#15343c;
+        box-shadow:0 24px 55px rgba(0,0,0,.24);
+      }
+      .bc-waitlist-seat-confirm-v100-2-15 small { color:#39717a; font-weight:900; text-transform:uppercase; letter-spacing:.08em; }
+      .bc-waitlist-seat-confirm-v100-2-15 strong { display:block; margin:6px 0 4px; font-size:24px; }
+      .bc-waitlist-seat-confirm-v100-2-15 p { margin:0 0 16px; font-size:17px; }
+      .bc-waitlist-seat-confirm-v100-2-15 .bc-confirm-seat { width:100%; background:#086b84; color:#fff; border:0; font-size:17px; }
+      .bc-waitlist-seat-confirm-v100-2-15 .bc-cancel-seat { width:100%; margin-top:8px; background:#edf5f1; color:#15343c; border:1px solid #b5caca; }
+      .bc-host-seat-toast-v100-2-15 {
+        position:absolute;
+        z-index:60;
+        right:18px;
+        top:18px;
+        padding:14px 18px;
+        border-radius:14px;
+        background:#edf5f1;
+        color:#15343c;
+        font-weight:900;
+        box-shadow:0 14px 34px rgba(0,0,0,.20);
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const normalizeLabel = (button) => (button?.textContent || '').replace(/[^a-zA-Z]/g, '').toLowerCase();
+  const floorNav = navButtons.find((button) => normalizeLabel(button) === 'floor');
+  const tables = () => [...document.querySelectorAll('.host-table')];
+  const getTableState = (table) => ['available','reserved','seated','cleaning'].find((name) => table?.classList.contains(name)) || 'selected';
+  const numberOf = (table) => table?.dataset?.table || '';
+  const numeric = (selector) => Number(document.querySelector(selector)?.textContent || 0);
+  const setNumeric = (selector, value) => { const node=document.querySelector(selector); if(node) node.textContent=String(Math.max(0,value)); };
+
+  const pending = window.__bcWaitlistSeatFlowV100_2_15 || { row:null, guestName:'', guestDetail:'', selectedTable:null };
+  window.__bcWaitlistSeatFlowV100_2_15 = pending;
+
+  let instruction = document.getElementById('bcWaitlistSeatInstructionV100_2_15');
+  if (!instruction) {
+    instruction = document.createElement('div');
+    instruction.id = 'bcWaitlistSeatInstructionV100_2_15';
+    instruction.className = 'bc-waitlist-seat-instruction-v100-2-15';
+    instruction.hidden = true;
+    instruction.innerHTML = '<div><strong>Choose a table</strong><span>Select an available table to continue.</span></div><button type="button">Cancel</button>';
+    floorPanel.insertBefore(instruction, floorPanel.firstChild);
+  }
+
+  let confirm = document.getElementById('bcWaitlistSeatConfirmV100_2_15');
+  if (!confirm) {
+    confirm = document.createElement('div');
+    confirm.id = 'bcWaitlistSeatConfirmV100_2_15';
+    confirm.className = 'bc-waitlist-seat-confirm-v100-2-15';
+    confirm.hidden = true;
+    confirm.innerHTML = '<small>Seat guest</small><strong></strong><p></p><button class="bc-confirm-seat" type="button">Confirm seating</button><button class="bc-cancel-seat" type="button">Cancel</button>';
+    floorMap.appendChild(confirm);
+  }
+
+  const clearAnthonyTransientDetail = () => {
+    document.querySelectorAll('.host-table.selected').forEach((table) => table.classList.remove('selected'));
+    if (detail) {
+      detail.hidden = true;
+      detail.setAttribute('aria-hidden','true');
+      detail.classList.remove('bc-detail-open');
+    }
+    window.__bcHostSelectedTableV100_2_13 = null;
+    window.__bcHostSelectedTableV100_2_12 = null;
+  };
+
+  const resetTableChoiceStyles = () => {
+    tables().forEach((table) => table.classList.remove('bc-seat-choice-v100-2-15','bc-seat-unavailable-v100-2-15'));
+  };
+
+  const cancelWaitlistSeatFlow = () => {
+    pending.row = null;
+    pending.guestName = '';
+    pending.guestDetail = '';
+    pending.selectedTable = null;
+    instruction.hidden = true;
+    confirm.hidden = true;
+    resetTableChoiceStyles();
+  };
+
+  const enterTableChoice = (row) => {
+    const name = row.querySelector('strong')?.textContent?.trim() || 'Guest';
+    const detailText = row.querySelector('small')?.textContent?.trim() || '';
+    pending.row = row;
+    pending.guestName = name;
+    pending.guestDetail = detailText;
+    pending.selectedTable = null;
+    if (floorNav) floorNav.click();
+    clearAnthonyTransientDetail();
+    instruction.querySelector('strong').textContent = `Choose a table for ${name}`;
+    instruction.querySelector('span').textContent = `${detailText || 'Waiting guest'} · Tap one highlighted table.`;
+    instruction.hidden = false;
+    confirm.hidden = true;
+    tables().forEach((table) => {
+      const state = getTableState(table);
+      table.classList.toggle('bc-seat-choice-v100-2-15', state === 'available' || state === 'cleaning');
+      table.classList.toggle('bc-seat-unavailable-v100-2-15', state !== 'available' && state !== 'cleaning');
+    });
+  };
+
+  const chooseTable = (table) => {
+    if (!pending.row) return;
+    const state = getTableState(table);
+    if (state !== 'available' && state !== 'cleaning') return;
+    pending.selectedTable = table;
+    tables().forEach((item) => item.classList.toggle('selected', item === table));
+    const number = numberOf(table);
+    confirm.querySelector('strong').textContent = `Seat ${pending.guestName} at Table ${number}`;
+    confirm.querySelector('p').textContent = `${pending.guestDetail || 'Waiting guest'} · Table ${number} is ${state}.`;
+    confirm.querySelector('.bc-confirm-seat').textContent = `Seat ${pending.guestName.split(' ')[0]} at Table ${number}`;
+    confirm.hidden = false;
+  };
+
+  const showSeatToast = (message) => {
+    const toast = document.createElement('div');
+    toast.className = 'bc-host-seat-toast-v100-2-15';
+    toast.setAttribute('role','status');
+    toast.textContent = message;
+    floorPanel.appendChild(toast);
+    setTimeout(() => toast.remove(), 2200);
+  };
+
+  const completeWaitlistSeat = () => {
+    const row = pending.row;
+    const table = pending.selectedTable;
+    if (!row || !table) return;
+    const number = numberOf(table);
+    const priorState = getTableState(table);
+    const name = pending.guestName;
+
+    table.classList.remove('available','cleaning','reserved');
+    table.classList.add('seated');
+    table.dataset.bcGuestName = name;
+    table.dataset.bcGuestStatus = 'seated';
+    const small = table.querySelector('small');
+    if (small) small.textContent = 'Seated';
+
+    if (priorState === 'available') {
+      setNumeric('#availableCount', numeric('#availableCount') - 1);
+      setNumeric('#hostOpen', numeric('#hostOpen') - 1);
+    }
+    if (priorState === 'cleaning') setNumeric('#cleaningCount', numeric('#cleaningCount') - 1);
+    setNumeric('#seatedCount', numeric('#seatedCount') + 1);
+    setNumeric('#hostSeated', numeric('#hostSeated') + 1);
+    setNumeric('#waitlistBadge', numeric('#waitlistBadge') - 1);
+    setNumeric('#hostWaiting', numeric('#hostWaiting') - 1);
+
+    row.dataset.bcGuestStatus = 'seated';
+    row.dataset.bcTable = number;
+    row.remove();
+    const recommendation = document.getElementById('hostRecommendation');
+    if (recommendation) recommendation.textContent = `${name} seated at Table ${number}`;
+
+    cancelWaitlistSeatFlow();
+    clearAnthonyTransientDetail();
+    showSeatToast(`${name} seated at Table ${number}`);
+  };
+
+  // Capture Seat before older generic handlers can mark a guest seated without a table.
+  if (!waitlist.dataset.bcGuidedSeatBoundV100215) {
+    waitlist.dataset.bcGuidedSeatBoundV100215 = 'true';
+    waitlist.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      const row = button?.closest('.queue-item');
+      if (!button || !row || button.disabled) return;
+      const label = button.textContent.trim().toLowerCase();
+      if (label !== 'seat') return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      enterTableChoice(row);
+    }, true);
+  }
+
+  // While choosing a table for a waitlist guest, table taps belong only to that guest flow.
+  if (!floorMap.dataset.bcGuidedTableBoundV100215) {
+    floorMap.dataset.bcGuidedTableBoundV100215 = 'true';
+    floorMap.addEventListener('click', (event) => {
+      if (!pending.row) return;
+      const table = event.target.closest('.host-table');
+      if (!table) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      chooseTable(table);
+    }, true);
+  }
+
+  instruction.querySelector('button')?.addEventListener('click', cancelWaitlistSeatFlow);
+  confirm.querySelector('.bc-cancel-seat')?.addEventListener('click', cancelWaitlistSeatFlow);
+  confirm.querySelector('.bc-confirm-seat')?.addEventListener('click', completeWaitlistSeat);
+
+  // Expected reservation hold is a completed action: collapse the card immediately after reserve.
+  if (!assignButton.dataset.bcReserveCollapseBoundV100215) {
+    assignButton.dataset.bcReserveCollapseBoundV100215 = 'true';
+    assignButton.addEventListener('click', () => {
+      setTimeout(() => {
+        const assignment = window.__bcHostAssignmentV100_2_13;
+        const state = assignButton.dataset.bcAssignmentState;
+        if (assignment?.status === 'assigned' && state === 'held' && detail) {
+          detail.hidden = true;
+          detail.setAttribute('aria-hidden','true');
+          detail.classList.remove('bc-detail-open');
+          document.querySelectorAll('.host-table.selected').forEach((table) => table.classList.remove('selected'));
+          window.__bcHostSelectedTableV100_2_13 = null;
+        }
+      }, 0);
+    });
+  }
+})();

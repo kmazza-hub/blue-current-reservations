@@ -1,0 +1,14 @@
+{
+  "version": "100.2.74",
+  "name": "Scheduling Publication Integrity",
+  "files": [
+    "server/services/schedulingService.js",
+    "scripts/maintenance/test-v100.2.74-scheduling-publication-integrity.js"
+  ],
+  "protectedBaseline": {
+    "server/services/schedulingService.js": "cd5b117bd75e17b1fb341e23e1b536c1dfc87987bafb23b63c81e7309811a5bf"
+  },
+  "targetHashes": {
+    "server/services/schedulingService.js": "601545617f6c91fc06567076e35408145fb968c72389208f5851b2c79d2b0d81"
+  }
+}

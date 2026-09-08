@@ -1,0 +1,20 @@
+{
+  "version": "86.50.0",
+  "defaultAuthority": {
+    "POS_TRANSACTION": "EXTERNAL_POS",
+    "PAYMENT": "EXTERNAL_POS",
+    "MENU_ITEM": "EXTERNAL_POS",
+    "RESERVATION": "RESERVATION_SOURCE",
+    "GUEST_PROFILE": "BLUE_CURRENT_WITH_PROVENANCE",
+    "EMPLOYEE": "LABOR_SOURCE",
+    "SCHEDULE": "LABOR_SOURCE",
+    "INVENTORY": "INVENTORY_SOURCE"
+  },
+  "rules": {
+    "provenanceRequired": true,
+    "disagreementNeverSilentlyOverwritten": true,
+    "humanReviewWhenAuthorityUnavailable": true,
+    "resolutionAudited": true,
+    "writeBackDisabledByDefault": true
+  }
+}

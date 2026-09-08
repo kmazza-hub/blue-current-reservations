@@ -1,0 +1,18 @@
+{
+  "version": "100.2.80",
+  "name": "Inventory Truth Foundation",
+  "files": [
+    "client/js/inventory-truth-v100.2.80.js",
+    "client/js/runtime-performance-v100.2.70.js",
+    "client/index.html",
+    "scripts/maintenance/test-v100.2.80-inventory-truth-foundation.js"
+  ],
+  "protectedBaseline": {
+    "client/js/runtime-performance-v100.2.70.js": "d86b3b4d1c5f34aa01610abb51f45e60fb3f41b0d665f1cbb8a5b4586fe172b7",
+    "client/index.html": "367c20624c1b0c8667993b91feae776b5e47fce00edafb8c6947c759e2a581ba"
+  },
+  "targetHashes": {
+    "client/js/runtime-performance-v100.2.70.js": "d64cc2ff79212d1fd7596a455c665ea36ce937174520f5966858c5ee6dac7458",
+    "client/index.html": "ac12423f240cda56694629deb450ab1efdaab2fbe0dc910a6e5e4d6e63884272"
+  }
+}

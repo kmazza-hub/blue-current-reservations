@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Partner Success Platform v35.4.4'));

@@ -1,0 +1,39 @@
+{
+  "version": "95.75.0",
+  "phase": "D",
+  "gate": "PILOT_EXIT_READINESS_AND_V96_CERTIFICATION_PREPARATION",
+  "locationChecks": [
+    "REPEAT_SERVICE_CONFIDENCE",
+    "PILOT_STABLE",
+    "CLOSEOUT_REVIEW",
+    "INCIDENT_CLOSEOUT",
+    "NO_HIGH_CRITICAL_DEBT",
+    "OPERATOR_FEEDBACK",
+    "GUEST_IMPACT_SUMMARY",
+    "SUPPORT_BURDEN_SUMMARY",
+    "DATA_KPI_CONFIDENCE",
+    "LESSONS_LEARNED"
+  ],
+  "releaseChecks": [
+    "RELEASE_CANDIDATE_REVIEW",
+    "IMMUTABLE_BUILD_ID",
+    "CHANGE_FREEZE",
+    "REGRESSION_EVIDENCE",
+    "SECURITY_SIGNOFF",
+    "BACKUP_RESTORE_SIGNOFF",
+    "OBSERVABILITY_SIGNOFF",
+    "SUPPORT_SIGNOFF",
+    "ROLLBACK_SIGNOFF",
+    "KNOWN_ISSUES_REGISTER",
+    "PILOT_SUCCESS_CRITERIA"
+  ],
+  "safety": {
+    "preparationDoesNotCertifyV96": true,
+    "humanV96CertificationRequired": true,
+    "certificationDoesNotDeploy": true,
+    "certificationDoesNotStartRuntime": true,
+    "noAutomaticExpansion": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "V96_PILOT_READY_CERTIFICATION"
+}

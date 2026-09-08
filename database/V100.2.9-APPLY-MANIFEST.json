@@ -1,0 +1,16 @@
+{
+  "version": "100.2.9",
+  "repair": "Host Stand Service-Scale Typography",
+  "baselineVersion": "100.0.0",
+  "requires": "V100.2.8 Host Stand Contrast Hardening",
+  "forwardOnly": true,
+  "files": [
+    "client/styles.css",
+    "scripts/maintenance/test-v100.2.9-host-stand-service-scale-typography.js"
+  ],
+  "runtimeScope": "presentation-only",
+  "serverChanges": false,
+  "databaseChanges": false,
+  "persistenceChanges": false,
+  "behaviorChanges": false
+}

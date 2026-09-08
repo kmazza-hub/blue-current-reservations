@@ -1,0 +1,16 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8"),pkg=require(path.join(root,"package.json"));
+let passed=0,total=0;const check=(name,value)=>{total+=1;if(!value){console.error(`FAIL: ${name}`);process.exitCode=1;}else{passed+=1;console.log(`PASS: ${name}`);}};
+const source=read("client/js/controlled-demonstration-v100.3.51.js"),html=read("client/index.html");
+check("Runtime identifies V100.3.51",pkg.version==="100.3.51"&&html.includes('content="100.3.51"'));
+check("Explicit demo setup URL is required",source.includes('params.get("demoSetup")==="1"'));
+check("Fictional restaurant is unmistakably labeled",source.includes("FICTIONAL DEMONSTRATION RESTAURANT")&&source.includes("Harbor & Hearth Tavern"));
+check("Chefs and Anchor truth are not claimed",source.includes("does not confirm Anchor Tavern data"));
+check("No live write-back is claimed",source.includes("No POS write-back")&&source.includes("NO LIVE SYSTEM WRITE-BACK"));
+check("Pilot certification is excluded",source.includes("No pilot certification")&&!source.includes("/api/pilot/operator-acceptance"));
+check("Demo does not call protected mutation APIs",!source.includes('fetch(')&&!source.includes('method:"POST"')&&!source.includes('method:"PUT"'));
+check("Seven-part operator story is present",["Tonight at a glance","Capture demand","Manage the door","Run the floor","Coordinate service","Protect throughput","Close with value"].every(value=>source.includes(value)));
+check("Presentation covers core workspaces",["#host-stand","#reservations","#floor","#service","#kitchen","#command"].every(value=>source.includes(value)));
+check("Demo script is loaded by client",html.includes('controlled-demonstration-v100.3.51.js?v=100.3.51'));
+console.log(`V100.3.51 controlled demonstration ${passed}/${total}`);if(passed!==total)process.exitCode=1;

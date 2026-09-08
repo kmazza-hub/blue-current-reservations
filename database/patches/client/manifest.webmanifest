@@ -1,0 +1,16 @@
+{
+  "name": "Blue Current Hospitality OS",
+  "short_name": "Blue Current",
+  "description": "Restaurant operating system for live hospitality operations.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#07131f",
+  "theme_color": "#07131f",
+  "categories": [
+    "business",
+    "productivity"
+  ],
+  "prefer_related_applications": false
+}

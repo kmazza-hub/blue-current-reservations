@@ -793,3 +793,33 @@ tabs.forEach((t,i)=>t.addEventListener("click",()=>render(i)));orbit.forEach((t,
 
 // WEB-025 — Pilot workspace
 (()=>{const tabs=document.querySelector('#pilotRoadmapTabs');if(!tabs)return;const stages=[['Discovery','Days 1–3','Map the workflow, systems, owners, baseline, and decision criteria.'],['Environment setup','Days 4–7','Prepare minimum technical and governance foundations.'],['Workflow configuration','Week 2','Configure policies, routing, escalation, and measurement.'],['Live pilot','Week 3','Operate with daily observation and evidence capture.'],['Executive review','Week 4','Compare results with baseline and make an expansion decision.']];const lists={Objectives:['Define one operating challenge','Name accountable owners','Establish the baseline'],Deliverables:['Workflow map','Pilot charter','Success scorecard'],Stakeholders:['Executive sponsor','Operational owner','Technical lead'],Evidence:['Current-state metrics','System inventory','Decision record']};const render=(s,i)=>{pilotStageKicker.textContent=`Stage ${i+1}`;pilotStageTitle.textContent=s[0];pilotStageTiming.textContent=s[1];pilotStageSummary.textContent=s[2];pilotStageObjectives.innerHTML=lists.Objectives.map(x=>`<li>${x}</li>`).join('');pilotStageDeliverables.innerHTML=lists.Deliverables.map(x=>`<li>${x}</li>`).join('');pilotStageStakeholders.innerHTML=lists.Stakeholders.map(x=>`<li>${x}</li>`).join('');pilotStageEvidence.innerHTML=lists.Evidence.map(x=>`<li>${x}</li>`).join('');[...tabs.children].forEach((b,j)=>b.classList.toggle('is-active',j===i))};stages.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.textContent=`${String(i+1).padStart(2,'0')}  ${s[0]}`;b.onclick=()=>render(s,i);tabs.appendChild(b)});render(stages[0],0);const items=[['Operations','A named owner and one bounded workflow.'],['Technology','A technical lead and minimum system access.'],['Leadership','An executive sponsor for the expansion decision.'],['Integrations','A confirmed data path or approved fallback.'],['Security','Defined permissions, escalation, and evidence rules.']];items.forEach(([t,d])=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" data-pilot-check><span><strong>${t}</strong><small>${d}</small></span>`;pilotChecklist.appendChild(l)});const checks=[...document.querySelectorAll('[data-pilot-check]')];const update=()=>{const p=Math.round(checks.filter(c=>c.checked).length/checks.length*100);pilotReadinessPercent.textContent=p+'%';pilotReadinessBar.style.width=p+'%';pilotReadinessMessage.textContent=p===100?'The pilot has a clear starting structure.':p>=60?'The foundation is forming. Resolve remaining gaps before launch.':'Review each item to build a responsible starting plan.'};checks.forEach(c=>c.onchange=update);pilotReset.onclick=()=>{checks.forEach(c=>c.checked=false);update()}})();
+
+
+// WEB-029 — Hospitality Storyfront
+(() => {
+  "use strict";
+  const story = document.getElementById("story");
+  if (!story) return;
+
+  const currents = [...story.querySelectorAll(".bc-current")];
+  const flow = [...story.querySelectorAll(".bc-story-flow span")];
+
+  // Make feature cards keyboard discoverable without turning them into fake buttons.
+  story.querySelectorAll(".bc-feature-card").forEach(card => {
+    card.setAttribute("tabindex","0");
+    card.addEventListener("focus",()=>card.classList.add("is-focused"));
+    card.addEventListener("blur",()=>card.classList.remove("is-focused"));
+  });
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(entries => {
+      const visible = entries.filter(e => e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if (!visible) return;
+      currents.forEach(section => section.classList.toggle("is-current",section===visible.target));
+      story.dataset.current = visible.target.id || "";
+    },{rootMargin:"-22% 0px -58% 0px",threshold:[0,.15,.35]});
+    currents.forEach(section => observer.observe(section));
+  }
+
+  document.documentElement.dataset.bcWebsiteStory = "WEB-029";
+})();

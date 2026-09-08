@@ -1,0 +1,21 @@
+NEXT BUILD
+
+Panel:
+District Command Center
+
+Module:
+client/js/modules/districtCommandCenter.js
+
+Functions:
+- loadPortfolio()
+- calculateLocationHealth()
+- renderPortfolioCards()
+- renderDistrictKPIs()
+- selectLocation()
+- syncDistrictDashboard()
+
+Future integrations:
+Restaurant Pulse
+Predictive Operations
+Shift Risk Heatmap
+AI Operations Timeline

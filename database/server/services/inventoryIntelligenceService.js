@@ -1,15 +1,20 @@
 "use strict";
+const crypto=require("crypto");
 class InventoryIntelligenceService {
   constructor(database,auditService,realtimeHub){
     Object.assign(this,{database,auditService,realtimeHub});
   }
   round(value,places=1){const p=10**places;return Math.round(Number(value||0)*p)/p;}
-  async snapshot(organizationId,locationId="loc_marina"){
+  uniqueId(prefix){const token=typeof crypto.randomUUID==="function"?crypto.randomUUID():crypto.randomBytes(16).toString("hex");return `${prefix}_${Date.now()}_${token}`;}
+  finiteNumber(value,label,{min=null}={}){const number=Number(value);if(!Number.isFinite(number)){const error=new Error(`${label} must be a finite number.`);error.statusCode=400;throw error;}if(min!==null&&number<min){const error=new Error(`${label} cannot be below ${min}.`);error.statusCode=400;throw error;}return number;}
+  async snapshot(organizationId,locationId){
     const db=await this.database.read();
+    const location=(db.locations||[]).find(x=>x.id===locationId&&x.organizationId===organizationId);
+    if(!location){const error=new Error("Location is not available to this organization.");error.statusCode=404;throw error;}
     const items=(db.inventoryItems||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
     const vendors=(db.vendors||[]).filter(x=>x.organizationId===organizationId);
     const recipes=(db.recipes||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
-    const tickets=(db.kitchenTickets||[]).filter(x=>x.locationId===locationId&&!["cancelled"].includes(x.status));
+    const tickets=(db.kitchenTickets||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&!["cancelled"].includes(x.status));
     const waste=(db.wasteEvents||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
     const policy=(db.inventoryPolicies||[]).find(x=>x.organizationId===organizationId&&x.locationId===locationId)||{targetFoodCostPercent:29,criticalDaysRemaining:1.5,autoDraftOrders:true};
     const itemMap=new Map(items.map(x=>[x.id,x]));
@@ -64,19 +69,68 @@ class InventoryIntelligenceService {
     };
   }
   async act(recommendationId,input,actor,organizationId){
-    const record={id:`inventory_action_${Date.now()}`,organizationId,locationId:input.locationId||"loc_marina",recommendationId,decision:input.decision||"approved",note:String(input.note||""),actor,createdAt:new Date().toISOString()};
-    await this.database.mutate(db=>{db.inventoryActions||=[];db.purchaseOrders||=[];db.inventoryActions.push(record);if(record.decision==="approved"&&recommendationId.startsWith("inv_reorder_")){const inventoryId=recommendationId.replace("inv_reorder_",""),item=(db.inventoryItems||[]).find(x=>x.id===inventoryId);if(item)db.purchaseOrders.push({id:`po_${Date.now()}`,organizationId,locationId:record.locationId,vendorId:item.vendorId,status:"draft",createdAt:record.createdAt,items:[{inventoryId:item.id,name:item.name,quantity:Math.max(0,item.par-item.onHand),unit:item.unit,unitCost:item.unitCost}]});}return record;});
+    const locationId=String(input.locationId||"").trim();
+    const location=locationId ? await this.database.get("locations",locationId) : null;
+    if(!location || location.organizationId!==organizationId){const error=new Error("Location is not available to this organization.");error.statusCode=404;throw error;}
+    if(recommendationId.startsWith("inv_reorder_")){
+      const inventoryId=recommendationId.replace("inv_reorder_","");
+      const item=await this.database.get("inventoryItems",inventoryId);
+      if(!item || item.organizationId!==organizationId || item.locationId!==locationId){const error=new Error("Inventory recommendation is not available at this location.");error.statusCode=404;throw error;}
+    }
+    const record={id:this.uniqueId("inventory_action"),organizationId,locationId,recommendationId,decision:input.decision||"approved",note:String(input.note||""),actor,createdAt:new Date().toISOString()};
+    await this.database.mutate(db=>{db.inventoryActions||=[];db.purchaseOrders||=[];db.inventoryActions.push(record);if(record.decision==="approved"&&recommendationId.startsWith("inv_reorder_")){const inventoryId=recommendationId.replace("inv_reorder_",""),item=(db.inventoryItems||[]).find(x=>x.id===inventoryId);if(item)db.purchaseOrders.push({id:this.uniqueId("po"),organizationId,locationId:record.locationId,vendorId:item.vendorId,status:"draft",createdAt:record.createdAt,items:[{inventoryId:item.id,name:item.name,quantity:Math.max(0,item.par-item.onHand),unit:item.unit,unitCost:item.unitCost}]});}return record;});
     await this.auditService.record({organizationId,actor,action:`Inventory recommendation ${record.decision}: ${recommendationId}`,category:"inventory"});
     this.realtimeHub.publish("inventory:action-recorded",record);
     return record;
   }
   async createPurchaseOrder(input,actor,organizationId){
-    const order={id:`po_${Date.now()}`,organizationId,locationId:input.locationId||"loc_marina",vendorId:input.vendorId,status:"draft",items:Array.isArray(input.items)?input.items:[],total:Number(input.total||0),createdAt:new Date().toISOString(),createdBy:actor};
+    const locationId=String(input.locationId||"").trim();
+    const location=await this.database.get("locations",locationId);
+    if(!location || location.organizationId!==organizationId){
+      const error=new Error("Location is not available to this organization.");
+      error.statusCode=404;
+      throw error;
+    }
+
+    const vendor=input.vendorId ? await this.database.get("vendors",input.vendorId) : null;
+    if(input.vendorId && (!vendor || vendor.organizationId!==organizationId)){
+      const error=new Error("Vendor is not available to this organization.");
+      error.statusCode=400;
+      throw error;
+    }
+
+    const items=Array.isArray(input.items)?input.items:[];
+    const safeItems=[];
+    for(const line of items){
+      const item=line.inventoryId ? await this.database.get("inventoryItems",line.inventoryId) : null;
+      if(line.inventoryId && (!item || item.organizationId!==organizationId || item.locationId!==locationId)){
+        const error=new Error(`Inventory item ${line.inventoryId} is not available at this location.`);
+        error.statusCode=400;
+        throw error;
+      }
+      const quantity=this.finiteNumber(line.quantity??0,"Purchase quantity",{min:0});
+      safeItems.push({...line,quantity});
+    }
+
+    const order={
+      id:this.uniqueId("po"),
+      organizationId,
+      locationId,
+      vendorId:input.vendorId,
+      status:"draft",
+      items:safeItems,
+      total:this.finiteNumber(input.total??0,"Purchase total",{min:0}),
+      createdAt:new Date().toISOString(),
+      createdBy:actor
+    };
     await this.database.insert("purchaseOrders",order);
-    await this.auditService.record({organizationId,actor,action:`Draft purchase order created: ${order.id}`,category:"inventory"});
+    await this.auditService.record({
+      organizationId,actor,action:`Draft purchase order created: ${order.id}`,category:"inventory"
+    });
     this.realtimeHub.publish("inventory:purchase-order-created",order);
     return order;
   }
+
   async updatePolicy(locationId,input,actor,organizationId){
     let result;
     await this.database.mutate(db=>{db.inventoryPolicies||=[];let policy=db.inventoryPolicies.find(x=>x.organizationId===organizationId&&x.locationId===locationId);if(!policy){policy={id:`policy_${locationId}`,organizationId,locationId};db.inventoryPolicies.push(policy);}Object.assign(policy,{targetFoodCostPercent:Number(input.targetFoodCostPercent??policy.targetFoodCostPercent??29),criticalDaysRemaining:Number(input.criticalDaysRemaining??policy.criticalDaysRemaining??1.5),autoDraftOrders:input.autoDraftOrders===undefined?Boolean(policy.autoDraftOrders):Boolean(input.autoDraftOrders),updatedAt:new Date().toISOString()});result=policy;return policy;});

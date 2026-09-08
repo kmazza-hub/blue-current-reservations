@@ -1,0 +1,11 @@
+(function(){"use strict";
+class BlueCurrentRuntimeCircuitBreakerEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.protective=false;this.history=[];this.timer=setInterval(()=>this.publish("sample"),5000);setTimeout(()=>this.publish("initial"),50);}
+ snapshot(reason="manual"){const s=this.appState.getState(),network=s.networkRequestBudget||{},churn=s.stateChurn||{},memory=s.memoryPressure||{},render=s.renderBudget||{},events=s.eventStormGuard||{};const checks=[['Network requests',network.score??100],['State churn',churn.score??100],['Memory pressure',memory.score??100],['Render budget',render.score??100],['Event traffic',events.score??100]].map(([label,score])=>({label,score:Number(score),pass:Number(score)>=70}));const score=Math.round(checks.reduce((sum,item)=>sum+item.score,0)/checks.length);const critical=checks.filter(item=>item.score<55).length;return{capturedAt:new Date().toISOString(),reason,score,status:this.protective?"protected":critical?"critical":score>=85?"healthy":score>=65?"watch":"critical",protective:this.protective,critical,checks,nextAction:critical?"Enter protective mode and return to focused startup.":score<85?"Keep secondary packs limited until runtime pressure clears.":"Runtime is inside the safe operating envelope."};}
+ publish(reason="manual"){const value=this.snapshot(reason);this.appState.update({runtimeCircuitBreaker:value});this.eventBus.emit("runtime-circuit:updated",structuredClone(value));return value;}
+ protect(){this.protective=true;document.documentElement.dataset.runtimeProtected="true";window.dispatchEvent(new CustomEvent("bluecurrent:release-idle-resources"));this.eventBus.emit("runtime-circuit:protective-mode",{at:new Date().toISOString()});return this.publish("protect");}
+ recover(){this.protective=false;delete document.documentElement.dataset.runtimeProtected;this.eventBus.emit("runtime-circuit:recovered",{at:new Date().toISOString()});return this.publish("recover");}
+ focusedReload(){const next=new URL(location.href);next.search="";location.assign(next.toString());}
+ destroy(){clearInterval(this.timer);}
+}
+window.BlueCurrentRuntimeCircuitBreakerEngine=BlueCurrentRuntimeCircuitBreakerEngine;})();

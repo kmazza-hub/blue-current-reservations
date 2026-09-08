@@ -1,0 +1,7 @@
+(function(){"use strict";
+function createBlueCurrentIngestionObservabilityCenterModule(eventBus){
+const root=document.getElementById("ingestionObservabilityCenter");if(!root||!window.BlueCurrentIngestionObservabilityEngine)return null;
+const e=new window.BlueCurrentIngestionObservabilityEngine(eventBus),$=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+async function render(){try{const r=await e.snapshot();$("ingestionHealthScore").textContent=`${r.score}%`;$("ingestionHealthStatus").textContent=r.status;$("ingestionLag").textContent=r.avgLagSeconds==null?"—":`${r.avgLagSeconds}s`;$("ingestionIssues").textContent=(r.metrics?.totals?.openDeadLetters||0)+r.unhealthySources;$("ingestionObservabilityList").innerHTML=(r.metrics?.sources||[]).map(x=>`<article><div><strong>${esc(x.name)}</strong><span>lag ${x.lagSeconds==null?"—":`${x.lagSeconds}s`} · ${x.openDeadLetters||0} dead letters · ${x.duplicate||0} duplicates</span></div><b class="${x.status==="healthy"?"pass":"watch"}">${esc(x.status||"unknown")}</b></article>`).join("");}catch(err){$("ingestionHealthStatus").textContent=err.message;}}
+$("ingestionObservabilityRefresh")?.addEventListener("click",render);eventBus?.on?.("v42:delivery-metrics",render);render();return{engine:e,render};}
+window.createBlueCurrentIngestionObservabilityCenterModule=createBlueCurrentIngestionObservabilityCenterModule;})();

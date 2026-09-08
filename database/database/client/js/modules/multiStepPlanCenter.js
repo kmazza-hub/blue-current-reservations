@@ -1,0 +1,5 @@
+(function(){"use strict";
+function createBlueCurrentMultiStepPlanCenterModule(eventBus){const root=document.getElementById("multiStepPlanCenter");if(!root||!window.BlueCurrentMultiStepPlanEngine)return null;const engine=new window.BlueCurrentMultiStepPlanEngine(eventBus),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+ function render(p){$("planId").textContent=p.id;$("planConfidence").textContent=`${p.confidence}%`;$("planSteps").textContent=p.steps.length;$("planApprovals").textContent=p.steps.filter(x=>x.approval).length;$("planMessage").textContent=`Draft plan for ${p.owner}. No step executes automatically.`;$("planList").innerHTML=p.steps.map(x=>`<article><div><strong>${x.order}. ${esc(x.title)}</strong><small>${esc(x.detail)}</small></div><span>${x.approval?"Approval required":"Governed step"}</span></article>`).join("");}
+ $("planBuild")?.addEventListener("click",()=>render(engine.build($("planGoal")?.value,$("planOwner")?.value||"Manager")));return{engine,render};}
+window.createBlueCurrentMultiStepPlanCenterModule=createBlueCurrentMultiStepPlanCenterModule;})();

@@ -1,0 +1,20 @@
+{
+  "version": "100.2.3",
+  "name": "Reservation Completion Workspace & Focus",
+  "baseline": "V100.2.2 forward state",
+  "files": [
+    {
+      "path": "client/js/floor-reservations-v62.0.js",
+      "sha256": "f388a302ce29b8e5aca9ee23b39ff803c8f58425249e011fe23662dec511a595",
+      "bytes": 13631
+    },
+    {
+      "path": "scripts/maintenance/test-v100.2.3-reservation-completion-workspace-focus.js",
+      "sha256": "4a3d120c6a76a0b0cecee20030d3496f753fa86dc46ef2a814351ef6f3f29e07",
+      "bytes": 1482
+    }
+  ],
+  "serverDatabaseChanges": false,
+  "authenticationChanges": false,
+  "durablePersistenceAdded": false
+}

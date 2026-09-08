@@ -1,0 +1,332 @@
+// V100.2.17 — Arrival Check-In + Priority Seating Queue
+(() => {
+  const hostWorkspace = document.querySelector('.host-workspace');
+  const waitlist = document.getElementById('waitlistQueue');
+  const arrivals = document.getElementById('arrivalQueue');
+  if (!hostWorkspace || !waitlist || !arrivals) return;
+
+  const normalize = (value) => String(value || '').replace(/\s+/g, ' ').trim();
+  const lower = (value) => normalize(value).toLowerCase();
+  const firstStrong = (row) => normalize(row?.querySelector('strong')?.textContent);
+  const partyDetail = (row) => normalize(row?.querySelector('small')?.textContent) || normalize([...row?.querySelectorAll?.('span') || []].find((n) => /party\s+of\s+\d+/i.test(normalize(n.textContent)))?.textContent);
+  const statusNode = (row) => row?.querySelector('.arrival-chip, [data-bc-status], .status-chip, .guest-status') || [...(row?.querySelectorAll?.('span,button') || [])].find((n) => /^(expected|arrived|waiting|seated(?:\s*·.*)?)$/i.test(normalize(n.textContent)));
+  const getStatus = (row) => lower(statusNode(row)?.textContent || row?.dataset?.bcGuestStatus || '');
+  const specialKeywords = ['birthday','anniversary','allergy','allergic','vip','wheelchair','accessibility','accessible','high chair','highchair','celebration','special occasion'];
+  const specialLabelFor = (text) => {
+    const src = lower(text);
+    if (src.includes('birthday')) return 'Birthday';
+    if (src.includes('anniversary')) return 'Anniversary';
+    if (src.includes('allerg')) return 'Allergy';
+    if (src.includes('wheelchair') || src.includes('accessib')) return 'Accessibility';
+    if (src.includes('high chair') || src.includes('highchair')) return 'High chair';
+    if (src.includes('vip')) return 'VIP';
+    if (src.includes('celebration') || src.includes('special occasion')) return 'Special occasion';
+    return '';
+  };
+  const isSpecial = (row) => specialKeywords.some((key) => lower(row?.textContent).includes(key));
+
+  const styleId = 'bc-arrival-priority-v100-2-17';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = `
+      /* Aim small, miss small: Arrivals = not here yet. Waitlist = physically here and ready to seat. */
+      #bcActivePartyBannerV100_2_16.bc-empty-banner-v100-2-17 { display:none !important; }
+      #arrivalQueue .queue-item.arrival,
+      #waitlistQueue .queue-item {
+        min-height:112px !important;
+        padding:20px 18px !important;
+        gap:16px !important;
+        align-items:center !important;
+      }
+      #arrivalQueue .queue-item.arrival strong,
+      #waitlistQueue .queue-item strong {
+        color:#fff !important;
+        font-size:22px !important;
+        line-height:1.05 !important;
+        font-weight:950 !important;
+      }
+      #arrivalQueue .queue-item.arrival small,
+      #waitlistQueue .queue-item small {
+        display:block !important;
+        margin-top:5px !important;
+        color:#d7f0f2 !important;
+        font-size:16px !important;
+        line-height:1.25 !important;
+        font-weight:750 !important;
+      }
+      #arrivalQueue .arrival-time,
+      #waitlistQueue .queue-time {
+        color:#102f39 !important;
+        background:#fff3d9 !important;
+        font-size:16px !important;
+        font-weight:950 !important;
+      }
+      .bc-mark-arrived-v100-2-17,
+      #arrivalQueue .bc-mark-arrived-v100-2-17 {
+        min-width:132px !important;
+        min-height:54px !important;
+        padding:0 18px !important;
+        border:2px solid #30bdd8 !important;
+        border-radius:14px !important;
+        background:#087694 !important;
+        color:#fff !important;
+        font-size:16px !important;
+        font-weight:950 !important;
+        opacity:1 !important;
+      }
+      .bc-mark-arrived-v100-2-17:hover { background:#075f77 !important; }
+      .bc-ready-seat-source-v100-2-17 {
+        display:inline-flex !important;
+        align-items:center !important;
+        margin-top:7px !important;
+        padding:4px 8px !important;
+        border-radius:999px !important;
+        background:#dff4f0 !important;
+        color:#124c54 !important;
+        font-size:12px !important;
+        font-weight:950 !important;
+        text-transform:uppercase !important;
+        letter-spacing:.06em !important;
+      }
+      .bc-special-priority-v100-2-17 {
+        border-left:6px solid #f5be4f !important;
+        background:#174f5c !important;
+        box-shadow:0 0 0 2px rgba(245,190,79,.12) inset !important;
+      }
+      .bc-special-badge-v100-2-17 {
+        display:inline-flex !important;
+        align-items:center !important;
+        width:max-content !important;
+        margin-top:7px !important;
+        padding:5px 9px !important;
+        border-radius:999px !important;
+        background:#fff0c7 !important;
+        color:#5c3f00 !important;
+        font-size:13px !important;
+        font-weight:950 !important;
+      }
+      .bc-special-badge-v100-2-17::before { content:'★'; margin-right:5px; }
+      .host-note-card {
+        padding:18px !important;
+        border:2px solid rgba(245,190,79,.34) !important;
+        background:#103f4a !important;
+      }
+      .host-note-card .host-note-head span {
+        color:#fff !important;
+        font-size:17px !important;
+        font-weight:950 !important;
+      }
+      .host-note-card > div:not(.host-note-head) { padding:10px 0 !important; }
+      .host-note-card > div:not(.host-note-head) strong {
+        color:#fff !important;
+        font-size:16px !important;
+        font-weight:950 !important;
+      }
+      .host-note-card > div:not(.host-note-head) p span {
+        color:#b9d9dc !important;
+        font-size:13px !important;
+        font-weight:750 !important;
+      }
+      .host-note-card > div:not(.host-note-head) i { color:#f5be4f !important; font-size:20px !important; }
+      .bc-ready-priority-label-v100-2-17 {
+        margin:0 0 12px !important;
+        color:#dff4f0 !important;
+        font-size:13px !important;
+        font-weight:900 !important;
+        letter-spacing:.05em !important;
+      }
+      @media (max-width:900px) {
+        .bc-mark-arrived-v100-2-17 { min-width:118px !important; }
+        #arrivalQueue .queue-item.arrival strong, #waitlistQueue .queue-item strong { font-size:20px !important; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const arrivalTab = [...document.querySelectorAll('.queue-tabs button')].find((b) => lower(b.dataset.queue || b.textContent).includes('arrival'));
+  const waitlistTab = [...document.querySelectorAll('.queue-tabs button')].find((b) => lower(b.dataset.queue || b.textContent).includes('wait'));
+  const badgeIn = (button) => button?.querySelector('span');
+  const waitlistBadge = document.getElementById('waitlistBadge') || badgeIn(waitlistTab);
+  const hostWaiting = document.getElementById('hostWaiting');
+
+  const syncCounts = () => {
+    const readyRows = [...waitlist.querySelectorAll('.queue-item')].filter((row) => !lower(row.textContent).includes('seated'));
+    const expectedRows = [...arrivals.querySelectorAll('.queue-item.arrival')].filter((row) => getStatus(row).includes('expected'));
+    if (waitlistBadge) waitlistBadge.textContent = String(readyRows.length);
+    if (hostWaiting) hostWaiting.textContent = String(readyRows.length);
+    const aBadge = badgeIn(arrivalTab);
+    if (aBadge) aBadge.textContent = String(expectedRows.length);
+  };
+
+  const waitMinutes = (row) => Number(normalize(row.querySelector('.queue-time')?.textContent).match(/\d+/)?.[0] || 0);
+  const priorityScore = (row) => {
+    let score = 0;
+    if (isSpecial(row)) score += 10000;
+    if (row.dataset.bcSourceType === 'reservation') score += 1000;
+    score += Math.min(999, waitMinutes(row));
+    return score;
+  };
+  const sortReadyQueue = () => {
+    const rows = [...waitlist.querySelectorAll('.queue-item')];
+    rows.sort((a,b) => priorityScore(b)-priorityScore(a));
+    rows.forEach((row) => waitlist.appendChild(row));
+  };
+
+  const decorateReadyRow = (row, sourceType='walk-in') => {
+    row.dataset.bcSourceType = sourceType;
+    const content = row.querySelector('div');
+    if (content && !content.querySelector('.bc-ready-seat-source-v100-2-17')) {
+      const source = document.createElement('span');
+      source.className = 'bc-ready-seat-source-v100-2-17';
+      source.textContent = sourceType === 'reservation' ? 'Reservation · Arrived' : 'Walk-in';
+      content.appendChild(source);
+    }
+    const label = specialLabelFor(row.textContent);
+    if (label && content && !content.querySelector('.bc-special-badge-v100-2-17')) {
+      row.classList.add('bc-special-priority-v100-2-17');
+      const badge = document.createElement('span');
+      badge.className = 'bc-special-badge-v100-2-17';
+      badge.textContent = label;
+      content.appendChild(badge);
+    }
+  };
+
+  const buildReadyRow = (sourceRow) => {
+    const name = firstStrong(sourceRow);
+    if (!name) return null;
+    const detail = partyDetail(sourceRow) || 'Party of 2';
+    const existing = [...waitlist.querySelectorAll('.queue-item')].find((row) => firstStrong(row) === name);
+    if (existing) {
+      decorateReadyRow(existing, 'reservation');
+      return existing;
+    }
+    const row = document.createElement('article');
+    row.className = 'queue-item bc-arrived-reservation-ready-v100-2-17';
+    row.dataset.bcGuestStatus = 'waiting';
+    row.dataset.bcSourceType = 'reservation';
+    row.innerHTML = `<span class="queue-time">0m</span><div><strong></strong><small></small></div><button type="button">Seat</button>`;
+    row.querySelector('strong').textContent = name;
+    row.querySelector('small').textContent = detail;
+    decorateReadyRow(row, 'reservation');
+    waitlist.appendChild(row);
+    return row;
+  };
+
+  const markMatchingReservationRowsArrived = (name) => {
+    [...hostWorkspace.querySelectorAll('article, .bc-guest-result')].forEach((row) => {
+      if (firstStrong(row) !== name) return;
+      row.dataset.bcGuestStatus = 'arrived';
+      const node = statusNode(row);
+      if (node && !row.closest('#waitlistQueue')) {
+        node.textContent = 'Arrived';
+        node.classList?.remove('pending');
+      }
+      row.querySelectorAll('.bc-mark-arrived-v100-2-17, .bc-arrival-action-v100-2-13').forEach((button) => button.remove());
+    });
+  };
+
+  const moveArrivalToReady = (row) => {
+    const name = firstStrong(row);
+    if (!name) return;
+    const ready = buildReadyRow(row);
+    markMatchingReservationRowsArrived(name);
+    if (row.closest('#arrivalQueue')) row.remove();
+    if (ready) ready.dataset.bcGuestStatus = 'waiting';
+    sortReadyQueue();
+    syncCounts();
+    if (waitlistTab) {
+      waitlistTab.classList.add('bc-has-ready-v100-2-17');
+      waitlistTab.setAttribute('aria-label', `${waitlistBadge?.textContent || ''} guests ready to seat`);
+    }
+  };
+
+  const ensureMarkArrivedButtons = () => {
+    // Side-panel Arrivals queue.
+    [...arrivals.querySelectorAll('.queue-item.arrival')].forEach((row) => {
+      const status = getStatus(row);
+      if (status.includes('seated')) return;
+      if (status.includes('arrived')) {
+        moveArrivalToReady(row);
+        return;
+      }
+      if (!status.includes('expected')) return;
+      if (row.querySelector('.bc-mark-arrived-v100-2-17')) return;
+      const old = row.querySelector('.bc-arrival-action-v100-2-13');
+      if (old) old.remove();
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'bc-mark-arrived-v100-2-17';
+      button.textContent = 'Mark arrived';
+      row.appendChild(button);
+    });
+
+    // Full Reservations workspace / newly-created reservation rows.
+    [...hostWorkspace.querySelectorAll('article')].forEach((row) => {
+      if (row.closest('#arrivalQueue') || row.closest('#waitlistQueue')) return;
+      const name = firstStrong(row);
+      if (!name || !/party\s+of\s+\d+/i.test(normalize(row.textContent))) return;
+      const status = getStatus(row);
+      if (!status.includes('expected')) return;
+      if (row.querySelector('.bc-mark-arrived-v100-2-17')) return;
+      const actions = row.querySelector('button')?.parentElement || row;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'bc-mark-arrived-v100-2-17';
+      button.textContent = 'Mark arrived';
+      actions.appendChild(button);
+    });
+  };
+
+  const clearBlankGenericBanner = () => {
+    const generic = document.getElementById('bcActivePartyBannerV100_2_16');
+    if (!generic) return;
+    const title = normalize(generic.querySelector('strong')?.textContent);
+    const oldInstruction = document.getElementById('bcWaitlistSeatInstructionV100_2_15');
+    const oldVisible = oldInstruction && !oldInstruction.hidden && getComputedStyle(oldInstruction).display !== 'none';
+    generic.classList.toggle('bc-empty-banner-v100-2-17', !title || oldVisible);
+    if (!title || oldVisible) generic.hidden = true;
+  };
+
+  const decorateExistingReadyRows = () => {
+    [...waitlist.querySelectorAll('.queue-item')].forEach((row) => decorateReadyRow(row, row.dataset.bcSourceType || 'walk-in'));
+    sortReadyQueue();
+    syncCounts();
+  };
+
+  hostWorkspace.addEventListener('click', (event) => {
+    const button = event.target.closest('.bc-mark-arrived-v100-2-17, .bc-arrival-action-v100-2-13');
+    if (!button) return;
+    const row = button.closest('article, .queue-item, .bc-guest-result');
+    if (!row) return;
+    const label = lower(button.textContent);
+    if (!label.includes('mark arrived')) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    moveArrivalToReady(row);
+    if (waitlistTab) waitlistTab.click();
+  }, true);
+
+  // Priority is operational, not decorative: make special occasions unmistakable wherever seen.
+  document.querySelectorAll('.host-note-card').forEach((card) => card.setAttribute('aria-label','Special occasions and guest moments — priority context'));
+
+  decorateExistingReadyRows();
+  ensureMarkArrivedButtons();
+  clearBlankGenericBanner();
+
+  let scheduled = false;
+  const observer = new MutationObserver(() => {
+    if (scheduled) return;
+    scheduled = true;
+    queueMicrotask(() => {
+      scheduled = false;
+      ensureMarkArrivedButtons();
+      decorateExistingReadyRows();
+      clearBlankGenericBanner();
+    });
+  });
+  observer.observe(hostWorkspace, {childList:true,subtree:true,characterData:true});
+
+  document.addEventListener('click', () => queueMicrotask(clearBlankGenericBanner), true);
+  window.__bcArrivalPriorityQueueV100_2_17 = { moveArrivalToReady, sortReadyQueue, syncCounts };
+})();

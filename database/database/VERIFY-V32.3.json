@@ -1,0 +1,12 @@
+{
+  "version": "32.3.0",
+  "release": "Core Cleanup",
+  "status": "passed-pending-runtime-smoke",
+  "changes": [
+    "legacy autonomous renderer retired",
+    "module lifecycle states",
+    "startup report",
+    "missing active scripts restored",
+    "enhanced validation"
+  ]
+}

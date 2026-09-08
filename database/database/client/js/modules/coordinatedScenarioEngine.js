@@ -1,0 +1,8 @@
+(function(){"use strict";
+class BlueCurrentCoordinatedScenarioEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4119:coordinated-scenarios";}
+ read(k,f=[]){try{return JSON.parse(localStorage.getItem(k)||"null")??f;}catch{return f;}}
+ run(action,owner){const constraints=this.read("bluecurrent:v4118:enterprise-constraints",[])[0]||null;const portfolio=this.read("bluecurrent:v4115:portfolio-reasoning",[])[0]||null;const base=portfolio?.highestRisk?.risk||45;const profiles={"Deploy floating manager":{risk:-14,labor:3,wait:-5},"Shift demand to lower-risk location":{risk:-11,labor:1,wait:-4},"Add temporary kitchen support":{risk:-16,labor:4,wait:-3},"Hold seating across constrained locations":{risk:-12,labor:0,wait:4}};const p=profiles[action]||profiles["Deploy floating manager"];const result={id:`SCN-${Date.now()}`,action,owner:owner||"Portfolio leader",beforeRisk:base,afterRisk:Math.max(0,base+p.risk),laborDelta:p.labor,waitDelta:p.wait,constraintCount:constraints?.constraints?.length||0,confidence:Math.max(55,88-(constraints?.constraints?.length||0)*3),status:(base+p.risk)<45?"preferred":"review",createdAt:new Date().toISOString()};const h=this.read(this.key,[]);h.unshift(result);localStorage.setItem(this.key,JSON.stringify(h.slice(0,30)));this.eventBus?.emit?.("aip:coordinated-scenario-run",result);return result;}
+ history(){return this.read(this.key,[]);}
+}
+window.BlueCurrentCoordinatedScenarioEngine=BlueCurrentCoordinatedScenarioEngine;})();

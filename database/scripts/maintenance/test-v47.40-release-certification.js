@@ -1,0 +1,11 @@
+"use strict";
+const fs=require("fs"),assert=require("assert"),read=p=>fs.readFileSync(p,"utf8");
+assert.equal(require("../../package.json").version,"47.40.0");
+const router=read("server/api/router.js");
+["/api/hospitality-performance","/api/hospitality-actions","/api/service-profitability","/api/predictive-shift-control","/api/manager-operating-rhythm","/api/multi-location-performance"].forEach(x=>assert(router.includes(x)));
+assert(router.includes("v47RejectLocation"));
+const html=read("client/index.html"),ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(new Set(ids).size,ids.length);
+assert(read("server/services/predictiveShiftControlService.js").includes("automaticExecution:false"));
+assert(read("server/services/managerOperatingRhythmService.js").includes("automaticExecution:false"));
+assert(read("server/services/multiLocationPerformanceService.js").includes("automaticCrossLocationExecution:false"));
+console.log(JSON.stringify({ok:true,version:"47.40.0",locationScopeGuard:true,duplicateHtmlIds:0,status:"V47-release-certified"},null,2));

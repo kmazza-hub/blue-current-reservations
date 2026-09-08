@@ -1,0 +1,24 @@
+{
+  "version": "89.50.0",
+  "phase": "C",
+  "gate": "PILOT_RUNTIME_GUARDRAILS_AND_SESSION_CONTROL",
+  "states": [
+    "ACTIVE",
+    "PAUSED",
+    "STOPPED"
+  ],
+  "requirements": [
+    "currentLaunchApproval",
+    "singleControllableSession",
+    "approvedEvidenceContinuity",
+    "explicitPauseResumeStopControl"
+  ],
+  "guardrailAction": "AUTO_PAUSE_ON_OPERATING_ENVELOPE_VIOLATION",
+  "safety": {
+    "providerWriteBack": false,
+    "autonomousProductionChanges": false,
+    "automaticExpansion": false,
+    "guestCommunication": false
+  },
+  "nextGate": "PILOT_RUNTIME_OBSERVABILITY_AND_INCIDENT_CONTROL"
+}

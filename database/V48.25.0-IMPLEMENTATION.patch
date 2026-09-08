@@ -1,0 +1,263 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "48.20.0",
++  "version": "48.25.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 human pilot decision ledger and executive sign-off",
++  "description": "Blue Current Hospitality OS \u2014 expansion readiness and staged rollout scope",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -46,6 +46,7 @@
+ const PilotProofProgramService = require("./services/pilotProofProgramService");
+ const ExecutivePilotReviewService = require("./services/executivePilotReviewService");
+ const PilotDecisionLedgerService = require("./services/pilotDecisionLedgerService");
++const ExpansionReadinessService = require("./services/expansionReadinessService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -95,7 +96,8 @@
+ const pilotProofProgramService = new PilotProofProgramService(database, auditService, realtimeHub, pilotValueScorecardService);
+ const executivePilotReviewService = new ExecutivePilotReviewService(database, auditService, realtimeHub, pilotProofProgramService);
+ const pilotDecisionLedgerService = new PilotDecisionLedgerService(database, auditService, realtimeHub, executivePilotReviewService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService });
++const expansionReadinessService = new ExpansionReadinessService(database, auditService, realtimeHub, pilotDecisionLedgerService, executivePilotReviewService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -182,7 +184,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V48.20.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V48.25.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "48.20.0",
++        version: "48.25.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,12 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/expansion-readiness" && request.method === "GET") { return sendJson(response,200,await expansionReadinessService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[])); }
++    if (url.pathname === "/api/expansion-readiness/draft" && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to draft expansion rollout."});
++      const body=await readJson(request);try{return sendJson(response,201,await expansionReadinessService.draft(auth.membership.organizationId,auth.membership.locationIds||[],body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/pilot-decision-ledger" && request.method === "GET") {
+       return sendJson(response,200,await pilotDecisionLedgerService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/expansionReadinessService.js
++++ b/server/services/expansionReadinessService.js
+@@ -0,0 +1,19 @@
++"use strict";
++class ExpansionReadinessService {
++ constructor(database,auditService,realtimeHub,pilotDecisionLedgerService,executivePilotReviewService){Object.assign(this,{database,auditService,realtimeHub,pilotDecisionLedgerService,executivePilotReviewService});}
++ now(){return new Date().toISOString();}
++ async plans(org){const db=await this.database.read();return (db.expansionReadinessPlans||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));}
++ async snapshot(org,allowed){
++  const ledger=await this.pilotDecisionLedgerService.snapshot(org,allowed),review=await this.executivePilotReviewService.snapshot(org,allowed),latest=ledger.latestDecision,plans=await this.plans(org),active=plans[0]||null;
++  const eligible=!!latest&&latest.decision==="EXPAND",scope=latest?.rolloutLocationIds||[],map=new Map((review.packet?.locationReview||[]).map(x=>[x.locationId,x]));
++  const rollout=scope.map(id=>{const x=map.get(id)||{};return {locationId:id,locationName:x.locationName||id,owner:x.owner||"Unassigned",attentionLevel:x.attentionLevel||"unknown",targetsMet:x.targetsMet||0,targetsMeasured:x.targetsMeasured||0,readinessLift:x.readinessLift||0,rhythmLift:x.rhythmLift||0,leakageReductionPercent:x.leakageReductionPercent||0};});
++  return {version:"48.25.0",generatedAt:this.now(),status:eligible?(active?"plan-drafted":"ready-to-plan"):"expansion-not-authorized",headline:eligible?`${scope.length} location(s) are within the signed human expansion scope. Drafting a rollout plan does not activate them.`:"A signed human EXPAND decision is required before rollout planning.",signedDecision:latest,rolloutScope:rollout,activePlan:active,planHistory:plans,policy:{signedExpandRequired:true,draftDoesNotActivate:true,automaticActivation:false,automaticExpansion:false,humanActivationRequired:true}};
++ }
++ async draft(org,allowed,input,actor){
++  const snap=await this.snapshot(org,allowed);if(!snap.signedDecision||snap.signedDecision.decision!=="EXPAND")throw new Error("A signed human EXPAND decision is required before drafting rollout.");if(!snap.rolloutScope.length)throw new Error("The signed EXPAND decision has no rollout locations.");
++  const waveSize=Math.max(1,Math.min(Number(input.waveSize)||1,snap.rolloutScope.length)),cadenceDays=Math.max(1,Math.min(Number(input.cadenceDays)||7,90)),readinessFloor=Math.max(0,Math.min(Number(input.readinessFloor)||70,100)),owner=String(input.owner||snap.signedDecision.approver||actor).trim().slice(0,160),conditions=String(input.conditions||snap.signedDecision.conditions||"").trim().slice(0,1500);
++  const locations=snap.rolloutScope.map((x,i)=>({...x,wave:Math.floor(i/waveSize)+1,state:"PLANNED",activationApproved:false,activationApprovedBy:null,activationApprovedAt:null}));
++  const record={id:`erp_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId:org,decisionId:snap.signedDecision.id,createdAt:this.now(),createdBy:actor,owner,conditions,cadenceDays,readinessFloor,waveSize,locations,status:"DRAFT",activationState:"NOT_ACTIVATED"};
++  await this.database.mutate(db=>{db.expansionReadinessPlans||=[];db.expansionReadinessPlans.push(record);return record;});await this.auditService.record({organizationId:org,actor,action:`Expansion readiness plan drafted: ${record.id}; ${locations.length} location(s); activation NOT approved`,category:"pilot_value"});this.realtimeHub.publish("expansion-readiness:drafted",{id:record.id,organizationId:org,locations:locations.length});return record;
++ }}
++module.exports=ExpansionReadinessService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="48.20.0">
++  <meta name="blue-current-build" content="48.25.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -238,6 +238,13 @@
+       <div class="v4316-actions"><select id="pdlDecision" class="v4312-input"><option>CONTINUE</option><option>INTERVENE</option><option>EXPAND</option><option>PAUSE</option><option>CLOSE</option></select><input id="pdlApproverInput" class="v4312-input" placeholder="Executive approver"><input id="pdlConditions" class="v4312-input" placeholder="Decision conditions / rationale"><input id="pdlFollowUp" class="v4312-input" placeholder="Follow-up obligation"><button id="pdlSign" type="button">Sign human decision</button></div>
+       <p><strong>Expansion rollout scope</strong></p><div id="pdlLocations" class="v4316-actions"></div>
+       <div id="pdlHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="expansionReadiness">
++      <header><div><small>V48.21–V48.25 · Expansion Readiness & Rollout Scope</small><strong>Convert a signed human expansion decision into a staged rollout plan—without activating a single location.</strong><span>Preserve signed scope, operating evidence, rollout waves, cadence, readiness floor, conditions, and ownership while keeping activation under explicit human control.</span></div><button id="expansionReadinessRefresh4825" type="button">Refresh readiness</button></header>
++      <div class="v432-kpis"><article><small>Signed decision</small><strong id="v4825Decision">UNSIGNED</strong></article><article><small>Rollout scope</small><strong id="v4825Scope">0</strong></article><article><small>Plan</small><strong id="v4825Plan">NONE</strong></article><article><small>Activation</small><strong id="v4825Activation">NOT ACTIVATED</strong></article></div>
++      <div class="v4316-answer" id="v4825Headline">A signed human EXPAND decision is required before rollout planning.</div>
++      <div class="v4316-actions"><input id="v4825Owner" class="v4312-input" placeholder="Rollout owner"><input id="v4825WaveSize" class="v4312-input" type="number" min="1" value="1" placeholder="Locations per wave"><input id="v4825Cadence" class="v4312-input" type="number" min="1" value="7" placeholder="Days between waves"><input id="v4825Floor" class="v4312-input" type="number" min="0" max="100" value="70" placeholder="Readiness floor"><input id="v4825Conditions" class="v4312-input" placeholder="Rollout conditions"><button id="v4825Draft" type="button">Draft rollout plan</button></div>
++      <p><strong>Signed rollout scope</strong></p><div id="v4825Locations" class="v432-list"></div><p><strong>Planned waves — activation remains off</strong></p><div id="v4825Waves" class="v432-list"></div><p><strong>Plan history</strong></p><div id="v4825History" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8618,7 +8625,7 @@
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionWorkspaceV43Center" data-src="js/modules/executiveDecisionWorkspaceV43Center.js?v=43.5.0"></script>
+ 
+ <section class="v432-center v438-center v4312-center" id="executiveKnowledgeGraphCenter"><header><div><small>V43.9 · Executive Knowledge Graph</small><strong>Connect locations, providers, goals, and governed evidence into one executive context graph.</strong><span id="ekgStatus">loading</span></div><button id="ekgRefresh" type="button">Refresh graph</button></header><div class="v432-kpis"><article><small>Nodes</small><strong id="ekgNodes">0</strong></article><article><small>Relationships</small><strong id="ekgEdges">0</strong></article></div><div id="ekgList" class="v432-list"></div></section>
+-<section class="v432-center v438-center v4312-center" id="executiveReasoningCenterV43"><header><div><small>V43.10 · Executive Reasoning Engine</small><strong>Explain what matters, why it is happening, and the recommended next action.</strong></div><button id="erRefresh" type="button">Run reasoning</button></header><div class="v432-kpis"><article><small>Confidence</small><strong id="erConfidence">0%</strong></article><article><small>Status</small><strong id="erStatus">—</strong></article></div><div class="v4312-reason"><article><small>Finding</small><strong id="erFinding">—</strong></article><article><small>Likely cause</small><span id="erCause">—</span></article><article><small>Recommended action</small><span id="erAction">—</span></article></div><div id="erEvidence" class="v432-list"></div></section>
++<section class="v432-center v438-center v4312-center" id="executiveReasoningCenterV43"><header><div><small>V43.10 · Executive Reasoning Engine</small><strong>Explain what matters, why it is happening, and the recommended next action.</strong></div><button id="v4825ExpansionRefresh" type="button">Run reasoning</button></header><div class="v432-kpis"><article><small>Confidence</small><strong id="erConfidence">0%</strong></article><article><small>Status</small><strong id="erStatus">—</strong></article></div><div class="v4312-reason"><article><small>Finding</small><strong id="erFinding">—</strong></article><article><small>Likely cause</small><span id="erCause">—</span></article><article><small>Recommended action</small><span id="erAction">—</span></article></div><div id="erEvidence" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4312-center" id="executiveDecisionSimulatorCenter"><header><div><small>V43.11 · Decision Simulator</small><strong>Test an operating scenario before approving a real-world change.</strong></div><button id="edsRun" type="button">Simulate</button></header><textarea id="edsScenario" class="v4312-input">Add host coverage and slow reservation pacing for the next demand wave.</textarea><div class="v432-kpis"><article><small>Confidence</small><strong id="edsConfidence">0%</strong></article><article><small>Projected risk</small><strong id="edsRisk">—</strong></article><article><small>Revenue Δ</small><strong id="edsRevenue">—</strong></article><article><small>Guest wait Δ</small><strong id="edsWait">—</strong></article></div><div class="v4312-reason"><article><small>Tradeoff</small><span id="edsTradeoff">—</span></article><article><small>Recommendation</small><span id="edsRecommendation">—</span></article></div></section>
+ <section class="v432-center v432-cert v4312-center" id="executiveAiConsoleCenter"><header><div><small>V43.12 · Executive AI Console</small><strong>Ask Blue Current about the operation in natural language.</strong><span>Answers are assembled from trusted operating evidence and remain advisory.</span></div><button id="eaiAsk" type="button">Ask Blue Current</button></header><textarea id="eaiQuery" class="v4312-input">Summarize tonight's operation and tell me what needs attention first.</textarea><div class="v432-kpis"><article><small>Confidence</small><strong id="eaiConfidence">0%</strong></article></div><div class="v4312-ai-answer"><strong id="eaiAnswer">Ask a question to begin.</strong><span id="eaiAction">—</span></div><div id="eaiEvidence" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveKpiStudioCenter" data-src="js/modules/executiveKpiStudioEngine.js?v=43.8.0"></script>
+@@ -8754,6 +8761,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="executivePilotReview" data-src="js/modules/executivePilotReviewCenter.js?v=48.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerEngine.js?v=48.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerCenter.js?v=48.20.0"></script>
+-<script src="js/startup-loader.js?v=48.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessEngine.js?v=48.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessCenter.js?v=48.25.0"></script>
++<script src="js/startup-loader.js?v=48.25.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1233,6 +1233,7 @@
+ const pilotProofProgramModule = startupRegistry.register("pilotProofProgram", shouldInitializeCenter("pilotProofProgram") ? window.createBlueCurrentPilotProofProgramCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotValueScorecard"]);
+ const executivePilotReviewModule = startupRegistry.register("executivePilotReview", shouldInitializeCenter("executivePilotReview") ? window.createBlueCurrentExecutivePilotReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotProofProgram"]);
+ const pilotDecisionLedgerModule = startupRegistry.register("pilotDecisionLedger", shouldInitializeCenter("pilotDecisionLedger") ? window.createBlueCurrentPilotDecisionLedgerCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "executivePilotReview"]);
++const expansionReadinessModule = startupRegistry.register("expansionReadiness", shouldInitializeCenter("expansionReadiness") ? window.createBlueCurrentExpansionReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDecisionLedger"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V48.20.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V48.25.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/expansionReadinessEngine.js
++++ b/client/js/modules/expansionReadinessEngine.js
+@@ -0,0 +1 @@
++(function(global){"use strict";class BlueCurrentExpansionReadinessEngine{constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}token(){return localStorage.getItem("blueCurrentV3230Token")||"";}headers(){return {Authorization:`Bearer ${this.token()}`};}async snapshot(){const r=await fetch("/api/expansion-readiness",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Expansion readiness failed (${r.status})`);this.appState?.update?.({expansionReadiness:d});return d;}async draft(payload){const r=await fetch("/api/expansion-readiness/draft",{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Expansion rollout draft failed (${r.status})`);this.eventBus?.emit?.("expansion-readiness:drafted",structuredClone(d));return d;}}if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentExpansionReadinessEngine;if(global)global.BlueCurrentExpansionReadinessEngine=BlueCurrentExpansionReadinessEngine;})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/expansionReadinessCenter.js
++++ b/client/js/modules/expansionReadinessCenter.js
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExpansionReadinessCenterModule(eventBus,appState){const root=document.getElementById("expansionReadiness");if(!root||!window.BlueCurrentExpansionReadinessEngine)return null;const e=new window.BlueCurrentExpansionReadinessEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));function render(s){$("v4825Decision").textContent=s.signedDecision?.decision||"UNSIGNED";$("v4825Scope").textContent=(s.rolloutScope||[]).length;$("v4825Plan").textContent=s.activePlan?.status||"NONE";$("v4825Activation").textContent=s.activePlan?.activationState||"NOT ACTIVATED";$("v4825Headline").textContent=s.headline||"Expansion readiness unavailable.";$("v4825Locations").innerHTML=(s.rolloutScope||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.owner)}</strong><span>Attention ${esc(x.attentionLevel)} · Targets ${x.targetsMet}/${x.targetsMeasured} · Readiness ${x.readinessLift>=0?"+":""}${x.readinessLift} · Rhythm ${x.rhythmLift>=0?"+":""}${x.rhythmLift} · Leakage reduction ${x.leakageReductionPercent}%</span></article>`).join("")||"<article><strong>No signed expansion scope.</strong></article>";$("v4825Waves").innerHTML=s.activePlan?(s.activePlan.locations||[]).map(x=>`<article><strong>Wave ${x.wave} · ${esc(x.locationName)}</strong><span>${esc(x.state)} · Activation approved: ${x.activationApproved?"YES":"NO"}</span></article>`).join(""):"<article><strong>No rollout plan drafted.</strong></article>";$("v4825History").innerHTML=(s.planHistory||[]).map(x=>`<article><strong>${esc(x.id)} · ${esc(x.status)}</strong><span>${x.locations.length} location(s) · ${x.cadenceDays}-day cadence · readiness floor ${x.readinessFloor} · ${esc(x.activationState)}</span></article>`).join("");}async function load(){try{render(await e.snapshot());}catch(err){$("v4825Headline").textContent=err.message;}}$("expansionReadinessRefresh4825")?.addEventListener("click",load);$("v4825Draft")?.addEventListener("click",async()=>{try{await e.draft({owner:$("v4825Owner").value,waveSize:Number($("v4825WaveSize").value||1),cadenceDays:Number($("v4825Cadence").value||7),readinessFloor:Number($("v4825Floor").value||70),conditions:$("v4825Conditions").value});await load();}catch(err){$("v4825Headline").textContent=err.message;}});["pilot-decision:signed","expansion-readiness:drafted","pilot-value:checkpoint","auth:restored"].forEach(x=>eventBus?.on?.(x,load));load();return{engine:e,load};}window.createBlueCurrentExpansionReadinessCenterModule=createBlueCurrentExpansionReadinessCenterModule;})();--- a/scripts/maintenance/test-v48.25-expansion-readiness.js
++++ b/scripts/maintenance/test-v48.25-expansion-readiness.js
+@@ -0,0 +1,2 @@
++"use strict";const assert=require("assert"),Service=require("../../server/services/expansionReadinessService");
++(async()=>{const state={},audit=[],events=[];const ledger={latestDecision:{id:"d1",decision:"EXPAND",approver:"Owner",conditions:"Stage rollout",rolloutLocationIds:["a","b"]}};const review={packet:{locationReview:[{locationId:"a",locationName:"A",owner:"GM A",attentionLevel:"healthy",targetsMet:3,targetsMeasured:3,readinessLift:8,rhythmLift:20,leakageReductionPercent:25},{locationId:"b",locationName:"B",owner:"GM B",attentionLevel:"watch",targetsMet:2,targetsMeasured:3,readinessLift:5,rhythmLift:15,leakageReductionPercent:18}]}};const svc=new Service({read:async()=>state,mutate:async fn=>fn(state)},{record:async x=>audit.push(x)},{publish:(n,p)=>events.push([n,p])},{snapshot:async()=>ledger},{snapshot:async()=>review});let snap=await svc.snapshot("org",["a","b"]);assert.equal(snap.status,"ready-to-plan");assert.equal(snap.rolloutScope.length,2);const plan=await svc.draft("org",["a","b"],{waveSize:1,cadenceDays:7,readinessFloor:75,owner:"VP Ops"},"Tester");assert.equal(plan.locations.length,2);assert.equal(plan.locations[0].wave,1);assert.equal(plan.locations[1].wave,2);assert.equal(plan.activationState,"NOT_ACTIVATED");assert.equal(plan.locations.some(x=>x.activationApproved),false);snap=await svc.snapshot("org",["a","b"]);assert.equal(snap.status,"plan-drafted");assert.equal(snap.policy.automaticActivation,false);assert.equal(audit.length,1);assert.equal(events[0][0],"expansion-readiness:drafted");console.log(JSON.stringify({ok:true,version:"48.25.0",scope:2,waves:2,draftOnly:true,automaticActivation:false,automaticExpansion:false},null,2));})().catch(e=>{console.error(e);process.exit(1);});--- a/V48.25.0-RELEASE.md
++++ b/V48.25.0-RELEASE.md
+@@ -0,0 +1,58 @@
++# BLUE CURRENT V48.25.0 — EXPANSION READINESS & ROLLOUT SCOPE
++
++V48.21–V48.25 converts a signed human EXPAND decision into a controlled rollout draft.
++
++## Added
++- signed expansion decision prerequisite
++- signed rollout scope preservation
++- per-location operating evidence in rollout view
++- rollout owner
++- locations-per-wave control
++- cadence in days
++- readiness floor
++- rollout conditions
++- deterministic wave assignment
++- rollout-plan history
++- audit + realtime event
++
++## Critical boundary
++A rollout plan is planning data only.
++
++- `draftDoesNotActivate: true`
++- `automaticActivation: false`
++- `automaticExpansion: false`
++- `humanActivationRequired: true`
++
++Every planned location is created with:
++- state: `PLANNED`
++- activationApproved: `false`
++- activationApprovedBy: `null`
++- activationApprovedAt: `null`
++
++Drafting is admin-only.
++
++## Current authenticated integration result
++Current isolated Chefs runtime:
++- expansion authorization: absent
++- rollout scope: 0
++- status: `expansion-not-authorized`
++- non-admin draft attempt: blocked
++- automatic activation: false
++
++That is the expected state until a qualified administrator records a signed human EXPAND decision.
++
++## Validation
++- focused expansion readiness lifecycle PASS
++- signed-scope requirement PASS
++- deterministic rollout waves PASS
++- activation remains OFF PASS
++- authenticated read PASS
++- admin draft boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 878 JavaScript files
++- 744 client scripts
++- 5,549 unique HTML IDs
++
++## Next
++V48.26–V48.30 is the V48 closure wave: end-to-end commercial proof certification, cross-module contract checks, stale/dead surface review, release hardening, and final V48 release certification.
+--- a/README-APPLY-V48.25.0.md
++++ b/README-APPLY-V48.25.0.md
+@@ -0,0 +1,27 @@
++# APPLY BLUE CURRENT V48.25.0
++
++Baseline: exact V48.20.0 repository.
++
++Extract `BLUE-CURRENT-V48.25.0-PATCH.zip` into the repository root.
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v48.25-expansion-readiness.js
++npm run start
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected version: `48.25.0`.
++
++Then `Ctrl+F5`.
++
++The new **Expansion Readiness & Rollout Scope** surface appears after the V48 decision stack.
++
++Important: rollout drafting requires both a signed human EXPAND decision and admin permission. Drafting a rollout never activates a location.
++
++```powershell
++git add -A
++git commit -m "V48.25.0 add expansion readiness and rollout scope"
++git push origin live-service-timeline
++```

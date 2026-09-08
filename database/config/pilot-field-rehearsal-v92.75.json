@@ -1,0 +1,43 @@
+{
+  "version": "92.75.0",
+  "phase": "D",
+  "gate": "PILOT_REHEARSAL_AND_FIELD_ACCEPTANCE_CERTIFICATION",
+  "rehearsalSequence": [
+    {
+      "id": "OPENING",
+      "label": "Opening conditions"
+    },
+    {
+      "id": "SHIFT_START",
+      "label": "Shift start"
+    },
+    {
+      "id": "NORMAL_SERVICE",
+      "label": "Normal service"
+    },
+    {
+      "id": "PRESSURE_EVENT",
+      "label": "Pressure event"
+    },
+    {
+      "id": "EXCEPTION_RECOVERY",
+      "label": "Exception & recovery"
+    },
+    {
+      "id": "HANDOFF",
+      "label": "Handoff"
+    },
+    {
+      "id": "CLOSEOUT",
+      "label": "Closeout"
+    }
+  ],
+  "certification": {
+    "allStagesRequired": true,
+    "criticalFailureBlocksAcceptance": true,
+    "humanSignoffRequired": true,
+    "productionWriteBackRequired": false,
+    "automaticPilotLaunch": false
+  },
+  "nextGate": "PILOT_ENVIRONMENT_AND_DEPLOYMENT_READINESS"
+}

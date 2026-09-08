@@ -1,0 +1,988 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.45.0",
++  "version": "46.50.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 final retirement authorization packet and Git checkpoint gate",
++  "description": "Blue Current Hospitality OS \u2014 first authoritative module retirement with rollback certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -156,7 +156,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.45.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.50.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.45.0",
++        version: "46.50.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+--- a/server/services/repositoryImpactService.js
++++ b/server/services/repositoryImpactService.js
+@@ -56,7 +56,7 @@
+   }
+   dependencyGraph(surfaceId){
+     const refs=this.references(surfaceId),owned=this.ownership(surfaceId,refs),ownedSet=new Set(owned);
+-    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":x.file.endsWith(".md")?"documentation":"reference"}));
++    const inbound=refs.exact.filter(x=>!ownedSet.has(x.file)).map(x=>({...x,type:x.file==="client/js/app-v15.1.3.js"?"startup-registry":x.file==="client/index.html"?"html-registration":x.file.startsWith("scripts/")?"test":x.file.endsWith(".md")||x.file.startsWith("config/retirements/")||x.file.endsWith("-APPLY-MANIFEST.json")?"documentation":"reference"}));
+     return {surfaceId,ownedFiles:owned,inboundReferences:inbound,referenceCount:refs.exact.reduce((s,x)=>s+x.count,0),startupDependencies:refs.startup,apiUsage:refs.api,testCoverage:refs.tests,htmlOwnership:refs.htmlOwnership,scriptOwnership:refs.scriptOwnership};
+   }
+   rollbackPlan(surfaceId,graph){
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.45.0">
++  <meta name="blue-current-build" content="46.50.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -1907,33 +1907,7 @@
+           <p id="governanceMessage" class="performance-governance-message" role="status"></p>
+         </section>
+ 
+-        <section class="enterprise-value-plan-center" id="enterpriseValuePlanCenter" aria-labelledby="enterpriseValuePlanTitle">
+-          <header class="enterprise-value-plan-header">
+-            <div><small>V35.12 · Enterprise value planning</small><strong id="enterpriseValuePlanTitle">Enterprise Value Plan & Annual Operating Plan</strong><span>Translate restaurant performance, measured outcomes, and governance commitments into annual targets, quarterly initiatives, and accountable financial execution.</span></div>
+-            <div class="enterprise-value-plan-score"><small>Plan readiness</small><strong id="enterpriseValuePlanScore">0%</strong><span id="enterpriseValuePlanStatus" data-tone="forming">forming</span></div>
+-            <div class="enterprise-value-plan-buttons"><button type="button" id="enterpriseValuePlanRefresh">Refresh plan</button><button type="button" id="enterpriseValuePlanAdd">Add initiative</button><button type="button" id="enterpriseValuePlanExport">Export annual plan</button></div>
+-          </header>
+-          <p class="enterprise-value-plan-summary" id="enterpriseValuePlanSummary">The annual value plan is forming. Complete target ownership, initiative sequencing, and milestone evidence before approval.</p>
+-          <div class="enterprise-value-plan-kpis">
+-            <article><small>Revenue target</small><strong id="enterpriseValueRevenueTarget">$0</strong><span id="enterpriseValueRevenueActual">$0</span></article>
+-            <article><small>Portfolio RPI target</small><strong id="enterpriseValueRpiTarget">0</strong><span id="enterpriseValueRpiActual">0</span></article>
+-            <article><small>Adoption target</small><strong id="enterpriseValueAdoptionTarget">0%</strong><span id="enterpriseValueAdoptionActual">0%</span></article>
+-            <article><small>Open initiatives</small><strong id="enterpriseValueOpenInitiatives">0</strong><span>Annual work plan</span></article>
+-          </div>
+-          <div class="enterprise-value-plan-grid">
+-            <section><div class="enterprise-value-plan-title"><small>Annual targets</small><strong>Financial and operating commitments</strong></div><div id="enterpriseValueTargets" class="enterprise-value-targets"></div></section>
+-            <section><div class="enterprise-value-plan-title"><small>Target variance</small><strong>Distance from annual ambition</strong></div><div id="enterpriseValueVariance" class="enterprise-value-variance"></div></section>
+-          </div>
+-          <div class="enterprise-value-plan-grid enterprise-value-plan-grid-secondary">
+-            <section><div class="enterprise-value-plan-title"><small>Value initiatives</small><strong>Owned work tied to measurable restaurant impact</strong></div><div id="enterpriseValueInitiatives" class="enterprise-value-initiatives"></div></section>
+-            <section><div class="enterprise-value-plan-title"><small>Quarterly roadmap</small><strong>Sequenced milestones and projected value</strong></div><div id="enterpriseValueQuarters" class="enterprise-value-quarters"></div></section>
+-          </div>
+-          <div class="enterprise-value-plan-grid enterprise-value-plan-grid-tertiary">
+-            <section><div class="enterprise-value-plan-title"><small>Plan controls</small><strong>Blockers to executive approval</strong></div><div id="enterpriseValueBlockers" class="enterprise-value-blockers"></div></section>
+-            <section><div class="enterprise-value-plan-title"><small>Next actions</small><strong>Highest-value work before approval</strong></div><ol id="enterpriseValueActions" class="enterprise-value-actions"></ol></section>
+-          </div>
+-          <p id="enterpriseValuePlanMessage" class="enterprise-value-plan-message" role="status"></p>
+-        </section>
++        
+         <section class="margin-intelligence-center" id="marginIntelligenceCenter" aria-labelledby="marginIntelligenceTitle">
+           <header class="margin-intelligence-header">
+             <div>
+@@ -7891,8 +7865,6 @@
+   <script type="text/bluecurrent-deferred" data-src="js/modules/expansionBenchmarkCenter.js?v=35.10.0"></script>
+   <script type="text/bluecurrent-deferred" data-src="js/modules/performanceGovernanceEngine.js?v=35.11.0"></script>
+   <script type="text/bluecurrent-deferred" data-src="js/modules/performanceGovernanceCenter.js?v=35.11.0"></script>
+-  <script type="text/bluecurrent-deferred" data-src="js/modules/enterpriseValuePlanEngine.js?v=35.12.0"></script>
+-  <script type="text/bluecurrent-deferred" data-src="js/modules/enterpriseValuePlanCenter.js?v=35.12.0"></script>
+   <script src="js/modules/marginIntelligenceEngine.js?v=35.13.0"></script>
+   <script src="js/modules/marginIntelligenceCenter.js?v=35.13.0"></script>
+   <script type="text/bluecurrent-deferred" data-src="js/modules/costVarianceEngine.js?v=35.14.0"></script>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -2685,22 +2685,6 @@
+   ["eventBus", "appState", "expansionBenchmarkCenter", "postLaunchValueCenter", "executiveBriefingCenter", "outcomeIntelligenceCenter", "performanceLearningCenter"]
+ );
+ 
+-
+-const enterpriseValuePlanCenterModule = startupRegistry.register(
+-  "enterpriseValuePlanCenter",
+-  shouldInitializeCenter("enterpriseValuePlanCenter")
+-    ? window.createBlueCurrentEnterpriseValuePlanCenterModule?.(eventBus, appState)
+-    : null,
+-  ["eventBus", "appState", "performanceGovernanceCenter", "expansionBenchmarkCenter", "postLaunchValueCenter", "outcomeIntelligenceCenter"]
+-);
+-
+-const marginIntelligenceCenterModule = startupRegistry.register(
+-  "marginIntelligenceCenter",
+-  shouldInitializeCenter("marginIntelligenceCenter")
+-    ? window.createBlueCurrentMarginIntelligenceCenterModule?.(eventBus, appState)
+-    : null,
+-  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "enterpriseValuePlanCenter"]
+-);
+ 
+ const costVarianceCenterModule = startupRegistry.register(
+   "costVarianceCenter",
+@@ -2871,7 +2855,6 @@
+     postLaunchValue: postLaunchValueCenterModule,
+     expansionBenchmark: expansionBenchmarkCenterModule,
+     performanceGovernance: performanceGovernanceCenterModule,
+-    enterpriseValuePlan: enterpriseValuePlanCenterModule,
+     marginIntelligence: marginIntelligenceCenterModule,
+     costVariance: costVarianceCenterModule,
+     predictiveService: predictiveServiceCenterModule,
+--- a/client/app-v15.1.3.js
++++ b/client/app-v15.1.3.js
+@@ -1694,22 +1694,6 @@
+   ["eventBus", "appState", "expansionBenchmarkCenter", "postLaunchValueCenter", "executiveBriefingCenter", "outcomeIntelligenceCenter", "performanceLearningCenter"]
+ );
+ 
+-
+-const enterpriseValuePlanCenterModule = startupRegistry.register(
+-  "enterpriseValuePlanCenter",
+-  shouldInitializeCenter("enterpriseValuePlanCenter")
+-    ? window.createBlueCurrentEnterpriseValuePlanCenterModule?.(eventBus, appState)
+-    : null,
+-  ["eventBus", "appState", "performanceGovernanceCenter", "expansionBenchmarkCenter", "postLaunchValueCenter", "outcomeIntelligenceCenter"]
+-);
+-
+-const marginIntelligenceCenterModule = startupRegistry.register(
+-  "marginIntelligenceCenter",
+-  shouldInitializeCenter("marginIntelligenceCenter")
+-    ? window.createBlueCurrentMarginIntelligenceCenterModule?.(eventBus, appState)
+-    : null,
+-  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "enterpriseValuePlanCenter"]
+-);
+ 
+ const costVarianceCenterModule = startupRegistry.register(
+   "costVarianceCenter",
+@@ -1817,7 +1801,6 @@
+     postLaunchValue: postLaunchValueCenterModule,
+     expansionBenchmark: expansionBenchmarkCenterModule,
+     performanceGovernance: performanceGovernanceCenterModule,
+-    enterpriseValuePlan: enterpriseValuePlanCenterModule,
+     marginIntelligence: marginIntelligenceCenterModule,
+     costVariance: costVarianceCenterModule,
+     predictiveService: predictiveServiceCenterModule,
+--- a/app-v15.1.3.js
++++ b/app-v15.1.3.js
+@@ -2518,22 +2518,6 @@
+   ["eventBus", "appState", "expansionBenchmarkCenter", "postLaunchValueCenter", "executiveBriefingCenter", "outcomeIntelligenceCenter", "performanceLearningCenter"]
+ );
+ 
+-
+-const enterpriseValuePlanCenterModule = startupRegistry.register(
+-  "enterpriseValuePlanCenter",
+-  shouldInitializeCenter("enterpriseValuePlanCenter")
+-    ? window.createBlueCurrentEnterpriseValuePlanCenterModule?.(eventBus, appState)
+-    : null,
+-  ["eventBus", "appState", "performanceGovernanceCenter", "expansionBenchmarkCenter", "postLaunchValueCenter", "outcomeIntelligenceCenter"]
+-);
+-
+-const marginIntelligenceCenterModule = startupRegistry.register(
+-  "marginIntelligenceCenter",
+-  shouldInitializeCenter("marginIntelligenceCenter")
+-    ? window.createBlueCurrentMarginIntelligenceCenterModule?.(eventBus, appState)
+-    : null,
+-  ["eventBus", "appState", "restaurantPerformanceCenter", "outcomeIntelligenceCenter", "enterpriseValuePlanCenter"]
+-);
+ 
+ const costVarianceCenterModule = startupRegistry.register(
+   "costVarianceCenter",
+@@ -2703,7 +2687,6 @@
+     postLaunchValue: postLaunchValueCenterModule,
+     expansionBenchmark: expansionBenchmarkCenterModule,
+     performanceGovernance: performanceGovernanceCenterModule,
+-    enterpriseValuePlan: enterpriseValuePlanCenterModule,
+     marginIntelligence: marginIntelligenceCenterModule,
+     costVariance: costVarianceCenterModule,
+     predictiveService: predictiveServiceCenterModule,
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.45.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.50.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/operatorConsolidationEngine.js
++++ b/client/js/modules/operatorConsolidationEngine.js
+@@ -2,7 +2,7 @@
+ class BlueCurrentOperatorConsolidationEngine{
+   constructor({eventBus,appState,rationalizationEngine}={}){this.eventBus=eventBus;this.appState=appState;this.rationalizationEngine=rationalizationEngine||null;this.roleDefaults={
+     manager:["unifiedCommandCenter","guidedShiftCenter","operatorServiceFlowCenter","operatorCopilotCenter","commandActionInboxCenter","shiftProfitPulseCenter","operationsWorkspaceCenter","reservationOperationsCenter","liveFloorOperationsCenter","kitchenThroughputCenter","laborDeploymentCenter","guestRecoveryCenter"],
+-    executive:["unifiedCommandCenter","shiftProfitPulseCenter","executiveBriefingCenter","portfolioPerformanceCenter","marginIntelligenceCenter","enterpriseValuePlanCenter"],
++    executive:["unifiedCommandCenter","shiftProfitPulseCenter","executiveBriefingCenter","portfolioPerformanceCenter","marginIntelligenceCenter"],
+     technical:["unifiedCommandCenter","operatorSurfaceRationalizationCenter","platformIntegrationAudit","runtimeReadinessCenter","aipRuntimeReadinessCenter","observabilityDashboard","releaseCertificationCenter"]
+   };this.mergeMap=this.rationalizationEngine?.mergeTargets||{};}
+   state(){try{return this.appState?.getState?.()||{};}catch{return {};}}
+--- a/scripts/maintenance/test-retirement-rehearsal.js
++++ b/scripts/maintenance/test-retirement-rehearsal.js
+@@ -5,6 +5,8 @@
+ const Rehearsal=require("../../server/services/repositoryRetirementRehearsalService");
+ 
+ const root=path.resolve(__dirname,"../..");
++const retiredModule=path.join(root,"client/js/modules/enterpriseValuePlanCenter.js");
++if(!require("fs").existsSync(retiredModule)){console.log(JSON.stringify({ok:true,skipped:true,reason:"enterpriseValuePlanCenter retired in V46.50.0"},null,2));process.exit(0);}
+ const impact=new Impact(root),service=new Rehearsal(root,impact);
+ const before=service.repositoryDigest();
+ const result=service.rehearse("enterpriseValuePlanCenter");
+--- a/scripts/maintenance/test-final-retirement-authorization.js
++++ b/scripts/maintenance/test-final-retirement-authorization.js
+@@ -7,6 +7,8 @@
+ 
+ (async()=>{
+   const root=path.resolve(__dirname,"../..");
++const retiredModule=path.join(root,"client/js/modules/enterpriseValuePlanCenter.js");
++if(!require("fs").existsSync(retiredModule)){console.log(JSON.stringify({ok:true,skipped:true,reason:"enterpriseValuePlanCenter retired in V46.50.0"},null,2));process.exit(0);}
+   const impact=new Impact(root),rehearsalService=new Rehearsal(root,impact);
+   const rehearsal=rehearsalService.rehearse("enterpriseValuePlanCenter");
+   assert.equal(rehearsal.validation.passed,true);
+--- a/scripts/maintenance/test-authoritative-retirement-v46.50.js
++++ b/scripts/maintenance/test-authoritative-retirement-v46.50.js
+@@ -0,0 +1,29 @@
++"use strict";
++const assert=require("assert"),fs=require("fs"),path=require("path");
++const Impact=require("../../server/services/repositoryImpactService");
++const root=path.resolve(__dirname,"../.."),surface="enterpriseValuePlanCenter";
++const retired=[
++  "client/js/modules/enterpriseValuePlanCenter.js",
++  "client/js/modules/enterpriseValuePlanEngine.js"
++];
++for(const rel of retired)assert.equal(fs.existsSync(path.join(root,rel)),false,`${rel} should be retired`);
++const runtime=[
++  "client/index.html","client/js/app-v15.1.3.js","client/app-v15.1.3.js","app-v15.1.3.js",
++  "client/js/modules/operatorConsolidationEngine.js"
++];
++for(const rel of runtime){
++  const text=fs.readFileSync(path.join(root,rel),"utf8");
++  assert.equal(text.includes(surface),false,`${rel} retains ${surface}`);
++  assert.equal(text.includes("enterpriseValuePlanEngine.js"),false,`${rel} retains retired engine script`);
++  assert.equal(text.includes("enterpriseValuePlanCenter.js"),false,`${rel} retains retired center script`);
++}
++const impact=new Impact(root).analyze(surface);
++assert.equal(impact.graph.ownedFiles.length,0);
++assert.equal(impact.graph.startupDependencies.length,0);
++assert.equal(impact.graph.apiUsage.length,0);
++assert.equal(impact.graph.inboundReferences.some(x=>["reference","startup-registry","html-registration"].includes(x.type)),false);
++const ledger=JSON.parse(fs.readFileSync(path.join(root,"config/retirements/V46.50.0-enterpriseValuePlanCenter.json"),"utf8"));
++assert.equal(ledger.status,"authoritatively-retired");
++assert.equal(ledger.rollbackAvailable,true);
++assert.equal(ledger.retiredFiles.length,2);
++console.log(JSON.stringify({ok:true,version:"46.50.0",surface,retiredFiles:retired.length,ownedFiles:impact.graph.ownedFiles.length,startupDependencies:impact.graph.startupDependencies.length,apiReferences:impact.graph.apiUsage.length,operationalInboundReferences:impact.graph.inboundReferences.filter(x=>["reference","startup-registry","html-registration"].includes(x.type)).length,rollbackAvailable:ledger.rollbackAvailable,status:ledger.status},null,2));
+--- a/config/retirements/V46.50.0-enterpriseValuePlanCenter.json
++++ b/config/retirements/V46.50.0-enterpriseValuePlanCenter.json
+@@ -0,0 +1,48 @@
++{
++  "version": "46.50.0",
++  "retirementId": "RET-V46.50.0-enterpriseValuePlanCenter",
++  "surfaceId": "enterpriseValuePlanCenter",
++  "status": "authoritatively-retired",
++  "retiredFiles": [
++    "client/js/modules/enterpriseValuePlanCenter.js",
++    "client/js/modules/enterpriseValuePlanEngine.js"
++  ],
++  "modifiedRuntimeFiles": [
++    "client/index.html",
++    "client/js/app-v15.1.3.js",
++    "client/app-v15.1.3.js",
++    "app-v15.1.3.js",
++    "client/js/modules/operatorConsolidationEngine.js"
++  ],
++  "baselineHashes": {
++    "client/index.html": "bf9df0ec2dd20379420b2927a4278ed89bd955797f73950ad2d91c5c17aca013",
++    "client/js/app-v15.1.3.js": "6f0a25d8420d13526dfa69365a9492360a79f7eb3025e84b5aa72b0a8486c65b",
++    "client/app-v15.1.3.js": "48a6687b5df8d872950ddbcc77e619f60022351d6298855e8d3a0ef2bec437d3",
++    "app-v15.1.3.js": "d144b89ac626d3a4dd12ca54c7406c186979702edce69d88755ec7b032bbee00",
++    "client/js/modules/operatorConsolidationEngine.js": "f86881705f884e596eb783b995116cfec0e6b938962c7bae39d8c7d9064d27fc",
++    "client/js/modules/enterpriseValuePlanCenter.js": "b24e4d0f7d0a7913747f7888b745bc04f6ee4f932d20758a8aeeb65920f5f1b5",
++    "client/js/modules/enterpriseValuePlanEngine.js": "07d2c1a5fa904181a85d94efbbc4d8a9921bdeb03dba581fe878533547cb90e7"
++  },
++  "postRetirementHashes": {
++    "client/index.html": "07225f3eff389ab388225fee3770d14c90dadf6dd4dcd20c9f41c86dd675974f",
++    "client/js/app-v15.1.3.js": "73ec7d1acd9c294f31f7722dc442d3fedd409da92f88956181e7e58b0f689e21",
++    "client/app-v15.1.3.js": "a22d07986c96a805e991da79bb186b3ee0271d53dd2af65b8aa73758f18b2508",
++    "app-v15.1.3.js": "9e86d5a911545a55620459ff2ad496a96b976e9f8292998eb893e99f2c15acea",
++    "client/js/modules/operatorConsolidationEngine.js": "22b052469f7442dd6043e992fafc9bdbbb31d379509d179a46042449920a72d5",
++    "package.json": "fb6049526f932aec538f088801e174e28d9e2640ce1aa65ad79377f0dc5c897e",
++    "server/server.js": "439efd9a384133852eec2136c9325c171235be9061f91398b94459bda9368129",
++    "server/api/router.js": "36035fd1776d21aa5e374ebda49001d1968d1684839d807730ed19ecd3f7a554",
++    "client/js/startup-loader.js": "85905fa76c866ce43de1936b97555cb446e9986aba00582e701f2a8f6616add2",
++    "scripts/maintenance/test-retirement-rehearsal.js": "fc9a7a9b789fdba1c17940fc8fb68093fe951bb044c65a63d1a18c0a7e355c3e",
++    "scripts/maintenance/test-final-retirement-authorization.js": "b2867c21f384efb80c92c86a4831cbec9a6f7d7df88443a853fe07a1164e4783"
++  },
++  "rollbackRequired": true,
++  "rollbackAvailable": true,
++  "validationRequired": [
++    "npm run check",
++    "node scripts/maintenance/test-authoritative-retirement-v46.50.js",
++    "server /api/health"
++  ],
++  "policy": "exact-rehearsed-retirement-with-automatic-rollback-on-apply-failure",
++  "retiredAt": "2026-08-08T16:55:00Z"
++}
+--- a/README-APPLY-V46.50.0.md
++++ b/README-APPLY-V46.50.0.md
+@@ -0,0 +1,82 @@
++# APPLY BLUE CURRENT V46.50.0
++
++## Baseline
++
++This package must be applied to the exact V46.45.0 repository baseline used to build the package.
++
++Unlike earlier overlay-only patches, V46.50 permanently retires two source files, so use the guarded apply script.
++
++## Apply from PowerShell
++
++From your `blue-current-reservations` repository root:
++
++```powershell
++$pkg = Join-Path $env:TEMP "blue-current-v4650"
++Remove-Item $pkg -Recurse -Force -ErrorAction SilentlyContinue
++New-Item -ItemType Directory -Path $pkg | Out-Null
++
++Expand-Archive "PATH\TO\BLUE-CURRENT-V46.50.0-AUTHORITATIVE-RETIREMENT.zip" -DestinationPath $pkg -Force
++
++node "$pkg\APPLY-V46.50.0.js" --repo .
++```
++
++The script will:
++- verify baseline hashes
++- create a rollback backup outside the repo
++- apply the V46.50 payload
++- retire the two authorized module files
++- verify final hashes
++- run full validation
++- run the focused retirement certification
++- restore automatically if validation fails
++
++## After application
++
++```powershell
++npm run check
++node scripts/maintenance/test-authoritative-retirement-v46.50.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.50.0"
++```
++
++## Expected retired files
++
++```text
++client/js/modules/enterpriseValuePlanCenter.js
++client/js/modules/enterpriseValuePlanEngine.js
++```
++
++## Git checkpoint
++
++After validation:
++
++```powershell
++git status
++git add -A
++git diff --cached
++git commit -m "V46.50.0 retire enterprise value plan center"
++git push origin live-service-timeline
++```
++
++Use `git add -A` here because this release intentionally includes two file deletions.
++
++## Rollback
++
++The apply script prints the external backup directory it creates.
++
++The delivery package also contains:
++
++`BLUE-CURRENT-V46.50.0-ROLLBACK.zip`
++
++Do not remove the backup until the V46.50 commit is pushed and verified.
+--- a/V46.50.0-RELEASE.md
++++ b/V46.50.0-RELEASE.md
+@@ -0,0 +1,123 @@
++# BLUE CURRENT V46.50.0 — FIRST AUTHORITATIVE MODULE RETIREMENT
++
++## Release scope
++
++V46.46–V46.50 performs Blue Current's first deliberate authoritative code retirement.
++
++Retired surface:
++
++`enterpriseValuePlanCenter`
++
++This is the candidate that previously passed:
++- operator evidence review
++- reversible hide preview
++- retirement certification
++- repository-impact analysis
++- disposable-copy retirement rehearsal
++- rollback/change-set generation
++- final retirement authorization-gate validation
++
++## V46.46 — Exact Runtime Retirement
++
++The authoritative V46.50 repository state removes:
++- `client/js/modules/enterpriseValuePlanCenter.js`
++- `client/js/modules/enterpriseValuePlanEngine.js`
++
++It also removes the retired surface from:
++- `client/index.html`
++- `client/js/app-v15.1.3.js`
++- `client/app-v15.1.3.js`
++- root `app-v15.1.3.js`
++- Executive default navigation in `operatorConsolidationEngine.js`
++
++No restaurant/runtime database data is changed.
++
++## V46.47 — Runtime Dependency Closure
++
++Post-retirement repository analysis reports:
++- owned runtime files: 0
++- startup dependencies: 0
++- API references: 0
++- operational inbound references: 0
++
++Historical documentation and tests can still mention the retired surface as evidence.
++
++The repository-impact analyzer now classifies `config/retirements/*` as documentation/audit evidence rather than an operational dependency.
++
++## V46.48 — Retirement Ledger + Rollback
++
++Adds:
++
++`config/retirements/V46.50.0-enterpriseValuePlanCenter.json`
++
++The ledger records:
++- retired files
++- modified runtime files
++- baseline SHA-256 hashes
++- post-retirement SHA-256 hashes
++- required validation
++- rollback availability
++
++The delivery package also contains a prebuilt rollback archive and the guarded apply workflow creates an external local backup before it mutates the repository.
++
++## V46.49 — Guarded Authoritative Apply
++
++Because ZIP overlays cannot delete files safely, V46.50 is delivered with a guarded Node apply script.
++
++The script:
++1. verifies exact V46.45 baseline hashes
++2. creates a backup outside the repository
++3. copies only V46.50 payload files
++4. deletes only the two authorized module files
++5. verifies post-retirement hashes
++6. runs `npm run check`
++7. runs `test-authoritative-retirement-v46.50.js`
++8. automatically restores the backup if application or validation fails
++
++The script refuses to proceed on baseline drift.
++
++## V46.50 — First Retirement Certification
++
++Adds:
++
++`node scripts/maintenance/test-authoritative-retirement-v46.50.js`
++
++The focused certification verifies:
++- both retired module files are absent
++- all runtime references are absent
++- no owned files remain
++- no startup dependencies remain
++- no API references remain
++- no operational inbound references remain
++- the retirement ledger exists
++- rollback availability is recorded
++
++Historical V46.40/V46.45 tests now self-identify as skipped once this exact candidate has been retired, rather than failing against architecture that no longer exists.
++
++## Validation
++
++- `node scripts/maintenance/test-authoritative-retirement-v46.50.js` passed.
++- Retired module files: 2.
++- Owned runtime files after retirement: 0.
++- Startup dependencies after retirement: 0.
++- API references after retirement: 0.
++- Operational inbound references after retirement: 0.
++- `npm run check` passed:
++  - 834 JavaScript files
++  - 714 client scripts
++  - 5,322 unique HTML IDs
++- Server startup passed as V46.50.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Safety
++
++V46.50 performs one narrowly scoped, previously rehearsed code retirement.
++
++It does NOT:
++- delete database data
++- enable autonomous live restaurant mutation
++- bulk-retire other candidates
++- create a generic unaudited deletion endpoint
++
++Future permanent retirements must independently pass the same evidence, rehearsal, authorization, apply, and rollback gates.
+--- a/V46.50.0-APPLY-MANIFEST.json
++++ b/V46.50.0-APPLY-MANIFEST.json
+@@ -0,0 +1,168 @@
++{
++  "version": "46.50.0",
++  "baselineVersion": "46.45.0",
++  "surfaceId": "enterpriseValuePlanCenter",
++  "preconditions": {
++    "package.json": {
++      "exists": true,
++      "sha256": "baa7dae685fb17e5cd6d64a54cc3611e61449830e1251bf19f345f26e1ca0ccc"
++    },
++    "server/server.js": {
++      "exists": true,
++      "sha256": "935201266616753ae7adb7153919e58adf7b41248d0f06a3e9cac137928753b3"
++    },
++    "server/api/router.js": {
++      "exists": true,
++      "sha256": "00a7331356b671fd3667453d36dd64db33f9766b9359855b572605a0a8047909"
++    },
++    "server/services/repositoryImpactService.js": {
++      "exists": true,
++      "sha256": "e88d0a4b45547029d90f5caee66223329a5d5ce73e2ad7c4e8b286f64fd2f64d"
++    },
++    "client/index.html": {
++      "exists": true,
++      "sha256": "bf9df0ec2dd20379420b2927a4278ed89bd955797f73950ad2d91c5c17aca013"
++    },
++    "client/js/app-v15.1.3.js": {
++      "exists": true,
++      "sha256": "6f0a25d8420d13526dfa69365a9492360a79f7eb3025e84b5aa72b0a8486c65b"
++    },
++    "client/app-v15.1.3.js": {
++      "exists": true,
++      "sha256": "48a6687b5df8d872950ddbcc77e619f60022351d6298855e8d3a0ef2bec437d3"
++    },
++    "app-v15.1.3.js": {
++      "exists": true,
++      "sha256": "d144b89ac626d3a4dd12ca54c7406c186979702edce69d88755ec7b032bbee00"
++    },
++    "client/js/startup-loader.js": {
++      "exists": true,
++      "sha256": "447f04a6a606bb169fe010371ea80883b2778e3760a3df64428e9a0adef4322d"
++    },
++    "client/js/modules/operatorConsolidationEngine.js": {
++      "exists": true,
++      "sha256": "f86881705f884e596eb783b995116cfec0e6b938962c7bae39d8c7d9064d27fc"
++    },
++    "scripts/maintenance/test-retirement-rehearsal.js": {
++      "exists": true,
++      "sha256": "ce35f90f92fcfbf0f0106d7d7e975c742742558b95464383846bf186d4f824ff"
++    },
++    "scripts/maintenance/test-final-retirement-authorization.js": {
++      "exists": true,
++      "sha256": "832c465137c471f5cab8c6ddeb1f7300a751762aec6196ebb48d438fa4bad5cf"
++    },
++    "scripts/maintenance/test-authoritative-retirement-v46.50.js": {
++      "exists": false
++    },
++    "config/retirements/V46.50.0-enterpriseValuePlanCenter.json": {
++      "exists": false
++    },
++    "README-APPLY-V46.50.0.md": {
++      "exists": false
++    },
++    "V46.50.0-RELEASE.md": {
++      "exists": false
++    },
++    "client/js/modules/enterpriseValuePlanCenter.js": {
++      "exists": true,
++      "sha256": "b24e4d0f7d0a7913747f7888b745bc04f6ee4f932d20758a8aeeb65920f5f1b5"
++    },
++    "client/js/modules/enterpriseValuePlanEngine.js": {
++      "exists": true,
++      "sha256": "07d2c1a5fa904181a85d94efbbc4d8a9921bdeb03dba581fe878533547cb90e7"
++    }
++  },
++  "postconditions": {
++    "package.json": {
++      "exists": true,
++      "sha256": "fb6049526f932aec538f088801e174e28d9e2640ce1aa65ad79377f0dc5c897e"
++    },
++    "server/server.js": {
++      "exists": true,
++      "sha256": "439efd9a384133852eec2136c9325c171235be9061f91398b94459bda9368129"
++    },
++    "server/api/router.js": {
++      "exists": true,
++      "sha256": "36035fd1776d21aa5e374ebda49001d1968d1684839d807730ed19ecd3f7a554"
++    },
++    "server/services/repositoryImpactService.js": {
++      "exists": true,
++      "sha256": "eb9264f34118c3b9f8ec4319e76b8aded1ce48be08069a23b576d522ac77ce1f"
++    },
++    "client/index.html": {
++      "exists": true,
++      "sha256": "07225f3eff389ab388225fee3770d14c90dadf6dd4dcd20c9f41c86dd675974f"
++    },
++    "client/js/app-v15.1.3.js": {
++      "exists": true,
++      "sha256": "73ec7d1acd9c294f31f7722dc442d3fedd409da92f88956181e7e58b0f689e21"
++    },
++    "client/app-v15.1.3.js": {
++      "exists": true,
++      "sha256": "a22d07986c96a805e991da79bb186b3ee0271d53dd2af65b8aa73758f18b2508"
++    },
++    "app-v15.1.3.js": {
++      "exists": true,
++      "sha256": "9e86d5a911545a55620459ff2ad496a96b976e9f8292998eb893e99f2c15acea"
++    },
++    "client/js/startup-loader.js": {
++      "exists": true,
++      "sha256": "85905fa76c866ce43de1936b97555cb446e9986aba00582e701f2a8f6616add2"
++    },
++    "client/js/modules/operatorConsolidationEngine.js": {
++      "exists": true,
++      "sha256": "22b052469f7442dd6043e992fafc9bdbbb31d379509d179a46042449920a72d5"
++    },
++    "scripts/maintenance/test-retirement-rehearsal.js": {
++      "exists": true,
++      "sha256": "fc9a7a9b789fdba1c17940fc8fb68093fe951bb044c65a63d1a18c0a7e355c3e"
++    },
++    "scripts/maintenance/test-final-retirement-authorization.js": {
++      "exists": true,
++      "sha256": "b2867c21f384efb80c92c86a4831cbec9a6f7d7df88443a853fe07a1164e4783"
++    },
++    "scripts/maintenance/test-authoritative-retirement-v46.50.js": {
++      "exists": true,
++      "sha256": "9b65e17bd03b82d3a32ff6f632965a6673bd4a03ca3e15b628ebc0dd02d3f464"
++    },
++    "config/retirements/V46.50.0-enterpriseValuePlanCenter.json": {
++      "exists": true,
++      "sha256": "22756ebb17788f595d5f221674b1218e7d3198077f82b8be44a40088e723173e"
++    },
++    "README-APPLY-V46.50.0.md": {
++      "exists": true,
++      "sha256": "3f5e914c2cb0445d53843bf46d831fcc705e6cfe3d3f5eb054ba969149e8e617"
++    },
++    "V46.50.0-RELEASE.md": {
++      "exists": true,
++      "sha256": "0f8de35ddda3c07f38f9bf3e9d12be1fb088ac1ab8942b9ac9203c406851e04d"
++    },
++    "client/js/modules/enterpriseValuePlanCenter.js": {
++      "exists": false
++    },
++    "client/js/modules/enterpriseValuePlanEngine.js": {
++      "exists": false
++    }
++  },
++  "deletedFiles": [
++    "client/js/modules/enterpriseValuePlanCenter.js",
++    "client/js/modules/enterpriseValuePlanEngine.js"
++  ],
++  "newFiles": [
++    "scripts/maintenance/test-authoritative-retirement-v46.50.js",
++    "config/retirements/V46.50.0-enterpriseValuePlanCenter.json",
++    "README-APPLY-V46.50.0.md",
++    "V46.50.0-RELEASE.md"
++  ],
++  "validation": [
++    [
++      "npm",
++      "run",
++      "check"
++    ],
++    [
++      "node",
++      "scripts/maintenance/test-authoritative-retirement-v46.50.js"
++    ]
++  ]
++}
+--- a/client/js/modules/enterpriseValuePlanCenter.js
++++ b/client/js/modules/enterpriseValuePlanCenter.js
+@@ -1,50 +0,0 @@
+-(function () {
+-  "use strict";
+-
+-  function createBlueCurrentEnterpriseValuePlanCenterModule(eventBus, appState) {
+-    const root=document.getElementById("enterpriseValuePlanCenter");
+-    if(!root||!window.BlueCurrentEnterpriseValuePlanEngine)return null;
+-    const engine=new window.BlueCurrentEnterpriseValuePlanEngine({eventBus,appState});
+-    const byId=id=>document.getElementById(id);
+-    const esc=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
+-    const money=value=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(value||0));
+-    const fmt=(value,unit)=>unit==="currency"?money(value):unit==="percent"?`${Math.round(Number(value||0))}%`:String(Math.round(Number(value||0)));
+-
+-    function render(snapshot=engine.refresh({reason:"render"})){
+-      byId("enterpriseValuePlanScore").textContent=`${snapshot.score}%`;
+-      byId("enterpriseValuePlanStatus").textContent=snapshot.status.replaceAll("-"," ");
+-      byId("enterpriseValuePlanStatus").dataset.tone=snapshot.status;
+-      byId("enterpriseValuePlanSummary").textContent=snapshot.summary;
+-      byId("enterpriseValueRevenueTarget").textContent=money(snapshot.metrics.annualRevenueTarget);
+-      byId("enterpriseValueRevenueActual").textContent=money(snapshot.metrics.realizedRevenue);
+-      byId("enterpriseValueRpiTarget").textContent=String(snapshot.metrics.portfolioRpiTarget);
+-      byId("enterpriseValueRpiActual").textContent=String(snapshot.metrics.currentPortfolioRpi);
+-      byId("enterpriseValueAdoptionTarget").textContent=`${snapshot.metrics.adoptionTarget}%`;
+-      byId("enterpriseValueAdoptionActual").textContent=`${snapshot.metrics.currentAdoption}%`;
+-      byId("enterpriseValueOpenInitiatives").textContent=String(snapshot.metrics.openInitiatives);
+-      byId("enterpriseValueTargets").innerHTML=snapshot.targets.map(item=>`<article><div><small>${esc(item.unit)}</small><strong>${esc(item.name)}</strong><span>${fmt(item.actual,item.unit)} actual · ${fmt(item.target,item.unit)} target</span></div><div class="enterprise-target-progress"><i style="width:${Math.min(100,item.target?item.actual/item.target*100:0)}%"></i></div><b>${esc(item.owner)}</b><button type="button" data-enterprise-target="${esc(item.id)}">Edit target</button></article>`).join("");
+-      byId("enterpriseValueInitiatives").innerHTML=snapshot.initiatives.map(item=>`<article data-priority="${esc(item.priority)}" data-status="${esc(item.status)}"><div><small>${esc(item.quarter)} · ${esc(item.priority)} priority</small><strong>${esc(item.title)}</strong><span>${esc(item.milestone)}</span></div><div class="enterprise-initiative-meta"><b>${esc(item.owner)}</b><span>${money(item.projectedValue)} projected</span></div><select data-enterprise-initiative-status="${esc(item.id)}"><option value="planned"${item.status==='planned'?' selected':''}>Planned</option><option value="in-progress"${item.status==='in-progress'?' selected':''}>In progress</option><option value="complete"${item.status==='complete'?' selected':''}>Complete</option><option value="blocked"${item.status==='blocked'?' selected':''}>Blocked</option></select><button type="button" data-enterprise-initiative-owner="${esc(item.id)}">Owner</button></article>`).join("");
+-      byId("enterpriseValueQuarters").innerHTML=snapshot.quarters.map(item=>`<article><div><small>${esc(item.quarter)}</small><strong>${esc(item.focus)}</strong><span>${item.complete}/${item.total} complete</span></div><b>${money(item.projectedValue)}</b></article>`).join("");
+-      byId("enterpriseValueVariance").innerHTML=`<article><small>Revenue gap</small><strong>${money(snapshot.variance.revenueGap)}</strong><span>${snapshot.variance.revenueProgress}% of target realized</span></article><article><small>RPI gap</small><strong>${snapshot.variance.rpiGap}</strong><span>Points to annual target</span></article><article><small>Adoption gap</small><strong>${snapshot.variance.adoptionGap}%</strong><span>Points to annual target</span></article><article><small>Accuracy gap</small><strong>${snapshot.variance.accuracyGap}%</strong><span>Points to annual target</span></article>`;
+-      byId("enterpriseValueBlockers").innerHTML=snapshot.blockers.length?snapshot.blockers.map(text=>`<article data-tone="blocker"><strong>Blocker</strong><span>${esc(text)}</span></article>`).join(""):`<article data-tone="clear"><strong>Clear</strong><span>No annual-plan blockers are currently active.</span></article>`;
+-      byId("enterpriseValueActions").innerHTML=snapshot.nextActions.length?snapshot.nextActions.map((item,index)=>`<li><span>${index+1}</span><div><strong>${esc(item.label)}</strong><small>${esc(item.action)}</small></div></li>`).join(""):`<li><span>✓</span><div><strong>Annual plan is current</strong><small>Continue measuring progress and refreshing executive commitments.</small></div></li>`;
+-    }
+-
+-    function message(text,tone=""){const node=byId("enterpriseValuePlanMessage");node.textContent=text;node.dataset.tone=tone;}
+-    root.addEventListener("click",event=>{
+-      const target=event.target.closest("[data-enterprise-target]");
+-      if(target){const id=target.dataset.enterpriseTarget;const current=(appState.get("enterpriseValueTargets")||[]).find(item=>item.id===id);const value=window.prompt("Target value:",String(current?.target||0));if(value===null)return;const owner=window.prompt("Target owner:",current?.owner||"Unassigned");render(engine.updateTarget(id,{target:Number(value)||0,owner:owner||"Unassigned"}));message("Annual target updated.","success");return;}
+-      const ownerBtn=event.target.closest("[data-enterprise-initiative-owner]");
+-      if(ownerBtn){const id=ownerBtn.dataset.enterpriseInitiativeOwner;const current=(appState.get("enterpriseValueInitiatives")||[]).find(item=>item.id===id);const owner=window.prompt("Initiative owner:",current?.owner||"Unassigned");if(owner===null)return;render(engine.updateInitiative(id,{owner:owner||"Unassigned"}));message("Initiative owner updated.","success");}
+-    });
+-    root.addEventListener("change",event=>{const select=event.target.closest("[data-enterprise-initiative-status]");if(!select)return;render(engine.updateInitiative(select.dataset.enterpriseInitiativeStatus,{status:select.value}));message("Initiative status updated.","success");});
+-    byId("enterpriseValuePlanRefresh")?.addEventListener("click",()=>{render(engine.refresh({reason:"manual-review"}));message("Annual value plan recalculated.","success");});
+-    byId("enterpriseValuePlanAdd")?.addEventListener("click",()=>{const title=window.prompt("New annual value initiative:");if(!title)return;render(engine.addInitiative(title.trim()));message("Value initiative added.","success");});
+-    byId("enterpriseValuePlanExport")?.addEventListener("click",()=>{const blob=new Blob([JSON.stringify(engine.exportManifest(),null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`blue-current-enterprise-value-plan-${Date.now()}.json`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);message("Annual operating plan downloaded.","success");});
+-    eventBus.on("enterprise-value-plan:updated",snapshot=>snapshot&&render(snapshot));
+-    setTimeout(()=>render(engine.refresh({reason:"startup-settled"})),1050);
+-    return{engine,refresh:()=>render(engine.refresh({reason:"module-refresh"})),getState:()=>appState.get("enterpriseValuePlan")};
+-  }
+-
+-  window.createBlueCurrentEnterpriseValuePlanCenterModule=createBlueCurrentEnterpriseValuePlanCenterModule;
+-})();
+--- a/client/js/modules/enterpriseValuePlanEngine.js
++++ b/client/js/modules/enterpriseValuePlanEngine.js
+@@ -1,223 +0,0 @@
+-(function () {
+-  "use strict";
+-
+-  class BlueCurrentEnterpriseValuePlanEngine {
+-    constructor({ eventBus, appState }) {
+-      if (!eventBus || !appState) throw new Error("EnterpriseValuePlanEngine requires EventBus and AppState.");
+-      this.eventBus = eventBus;
+-      this.appState = appState;
+-      this.timer = null;
+-      this.history = Array.isArray(appState.get("enterpriseValuePlanHistory")) ? appState.get("enterpriseValuePlanHistory") : [];
+-      this.bind();
+-    }
+-
+-    bind() {
+-      const schedule = reason => {
+-        clearTimeout(this.timer);
+-        this.timer = setTimeout(() => this.refresh({ reason }), 260);
+-      };
+-      [
+-        "performance-governance:updated",
+-        "expansion-benchmark:updated",
+-        "post-launch-value:updated",
+-        "executive-briefing:updated",
+-        "outcome-intelligence:updated",
+-        "restaurant-performance:updated",
+-        "state:changed"
+-      ].forEach(name => this.eventBus.on(name, () => schedule(name)));
+-      this.eventBus.on("state:reset", () => this.reset());
+-    }
+-
+-    refresh({ reason = "manual" } = {}) {
+-      const state = this.appState.getState();
+-      const governance = state.performanceGovernance || {};
+-      const expansion = state.expansionBenchmark || {};
+-      const postLaunch = state.postLaunchValue || {};
+-      const outcomes = state.outcomeIntelligence || {};
+-      const performance = state.restaurantPerformance || {};
+-      const targets = this.normalizeTargets(state.enterpriseValueTargets, { governance, expansion, postLaunch, outcomes, performance });
+-      const initiatives = this.normalizeInitiatives(state.enterpriseValueInitiatives, governance, expansion);
+-      const quarters = this.buildQuarterPlan(targets, initiatives);
+-      const variance = this.calculateVariance(targets);
+-      const blockers = this.buildBlockers(targets, initiatives, governance, expansion, postLaunch);
+-      const score = this.calculateScore(targets, initiatives, governance, blockers);
+-      const status = blockers.length ? "blocked" : score >= 88 ? "plan-ready" : score >= 72 ? "aligned" : "forming";
+-      const snapshot = {
+-        id: `enterprise-value-plan-${Date.now()}`,
+-        release: "V35.12.0",
+-        capturedAt: new Date().toISOString(),
+-        reason,
+-        score,
+-        status,
+-        summary: this.summary(status, blockers),
+-        targets,
+-        initiatives,
+-        quarters,
+-        variance,
+-        blockers,
+-        metrics: {
+-          annualRevenueTarget: targets.find(item => item.id === "revenue")?.target || 0,
+-          realizedRevenue: targets.find(item => item.id === "revenue")?.actual || 0,
+-          portfolioRpiTarget: targets.find(item => item.id === "rpi")?.target || 0,
+-          currentPortfolioRpi: targets.find(item => item.id === "rpi")?.actual || 0,
+-          adoptionTarget: targets.find(item => item.id === "adoption")?.target || 0,
+-          currentAdoption: targets.find(item => item.id === "adoption")?.actual || 0,
+-          openInitiatives: initiatives.filter(item => item.status !== "complete").length
+-        },
+-        nextActions: this.nextActions({ targets, initiatives, blockers, status }),
+-        confidence: Math.max(0, Math.min(100, Math.round((Number(governance.score || 65) + Number(expansion.score || 65) + Number(outcomes.forecastAccuracy || 65)) / 3)))
+-      };
+-      this.history.unshift({ capturedAt: snapshot.capturedAt, score, status, revenueGap: variance.revenueGap, rpiGap: variance.rpiGap });
+-      this.history = this.history.slice(0, 60);
+-      this.appState.update({
+-        enterpriseValuePlan: snapshot,
+-        enterpriseValuePlanHistory: this.history,
+-        enterpriseValueTargets: targets,
+-        enterpriseValueInitiatives: initiatives
+-      });
+-      this.eventBus.emit("enterprise-value-plan:updated", structuredClone(snapshot));
+-      return structuredClone(snapshot);
+-    }
+-
+-    normalizeTargets(value, context) {
+-      const current = Array.isArray(value) ? value : [];
+-      const realizedRevenue = Number(context.expansion.benchmarks?.totalRealizedRevenue || context.postLaunch.realizedRevenue || context.outcomes.realizedRevenue || 0);
+-      const portfolioRpi = Number(context.expansion.benchmarks?.averageRpi || context.performance.rpi || 0);
+-      const adoption = Number(context.expansion.benchmarks?.averageAdoption || context.postLaunch.adoptionPercent || 0);
+-      const forecast = Number(context.outcomes.forecastAccuracy || 0);
+-      const defaults = [
+-        { id:"revenue", name:"Annual realized revenue", unit:"currency", target:Math.max(250000, Math.round(realizedRevenue * 4 || 250000)), actual:realizedRevenue, owner:"Executive sponsor", status:"active" },
+-        { id:"rpi", name:"Portfolio RPI", unit:"score", target:90, actual:portfolioRpi, owner:"Regional operator", status:"active" },
+-        { id:"adoption", name:"Weekly active adoption", unit:"percent", target:85, actual:adoption, owner:"Deployment lead", status:"active" },
+-        { id:"accuracy", name:"Forecast accuracy", unit:"percent", target:85, actual:forecast, owner:"Technical owner", status:"active" }
+-      ];
+-      return defaults.map(item => ({ ...item, ...(current.find(entry => entry.id === item.id) || {}), actual:item.actual }));
+-    }
+-
+-    normalizeInitiatives(value, governance, expansion) {
+-      const current = Array.isArray(value) ? value : [];
+-      if (current.length) return current.map(item => ({ priority:"medium", status:"planned", owner:"Unassigned", quarter:"Q1", projectedValue:0, ...item }));
+-      const commitments = Array.isArray(governance.commitments) ? governance.commitments : [];
+-      const actions = Array.isArray(expansion.nextActions) ? expansion.nextActions : [];
+-      const source = [
+-        ...commitments.slice(0,3).map(item => ({ title:item.title, owner:item.owner, priority:item.priority, projectedValue:25000 })),
+-        ...actions.slice(0,2).map(item => ({ title:item.label || item.action, owner:"Regional operator", priority:"high", projectedValue:40000 }))
+-      ].filter(item => item.title);
+-      const base = source.length ? source : [
+-        { title:"Increase reservation capture and table utilization", owner:"Operations leader", priority:"high", projectedValue:50000 },
+-        { title:"Reduce kitchen compression during peak periods", owner:"Culinary leader", priority:"high", projectedValue:35000 },
+-        { title:"Raise manager adoption and recommendation follow-through", owner:"Deployment lead", priority:"medium", projectedValue:25000 }
+-      ];
+-      return base.slice(0,6).map((item,index) => ({
+-        id:`enterprise-initiative-${index+1}`,
+-        title:item.title,
+-        owner:item.owner || "Unassigned",
+-        priority:item.priority || "medium",
+-        projectedValue:Number(item.projectedValue || 0),
+-        status:"planned",
+-        quarter:`Q${Math.min(4,index+1)}`,
+-        milestone:`Complete measurable proof by the end of Q${Math.min(4,index+1)}.`
+-      }));
+-    }
+-
+-    buildQuarterPlan(targets, initiatives) {
+-      return ["Q1","Q2","Q3","Q4"].map(quarter => {
+-        const items = initiatives.filter(item => item.quarter === quarter);
+-        return {
+-          quarter,
+-          initiatives:items,
+-          projectedValue:items.reduce((sum,item)=>sum+Number(item.projectedValue||0),0),
+-          complete:items.filter(item=>item.status==="complete").length,
+-          total:items.length,
+-          focus:items[0]?.title || "Maintain performance and validate the next improvement cycle."
+-        };
+-      });
+-    }
+-
+-    calculateVariance(targets) {
+-      const get=id=>targets.find(item=>item.id===id)||{target:0,actual:0};
+-      const revenue=get("revenue"), rpi=get("rpi"), adoption=get("adoption"), accuracy=get("accuracy");
+-      return {
+-        revenueGap:Math.max(0,Number(revenue.target)-Number(revenue.actual)),
+-        revenueProgress:revenue.target?Math.min(100,Math.round(revenue.actual/revenue.target*100)):0,
+-        rpiGap:Math.max(0,Number(rpi.target)-Number(rpi.actual)),
+-        adoptionGap:Math.max(0,Number(adoption.target)-Number(adoption.actual)),
+-        accuracyGap:Math.max(0,Number(accuracy.target)-Number(accuracy.actual))
+-      };
+-    }
+-
+-    calculateScore(targets, initiatives, governance, blockers) {
+-      const targetOwnership = targets.length ? targets.filter(item=>item.owner && item.owner!=="Unassigned").length/targets.length*100 : 0;
+-      const initiativeOwnership = initiatives.length ? initiatives.filter(item=>item.owner && item.owner!=="Unassigned").length/initiatives.length*100 : 0;
+-      const milestoneCoverage = initiatives.length ? initiatives.filter(item=>item.milestone && item.quarter).length/initiatives.length*100 : 0;
+-      const initiativeProgress = initiatives.length ? initiatives.reduce((sum,item)=>sum+(item.status==="complete"?100:item.status==="in-progress"?55:item.status==="blocked"?10:25),0)/initiatives.length : 0;
+-      const governanceScore = Number(governance.score || 0);
+-      const penalty = Math.min(35, blockers.length*10);
+-      return Math.max(0,Math.min(100,Math.round(targetOwnership*.2+initiativeOwnership*.2+milestoneCoverage*.16+initiativeProgress*.14+governanceScore*.3-penalty)));
+-    }
+-
+-    buildBlockers(targets, initiatives, governance, expansion, postLaunch) {
+-      const blockers=[];
+-      if (targets.some(item=>!item.owner || item.owner==="Unassigned")) blockers.push("Assign an accountable owner to every annual performance target.");
+-      if (initiatives.some(item=>item.priority==="high" && (!item.owner || item.owner==="Unassigned"))) blockers.push("Assign owners to every high-priority value initiative.");
+-      if (initiatives.some(item=>item.status==="blocked")) blockers.push("Resolve blocked annual-plan initiatives before approving the operating plan.");
+-      if (Number(governance.score||0)<70) blockers.push("Performance governance is below the minimum planning threshold of 70%.");
+-      if (Number(expansion.blockers?.length||0)>0) blockers.push("Expansion blockers must be incorporated into the annual operating plan.");
+-      if (Number(postLaunch.counts?.blockingIssues||0)>0) blockers.push("Open blocking post-launch issues remain unresolved.");
+-      return blockers;
+-    }
+-
+-    nextActions({ targets, initiatives, blockers, status }) {
+-      const actions=[];
+-      blockers.slice(0,3).forEach(text=>actions.push({label:"Remove blocker",action:text}));
+-      const ownerGap=targets.find(item=>!item.owner||item.owner==="Unassigned");
+-      if(ownerGap) actions.push({label:"Assign target ownership",action:`Name an accountable owner for ${ownerGap.name}.`});
+-      const high=initiatives.find(item=>item.priority==="high"&&item.status!=="complete");
+-      if(high) actions.push({label:"Advance highest-value initiative",action:`Move ${high.title} into active execution and capture evidence.`});
+-      if(status==="plan-ready") actions.push({label:"Approve annual operating plan",action:"Export the value plan and confirm executive sponsorship for the next cycle."});
+-      return actions.slice(0,5);
+-    }
+-
+-    summary(status, blockers) {
+-      if(status==="plan-ready") return "The annual operating plan has named ownership, measurable targets, sequenced initiatives, and sufficient governance evidence for executive approval.";
+-      if(status==="aligned") return "The value plan is aligned, with a small number of targets or initiatives still needing stronger ownership or evidence.";
+-      if(status==="blocked") return `The annual plan is blocked by ${blockers.length} unresolved control${blockers.length===1?"":"s"}.`;
+-      return "The annual value plan is forming. Complete target ownership, initiative sequencing, and milestone evidence before approval.";
+-    }
+-
+-    updateTarget(id, changes={}) {
+-      const current=this.normalizeTargets(this.appState.get("enterpriseValueTargets"),{
+-        governance:this.appState.get("performanceGovernance")||{},
+-        expansion:this.appState.get("expansionBenchmark")||{},
+-        postLaunch:this.appState.get("postLaunchValue")||{},
+-        outcomes:this.appState.get("outcomeIntelligence")||{},
+-        performance:this.appState.get("restaurantPerformance")||{}
+-      });
+-      this.appState.set("enterpriseValueTargets",current.map(item=>item.id===id?{...item,...changes}:item));
+-      this.eventBus.emit("enterprise-value-plan:target-updated",{id,changes});
+-      return this.refresh({reason:"target-updated"});
+-    }
+-
+-    updateInitiative(id, changes={}) {
+-      const current=this.normalizeInitiatives(this.appState.get("enterpriseValueInitiatives"),this.appState.get("performanceGovernance")||{},this.appState.get("expansionBenchmark")||{});
+-      this.appState.set("enterpriseValueInitiatives",current.map(item=>item.id===id?{...item,...changes}:item));
+-      this.eventBus.emit("enterprise-value-plan:initiative-updated",{id,changes});
+-      return this.refresh({reason:"initiative-updated"});
+-    }
+-
+-    addInitiative(title) {
+-      const current=this.normalizeInitiatives(this.appState.get("enterpriseValueInitiatives"),this.appState.get("performanceGovernance")||{},this.appState.get("expansionBenchmark")||{});
+-      current.push({id:`enterprise-initiative-${Date.now()}`,title,owner:"Unassigned",priority:"medium",projectedValue:0,status:"planned",quarter:"Q1",milestone:"Define a measurable milestone."});
+-      this.appState.set("enterpriseValueInitiatives",current);
+-      return this.refresh({reason:"initiative-added"});
+-    }
+-
+-    exportManifest() {
+-      return {generatedAt:new Date().toISOString(),product:"Blue Current Hospitality OS",release:"V35.12.0",enterpriseValuePlan:this.appState.get("enterpriseValuePlan"),targets:this.appState.get("enterpriseValueTargets"),initiatives:this.appState.get("enterpriseValueInitiatives")};
+-    }
+-
+-    reset(){this.history=[];this.appState.update({enterpriseValuePlan:null,enterpriseValuePlanHistory:[],enterpriseValueTargets:[],enterpriseValueInitiatives:[]});}
+-  }
+-
+-  window.BlueCurrentEnterpriseValuePlanEngine=BlueCurrentEnterpriseValuePlanEngine;
+-})();

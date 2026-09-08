@@ -1,0 +1,551 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "49.30.0",
++  "version": "50.5.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V49 controlled rollout release certification",
++  "description": "Blue Current Hospitality OS \u2014 production operations handoff and support ownership",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -54,6 +54,7 @@
+ const GoLiveCommandService = require("./services/goLiveCommandService");
+ const LaunchStabilizationService = require("./services/launchStabilizationService");
+ const V49ReleaseCertificationService = require("./services/v49ReleaseCertificationService");
++const ProductionOperationsHandoffService = require("./services/productionOperationsHandoffService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -111,7 +112,8 @@
+ const goLiveCommandService = new GoLiveCommandService(database, auditService, realtimeHub, locationDeploymentPackageService, technicalActivationReadinessService);
+ const launchStabilizationService = new LaunchStabilizationService(database, auditService, realtimeHub, goLiveCommandService, multiLocationPerformanceService);
+ const v49ReleaseCertificationService = new V49ReleaseCertificationService(database, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService });
++const productionOperationsHandoffService = new ProductionOperationsHandoffService(database, auditService, realtimeHub, launchStabilizationService, reliabilityAutomationService, multiLocationPerformanceService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -198,7 +200,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V49.30.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V50.5.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "49.30.0",
++        version: "50.5.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,20 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/production-operations-handoff" && request.method === "GET") {
++      return sendJson(response,200,await productionOperationsHandoffService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/production-operations-handoff/locations/") && url.pathname.endsWith("/accept") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for production-operations acceptance."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await productionOperationsHandoffService.accept(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/v49-release-certification" && request.method === "GET") {
+       return sendJson(response,200,await v49ReleaseCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/productionOperationsHandoffService.js
++++ b/server/services/productionOperationsHandoffService.js
+@@ -0,0 +1,98 @@
++"use strict";
++
++class ProductionOperationsHandoffService {
++  constructor(database,auditService,realtimeHub,launchStabilizationService,reliabilityAutomationService,multiLocationPerformanceService){
++    Object.assign(this,{database,auditService,realtimeHub,launchStabilizationService,reliabilityAutomationService,multiLocationPerformanceService});
++  }
++  now(){return new Date().toISOString();}
++  async acceptances(organizationId){
++    const db=await this.database.read();
++    return (db.productionOperationsAcceptances||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.acceptedAt)-new Date(a.acceptedAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [stabilization,reliability,portfolio,acceptances]=await Promise.all([
++      this.launchStabilizationService.snapshot(organizationId,allowedLocationIds),
++      this.reliabilityAutomationService.evaluate(organizationId),
++      this.multiLocationPerformanceService.snapshot(organizationId,allowedLocationIds),
++      this.acceptances(organizationId)
++    ]);
++    const pmap=new Map((portfolio.locations||[]).map(x=>[x.locationId,x]));
++    const latestAcceptance=new Map();
++    for(const x of acceptances)if(!latestAcceptance.has(x.locationId))latestAcceptance.set(x.locationId,x);
++
++    const locations=(stabilization.locations||[])
++      .filter(x=>x.declaration?.decision==="STABLE")
++      .map(loc=>{
++        const live=pmap.get(loc.locationId)||{};
++        const acceptance=latestAcceptance.get(loc.locationId)||null;
++        const gates=[
++          {id:"stable",label:"Human STABLE declaration recorded",passed:loc.declaration?.decision==="STABLE",actual:loc.declaration?.decision||"open"},
++          {id:"platform-reliability",label:"Platform reliability is not breached",passed:reliability.status!=="breached",actual:reliability.status},
++          {id:"restaurant-readiness",label:"Restaurant readiness is at least 70",passed:Number(live.readinessScore||0)>=70,actual:Number(live.readinessScore||0)},
++          {id:"leadership-attention",label:"No High/Critical operating attention",passed:!["high","critical"].includes(live.attentionLevel),actual:live.attentionLevel||"unknown"},
++          {id:"predictive-pressure",label:"No urgent predictive intervention",passed:Number(live.urgentPredictiveInterventions||0)===0,actual:Number(live.urgentPredictiveInterventions||0)}
++        ];
++        const passed=gates.filter(x=>x.passed).length;
++        return {
++          locationId:loc.locationId,locationName:loc.locationName,wave:loc.wave,
++          gates,passed,total:gates.length,
++          productionReady:passed===gates.length,
++          readinessScore:Number(live.readinessScore||0),
++          attentionLevel:live.attentionLevel||"unknown",
++          urgentPredictiveInterventions:Number(live.urgentPredictiveInterventions||0),
++          platformReliability:{status:reliability.status,score:reliability.score,breached:reliability.breached,warning:reliability.warning,errorBudgetRemaining:reliability.errorBudgetRemaining},
++          acceptance,
++          productionState:acceptance?.status==="ACCEPTED_INTO_PRODUCTION_OPERATIONS"?"PRODUCTION_OPERATIONS_ACCEPTED":"AWAITING_PRODUCTION_HANDOFF"
++        };
++      });
++
++    return {
++      version:"50.5.0",generatedAt:this.now(),
++      status:locations.length===0?"stable-location-required":locations.every(x=>x.acceptance?.status==="ACCEPTED_INTO_PRODUCTION_OPERATIONS")?"production-handoff-complete":"production-handoff-review",
++      headline:locations.length===0?"A human STABLE launch declaration is required before production-operations handoff.":`${locations.filter(x=>x.productionReady).length}/${locations.length} stabilized location(s) currently pass production-operations acceptance gates.`,
++      platformReliability:{status:reliability.status,score:reliability.score,breached:reliability.breached,warning:reliability.warning,errorBudgetRemaining:reliability.errorBudgetRemaining,objectives:reliability.objectives},
++      locations,acceptanceHistory:acceptances,
++      policy:{
++        stableDeclarationRequired:true,
++        adminAcceptanceRequired:true,
++        supportOwnershipRequired:true,
++        acceptanceDoesNotModifyRuntime:true,
++        automaticAcceptance:false,
++        automaticRemediation:false,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async accept(organizationId,allowedLocationIds,locationId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location must be human-declared STABLE before production-operations acceptance.");
++    const supportOwner=String(input.supportOwner||"").trim().slice(0,160);
++    const escalationOwner=String(input.escalationOwner||"").trim().slice(0,160);
++    if(!supportOwner)throw new Error("Production support owner is required.");
++    if(!escalationOwner)throw new Error("Escalation owner is required.");
++    const overrideReason=String(input.overrideReason||"").trim().slice(0,1500);
++    if(!loc.productionReady&&!overrideReason)throw new Error("Production acceptance gates are open. A documented executive override reason is required.");
++    const now=this.now();
++    const record={
++      id:`poa_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,wave:loc.wave,
++      status:"ACCEPTED_INTO_PRODUCTION_OPERATIONS",
++      acceptedBy:actor,acceptedAt:now,
++      supportOwner,escalationOwner,
++      supportHours:String(input.supportHours||"24x7 launch support; business-hours steady state").slice(0,240),
++      maintenanceWindow:String(input.maintenanceWindow||"").slice(0,240),
++      overrideUsed:!loc.productionReady,overrideReason,
++      acceptanceSnapshot:{passed:loc.passed,total:loc.total,gates:loc.gates,platformReliability:loc.platformReliability},
++      note:String(input.note||"").slice(0,1000),
++      runtimeMutationPerformed:false
++    };
++    await this.database.mutate(db=>{db.productionOperationsAcceptances||=[];db.productionOperationsAcceptances.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Production operations handoff accepted for ${locationId}; support owner ${supportOwner}; runtime mutation not performed`,category:"production_operations"});
++    this.realtimeHub.publish("production-operations:accepted",{id:record.id,organizationId,locationId,supportOwner,overrideUsed:record.overrideUsed});
++    return record;
++  }
++}
++module.exports=ProductionOperationsHandoffService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="49.30.0">
++  <meta name="blue-current-build" content="50.5.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -305,6 +305,14 @@
+       <p><strong>Controlled rollout chain</strong></p><div id="v49certChain" class="v432-list"></div>
+       <p><strong>Architecture / human-control contracts</strong></p><div id="v49certArchitectureChecks" class="v432-list"></div>
+       <p><strong>Current live rollout state</strong></p><div id="v49certLiveChecks" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="productionOperationsHandoff">
++      <header><div><small>V50.01–V50.05 · Production Operations Handoff</small><strong>Move a stabilized restaurant into supported steady-state production operations.</strong><span>Blue Current reuses the existing reliability/SLO engine and combines it with restaurant readiness, leadership attention, predictive pressure, and the human STABLE declaration. A named support owner and escalation owner must accept the location; acceptance does not change production runtime.</span></div><button id="pohRefresh" type="button">Refresh production handoff</button></header>
++      <div class="v432-kpis"><article><small>Handoff status</small><strong id="pohStatus">—</strong></article><article><small>Production-ready</small><strong id="pohReady">0/0</strong></article><article><small>Accepted</small><strong id="pohAccepted">0</strong></article><article><small>Platform reliability</small><strong id="pohReliability">—</strong></article></div>
++      <div class="v4316-answer" id="pohHeadline">A human STABLE launch declaration is required before production handoff.</div>
++      <div class="v4316-actions"><input id="pohSupportOwner" class="v4312-input" placeholder="Production support owner"><input id="pohEscalationOwner" class="v4312-input" placeholder="Escalation owner"><input id="pohSupportHours" class="v4312-input" placeholder="Support coverage / hours"><input id="pohMaintenanceWindow" class="v4312-input" placeholder="Maintenance window"><input id="pohOverride" class="v4312-input" placeholder="Executive override reason (required with open gates)"><input id="pohNote" class="v4312-input" placeholder="Production handoff note"></div>
++      <p><strong>Stabilized locations</strong></p><div id="pohLocations" class="v432-list"></div>
++      <p><strong>Production handoff ledger</strong></p><div id="pohHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8837,6 +8845,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationCenter.js?v=49.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationEngine.js?v=49.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationCenter.js?v=49.30.0"></script>
+-<script src="js/startup-loader.js?v=49.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffEngine.js?v=50.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionOperationsHandoff" data-src="js/modules/productionOperationsHandoffCenter.js?v=50.5.0"></script>
++<script src="js/startup-loader.js?v=50.5.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1241,6 +1241,7 @@
+ const goLiveCommandModule = startupRegistry.register("goLiveCommand", shouldInitializeCenter("goLiveCommand") ? window.createBlueCurrentGoLiveCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "locationDeploymentPackage"]);
+ const launchStabilizationModule = startupRegistry.register("launchStabilization", shouldInitializeCenter("launchStabilization") ? window.createBlueCurrentLaunchStabilizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "goLiveCommand"]);
+ const v49ReleaseCertificationModule = startupRegistry.register("v49ReleaseCertification", shouldInitializeCenter("v49ReleaseCertification") ? window.createBlueCurrentV49ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "launchStabilization"]);
++const productionOperationsHandoffModule = startupRegistry.register("productionOperationsHandoff", shouldInitializeCenter("productionOperationsHandoff") ? window.createBlueCurrentProductionOperationsHandoffCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v49ReleaseCertification"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V49.30.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V50.5.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/productionOperationsHandoffEngine.js
++++ b/client/js/modules/productionOperationsHandoffEngine.js
+@@ -0,0 +1,11 @@
++(function(global){"use strict";
++class BlueCurrentProductionOperationsHandoffEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/production-operations-handoff",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Production operations handoff failed (${r.status})`);this.appState?.update?.({productionOperationsHandoff:d});return d;}
++  async accept(locationId,payload={}){const r=await fetch(`/api/production-operations-handoff/locations/${encodeURIComponent(locationId)}/accept`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Production operations acceptance failed (${r.status})`);this.eventBus?.emit?.("production-operations:accepted",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentProductionOperationsHandoffEngine;
++if(global)global.BlueCurrentProductionOperationsHandoffEngine=BlueCurrentProductionOperationsHandoffEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/productionOperationsHandoffCenter.js
++++ b/client/js/modules/productionOperationsHandoffCenter.js
+@@ -0,0 +1,33 @@
++(function(){"use strict";
++function createBlueCurrentProductionOperationsHandoffCenterModule(eventBus,appState){
++  const root=document.getElementById("productionOperationsHandoff");
++  if(!root||!window.BlueCurrentProductionOperationsHandoffEngine)return null;
++  const e=new window.BlueCurrentProductionOperationsHandoffEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("pohStatus").textContent=s.status||"—";
++    $("pohReady").textContent=`${locs.filter(x=>x.productionReady).length}/${locs.length}`;
++    $("pohAccepted").textContent=locs.filter(x=>x.acceptance?.status==="ACCEPTED_INTO_PRODUCTION_OPERATIONS").length;
++    $("pohReliability").textContent=`${s.platformReliability?.score??"—"} · ${s.platformReliability?.status||"unknown"}`;
++    $("pohHeadline").textContent=s.headline||"Production operations handoff unavailable.";
++    $("pohLocations").innerHTML=locs.map(x=>`<article data-poh-location="${esc(x.locationId)}"><div><strong>Wave ${x.wave} · ${esc(x.locationName)}</strong><span>${esc(x.productionState)} · readiness ${x.readinessScore} · reliability ${x.platformReliability.score}</span></div><div class="v432-list">${(x.gates||[]).map(g=>`<article><strong>${g.passed?"PASS":"OPEN"} · ${esc(g.label)}</strong><span>${esc(g.actual)}</span></article>`).join("")}</div>${x.acceptance?`<p><strong>Support owner:</strong> ${esc(x.acceptance.supportOwner)} · <strong>Escalation:</strong> ${esc(x.acceptance.escalationOwner)} · runtime mutation ${x.acceptance.runtimeMutationPerformed?"YES":"NO"}</p>`:`<div class="v4316-actions"><button type="button" data-poh-accept="true">Accept into production operations</button></div>`}</article>`).join("")||"<article><strong>No STABLE locations are ready for production handoff.</strong></article>";
++    $("pohHistory").innerHTML=(s.acceptanceHistory||[]).map(x=>`<article><strong>${esc(x.locationName)} · ${esc(x.status)}</strong><span>${esc(x.supportOwner)} · ${new Date(x.acceptedAt).toLocaleString()}${x.overrideUsed?" · override used":""}</span></article>`).join("")||"<article><strong>No production-operations acceptances recorded.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("pohHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const btn=ev.target.closest("[data-poh-accept]"),card=ev.target.closest("[data-poh-location]");
++    if(!btn||!card)return;
++    try{
++      btn.disabled=true;
++      await e.accept(card.dataset.pohLocation,{supportOwner:$("pohSupportOwner").value,escalationOwner:$("pohEscalationOwner").value,supportHours:$("pohSupportHours").value,maintenanceWindow:$("pohMaintenanceWindow").value,overrideReason:$("pohOverride").value,note:$("pohNote").value});
++      await load();
++    }catch(err){$("pohHeadline").textContent=err.message;}finally{btn.disabled=false;}
++  });
++  $("pohRefresh")?.addEventListener("click",load);
++  ["launch-stabilization:declared","production-operations:accepted","reliability:slo-evaluated","multi-location-performance:updated","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentProductionOperationsHandoffCenterModule=createBlueCurrentProductionOperationsHandoffCenterModule;
++})();--- a/scripts/maintenance/test-v50.05-production-operations-handoff.js
++++ b/scripts/maintenance/test-v50.05-production-operations-handoff.js
+@@ -0,0 +1,80 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/productionOperationsHandoffService");
++
++(async()=>{
++  const state={productionOperationsAcceptances:[]},audit=[],events=[];
++  const stabilization={
++    locations:[
++      {locationId:"a",locationName:"A",wave:1,declaration:{decision:"STABLE"}},
++      {locationId:"b",locationName:"B",wave:2,declaration:{decision:"STABLE"}}
++    ]
++  };
++  let reliability={status:"meeting",score:96,breached:0,warning:0,errorBudgetRemaining:100,objectives:[]};
++  let portfolio={
++    locations:[
++      {locationId:"a",locationName:"A",readinessScore:88,attentionLevel:"healthy",urgentPredictiveInterventions:0},
++      {locationId:"b",locationName:"B",readinessScore:62,attentionLevel:"high",urgentPredictiveInterventions:1}
++    ]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>stabilization},
++    {evaluate:async()=>reliability},
++    {snapshot:async()=>portfolio}
++  );
++
++  let snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.version,"50.5.0");
++  const a=snap.locations.find(x=>x.locationId==="a");
++  const b=snap.locations.find(x=>x.locationId==="b");
++  assert.equal(a.productionReady,true);
++  assert.equal(b.productionReady,false);
++  assert.equal(snap.policy.automaticAcceptance,false);
++  assert.equal(snap.policy.acceptanceDoesNotModifyRuntime,true);
++
++  const accepted=await svc.accept("org",["a","b"],"a",{
++    supportOwner:"Production Support",
++    escalationOwner:"VP Operations",
++    supportHours:"24x7 during launch",
++    maintenanceWindow:"Tuesday 03:00",
++    note:"Steady-state ownership transferred."
++  },"Tester");
++  assert.equal(accepted.status,"ACCEPTED_INTO_PRODUCTION_OPERATIONS");
++  assert.equal(accepted.runtimeMutationPerformed,false);
++  assert.equal(accepted.overrideUsed,false);
++
++  let blocked=false;
++  try{await svc.accept("org",["a","b"],"b",{supportOwner:"Support",escalationOwner:"VP Ops"},"Tester");}
++  catch(e){blocked=/override reason/i.test(e.message);}
++  assert(blocked);
++
++  const override=await svc.accept("org",["a","b"],"b",{
++    supportOwner:"Support",
++    escalationOwner:"VP Ops",
++    overrideReason:"Executive accepts temporary readiness pressure while support coverage is elevated."
++  },"Tester");
++  assert.equal(override.overrideUsed,true);
++  assert.equal(override.runtimeMutationPerformed,false);
++
++  reliability={status:"breached",score:60,breached:1,warning:0,errorBudgetRemaining:50,objectives:[]};
++  snap=await svc.snapshot("org",["a","b"]);
++  assert.equal(snap.locations.every(x=>x.productionReady===false),true);
++  assert.equal(audit.length,2);
++  assert.equal(events.length,2);
++
++  console.log(JSON.stringify({
++    ok:true,version:"50.5.0",
++    stableDeclarationRequired:true,
++    platformReliabilityReused:true,
++    productionReadinessGates:true,
++    supportOwnershipRequired:true,
++    executiveOverrideGuard:true,
++    runtimeMutationPerformed:false,
++    automaticAcceptance:false,
++    automaticRemediation:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V50.5.0-RELEASE.md
++++ b/V50.5.0-RELEASE.md
+@@ -0,0 +1,125 @@
++# BLUE CURRENT V50.5.0 — PRODUCTION OPERATIONS HANDOFF
++
++V50 begins Blue Current's steady-state production operations phase.
++
++V49 answered:
++
++`Can a restaurant move from rollout approval through stabilization safely?`
++
++V50 begins answering:
++
++`Once a restaurant is stable, who owns it in production and under what operating/reliability conditions?`
++
++## V50.01–V50.05 — Production Operations Handoff
++
++This wave deliberately reuses the existing Blue Current reliability/SLO system rather than creating a second observability stack.
++
++A location becomes eligible for production-operations acceptance only after a human `STABLE` declaration from V49 Launch Stabilization.
++
++## Production acceptance gates
++
++Each stabilized restaurant is evaluated against:
++
++1. Human STABLE declaration exists.
++2. Existing platform reliability/SLO state is not breached.
++3. Restaurant operating readiness is at least 70.
++4. Leadership attention is not High/Critical.
++5. No urgent predictive intervention is active.
++
++The platform reliability gate comes from the existing `ReliabilityAutomationService`, including:
++
++- SLO status
++- reliability score
++- breached objectives
++- warning objectives
++- error-budget remaining
++
++## Human production ownership
++
++Adds:
++
++`POST /api/production-operations-handoff/locations/:locationId/accept`
++
++Acceptance requires:
++
++- authenticated admin permission
++- location inside authorized scope
++- named production support owner
++- named escalation owner
++
++Optional operational ownership fields:
++
++- support hours / coverage
++- maintenance window
++- handoff note
++
++If one or more production-acceptance gates are open, a documented executive override reason is required.
++
++## Critical separation
++
++Production-operations acceptance is an ownership / governance transition.
++
++It does not change application runtime, infrastructure, connector state, or restaurant configuration.
++
++Each acceptance explicitly records:
++
++- `status: ACCEPTED_INTO_PRODUCTION_OPERATIONS`
++- `runtimeMutationPerformed: false`
++
++## Policy
++
++- `stableDeclarationRequired: true`
++- `adminAcceptanceRequired: true`
++- `supportOwnershipRequired: true`
++- `acceptanceDoesNotModifyRuntime: true`
++- `automaticAcceptance: false`
++- `automaticRemediation: false`
++- `autonomousProductionChanges: false`
++
++## Current authenticated runtime
++
++The untouched Chefs runtime does not yet contain a real V49 human STABLE declaration.
++
++V50.5 therefore correctly reports:
++
++- status: `stable-location-required`
++- stable locations available for production handoff: 0
++- platform reliability: `meeting`
++- automatic acceptance: false
++- automatic remediation: false
++- autonomous production changes: false
++
++The current demo owner account is not an admin, so an attempted production-operations acceptance correctly returns HTTP 403.
++
++## Validation
++
++- V50.5 focused production-operations handoff lifecycle PASS
++- existing ReliabilityAutomationService reuse PASS
++- STABLE prerequisite PASS
++- production readiness gates PASS
++- support ownership requirement PASS
++- open-gate override protection PASS
++- runtime mutation remains false PASS
++- V49.30 certification regression PASS
++- authenticated production-handoff GET PASS
++- admin acceptance boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 902 JavaScript files
++- 760 client scripts
++- 5,670 unique HTML IDs
++
++## Next
++
++V50.06–V50.10 should build Production Health & Support Command:
++
++- accepted production-location registry
++- restaurant + platform health rollup
++- support ownership and escalation status
++- open SLO breaches / incidents
++- current operational degradation
++- support case / incident linkage
++- human acknowledgment and escalation workflow
++- maintenance-window awareness
++- production support timeline
++- no autonomous remediation
+--- a/README-APPLY-V50.5.0.md
++++ b/README-APPLY-V50.5.0.md
+@@ -0,0 +1,48 @@
++# APPLY BLUE CURRENT V50.5.0
++
++Baseline: exact certified V49.30.0 repository.
++
++Extract `BLUE-CURRENT-V50.5.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v50.05-production-operations-handoff.js
++node scripts/maintenance/test-v49.30-release-certification.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "50.5.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Production Operations Handoff** surface appears after the V49 rollout stack.
++
++Important:
++
++- only a human-declared STABLE location can enter production handoff
++- production acceptance is admin-only
++- support owner and escalation owner are required
++- open gates require a documented executive override
++- acceptance does not modify production runtime
++- Blue Current does not remediate automatically
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V50.5.0 add production operations handoff"
++git push origin live-service-timeline
++```

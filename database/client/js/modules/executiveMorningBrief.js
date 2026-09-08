@@ -33,14 +33,10 @@
           alerts: Number.parseInt(metricMap.alerts || "0", 10) || 0,
           status: card.querySelector(".district-location-status")?.textContent?.trim() || ""
         };
-      });
+      }).filter(location => location.id);
     }
 
-    return [
-      { id:"loc_marina", name:"Marina Grill", city:"Belmar", health:92, revenue:18420, labor:26.1, alerts:1, status:"Strong dinner outlook." },
-      { id:"loc_asbury", name:"Asbury Boardwalk", city:"Asbury Park", health:76, revenue:22140, labor:30.4, alerts:3, status:"Labor and host-stand pressure require attention." },
-      { id:"loc_lobster", name:"Lobster Shanty", city:"Point Pleasant", health:84, revenue:17860, labor:28.7, alerts:2, status:"Kitchen pressure is building." }
-    ];
+    return [];
   }
 
   function summarizePortfolio(locations) {
@@ -105,7 +101,26 @@
 
   function renderBrief() {
     const locations = getPortfolioLocations();
+    if (!locations.length) {
+      byId("executiveBriefHealth").textContent = "—";
+      byId("executiveBriefRevenue").textContent = "—";
+      byId("executiveBriefLabor").textContent = "—";
+      byId("executiveBriefAlerts").textContent = "—";
+      byId("executiveBriefTopRisk").textContent = "No verified location";
+      byId("executiveBriefTopRiskDetail").textContent = "Authorized district data is unavailable.";
+      byId("executiveBriefTopPerformer").textContent = "Not available";
+      byId("executiveBriefTopPerformerDetail").textContent = "Performance ranking requires verified restaurant data.";
+      byId("executiveBriefHeadline").textContent = "District brief is waiting for verified locations.";
+      byId("executiveBriefNarrative").textContent = "Blue Current will not substitute illustrative restaurants for unavailable operating data.";
+      byId("executiveBriefPriorities").replaceChildren();
+      byId("executiveBriefPriorityCount").textContent = "0";
+      const focus = byId("executiveBriefFocus");
+      focus.dataset.locationId = "";
+      focus.disabled = true;
+      return;
+    }
     const summary = summarizePortfolio(locations);
+    byId("executiveBriefFocus").disabled = false;
 
     byId("executiveBriefHealth").textContent = String(summary.averageHealth);
     byId("executiveBriefRevenue").textContent = money(summary.totalRevenue);
@@ -148,12 +163,13 @@
       minute: "2-digit"
     }).format(new Date())}`;
 
-    byId("executiveBriefFocus").dataset.locationId = summary.topRisk.id || "loc_asbury";
+    byId("executiveBriefFocus").dataset.locationId = summary.topRisk.id;
   }
 
   function bindFocus() {
     byId("executiveBriefFocus")?.addEventListener("click", event => {
       const locationId = event.currentTarget.dataset.locationId;
+      if (!locationId) return;
       const cards = [...document.querySelectorAll(".district-location-card")];
       const target = cards.find(card =>
         card.querySelector("button")?.dataset?.locationId === locationId

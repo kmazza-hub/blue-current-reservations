@@ -1,0 +1,11 @@
+{
+  "version": "100.3.1",
+  "name": "Service to Manager Cross-Domain Certification",
+  "requires": "100.3.0",
+  "runtimeFilesChanged": [
+    "server/services/actionListService.js"
+  ],
+  "sourceApplicationSha256": "00c33b110ea6067e27a4104ac9714b96491cfa1897db2aba8ee360fd555d9577",
+  "targetApplicationSha256": "0cc6d15431cbb625e48fdb1d49953e703b22b5386bd1d584e7a77e68593f623c",
+  "scope": "tenant-scoped Service exception action identity and cross-domain certification only"
+}

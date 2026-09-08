@@ -1,0 +1,28 @@
+{
+  "version": "100.2.4",
+  "name": "Reservation Readability",
+  "baselineVersion": "100.0.0",
+  "scope": "presentation-only",
+  "files": [
+    {
+      "path": "README-APPLY-V100.2.4.md",
+      "sha256": "815f2383161e7e7c3821b2cf5973b471e0a88e84d484f4b3d164e3fe2e802839",
+      "bytes": 681
+    },
+    {
+      "path": "V100.2.4-RELEASE.md",
+      "sha256": "57e18f9a23381de6b1e4c9a26e8e929023871e198b0708998ff74eac8823fa50",
+      "bytes": 690
+    },
+    {
+      "path": "client/styles.css",
+      "sha256": "984966d3477621ad79c6201518146bcfbbe1216de31fe187388a9c21654f7e3d",
+      "bytes": 1092909
+    },
+    {
+      "path": "scripts/maintenance/test-v100.2.4-reservation-readability.js",
+      "sha256": "e1bf3c31103971b12276bad2b3a1fcab3437545cb2436c539796e38c9f7d78de",
+      "bytes": 1392
+    }
+  ]
+}

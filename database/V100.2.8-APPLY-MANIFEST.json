@@ -1,0 +1,14 @@
+{
+  "version": "100.2.8",
+  "repair": "Host Stand Contrast Hardening",
+  "baselineVersion": "100.0.0",
+  "forwardOnly": true,
+  "files": [
+    "client/styles.css",
+    "scripts/maintenance/test-v100.2.8-host-stand-contrast-hardening.js"
+  ],
+  "runtimeScope": "presentation-only",
+  "serverChanges": false,
+  "databaseChanges": false,
+  "persistenceChanges": false
+}

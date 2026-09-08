@@ -1,0 +1,10 @@
+{
+  "version": "100.2.99",
+  "name": "Manager Actions Runtime Wiring Integrity",
+  "runtimeFilesChanged": [
+    "server/server.js"
+  ],
+  "sourceServerSha256": "981ae42521a26039067813f6f99bae1ad046368bf8130235a6d084da381c1d54",
+  "targetServerSha256": "e64415ce50baf6ab012b07ebce3683cc1062f0bda936e385cff8d253327b0dd3",
+  "scope": "existing ActionListService import, construction, and router injection only"
+}

@@ -1,0 +1,18 @@
+{
+  "version": "100.2.76",
+  "name": "Time & Attendance Truth Foundation",
+  "files": [
+    "client/js/timeclock-truth-v100.2.76.js",
+    "client/js/runtime-performance-v100.2.70.js",
+    "client/index.html",
+    "scripts/maintenance/test-v100.2.76-timeclock-truth-foundation.js"
+  ],
+  "protectedBaseline": {
+    "client/js/runtime-performance-v100.2.70.js": "63bee972f60b2b5769b3a998e2830d557e0f087e6f78f81be21cefdd2e84677f",
+    "client/index.html": "f27e07678e8b19c5b6146b649787efd13faefb003cd7837aefc7c347ca9c5644"
+  },
+  "targetHashes": {
+    "client/js/runtime-performance-v100.2.70.js": "d86b3b4d1c5f34aa01610abb51f45e60fb3f41b0d665f1cbb8a5b4586fe172b7",
+    "client/index.html": "367c20624c1b0c8667993b91feae776b5e47fce00edafb8c6947c759e2a581ba"
+  }
+}

@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentShiftCloseBriefEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.off=[eventBus.on("outcome-capture:updated",()=>this.eventBus.emit("shift-close-brief:updated",this.snapshot())),eventBus.on("action-ownership:updated",()=>this.eventBus.emit("shift-close-brief:updated",this.snapshot()))];}
+ read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback));}catch{return fallback;}}
+ snapshot(){const outcomes=this.read("bluecurrent:operations-outcomes",[]),ownership=this.read("bluecurrent:operations-action-ownership",{}),shift=this.appState.get("shiftIntelligence")||{};const modeled=outcomes.reduce((s,x)=>s+(Number(x.modeledImpact)||0),0),measured=outcomes.reduce((s,x)=>s+(Number(x.measuredImpact)||0),0),done=Object.values(ownership).filter(x=>x.status==="done").length,open=Object.values(ownership).filter(x=>x.status!=="done").length;const summary=[`Shift score: ${shift.score??"—"} (${shift.status||"unknown"})`,`Actions completed: ${done} · Open: ${open}`,`Modeled value: $${Math.round(modeled)} · Measured value: $${Math.round(measured)}`,`Variance: ${measured-modeled>=0?"+":""}$${Math.round(measured-modeled)}`,`Outcomes captured: ${outcomes.length}`].join("\n");return{score:shift.score??null,status:shift.status||"unknown",modeled,measured,variance:measured-modeled,done,open,outcomes:outcomes.length,summary,capturedAt:new Date().toISOString()};}
+ export(){const v=this.snapshot(),blob=new Blob([JSON.stringify(v,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`blue-current-shift-close-${new Date().toISOString().slice(0,19).replace(/[:T]/g,"-")}.json`;a.click();URL.revokeObjectURL(a.href);return v;}
+ destroy(){this.off.forEach(fn=>fn?.());}
+}
+window.BlueCurrentShiftCloseBriefEngine=BlueCurrentShiftCloseBriefEngine;})();

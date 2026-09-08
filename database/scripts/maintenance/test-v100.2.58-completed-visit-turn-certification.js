@@ -1,0 +1,28 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=process.cwd();
+const moduleFile=path.join(root,"client","js","completed-visit-turn-certification-v100.2.58.js");
+const htmlFile=path.join(root,"client","index.html");
+const floorFile=path.join(root,"client","js","floor-reservations-v62.0.js");
+let passed=0,total=0;
+function check(name,ok){total+=1;if(!ok){console.error(`FAIL ${name}`);process.exitCode=1;}else{passed+=1;console.log(`PASS ${name}`);}}
+const js=fs.readFileSync(moduleFile,"utf8"),html=fs.readFileSync(htmlFile,"utf8"),floor=fs.readFileSync(floorFile,"utf8");
+check("version marker",js.includes('const VERSION = "100.2.58"'));
+check("uses existing guest registry",js.includes('bcHostGuestRegistryV100_2_43'));
+check("listens for service completion",js.includes('bc:service-party-completed'));
+check("records completed service visit",js.includes('source:"completed-service"'));
+check("completed visit identifies table",js.includes('Completed service · Table ${tableId}'));
+check("completed visit keeps party size",js.includes('partySize'));
+check("completion is deduplicated",js.includes('completionId'));
+check("turn enters cleaning",js.includes('status:"cleaning"'));
+check("manual open is observed",js.includes('before === "cleaning" && after === "available"'));
+check("stale party size is cleared",js.includes('delete table.dataset.bcPartySize'));
+check("turn is certified open",js.includes('status:"open"'));
+check("open certification event exists",js.includes('bc:table-turn-completed'));
+check("visit recorded event exists",js.includes('bc:guest-completed-visit-recorded'));
+check("module is loaded after 100.2.57 bridge",html.indexOf('service-table-lifecycle-v100.2.57.js')>=0&&html.indexOf('completed-visit-turn-certification-v100.2.58.js')>html.indexOf('service-table-lifecycle-v100.2.57.js'));
+check("service complete still moves to cleaning",floor.includes('completion moves SEATED → CLEANING, never directly to OPEN'));
+check("protected floor restoration remains present",floor.includes('V100.2.47 — Floor Layout Restoration'));
+check("human open action remains present",fs.readFileSync(path.join(root,"client","js","app-v15.1.3.js"),"utf8").includes("primary.textContent = 'Mark table open'"));
+console.log(`${passed}/${total} V100.2.58 checks passed`);
+if(passed!==total)process.exit(1);

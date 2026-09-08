@@ -1,0 +1,47 @@
+// V100.2.33 — Neutral Table Detail Dismiss
+(() => {
+  const detail = document.getElementById('hostTableDetail');
+  const floorMap = document.querySelector('.host-floor-map');
+  if (!detail || !floorMap) return;
+  if (detail.dataset.bcDismissV100233 === 'true') return;
+  detail.dataset.bcDismissV100233 = 'true';
+
+  const closeNeutralDetail = () => {
+    detail.classList.remove('bc-detail-open');
+    detail.hidden = true;
+    detail.setAttribute('aria-hidden', 'true');
+    floorMap.querySelectorAll('.host-table.selected').forEach((table) => table.classList.remove('selected'));
+  };
+
+  let closeButton = detail.querySelector('.bc-neutral-detail-close-v100-2-33');
+  if (!closeButton) {
+    closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'bc-neutral-detail-close-v100-2-33';
+    closeButton.setAttribute('aria-label', 'Close table details');
+    closeButton.textContent = '×';
+    detail.appendChild(closeButton);
+  }
+
+  closeButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    closeNeutralDetail();
+  });
+
+  floorMap.addEventListener('click', (event) => {
+    if (event.target.closest('.host-table, #hostTableDetail')) return;
+    if (!detail.hidden && detail.classList.contains('bc-neutral-table-detail-v100-2-16')) closeNeutralDetail();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!detail.hidden && detail.classList.contains('bc-neutral-table-detail-v100-2-16')) closeNeutralDetail();
+  });
+
+  document.querySelectorAll('.host-side-nav button, .host-top-nav button, [data-host-workspace]').forEach((control) => {
+    control.addEventListener('click', () => {
+      if (!detail.hidden && detail.classList.contains('bc-neutral-table-detail-v100-2-16')) closeNeutralDetail();
+    });
+  });
+})();

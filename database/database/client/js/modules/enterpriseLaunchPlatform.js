@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Enterprise Launch Platform v35.4.5'));

@@ -1,6 +1,6 @@
 (function(){"use strict";
 function createServiceCoordinationModule(eventBus,appState,cloudFoundationModule){
- const api=cloudFoundationModule?.api||new window.BlueCurrentCloudApi(""); const $=id=>document.getElementById(id); let state={flows:[],alerts:[],events:[],metrics:{},staff:[]}; let filter="all";
+ const api=cloudFoundationModule?.api||new window.BlueCurrentCloudApi(""); const $=id=>document.getElementById(id),locationId=()=>window.BlueCurrentFrontlineLocation?.get?.()||"loc_marina"; let state={flows:[],alerts:[],events:[],metrics:{},staff:[]}; let filter="all";
  const mins=v=>Math.max(0,Math.floor((Date.now()-new Date(v))/60000));
  function render(){const m=state.metrics||{};$("svcActive").textContent=m.activeTables||0;$("svcReady").textContent=m.readyForRunner||0;$("svcRisk").textContent=m.highRisk||0;$("svcHealth").textContent=`${m.operationalHealth||0}%`;
   const flows=filter==="all"?state.flows:state.flows.filter(x=>x.risk===filter||x.expoStatus===filter);
@@ -10,7 +10,7 @@ function createServiceCoordinationModule(eventBus,appState,cloudFoundationModule
   const loads={};state.flows.filter(x=>x.course!=="closed").forEach(x=>loads[x.serverName]=(loads[x.serverName]||0)+x.partySize);$("svcServerLoad").innerHTML=state.staff.filter(x=>x.role==="Server").map(x=>{const n=loads[x.name]||0,p=Math.min(100,Math.round(n/(x.maxCovers||24)*100));return `<article><div><strong>${x.name}</strong><span>${n}/${x.maxCovers||24} covers</span></div><i><b style="width:${p}%"></b></i></article>`}).join("");
   appState.update({serviceHealth:m.operationalHealth,serviceAlerts:state.alerts.length,expoReady:m.readyForRunner});
  }
- async function load(){if(!api.token)return;state=await api.serviceCoordination("loc_marina");render();eventBus.emit("service:coordination-loaded",state.metrics);}
+ async function load(){if(!api.token)return;state=await api.serviceCoordination(locationId());render();eventBus.emit("service:coordination-loaded",state.metrics);}
  $("svcFilters")?.addEventListener("click",e=>{const b=e.target.closest("[data-svc-filter]");if(!b)return;filter=b.dataset.svcFilter;document.querySelectorAll("[data-svc-filter]").forEach(x=>x.classList.toggle("active",x===b));render();});
  $("serviceCoordination")?.addEventListener("change",async e=>{const s=e.target.closest("[data-flow-course]");if(!s)return;await api.updateServiceFlow(s.dataset.flowCourse,{course:s.value});await load();});
  $("serviceCoordination")?.addEventListener("click",async e=>{const b=e.target.closest("[data-deliver]");if(!b)return;await api.deliverServiceFlow(b.dataset.deliver);await load();});

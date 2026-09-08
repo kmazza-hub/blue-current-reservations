@@ -1,0 +1,83 @@
+{
+  "version": "100.2.0",
+  "repair": "Consolidated Operator Shell Ownership",
+  "baselineVersion": "100.0.0",
+  "forwardOnly": true,
+  "files": [
+    {
+      "path": "README-APPLY-V100.2.0.md",
+      "sha256": "07e2c44b7fd005dd83c44d1b252da53085d4a74a807a3713a50869c3558169b7",
+      "bytes": 1234
+    },
+    {
+      "path": "V100.2.0-RELEASE.md",
+      "sha256": "4a7cbb517b23e5bd3801e58554a4f9c27b3e3548cee928b0f3d816d39d908a2e",
+      "bytes": 1297
+    },
+    {
+      "path": "client/styles.css",
+      "sha256": "43e2e87331f315cff10f59cae587ff23b586d388d74e876ed0104892487fd829",
+      "bytes": 1090264
+    },
+    {
+      "path": "client/js/operator-experience-v60.0.js",
+      "sha256": "aefaf6e8a2c4ee06520986723ef9deeaf7e7b34faaccf63df73f159f6cba616d",
+      "bytes": 4509
+    },
+    {
+      "path": "client/js/operator-usability-v60.50.js",
+      "sha256": "70411b1a33966d634c440425f6a4a3f8901fdb36dc6604392da6e02f78aebb23",
+      "bytes": 6212
+    },
+    {
+      "path": "client/js/product-experience-v59.50.js",
+      "sha256": "96b7fe29ef436da82c6c683ff9fbacc05f4b5ff89753adf3ae74a424aacd9218",
+      "bytes": 3413
+    },
+    {
+      "path": "client/js/modules/hospitalityOsShell.js",
+      "sha256": "97d6ff0945fa530daf49af59eaf5bade65f322b311aadfb35fe8973f5f4f8329",
+      "bytes": 56670
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1-operator-shell-stabilization.js",
+      "sha256": "46d606d2ced2bb104a222a9770311b978e7d64f0b94abcd81d9b341b4c3a28b8",
+      "bytes": 2896
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.1-command-auth-transport.js",
+      "sha256": "4be8dc44e9a82ba444e1ef6916afed440fa75e13fbbdfb4e8d884b6ceb5b4fba",
+      "bytes": 3071
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.2-command-lifecycle-api-contract.js",
+      "sha256": "1628dc5e426c9701e64c7db09c5162c5235ad262756c2477142eefaaba647930",
+      "bytes": 4126
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.3-auth-overlay-interaction-focus.js",
+      "sha256": "f82865929058bdfff2b7012b731025ae894d2244b1a49cecbd73540eb24085d9",
+      "bytes": 3482
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.4-command-auth-state-synchronization.js",
+      "sha256": "8b39e1224c2f582fa8839fce5d76a9d1f4f1f2239e7e0a4247b874a740e7642c",
+      "bytes": 1337
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.5-command-auth-presentation-synchronization.js",
+      "sha256": "1c73cedfb46830a984c6d68f68f1739e2f2fbc6eda845da3f8932e1b27a1d68b",
+      "bytes": 1319
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1.6-command-connectivity-state-reconciliation.js",
+      "sha256": "3dac6c17d235158db22dac68bfe1aaa69761695c993437abbfa3931036b0256c",
+      "bytes": 1396
+    },
+    {
+      "path": "scripts/maintenance/test-v100.2.0-consolidated-operator-shell-ownership.js",
+      "sha256": "d34f4ff6f37b1808687a1a37e579e6efa150c9beaa3defdc671f4e83504486dd",
+      "bytes": 2216
+    }
+  ]
+}

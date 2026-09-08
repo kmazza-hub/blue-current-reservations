@@ -1,0 +1,21 @@
+{
+  "version": "100.2.70",
+  "requires": "V100.2.69",
+  "wave": "Startup / Runtime Performance Hardening",
+  "adds": [
+    "client/js/runtime-performance-v100.2.70.js",
+    "scripts/maintenance/test-v100.2.70-startup-runtime-performance.js"
+  ],
+  "modifies": [
+    "client/index.html"
+  ],
+  "behavior": {
+    "focusedStartup": "44 legacy diagnostics deferred; 8 current domain modules lazy",
+    "fullStartup": "preserved with ?full=1"
+  },
+  "protected": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/startup-loader.js",
+    "client/js/manager-action-ownership-v100.2.69.js"
+  ]
+}

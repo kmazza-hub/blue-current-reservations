@@ -1,0 +1,299 @@
+--- bc_v435/blue-current-reservations/client/index.html	2026-08-08 02:01:19.000000000 +0000
++++ bc_v438/client/index.html	2026-08-08 02:11:38.343121591 +0000
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="43.5.0-executive-decision-intelligence">
++  <meta name="blue-current-build" content="43.8.0-executive-performance-control">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8510,6 +8510,9 @@
+ <section class="v432-center v435-center" id="executiveInsightCenter" aria-labelledby="exiTitle"><header><div><small>V43.3 · Executive Insight Engine</small><strong id="exiTitle">Convert trusted operating evidence into ranked executive insights.</strong><span>Risks, opportunities, and operating leverage are synthesized from live production evidence.</span></div><button type="button" id="exiRefresh">Refresh insights</button></header><div class="v432-kpis"><article><small>Insights</small><strong id="exiCount">0</strong></article><article><small>Critical</small><strong id="exiCritical">0</strong></article><article><small>High priority</small><strong id="exiHigh">0</strong></article><article><small>Top insight</small><strong id="exiTop">—</strong></article></div><div id="exiList" class="v432-list"></div></section>
+ <section class="v432-center v435-center" id="executiveRecommendationCenterV43" aria-labelledby="exrTitle"><header><div><small>V43.4 · Executive Recommendation Engine</small><strong id="exrTitle">Turn executive insights into governed operating recommendations.</strong><span>Each recommendation exposes confidence, expected impact, approval requirements, and supporting evidence.</span></div><button type="button" id="exrRefresh">Refresh recommendations</button></header><div class="v432-kpis"><article><small>Recommendations</small><strong id="exrCount">0</strong></article><article><small>Need approval</small><strong id="exrApproval">0</strong></article><article><small>Decision gate</small><strong id="exrGate">—</strong></article><article><small>Decision ready</small><strong id="exrReady">NO</strong></article></div><div id="exrList" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v435-workspace" id="executiveDecisionWorkspaceV43Center" aria-labelledby="edw43Title"><header><div><small>V43.5 · Executive Decision Workspace</small><strong id="edw43Title">Bring live evidence, risk, insights, recommendations, and governance into one decision surface.</strong><span id="edw43Headline">Building executive decision workspace…</span></div><div class="v432-actions"><button type="button" id="edw43Refresh">Refresh workspace</button><button type="button" id="edw43Persist">Persist decision package</button></div></header><div class="v432-kpis"><article><small>Workspace score</small><strong id="edw43Score">0%</strong></article><article><small>Status</small><strong id="edw43Status">—</strong></article><article><small>Trusted</small><strong id="edw43Trusted">NO</strong></article><article><small>Insights</small><strong id="edw43Insights">0</strong></article><article><small>Recommendations</small><strong id="edw43Recommendations">0</strong></article><article><small>Package</small><strong id="edw43Id">—</strong></article></div><div class="v435-action-card"><small>Recommended executive action</small><strong id="edw43Action">No recommendation available</strong></div><div id="edw43Checks" class="v432-list"></div></section>
++<section class="v432-center v438-center" id="executiveKpiStudioCenter" aria-labelledby="ekpiTitle"><header><div><small>V43.6 · Executive KPI Studio</small><strong id="ekpiTitle">Define the executive scorecard and see immediately where operating performance misses target.</strong><span id="ekpiName">Executive Operating Scorecard</span></div><div class="v432-actions"><button type="button" id="ekpiRefresh">Refresh KPIs</button><button type="button" id="ekpiSave">Save scorecard</button></div></header><div class="v438-inputs"><input id="ekpiNameInput" value="Executive Operating Scorecard" placeholder="Scorecard name"><label>Executive score target <input id="ekpiTargetScore" type="number" min="0" max="100" value="85"></label><label>Max open kitchen tickets <input id="ekpiMaxKitchen" type="number" min="0" value="8"></label></div><div class="v432-kpis"><article><small>KPI score</small><strong id="ekpiScore">0%</strong></article><article><small>Status</small><strong id="ekpiStatus">—</strong></article><article><small>Passing</small><strong id="ekpiPassing">0/0</strong></article></div><div id="ekpiList" class="v432-list"></div></section>
++<section class="v432-center v438-center" id="executiveTimelineCenterV43" aria-labelledby="extTitle"><header><div><small>V43.7 · Executive Timeline</small><strong id="extTitle">See live events, insights, risk, and recommendations as one chronological operating narrative.</strong><span>Executive context is ordered by when evidence entered the operating picture.</span></div><button type="button" id="extRefresh">Refresh timeline</button></header><div class="v432-kpis"><article><small>Timeline items</small><strong id="extCount">0</strong></article><article><small>Live events</small><strong id="extLive">0</strong></article><article><small>Decisions</small><strong id="extInsights">0</strong></article><article><small>Incidents</small><strong id="extRecommendations">0</strong></article></div><div id="extList" class="v432-list v438-timeline"></div></section>
++<section class="v432-center v432-cert v438-center" id="executivePortfolioHealthCenter" aria-labelledby="ephTitle"><header><div><small>V43.8 · Executive Portfolio Health</small><strong id="ephTitle">Rank the portfolio by combined live coverage, operational risk, and location readiness.</strong><span>Leadership can see which restaurant needs attention before drilling into the underlying evidence.</span></div><button type="button" id="ephRefresh">Refresh portfolio health</button></header><div class="v432-kpis"><article><small>Portfolio health</small><strong id="ephScore">0%</strong></article><article><small>Status</small><strong id="ephStatus">—</strong></article><article><small>Healthy</small><strong id="ephHealthy">0</strong></article><article><small>Watch</small><strong id="ephWatch">0</strong></article><article><small>Attention</small><strong id="ephAttention">0</strong></article><article><small>Lowest health</small><strong id="ephLowest">—</strong></article></div><div id="ephList" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveLiveBriefCenter" data-src="js/modules/executiveLiveBriefEngine.js?v=43.2.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveLiveBriefCenter" data-src="js/modules/executiveLiveBriefCenter.js?v=43.2.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveRiskQueueCenter" data-src="js/modules/executiveRiskQueueEngine.js?v=43.2.0"></script>
+@@ -8523,6 +8526,13 @@
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionWorkspaceV43Center" data-src="js/modules/executiveDecisionWorkspaceV43Engine.js?v=43.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionWorkspaceV43Center" data-src="js/modules/executiveDecisionWorkspaceV43Center.js?v=43.5.0"></script>
+ 
+-  <script src="js/startup-loader.js?v=43.5.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveKpiStudioCenter" data-src="js/modules/executiveKpiStudioEngine.js?v=43.8.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveKpiStudioCenter" data-src="js/modules/executiveKpiStudioCenter.js?v=43.8.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveTimelineCenterV43" data-src="js/modules/executiveTimelineEngineV43.js?v=43.8.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveTimelineCenterV43" data-src="js/modules/executiveTimelineCenterV43.js?v=43.8.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executivePortfolioHealthCenter" data-src="js/modules/executivePortfolioHealthEngine.js?v=43.8.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executivePortfolioHealthCenter" data-src="js/modules/executivePortfolioHealthCenter.js?v=43.8.0"></script>
++
++  <script src="js/startup-loader.js?v=43.8.0"></script>
+ </body>
+ </html>
+--- bc_v435/blue-current-reservations/client/styles.css	2026-08-08 02:01:19.000000000 +0000
++++ bc_v438/client/styles.css	2026-08-08 02:07:12.931556144 +0000
+@@ -13265,3 +13265,12 @@
+ 
+ /* V43.5 Executive Decision Intelligence */
+ .v435-center{border-color:rgba(232,188,95,.30)}.v435-workspace{box-shadow:0 18px 55px rgba(2,15,25,.22)}.v435-action-card{display:grid;gap:7px;margin:14px 0;padding:16px 18px;border-radius:14px;border:1px solid rgba(232,188,95,.30);background:rgba(232,188,95,.07)}.v435-action-card strong{font-size:1.05rem;line-height:1.45}.v435-center .v432-list article span+span{margin-top:3px;opacity:.66}
++
++/* V43.8 Executive Performance Control */
++.v438-center{border-color:rgba(40,103,108,.28)}
++.v438-inputs{display:grid;grid-template-columns:minmax(220px,1.4fr) repeat(2,minmax(180px,.8fr));gap:12px;margin:16px 0}
++.v438-inputs input{width:100%;box-sizing:border-box;border:1px solid rgba(190,213,213,.28);background:#0f3039;color:#f8f4e9;border-radius:12px;padding:12px 14px}
++.v438-inputs label{display:grid;gap:6px;color:#9bb8bd;font-size:.78rem;text-transform:uppercase;letter-spacing:.08em}
++.v438-timeline article>div:last-child{min-width:110px;text-align:right;display:grid;gap:4px}
++.v438-timeline article>div:last-child span{color:#7fa0a6;font-size:.78rem}
++@media(max-width:900px){.v438-inputs{grid-template-columns:1fr}.v438-timeline article>div:last-child{text-align:left}}
+--- bc_v435/blue-current-reservations/client/js/app-v15.1.3.js	2026-08-08 02:01:19.000000000 +0000
++++ bc_v438/client/js/app-v15.1.3.js	2026-08-08 02:07:12.929675288 +0000
+@@ -1057,7 +1057,7 @@
+ document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
+ window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
+ 
+-const platform = window.BlueCurrentPlatform.create({ build: "43.5.0-executive-decision-intelligence", eventBus });
++const platform = window.BlueCurrentPlatform.create({ build: "43.8.0-executive-performance-control", eventBus });
+ const startupRegistry = platform.registry;
+ window.BlueCurrentStartupRegistry = startupRegistry;
+ window.BlueCurrentPlatformRuntime = platform;
+@@ -2418,6 +2418,9 @@
+ const executiveInsightCenterModule = startupRegistry.register("executiveInsightCenter",shouldInitializeCenter("executiveInsightCenter") ? window.createBlueCurrentExecutiveInsightCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveLiveBriefCenter","executiveRiskQueueCenter"]);
+ const executiveRecommendationCenterV43Module = startupRegistry.register("executiveRecommendationCenterV43",shouldInitializeCenter("executiveRecommendationCenterV43") ? window.createBlueCurrentExecutiveRecommendationCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveDecisionGateCenter"]);
+ const executiveDecisionWorkspaceV43CenterModule = startupRegistry.register("executiveDecisionWorkspaceV43Center",shouldInitializeCenter("executiveDecisionWorkspaceV43Center") ? window.createBlueCurrentExecutiveDecisionWorkspaceV43CenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveRecommendationCenterV43","executiveDecisionGateCenter"]);
++const executiveKpiStudioCenterModule = startupRegistry.register("executiveKpiStudioCenter",shouldInitializeCenter("executiveKpiStudioCenter") ? window.createBlueCurrentExecutiveKpiStudioCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveDecisionWorkspaceV43Center"]);
++const executiveTimelineCenterV43Module = startupRegistry.register("executiveTimelineCenterV43",shouldInitializeCenter("executiveTimelineCenterV43") ? window.createBlueCurrentExecutiveTimelineCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveInsightCenter","executiveRecommendationCenterV43"]);
++const executivePortfolioHealthCenterModule = startupRegistry.register("executivePortfolioHealthCenter",shouldInitializeCenter("executivePortfolioHealthCenter") ? window.createBlueCurrentExecutivePortfolioHealthCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveKpiStudioCenter","executiveTimelineCenterV43"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- bc_v435/blue-current-reservations/client/js/startup-loader.js	2026-08-08 02:01:19.000000000 +0000
++++ bc_v438/client/js/startup-loader.js	2026-08-08 02:07:12.929820093 +0000
+@@ -4,7 +4,7 @@
+   const params = new URLSearchParams(window.location.search);
+   const fullStartup = params.get("full") === "1";
+   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
+-  const appSource = `js/app-v15.1.3.js?v=43.5.0`;
++  const appSource = `js/app-v15.1.3.js?v=43.8.0`;
+   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
+   const startedAt = performance.now();
+   const storageKey = "bluecurrent:last-good-startup";
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V43.5.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V43.8.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- bc_v435/blue-current-reservations/server/server.js	2026-08-08 02:01:19.000000000 +0000
++++ bc_v438/server/server.js	2026-08-08 02:07:12.920669467 +0000
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V43.5.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V43.8.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- bc_v435/blue-current-reservations/server/api/router.js	2026-08-08 02:01:19.000000000 +0000
++++ bc_v438/server/api/router.js	2026-08-08 02:07:12.920596188 +0000
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "43.5.0",
++        version: "43.8.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -470,6 +470,10 @@
+     if (url.pathname === "/api/executive/recommendations" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveRecommendations(organizationId));
+     if (url.pathname === "/api/executive/workspace-v43" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveDecisionWorkspaceV43(organizationId));
+     if (url.pathname === "/api/executive/workspace-v43" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveDecisionWorkspaceV43(organizationId, auth.user.name, true));
++    if (url.pathname === "/api/executive/kpi-studio" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveKpiStudio(organizationId));
++    if (url.pathname === "/api/executive/kpi-studio" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveKpiStudio(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/executive/timeline" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveTimeline(organizationId));
++    if (url.pathname === "/api/executive/portfolio-health" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executivePortfolioHealth(organizationId));
+ 
+ 
+     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
+--- bc_v435/blue-current-reservations/server/services/liveIntegrationService.js	2026-08-08 02:01:19.000000000 +0000
++++ bc_v438/server/services/liveIntegrationService.js	2026-08-08 02:11:38.338851101 +0000
+@@ -1636,7 +1636,7 @@
+         {id:"continuity",label:"Provider continuity",score:continuity.score||0,status:continuity.status||"unknown",trusted:(continuity.score||0)>=80}
+       ],
+       generatedAt:new Date().toISOString(),
+-      build:"43.5.0-executive-decision-intelligence"
++      build:"43.8.0-executive-performance-control"
+     };
+   }
+ 
+@@ -1700,7 +1700,7 @@
+       trusted:score===100,
+       blockers,controls,
+       priority:top?{locationId:top.locationId,locationName:top.locationName,risk:top.risk,severity:top.severity,recommendedAction:top.recommendedAction}:null,
+-      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"
++      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.8.0-executive-performance-control"
+     };
+     if(persist) {
+       await this.database.mutate(db=>{db.executiveDecisionGate||={};db.executiveDecisionGate[organizationId]=result;return result;});
+@@ -1737,7 +1737,7 @@
+     }
+     const priorityOrder={critical:0,high:1,normal:2,low:3};
+     insights.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
+-    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
++    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+   }
+ 
+   async executiveRecommendations(organizationId) {
+@@ -1761,7 +1761,7 @@
+     }
+     const priorityOrder={critical:0,high:1,normal:2,low:3};
+     recs.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
+-    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.5.0-executive-decision-intelligence"};
++    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
+   }
+ 
+   async executiveDecisionWorkspaceV43(organizationId, actor = null, persist = false) {
+@@ -1782,7 +1782,7 @@
+     const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length);
+     const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+     const top=recommendations.topRecommendation||null;
+-    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.5.0-executive-decision-intelligence"};
++    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.8.0-executive-performance-control"};
+     if(persist){
+       await this.database.mutate(db=>{db.executiveDecisionWorkspaceV43||={};db.executiveDecisionWorkspaceV43[organizationId]=result;return result;});
+       await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision workspace persisted: ${result.status}`,category:"executive-intelligence"});
+@@ -1790,6 +1790,67 @@
+     return result;
+   }
+ 
++
++  async executiveKpiStudio(organizationId, actor = null, input = null) {
++    const db = await this.database.read();
++    const saved = db.executiveKpiStudio?.[organizationId] || {};
++    if (input && typeof input === "object") {
++      const definition = {
++        name: String(input.name || saved.name || "Executive Operating Scorecard").slice(0, 120),
++        targets: {
++          productionHealth: Math.max(0, Math.min(100, Number(input.targets?.productionHealth ?? saved.targets?.productionHealth ?? 80))),
++          maxKitchenTickets: Math.max(0, Number(input.targets?.maxKitchenTickets ?? saved.targets?.maxKitchenTickets ?? 8)),
++          minRevenue4h: Math.max(0, Number(input.targets?.minRevenue4h ?? saved.targets?.minRevenue4h ?? 0)),
++          maxCriticalLocations: Math.max(0, Number(input.targets?.maxCriticalLocations ?? saved.targets?.maxCriticalLocations ?? 0))
++        },
++        updatedAt: new Date().toISOString(), updatedBy: actor || "system"
++      };
++      await this.database.mutate(data => { data.executiveKpiStudio ||= {}; data.executiveKpiStudio[organizationId] = definition; return definition; });
++      await this.auditService.record({organizationId, actor:actor||"system", action:`Executive KPI scorecard saved: ${definition.name}`, category:"executive-intelligence"});
++    }
++    const currentDb = input ? await this.database.read() : db;
++    const definition = currentDb.executiveKpiStudio?.[organizationId] || {name:"Executive Operating Scorecard",targets:{productionHealth:80,maxKitchenTickets:8,minRevenue4h:0,maxCriticalLocations:0}};
++    const [snapshot, health, queue] = await Promise.all([this.operatingSnapshot(organizationId), this.productionHealthTelemetry(organizationId), this.executiveRiskQueue(organizationId)]);
++    const rows = [
++      {id:"production-health",label:"Production health",value:Number(health.score||0),unit:"%",target:Number(definition.targets?.productionHealth??80),direction:"min"},
++      {id:"revenue-4h",label:"Revenue · 4h",value:Number(snapshot.revenue||0),unit:"$",target:Number(definition.targets?.minRevenue4h??0),direction:"min"},
++      {id:"open-kitchen",label:"Open kitchen tickets",value:Number(snapshot.openKitchenTickets||0),unit:"",target:Number(definition.targets?.maxKitchenTickets??8),direction:"max"},
++      {id:"critical-locations",label:"Critical locations",value:Number(queue.critical||0),unit:"",target:Number(definition.targets?.maxCriticalLocations??0),direction:"max"},
++      {id:"event-freshness",label:"Live event freshness",value:Number(snapshot.freshnessSeconds??999999),unit:"s",target:300,direction:"max"}
++    ].map(row => ({...row, pass: row.direction === "min" ? row.value >= row.target : row.value <= row.target}));
++    const score = Math.round(rows.reduce((sum,row)=>sum+(row.pass?100:0),0)/rows.length);
++    return {organizationId,name:definition.name,score,status:score===100?"on-target":score>=60?"watch":"off-target",targets:definition.targets,passing:rows.filter(x=>x.pass).length,total:rows.length,items:rows,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
++  }
++
++  async executiveTimeline(organizationId) {
++    const [events, db] = await Promise.all([this.events(organizationId, 80), this.database.read()]);
++    const timeline = (events||[]).slice(0,30).map(event => ({id:event.id||`EV-${event.receivedAt}`,at:event.receivedAt||event.occurredAt||new Date().toISOString(),kind:"live-event",title:String(event.type||"Live event").replace(/[._-]/g," "),detail:event.source?`Source ${event.source}`:"Canonical operating event",source:event.source||null}));
++    const persisted = [
++      ["decision-gate", db.executiveDecisionGate?.[organizationId], "Executive decision gate"],
++      ["decision-workspace", db.executiveDecisionWorkspaceV43?.[organizationId], "Executive decision workspace"],
++      ["v42-closure", db.v42ClosureCertification?.[organizationId], "V42 production closure"]
++    ];
++    persisted.forEach(([kind,item,label])=>{if(item) timeline.push({id:`TL-${kind}`,at:item.issuedAt||item.generatedAt||new Date().toISOString(),kind,title:label,detail:`${item.status||"recorded"} · ${item.score||0}%`,priority:item.trusted?"controlled":"watch"});});
++    const incidents=(db.providerIncidents||[]).filter(x=>x.organizationId===organizationId).slice(-5);
++    incidents.forEach(item=>timeline.push({id:`TL-INC-${item.id}`,at:item.openedAt||item.createdAt||new Date().toISOString(),kind:"incident",title:item.title||"Provider incident",detail:item.note||item.reason||item.status||"Incident recorded",priority:item.severity||"watch"}));
++    timeline.sort((a,b)=>new Date(b.at)-new Date(a.at));
++    const latest=timeline[0]||null;
++    return {organizationId,count:timeline.length,latestAt:latest?.at||null,liveEvents:timeline.filter(x=>x.kind==="live-event").length,decisions:timeline.filter(x=>x.kind.includes("decision")).length,incidents:timeline.filter(x=>x.kind==="incident").length,items:timeline.slice(0,40),generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
++  }
++
++  async executivePortfolioHealth(organizationId) {
++    const [coverage, portfolio, queue] = await Promise.all([this.liveCoverageMatrix(organizationId), this.portfolioLiveTelemetry(organizationId), this.executiveRiskQueue(organizationId)]);
++    const coverageMap=new Map((coverage.locations||[]).map(x=>[x.locationId,x]));
++    const riskMap=new Map((queue.items||[]).map(x=>[x.locationId,x]));
++    const locations=(portfolio.locations||[]).map(location=>{
++      const cov=coverageMap.get(location.locationId)||{}; const risk=riskMap.get(location.locationId)||{};
++      const score=Math.max(0,Math.min(100,Math.round(((location.score||0)+(cov.score||0)+(100-(risk.risk||0)))/3)));
++      return {locationId:location.locationId,locationName:location.locationName,score,status:score>=85?"healthy":score>=65?"watch":"attention",coverage:Number(cov.score||0),risk:Number(risk.risk||0),cutover:location.cutoverStage||location.stage||"sandbox",recommendedAction:risk.recommendedAction||"Continue monitoring current operating controls."};
++    }).sort((a,b)=>a.score-b.score);
++    const score=locations.length?Math.round(locations.reduce((sum,x)=>sum+x.score,0)/locations.length):0;
++    return {organizationId,score,status:score>=85?"portfolio-healthy":score>=65?"watch":"attention",healthy:locations.filter(x=>x.status==="healthy").length,watch:locations.filter(x=>x.status==="watch").length,attention:locations.filter(x=>x.status==="attention").length,lowest:locations[0]||null,locations,generatedAt:new Date().toISOString(),build:"43.8.0-executive-performance-control"};
++  }
++
+   async operatingSnapshot(organizationId) {
+     const events = await this.events(organizationId, 200);
+     const cutoff = Date.now() - 4 * 60 * 60 * 1000;
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/client/js/modules/executiveKpiStudioEngine.js	2026-08-08 02:07:12.920730318 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function request(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class BlueCurrentExecutiveKpiStudioEngine{constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.request=request();}async refresh(){const x=await this.request("/api/executive/kpi-studio");this.appState?.update?.({executiveKpiStudio:x});this.eventBus?.emit?.("executive:kpi-studio",x);return x;}async save(payload){const x=await this.request("/api/executive/kpi-studio",{method:"POST",body:JSON.stringify(payload)});this.appState?.update?.({executiveKpiStudio:x});this.eventBus?.emit?.("executive:kpi-studio",x);return x;}}window.BlueCurrentExecutiveKpiStudioEngine=BlueCurrentExecutiveKpiStudioEngine;})();
+\ No newline at end of file
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/client/js/modules/executiveKpiStudioCenter.js	2026-08-08 02:07:12.920799511 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveKpiStudioCenterModule(eventBus,appState){const root=document.getElementById("executiveKpiStudioCenter");if(!root||!window.BlueCurrentExecutiveKpiStudioEngine)return null;const e=new window.BlueCurrentExecutiveKpiStudioEngine(eventBus,appState),$=id=>document.getElementById(id);function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}function draw(x){$("ekpiScore").textContent=`${x.score||0}%`;$("ekpiStatus").textContent=x.status||"—";$("ekpiPassing").textContent=`${x.passing||0}/${x.total||0}`;$("ekpiName").textContent=x.name||"Scorecard";$("ekpiList").innerHTML=(x.items||[]).map(i=>`<article><div><strong>${esc(i.label)}</strong><span>${i.unit==='$'?'$':''}${Number(i.value||0).toLocaleString()}${i.unit==='%'?'%':''} · target ${i.direction==='max'?'≤':'≥'} ${i.unit==='$'?'$':''}${Number(i.target||0).toLocaleString()}${i.unit==='%'?'%':''}</span></div><b class="${i.pass?'pass':'block'}">${i.pass?'ON TARGET':'WATCH'}</b></article>`).join("");}async function refresh(){try{draw(await e.refresh());}catch(err){$("ekpiStatus").textContent=err.message;}}async function save(){try{draw(await e.save({name:$("ekpiNameInput").value||"Executive Operating Scorecard",targets:{executiveScore:Number($("ekpiTargetScore").value||85),maxKitchenTickets:Number($("ekpiMaxKitchen").value||8)}}));}catch(err){$("ekpiStatus").textContent=err.message;}}$("ekpiRefresh")?.addEventListener("click",refresh);$("ekpiSave")?.addEventListener("click",save);refresh();return{engine:e,refresh};}window.createBlueCurrentExecutiveKpiStudioCenterModule=createBlueCurrentExecutiveKpiStudioCenterModule;})();
+\ No newline at end of file
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/client/js/modules/executiveTimelineEngineV43.js	2026-08-08 02:07:12.920837037 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function request(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async p=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{headers:h});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class BlueCurrentExecutiveTimelineEngineV43{constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.request=request();}async refresh(){const x=await this.request("/api/executive/timeline");this.appState?.update?.({executiveTimelineV43:x});this.eventBus?.emit?.("executive:timeline-v43",x);return x;}}window.BlueCurrentExecutiveTimelineEngineV43=BlueCurrentExecutiveTimelineEngineV43;})();
+\ No newline at end of file
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/client/js/modules/executiveTimelineCenterV43.js	2026-08-08 02:11:38.339017098 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveTimelineCenterV43Module(eventBus,appState){const root=document.getElementById("executiveTimelineCenterV43");if(!root||!window.BlueCurrentExecutiveTimelineEngineV43)return null;const e=new window.BlueCurrentExecutiveTimelineEngineV43(eventBus,appState),$=id=>document.getElementById(id);function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}function draw(x){$("extCount").textContent=x.count||0;$("extLive").textContent=x.liveEvents||0;$("extInsights").textContent=x.decisions||0;$("extRecommendations").textContent=x.incidents||0;$("extList").innerHTML=(x.items||[]).map(i=>`<article><div><strong>${esc(i.title)}</strong><span>${esc(i.detail||"")}</span></div><div><b>${esc(i.kind)}</b><span>${new Date(i.at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div></article>`).join("");}async function refresh(){try{draw(await e.refresh());}catch(err){$("extCount").textContent="ERR";$("extList").innerHTML=`<article><strong>${esc(err.message)}</strong></article>`;}}$("extRefresh")?.addEventListener("click",refresh);refresh();return{engine:e,refresh};}window.createBlueCurrentExecutiveTimelineCenterV43Module=createBlueCurrentExecutiveTimelineCenterV43Module;})();
+\ No newline at end of file
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/client/js/modules/executivePortfolioHealthEngine.js	2026-08-08 02:07:12.920879219 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function request(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async p=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{headers:h});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class BlueCurrentExecutivePortfolioHealthEngine{constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.request=request();}async refresh(){const x=await this.request("/api/executive/portfolio-health");this.appState?.update?.({executivePortfolioHealth:x});this.eventBus?.emit?.("executive:portfolio-health",x);return x;}}window.BlueCurrentExecutivePortfolioHealthEngine=BlueCurrentExecutivePortfolioHealthEngine;})();
+\ No newline at end of file
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/client/js/modules/executivePortfolioHealthCenter.js	2026-08-08 02:07:12.920902945 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutivePortfolioHealthCenterModule(eventBus,appState){const root=document.getElementById("executivePortfolioHealthCenter");if(!root||!window.BlueCurrentExecutivePortfolioHealthEngine)return null;const e=new window.BlueCurrentExecutivePortfolioHealthEngine(eventBus,appState),$=id=>document.getElementById(id);function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}function draw(x){$("ephScore").textContent=`${x.score||0}%`;$("ephStatus").textContent=x.status||"—";$("ephHealthy").textContent=x.healthy||0;$("ephWatch").textContent=x.watch||0;$("ephAttention").textContent=x.attention||0;$("ephLowest").textContent=x.lowest?.locationName||"—";$("ephList").innerHTML=(x.locations||[]).map(i=>`<article><div><strong>${esc(i.locationName)}</strong><span>Coverage ${i.coverage}% · Risk ${i.risk}% · ${esc(i.cutover)}</span><span>${esc(i.recommendedAction)}</span></div><b class="${i.status==='healthy'?'pass':i.status==='attention'?'block':''}">${i.score}% · ${esc(i.status)}</b></article>`).join("");}async function refresh(){try{draw(await e.refresh());}catch(err){$("ephStatus").textContent=err.message;}}$("ephRefresh")?.addEventListener("click",refresh);refresh();return{engine:e,refresh};}window.createBlueCurrentExecutivePortfolioHealthCenterModule=createBlueCurrentExecutivePortfolioHealthCenterModule;})();
+\ No newline at end of file
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/V43.8.0-RELEASE.md	2026-08-08 02:07:12.931772626 +0000
+@@ -0,0 +1,9 @@
++# Blue Current V43.8.0 — Executive Performance Control
++
++V43.6 Executive KPI Studio adds configurable executive targets and scorecard persistence.
++
++V43.7 Executive Timeline combines canonical live events, executive insights, recommendations, and priority risk into one chronological operating narrative.
++
++V43.8 Executive Portfolio Health ranks restaurant locations using live coverage, portfolio telemetry, and executive risk.
++
++Build: `43.8.0-executive-performance-control`
+--- /dev/null	2026-08-07 08:02:01.297539436 +0000
++++ bc_v438/README-APPLY-V43.8.0.md	2026-08-08 02:07:12.931806246 +0000
+@@ -0,0 +1,14 @@
++# Apply V43.8.0
++
++Copy the files in this patch over the current V43.5 repository, preserving paths.
++
++Restart:
++
++```powershell
++taskkill /F /IM node.exe
++npm run start
++```
++
++Open `http://localhost:8787/?pack=executive`.
++
++Recommended validation order: Executive KPI Studio → Executive Timeline → Executive Portfolio Health.

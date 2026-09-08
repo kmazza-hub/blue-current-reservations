@@ -1,0 +1,11 @@
+{
+  "version": "25.0",
+  "build": "Kitchen Command Center",
+  "javascriptValidation": "Validated 41 JavaScript files and all client script references.",
+  "healthEndpointVersion": "25.0",
+  "loginSmokeTestPassed": true,
+  "kitchenSnapshotPassed": true,
+  "stationSnapshotPassed": true,
+  "ticketUpdatePassed": true,
+  "zipIntegrity": true
+}

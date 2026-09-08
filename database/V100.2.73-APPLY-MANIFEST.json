@@ -1,0 +1,10 @@
+{
+  "version": "100.2.73",
+  "name": "Scheduling Truth Foundation",
+  "files": [
+    "client/js/scheduling-truth-v100.2.73.js",
+    "client/js/runtime-performance-v100.2.70.js",
+    "client/index.html",
+    "scripts/maintenance/test-v100.2.73-scheduling-truth-foundation.js"
+  ]
+}

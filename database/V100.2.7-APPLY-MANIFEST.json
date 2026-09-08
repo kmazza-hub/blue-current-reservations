@@ -1,0 +1,17 @@
+{
+  "version": "100.2.7",
+  "name": "Guest Journey Focus & Visibility Lifecycle",
+  "baselineVersion": "100.0.0",
+  "forwardOnly": true,
+  "files": [
+    "client/js/modules/guestJourney.js",
+    "scripts/maintenance/test-v100.2.7-guest-journey-focus-visibility-lifecycle.js",
+    "README-APPLY-V100.2.7.md",
+    "V100.2.7-RELEASE.md",
+    "V100.2.7-APPLY-MANIFEST.json"
+  ],
+  "serverChanges": false,
+  "databaseChanges": false,
+  "persistenceChanges": false,
+  "authChanges": false
+}

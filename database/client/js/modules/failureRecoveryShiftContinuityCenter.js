@@ -1,0 +1,17 @@
+(function(){"use strict";
+function createBlueCurrentFailureRecoveryShiftContinuityCenterModule(eventBus,appState){
+ const root=document.getElementById("v5375FailureRecoveryShiftContinuity");if(!root||!window.BlueCurrentFailureRecoveryShiftContinuityEngine)return null;
+ const e=new window.BlueCurrentFailureRecoveryShiftContinuityEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
+ const scenarioIds=["API_FAILURE","CONNECTOR_FAILURE","STALE_DATA","OFFLINE_CONTINUITY","DEVICE_SURFACE_FAILURE","RECONNECT_RECONCILIATION"];
+ function render(s){$("v5375Status").textContent=s.status||"—";$("v5375Ready").textContent=`${(s.locations||[]).filter(x=>x.recoveryReady).length}/${(s.locations||[]).length}`;$("v5375Reliability").textContent=`${s.reliability?.score??0}`;$("v5375Headline").textContent=s.headline||"Failure recovery unavailable.";$("v5375Locations").innerHTML=(s.locations||[]).map(x=>`<article data-v5375-location="${esc(x.locationId)}"><strong>${esc(x.locationName)}</strong><span>${esc(x.state)} · ${x.passed}/${x.total} gates · high/critical ${x.highCriticalFindings.length}</span><div class="v432-list">${x.checks.map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.id)}</strong><span>${esc(c.actual)}</span></article>`).join("")}</div><div class="v4316-actions"><button data-v5375-rehearse="true">Record recovery rehearsal</button><button data-v5375-recover="true">RECOVER</button><button data-v5375-degraded="true">DEGRADED</button><button data-v5375-hold="true">HOLD</button></div></article>`).join("");}
+ async function load(){try{render(await e.snapshot());}catch(err){$("v5375Headline").textContent=err.message;}}
+ root.addEventListener("click",async ev=>{const card=ev.target.closest("[data-v5375-location]");if(!card)return;try{
+  if(ev.target.closest("[data-v5375-rehearse]"))await e.rehearse(card.dataset.v5375Location,{fallbackRunbook:$("v5375Runbook").value,escalationOwner:$("v5375Owner").value,recoveryTimeMinutes:Number($("v5375Recovery").value),maxRecoveryMinutes:Number($("v5375MaxRecovery").value),shiftContinuity:$("v5375Continuity").value,evidence:$("v5375Evidence").value,note:$("v5375Note").value,scenarios:scenarioIds.map(id=>({id,status:"PASS",evidence:`${id} manually rehearsed`})),findings:[]});
+  else if(ev.target.closest("[data-v5375-recover]"))await e.decide(card.dataset.v5375Location,{decision:"RECOVER",evidence:$("v5375DecisionEvidence").value,reason:$("v5375DecisionReason").value});
+  else if(ev.target.closest("[data-v5375-degraded]"))await e.decide(card.dataset.v5375Location,{decision:"DEGRADED",evidence:$("v5375DecisionEvidence").value,reason:$("v5375DecisionReason").value});
+  else if(ev.target.closest("[data-v5375-hold]"))await e.decide(card.dataset.v5375Location,{decision:"HOLD",evidence:$("v5375DecisionEvidence").value,reason:$("v5375DecisionReason").value});
+  await load();
+ }catch(err){$("v5375Headline").textContent=err.message;}});
+ $("v5375Refresh")?.addEventListener("click",load);load();return{engine:e,load};
+}
+window.createBlueCurrentFailureRecoveryShiftContinuityCenterModule=createBlueCurrentFailureRecoveryShiftContinuityCenterModule;})();

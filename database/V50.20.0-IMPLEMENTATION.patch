@@ -1,0 +1,670 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "50.15.0",
++  "version": "50.20.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 production incident command and human-controlled recovery workflow",
++  "description": "Blue Current Hospitality OS \u2014 production recovery verification and post-incident review",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -57,6 +57,7 @@
+ const ProductionOperationsHandoffService = require("./services/productionOperationsHandoffService");
+ const ProductionHealthSupportService = require("./services/productionHealthSupportService");
+ const ProductionIncidentCommandService = require("./services/productionIncidentCommandService");
++const ProductionRecoveryReviewService = require("./services/productionRecoveryReviewService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -117,7 +118,8 @@
+ const productionOperationsHandoffService = new ProductionOperationsHandoffService(database, auditService, realtimeHub, launchStabilizationService, reliabilityAutomationService, multiLocationPerformanceService);
+ const productionHealthSupportService = new ProductionHealthSupportService(database, auditService, realtimeHub, productionOperationsHandoffService, reliabilityAutomationService, telemetryService, multiLocationPerformanceService);
+ const productionIncidentCommandService = new ProductionIncidentCommandService(database, auditService, realtimeHub, productionHealthSupportService, reliabilityAutomationService, telemetryService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService });
++const productionRecoveryReviewService = new ProductionRecoveryReviewService(database, auditService, realtimeHub, productionIncidentCommandService, productionHealthSupportService, reliabilityAutomationService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -204,7 +206,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V50.15.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V50.20.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "50.15.0",
++        version: "50.20.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,26 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/production-recovery-review" && request.method === "GET") {
++      return sendJson(response,200,await productionRecoveryReviewService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/production-recovery-review/incidents/") && url.pathname.endsWith("/review") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required to create a post-incident review."});
++      const incidentId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const body=await readJson(request);
++      try{return sendJson(response,201,await productionRecoveryReviewService.createReview(auth.membership.organizationId,auth.membership.locationIds||[],incidentId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/production-recovery-review/reviews/") && url.pathname.endsWith("/accept-lessons") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to accept post-incident lessons."});
++      const reviewId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const body=await readJson(request);
++      try{return sendJson(response,200,await productionRecoveryReviewService.acceptLessons(auth.membership.organizationId,reviewId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/production-incident-command" && request.method === "GET") {
+       return sendJson(response,200,await productionIncidentCommandService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/productionRecoveryReviewService.js
++++ b/server/services/productionRecoveryReviewService.js
+@@ -0,0 +1,142 @@
++"use strict";
++
++class ProductionRecoveryReviewService {
++  constructor(database,auditService,realtimeHub,productionIncidentCommandService,productionHealthSupportService,reliabilityAutomationService){
++    Object.assign(this,{database,auditService,realtimeHub,productionIncidentCommandService,productionHealthSupportService,reliabilityAutomationService});
++  }
++  now(){return new Date().toISOString();}
++  async reviews(organizationId){
++    const db=await this.database.read();
++    return (db.productionRecoveryReviews||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [incidentSnapshot,support,reliability,reviews]=await Promise.all([
++      this.productionIncidentCommandService.snapshot(organizationId,allowedLocationIds),
++      this.productionHealthSupportService.snapshot(organizationId,allowedLocationIds),
++      this.reliabilityAutomationService.evaluate(organizationId),
++      this.reviews(organizationId)
++    ]);
++    const supportMap=new Map((support.locations||[]).map(x=>[x.locationId,x]));
++    const latestReview=new Map();
++    for(const r of reviews)if(!latestReview.has(r.incidentId))latestReview.set(r.incidentId,r);
++
++    const resolvedIncidents=(incidentSnapshot.commandHistory||[]).filter(x=>x.status==="resolved");
++    const incidents=resolvedIncidents.map(incident=>{
++      const affected=(incident.affectedLocationIds||[]).map(locationId=>{
++        const loc=supportMap.get(locationId)||{};
++        const checks=[
++          {id:"support-health",label:"Production support health is not critical",passed:loc.healthState!=="critical",actual:loc.healthState||"unknown"},
++          {id:"readiness",label:"Restaurant readiness is at least 70",passed:Number(loc.readinessScore||0)>=70,actual:Number(loc.readinessScore||0)},
++          {id:"open-support",label:"No open critical support event",passed:Number(loc.openSupportEvents||0)===0,actual:Number(loc.openSupportEvents||0)}
++        ];
++        const passed=checks.filter(x=>x.passed).length;
++        return {locationId,locationName:loc.locationName||locationId,checks,passed,total:checks.length,recovered:passed===checks.length};
++      });
++      const review=latestReview.get(incident.id)||null;
++      const createdAt=new Date(incident.createdAt||0),resolvedAt=new Date(incident.resolvedAt||incident.updatedAt||0);
++      const durationMinutes=Number.isFinite(createdAt.getTime())&&Number.isFinite(resolvedAt.getTime())&&resolvedAt>=createdAt
++        ? Math.round((resolvedAt-createdAt)/60000):null;
++      const recoveryVerified=affected.length?affected.every(x=>x.recovered):reliability.status!=="breached";
++      return {
++        incidentId:incident.id,title:incident.title,severity:incident.severity,
++        commander:incident.commander,
++        createdAt:incident.createdAt,resolvedAt:incident.resolvedAt||incident.updatedAt,
++        durationMinutes,
++        businessImpact:incident.businessImpact||"",
++        serviceImpact:incident.serviceImpact||"",
++        resolution:incident.resolution||"",
++        recoveryEvidence:incident.recoveryEvidence||[],
++        affectedLocations:affected,
++        recoveryVerified,
++        platformReliability:{status:reliability.status,score:reliability.score,breached:reliability.breached,warning:reliability.warning,errorBudgetRemaining:reliability.errorBudgetRemaining},
++        review,
++        reviewState:review?.status||"NOT_REVIEWED"
++      };
++    });
++    return {
++      version:"50.20.0",generatedAt:this.now(),
++      status:incidents.length===0?"resolved-incident-required":incidents.every(x=>x.review?.status==="POST_INCIDENT_REVIEW_ACCEPTED")?"post-incident-review-complete":"post-incident-review-open",
++      headline:incidents.length===0?"A human-resolved production incident is required before recovery review.":`${incidents.filter(x=>x.recoveryVerified).length}/${incidents.length} resolved incident(s) currently pass recovery verification.`,
++      incidents,reviewHistory:reviews,
++      policy:{
++        recoveryVerificationReadOnly:true,
++        rootCauseHumanAuthored:true,
++        correctiveActionsHumanOwned:true,
++        lessonsAcceptanceHumanRequired:true,
++        automaticCorrectiveActionExecution:false,
++        automaticClosure:false,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  normalizeActions(value){
++    if(!Array.isArray(value))return [];
++    return value.slice(0,30).map((x,i)=>({
++      id:`ca_${i+1}`,
++      action:String(x.action||"").trim().slice(0,800),
++      owner:String(x.owner||"").trim().slice(0,160),
++      dueDate:String(x.dueDate||"").trim().slice(0,40),
++      status:"OPEN",
++      executionState:"NOT_EXECUTED_BY_BLUE_CURRENT"
++    })).filter(x=>x.action&&x.owner);
++  }
++  async createReview(organizationId,allowedLocationIds,incidentId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const incident=snap.incidents.find(x=>x.incidentId===incidentId);
++    if(!incident)throw new Error("Resolved production incident not found in post-incident review.");
++    const rootCause=String(input.rootCause||"").trim().slice(0,2200);
++    if(!rootCause)throw new Error("Human-authored root cause is required.");
++    const contributingFactors=(Array.isArray(input.contributingFactors)?input.contributingFactors:[]).map(String).map(x=>x.trim()).filter(Boolean).slice(0,20);
++    const correctiveActions=this.normalizeActions(input.correctiveActions);
++    if(!correctiveActions.length)throw new Error("At least one corrective action with an owner is required.");
++    const repeatRisk=String(input.repeatRisk||"medium").toLowerCase();
++    if(!["low","medium","high","critical"].includes(repeatRisk))throw new Error("Repeat risk must be low, medium, high, or critical.");
++    const executiveSummary=String(input.executiveSummary||"").trim().slice(0,2600);
++    if(!executiveSummary)throw new Error("Executive post-incident summary is required.");
++    const now=this.now();
++    const record={
++      id:`pir_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,incidentId,
++      incidentTitle:incident.title,
++      status:"POST_INCIDENT_REVIEW_OPEN",
++      createdAt:now,createdBy:actor,
++      recoveryVerifiedAtReview:incident.recoveryVerified,
++      durationMinutes:incident.durationMinutes,
++      businessImpact:incident.businessImpact,
++      serviceImpact:incident.serviceImpact,
++      rootCause,contributingFactors,correctiveActions,repeatRisk,executiveSummary,
++      lessonsAcceptedBy:null,lessonsAcceptedAt:null,
++      closureNote:null,
++      correctiveActionsExecutedBySystem:false,
++      runtimeMutationPerformed:false
++    };
++    await this.database.mutate(db=>{db.productionRecoveryReviews||=[];db.productionRecoveryReviews.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Post-incident review opened for ${incidentId}; ${correctiveActions.length} corrective action(s) recorded`,category:"production_recovery"});
++    this.realtimeHub.publish("production-recovery:review-created",{id:record.id,organizationId,incidentId,repeatRisk});
++    return record;
++  }
++  async acceptLessons(organizationId,reviewId,input,actor){
++    const approver=String(input.approver||actor||"").trim().slice(0,160);
++    if(!approver)throw new Error("Lessons approver is required.");
++    const note=String(input.note||"").trim().slice(0,1600);
++    if(!note)throw new Error("Human closure / lessons note is required.");
++    const now=this.now();
++    const record=await this.database.mutate(db=>{
++      db.productionRecoveryReviews||=[];
++      const x=db.productionRecoveryReviews.find(r=>r.id===reviewId&&r.organizationId===organizationId);
++      if(!x)return null;
++      x.status="POST_INCIDENT_REVIEW_ACCEPTED";
++      x.lessonsAcceptedBy=approver;
++      x.lessonsAcceptedAt=now;
++      x.closureNote=note;
++      return {...x};
++    });
++    if(!record)throw new Error("Post-incident review not found.");
++    await this.auditService.record({organizationId,actor,action:`Post-incident lessons accepted for ${record.incidentId} by ${approver}; corrective actions remain human-owned`,category:"production_recovery"});
++    this.realtimeHub.publish("production-recovery:lessons-accepted",{id:record.id,organizationId,incidentId:record.incidentId,approver});
++    return record;
++  }
++}
++module.exports=ProductionRecoveryReviewService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="50.15.0">
++  <meta name="blue-current-build" content="50.20.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -331,6 +331,15 @@
+       <div class="v4316-actions"><input id="picActionNote" class="v4312-input" placeholder="Containment / communication / recovery / resolution note"></div>
+       <p><strong>Open source signals</strong></p><div id="picSignalsList" class="v432-list"></div>
+       <p><strong>Incident command ledger</strong></p><div id="picCommands" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="productionRecoveryReview">
++      <header><div><small>V50.16–V50.20 · Production Recovery & Post-Incident Review</small><strong>Verify service recovery, capture why the incident happened, and leave corrective work explicitly human-owned.</strong><span>Blue Current summarizes duration and impact, checks affected-location recovery, records root cause and contributing factors, tracks corrective actions with owners/due dates, assesses repeat risk, produces an executive review record, and requires human acceptance of lessons learned.</span></div><button id="prrRefresh" type="button">Refresh recovery review</button></header>
++      <div class="v432-kpis"><article><small>Review status</small><strong id="prrStatus">—</strong></article><article><small>Recovery verified</small><strong id="prrRecovered">0/0</strong></article><article><small>Reviews open</small><strong id="prrOpen">0</strong></article><article><small>Lessons accepted</small><strong id="prrAccepted">0</strong></article></div>
++      <div class="v4316-answer" id="prrHeadline">A human-resolved incident is required before post-incident review.</div>
++      <div class="v4316-actions"><input id="prrRootCause" class="v4312-input" placeholder="Human-authored root cause"><input id="prrFactors" class="v4312-input" placeholder="Contributing factors, comma separated"><select id="prrRisk" class="v4312-input"><option value="low">low repeat risk</option><option value="medium" selected>medium repeat risk</option><option value="high">high repeat risk</option><option value="critical">critical repeat risk</option></select><input id="prrExecutiveSummary" class="v4312-input" placeholder="Executive post-incident summary"></div>
++      <div class="v4316-actions"><input id="prrAction" class="v4312-input" placeholder="Corrective action"><input id="prrActionOwner" class="v4312-input" placeholder="Corrective action owner"><input id="prrActionDue" class="v4312-input" placeholder="Due date"><input id="prrApprover" class="v4312-input" placeholder="Lessons approver"><input id="prrClosure" class="v4312-input" placeholder="Closure / lessons accepted note"></div>
++      <p><strong>Resolved incidents & recovery state</strong></p><div id="prrIncidents" class="v432-list"></div>
++      <p><strong>Post-incident review history</strong></p><div id="prrHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8869,6 +8878,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionHealthSupport" data-src="js/modules/productionHealthSupportCenter.js?v=50.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandEngine.js?v=50.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandCenter.js?v=50.15.0"></script>
+-<script src="js/startup-loader.js?v=50.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewEngine.js?v=50.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewCenter.js?v=50.20.0"></script>
++<script src="js/startup-loader.js?v=50.20.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1244,6 +1244,7 @@
+ const productionOperationsHandoffModule = startupRegistry.register("productionOperationsHandoff", shouldInitializeCenter("productionOperationsHandoff") ? window.createBlueCurrentProductionOperationsHandoffCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v49ReleaseCertification"]);
+ const productionHealthSupportModule = startupRegistry.register("productionHealthSupport", shouldInitializeCenter("productionHealthSupport") ? window.createBlueCurrentProductionHealthSupportCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionOperationsHandoff"]);
+ const productionIncidentCommandModule = startupRegistry.register("productionIncidentCommand", shouldInitializeCenter("productionIncidentCommand") ? window.createBlueCurrentProductionIncidentCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionHealthSupport"]);
++const productionRecoveryReviewModule = startupRegistry.register("productionRecoveryReview", shouldInitializeCenter("productionRecoveryReview") ? window.createBlueCurrentProductionRecoveryReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionIncidentCommand"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V50.15.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V50.20.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/productionRecoveryReviewEngine.js
++++ b/client/js/modules/productionRecoveryReviewEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentProductionRecoveryReviewEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/production-recovery-review",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Production recovery review failed (${r.status})`);this.appState?.update?.({productionRecoveryReview:d});return d;}
++  async createReview(incidentId,payload={}){const r=await fetch(`/api/production-recovery-review/incidents/${encodeURIComponent(incidentId)}/review`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Post-incident review creation failed (${r.status})`);this.eventBus?.emit?.("production-recovery:review-created",structuredClone(d));return d;}
++  async acceptLessons(reviewId,payload={}){const r=await fetch(`/api/production-recovery-review/reviews/${encodeURIComponent(reviewId)}/accept-lessons`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Lessons acceptance failed (${r.status})`);this.eventBus?.emit?.("production-recovery:lessons-accepted",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentProductionRecoveryReviewEngine;
++if(global)global.BlueCurrentProductionRecoveryReviewEngine=BlueCurrentProductionRecoveryReviewEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/productionRecoveryReviewCenter.js
++++ b/client/js/modules/productionRecoveryReviewCenter.js
+@@ -0,0 +1,50 @@
++(function(){"use strict";
++function createBlueCurrentProductionRecoveryReviewCenterModule(eventBus,appState){
++  const root=document.getElementById("productionRecoveryReview");
++  if(!root||!window.BlueCurrentProductionRecoveryReviewEngine)return null;
++  const e=new window.BlueCurrentProductionRecoveryReviewEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function actionPayload(){
++    const action=$("prrAction").value.trim(),owner=$("prrActionOwner").value.trim(),dueDate=$("prrActionDue").value.trim();
++    return action&&owner?[{action,owner,dueDate}]:[];
++  }
++  function render(s){
++    const incidents=s.incidents||[];
++    $("prrStatus").textContent=s.status||"—";
++    $("prrRecovered").textContent=`${incidents.filter(x=>x.recoveryVerified).length}/${incidents.length}`;
++    $("prrOpen").textContent=incidents.filter(x=>!x.review||x.review.status!=="POST_INCIDENT_REVIEW_ACCEPTED").length;
++    $("prrAccepted").textContent=incidents.filter(x=>x.review?.status==="POST_INCIDENT_REVIEW_ACCEPTED").length;
++    $("prrHeadline").textContent=s.headline||"Production recovery review unavailable.";
++    $("prrIncidents").innerHTML=incidents.map(x=>`<article data-prr-incident="${esc(x.incidentId)}"${x.review?` data-prr-review="${esc(x.review.id)}"`:""}><div><strong>${esc(x.severity)} · ${esc(x.title)}</strong><span>${x.durationMinutes===null?"duration unavailable":`${x.durationMinutes} min`} · recovery ${x.recoveryVerified?"VERIFIED":"OPEN"} · review ${esc(x.reviewState)}</span></div><p><strong>Impact:</strong> ${esc(x.businessImpact||"Not recorded.")}</p><p><strong>Resolution:</strong> ${esc(x.resolution||"Not recorded.")}</p><div class="v432-list">${(x.affectedLocations||[]).map(l=>`<article><strong>${l.recovered?"PASS":"OPEN"} · ${esc(l.locationName)}</strong><span>recovery ${l.passed}/${l.total}</span></article>`).join("")||"<article><strong>No location-specific recovery state.</strong></article>"}</div>${x.review?`<p><strong>Root cause:</strong> ${esc(x.review.rootCause)} · repeat risk ${esc(x.review.repeatRisk)}</p><p><strong>Corrective actions:</strong> ${(x.review.correctiveActions||[]).map(a=>`${esc(a.action)} — ${esc(a.owner)}${a.dueDate?` by ${esc(a.dueDate)}`:""} · ${esc(a.executionState)}`).join(" | ")}</p><div class="v4316-actions">${x.review.status!=="POST_INCIDENT_REVIEW_ACCEPTED"?'<button type="button" data-prr-accept="true">Accept lessons & close review</button>':""}</div>`:'<div class="v4316-actions"><button type="button" data-prr-create="true">Create post-incident review</button></div>'}</article>`).join("")||"<article><strong>No resolved incidents are ready for recovery review.</strong></article>";
++    $("prrHistory").innerHTML=(s.reviewHistory||[]).map(x=>`<article><strong>${esc(x.incidentTitle)} · ${esc(x.status)}</strong><span>repeat risk ${esc(x.repeatRisk)} · ${new Date(x.createdAt).toLocaleString()}${x.lessonsAcceptedBy?` · accepted by ${esc(x.lessonsAcceptedBy)}`:""}</span></article>`).join("")||"<article><strong>No post-incident reviews recorded.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("prrHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-prr-incident]"); if(!card)return;
++    if(ev.target.closest("[data-prr-create]")){
++      try{
++        await e.createReview(card.dataset.prrIncident,{
++          rootCause:$("prrRootCause").value,
++          contributingFactors:$("prrFactors").value.split(",").map(x=>x.trim()).filter(Boolean),
++          correctiveActions:actionPayload(),
++          repeatRisk:$("prrRisk").value,
++          executiveSummary:$("prrExecutiveSummary").value
++        });
++        await load();
++      }catch(err){$("prrHeadline").textContent=err.message;}
++      return;
++    }
++    if(ev.target.closest("[data-prr-accept]")){
++      try{
++        await e.acceptLessons(card.dataset.prrReview,{approver:$("prrApprover").value,note:$("prrClosure").value});
++        await load();
++      }catch(err){$("prrHeadline").textContent=err.message;}
++    }
++  });
++  $("prrRefresh")?.addEventListener("click",load);
++  ["production-incident:updated","production-recovery:review-created","production-recovery:lessons-accepted","production-support:event-updated","reliability:slo-evaluated","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentProductionRecoveryReviewCenterModule=createBlueCurrentProductionRecoveryReviewCenterModule;
++})();--- a/scripts/maintenance/test-v50.20-production-recovery-review.js
++++ b/scripts/maintenance/test-v50.20-production-recovery-review.js
+@@ -0,0 +1,99 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/productionRecoveryReviewService");
++
++(async()=>{
++  const state={productionRecoveryReviews:[]},audit=[],events=[];
++  const incidentSnapshot={
++    commandHistory:[{
++      id:"i1",title:"Reservation outage",severity:"critical",status:"resolved",
++      commander:"Incident Lead",
++      createdAt:"2026-08-09T10:00:00.000Z",
++      resolvedAt:"2026-08-09T10:42:00.000Z",
++      affectedLocationIds:["a"],
++      businessImpact:"Reservation intake unavailable.",
++      serviceImpact:"Host stand used manual fallback.",
++      resolution:"Reservation service restored.",
++      recoveryEvidence:[{detail:"API recovered."}]
++    }]
++  };
++  let support={
++    locations:[{
++      locationId:"a",locationName:"A",healthState:"healthy",readinessScore:86,openSupportEvents:0
++    }]
++  };
++  let reliability={status:"meeting",score:96,breached:0,warning:0,errorBudgetRemaining:100};
++
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>incidentSnapshot},
++    {snapshot:async()=>support},
++    {evaluate:async()=>reliability}
++  );
++
++  let snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.version,"50.20.0");
++  assert.equal(snap.status,"post-incident-review-open");
++  assert.equal(snap.incidents[0].durationMinutes,42);
++  assert.equal(snap.incidents[0].recoveryVerified,true);
++  assert.equal(snap.policy.automaticCorrectiveActionExecution,false);
++
++  let blocked=false;
++  try{
++    await svc.createReview("org",["a"],"i1",{
++      rootCause:"Reservation connector saturation.",
++      executiveSummary:"Recovered.",
++      correctiveActions:[]
++    },"Tester");
++  }catch(e){blocked=/corrective action/i.test(e.message);}
++  assert(blocked);
++
++  const review=await svc.createReview("org",["a"],"i1",{
++    rootCause:"Reservation connector saturation caused request queue exhaustion.",
++    contributingFactors:["Insufficient alert threshold","Dinner peak load"],
++    correctiveActions:[{
++      action:"Recalibrate reservation connector saturation alert.",
++      owner:"Platform Lead",
++      dueDate:"2026-08-16"
++    }],
++    repeatRisk:"medium",
++    executiveSummary:"Dinner reservation intake was restored in 42 minutes. Corrective work is assigned and remains human-owned."
++  },"Tester");
++
++  assert.equal(review.status,"POST_INCIDENT_REVIEW_OPEN");
++  assert.equal(review.correctiveActions.length,1);
++  assert.equal(review.correctiveActions[0].executionState,"NOT_EXECUTED_BY_BLUE_CURRENT");
++  assert.equal(review.correctiveActionsExecutedBySystem,false);
++  assert.equal(review.runtimeMutationPerformed,false);
++
++  const accepted=await svc.acceptLessons("org",review.id,{
++    approver:"VP Operations",
++    note:"Lessons reviewed and corrective ownership accepted."
++  },"Tester");
++
++  assert.equal(accepted.status,"POST_INCIDENT_REVIEW_ACCEPTED");
++  assert.equal(accepted.lessonsAcceptedBy,"VP Operations");
++
++  snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.status,"post-incident-review-complete");
++  assert.equal(snap.incidents[0].reviewState,"POST_INCIDENT_REVIEW_ACCEPTED");
++  assert.equal(audit.length,2);
++  assert.equal(events.length,2);
++
++  console.log(JSON.stringify({
++    ok:true,version:"50.20.0",
++    recoveryVerification:true,
++    incidentDuration:true,
++    rootCauseCapture:true,
++    correctiveActionOwnership:true,
++    repeatRisk:true,
++    executiveSummary:true,
++    humanLessonsAcceptance:true,
++    correctiveActionExecutionState:"NOT_EXECUTED_BY_BLUE_CURRENT",
++    automaticCorrectiveActionExecution:false,
++    automaticClosure:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V50.20.0-RELEASE.md
++++ b/V50.20.0-RELEASE.md
+@@ -0,0 +1,156 @@
++# BLUE CURRENT V50.20.0 — PRODUCTION RECOVERY & POST-INCIDENT REVIEW
++
++V50.16–V50.20 adds the recovery-verification and lessons-learned layer after a human-resolved production incident.
++
++## Recovery verification
++
++Resolved incidents are evaluated against current production state.
++
++For each affected restaurant Blue Current checks:
++
++1. Production support health is not critical.
++2. Restaurant readiness is at least 70.
++3. No open critical production support event remains.
++
++If no location-specific scope exists, platform reliability is used as the recovery signal.
++
++The review also summarizes:
++
++- incident start / resolution time
++- incident duration in minutes
++- business impact
++- service impact
++- incident commander
++- human resolution
++- recovery evidence
++- current platform SLO/reliability state
++
++## Human-authored post-incident review
++
++Adds:
++
++POST `/api/production-recovery-review/incidents/:incidentId/review`
++
++A review requires:
++
++- human-authored root cause
++- at least one corrective action
++- corrective-action owner
++- repeat-risk assessment
++- executive post-incident summary
++
++Optional contributing factors are captured explicitly.
++
++Repeat risk:
++
++- low
++- medium
++- high
++- critical
++
++## Corrective actions
++
++Each corrective action records:
++
++- action
++- owner
++- due date
++- status: `OPEN`
++- execution state: `NOT_EXECUTED_BY_BLUE_CURRENT`
++
++Blue Current records corrective work but does not execute it.
++
++Each review also explicitly records:
++
++- `correctiveActionsExecutedBySystem: false`
++- `runtimeMutationPerformed: false`
++
++## Human lessons acceptance
++
++Adds:
++
++POST `/api/production-recovery-review/reviews/:reviewId/accept-lessons`
++
++Acceptance is admin-only and requires:
++
++- named approver
++- human closure / lessons note
++
++Accepted state:
++
++`POST_INCIDENT_REVIEW_ACCEPTED`
++
++## Executive review record
++
++The stored post-incident review provides the decision-ready executive record:
++
++- duration
++- impact
++- recovery status
++- root cause
++- contributing factors
++- corrective actions / owners / due dates
++- repeat risk
++- executive summary
++- lessons acceptance
++- closure note
++
++## Safety policy
++
++- `recoveryVerificationReadOnly: true`
++- `rootCauseHumanAuthored: true`
++- `correctiveActionsHumanOwned: true`
++- `lessonsAcceptanceHumanRequired: true`
++- `automaticCorrectiveActionExecution: false`
++- `automaticClosure: false`
++- `autonomousProductionChanges: false`
++
++## Current authenticated runtime
++
++The untouched Chefs runtime has no human-resolved production incident yet.
++
++V50.20 therefore correctly reports:
++
++- status: `resolved-incident-required`
++- resolved incidents in post-incident review: 0
++- automatic corrective-action execution: false
++- automatic closure: false
++- autonomous production changes: false
++
++The current demo owner account does not have the admin permission used to accept post-incident lessons, and an attempted acceptance correctly returns HTTP 403.
++
++## Validation
++
++- V50.20 Production Recovery & Post-Incident Review lifecycle PASS
++- restored-service verification PASS
++- affected-location recovery state PASS
++- incident duration / impact summary PASS
++- human root-cause capture PASS
++- contributing-factor capture PASS
++- corrective actions + ownership PASS
++- repeat-risk assessment PASS
++- executive summary PASS
++- human lessons acceptance PASS
++- corrective actions remain NOT_EXECUTED_BY_BLUE_CURRENT PASS
++- V50.15 Production Incident Command regression PASS
++- authenticated recovery-review GET PASS
++- admin lessons-acceptance boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 911 JavaScript files
++- 766 client scripts
++- 5,724 unique HTML IDs
++
++## Next
++
++V50.21–V50.25 should build Production Learning & Corrective Action Governance:
++
++- corrective-action register across incidents
++- action owner / due-date aging
++- overdue / high-risk corrective work
++- repeat-incident linkage
++- risk-reduction evidence
++- executive accountability rollup
++- action verification
++- human completion / acceptance
++- no automatic corrective-action execution
+--- a/README-APPLY-V50.20.0.md
++++ b/README-APPLY-V50.20.0.md
+@@ -0,0 +1,48 @@
++# APPLY BLUE CURRENT V50.20.0
++
++Baseline: exact V50.15.0 repository.
++
++Extract `BLUE-CURRENT-V50.20.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v50.20-production-recovery-review.js
++node scripts/maintenance/test-v50.15-production-incident-command.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "50.20.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Production Recovery & Post-Incident Review** surface appears after Production Incident Command.
++
++Important:
++
++- recovery verification is read-only
++- root cause is human authored
++- corrective actions require human owners
++- corrective actions are never executed by Blue Current
++- lessons acceptance is admin/human controlled
++- post-incident closure does not mutate production runtime
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V50.20.0 add production recovery and post-incident review"
++git push origin live-service-timeline
++```

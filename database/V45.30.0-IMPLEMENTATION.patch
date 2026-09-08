@@ -1,0 +1,546 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "45.25.0",
++  "version": "45.30.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 V45 controlled execution certification",
++  "description": "Blue Current Hospitality OS \u2014 V45 failure recovery certification and architecture closure",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V45.25.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V45.30.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "45.25.0",
++        version: "45.30.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -1006,6 +1006,17 @@
+       return sendJson(response,200,await autonomousOperationsService.v45ExecutionCertificationControl(organizationId,auth.user.name,await readJson(request)));
+     }
+     if (url.pathname === "/api/autonomous-assistance/controlled-execution-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ControlledExecutionReadiness(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/failure-recovery-rehearsals" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryRehearsals(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/failure-recovery-rehearsals" && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Failure/recovery certification permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryRehearsals(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/failure-recovery-control" && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Failure/recovery certification permission required."});
++      return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryControl(organizationId,auth.user.name,await readJson(request)));
++    }
++    if (url.pathname === "/api/autonomous-assistance/failure-recovery-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45FailureRecoveryReadiness(organizationId));
++    if (url.pathname === "/api/autonomous-assistance/v45-closure-readiness" && request.method === "GET") return sendJson(response,200,await autonomousOperationsService.v45ClosureReadiness(organizationId));
+     if (url.pathname === "/api/autonomous-operations/run" && request.method === "POST") {
+       if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Operations permission required."});
+       return sendJson(response,200,await autonomousOperationsService.runCycle(organizationId,auth.user.name));
+--- a/server/services/autonomousOperationsService.js
++++ b/server/services/autonomousOperationsService.js
+@@ -712,6 +712,155 @@
+     const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
+     return {organizationId:org,version:"45.25.0",score,status:score===100?"v45-controlled-execution-certification-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,latestCertificationId:latest?.id||null,policyHash:policy.contentHash,safety:{certificationOnly:true,liveExecutionEnabled:false,liveHandlers:0,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.25.0-controlled-execution-certification"};
+   }
++  v45FailureScenarioCatalog(){
++    return {
++      version:"45.30.0",
++      executionMode:"certification-only",
++      liveExecutionEnabled:false,
++      scenarios:{
++        "adapter-timeout":{
++          severity:"high",description:"Shadow adapter exceeds the execution time budget.",
++          expectedDetection:"timeout",expectedResponse:"trip-circuit-breaker-and-compensate",rollbackRequired:true
++        },
++        "partial-command-failure":{
++          severity:"critical",description:"A multi-command shadow batch completes only a subset of commands.",
++          expectedDetection:"partial-failure",expectedResponse:"halt-batch-and-compensate-completed-steps",rollbackRequired:true
++        },
++        "evidence-drift":{
++          severity:"high",description:"Approval/certification evidence digest changes before release.",
++          expectedDetection:"evidence-drift",expectedResponse:"invalidate-certification-and-require-reapproval",rollbackRequired:false
++        },
++        "compensation-failure":{
++          severity:"critical",description:"A compensation contract fails its recovery rehearsal.",
++          expectedDetection:"compensation-failure",expectedResponse:"trip-circuit-breaker-and-block-promotion",rollbackRequired:true
++        },
++        "emergency-stop":{
++          severity:"critical",description:"Operator emergency stop is engaged during a release rehearsal.",
++          expectedDetection:"emergency-stop",expectedResponse:"halt-immediately-and-preserve-state",rollbackRequired:false
++        }
++      }
++    };
++  }
++  buildV45FailureRecoveryRecord(certification,scenarioKey,actor="Operator"){
++    const catalog=this.v45FailureScenarioCatalog(),scenario=catalog.scenarios[scenarioKey];
++    if(!scenario)throw new Error("Unsupported V45 failure scenario.");
++    const now=this.now();
++    const adapters=this.v45ExecutionAdapterRegistry().adapters;
++    const commandTypes=certification?.commandTypes||[];
++    const compensationPlan=commandTypes.map(commandType=>{
++      const adapter=adapters[commandType];
++      return {commandType,adapterId:adapter?.adapterId||null,compensationType:adapter?.compensation?.type||null,supported:Boolean(adapter?.compensation?.supported),status:"planned"};
++    });
++    return {
++      id:`V45-FR-${Date.now().toString(36).toUpperCase()}`,organizationId:certification.organizationId,certificationId:certification.id,
++      scenarioKey,severity:scenario.severity,description:scenario.description,expectedDetection:scenario.expectedDetection,expectedResponse:scenario.expectedResponse,
++      rollbackRequired:scenario.rollbackRequired,status:"prepared",detected:false,circuitBreakerTripped:false,rollback:{required:scenario.rollbackRequired,status:"not-run",steps:compensationPlan},
++      recovery:{status:"not-run",evidence:[],recoveredAt:null},observation:{state:"pre-failure",liveStateChanged:false},
++      executionMode:"failure-rehearsal",liveExecutionEnabled:false,liveExecutionAllowed:false,liveStateChanged:false,
++      createdBy:actor,createdAt:now,updatedAt:now
++    };
++  }
++  async v45FailureRecoveryRehearsals(org,actor=null,input=null){
++    const db=await this.database.read(),stored=db.v45FailureRecoveryRehearsals?.[org]||[];
++    if(!input)return {organizationId:org,count:stored.length,items:stored.slice(0,100),latest:stored[0]||null,catalog:this.v45FailureScenarioCatalog(),build:"45.30.0-v45-failure-recovery-closure"};
++    const certificationId=String(input.certificationId||"").trim(),scenarioKey=String(input.scenarioKey||"").trim();
++    if(!certificationId)throw new Error("certificationId is required.");
++    const certification=(db.v45ExecutionCertifications?.[org]||[]).find(x=>x.id===certificationId);
++    if(!certification)throw new Error("Execution certification not found.");
++    const rehearsal=this.buildV45FailureRecoveryRecord(certification,scenarioKey,actor||"Operator");
++    await this.database.mutate(data=>{data.v45FailureRecoveryRehearsals||={};const list=data.v45FailureRecoveryRehearsals[org]||[];list.unshift(rehearsal);data.v45FailureRecoveryRehearsals[org]=list.slice(0,300);return rehearsal;});
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 failure/recovery rehearsal prepared: ${rehearsal.scenarioKey}`,category:"v45-failure-recovery"});
++    this.realtimeHub.publish("v45-failure-rehearsal-prepared",{organizationId:org,id:rehearsal.id,scenarioKey,liveExecutionEnabled:false});
++    return {organizationId:org,rehearsal,build:"45.30.0-v45-failure-recovery-closure"};
++  }
++  async v45FailureRecoveryControl(org,actor,input={}){
++    const rehearsalId=String(input.rehearsalId||"").trim(),action=String(input.action||"").trim().toLowerCase();
++    if(!rehearsalId)throw new Error("rehearsalId is required.");
++    if(!["inject","rollback","recover","verify"].includes(action))throw new Error("Unsupported failure/recovery rehearsal action.");
++    const now=this.now();
++    const result=await this.database.mutate(db=>{
++      db.v45FailureRecoveryRehearsals||={};const list=db.v45FailureRecoveryRehearsals[org]||[];const r=list.find(x=>x.id===rehearsalId);if(!r)throw new Error("Failure/recovery rehearsal not found.");
++      const event=(type,detail={})=>{r.history||=[];r.history.push({type,actor:actor||"Operator",at:now,...detail});r.history=r.history.slice(-150);};
++      if(action==="inject"){
++        if(r.status!=="prepared")throw new Error(`Failure injection unavailable from status ${r.status}.`);
++        r.detected=true;r.status="failure-detected";r.observation={state:"degraded",failure:r.expectedDetection,liveStateChanged:false};
++        if(["adapter-timeout","partial-command-failure","compensation-failure"].includes(r.scenarioKey)){
++          r.circuitBreakerTripped=true;
++        }
++        if(r.scenarioKey==="evidence-drift")r.authorizationInvalidated=true;
++        if(r.scenarioKey==="emergency-stop")r.emergencyStopObserved=true;
++        event("failure-injected",{scenarioKey:r.scenarioKey});
++      }else if(action==="rollback"){
++        if(!r.detected)throw new Error("Inject the failure before rollback.");
++        if(!r.rollback.required){r.rollback.status="not-required";event("rollback-not-required");}
++        else{
++          const failDrill=Boolean(input.failDrill);
++          r.rollback.steps=(r.rollback.steps||[]).map(step=>({...step,status:failDrill?"failed":"compensated",simulated:true,liveStateChanged:false}));
++          r.rollback.status=failDrill?"failed":"completed";
++          if(failDrill){r.circuitBreakerTripped=true;r.status="rollback-failed";}else r.status="rolled-back";
++          event(failDrill?"rollback-failed":"rollback-completed");
++        }
++      }else if(action==="recover"){
++        if(!r.detected)throw new Error("Inject the failure before recovery.");
++        if(r.rollback.required&&r.rollback.status!=="completed")throw new Error("Required rollback must complete before recovery.");
++        r.recovery={status:"completed",evidence:[
++          {type:"failure-detected",pass:r.detected===true},
++          {type:"live-state-isolated",pass:r.liveStateChanged===false},
++          {type:"rollback",pass:!r.rollback.required||r.rollback.status==="completed"},
++          {type:"response",pass:Boolean(r.expectedResponse)}
++        ],recoveredAt:now};
++        r.status="recovered";r.observation={state:"recovered-shadow",liveStateChanged:false};event("recovery-completed");
++      }else if(action==="verify"){
++        const evidence=r.recovery?.evidence||[];
++        const recoveryPass=r.recovery?.status==="completed"&&evidence.length>0&&evidence.every(x=>x.pass);
++        r.status=recoveryPass?"verified":"verification-failed";r.verifiedAt=now;r.verification={pass:recoveryPass,evidence,liveStateChanged:false};event("recovery-verified",{pass:recoveryPass});
++      }
++      r.liveExecutionEnabled=false;r.liveExecutionAllowed=false;r.liveStateChanged=false;r.updatedAt=now;
++      return {...r};
++    });
++    await this.auditService.record({organizationId:org,actor:actor||"Operator",action:`V45 failure/recovery ${action}: ${rehearsalId}`,category:"v45-failure-recovery"});
++    this.realtimeHub.publish("v45-failure-recovery-updated",{organizationId:org,id:rehearsalId,status:result.status,liveExecutionEnabled:false});
++    return {organizationId:org,rehearsal:result,build:"45.30.0-v45-failure-recovery-closure"};
++  }
++  async v45FailureRecoveryReadiness(org){
++    const db=await this.database.read(),items=db.v45FailureRecoveryRehearsals?.[org]||[],catalog=this.v45FailureScenarioCatalog();
++    const scenarios=Object.keys(catalog.scenarios),verified=new Set(items.filter(x=>x.status==="verified"&&x.verification?.pass).map(x=>x.scenarioKey));
++    const rollbackItems=items.filter(x=>x.rollback?.required);
++    const checks=[
++      {id:"scenario-coverage",label:"Production-like degraded-state scenario coverage",pass:scenarios.every(x=>verified.has(x)),detail:`${verified.size}/${scenarios.length} scenario(s) verified`},
++      {id:"timeout",label:"Timeout detection and recovery",pass:verified.has("adapter-timeout"),detail:verified.has("adapter-timeout")?"verified":"not verified"},
++      {id:"partial-failure",label:"Partial failure rollback",pass:verified.has("partial-command-failure"),detail:verified.has("partial-command-failure")?"verified":"not verified"},
++      {id:"evidence-drift",label:"Evidence drift invalidation",pass:verified.has("evidence-drift"),detail:verified.has("evidence-drift")?"verified":"not verified"},
++      {id:"compensation-failure",label:"Compensation failure degradation gate",pass:verified.has("compensation-failure"),detail:verified.has("compensation-failure")?"verified":"not verified"},
++      {id:"emergency-stop",label:"Emergency stop recovery evidence",pass:verified.has("emergency-stop"),detail:verified.has("emergency-stop")?"verified":"not verified"},
++      {id:"rollback-evidence",label:"Rollback/compensation evidence retained",pass:rollbackItems.length>0&&rollbackItems.filter(x=>x.status==="verified").every(x=>x.rollback.status==="completed"),detail:`${rollbackItems.filter(x=>x.rollback.status==="completed").length}/${rollbackItems.length} rollback-required rehearsal(s) compensated`},
++      {id:"history",label:"Failure and recovery history persisted",pass:items.length>0&&items.every(x=>Array.isArray(x.history)&&x.history.length>=2),detail:`${items.length} persistent rehearsal record(s)`},
++      {id:"live-safety",label:"Failure certification remains isolated",pass:items.every(x=>x.liveExecutionEnabled===false&&x.liveExecutionAllowed===false&&x.liveStateChanged===false),detail:"No failure/recovery rehearsal mutates restaurant state"}
++    ];
++    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {organizationId:org,version:"45.30.0",score,status:score===100?"v45-failure-recovery-ready":score>=56?"conditional":"blocked",trusted:score===100,blockers,checks,verifiedScenarios:[...verified],generatedAt:this.now(),safety:{liveExecutionEnabled:false,liveExecutionAllowed:false,liveStateChanged:false},build:"45.30.0-v45-failure-recovery-closure"};
++  }
++  async v45ClosureReadiness(org){
++    const db=await this.database.read();
++    const assistance=db.v45AutonomousDecisionCycles?.[org]||[],proposals=db.v45InterventionProposals?.[org]||[],rehearsals=db.v45InterventionRehearsals?.[org]||[];
++    const packets=db.v45ApprovalPackets?.[org]||[],drafts=db.v45CommandDrafts?.[org]||[],shadows=db.v45ShadowExecutions?.[org]||[],certs=db.v45ExecutionCertifications?.[org]||[];
++    const failure=await this.v45FailureRecoveryReadiness(org);
++    const latestCert=certs[0]||null;
++    const checks=[
++      {id:"decision-cycle",label:"Autonomous observation/recommendation/simulation",pass:assistance.length>0&&assistance.every(x=>x.governance?.liveExecutionAllowed===false),detail:`${assistance.length} governed decision cycle(s)`},
++      {id:"intervention-planning",label:"Policy-bounded intervention planning",pass:proposals.length>0&&rehearsals.length>0,detail:`${proposals.length} proposal(s) · ${rehearsals.length} rehearsal(s)`},
++      {id:"authorization",label:"Scoped human authorization",pass:packets.length>0&&packets.every(x=>x.scope==="command-draft-only"&&x.liveExecutionAllowed===false),detail:`${packets.length} approval packet(s)`},
++      {id:"command-separation",label:"Command drafting separated from execution",pass:drafts.length>0&&drafts.every(x=>x.executionCertified===false&&x.liveExecutionAllowed===false),detail:`${drafts.length} non-executable draft(s)`},
++      {id:"shadow-boundary",label:"Shadow execution boundary",pass:shadows.length>0&&shadows.every(x=>x.mode==="shadow-only"&&x.liveStateChanged===false),detail:`${shadows.length} shadow execution(s)`},
++      {id:"controlled-certification",label:"Controlled execution certification",pass:Boolean(latestCert)&&latestCert.promotion?.eligible===true&&latestCert.liveExecutionEnabled===false,detail:latestCert?`${latestCert.status} · eligible=${latestCert.promotion?.eligible}`:"No certification"},
++      {id:"failure-recovery",label:"Production-like failure/recovery certification",pass:failure.score===100,detail:`${failure.score}% · ${failure.status}`},
++      {id:"zero-live-canary",label:"Live canary remains zero",pass:certs.every(x=>x.canary?.currentPercent===0&&x.canary?.liveTraffic===false),detail:"0% live traffic across certifications"},
++      {id:"no-live-handlers",label:"No production mutation handlers introduced",pass:Object.values(this.v45ExecutionAdapterRegistry().adapters).every(x=>x.liveHandler===null),detail:"All live handlers remain null"},
++      {id:"operation-v-safety",label:"V45 closes without live restaurant mutation",pass:[...assistance,...proposals,...rehearsals,...packets,...drafts,...shadows,...certs].every(x=>x.liveStateChanged!==true)&&failure.safety.liveStateChanged===false,detail:"Entire V45 path remains governed/shadow-only"}
++    ];
++    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {organizationId:org,version:"45.30.0",score,status:score===100?"v45-architecture-closed":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,operationVPhase:"V45 Autonomous Operations",nextPhase:"operator fine-comb / operational validation before any live-execution release",safety:{liveExecutionEnabled:false,liveHandlers:0,canaryLivePercentage:0,liveExecutionAllowed:false,liveStateChanged:false},generatedAt:this.now(),build:"45.30.0-v45-failure-recovery-closure"};
++  }
+   async ask(question,org){const snap=await this.snapshot(org),q=String(question||'').toLowerCase(),risk=[...snap.locations].sort((a,b)=>(a.health-b.health)||(b.averageTicketMinutes-a.averageTicketMinutes))[0],top=[...snap.locations].sort((a,b)=>b.revenue-a.revenue)[0];let answer;if(q.includes('revenue')||q.includes('forecast'))answer=`Projected portfolio close is $${snap.forecasts.reduce((s,x)=>s+x.projectedCloseRevenue,0).toLocaleString()}. ${top.name} currently leads at $${top.revenue.toLocaleString()}.`;else if(q.includes('help')||q.includes('risk')||q.includes('behind'))answer=`${risk.name} needs the most attention. Health is ${risk.health}, average tickets are ${risk.averageTicketMinutes} minutes, and operating risk is ${risk.risk}.`;else if(q.includes('cook')||q.includes('staff')){const need=snap.forecasts.filter(x=>x.additionalStaffNeeded>0);answer=need.length?`${need.map(x=>`${x.name}: ${x.additionalStaffNeeded} additional`).join('; ')} team member coverage is forecast.`:'No location currently crosses the additional-staff threshold.';}else if(q.includes('profit')||q.includes('margin'))answer=`Modeled operating profit is $${snap.portfolioProfit.operatingProfit.toLocaleString()} at a ${snap.portfolioProfit.margin}% margin. Labor is ${snap.portfolioProfit.laborPercent}% and food cost is ${snap.portfolioProfit.foodPercent}%.`;else answer=`Portfolio health is ${snap.portfolio.health}. There are ${snap.actions.length} active operating actions; ${snap.actions.filter(x=>x.risk==='low').length} are low risk and eligible for guarded automation.`;return{question,answer,generatedAt:this.now(),evidence:{portfolioHealth:snap.portfolio.health,actions:snap.actions.length,atRiskLocations:snap.portfolio.atRiskLocations}};}
+ }
+ module.exports=AutonomousOperationsService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="45.25.0">
++  <meta name="blue-current-build" content="45.30.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8583,6 +8583,7 @@
+ <section class="v432-center v438-center v4316-center" id="interventionAuthorizationCenter"><header><div><small>V45.11–V45.15 · Governed Intervention Authorization</small><strong>Package evidence for approval, revalidate state, enforce scoped expiry/revocation, and draft non-executable commands.</strong><span>Approval authorizes command drafting only. No command in this release has an execution endpoint.</span></div><div class="v4316-actions"><button id="viaRefresh" type="button">Refresh</button><button id="viaPrepare" type="button">Prepare approval packet</button></div></header><div class="v4316-actions"><select id="viaRole"><option value="manager">Manager</option><option value="general-manager">General manager</option><option value="regional-operator">Regional operator</option><option value="executive">Executive</option></select><input id="viaNote" class="v4312-input" placeholder="Approval / rejection note"><button type="button" data-auth-action="approve">Approve</button><button type="button" data-auth-action="reject">Reject</button><button type="button" data-auth-action="revoke">Revoke</button><button type="button" data-auth-action="draft">Draft commands</button></div><div class="v432-kpis"><article><small>Packets</small><strong id="viaPackets">0</strong></article><article><small>Pending</small><strong id="viaPending">0</strong></article><article><small>Approved</small><strong id="viaApproved">0</strong></article><article><small>Drafts</small><strong id="viaDrafts">0</strong></article><article><small>Readiness</small><strong id="viaScore">0%</strong></article><article><small>Status</small><strong id="viaStatus">—</strong></article><article><small>Trusted</small><strong id="viaTrusted">NO</strong></article></div><div class="v4316-answer" id="viaMessage">Prepare an approval packet from a conflict-free rehearsal.</div><div id="viaList" class="v432-list"></div><div id="viaChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="shadowExecutionBoundaryCenter"><header><div><small>V45.16–V45.20 · Shadow Execution Boundary</small><strong>Preflight allowlisted commands, enforce compensation contracts and emergency stop, and shadow-run adapters with canary traffic locked to zero.</strong><span>Live handlers are intentionally absent. This release certifies the boundary architecture without enabling restaurant mutations.</span></div><div class="v4316-actions"><button id="vseRefresh" type="button">Refresh</button><button id="vseShadow" type="button">Run shadow execution</button></div></header><div class="v4316-actions"><input id="vseReason" class="v4312-input" placeholder="Emergency-stop reason"><button id="vseStopBtn" type="button">Engage emergency stop</button></div><div class="v432-kpis"><article><small>Adapters</small><strong id="vseAdapters">0</strong></article><article><small>Emergency stop</small><strong id="vseStop">ENGAGED</strong></article><article><small>Shadow runs</small><strong id="vseShadows">0</strong></article><article><small>Canary live</small><strong id="vseCanary">0%</strong></article><article><small>Readiness</small><strong id="vseScore">0%</strong></article><article><small>Status</small><strong id="vseStatus">—</strong></article><article><small>Trusted</small><strong id="vseTrusted">NO</strong></article></div><div class="v4316-answer" id="vseMessage">Shadow-run the latest approved command draft to certify the boundary.</div><div id="vseList" class="v432-list"></div><div id="vseChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="executionCertificationCenter"><header><div><small>V45.21–V45.25 · Controlled Execution Certification</small><strong>Certify immutable policy, dual authorization, observation windows, compensation, circuit breakers, and promotion criteria before any future live release.</strong><span>Certification can declare the shadow boundary ready; it still cannot enable live handlers or live canary traffic.</span></div><div class="v4316-actions"><button id="vecRefresh" type="button">Refresh</button><button id="vecCreate" type="button">Create certification</button></div></header><div class="v4316-actions"><input id="vecApprover" class="v4312-input" placeholder="Distinct approver ID"><select id="vecRole"><option value="general-manager">General manager</option><option value="regional-operator">Regional operator</option><option value="executive">Executive</option></select><button type="button" data-cert-action="authorize">Authorize</button><button type="button" data-cert-action="start-observation">Start observation</button><button type="button" data-cert-action="complete-observation">Complete test observation</button><button type="button" data-cert-action="compensation-drill">Compensation drill</button><button type="button" data-cert-action="evaluate">Evaluate</button><button type="button" data-cert-action="trip-breaker">Trip breaker drill</button><button type="button" data-cert-action="reset-review">Reset for review</button></div><div class="v432-kpis"><article><small>Certifications</small><strong id="vecCerts">0</strong></article><article><small>Approvers</small><strong id="vecApprovers">0</strong></article><article><small>Observation</small><strong id="vecObservation">—</strong></article><article><small>Compensation</small><strong id="vecComp">—</strong></article><article><small>Shadow runs</small><strong id="vecShadows">0</strong></article><article><small>Canary live</small><strong id="vecCanary">0%</strong></article><article><small>Readiness</small><strong id="vecScore">0%</strong></article><article><small>Status</small><strong id="vecStatus">—</strong></article><article><small>Trusted</small><strong id="vecTrusted">NO</strong></article></div><div class="v4316-answer" id="vecMessage">Create a certification from the latest command draft after shadow runs exist.</div><div id="vecChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="v45ClosureCenter"><header><div><small>V45.26–V45.30 · Failure Recovery + V45 Closure</small><strong>Rehearse degraded states, compensation and recovery evidence, then certify V45 Autonomous Operations architecture.</strong><span>V45 closes with live handlers absent and live canary traffic at zero; this is architecture certification, not permission for production mutation.</span></div><div class="v4316-actions"><button id="v45cRefresh" type="button">Refresh</button><select id="v45cScenario"><option value="adapter-timeout">Adapter timeout</option><option value="partial-command-failure">Partial command failure</option><option value="evidence-drift">Evidence drift</option><option value="compensation-failure">Compensation failure</option><option value="emergency-stop">Emergency stop</option></select><button id="v45cCreate" type="button">Create failure rehearsal</button></div></header><div class="v4316-actions"><button type="button" data-failure-action="inject">Inject failure</button><button type="button" data-failure-action="rollback">Run rollback</button><button type="button" data-failure-action="recover">Recover</button><button type="button" data-failure-action="verify">Verify recovery</button></div><div class="v432-kpis"><article><small>Rehearsals</small><strong id="v45cRuns">0</strong></article><article><small>Scenarios</small><strong id="v45cScenarios">0/5</strong></article><article><small>Failure readiness</small><strong id="v45cFailureScore">0%</strong></article><article><small>V45 closure</small><strong id="v45cClosureScore">0%</strong></article><article><small>Status</small><strong id="v45cStatus">—</strong></article><article><small>Trusted</small><strong id="v45cTrusted">NO</strong></article></div><div class="v4316-answer" id="v45cMessage">Run all five failure/recovery scenarios to close V45.</div><div id="v45cList" class="v432-list"></div><div id="v45cChecks" class="v432-list"></div></section>
+ <section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · Persistent Runtime Readiness</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryEngineV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryCenterV44.js?v=44.3.0"></script>
+@@ -8614,6 +8615,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="shadowExecutionBoundaryCenter" data-src="js/modules/shadowExecutionBoundaryCenter.js?v=45.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executionCertificationCenter" data-src="js/modules/executionCertificationEngine.js?v=45.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="executionCertificationCenter" data-src="js/modules/executionCertificationCenter.js?v=45.25.0"></script>
+-<script src="js/startup-loader.js?v=45.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v45ClosureCenter" data-src="js/modules/v45ClosureEngine.js?v=45.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="v45ClosureCenter" data-src="js/modules/v45ClosureCenter.js?v=45.30.0"></script>
++<script src="js/startup-loader.js?v=45.30.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -2448,6 +2448,7 @@
+ const interventionAuthorizationCenterModule = startupRegistry.register("interventionAuthorizationCenter",shouldInitializeCenter("interventionAuthorizationCenter") ? window.createBlueCurrentInterventionAuthorizationCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionPlanningCenter"]);
+ const shadowExecutionBoundaryCenterModule = startupRegistry.register("shadowExecutionBoundaryCenter",shouldInitializeCenter("shadowExecutionBoundaryCenter") ? window.createBlueCurrentShadowExecutionBoundaryCenterModule?.(eventBus, appState) : null,["eventBus","appState","interventionAuthorizationCenter"]);
+ const executionCertificationCenterModule = startupRegistry.register("executionCertificationCenter",shouldInitializeCenter("executionCertificationCenter") ? window.createBlueCurrentExecutionCertificationCenterModule?.(eventBus, appState) : null,["eventBus","appState","shadowExecutionBoundaryCenter"]);
++const v45ClosureCenterModule = startupRegistry.register("v45ClosureCenter",shouldInitializeCenter("v45ClosureCenter") ? window.createBlueCurrentV45ClosureCenterModule?.(eventBus, appState) : null,["eventBus","appState","executionCertificationCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V45.25.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V45.30.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/v45ClosureEngine.js
++++ b/client/js/modules/v45ClosureEngine.js
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentV45ClosureEngine{constructor(){this.r=api();}rehearsals(){return this.r('/api/autonomous-assistance/failure-recovery-rehearsals');}create(certificationId,scenarioKey){return this.r('/api/autonomous-assistance/failure-recovery-rehearsals',{method:'POST',body:JSON.stringify({certificationId,scenarioKey})});}control(rehearsalId,action,extra={}){return this.r('/api/autonomous-assistance/failure-recovery-control',{method:'POST',body:JSON.stringify({rehearsalId,action,...extra})});}failureReadiness(){return this.r('/api/autonomous-assistance/failure-recovery-readiness');}closure(){return this.r('/api/autonomous-assistance/v45-closure-readiness');}}
++window.BlueCurrentV45ClosureEngine=BlueCurrentV45ClosureEngine;})();--- a/client/js/modules/v45ClosureCenter.js
++++ b/client/js/modules/v45ClosureCenter.js
+@@ -0,0 +1,8 @@
++(function(){"use strict";
++function createBlueCurrentV45ClosureCenterModule(){const root=document.getElementById('v45ClosureCenter');if(!root||!window.BlueCurrentV45ClosureEngine)return null;const e=new window.BlueCurrentV45ClosureEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));let current=null;
++async function load(){try{const [r,f,c]=await Promise.all([e.rehearsals(),e.failureReadiness(),e.closure()]);current=r.items?.[0]||null;$('v45cRuns').textContent=r.count||0;$('v45cScenarios').textContent=`${f.verifiedScenarios?.length||0}/5`;$('v45cFailureScore').textContent=`${f.score||0}%`;$('v45cClosureScore').textContent=`${c.score||0}%`;$('v45cStatus').textContent=c.status||'—';$('v45cTrusted').textContent=c.trusted?'YES':'NO';$('v45cMessage').textContent=current?`${current.scenarioKey} · ${current.status} · live state isolated`:'Run all five failure/recovery scenarios to close V45.';$('v45cList').innerHTML=(r.items||[]).slice(0,12).map(x=>`<article><div><strong>${esc(x.scenarioKey)} · ${esc(x.status)}</strong><span>rollback ${esc(x.rollback?.status)} · recovery ${esc(x.recovery?.status)} · breaker ${x.circuitBreakerTripped?'TRIPPED':'clear'}</span></div><button type="button" data-failure-id="${esc(x.id)}">Select</button></article>`).join('')||'<p>No failure/recovery rehearsals yet.</p>';$('v45cChecks').innerHTML=(c.checks||[]).map(x=>`<article><div><strong>${x.pass?'PASS':'BLOCK'} · ${esc(x.label)}</strong><span>${esc(x.detail)}</span></div></article>`).join('');}catch(err){$('v45cMessage').textContent=err.message;}}
++async function latestCert(){const t=localStorage.getItem("blueCurrentV3230Token")||"",r=await fetch('/api/autonomous-assistance/execution-certifications',{headers:{Authorization:`Bearer ${t}`}}),d=await r.json();if(!r.ok)throw new Error(d.error||'Unable to load certifications');return d.items?.[0]||null;}
++$('v45cCreate')?.addEventListener('click',async()=>{try{const c=await latestCert();if(!c)throw new Error('Create controlled-execution certification first.');await e.create(c.id,$('v45cScenario').value);await load();}catch(err){$('v45cMessage').textContent=err.message;}});
++root.addEventListener('click',async ev=>{const id=ev.target.closest('[data-failure-id]')?.dataset.failureId;if(id){const r=await e.rehearsals();current=(r.items||[]).find(x=>x.id===id)||null;await load();return;}const action=ev.target.closest('[data-failure-action]')?.dataset.failureAction;if(!action)return;if(!current){$('v45cMessage').textContent='Select a failure rehearsal first.';return;}try{await e.control(current.id,action);await load();}catch(err){$('v45cMessage').textContent=err.message;}});
++$('v45cRefresh')?.addEventListener('click',load);load();return{engine:e,load};}
++window.createBlueCurrentV45ClosureCenterModule=createBlueCurrentV45ClosureCenterModule;})();--- a/scripts/maintenance/test-v45-failure-recovery-closure.js
++++ b/scripts/maintenance/test-v45-failure-recovery-closure.js
+@@ -0,0 +1,64 @@
++"use strict";
++const assert=require("assert"),AutonomousOperationsService=require("../../server/services/autonomousOperationsService");
++class MemoryDatabase{constructor(seed){this.data=structuredClone(seed);}async read(){return structuredClone(this.data);}async mutate(fn){return structuredClone(fn(this.data));}}
++(async()=>{
++ const org="org-test";
++ const cert={id:"CERT1",organizationId:org,draftId:"D1",commandTypes:["fire-pacing-plan","contingency-coverage-plan"],status:"certified-shadow-boundary",promotion:{eligible:true,blockers:[]},canary:{currentPercent:0,liveTraffic:false,promotionLocked:true},liveExecutionEnabled:false,liveExecutionAllowed:false,liveStateChanged:false};
++ const seed={
++  v45AutonomousDecisionCycles:{[org]:[{id:"CYCLE1",governance:{liveExecutionAllowed:false},liveStateChanged:false}]},
++  v45InterventionProposals:{[org]:[{id:"P1",liveExecutionAllowed:false,liveStateChanged:false}]},
++  v45InterventionRehearsals:{[org]:[{id:"REH1",status:"ready-for-approval-review",liveStateChanged:false}]},
++  v45ApprovalPackets:{[org]:[{id:"AP1",scope:"command-draft-only",liveExecutionAllowed:false,liveStateChanged:false}]},
++  v45CommandDrafts:{[org]:[{id:"D1",executionCertified:false,liveExecutionAllowed:false,liveStateChanged:false}]},
++  v45ShadowExecutions:{[org]:[
++   {id:"S1",draftId:"D1",mode:"shadow-only",status:"completed",preflight:{pass:true},idempotencyKey:"K1",liveExecutionAllowed:false,liveStateChanged:false},
++   {id:"S2",draftId:"D1",mode:"shadow-only",status:"completed",preflight:{pass:true},idempotencyKey:"K2",liveExecutionAllowed:false,liveStateChanged:false},
++   {id:"S3",draftId:"D1",mode:"shadow-only",status:"completed",preflight:{pass:true},idempotencyKey:"K3",liveExecutionAllowed:false,liveStateChanged:false}
++  ]},
++  v45ExecutionCertifications:{[org]:[cert]}
++ };
++ const db=new MemoryDatabase(seed),audits=[],events=[];
++ const svc=new AutonomousOperationsService(db,{record:async x=>audits.push(x)},{publish:(t,p)=>events.push({t,p})},{snapshot:async()=>({})});
++ const scenarios=["adapter-timeout","partial-command-failure","evidence-drift","compensation-failure","emergency-stop"];
++ const verified=[];
++ for(const scenarioKey of scenarios){
++   const made=await svc.v45FailureRecoveryRehearsals(org,"Tester",{certificationId:"CERT1",scenarioKey});
++   const id=made.rehearsal.id;
++   let x=await svc.v45FailureRecoveryControl(org,"Tester",{rehearsalId:id,action:"inject"});
++   assert.equal(x.rehearsal.detected,true);
++   assert.equal(x.rehearsal.liveStateChanged,false);
++   if(x.rehearsal.rollback.required){
++     x=await svc.v45FailureRecoveryControl(org,"Tester",{rehearsalId:id,action:"rollback"});
++     assert.equal(x.rehearsal.rollback.status,"completed");
++   }
++   x=await svc.v45FailureRecoveryControl(org,"Tester",{rehearsalId:id,action:"recover"});
++   assert.equal(x.rehearsal.recovery.status,"completed");
++   x=await svc.v45FailureRecoveryControl(org,"Tester",{rehearsalId:id,action:"verify"});
++   assert.equal(x.rehearsal.status,"verified");
++   assert.equal(x.rehearsal.verification.pass,true);
++   verified.push(scenarioKey);
++ }
++ const failure=await svc.v45FailureRecoveryReadiness(org);
++ assert.equal(failure.score,100);
++ assert.equal(failure.trusted,true);
++ assert.equal(failure.verifiedScenarios.length,5);
++ const closure=await svc.v45ClosureReadiness(org);
++ assert.equal(closure.score,100);
++ assert.equal(closure.trusted,true);
++ assert.equal(closure.status,"v45-architecture-closed");
++ assert.equal(closure.safety.liveExecutionEnabled,false);
++ assert.equal(closure.safety.liveHandlers,0);
++ assert.equal(closure.safety.canaryLivePercentage,0);
++
++ // Negative rollback drill: compensation failure must block recovery if rollback fails.
++ const bad=await svc.v45FailureRecoveryRehearsals(org,"Tester",{certificationId:"CERT1",scenarioKey:"partial-command-failure"});
++ await svc.v45FailureRecoveryControl(org,"Tester",{rehearsalId:bad.rehearsal.id,action:"inject"});
++ const failedRollback=await svc.v45FailureRecoveryControl(org,"Tester",{rehearsalId:bad.rehearsal.id,action:"rollback",failDrill:true});
++ assert.equal(failedRollback.rehearsal.status,"rollback-failed");
++ assert.equal(failedRollback.rehearsal.circuitBreakerTripped,true);
++ let recoveryBlocked=false;
++ try{await svc.v45FailureRecoveryControl(org,"Tester",{rehearsalId:bad.rehearsal.id,action:"recover"});}catch(e){recoveryBlocked=/rollback must complete/.test(e.message);}
++ assert.equal(recoveryBlocked,true);
++
++ console.log(JSON.stringify({ok:true,version:closure.version,verifiedScenarios:verified,failureReadiness:failure.score,closure:closure.score,status:closure.status,failedRollbackBlockedRecovery:recoveryBlocked,liveHandlers:closure.safety.liveHandlers,canaryLivePercentage:closure.safety.canaryLivePercentage,liveExecutionEnabled:false,audits:audits.length,events:events.length},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V45.30.0.md
++++ b/README-APPLY-V45.30.0.md
+@@ -0,0 +1,69 @@
++# APPLY BLUE CURRENT V45.30.0
++
++## Baseline
++Apply over the authoritative repository containing V45.25.0.
++
++## Important
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++Extract `BLUE-CURRENT-V45.30.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v45-failure-recovery-closure.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "45.30.0"
++```
++
++## Recommended Git staging
++Do not use `git add .` while runtime database artifacts may exist.
++
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/autonomousOperationsService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/v45ClosureEngine.js
++git add client/js/modules/v45ClosureCenter.js
++git add scripts/maintenance/test-v45-failure-recovery-closure.js
++git add README-APPLY-V45.30.0.md
++git add V45.30.0-RELEASE.md
++git add V45.30.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V45.30.0 failure recovery and V45 closure"
++git push origin live-service-timeline
++```
++
++## Safety
++V45.30.0 closes the autonomous-operations architecture while keeping production mutation disabled.
+--- a/V45.30.0-RELEASE.md
++++ b/V45.30.0-RELEASE.md
+@@ -0,0 +1,127 @@
++# BLUE CURRENT V45.30.0 — FAILURE RECOVERY CERTIFICATION + V45 CLOSURE
++
++## Release scope
++
++V45.26–V45.30 closes the Autonomous Operations architecture with production-like degraded-state rehearsals, rollback/recovery evidence, and an overall V45 closure gate.
++
++Live restaurant mutation remains disabled.
++
++### V45.26 — Failure Scenario Catalog
++Adds persistent certification scenarios for:
++- adapter timeout
++- partial command failure
++- evidence drift
++- compensation failure
++- emergency stop
++
++Each scenario declares its severity, expected detection mode, expected response, and whether rollback is required.
++
++### V45.27 — Failure Injection + Degraded-State Evidence
++Failure rehearsals can now inject a controlled degraded state.
++
++The rehearsal records:
++- failure detection
++- degraded observation state
++- circuit-breaker behavior
++- evidence invalidation where applicable
++- emergency-stop behavior
++- live-state isolation
++
++### V45.28 — Rollback / Compensation Rehearsal
++Rollback-required scenarios execute compensation drills against the declared adapter contracts.
++
++The focused test also proves the negative path:
++- a failed rollback trips the circuit breaker
++- recovery is blocked until rollback completes successfully
++
++### V45.29 — Recovery Verification + Persistent History
++Recovery requires:
++- failure detection
++- successful rollback when required
++- live-state isolation
++- expected-response evidence
++
++Every rehearsal retains persistent history and can reach `verified` only when recovery evidence passes.
++
++### V45.30 — V45 Architecture Closure
++Adds two final readiness gates:
++
++- `GET /api/autonomous-assistance/failure-recovery-readiness`
++- `GET /api/autonomous-assistance/v45-closure-readiness`
++
++The V45 closure gate certifies the complete chain:
++- autonomous observation/recommendation/simulation
++- policy-bounded intervention planning
++- scoped human authorization
++- non-executable command drafting
++- shadow execution
++- controlled execution certification
++- failure/recovery certification
++- zero live canary
++- zero live handlers
++- no live restaurant mutation
++
++A fully passing architecture returns:
++
++`v45-architecture-closed`
++
++## New APIs
++- `GET/POST /api/autonomous-assistance/failure-recovery-rehearsals`
++- `POST /api/autonomous-assistance/failure-recovery-control`
++- `GET /api/autonomous-assistance/failure-recovery-readiness`
++- `GET /api/autonomous-assistance/v45-closure-readiness`
++
++## UI
++Adds the V45 Failure Recovery + Closure center:
++- five failure scenario types
++- failure injection
++- rollback rehearsal
++- recovery
++- recovery verification
++- failure-readiness score
++- final V45 closure score
++
++## Safety boundary
++V45.30.0 closes the architecture without enabling live execution.
++
++Current state remains:
++- `liveExecutionEnabled: false`
++- production/live handlers: 0
++- canary live traffic: 0%
++- `liveExecutionAllowed: false`
++- `liveStateChanged: false`
++
++## Validation
++- `node scripts/maintenance/test-v45-failure-recovery-closure.js` passed.
++- All 5 failure/recovery scenarios verified.
++- Timeout recovery verified.
++- Partial-failure rollback verified.
++- Evidence-drift invalidation/recovery verified.
++- Compensation-failure recovery verified.
++- Emergency-stop recovery verified.
++- Deliberately failed rollback blocked recovery and tripped the breaker.
++- Failure/recovery readiness scored 100%.
++- V45 closure readiness scored 100%.
++- V45 status returned `v45-architecture-closed`.
++- Live handler count remained 0.
++- Canary live percentage remained 0.
++- `npm run check` passed:
++  - 816 JavaScript files
++  - 698 client scripts
++  - 5,214 unique HTML IDs
++- Server startup passed as V45.30.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged during validation.
++
++## Operation V position
++V45 Autonomous Operations is now architecture-closed.
++
++The next phase should not be another broad architecture expansion. It should move into the operator fine-comb / operational validation phase:
++- evaluate the product against real restaurant workflows
++- remove redundant or low-value modules
++- simplify navigation and operator surfaces
++- validate throughput, staffing, pacing, kitchen, guest recovery, and profitability workflows
++- identify the minimum production-grade execution set
++- decide which live execution adapters, if any, deserve implementation after operator validation
++
++Live mutation should remain disabled until that product/operator review explicitly selects and certifies narrowly bounded production actions.

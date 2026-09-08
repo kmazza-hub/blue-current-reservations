@@ -1,0 +1,24 @@
+{
+  "version": "100.3.0",
+  "name": "Service to Manager Exception Visibility Integrity",
+  "requires": "100.2.99",
+  "runtimeFilesChanged": [
+    "server/services/actionListService.js",
+    "server/api/router.js",
+    "client/js/cloud/cloudApi.js",
+    "client/js/floor-reservations-v62.0.js"
+  ],
+  "sourceSha256": {
+    "server/services/actionListService.js": "25e082cf3638158d738b66baca5124ff986d0d91ae67e93331ce9b2f4347c84a",
+    "server/api/router.js": "3f892730fc36625df467b74a5cee5f2b0f734f051cb43dd5c923322602840a1b",
+    "client/js/cloud/cloudApi.js": "c56d2a639b7435fdf52434123ebd93aeb362f8bf06f733d3478c4c89d570e337",
+    "client/js/floor-reservations-v62.0.js": "526d152c4f0010b449760937119eeb13cea5a93fdbbad1dea10e1b7f3226862b"
+  },
+  "targetSha256": {
+    "server/services/actionListService.js": "00c33b110ea6067e27a4104ac9714b96491cfa1897db2aba8ee360fd555d9577",
+    "server/api/router.js": "823cc822eb9bcf4c8c1bc3f713404a35f901fb675a82525eeb3782f0c6102805",
+    "client/js/cloud/cloudApi.js": "167f92a395235ea7a4cbfde92de2e96cb81105244b57226944adc659d9235d1f",
+    "client/js/floor-reservations-v62.0.js": "0d0b79a6d941aca4e7c0a4cdd1831e13b3d8a40ead9febf26fdcf6d7844e2c07"
+  },
+  "scope": "existing Service recovery truth to existing Manager Actions and Operations Feed only"
+}

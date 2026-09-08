@@ -1,0 +1,17 @@
+{
+  "version": "100.2.69",
+  "requires": "V100.2.68",
+  "adds": [
+    "client/js/manager-action-ownership-v100.2.69.js",
+    "scripts/maintenance/test-v100.2.69-manager-action-ownership.js"
+  ],
+  "modifies": [
+    "client/index.html"
+  ],
+  "protected": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/js/manager-operations-truth-v100.2.68.js",
+    "server/services/actionListService.js",
+    "client/js/cloud/cloudApi.js"
+  ]
+}

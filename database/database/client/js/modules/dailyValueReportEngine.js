@@ -1,0 +1,8 @@
+(function(){"use strict";
+class BlueCurrentDailyValueReportEngine{
+ constructor({appState}){this.appState=appState;this.outcomeKey="bluecurrent:operations-outcomes";this.ownershipKey="bluecurrent:action-ownership";this.checkpointKey="bluecurrent:shift-checkpoints";}
+ read(k){try{return JSON.parse(localStorage.getItem(k)||"[]");}catch{return [];}}
+ snapshot(){const outcomes=this.read(this.outcomeKey),actions=this.read(this.ownershipKey),checks=this.read(this.checkpointKey),today=new Date().toDateString();const todays=outcomes.filter(x=>new Date(x.capturedAt||x.createdAt||Date.now()).toDateString()===today);const modeled=todays.reduce((s,x)=>s+(Number(x.modeledImpact)||0),0),measured=todays.reduce((s,x)=>s+(Number(x.measuredImpact)||0),0);const completed=actions.filter(x=>x.status==="done").length,open=actions.filter(x=>x.status!=="done").length;const avg=checks.length?Math.round(checks.slice(-8).reduce((s,x)=>s+(Number(x.score)||0),0)/Math.min(8,checks.length)):0;return{date:new Date().toISOString(),outcomes:todays.length,modeled,measured,variance:measured-modeled,completed,open,checkpoints:checks.length,averageShiftScore:avg,summary:measured>=modeled?"Measured value is meeting or exceeding the operating model.":"Measured value is below the operating model and should be reviewed."};}
+ text(v){return[`Blue Current Daily Value Report`,new Date(v.date).toLocaleDateString(),`Measured value: $${Math.round(v.measured)}`,`Modeled value: $${Math.round(v.modeled)}`,`Variance: $${Math.round(v.variance)}`,`Completed actions: ${v.completed}`,`Open actions: ${v.open}`,`Checkpoints: ${v.checkpoints}`,`Average shift score: ${v.averageShiftScore||"—"}`,``,v.summary].join("\n");}
+}
+window.BlueCurrentDailyValueReportEngine=BlueCurrentDailyValueReportEngine;})();

@@ -1,0 +1,21 @@
+"use strict";
+const fs=require("fs"), path=require("path"), vm=require("vm");
+const root=path.resolve(__dirname,"..","..");
+const frag=path.join(root,"patches","arrival-checkin-priority-seating-queue.jsfrag");
+const apply=path.join(root,"APPLY-V100.2.17.js");
+const checks=[]; const add=(name,ok)=>checks.push({name,ok:!!ok});
+add("fragment exists",fs.existsSync(frag));
+add("apply exists",fs.existsSync(apply));
+const src=fs.existsSync(frag)?fs.readFileSync(frag,"utf8"):"";
+add("version marker",src.includes("V100.2.17 — Arrival Check-In + Priority Seating Queue"));
+add("blank banner suppression",src.includes("bc-empty-banner-v100-2-17"));
+add("mark arrived action",src.includes("bc-mark-arrived-v100-2-17"));
+add("arrivals move to ready queue",src.includes("moveArrivalToReady"));
+add("priority sorting",src.includes("priorityScore")&&src.includes("sortReadyQueue"));
+add("special occasions promoted",src.includes("bc-special-priority-v100-2-17")&&src.includes("specialLabelFor"));
+add("source labels preserved",src.includes("Reservation · Arrived")&&src.includes("Walk-in"));
+add("counts synchronize",src.includes("syncCounts"));
+add("guided Seat preserved",src.includes("<button type=\"button\">Seat</button>"));
+add("dynamic reservation rows",src.includes("MutationObserver"));
+try{new vm.Script(src,{filename:"arrival-checkin-priority-seating-queue.jsfrag"});add("fragment syntax",true);}catch(e){add("fragment syntax",false);console.error(e.stack);}
+const failed=checks.filter(c=>!c.ok); console.log(JSON.stringify({ok:!failed.length,version:"100.2.17",checks,failed:failed.map(f=>f.name)},null,2)); process.exit(failed.length?1:0);

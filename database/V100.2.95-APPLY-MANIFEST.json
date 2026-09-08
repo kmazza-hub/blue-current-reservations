@@ -1,0 +1,13 @@
+{
+  "version": "100.2.95",
+  "name": "iPad Safe Area + Keyboard Viewport Integrity",
+  "runtimeFilesChanged": [
+    "client/index.html",
+    "client/styles.css"
+  ],
+  "sourceIndexSha256": "6ef6328a6118bf1d8dfebd03823ed4694e66e6835be17e7f2ef55ef92ad0e065",
+  "targetIndexSha256": "8c271bf22527b189b06bf3c3f955e16140c121a81b1f8857a8157a7517863d3e",
+  "sourceStylesSha256": "c33b62febce584646d7eee5d099968a811f5837f7e8b95e85db168aa270e89d6",
+  "targetStylesSha256": "c7a72318b58355b777f6ef9aad70d5e0c1bcff3923ed7f01537b676eb70f5162",
+  "scope": "coarse-pointer tablet safe areas and keyboard viewport only"
+}

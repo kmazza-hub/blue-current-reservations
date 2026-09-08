@@ -1,0 +1,26 @@
+{
+  "version": "94.25.0",
+  "phase": "D",
+  "gate": "PILOT_DEVICE_NETWORK_AND_ONSITE_CONTINUITY_READINESS",
+  "requiredScenarios": [
+    "API_FAILURE",
+    "CONNECTOR_FAILURE",
+    "STALE_DATA",
+    "OFFLINE_CONTINUITY",
+    "DEVICE_SURFACE_FAILURE",
+    "RECONNECT_RECONCILIATION"
+  ],
+  "onsiteControls": [
+    "FALLBACK_RUNBOOK",
+    "ESCALATION_OWNER",
+    "RECOVERY_TIME_OBJECTIVE",
+    "SHIFT_CONTINUITY",
+    "NO_HIGH_CRITICAL_FINDINGS"
+  ],
+  "decision": {
+    "humanRecoverDegradedHoldRequired": true,
+    "automaticRepair": false,
+    "automaticOperationalMutation": false
+  },
+  "nextGate": "PILOT_TRAINING_RUNBOOK_AND_OPERATOR_ENABLEMENT_READINESS"
+}

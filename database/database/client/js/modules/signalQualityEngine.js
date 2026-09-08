@@ -1,0 +1,6 @@
+(function(){"use strict";
+class BlueCurrentSignalQualityEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.value=null;['integration-control:updated','state:changed'].forEach(n=>eventBus.on(n,()=>this.refresh(n)));}
+ refresh(reason='manual'){const s=this.appState.getState(),i=s.integrationControl||{},checks=(i.sources||[]).map((x,idx)=>({id:x.id,label:x.label,completeness:x.connected?Math.max(72,96-idx*4):0,freshness:x.freshness,valid:x.connected&&x.freshness!=='stale'}));const valid=checks.filter(x=>x.valid).length,score=checks.length?Math.round(checks.reduce((n,x)=>n+x.completeness,0)/checks.length):0,status=score>=85&&valid>=3?'trusted':score>=60?'watch':'insufficient',anomalies=checks.filter(x=>!x.valid).map(x=>`${x.label}: ${x.completeness===0?'missing':'stale'}`);const value={capturedAt:new Date().toISOString(),reason,score,status,checks,anomalies,confidenceMultiplier:status==='trusted'?1:status==='watch'?.85:.6};this.value=value;this.appState.update({signalQuality:value,signalQualityHistory:[...(s.signalQualityHistory||[]),value].slice(-100)});this.eventBus.emit('signal-quality:updated',structuredClone(value));return structuredClone(value)} snapshot(){return structuredClone(this.value||this.refresh('initial'))}
+}
+window.BlueCurrentSignalQualityEngine=BlueCurrentSignalQualityEngine;})();

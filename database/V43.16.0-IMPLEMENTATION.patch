@@ -1,0 +1,409 @@
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/README-APPLY-V43.16.0.md /mnt/data/bcnext/blue-current-reservations/README-APPLY-V43.16.0.md
+--- /mnt/data/orig4312/blue-current-reservations/README-APPLY-V43.16.0.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/README-APPLY-V43.16.0.md	2026-08-08 03:22:35.993000970 +0000
+@@ -0,0 +1,16 @@
++# Apply V43.16.0
++
++Replace the changed client/server files and add the eight new Executive AI modules included in this patch.
++
++Restart:
++
++```powershell
++taskkill /F /IM node.exe
++npm run start
++```
++
++Open:
++
++`http://localhost:8787/?pack=executive`
++
++Recommended order: Executive AI Console -> Executive Conversation Memory -> Executive Evidence Citations -> Governed Executive Action Draft -> Executive AI Readiness.
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/V43.16.0-RELEASE.md /mnt/data/bcnext/blue-current-reservations/V43.16.0-RELEASE.md
+--- /mnt/data/orig4312/blue-current-reservations/V43.16.0-RELEASE.md	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/V43.16.0-RELEASE.md	2026-08-08 03:22:35.992371766 +0000
+@@ -0,0 +1,15 @@
++# Blue Current V43.16.0 — Executive AI Governance
++
++This release extends Executive AI with governed conversation memory, evidence citation mapping, approval-aware action drafting, and an Executive AI readiness gate.
++
++## V43.13 Executive Conversation Memory
++Persists the last 20 executive question/answer turns as explicit decision context.
++
++## V43.14 Executive Evidence Citations
++Maps executive claims to knowledge-graph relationships and reasoning evidence.
++
++## V43.15 Governed Executive Action Draft
++Transforms an executive instruction into a risk-classified, approval-aware action draft. No live action executes automatically.
++
++## V43.16 Executive AI Readiness
++Certifies graph coverage, reasoning confidence, citation coverage, saved conversation evidence, and governed action drafting.
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/index.html /mnt/data/bcnext/blue-current-reservations/client/index.html
+--- /mnt/data/orig4312/blue-current-reservations/client/index.html	2026-08-08 03:11:11.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/index.html	2026-08-08 03:22:14.851735096 +0000
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="43.12.0-executive-ai">
++  <meta name="blue-current-build" content="43.16.0-executive-ai-governance">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8545,6 +8545,18 @@
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveDecisionSimulatorCenter" data-src="js/modules/executiveDecisionSimulatorCenter.js?v=43.12.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiConsoleCenter" data-src="js/modules/executiveAiConsoleEngine.js?v=43.12.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiConsoleCenter" data-src="js/modules/executiveAiConsoleCenter.js?v=43.12.0"></script>
+-<script src="js/startup-loader.js?v=43.12.0"></script>
++<section class="v432-center v438-center v4316-center" id="executiveConversationCenter"><header><div><small>V43.13 · Executive Conversation Memory</small><strong>Keep a governed executive conversation across operating questions.</strong><span>Recent turns are persisted as decision context, not hidden model memory.</span></div><div class="v4316-actions"><button id="ecRefresh" type="button">Refresh</button><button id="ecAsk" type="button">Ask & save</button></div></header><textarea id="ecQuery" class="v4312-input">What changed since the last executive review?</textarea><div class="v432-kpis"><article><small>Saved turns</small><strong id="ecTurns">0</strong></article><article><small>Last turn</small><strong id="ecLast">—</strong></article></div><div class="v4316-answer" id="ecAnswer">Ask a question to create governed conversation evidence.</div><div id="ecList" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="executiveCitationCenter"><header><div><small>V43.14 · Executive Evidence Citations</small><strong>Trace executive claims back to the graph and reasoning evidence that supports them.</strong></div><button id="eciRefresh" type="button">Refresh citations</button></header><div class="v432-kpis"><article><small>Traceability</small><strong id="eciScore">0%</strong></article><article><small>Citations</small><strong id="eciCount">0</strong></article><article><small>Status</small><strong id="eciStatus">—</strong></article></div><div id="eciList" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="executiveActionDraftCenter"><header><div><small>V43.15 · Governed Executive Action Draft</small><strong>Turn an executive instruction into an approval-aware operating draft.</strong><span>No live action is executed from this workspace.</span></div><div class="v4316-actions"><button id="eadRefresh" type="button">Refresh</button><button id="eadCreate" type="button">Create draft</button></div></header><textarea id="eadInstruction" class="v4312-input">Prepare a staffing and pacing response for the highest-risk location.</textarea><div class="v432-kpis"><article><small>Drafts</small><strong id="eadCount">0</strong></article><article><small>Latest status</small><strong id="eadStatus">—</strong></article></div><div id="eadList" class="v432-list"></div></section>
++<section class="v432-center v432-cert v4316-center" id="executiveAiReadinessCenter"><header><div><small>V43.16 · Executive AI Readiness</small><strong>Certify the executive AI path from evidence through governed action drafting.</strong></div><button id="earRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="earScore">0%</strong></article><article><small>Status</small><strong id="earStatus">—</strong></article><article><small>Trusted</small><strong id="earTrusted">NO</strong></article><article><small>Blockers</small><strong id="earBlockers">0</strong></article></div><div id="earChecks" class="v432-list"></div></section>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveConversationCenter" data-src="js/modules/executiveConversationEngine.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveConversationCenter" data-src="js/modules/executiveConversationCenter.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveCitationCenter" data-src="js/modules/executiveCitationEngine.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveCitationCenter" data-src="js/modules/executiveCitationCenter.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveActionDraftCenter" data-src="js/modules/executiveActionDraftEngine.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveActionDraftCenter" data-src="js/modules/executiveActionDraftCenter.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiReadinessCenter" data-src="js/modules/executiveAiReadinessEngine.js?v=43.16.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="executive" data-pack-explicit="true" data-center="executiveAiReadinessCenter" data-src="js/modules/executiveAiReadinessCenter.js?v=43.16.0"></script>
++<script src="js/startup-loader.js?v=43.16.0"></script>
+ </body>
+ </html>
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/app-v15.1.3.js /mnt/data/bcnext/blue-current-reservations/client/js/app-v15.1.3.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/app-v15.1.3.js	2026-08-08 03:11:12.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/app-v15.1.3.js	2026-08-08 03:22:35.990866401 +0000
+@@ -1057,7 +1057,7 @@
+ document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
+ window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
+ 
+-const platform = window.BlueCurrentPlatform.create({ build: "43.12.0-executive-ai", eventBus });
++const platform = window.BlueCurrentPlatform.create({ build: "43.16.0-executive-ai-governance", eventBus });
+ const startupRegistry = platform.registry;
+ window.BlueCurrentStartupRegistry = startupRegistry;
+ window.BlueCurrentPlatformRuntime = platform;
+@@ -2425,6 +2425,10 @@
+ const executiveReasoningCenterV43Module = startupRegistry.register("executiveReasoningCenterV43",shouldInitializeCenter("executiveReasoningCenterV43") ? window.createBlueCurrentExecutiveReasoningCenterV43Module?.(eventBus, appState) : null,["eventBus","appState","executiveKnowledgeGraphCenter"]);
+ const executiveDecisionSimulatorCenterModule = startupRegistry.register("executiveDecisionSimulatorCenter",shouldInitializeCenter("executiveDecisionSimulatorCenter") ? window.createBlueCurrentExecutiveDecisionSimulatorCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveReasoningCenterV43"]);
+ const executiveAiConsoleCenterModule = startupRegistry.register("executiveAiConsoleCenter",shouldInitializeCenter("executiveAiConsoleCenter") ? window.createBlueCurrentExecutiveAiConsoleCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveReasoningCenterV43","executiveDecisionSimulatorCenter"]);
++const executiveConversationCenterModule = startupRegistry.register("executiveConversationCenter",shouldInitializeCenter("executiveConversationCenter") ? window.createBlueCurrentExecutiveConversationCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveAiConsoleCenter"]);
++const executiveCitationCenterModule = startupRegistry.register("executiveCitationCenter",shouldInitializeCenter("executiveCitationCenter") ? window.createBlueCurrentExecutiveCitationCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveKnowledgeGraphCenter","executiveReasoningCenterV43"]);
++const executiveActionDraftCenterModule = startupRegistry.register("executiveActionDraftCenter",shouldInitializeCenter("executiveActionDraftCenter") ? window.createBlueCurrentExecutiveActionDraftCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter"]);
++const executiveAiReadinessCenterModule = startupRegistry.register("executiveAiReadinessCenter",shouldInitializeCenter("executiveAiReadinessCenter") ? window.createBlueCurrentExecutiveAiReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","executiveConversationCenter","executiveCitationCenter","executiveActionDraftCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveActionDraftCenter.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveActionDraftCenter.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveActionDraftCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveActionDraftCenter.js	2026-08-08 03:21:04.494272729 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveActionDraftCenterModule(){const root=document.getElementById('executiveActionDraftCenter');if(!root||!window.BlueCurrentExecutiveActionDraftEngine)return null;const e=new window.BlueCurrentExecutiveActionDraftEngine(),$=id=>document.getElementById(id);function render(items){$('eadCount').textContent=items.length;$('eadList').innerHTML=items.map(d=>`<article><div><strong>${d.instruction}</strong><span>${d.status} · ${d.risk} · ${d.evidenceCount||0} evidence item(s)</span></div><b>${d.confidence||0}%</b></article>`).join('')||'<article><span>No governed action drafts yet.</span></article>';}async function load(){try{render((await e.get()).items||[]);}catch(err){$('eadList').innerHTML=`<article><span>${err.message}</span></article>`;}}async function create(){const q=$('eadInstruction').value.trim();if(!q)return;$('eadStatus').textContent='Drafting…';try{const x=await e.create(q);$('eadStatus').textContent=x.draft?.status||'created';await load();}catch(err){$('eadStatus').textContent=err.message;}}$('eadCreate')?.addEventListener('click',create);$('eadRefresh')?.addEventListener('click',load);load();return{engine:e,load,create};}window.createBlueCurrentExecutiveActionDraftCenterModule=createBlueCurrentExecutiveActionDraftCenterModule;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveActionDraftEngine.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveActionDraftEngine.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveActionDraftEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveActionDraftEngine.js	2026-08-08 03:21:04.493638447 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:h}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}get(){return this.r('/api/executive/action-drafts');}create(instruction){return this.r('/api/executive/action-drafts',{method:'POST',body:JSON.stringify({instruction})});}}window.BlueCurrentExecutiveActionDraftEngine=E;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveAiReadinessCenter.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveAiReadinessCenter.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveAiReadinessCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveAiReadinessCenter.js	2026-08-08 03:21:04.495541637 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveAiReadinessCenterModule(){const root=document.getElementById('executiveAiReadinessCenter');if(!root||!window.BlueCurrentExecutiveAiReadinessEngine)return null;const e=new window.BlueCurrentExecutiveAiReadinessEngine(),$=id=>document.getElementById(id);async function load(){try{const x=await e.get();$('earScore').textContent=`${x.score||0}%`;$('earStatus').textContent=x.status||'—';$('earTrusted').textContent=x.trusted?'YES':'NO';$('earBlockers').textContent=(x.blockers||[]).length;$('earChecks').innerHTML=(x.checks||[]).map(c=>`<article><div><strong>${c.label}</strong><span>${c.detail}</span></div><b class="${c.pass?'pass':'block'}">${c.pass?'PASS':'BLOCK'}</b></article>`).join('');}catch(err){$('earStatus').textContent='error';$('earChecks').innerHTML=`<article><span>${err.message}</span></article>`;}}$('earRefresh')?.addEventListener('click',load);load();return{engine:e,load};}window.createBlueCurrentExecutiveAiReadinessCenterModule=createBlueCurrentExecutiveAiReadinessCenterModule;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveAiReadinessEngine.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveAiReadinessEngine.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveAiReadinessEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveAiReadinessEngine.js	2026-08-08 03:21:04.494917300 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async p=>{const h={};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{headers:h}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}get(){return this.r('/api/executive/ai-readiness');}}window.BlueCurrentExecutiveAiReadinessEngine=E;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveCitationCenter.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveCitationCenter.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveCitationCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveCitationCenter.js	2026-08-08 03:21:04.493000680 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveCitationCenterModule(){const root=document.getElementById('executiveCitationCenter');if(!root||!window.BlueCurrentExecutiveCitationEngine)return null;const e=new window.BlueCurrentExecutiveCitationEngine(),$=id=>document.getElementById(id);async function load(){try{const x=await e.get();$('eciScore').textContent=`${x.score||0}%`;$('eciCount').textContent=x.count||0;$('eciStatus').textContent=x.status||'—';$('eciList').innerHTML=(x.items||[]).slice(0,20).map(c=>`<article><div><strong>${c.claim}</strong><span>${c.sourceType} · ${c.sourceRef}</span></div><b>${c.confidence||0}%</b></article>`).join('')||'<article><span>No citations available.</span></article>';}catch(err){$('eciStatus').textContent='error';$('eciList').innerHTML=`<article><span>${err.message}</span></article>`;}}$('eciRefresh')?.addEventListener('click',load);load();return{engine:e,load};}window.createBlueCurrentExecutiveCitationCenterModule=createBlueCurrentExecutiveCitationCenterModule;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveCitationEngine.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveCitationEngine.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveCitationEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveCitationEngine.js	2026-08-08 03:21:04.492408390 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async p=>{const h={};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{headers:h}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}get(){return this.r('/api/executive/evidence-citations');}}window.BlueCurrentExecutiveCitationEngine=E;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveConversationCenter.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveConversationCenter.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveConversationCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveConversationCenter.js	2026-08-08 03:21:04.491785215 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentExecutiveConversationCenterModule(){const root=document.getElementById('executiveConversationCenter');if(!root||!window.BlueCurrentExecutiveConversationEngine)return null;const e=new window.BlueCurrentExecutiveConversationEngine(),$=id=>document.getElementById(id);function render(x){const turns=x.turns||[];$('ecTurns').textContent=String(turns.length);$('ecLast').textContent=x.lastTurnAt?new Date(x.lastTurnAt).toLocaleTimeString():'—';$('ecList').innerHTML=turns.slice().reverse().map(t=>`<article><div><strong>${t.query}</strong><span>${t.answer||'—'}</span></div><b>${t.confidence||0}%</b></article>`).join('')||'<article><span>No saved executive conversation yet.</span></article>';}async function load(){try{render(await e.get());}catch(err){$('ecList').innerHTML=`<article><span>${err.message}</span></article>`;}}async function ask(){const q=$('ecQuery').value.trim();if(!q)return;$('ecAnswer').textContent='Reasoning…';try{const x=await e.ask(q);$('ecAnswer').textContent=x.latest?.answer||'—';render(x);}catch(err){$('ecAnswer').textContent=err.message;}}$('ecAsk')?.addEventListener('click',ask);$('ecRefresh')?.addEventListener('click',load);load();return{engine:e,load,ask};}window.createBlueCurrentExecutiveConversationCenterModule=createBlueCurrentExecutiveConversationCenterModule;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveConversationEngine.js /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveConversationEngine.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/modules/executiveConversationEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/modules/executiveConversationEngine.js	2026-08-08 03:21:04.491162906 +0000
+@@ -0,0 +1 @@
++(function(){"use strict";function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:h}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}class E{constructor(){this.r=api();}get(){return this.r('/api/executive/conversation-session');}ask(query){return this.r('/api/executive/conversation-session',{method:'POST',body:JSON.stringify({query})});}}window.BlueCurrentExecutiveConversationEngine=E;})();
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/js/startup-loader.js /mnt/data/bcnext/blue-current-reservations/client/js/startup-loader.js
+--- /mnt/data/orig4312/blue-current-reservations/client/js/startup-loader.js	2026-08-08 03:11:12.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/js/startup-loader.js	2026-08-08 03:22:14.852670615 +0000
+@@ -4,7 +4,7 @@
+   const params = new URLSearchParams(window.location.search);
+   const fullStartup = params.get("full") === "1";
+   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
+-  const appSource = `js/app-v15.1.3.js?v=43.12.0`;
++  const appSource = `js/app-v15.1.3.js?v=43.16.0`;
+   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
+   const startedAt = performance.now();
+   const storageKey = "bluecurrent:last-good-startup";
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V43.12.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V43.16.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/client/styles.css /mnt/data/bcnext/blue-current-reservations/client/styles.css
+--- /mnt/data/orig4312/blue-current-reservations/client/styles.css	2026-08-08 03:11:11.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/client/styles.css	2026-08-08 03:22:14.855236414 +0000
+@@ -13278,3 +13278,7 @@
+ .v4312-center{border-color:rgba(79,145,149,.35)}
+ .v4312-input{width:100%;min-height:88px;box-sizing:border-box;border:1px solid rgba(190,213,213,.28);background:#0f3039;color:#f8f4e9;border-radius:14px;padding:14px 16px;font:inherit;resize:vertical;margin:14px 0}
+ .v4312-reason{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.v4312-reason article,.v4312-ai-answer{border:1px solid rgba(190,213,213,.16);background:rgba(12,43,51,.72);border-radius:14px;padding:14px}.v4312-reason small{display:block;color:#8fb0b5;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}.v4312-ai-answer{display:grid;gap:8px;margin:14px 0}.v4312-ai-answer strong{font-size:1.05rem}.v4312-ai-answer span{color:#a8c0c4}@media(max-width:900px){.v4312-reason{grid-template-columns:1fr}}
++
++
++/* V43.13–V43.16 Executive AI governance */
++.v4316-center{border-color:rgba(113,184,255,.25);background:linear-gradient(145deg,rgba(8,24,42,.9),rgba(12,31,47,.82))}.v4316-center header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap}.v4316-actions{display:flex;gap:8px;flex-wrap:wrap}.v4316-answer{margin:14px 0;padding:14px;border-radius:14px;border:1px solid rgba(113,184,255,.18);background:rgba(255,255,255,.04);line-height:1.5}.v4316-center .pass{color:#8ce8b3}.v4316-center .block{color:#ffa1a1}@media(max-width:720px){.v4316-actions{width:100%;display:grid}.v4316-actions button{width:100%}}
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/server/api/router.js /mnt/data/bcnext/blue-current-reservations/server/api/router.js
+--- /mnt/data/orig4312/blue-current-reservations/server/api/router.js	2026-08-08 03:11:11.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/server/api/router.js	2026-08-08 03:20:43.461875346 +0000
+@@ -478,6 +478,12 @@
+     if (url.pathname === "/api/executive/reasoning" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveReasoning(organizationId));
+     if (url.pathname === "/api/executive/simulate" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveDecisionSimulation(organizationId, await readJson(request)));
+     if (url.pathname === "/api/executive/ai-console" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveAiConsole(organizationId, await readJson(request)));
++    if (url.pathname === "/api/executive/conversation-session" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveConversationSession(organizationId));
++    if (url.pathname === "/api/executive/conversation-session" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveConversationSession(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/executive/evidence-citations" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveEvidenceCitationMap(organizationId));
++    if (url.pathname === "/api/executive/action-drafts" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId));
++    if (url.pathname === "/api/executive/action-drafts" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.executiveActionDraft(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/executive/ai-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.executiveAiReadiness(organizationId));
+ 
+ 
+     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/server/server.js /mnt/data/bcnext/blue-current-reservations/server/server.js
+--- /mnt/data/orig4312/blue-current-reservations/server/server.js	2026-08-08 03:11:11.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/server/server.js	2026-08-08 03:20:43.461954553 +0000
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V43.12.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V43.16.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+diff -ruN '--exclude=.git' /mnt/data/orig4312/blue-current-reservations/server/services/liveIntegrationService.js /mnt/data/bcnext/blue-current-reservations/server/services/liveIntegrationService.js
+--- /mnt/data/orig4312/blue-current-reservations/server/services/liveIntegrationService.js	2026-08-08 03:11:11.000000000 +0000
++++ /mnt/data/bcnext/blue-current-reservations/server/services/liveIntegrationService.js	2026-08-08 03:20:43.461691012 +0000
+@@ -1636,7 +1636,7 @@
+         {id:"continuity",label:"Provider continuity",score:continuity.score||0,status:continuity.status||"unknown",trusted:(continuity.score||0)>=80}
+       ],
+       generatedAt:new Date().toISOString(),
+-      build:"43.12.0-executive-ai"
++      build:"43.16.0-executive-ai-governance"
+     };
+   }
+ 
+@@ -1700,7 +1700,7 @@
+       trusted:score===100,
+       blockers,controls,
+       priority:top?{locationId:top.locationId,locationName:top.locationName,risk:top.risk,severity:top.severity,recommendedAction:top.recommendedAction}:null,
+-      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.12.0-executive-ai"
++      issuedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.16.0-executive-ai-governance"
+     };
+     if(persist) {
+       await this.database.mutate(db=>{db.executiveDecisionGate||={};db.executiveDecisionGate[organizationId]=result;return result;});
+@@ -1737,7 +1737,7 @@
+     }
+     const priorityOrder={critical:0,high:1,normal:2,low:3};
+     insights.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
+-    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
++    return {organizationId,count:insights.length,critical:insights.filter(x=>x.priority==="critical").length,high:insights.filter(x=>x.priority==="high").length,topInsight:insights[0]||null,items:insights,generatedAt:new Date().toISOString(),build:"43.16.0-executive-ai-governance"};
+   }
+ 
+   async executiveRecommendations(organizationId) {
+@@ -1761,7 +1761,7 @@
+     }
+     const priorityOrder={critical:0,high:1,normal:2,low:3};
+     recs.sort((a,b)=>(priorityOrder[a.priority]??9)-(priorityOrder[b.priority]??9));
+-    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
++    return {organizationId,count:recs.length,approvalRequired:recs.filter(x=>x.approvalRequired).length,decisionReady:gate.trusted===true,decisionGate:gate.status||"unknown",topRecommendation:recs[0]||null,items:recs,generatedAt:new Date().toISOString(),build:"43.16.0-executive-ai-governance"};
+   }
+ 
+   async executiveDecisionWorkspaceV43(organizationId, actor = null, persist = false) {
+@@ -1782,7 +1782,7 @@
+     const score=Math.round(checks.reduce((sum,c)=>sum+(c.pass?100:0),0)/checks.length);
+     const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+     const top=recommendations.topRecommendation||null;
+-    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.12.0-executive-ai"};
++    const result={id:`EDW43-${Date.now().toString(36).toUpperCase()}`,organizationId,score,status:score===100?"decision-workspace-ready":score>=60?"conditional":"blocked",trusted:score===100,blockers,checks,headline:brief.headline||"Executive decision workspace",priorityLocation:queue.topRisk?{locationId:queue.topRisk.locationId,locationName:queue.topRisk.locationName,risk:queue.topRisk.risk}:null,recommendedAction:top?{id:top.id,title:top.title,action:top.action,category:top.category,confidence:top.confidence,approvalRequired:top.approvalRequired}:null,insightCount:insights.count||0,recommendationCount:recommendations.count||0,generatedAt:new Date().toISOString(),issuedBy:actor||null,build:"43.16.0-executive-ai-governance"};
+     if(persist){
+       await this.database.mutate(db=>{db.executiveDecisionWorkspaceV43||={};db.executiveDecisionWorkspaceV43[organizationId]=result;return result;});
+       await this.auditService.record({organizationId,actor:actor||"system",action:`Executive decision workspace persisted: ${result.status}`,category:"executive-intelligence"});
+@@ -1819,7 +1819,7 @@
+       {id:"event-freshness",label:"Live event freshness",value:Number(snapshot.freshnessSeconds??999999),unit:"s",target:300,direction:"max"}
+     ].map(row => ({...row, pass: row.direction === "min" ? row.value >= row.target : row.value <= row.target}));
+     const score = Math.round(rows.reduce((sum,row)=>sum+(row.pass?100:0),0)/rows.length);
+-    return {organizationId,name:definition.name,score,status:score===100?"on-target":score>=60?"watch":"off-target",targets:definition.targets,passing:rows.filter(x=>x.pass).length,total:rows.length,items:rows,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
++    return {organizationId,name:definition.name,score,status:score===100?"on-target":score>=60?"watch":"off-target",targets:definition.targets,passing:rows.filter(x=>x.pass).length,total:rows.length,items:rows,generatedAt:new Date().toISOString(),build:"43.16.0-executive-ai-governance"};
+   }
+ 
+   async executiveTimeline(organizationId) {
+@@ -1835,7 +1835,7 @@
+     incidents.forEach(item=>timeline.push({id:`TL-INC-${item.id}`,at:item.openedAt||item.createdAt||new Date().toISOString(),kind:"incident",title:item.title||"Provider incident",detail:item.note||item.reason||item.status||"Incident recorded",priority:item.severity||"watch"}));
+     timeline.sort((a,b)=>new Date(b.at)-new Date(a.at));
+     const latest=timeline[0]||null;
+-    return {organizationId,count:timeline.length,latestAt:latest?.at||null,liveEvents:timeline.filter(x=>x.kind==="live-event").length,decisions:timeline.filter(x=>x.kind.includes("decision")).length,incidents:timeline.filter(x=>x.kind==="incident").length,items:timeline.slice(0,40),generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
++    return {organizationId,count:timeline.length,latestAt:latest?.at||null,liveEvents:timeline.filter(x=>x.kind==="live-event").length,decisions:timeline.filter(x=>x.kind.includes("decision")).length,incidents:timeline.filter(x=>x.kind==="incident").length,items:timeline.slice(0,40),generatedAt:new Date().toISOString(),build:"43.16.0-executive-ai-governance"};
+   }
+ 
+   async executivePortfolioHealth(organizationId) {
+@@ -1848,7 +1848,7 @@
+       return {locationId:location.locationId,locationName:location.locationName,score,status:score>=85?"healthy":score>=65?"watch":"attention",coverage:Number(cov.score||0),risk:Number(risk.risk||0),cutover:location.cutoverStage||location.stage||"sandbox",recommendedAction:risk.recommendedAction||"Continue monitoring current operating controls."};
+     }).sort((a,b)=>a.score-b.score);
+     const score=locations.length?Math.round(locations.reduce((sum,x)=>sum+x.score,0)/locations.length):0;
+-    return {organizationId,score,status:score>=85?"portfolio-healthy":score>=65?"watch":"attention",healthy:locations.filter(x=>x.status==="healthy").length,watch:locations.filter(x=>x.status==="watch").length,attention:locations.filter(x=>x.status==="attention").length,lowest:locations[0]||null,locations,generatedAt:new Date().toISOString(),build:"43.12.0-executive-ai"};
++    return {organizationId,score,status:score>=85?"portfolio-healthy":score>=65?"watch":"attention",healthy:locations.filter(x=>x.status==="healthy").length,watch:locations.filter(x=>x.status==="watch").length,attention:locations.filter(x=>x.status==="attention").length,lowest:locations[0]||null,locations,generatedAt:new Date().toISOString(),build:"43.16.0-executive-ai-governance"};
+   }
+ 
+   async executiveKnowledgeGraph(organizationId) {
+@@ -1863,7 +1863,7 @@
+     for(const g of goals.slice(0,12)){const id=`goal:${g.id||g.name||nodes.length}`;nodes.push({id,type:'goal',label:g.name||g.title||g.metric||'Executive goal',status:g.status||'active',value:g.target??null});for(const loc of locations)edges.push({from:`location:${loc.id}`,to:id,type:'measured-against',weight:50});}
+     if(cert){nodes.push({id:'cert:provider-launch',type:'certification',label:'Provider Launch Certification',status:cert.status||'recorded',score:cert.score||0});for(const c of connectors)edges.push({from:`connector:${c.id}`,to:'cert:provider-launch',type:'governed-by',weight:100});}
+     const context=(db.auditLogs||[]).filter(x=>x.organizationId===organizationId).slice(-12).reverse().map(x=>({at:x.createdAt||x.timestamp||null,title:x.action||x.category||'Audit evidence'}));
+-    return {organizationId,nodeCount:nodes.length,edgeCount:edges.length,locationCount:locations.length,providerCount:connectors.length,nodes,edges,recentContext:context,generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
++    return {organizationId,nodeCount:nodes.length,edgeCount:edges.length,locationCount:locations.length,providerCount:connectors.length,nodes,edges,recentContext:context,generatedAt:new Date().toISOString(),build:'43.16.0-executive-ai-governance'};
+   }
+ 
+   async executiveReasoning(organizationId) {
+@@ -1876,19 +1876,127 @@
+     if(unconnected.length){finding=`${unconnected.length} location${unconnected.length===1?' is':'s are'} missing an explicit live-source relationship.`;cause='The executive graph cannot trace trusted provider evidence to every restaurant.';recommendation=`Prioritize source binding for ${unconnected[0].label} before using AI recommendations for that location.`;}else if(providerWarnings.length){finding=`${providerWarnings.length} provider relationship${providerWarnings.length===1?' requires':'s require'} review.`;cause='At least one provider is outside the expected healthy/live state.';recommendation=`Review ${providerWarnings[0].label} before approving an executive action that depends on its data.`;}
+     const completeness=locationNodes.length?Math.round(((locationNodes.length-unconnected.length)/locationNodes.length)*100):0;
+     const confidence=Math.max(40,Math.min(98,Math.round(completeness*.75+(providerWarnings.length?10:23))));
+-    return {organizationId,confidence,status:confidence>=80?'high-confidence':confidence>=60?'review':'low-confidence',finding,cause,recommendation,evidence:[`${graph.locationCount} locations in graph`,`${graph.providerCount} providers in graph`,`${graph.edgeCount} governed relationships`],graph:{nodes:graph.nodeCount,edges:graph.edgeCount},generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
++    return {organizationId,confidence,status:confidence>=80?'high-confidence':confidence>=60?'review':'low-confidence',finding,cause,recommendation,evidence:[`${graph.locationCount} locations in graph`,`${graph.providerCount} providers in graph`,`${graph.edgeCount} governed relationships`],graph:{nodes:graph.nodeCount,edges:graph.edgeCount},generatedAt:new Date().toISOString(),build:'43.16.0-executive-ai-governance'};
+   }
+ 
+   async executiveDecisionSimulation(organizationId, input={}) {
+     const reasoning=await this.executiveReasoning(organizationId); const scenario=String(input.scenario||'balanced staffing and pacing').slice(0,220); const lower=scenario.toLowerCase(); let revenueDelta=0,riskDelta=-3,laborDelta=0,waitDelta=-2;
+     if(lower.includes('staff')){laborDelta=4;riskDelta=-8;waitDelta=-6;} if(lower.includes('reservation')||lower.includes('pace')){revenueDelta=-2;riskDelta=-6;waitDelta=-5;} if(lower.includes('patio')||lower.includes('capacity')){revenueDelta=6;riskDelta=3;waitDelta=-3;} if(lower.includes('kitchen')){laborDelta=3;riskDelta=-7;waitDelta=-4;}
+-    const baseRisk=Math.max(0,100-reasoning.confidence); return {organizationId,scenario,confidence:Math.max(45,reasoning.confidence-5),baseline:{executiveConfidence:reasoning.confidence,modeledRisk:baseRisk},projected:{revenueIndexDeltaPct:revenueDelta,highestRisk:Math.max(0,baseRisk+riskDelta),laborDeltaPct:laborDelta,guestWaitDeltaMinutes:waitDelta},tradeoff:laborDelta>0?'Higher labor cost for lower service risk.':revenueDelta<0?'Protects service quality at modest revenue cost.':'Balanced operational impact.',recommendation:riskDelta<0?'Scenario is directionally favorable; require human approval before execution.':'Review downstream capacity before approval.',generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
++    const baseRisk=Math.max(0,100-reasoning.confidence); return {organizationId,scenario,confidence:Math.max(45,reasoning.confidence-5),baseline:{executiveConfidence:reasoning.confidence,modeledRisk:baseRisk},projected:{revenueIndexDeltaPct:revenueDelta,highestRisk:Math.max(0,baseRisk+riskDelta),laborDeltaPct:laborDelta,guestWaitDeltaMinutes:waitDelta},tradeoff:laborDelta>0?'Higher labor cost for lower service risk.':revenueDelta<0?'Protects service quality at modest revenue cost.':'Balanced operational impact.',recommendation:riskDelta<0?'Scenario is directionally favorable; require human approval before execution.':'Review downstream capacity before approval.',generatedAt:new Date().toISOString(),build:'43.16.0-executive-ai-governance'};
+   }
+ 
+   async executiveAiConsole(organizationId, input={}) {
+     const query=String(input.query||"Summarize tonight's operation.").trim().slice(0,500); const reasoning=await this.executiveReasoning(organizationId); const graph=await this.executiveKnowledgeGraph(organizationId); const q=query.toLowerCase(); let answer;
+     if(q.includes('risk')||q.includes('attention')) answer=`Current modeled executive confidence is ${reasoning.confidence}%. ${reasoning.finding} ${reasoning.recommendation}`; else if(q.includes('why')) answer=`${reasoning.finding} ${reasoning.cause} Confidence is ${reasoning.confidence}%.`; else if(q.includes('recommend')||q.includes('what should')||q.includes('do')) answer=reasoning.recommendation; else answer=`Blue Current is reasoning across ${graph.locationCount} locations, ${graph.providerCount} providers, and ${graph.edgeCount} governed relationships. ${reasoning.finding} Recommended next action: ${reasoning.recommendation}`;
+-    return {organizationId,query,answer,confidence:reasoning.confidence,evidence:reasoning.evidence,recommendedAction:reasoning.recommendation,approvalRequired:true,generatedAt:new Date().toISOString(),build:'43.12.0-executive-ai'};
++    return {organizationId,query,answer,confidence:reasoning.confidence,evidence:reasoning.evidence,recommendedAction:reasoning.recommendation,approvalRequired:true,generatedAt:new Date().toISOString(),build:'43.16.0-executive-ai-governance'};
++  }
++
++
++  async executiveConversationSession(organizationId, actor = null, input = null) {
++    const db = await this.database.read();
++    const existing = db.executiveConversationSessions?.[organizationId] || { turns: [] };
++    if (!input) return { organizationId, ...existing, build: "43.16.0-executive-ai-governance" };
++    const query = String(input.query || "").trim().slice(0, 500);
++    if (!query) throw new Error("Query is required.");
++    const response = await this.executiveAiConsole(organizationId, { query });
++    const turn = {
++      id: `ECS-${Date.now().toString(36).toUpperCase()}`,
++      query,
++      answer: response.answer,
++      confidence: response.confidence,
++      evidence: response.evidence || [],
++      recommendedAction: response.recommendedAction || null,
++      actor: actor || "executive",
++      createdAt: new Date().toISOString()
++    };
++    const turns = [...(existing.turns || []), turn].slice(-20);
++    const session = { id: existing.id || `ECSN-${Date.now().toString(36).toUpperCase()}`, turns, lastTurnAt: turn.createdAt, updatedBy: actor || "executive" };
++    await this.database.mutate(data => { data.executiveConversationSessions ||= {}; data.executiveConversationSessions[organizationId] = session; return session; });
++    return { organizationId, ...session, latest: turn, build: "43.16.0-executive-ai-governance" };
++  }
++
++  async executiveEvidenceCitationMap(organizationId) {
++    const [graph, reasoning] = await Promise.all([
++      this.executiveKnowledgeGraph(organizationId),
++      this.executiveReasoning(organizationId)
++    ]);
++    const citations = [];
++    for (const edge of graph.edges || []) {
++      citations.push({
++        id: `CITE-${citations.length + 1}`,
++        claim: `${edge.from} ${edge.type} ${edge.to}`,
++        sourceType: "knowledge-graph",
++        sourceRef: edge.id || `${edge.from}:${edge.to}`,
++        confidence: edge.confidence ?? reasoning.confidence,
++        status: "traceable"
++      });
++    }
++    for (const evidence of reasoning.evidence || []) {
++      citations.push({
++        id: `CITE-${citations.length + 1}`,
++        claim: evidence,
++        sourceType: "reasoning-evidence",
++        sourceRef: "executive-reasoning",
++        confidence: reasoning.confidence,
++        status: "traceable"
++      });
++    }
++    const score = citations.length ? 100 : 0;
++    return { organizationId, score, status: score === 100 ? "traceable" : "insufficient-evidence", count: citations.length, items: citations.slice(0, 100), generatedAt: new Date().toISOString(), build: "43.16.0-executive-ai-governance" };
++  }
++
++  async executiveActionDraft(organizationId, actor = null, input = null) {
++    const db = await this.database.read();
++    if (!input) return { organizationId, items: db.executiveActionDrafts?.[organizationId] || [], build: "43.16.0-executive-ai-governance" };
++    const instruction = String(input.instruction || "").trim().slice(0, 500);
++    if (!instruction) throw new Error("Instruction is required.");
++    const [reasoning, citations] = await Promise.all([
++      this.executiveReasoning(organizationId),
++      this.executiveEvidenceCitationMap(organizationId)
++    ]);
++    const lower = instruction.toLowerCase();
++    const risk = /(close|cancel|change|move|reduce|increase|open|staff|schedule|reservation|price)/.test(lower) ? "write" : "advisory";
++    const approvalRequired = risk === "write";
++    const draft = {
++      id: `EAD-${Date.now().toString(36).toUpperCase()}`,
++      instruction,
++      owner: actor || "Executive",
++      risk,
++      approvalRequired,
++      status: approvalRequired ? "approval-required" : "advisory-draft",
++      plan: [
++        "Confirm current trusted evidence and location scope.",
++        reasoning.recommendation || "Review the executive recommendation.",
++        approvalRequired ? "Obtain explicit human approval before any live change." : "Review the advisory recommendation.",
++        "Capture the measured outcome after execution."
++      ],
++      evidenceCount: citations.count || 0,
++      confidence: reasoning.confidence || 0,
++      createdAt: new Date().toISOString()
++    };
++    await this.database.mutate(data => { data.executiveActionDrafts ||= {}; const list = data.executiveActionDrafts[organizationId] ||= []; list.unshift(draft); data.executiveActionDrafts[organizationId] = list.slice(0, 50); return draft; });
++    return { organizationId, draft, build: "43.16.0-executive-ai-governance" };
++  }
++
++  async executiveAiReadiness(organizationId) {
++    const [graph, reasoning, citations] = await Promise.all([
++      this.executiveKnowledgeGraph(organizationId),
++      this.executiveReasoning(organizationId),
++      this.executiveEvidenceCitationMap(organizationId)
++    ]);
++    const db = await this.database.read();
++    const turns = db.executiveConversationSessions?.[organizationId]?.turns || [];
++    const drafts = db.executiveActionDrafts?.[organizationId] || [];
++    const checks = [
++      { id: "graph", label: "Executive knowledge graph", pass: (graph.nodeCount || 0) > 0 && (graph.edgeCount || 0) > 0, detail: `${graph.nodeCount || 0} nodes · ${graph.edgeCount || 0} relationships` },
++      { id: "reasoning", label: "Reasoning confidence", pass: (reasoning.confidence || 0) >= 60, detail: `${reasoning.confidence || 0}%` },
++      { id: "citations", label: "Evidence citation coverage", pass: (citations.score || 0) >= 80, detail: `${citations.score || 0}% · ${citations.count || 0} citations` },
++      { id: "conversation", label: "Conversational operating evidence", pass: turns.length > 0, detail: `${turns.length} saved turn(s)` },
++      { id: "governed-actions", label: "Governed action drafting", pass: drafts.length > 0, detail: `${drafts.length} draft(s)` }
++    ];
++    const score = Math.round(checks.reduce((sum, c) => sum + (c.pass ? 100 : 0), 0) / checks.length);
++    const blockers = checks.filter(c => !c.pass).map(c => `${c.label}: ${c.detail}`);
++    return { organizationId, score, status: score === 100 ? "executive-ai-ready" : score >= 60 ? "conditional" : "blocked", trusted: score === 100, blockers, checks, generatedAt: new Date().toISOString(), build: "43.16.0-executive-ai-governance" };
+   }
+ 
+   async operatingSnapshot(organizationId) {

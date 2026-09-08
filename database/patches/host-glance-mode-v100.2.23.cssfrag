@@ -1,0 +1,46 @@
+/* V100.2.23 — Host Stand Glance Mode: aim small, miss small */
+#host-stand .bc-ready-source-v100-2-17 {
+  display:none !important;
+}
+#host-stand #waitlistQueue .queue-item {
+  gap:14px !important;
+}
+#host-stand #waitlistQueue .queue-item strong {
+  font-size:clamp(1.35rem,2vw,1.8rem) !important;
+  line-height:1.05 !important;
+}
+#host-stand #waitlistQueue .queue-item small {
+  font-size:1rem !important;
+  line-height:1.3 !important;
+}
+#host-stand .bc-ready-priority-v100-2-17 {
+  display:inline-flex !important;
+  width:max-content !important;
+  margin-top:7px !important;
+  font-size:.9rem !important;
+  font-weight:950 !important;
+}
+#host-stand .host-table small {
+  font-size:.92rem !important;
+  line-height:1.02 !important;
+  font-weight:950 !important;
+  text-align:center !important;
+  white-space:normal !important;
+}
+#host-stand .host-table.available small { color:#073541 !important; }
+#host-stand .host-table.seated small { color:#f7ffff !important; }
+#host-stand .host-table.cleaning small { color:#163d47 !important; }
+#host-stand .host-table.reserved small { color:#5b3c00 !important; }
+#host-stand .bc-unified-seat-confirm-v100-2-18 small,
+#host-stand .bc-unified-seat-confirm-v100-2-18 p {
+  color:#173f49 !important;
+  opacity:1 !important;
+  font-weight:900 !important;
+}
+#host-stand .bc-unified-seat-confirm-v100-2-18 .bc-unified-cancel-v100-2-18,
+#host-stand .bc-unified-seat-instruction-v100-2-18 .bc-unified-cancel-v100-2-18 {
+  color:#082f3a !important;
+  background:#fff7e8 !important;
+  border-color:#456d76 !important;
+  opacity:1 !important;
+}

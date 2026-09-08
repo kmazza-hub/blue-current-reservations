@@ -1,0 +1,14 @@
+(function(global){"use strict";
+class BlueCurrentPilotExecutionObservationEngine{
+  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
+  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
+  headers(){return {Authorization:`Bearer ${this.token()}`};}
+  async snapshot(){const r=await fetch("/api/pilot-execution-observation",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot execution observation failed (${r.status})`);this.appState?.update?.({pilotExecutionObservation:d});return d;}
+  async start(locationId,payload={}){const r=await fetch(`/api/pilot-execution-observation/locations/${encodeURIComponent(locationId)}/start`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot start record failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:started",structuredClone(d));return d;}
+  async milestone(sessionId,payload={}){const r=await fetch(`/api/pilot-execution-observation/sessions/${encodeURIComponent(sessionId)}/milestone`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot milestone failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:milestone",structuredClone(d));return d;}
+  async observe(sessionId,payload={}){const r=await fetch(`/api/pilot-execution-observation/sessions/${encodeURIComponent(sessionId)}/observe`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot health observation failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:observed",structuredClone(d));return d;}
+  async decide(sessionId,payload={}){const r=await fetch(`/api/pilot-execution-observation/sessions/${encodeURIComponent(sessionId)}/decision`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot execution decision failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:decision",structuredClone(d));return d;}
+}
+if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotExecutionObservationEngine;
+if(global)global.BlueCurrentPilotExecutionObservationEngine=BlueCurrentPilotExecutionObservationEngine;
+})(typeof window!=="undefined"?window:globalThis);

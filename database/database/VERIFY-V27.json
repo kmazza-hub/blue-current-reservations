@@ -1,0 +1,11 @@
+{
+  "version": "27.0",
+  "build": "Executive Command Center",
+  "javascriptValidation": "Validated 47 JavaScript files and all client script references.",
+  "healthEndpointVersion": "27.0",
+  "authenticationPassed": true,
+  "portfolioSnapshotPassed": true,
+  "locationAggregationPassed": true,
+  "executiveBriefPassed": true,
+  "zipIntegrity": true
+}

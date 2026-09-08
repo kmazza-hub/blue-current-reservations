@@ -1,0 +1,24 @@
+{
+  "version": "100.2.2",
+  "name": "Guest Search Consistency & Readability",
+  "baseline": "V100.2.1 forward state",
+  "files": [
+    {
+      "path": "client/js/floor-reservations-v62.0.js",
+      "sha256": "99c2d4ce6298cec1f79c70f82f599c0131cb80fd4d86fa5a3c26fdf117af40ee",
+      "bytes": 12592
+    },
+    {
+      "path": "client/styles.css",
+      "sha256": "78a0f900e707116984efb187c8e189bec9d11ae364f776fd4df20e8bd8a21fc8",
+      "bytes": 1090721
+    },
+    {
+      "path": "scripts/maintenance/test-v100.2.2-guest-search-consistency-readability.js",
+      "sha256": "6b76deccb94e0ad863ebe25f722e5d2c79ac677ce625a81bb0ac95a758b74735",
+      "bytes": 1586
+    }
+  ],
+  "serverDatabaseChanges": false,
+  "durablePersistenceAdded": false
+}

@@ -1,0 +1,21 @@
+"use strict";
+const fs=require("fs"), path=require("path"), cp=require("child_process");
+const root=process.cwd();
+const js=fs.readFileSync(path.join(root,"client/js/app-v15.1.3.js"),"utf8");
+const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
+const checks=[];
+const check=(name,ok)=>checks.push({name,ok:!!ok});
+check("V100.2.23 runtime marker",js.includes("__bcHostGlanceModeV100_2_23"));
+check("open tile is simple",js.includes("small.textContent = 'OPEN';"));
+check("seated tile removes elapsed timer",js.includes("small.textContent = 'SEATED';"));
+check("open-soon tile is action language",js.includes("small.textContent = 'OPEN SOON';"));
+check("check tile is action language",js.includes("small.textContent = 'CHECK';"));
+check("cleaning tile removes routine timer",js.includes("small.textContent = elapsed >= 10 ? 'CHECK' : 'CLEANING';"));
+check("reservation time retained when useful",js.includes("/^\\d{1,2}:\\d{2}$/.test(label) ? label : 'RESERVED'"));
+check("ready source badge hidden",css.includes("#host-stand .bc-ready-source-v100-2-17") && css.includes("display:none !important"));
+check("priority note remains visible",css.includes(".bc-ready-priority-v100-2-17"));
+let syntax=true; try{ cp.execFileSync(process.execPath,["--check",path.join(root,"client/js/app-v15.1.3.js")],{stdio:"pipe"}); }catch(e){syntax=false;}
+check("client JavaScript syntax",syntax);
+const failed=checks.filter(c=>!c.ok);
+console.log(JSON.stringify({ok:failed.length===0,version:"100.2.23",checks:checks.map(c=>c.name),failed:failed.map(c=>c.name)},null,2));
+process.exit(failed.length?1:0);

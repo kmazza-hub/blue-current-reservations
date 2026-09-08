@@ -1,0 +1,21 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const bridge=read("client/js/command-location-continuity-v100.3.20.js"),authority=read("client/js/frontline-location-authority-v100.3.17.js"),shell=read("client/js/modules/hospitalityOsShell.js"),index=read("client/index.html");
+check("Bridge declares pilot version",bridge.includes('VERSION="100.3.20"'));
+check("Command selector uses shared frontline authority",bridge.includes("BlueCurrentFrontlineLocation"));
+check("Only authorized selector options remain",bridge.includes("authorized.includes(option.value)")&&bridge.includes("option.remove()"));
+check("Current authority is reflected in selector",bridge.includes("select.value=active"));
+check("Location selection uses authority validation",bridge.includes("authority().select(next)"));
+check("Unauthorized selection restores previous location",bridge.includes("select.value=previous")&&bridge.includes("command-location-blocked"));
+check("Successful selection writes canonical location query",bridge.includes('url.searchParams.set("location",id)'));
+check("Successful selection performs clean page transition",bridge.includes("window.location.assign(url.href)"));
+check("Command's stale change handler is stopped",bridge.includes("event.stopImmediatePropagation()"));
+check("Active restaurant identity remains visible",bridge.includes(".bc-os-rail-foot small")&&bridge.includes("Active restaurant:"));
+check("Selector observer is narrowly scoped",bridge.includes('observer.observe(select,{childList:true})')&&!bridge.includes("subtree:true"));
+check("No polling is added",!bridge.includes("setInterval(")&&!bridge.includes("setTimeout("));
+check("Authority then bridge then Floor load order is deterministic",index.indexOf("frontline-location-authority-v100.3.17.js")<index.indexOf("command-location-continuity-v100.3.20.js")&&index.indexOf("command-location-continuity-v100.3.20.js")<index.indexOf("floor-reservations-v62.0.js"));
+check("Existing Command operating-picture request remains unchanged",shell.includes("/api/command/operating-picture")&&authority.includes("Location is not authorized for this user"));
+console.log(`V100.3.20 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;

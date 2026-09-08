@@ -3,7 +3,7 @@
 
   function createAiRestaurantBrainModule(eventBus, appState, cloudFoundationModule) {
     const api = cloudFoundationModule?.api || new window.BlueCurrentCloudApi("");
-    const locationId = "loc_marina";
+    const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
     const $ = id => document.getElementById(id);
     let state = { recommendations: [], health: {}, signals: {}, decisions: [] };
     let category = "all";
@@ -118,12 +118,12 @@
     async function load() {
       if (!api.token) return;
       try {
-        state = await api.aiBrain(locationId);
+        state = await api.aiBrain(locationId());
         if (!selectedId || !state.recommendations.some(item => item.id === selectedId)) {
           selectedId = state.recommendations[0]?.id || null;
         }
         renderAll();
-        eventBus.emit("ai:brain-loaded", { locationId, count: state.recommendations.length, health: state.health });
+        eventBus.emit("ai:brain-loaded", { locationId: locationId(), count: state.recommendations.length, health: state.health });
       } catch (error) {
         console.error("AI Brain load failed", error);
       }
@@ -153,7 +153,7 @@
       const item = selectedRecommendation();
       if (!item) return;
       await api.decideAiRecommendation(item.id, {
-        locationId,
+        locationId: locationId(),
         status: button.dataset.aiDecision,
         note: $("aiDecisionNote")?.value || "",
         expectedImpact: item.impact
@@ -162,7 +162,7 @@
     });
 
     $("aiRefreshButton")?.addEventListener("click", async () => {
-      state = await api.refreshAiBrain(locationId);
+      state = await api.refreshAiBrain(locationId());
       selectedId = state.recommendations[0]?.id || null;
       renderAll();
     });
@@ -172,6 +172,7 @@
     });
     eventBus.on?.("auth:signed-in", load);
     eventBus.on?.("auth:restored", load);
+    window.addEventListener("bluecurrent:frontline-location-changed", load);
 
     setInterval(load, 45000);
     load();

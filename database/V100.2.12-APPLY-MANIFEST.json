@@ -1,0 +1,13 @@
+{
+  "version": "100.2.12",
+  "name": "Dynamic Table Selection & Assignment Ownership",
+  "requires": "100.2.11",
+  "baselineVersion": "100.0.0",
+  "files": [
+    "APPLY-V100.2.12.js",
+    "patches/host-stand-dynamic-table-assignment.jsfrag",
+    "scripts/maintenance/test-v100.2.12-dynamic-table-selection-assignment-ownership.js",
+    "README-APPLY-V100.2.12.md",
+    "V100.2.12-RELEASE.md"
+  ]
+}

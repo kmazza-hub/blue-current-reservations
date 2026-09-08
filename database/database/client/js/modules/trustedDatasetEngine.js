@@ -1,0 +1,13 @@
+(function(){"use strict";
+class BlueCurrentTrustedDatasetEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.off=eventBus.on("trusted-pilot-source:promoted",payload=>this.capture(payload));}
+ state(){return this.appState.get("trustedDataset")||{sources:{},history:[]};}
+ normalize(source,records=[]){return records.map((record,index)=>({id:record.id||record.reservation_id||record.check_id||record.employee_id||record.sku||`${source}_${index+1}`,source,record,receivedAt:new Date().toISOString()}));}
+ capture(payload={}){const source=payload.source||"unknown",records=this.normalize(source,payload.records||[]),s=this.state();const sources={...(s.sources||{}),[source]:{source,records,count:records.length,promotedAt:new Date().toISOString(),owner:payload.owner||"Manager approval"}};const history=[...(s.history||[]),{source,count:records.length,at:new Date().toISOString()}].slice(-100);const value=this.evaluate({sources,history},"promotion");this.appState.update({trustedDataset:value});this.eventBus.emit("trusted-dataset:updated",structuredClone(value));return value;}
+ evaluate(state=this.state(),reason="manual"){const groups=Object.values(state.sources||{}),recordCount=groups.reduce((n,g)=>n+(g.count||0),0);return{...state,reason,capturedAt:new Date().toISOString(),sourceCount:groups.length,recordCount,status:recordCount?"trusted":"empty",nextAction:recordCount?"Review trusted pilot records and confirm source coverage before rehearsal.":"Promote a processed source batch to create the trusted pilot dataset."};}
+ snapshot(){const promoted=this.appState.get("sourcePromotion")?.promoted||{};let s=this.state();for(const item of Object.values(promoted)){if(!s.sources?.[item.source]){s=this.capture({source:item.source,records:item.records||[],owner:item.owner});}}return this.evaluate(s);}
+ clearSource(source){const s=this.state(),sources={...(s.sources||{})};delete sources[source];const value=this.evaluate({...s,sources},"clear-source");this.appState.update({trustedDataset:value});this.eventBus.emit("trusted-dataset:updated",structuredClone(value));return value;}
+ export(){const blob=new Blob([JSON.stringify(this.snapshot(),null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`blue-current-trusted-dataset-${Date.now()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),0);}
+ destroy(){this.off?.();}
+}
+window.BlueCurrentTrustedDatasetEngine=BlueCurrentTrustedDatasetEngine;})();

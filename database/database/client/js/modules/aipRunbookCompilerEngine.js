@@ -1,0 +1,7 @@
+(function(){"use strict";
+class BlueCurrentAIPRunbookCompilerEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4011:runbooks";}
+ list(){try{return JSON.parse(localStorage.getItem(this.key)||"[]");}catch{return[];}}
+ compile(text,owner){const source=String(text||"").trim();if(!source)throw new Error("Describe the operating runbook.");const sentences=source.split(/[.\n]+/).map(s=>s.trim()).filter(Boolean);const trigger=sentences.find(s=>/\b(if|when|whenever|after|before)\b/i.test(s))||"Manager initiated";const actions=sentences.filter(s=>s!==trigger).map((s,i)=>({order:i+1,instruction:s,approvalRequired:/open|close|move|notify|change|approve|send/i.test(s)}));const runbook={id:`RB-${Date.now()}`,name:sentences[0]?.slice(0,70)||"AI runbook",trigger,actions:actions.length?actions:[{order:1,instruction:source,approvalRequired:true}],owner:String(owner||"Manager"),status:"draft",createdAt:new Date().toISOString()};const rows=this.list();rows.unshift(runbook);localStorage.setItem(this.key,JSON.stringify(rows.slice(0,40)));this.eventBus?.emit?.("aip:runbook-compiled",runbook);return runbook;}
+}
+window.BlueCurrentAIPRunbookCompilerEngine=BlueCurrentAIPRunbookCompilerEngine;})();

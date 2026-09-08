@@ -1,0 +1,34 @@
+{
+  "version": "95.0.0",
+  "phase": "D",
+  "gate": "PILOT_LAUNCH_DAY_COMMAND_AND_CONTROL",
+  "checkpoints": [
+    "FINAL_GO_LIVE",
+    "HUMAN_SHIFT_START",
+    "SUPPORT_OWNERSHIP",
+    "INCIDENT_VISIBILITY",
+    "CRITICAL_PAUSE_POSTURE",
+    "LOCAL_FALLBACK",
+    "HUMAN_SHIFT_CLOSE"
+  ],
+  "commandModel": {
+    "preShiftVerification": true,
+    "humanGoHold": true,
+    "liveSupportOwnership": true,
+    "incidentPosture": true,
+    "criticalIncidentPauseGuard": true,
+    "localFallbackVisible": true,
+    "humanCloseout": true
+  },
+  "safety": {
+    "assessmentDoesNotStartShift": true,
+    "humanStartRequired": true,
+    "humanPauseResumeStopRequired": true,
+    "humanCloseRequired": true,
+    "criticalIncidentsPauseRuntime": true,
+    "rollbackHumanDirected": true,
+    "automaticGoLive": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_FIRST_SERVICE_STABILIZATION_AND_HYPERCARE"
+}

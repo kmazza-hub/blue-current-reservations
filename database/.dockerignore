@@ -1,0 +1,12 @@
+.git
+.gitignore
+node_modules
+npm-debug.log*
+*.zip
+database/data
+**/*.bak
+**/*.bak.*
+**/*.tmp
+.env
+.env.*
+!.env.example

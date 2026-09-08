@@ -1,0 +1,98 @@
+/* V100.2.35 — Premium Restaurant Floor Map
+   Visual-only architectural treatment for zoned Host Stand floor plans. */
+#host-stand #hostFloorMap{
+  border:1px solid rgba(14,48,57,.14) !important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.72), inset 0 18px 42px rgba(255,255,255,.22) !important;
+  background:
+    linear-gradient(rgba(255,255,255,.16),rgba(255,255,255,.16)),
+    repeating-linear-gradient(0deg,transparent 0 74px,rgba(25,55,58,.035) 75px),
+    repeating-linear-gradient(90deg,transparent 0 74px,rgba(25,55,58,.035) 75px),
+    #f5f1e8 !important;
+}
+#host-stand #hostFloorMap .bc-floor-architecture-v100-2-35{
+  position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+}
+#host-stand #hostFloorMap .bc-room-name-v100-2-35{
+  position:absolute; top:18px; left:22px;
+  font-size:11px; line-height:1; font-weight:950; letter-spacing:.16em;
+  text-transform:uppercase; color:rgba(18,59,66,.42);
+}
+#host-stand #hostFloorMap .bc-floor-fixture-v100-2-35{
+  position:absolute; display:flex; align-items:center; justify-content:center;
+  box-sizing:border-box; border:1px solid rgba(20,62,68,.16); border-radius:10px;
+  background:rgba(224,232,227,.58); color:rgba(20,62,68,.58);
+  font-size:9px; font-weight:900; letter-spacing:.08em; text-transform:uppercase;
+}
+#host-stand #hostFloorMap .bc-floor-line-v100-2-35{
+  position:absolute; background:rgba(22,64,70,.10); border-radius:999px;
+}
+#host-stand #hostFloorMap .bc-floor-zone-note-v100-2-35{
+  position:absolute; right:20px; bottom:18px; font-size:9px; font-weight:850;
+  letter-spacing:.08em; text-transform:uppercase; color:rgba(25,72,77,.42);
+}
+
+/* Main dining room: entry/host, bar edge, and a generous central service aisle. */
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-only-v100-2-35{display:flex!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-water-only-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-private-only-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-host-v100-2-35{left:24px;bottom:26px;width:112px;height:46px}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-bar-v100-2-35{right:24px;top:74px;width:116px;height:54px;border-radius:16px 16px 4px 4px;background:rgba(221,211,185,.62)}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-aisle-v100-2-35{left:49.7%;top:82px;width:2px;height:360px}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-note-v100-2-35{display:block!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-water-note-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-private-note-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .host-table[data-table="2"]{--x:27%!important;--y:34%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .host-table[data-table="4"]{--x:56%!important;--y:35%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="main"] .host-table[data-table="6"]{--x:73%!important;--y:67%!important}
+
+/* Waterfront: window wall, lounge/service edge, staggered tables facing the view. */
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"]{
+  background:
+    linear-gradient(to bottom,rgba(255,255,255,.20) 0 72%,rgba(190,226,226,.20) 72% 100%),
+    repeating-linear-gradient(0deg,transparent 0 74px,rgba(25,55,58,.03) 75px),
+    repeating-linear-gradient(90deg,transparent 0 74px,rgba(25,55,58,.03) 75px),
+    #f5f1e8 !important;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-only-v100-2-35{display:flex!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-main-only-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-private-only-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-window-v100-2-35{left:6%;right:6%;bottom:24px;height:12px;border-radius:4px;background:linear-gradient(90deg,rgba(103,188,196,.20),rgba(103,188,196,.42),rgba(103,188,196,.20));border-color:rgba(93,157,165,.22)}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-service-v100-2-35{right:28px;top:78px;width:104px;height:42px}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-water-note-v100-2-35{display:block!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-main-note-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .bc-private-note-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-table[data-table="8"]{--x:25%!important;--y:36%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-table[data-table="14"]{--x:52%!important;--y:52%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-table[data-table="16"]{--x:76%!important;--y:35%!important}
+
+/* Private dining: enclosed room, credenza, and a centered event-table arrangement. */
+#host-stand #hostFloorMap[data-bc-active-zone="private"]{
+  background:
+    linear-gradient(rgba(255,252,244,.36),rgba(255,252,244,.36)),
+    repeating-linear-gradient(90deg,transparent 0 88px,rgba(90,69,34,.025) 89px),
+    #f4efe4 !important;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-only-v100-2-35{display:flex!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-main-only-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-water-only-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-room-v100-2-35{left:7%;right:7%;top:66px;bottom:72px;border:2px solid rgba(133,103,54,.13);border-radius:20px;background:transparent}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-credenza-v100-2-35{left:50%;transform:translateX(-50%);bottom:92px;width:150px;height:38px;background:rgba(226,216,193,.62)}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-private-note-v100-2-35{display:block!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-main-note-v100-2-35,
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .bc-water-note-v100-2-35{display:none!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .host-table[data-table="18"]{--x:27%!important;--y:42%!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .host-table[data-table="20"]{--x:50%!important;--y:42%!important;min-width:92px!important}
+#host-stand #hostFloorMap[data-bc-active-zone="private"] .host-table[data-table="22"]{--x:73%!important;--y:42%!important}
+
+/* Keep real operational markers visually above the architecture. */
+#host-stand #hostFloorMap .host-table,
+#host-stand #hostFloorMap .host-table-detail,
+#host-stand #hostFloorMap .bc-reserved-table-tool-v100-2-26{z-index:4!important}
+#host-stand #hostFloorMap .host-water-line{display:none!important}
+
+@media(max-width:900px){
+  #host-stand #hostFloorMap .bc-floor-fixture-v100-2-35{font-size:8px}
+  #host-stand #hostFloorMap .bc-room-name-v100-2-35{font-size:9px}
+  #host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-bar-v100-2-35{width:88px;height:44px}
+  #host-stand #hostFloorMap[data-bc-active-zone="main"] .bc-main-host-v100-2-35{width:92px;height:40px}
+}

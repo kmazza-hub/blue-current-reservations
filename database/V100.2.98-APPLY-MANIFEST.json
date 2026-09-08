@@ -1,0 +1,10 @@
+{
+  "version": "100.2.98",
+  "name": "Host to Service Party Identity Integrity",
+  "runtimeFilesChanged": [
+    "client/js/app-v15.1.3.js"
+  ],
+  "sourceApplicationSha256": "08d09c1e766342f1646cbae7d5388e22e296e7e8ef2ba88b78dfbcbd23e3418c",
+  "targetApplicationSha256": "920d28dbe761d56413632e6c64efe9deb75b0e97573b756855e9cb41df293d32",
+  "scope": "unified seating identity commit and existing Service handoff only"
+}

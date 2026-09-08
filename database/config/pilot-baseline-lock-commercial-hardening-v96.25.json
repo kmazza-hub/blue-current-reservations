@@ -1,0 +1,30 @@
+{
+  "version": "96.25.0",
+  "gate": "PILOT_BASELINE_LOCK_AND_COMMERCIAL_HARDENING_ENTRY",
+  "lockedBaseline": "96.0.0",
+  "allowedChangeClasses": [
+    "PILOT_DEFECT_FIX",
+    "UX_SIMPLIFICATION",
+    "RELIABILITY_HARDENING",
+    "SECURITY_HARDENING",
+    "OBSERVABILITY_HARDENING",
+    "SUPPORTABILITY_HARDENING",
+    "DEPLOYMENT_DISCIPLINE",
+    "COMMERCIAL_RELEASE_PREPARATION"
+  ],
+  "restrictedChangeClasses": [
+    "UNVALIDATED_MAJOR_CAPABILITY",
+    "DUPLICATE_DOMAIN_AUTHORITY",
+    "DUPLICATE_WRITE_PATH",
+    "AUTONOMOUS_PRODUCTION_CHANGE"
+  ],
+  "policy": {
+    "v96BaselineMustRemainRecoverable": true,
+    "majorCapabilityRequiresPilotEvidence": true,
+    "humanChangeApprovalPreserved": true,
+    "noAutomaticExpansion": true,
+    "noAutomaticProductionMutation": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "COMMERCIAL_HARDENING_DEFECT_AND_FRICTION_CONTROL"
+}

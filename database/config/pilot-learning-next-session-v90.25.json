@@ -1,0 +1,31 @@
+{
+  "version": "90.25.0",
+  "phase": "C",
+  "gate": "PILOT_LEARNING_REVIEW_AND_NEXT_SESSION_DECISION",
+  "decisions": [
+    "REPEAT",
+    "HOLD",
+    "REVISE",
+    "PROGRESS"
+  ],
+  "inputs": [
+    "closeoutOutcome",
+    "operatorSummary",
+    "lessonsLearned",
+    "followUp",
+    "runtimeSummary",
+    "incidents"
+  ],
+  "rules": {
+    "humanDecisionRequired": true,
+    "systemSuggestionNonBinding": true,
+    "reviseRequiresChanges": true
+  },
+  "safety": {
+    "automaticNextSession": false,
+    "automaticExpansion": false,
+    "autonomousProductionChanges": false,
+    "providerWriteBack": false
+  },
+  "nextPhase": "PILOT_OPERATOR_EXPERIENCE_AND_FIELD_READINESS"
+}

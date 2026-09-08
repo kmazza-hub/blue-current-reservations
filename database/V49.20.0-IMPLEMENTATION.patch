@@ -1,0 +1,661 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "49.15.0",
++  "version": "49.20.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 per-location deployment package and rollout runbook",
++  "description": "Blue Current Hospitality OS \u2014 human-controlled go-live command and manual cutover result ledger",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -51,6 +51,7 @@
+ const RolloutActivationControlService = require("./services/rolloutActivationControlService");
+ const TechnicalActivationReadinessService = require("./services/technicalActivationReadinessService");
+ const LocationDeploymentPackageService = require("./services/locationDeploymentPackageService");
++const GoLiveCommandService = require("./services/goLiveCommandService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -105,7 +106,8 @@
+ const rolloutActivationControlService = new RolloutActivationControlService(database, auditService, realtimeHub, expansionReadinessService, multiLocationPerformanceService);
+ const technicalActivationReadinessService = new TechnicalActivationReadinessService(database, auditService, realtimeHub, rolloutActivationControlService);
+ const locationDeploymentPackageService = new LocationDeploymentPackageService(database, auditService, realtimeHub, technicalActivationReadinessService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService });
++const goLiveCommandService = new GoLiveCommandService(database, auditService, realtimeHub, locationDeploymentPackageService, technicalActivationReadinessService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -192,7 +194,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V49.15.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V49.20.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "49.15.0",
++        version: "49.20.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,30 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/go-live-command" && request.method === "GET") {
++      return sendJson(response,200,await goLiveCommandService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/go-live-command/locations/") && url.pathname.endsWith("/authorize-execution") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to authorize manual production cutover."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await goLiveCommandService.authorizeExecution(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/go-live-command/locations/") && url.pathname.endsWith("/record-result") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to record a production cutover result."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const allowed=auth.membership.locationIds||[];
++      if(!allowed.includes("*")&&!allowed.includes(locationId)) return sendJson(response,403,{error:"Location is outside your authorized scope."});
++      const body=await readJson(request);
++      try{return sendJson(response,201,await goLiveCommandService.recordResult(auth.membership.organizationId,allowed,locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/location-deployment-package" && request.method === "GET") {
+       return sendJson(response,200,await locationDeploymentPackageService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/goLiveCommandService.js
++++ b/server/services/goLiveCommandService.js
+@@ -0,0 +1,158 @@
++"use strict";
++
++class GoLiveCommandService {
++  constructor(database,auditService,realtimeHub,locationDeploymentPackageService,technicalActivationReadinessService){
++    Object.assign(this,{database,auditService,realtimeHub,locationDeploymentPackageService,technicalActivationReadinessService});
++  }
++  now(){return new Date().toISOString();}
++  async commands(organizationId){
++    const db=await this.database.read();
++    return (db.goLiveCommands||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++  }
++  async results(organizationId){
++    const db=await this.database.read();
++    return (db.goLiveCutoverResults||[]).filter(x=>x.organizationId===organizationId).sort((a,b)=>new Date(b.recordedAt)-new Date(a.recordedAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [deployment,technical,commands,results]=await Promise.all([
++      this.locationDeploymentPackageService.snapshot(organizationId,allowedLocationIds),
++      this.technicalActivationReadinessService.snapshot(organizationId,allowedLocationIds),
++      this.commands(organizationId),
++      this.results(organizationId)
++    ]);
++    const technicalMap=new Map((technical.locations||[]).map(x=>[x.locationId,x]));
++    const latestCommand=new Map();
++    for(const x of commands)if(!latestCommand.has(x.locationId))latestCommand.set(x.locationId,x);
++    const latestResult=new Map();
++    for(const x of results)if(!latestResult.has(x.locationId))latestResult.set(x.locationId,x);
++
++    const locations=(deployment.locations||[]).map(loc=>{
++      const pkg=loc.deploymentPackage||null;
++      const tech=technicalMap.get(loc.locationId)||null;
++      const command=latestCommand.get(loc.locationId)||null;
++      const result=latestResult.get(loc.locationId)||null;
++      const finalChecks=[
++        {id:"deployment-package",label:"Deployment package is prepared",passed:pkg?.status==="READY_FOR_DEPLOYMENT_EXECUTION",actual:pkg?.status||"missing"},
++        {id:"go-live-authorization",label:"Human go-live authorization remains present",passed:loc.goLiveAuthorized===true,actual:loc.goLiveAuthorized?"authorized":"not authorized"},
++        {id:"technical-readiness",label:"Technical readiness is currently complete or was explicitly overridden at authorization",passed:tech?.technicallyReady===true||tech?.goLiveAuthorization?.overrideUsed===true,actual:tech?.technicallyReady?"ready":tech?.goLiveAuthorization?.overrideUsed?"authorized override":"not ready"},
++        {id:"deployment-owner",label:"Deployment owner is assigned",passed:!!pkg?.deploymentOwner,actual:pkg?.deploymentOwner||"missing"},
++        {id:"rollback-owner",label:"Rollback owner is assigned",passed:!!pkg?.rollbackOwner,actual:pkg?.rollbackOwner||"missing"},
++        {id:"launch-window",label:"Launch window is defined",passed:!!pkg?.launchWindow,actual:pkg?.launchWindow||"missing"},
++        {id:"cutover-not-already-complete",label:"Production cutover is not already recorded complete",passed:result?.status!=="CUTOVER_SUCCEEDED",actual:result?.status||"not recorded"}
++      ];
++      const passed=finalChecks.filter(x=>x.passed).length;
++      return {
++        locationId:loc.locationId,locationName:loc.locationName,wave:loc.wave,
++        packageId:pkg?.id||null,
++        packageState:loc.packageState,
++        deploymentOwner:pkg?.deploymentOwner||null,
++        rollbackOwner:pkg?.rollbackOwner||null,
++        launchWindow:pkg?.launchWindow||null,
++        finalChecks,finalPassed:passed,finalTotal:finalChecks.length,
++        finalPreCutoverPassed:passed===finalChecks.length,
++        command,result,
++        commandState:command?.status||"NOT_AUTHORIZED",
++        cutoverResultState:result?.status||"NOT_RECORDED",
++        productionState:result?.status==="CUTOVER_SUCCEEDED"?"CUTOVER_RECORDED_SUCCESS":result?.status==="ROLLED_BACK"?"ROLLED_BACK":result?.status==="CUTOVER_FAILED"?"CUTOVER_FAILED":"NOT_PERFORMED"
++      };
++    });
++
++    return {
++      version:"49.20.0",generatedAt:this.now(),
++      status:!deployment.locations?.length?"deployment-package-required":locations.every(x=>x.result?.status==="CUTOVER_SUCCEEDED")?"cutover-results-complete":"go-live-command-review",
++      headline:!deployment.locations?.length?"A prepared location deployment package is required before Go-Live Command.":`${locations.filter(x=>x.finalPreCutoverPassed).length}/${locations.length} location(s) currently pass the final pre-cutover command checks.`,
++      locations,commandHistory:commands,resultHistory:results,
++      policy:{
++        explicitExecutionAuthorizationRequired:true,
++        adminExecutionAuthorizationRequired:true,
++        authorizationDoesNotExecuteDeployment:true,
++        resultRecordingIsManual:true,
++        automatedCutover:false,
++        autonomousProductionDeployment:false,
++        rollbackMustBeHumanDirected:true
++      }
++    };
++  }
++
++  async authorizeExecution(organizationId,allowedLocationIds,locationId,input,actor){
++    const snapshot=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snapshot.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location does not have a deployment package in Go-Live Command.");
++    const operator=String(input.deploymentOperator||loc.deploymentOwner||actor||"").trim().slice(0,160);
++    const rollbackOperator=String(input.rollbackOperator||loc.rollbackOwner||"").trim().slice(0,160);
++    if(!operator)throw new Error("Deployment operator is required.");
++    if(!rollbackOperator)throw new Error("Rollback operator is required.");
++    const overrideReason=String(input.overrideReason||"").trim().slice(0,1500);
++    if(!loc.finalPreCutoverPassed&&!overrideReason)throw new Error("Final pre-cutover checks have open gates. A documented executive override reason is required.");
++    const now=this.now();
++    const record={
++      id:`glc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,wave:loc.wave,packageId:loc.packageId,
++      status:"AUTHORIZED_FOR_MANUAL_CUTOVER",
++      deploymentExecutionState:"AUTHORIZED_NOT_EXECUTED",
++      productionCutoverState:"NOT_PERFORMED",
++      deploymentOperator:operator,rollbackOperator,
++      authorizedBy:actor,authorizedAt:now,
++      launchWindow:String(input.launchWindow||loc.launchWindow||"").slice(0,160),
++      overrideUsed:!loc.finalPreCutoverPassed,overrideReason,
++      finalPreCutoverSnapshot:{passed:loc.finalPassed,total:loc.finalTotal,checks:loc.finalChecks},
++      note:String(input.note||"").slice(0,1000)
++    };
++    await this.database.mutate(db=>{db.goLiveCommands||=[];db.goLiveCommands.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Manual production cutover authorized for ${locationId}; execution NOT performed${record.overrideUsed?" with documented override":""}`,category:"go_live_command"});
++    this.realtimeHub.publish("go-live-command:authorized",{id:record.id,organizationId,locationId,deploymentOperator:operator,overrideUsed:record.overrideUsed});
++    return record;
++  }
++
++  async recordResult(organizationId,allowedLocationIds,locationId,input,actor){
++    const snapshot=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snapshot.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Location is not in Go-Live Command.");
++    if(loc.command?.status!=="AUTHORIZED_FOR_MANUAL_CUTOVER")throw new Error("Manual cutover execution authorization is required before recording a cutover result.");
++    const status=String(input.status||"").toUpperCase();
++    if(!["CUTOVER_SUCCEEDED","CUTOVER_FAILED","ROLLED_BACK"].includes(status))throw new Error("Result status must be CUTOVER_SUCCEEDED, CUTOVER_FAILED, or ROLLED_BACK.");
++    const operator=String(input.deploymentOperator||loc.command.deploymentOperator||actor||"").trim().slice(0,160);
++    const rollbackOperator=String(input.rollbackOperator||loc.command.rollbackOperator||"").trim().slice(0,160);
++    const health={
++      apiHealthy:input.apiHealthy===true,
++      authenticationHealthy:input.authenticationHealthy===true,
++      reservationIntegrity:input.reservationIntegrity===true,
++      floorIntegrity:input.floorIntegrity===true,
++      kitchenIntegrity:input.kitchenIntegrity===true,
++      workforceIntegrity:input.workforceIntegrity===true
++    };
++    const healthPassed=Object.values(health).filter(Boolean).length;
++    if(status==="CUTOVER_SUCCEEDED"&&healthPassed<Object.keys(health).length)throw new Error("CUTOVER_SUCCEEDED requires all post-cutover health checks to pass.");
++    if(status==="ROLLED_BACK"&&!rollbackOperator)throw new Error("Rollback operator is required for ROLLED_BACK.");
++    const incident=String(input.incident||"").trim().slice(0,1500);
++    if(status==="CUTOVER_FAILED"&&!incident)throw new Error("CUTOVER_FAILED requires a launch incident description.");
++    const now=this.now();
++    const record={
++      id:`glr_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,wave:loc.wave,
++      commandId:loc.command.id,packageId:loc.packageId,
++      status,
++      deploymentOperator:operator,rollbackOperator,
++      recordedBy:actor,recordedAt:now,
++      postCutoverHealth:{...health,passed:healthPassed,total:Object.keys(health).length},
++      incident,
++      note:String(input.note||"").slice(0,1000),
++      systemExecutionClaim:false,
++      resultSource:"HUMAN_RECORDED"
++    };
++    await this.database.mutate(db=>{
++      db.goLiveCutoverResults||=[];
++      db.goLiveCutoverResults.push(record);
++      const pkg=(db.locationDeploymentPackages||[]).find(x=>x.id===loc.packageId);
++      if(pkg){
++        pkg.deploymentExecutionState=status==="CUTOVER_SUCCEEDED"?"MANUAL_CUTOVER_RECORDED":status==="ROLLED_BACK"?"ROLLBACK_RECORDED":"MANUAL_CUTOVER_FAILED";
++        pkg.productionCutoverState=status;
++      }
++      return record;
++    });
++    await this.auditService.record({organizationId,actor,action:`Human-recorded cutover result for ${locationId}: ${status}; Blue Current did not execute deployment`,category:"go_live_command"});
++    this.realtimeHub.publish("go-live-command:result-recorded",{id:record.id,organizationId,locationId,status});
++    return record;
++  }
++}
++module.exports=GoLiveCommandService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="49.15.0">
++  <meta name="blue-current-build" content="49.20.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -278,6 +278,15 @@
+       <p><strong>Location deployment packages</strong></p><div id="ldpLocations" class="v432-list"></div>
+       <p><strong>Deployment manifest</strong></p><pre id="ldpPacket" style="white-space:pre-wrap;overflow:auto;max-height:420px"></pre>
+       <p><strong>Package history</strong></p><div id="ldpHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="goLiveCommand">
++      <header><div><small>V49.16–V49.20 · Go-Live Command</small><strong>Control the final launch window without allowing Blue Current to deploy itself.</strong><span>Final pre-cutover checks, deployment and rollback operators, manual execution authorization, post-cutover health verification, incident recording, and human-entered cutover results live here. Blue Current records the command state; it does not execute production deployment.</span></div><button id="glcRefresh" type="button">Refresh Go-Live Command</button></header>
++      <div class="v432-kpis"><article><small>Command status</small><strong id="glcStatus">—</strong></article><article><small>Final checks passed</small><strong id="glcReady">0/0</strong></article><article><small>Cutovers authorized</small><strong id="glcAuthorized">0</strong></article><article><small>Results recorded</small><strong id="glcResults">0</strong></article></div>
++      <div class="v4316-answer" id="glcHeadline">A prepared location deployment package is required before Go-Live Command.</div>
++      <div class="v4316-actions"><input id="glcOperator" class="v4312-input" placeholder="Deployment operator"><input id="glcRollbackOperator" class="v4312-input" placeholder="Rollback operator"><input id="glcWindow" class="v4312-input" placeholder="Launch window"><input id="glcOverride" class="v4312-input" placeholder="Executive override reason (required with open gates)"><input id="glcIncident" class="v4312-input" placeholder="Launch incident description"><input id="glcNote" class="v4312-input" placeholder="Go-live command note"></div>
++      <div class="v4316-actions"><select id="glcResultStatus" class="v4312-input"><option value="CUTOVER_SUCCEEDED">CUTOVER_SUCCEEDED</option><option value="CUTOVER_FAILED">CUTOVER_FAILED</option><option value="ROLLED_BACK">ROLLED_BACK</option></select><label><input id="glcApi" type="checkbox"> API healthy</label><label><input id="glcAuth" type="checkbox"> Auth healthy</label><label><input id="glcReservations" type="checkbox"> Reservations intact</label><label><input id="glcFloor" type="checkbox"> Floor intact</label><label><input id="glcKitchen" type="checkbox"> Kitchen intact</label><label><input id="glcWorkforce" type="checkbox"> Workforce intact</label></div>
++      <p><strong>Launch locations</strong></p><div id="glcLocations" class="v432-list"></div>
++      <p><strong>Command and result ledger</strong></p><div id="glcHistory" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8804,6 +8813,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="technicalActivationReadiness" data-src="js/modules/technicalActivationReadinessCenter.js?v=49.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageEngine.js?v=49.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="locationDeploymentPackage" data-src="js/modules/locationDeploymentPackageCenter.js?v=49.15.0"></script>
+-<script src="js/startup-loader.js?v=49.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandEngine.js?v=49.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandCenter.js?v=49.20.0"></script>
++<script src="js/startup-loader.js?v=49.20.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1238,6 +1238,7 @@
+ const rolloutActivationControlModule = startupRegistry.register("rolloutActivationControl", shouldInitializeCenter("rolloutActivationControl") ? window.createBlueCurrentRolloutActivationControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v48ReleaseCertification"]);
+ const technicalActivationReadinessModule = startupRegistry.register("technicalActivationReadiness", shouldInitializeCenter("technicalActivationReadiness") ? window.createBlueCurrentTechnicalActivationReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "rolloutActivationControl"]);
+ const locationDeploymentPackageModule = startupRegistry.register("locationDeploymentPackage", shouldInitializeCenter("locationDeploymentPackage") ? window.createBlueCurrentLocationDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "technicalActivationReadiness"]);
++const goLiveCommandModule = startupRegistry.register("goLiveCommand", shouldInitializeCenter("goLiveCommand") ? window.createBlueCurrentGoLiveCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "locationDeploymentPackage"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V49.15.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V49.20.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/goLiveCommandEngine.js
++++ b/client/js/modules/goLiveCommandEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentGoLiveCommandEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/go-live-command",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Go-Live Command failed (${r.status})`);this.appState?.update?.({goLiveCommand:d});return d;}
++  async authorize(locationId,payload={}){const r=await fetch(`/api/go-live-command/locations/${encodeURIComponent(locationId)}/authorize-execution`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Cutover authorization failed (${r.status})`);this.eventBus?.emit?.("go-live-command:authorized",structuredClone(d));return d;}
++  async record(locationId,payload={}){const r=await fetch(`/api/go-live-command/locations/${encodeURIComponent(locationId)}/record-result`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Cutover result failed (${r.status})`);this.eventBus?.emit?.("go-live-command:result-recorded",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentGoLiveCommandEngine;
++if(global)global.BlueCurrentGoLiveCommandEngine=BlueCurrentGoLiveCommandEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/goLiveCommandCenter.js
++++ b/client/js/modules/goLiveCommandCenter.js
+@@ -0,0 +1,45 @@
++(function(){"use strict";
++function createBlueCurrentGoLiveCommandCenterModule(eventBus,appState){
++  const root=document.getElementById("goLiveCommand");
++  if(!root||!window.BlueCurrentGoLiveCommandEngine)return null;
++  const e=new window.BlueCurrentGoLiveCommandEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("glcStatus").textContent=s.status||"—";
++    $("glcReady").textContent=`${locs.filter(x=>x.finalPreCutoverPassed).length}/${locs.length}`;
++    $("glcAuthorized").textContent=locs.filter(x=>x.command?.status==="AUTHORIZED_FOR_MANUAL_CUTOVER").length;
++    $("glcResults").textContent=locs.filter(x=>x.result).length;
++    $("glcHeadline").textContent=s.headline||"Go-Live Command unavailable.";
++    $("glcLocations").innerHTML=locs.map(x=>`<article data-glc-location="${esc(x.locationId)}"><div><strong>Wave ${x.wave} · ${esc(x.locationName)}</strong><span>${esc(x.commandState)} · result ${esc(x.cutoverResultState)} · production ${esc(x.productionState)}</span></div><div class="v432-list">${(x.finalChecks||[]).map(c=>`<article><strong>${c.passed?"PASS":"OPEN"} · ${esc(c.label)}</strong><span>${esc(c.actual)}</span></article>`).join("")}</div>${x.command?`<p><strong>Operator:</strong> ${esc(x.command.deploymentOperator)} · <strong>Rollback:</strong> ${esc(x.command.rollbackOperator)} · execution ${esc(x.command.deploymentExecutionState)}</p>`:""}${x.result?`<p><strong>Human-recorded result:</strong> ${esc(x.result.status)} · health ${x.result.postCutoverHealth?.passed||0}/${x.result.postCutoverHealth?.total||0}</p>`:""}<div class="v4316-actions">${!x.command?'<button type="button" data-glc-authorize="true">Authorize manual cutover</button>':""}${x.command&&!x.result?'<button type="button" data-glc-record="true">Record cutover result</button>':""}</div></article>`).join("")||"<article><strong>No prepared deployment packages are in Go-Live Command.</strong></article>";
++    $("glcHistory").innerHTML=[...(s.commandHistory||[]).map(x=>`<article><strong>AUTH · ${esc(x.locationName)}</strong><span>${esc(x.deploymentOperator)} · ${new Date(x.authorizedAt).toLocaleString()} · ${esc(x.deploymentExecutionState)}</span></article>`),...(s.resultHistory||[]).map(x=>`<article><strong>RESULT · ${esc(x.locationName)} · ${esc(x.status)}</strong><span>${new Date(x.recordedAt).toLocaleString()} · source ${esc(x.resultSource)}</span></article>`)].join("")||"<article><strong>No go-live command history.</strong></article>";
++  }
++  function healthPayload(){
++    return {
++      apiHealthy:$("glcApi").checked,
++      authenticationHealthy:$("glcAuth").checked,
++      reservationIntegrity:$("glcReservations").checked,
++      floorIntegrity:$("glcFloor").checked,
++      kitchenIntegrity:$("glcKitchen").checked,
++      workforceIntegrity:$("glcWorkforce").checked
++    };
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("glcHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-glc-location]"); if(!card)return;
++    const id=card.dataset.glcLocation;
++    if(ev.target.closest("[data-glc-authorize]")){
++      try{await e.authorize(id,{deploymentOperator:$("glcOperator").value,rollbackOperator:$("glcRollbackOperator").value,launchWindow:$("glcWindow").value,overrideReason:$("glcOverride").value,note:$("glcNote").value});await load();}catch(err){$("glcHeadline").textContent=err.message;}
++      return;
++    }
++    if(ev.target.closest("[data-glc-record]")){
++      try{await e.record(id,{status:$("glcResultStatus").value,deploymentOperator:$("glcOperator").value,rollbackOperator:$("glcRollbackOperator").value,incident:$("glcIncident").value,note:$("glcNote").value,...healthPayload()});await load();}catch(err){$("glcHeadline").textContent=err.message;}
++    }
++  });
++  $("glcRefresh")?.addEventListener("click",load);
++  ["location-deployment:package-prepared","go-live-command:authorized","go-live-command:result-recorded","technical-activation:authorized","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentGoLiveCommandCenterModule=createBlueCurrentGoLiveCommandCenterModule;
++})();--- a/scripts/maintenance/test-v49.20-go-live-command.js
++++ b/scripts/maintenance/test-v49.20-go-live-command.js
+@@ -0,0 +1,95 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/goLiveCommandService");
++
++(async()=>{
++  const state={
++    goLiveCommands:[],
++    goLiveCutoverResults:[],
++    locationDeploymentPackages:[{
++      id:"pkg1",organizationId:"org",locationId:"a",status:"READY_FOR_DEPLOYMENT_EXECUTION",
++      deploymentExecutionState:"NOT_STARTED",productionCutoverState:"NOT_PERFORMED",
++      deploymentOwner:"Deploy Lead",rollbackOwner:"Rollback Lead",launchWindow:"Friday 09:00"
++    }]
++  };
++  const audit=[],events=[];
++  const deployment={
++    locations:[{
++      locationId:"a",locationName:"A",wave:1,goLiveAuthorized:true,
++      packageState:"READY_FOR_DEPLOYMENT_EXECUTION",
++      deploymentPackage:state.locationDeploymentPackages[0]
++    }]
++  };
++  const technical={
++    locations:[{
++      locationId:"a",locationName:"A",wave:1,technicallyReady:true,
++      goLiveAuthorization:{status:"AUTHORIZED_FOR_GO_LIVE",overrideUsed:false}
++    }]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>deployment},
++    {snapshot:async()=>technical}
++  );
++
++  let snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.version,"49.20.0");
++  assert.equal(snap.locations[0].finalPreCutoverPassed,true);
++  assert.equal(snap.policy.autonomousProductionDeployment,false);
++
++  const cmd=await svc.authorizeExecution("org",["a"],"a",{
++    deploymentOperator:"Deploy Lead",
++    rollbackOperator:"Rollback Lead",
++    launchWindow:"Friday 09:00"
++  },"Tester");
++
++  assert.equal(cmd.status,"AUTHORIZED_FOR_MANUAL_CUTOVER");
++  assert.equal(cmd.deploymentExecutionState,"AUTHORIZED_NOT_EXECUTED");
++  assert.equal(cmd.productionCutoverState,"NOT_PERFORMED");
++
++  let badSuccess=false;
++  try{
++    await svc.recordResult("org",["a"],"a",{status:"CUTOVER_SUCCEEDED",deploymentOperator:"Deploy Lead",apiHealthy:true},"Tester");
++  }catch(e){badSuccess=/all post-cutover health checks/i.test(e.message);}
++  assert(badSuccess);
++
++  const result=await svc.recordResult("org",["a"],"a",{
++    status:"CUTOVER_SUCCEEDED",
++    deploymentOperator:"Deploy Lead",
++    rollbackOperator:"Rollback Lead",
++    apiHealthy:true,
++    authenticationHealthy:true,
++    reservationIntegrity:true,
++    floorIntegrity:true,
++    kitchenIntegrity:true,
++    workforceIntegrity:true,
++    note:"Manual cutover completed by deployment operator."
++  },"Tester");
++
++  assert.equal(result.status,"CUTOVER_SUCCEEDED");
++  assert.equal(result.resultSource,"HUMAN_RECORDED");
++  assert.equal(result.systemExecutionClaim,false);
++  assert.equal(result.postCutoverHealth.passed,6);
++  assert.equal(state.locationDeploymentPackages[0].deploymentExecutionState,"MANUAL_CUTOVER_RECORDED");
++  assert.equal(state.locationDeploymentPackages[0].productionCutoverState,"CUTOVER_SUCCEEDED");
++
++  snap=await svc.snapshot("org",["a"]);
++  assert.equal(snap.locations[0].productionState,"CUTOVER_RECORDED_SUCCESS");
++  assert.equal(snap.status,"cutover-results-complete");
++  assert.equal(audit.length,2);
++  assert.equal(events.length,2);
++
++  console.log(JSON.stringify({
++    ok:true,version:"49.20.0",
++    finalPreCutoverChecks:true,
++    manualExecutionAuthorization:true,
++    incompleteHealthBlocked:true,
++    manualCutoverResult:true,
++    postCutoverHealth:true,
++    systemExecutionClaim:false,
++    automatedCutover:false,
++    autonomousProductionDeployment:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V49.20.0-RELEASE.md
++++ b/V49.20.0-RELEASE.md
+@@ -0,0 +1,136 @@
++# BLUE CURRENT V49.20.0 — GO-LIVE COMMAND
++
++V49.16–V49.20 adds the final human-controlled command layer before and after production cutover.
++
++## Final pre-cutover checks
++
++Each location with a prepared deployment package is re-evaluated for:
++
++1. Deployment package prepared.
++2. Human go-live authorization still present.
++3. Technical readiness complete or explicitly overridden at authorization.
++4. Deployment owner assigned.
++5. Rollback owner assigned.
++6. Launch window defined.
++7. Production cutover has not already been recorded successful.
++
++Open final checks require a documented executive override before manual cutover can be authorized.
++
++## Manual cutover execution authorization
++
++Adds:
++
++`POST /api/go-live-command/locations/:locationId/authorize-execution`
++
++Authorization records:
++
++- deployment package
++- location / rollout wave
++- deployment operator
++- rollback operator
++- launch window
++- authenticated authorizer
++- final pre-cutover snapshot
++- override status and reason
++- note
++
++The resulting state is:
++
++- `status: AUTHORIZED_FOR_MANUAL_CUTOVER`
++- `deploymentExecutionState: AUTHORIZED_NOT_EXECUTED`
++- `productionCutoverState: NOT_PERFORMED`
++
++Authorization does not run commands, deploy infrastructure, modify connectors, or perform production cutover.
++
++## Human-recorded cutover result
++
++Adds:
++
++`POST /api/go-live-command/locations/:locationId/record-result`
++
++Supported results:
++
++- `CUTOVER_SUCCEEDED`
++- `CUTOVER_FAILED`
++- `ROLLED_BACK`
++
++Results can only be recorded after manual execution authorization.
++
++A successful cutover result requires every post-cutover health check to be explicitly confirmed:
++
++- API healthy
++- authentication healthy
++- reservation integrity
++- floor integrity
++- kitchen integrity
++- workforce integrity
++
++A failed result requires a launch incident description.
++
++A rollback requires a rollback operator.
++
++Each result explicitly records:
++
++- `resultSource: HUMAN_RECORDED`
++- `systemExecutionClaim: false`
++
++Blue Current records what a human deployment operator reports. It does not claim to have executed the deployment.
++
++## Launch incident state
++
++Failed cutover records preserve the launch incident narrative for subsequent stabilization and incident-command workflows.
++
++## Safety policy
++
++- `explicitExecutionAuthorizationRequired: true`
++- `adminExecutionAuthorizationRequired: true`
++- `authorizationDoesNotExecuteDeployment: true`
++- `resultRecordingIsManual: true`
++- `automatedCutover: false`
++- `autonomousProductionDeployment: false`
++- `rollbackMustBeHumanDirected: true`
++
++## Current authenticated runtime
++
++The untouched Chefs runtime has not executed the rollout, technical authorization, and deployment-package chain.
++
++V49.20 therefore correctly reports:
++
++- status: `deployment-package-required`
++- locations in Go-Live Command: 0
++- autonomous production deployment: false
++
++The current demo owner account does not hold the required `admin` permission. Its attempts to authorize manual cutover and record a cutover result both correctly return HTTP 403.
++
++## Validation
++
++- V49.20 focused Go-Live Command lifecycle PASS
++- final pre-cutover checks PASS
++- manual cutover authorization PASS
++- authorization remains NOT_EXECUTED PASS
++- incomplete health confirmation blocks success PASS
++- human-recorded successful cutover path PASS
++- post-cutover health verification PASS
++- system execution claim remains false PASS
++- V49.15 deployment-package regression PASS
++- authenticated Go-Live Command GET PASS
++- admin-only execution authorization boundary PASS
++- admin-only result-recording boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 893 JavaScript files
++- 754 client scripts
++- 5,622 unique HTML IDs
++
++## Next
++
++V49.21–V49.25 should build Launch Stabilization:
++- post-launch observation window
++- location health timeline
++- launch incidents / degradations
++- rollback recommendation state
++- adoption/readiness after launch
++- first-service verification
++- stabilization exit criteria
++- human declaration of STABLE / EXTEND / ROLLBACK
++- no autonomous rollback
+--- a/README-APPLY-V49.20.0.md
++++ b/README-APPLY-V49.20.0.md
+@@ -0,0 +1,48 @@
++# APPLY BLUE CURRENT V49.20.0
++
++Baseline: exact V49.15.0 repository.
++
++Extract `BLUE-CURRENT-V49.20.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v49.20-go-live-command.js
++node scripts/maintenance/test-v49.15-location-deployment-package.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "49.20.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Go-Live Command** surface appears after Location Deployment Package.
++
++Important:
++
++- production cutover authorization is admin-only
++- authorization does not execute deployment
++- cutover results are human-recorded
++- successful cutover requires all six post-cutover health confirmations
++- failed cutover requires an incident description
++- Blue Current never claims it executed the production cutover
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V49.20.0 add go-live command"
++git push origin live-service-timeline
++```

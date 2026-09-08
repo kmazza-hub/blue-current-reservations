@@ -1,0 +1,7 @@
+(function(){"use strict";
+function api(){const token=localStorage.getItem("blueCurrentV3230Token")||"";return async(path)=>{const headers={"Content-Type":"application/json"};if(token)headers.Authorization=`Bearer ${token}`;const r=await fetch(path,{headers});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||`Request failed (${r.status})`);return data;};}
+class BlueCurrentIngestionObservabilityEngine{
+constructor(eventBus){this.eventBus=eventBus;this.request=api();}
+async snapshot(){const [metrics,status]=await Promise.all([this.request("/api/live/delivery-metrics"),this.request("/api/live/status")]);const sources=metrics.sources||[];const active=sources.filter(x=>x.lastEventAt);const avgLag=active.length?Math.round(active.reduce((s,x)=>s+(Number(x.lagSeconds)||0),0)/active.length):null;const unhealthy=sources.filter(x=>x.status!=="healthy"&&x.status!=="not-configured").length;const score=Math.max(0,100-(metrics.totals?.openDeadLetters||0)*8-(metrics.totals?.rejected||0)*2-unhealthy*10-(avgLag!=null&&avgLag>300?15:0));const out={score,status:score>=90?"healthy":score>=75?"watch":"degraded",avgLagSeconds:avgLag,unhealthySources:unhealthy,metrics,sourceHealth:status,generatedAt:new Date().toISOString()};this.eventBus?.emit?.("v42:ingestion-observability",out);return out;}
+}
+window.BlueCurrentIngestionObservabilityEngine=BlueCurrentIngestionObservabilityEngine;})();

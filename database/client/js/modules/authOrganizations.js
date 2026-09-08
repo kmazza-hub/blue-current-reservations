@@ -19,15 +19,58 @@
       return true;
     }
 
+    function commandShell() {
+      return $("blueCurrentCommand");
+    }
+
+    function moveFocusIntoAuth() {
+      const active=document.activeElement;
+      const shell=commandShell();
+      if(shell && active && shell.contains(active))active.blur?.();
+      window.requestAnimationFrame(() => $("authEmail")?.focus?.({preventScroll:true}));
+    }
+
+    function focusOutsideAuth() {
+      const overlay=$("authOverlay");
+      const active=document.activeElement;
+      if(overlay && active && overlay.contains(active))active.blur?.();
+    }
+
     function openAuth() {
-      $("authOverlay")?.classList.add("open");
+      const overlay=$("authOverlay");
+      if(!overlay)return;
+      focusOutsideAuth();
+      const shell=commandShell();
+      const active=document.activeElement;
+      if(shell && active && shell.contains(active))active.blur?.();
+      overlay.classList.add("open");
+      overlay.removeAttribute("aria-hidden");
+      overlay.removeAttribute("inert");
+      if(shell){
+        shell.setAttribute("aria-hidden","true");
+        shell.setAttribute("inert","");
+      }
       document.body.classList.add("auth-locked");
+      moveFocusIntoAuth();
     }
 
     function closeAuth() {
-      $("authOverlay")?.classList.remove("open");
+      const overlay=$("authOverlay");
+      if(!overlay)return;
+      focusOutsideAuth();
+      overlay.classList.remove("open");
+      overlay.setAttribute("aria-hidden","true");
+      overlay.setAttribute("inert","");
+      const shell=commandShell();
+      if(shell){
+        shell.removeAttribute("aria-hidden");
+        shell.removeAttribute("inert");
+      }
       document.body.classList.remove("auth-locked");
+      window.requestAnimationFrame(()=>$("bcCommandTitle")?.focus?.({preventScroll:true}));
     }
+
+    window.BlueCurrentAuthOverlay={open:openAuth,close:closeAuth};
 
     function setMessage(message, error = false) {
       const el = $("authMessage");

@@ -1,0 +1,1 @@
+document.addEventListener('DOMContentLoaded',()=>console.log('Restaurant Digital Twin v35.1.5'));

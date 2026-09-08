@@ -1,0 +1,331 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.15.0",
++  "version": "46.20.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 operator consolidation, role navigation, and usage evidence",
++  "description": "Blue Current Hospitality OS \u2014 operator consolidation scorecard and evidence-backed deprecation review",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.15.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.20.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.15.0",
++        version: "46.20.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.15.0">
++  <meta name="blue-current-build" content="46.20.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -4165,6 +4165,7 @@
+ <section class="v393-center" id="operatorServiceFlowCenter" aria-labelledby="osfTitle"><header><div><small>V46.1–V46.5 · Operator Fine-Comb I</small><strong id="osfTitle">Run the shift through one service flow instead of hunting across the platform.</strong><span id="osfHeadline">Consolidating reservation, floor, kitchen, staffing, guest recovery, and profit signals.</span></div><div class="v393-actions"><button id="osfRefresh" type="button">Refresh flow</button><button id="osfOperatorMode" type="button">Operator mode</button><button id="osfFullMode" type="button">Full platform</button></div></header><div class="v393-kpis"><article><small>Flow score</small><strong id="osfScore">0%</strong></article><article><small>Live stages</small><strong id="osfLive">0/6</strong></article><article><small>Needs attention</small><strong id="osfAttention">0</strong></article><article><small>Total surfaces</small><strong id="osfSurfaces">0</strong></article><article><small>Technical surfaces</small><strong id="osfTechnical">0</strong></article><article><small>View</small><strong id="osfMode">FULL</strong></article></div><div id="osfStages" class="v393-grid"></div><div id="osfAudit" class="v393-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="operatorSurfaceRationalizationCenter"><header><div><small>V46.6–V46.10 · Operator Surface Rationalization</small><strong>Classify the platform into primary, merge, diagnostics, and evidence-gated deprecation candidates.</strong><span>No modules are deleted in this wave. The classification creates an evidence-based cut/merge map and makes cross-stage handoffs explicit.</span></div><button id="osrRefresh" type="button">Refresh rationalization</button></header><div class="v4316-actions"><button type="button" data-osr-view="all">All surfaces</button><button type="button" data-osr-view="merge">Merge review</button><button type="button" data-osr-view="diagnostics-admin">Diagnostics/admin</button><button type="button" data-osr-view="deprecation-candidate">Deprecation review</button></div><div class="v432-kpis"><article><small>Total surfaces</small><strong id="osrTotal">0</strong></article><article><small>Keep primary</small><strong id="osrPrimary">0</strong></article><article><small>Merge</small><strong id="osrMerge">0</strong></article><article><small>Diagnostics</small><strong id="osrDiagnostics">0</strong></article><article><small>Deprecation candidates</small><strong id="osrCandidates">0</strong></article><article><small>Attention handoffs</small><strong id="osrHandoffs">0</strong></article></div><div class="v4316-answer" id="osrHeadline">Classifying operator surfaces…</div><div id="osrGroups" class="v432-list"></div><div id="osrHandoffList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="operatorConsolidationCenter"><header><div><small>V46.11–V46.15 · Operator Consolidation + Usage Evidence</small><strong>Merge duplicate operator entry points into primary surfaces, apply role defaults, and collect evidence before deprecation.</strong><span>This wave changes navigation and presentation only. It records non-destructive operator-use evidence in AppState; no working module is deleted.</span></div><div class="v4316-actions"><button id="ocRefresh" type="button">Refresh</button><button id="ocApplyRole" type="button">Apply role defaults</button><button id="ocFullPlatform" type="button">Full platform</button></div></header><div class="v432-kpis"><article><small>Role</small><strong id="ocRole">MANAGER</strong></article><article><small>Default surfaces</small><strong id="ocDefaults">0</strong></article><article><small>Merged primary</small><strong id="ocMerged">0</strong></article><article><small>Use evidence</small><strong id="ocUseEvidence">0</strong></article><article><small>Deprecation evidence</small><strong id="ocDepReady">0</strong></article></div><div class="v4316-answer" id="ocHeadline">Preparing consolidated operator navigation…</div><div id="ocPrimary" class="v432-list"></div><div id="ocDeprecation" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="operatorConsolidationScorecardCenter"><header><div><small>V46.16–V46.20 · Consolidation Scorecard</small><strong>Measure navigation duplication, workflow coverage, handoff pressure, role usage, and evidence-backed deprecation readiness.</strong><span>The scorecard produces a review shortlist only. It cannot remove modules automatically.</span></div><button id="ocsRefresh" type="button">Refresh scorecard</button></header><div class="v432-kpis"><article><small>Score</small><strong id="ocsScore">0%</strong></article><article><small>Grade</small><strong id="ocsGrade">—</strong></article><article><small>Duplicate nav</small><strong id="ocsDupNav">0</strong></article><article><small>Workflow coverage</small><strong id="ocsCoverage">0%</strong></article><article><small>Attention handoffs</small><strong id="ocsHandoffs">0</strong></article><article><small>Use evidence</small><strong id="ocsEvidence">0</strong></article><article><small>Review shortlist</small><strong id="ocsShortlist">0</strong></article></div><div class="v4316-answer" id="ocsHeadline">Calculating operator consolidation score…</div><div id="ocsNav" class="v432-list"></div><div id="ocsRoles" class="v432-list"></div><div id="ocsDeprecation" class="v432-list"></div></section>
+ <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+             <header class="guided-shift-header">
+               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
+@@ -8626,6 +8627,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorSurfaceRationalizationCenter" data-src="js/modules/operatorSurfaceRationalizationCenter.js?v=46.10.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationCenter" data-src="js/modules/operatorConsolidationEngine.js?v=46.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationCenter" data-src="js/modules/operatorConsolidationCenter.js?v=46.15.0"></script>
+-<script src="js/startup-loader.js?v=46.15.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationScorecardCenter" data-src="js/modules/operatorConsolidationScorecardEngine.js?v=46.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="operatorConsolidationScorecardCenter" data-src="js/modules/operatorConsolidationScorecardCenter.js?v=46.20.0"></script>
++<script src="js/startup-loader.js?v=46.20.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1212,6 +1212,7 @@
+ const operatorServiceFlowCenterModule = startupRegistry.register("operatorServiceFlowCenter", shouldInitializeCenter("operatorServiceFlowCenter") ? window.createBlueCurrentOperatorServiceFlowCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "guidedShiftCenter"]);
+ const operatorSurfaceRationalizationCenterModule = startupRegistry.register("operatorSurfaceRationalizationCenter", shouldInitializeCenter("operatorSurfaceRationalizationCenter") ? window.createBlueCurrentOperatorSurfaceRationalizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorServiceFlowCenter"]);
+ const operatorConsolidationCenterModule = startupRegistry.register("operatorConsolidationCenter", shouldInitializeCenter("operatorConsolidationCenter") ? window.createBlueCurrentOperatorConsolidationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorSurfaceRationalizationCenter", "roleExperienceCenter"]);
++const operatorConsolidationScorecardCenterModule = startupRegistry.register("operatorConsolidationScorecardCenter", shouldInitializeCenter("operatorConsolidationScorecardCenter") ? window.createBlueCurrentOperatorConsolidationScorecardCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "operatorConsolidationCenter"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.15.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.20.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/operatorConsolidationScorecardEngine.js
++++ b/client/js/modules/operatorConsolidationScorecardEngine.js
+@@ -0,0 +1,16 @@
++(function(global){"use strict";
++class BlueCurrentOperatorConsolidationScorecardEngine{
++  constructor({eventBus,appState,consolidationEngine,rationalizationEngine,flowEngine}={}){this.eventBus=eventBus;this.appState=appState;this.consolidationEngine=consolidationEngine||null;this.rationalizationEngine=rationalizationEngine||null;this.flowEngine=flowEngine||null;this.stageCenters=["reservationOperationsCenter","liveFloorOperationsCenter","kitchenThroughputCenter","laborDeploymentCenter","guestRecoveryCenter","shiftProfitPulseCenter"];}
++  state(){try{return this.appState?.getState?.()||{};}catch{return {};}}
++  navigationEntries(entries=null){if(Array.isArray(entries))return entries.map(x=>typeof x==="string"?{href:x,label:x,nav:"provided"}:{nav:"provided",...x});if(typeof document==="undefined")return [];return [...document.querySelectorAll(".desktop-nav a,.mobile-nav a")].map(a=>({href:a.getAttribute("href")||"",label:(a.textContent||"").trim(),nav:a.closest(".mobile-nav")?"mobile":"desktop"}));}
++  duplicateNavigation(entries=null){const nav=this.navigationEntries(entries),buckets={};nav.forEach(x=>{const key=`${x.nav||"unknown"}::${x.href||""}`;(buckets[key] ||= []).push(x);});const groups=Object.values(buckets).filter(items=>items[0]?.href&&items.length>1).map(items=>({nav:items[0].nav||"unknown",href:items[0].href,count:items.length,labels:[...new Set(items.map(x=>x.label))],excess:items.length-1}));const uniqueHrefs=new Set(nav.map(x=>x.href).filter(Boolean));return {entries:nav.length,uniqueHrefs:uniqueHrefs.size,duplicateGroups:groups.length,duplicateEntries:groups.reduce((s,x)=>s+x.excess,0),groups};}
++  workflowCoverage(role=null){const consolidation=this.consolidationEngine?.navigationModel?.(role)||{defaultSurfaces:[]},defaults=new Set(consolidation.defaultSurfaces||[]);const covered=this.stageCenters.filter(x=>defaults.has(x));return {required:this.stageCenters.length,covered:covered.length,percent:Math.round(100*covered.length/this.stageCenters.length),coveredCenters:covered,missingCenters:this.stageCenters.filter(x=>!defaults.has(x))};}
++  handoffHealth(){const flow=this.flowEngine?.snapshot?.()||this.state().operatorServiceFlow||{handoffs:[]};const handoffs=flow.handoffs||[],attention=handoffs.filter(x=>x.status==="attention");return {total:handoffs.length,attention:attention.length,clear:handoffs.length-attention.length,percent:handoffs.length?Math.round(100*(handoffs.length-attention.length)/handoffs.length):100,attentionIds:attention.map(x=>x.id)};}
++  usageByRole(){const evidence=this.consolidationEngine?.evidence?.()||this.state().operatorUseEvidence||[],roles={};for(const e of evidence){const role=e.role||"unknown";roles[role] ||= {role,events:0,surfaces:new Set(),actions:{}};roles[role].events++;roles[role].surfaces.add(e.surfaceId);roles[role].actions[e.action]=(roles[role].actions[e.action]||0)+1;}return Object.values(roles).map(x=>({role:x.role,events:x.events,uniqueSurfaces:x.surfaces.size,actions:x.actions})).sort((a,b)=>b.events-a.events);}
++  clicksToAction(){const evidence=this.consolidationEngine?.evidence?.()||this.state().operatorUseEvidence||[];const actions=new Set(["action","execute","acknowledge","resolve","approve","create-action","open-action"]);let opens=0,completed=0;for(const e of evidence){if(e.action==="open")opens++;if(actions.has(e.action))completed++;}const proxy=completed?Math.max(1,Math.round(opens/completed)):opens?opens:null;return {openEvents:opens,actionEvents:completed,clicksPerActionProxy:proxy,measurement:"instrumented-use-event-proxy"};}
++  shortlist(ids=null){const rational=this.rationalizationEngine?.snapshot?.(ids)||{items:[]},usage=new Map((this.consolidationEngine?.evidenceSummary?.(rational.items.map(x=>x.id))||[]).map(x=>[x.surfaceId,x]));const coverage=this.workflowCoverage("manager");return rational.items.filter(x=>x.disposition==="deprecation-candidate").map(item=>{const u=usage.get(item.id)||{uses:0,roles:[],lastUsedAt:null};const eligible=u.uses===0&&coverage.percent===100;return {...item,usage:u,shortlistStatus:eligible?"eligible-for-deprecation-review":u.uses>0?"retain-observed-use":"blocked-until-primary-coverage",automaticDeletion:false};}).sort((a,b)=>a.usage.uses-b.usage.uses);}
++  score(entries=null,ids=null){const nav=this.duplicateNavigation(entries),coverage=this.workflowCoverage("manager"),handoffs=this.handoffHealth(),clicks=this.clicksToAction(),usage=this.usageByRole(),shortlist=this.shortlist(ids);const navScore=Math.max(0,100-nav.duplicateEntries*8),coverageScore=coverage.percent,handoffScore=handoffs.percent,evidenceScore=Math.min(100,(this.consolidationEngine?.evidence?.()||[]).length*10),score=Math.round(navScore*.25+coverageScore*.35+handoffScore*.20+evidenceScore*.20);return {score,grade:score>=90?"A":score>=80?"B":score>=70?"C":score>=60?"D":"F",navigation:{...nav,score:navScore},workflowCoverage:coverage,handoffs,clicksToAction:clicks,usageByRole:usage,evidenceEvents:(this.consolidationEngine?.evidence?.()||[]).length,deprecationShortlist:shortlist,shortlistEligible:shortlist.filter(x=>x.shortlistStatus==="eligible-for-deprecation-review").length,policy:"evidence-backed-review-no-automatic-deletion",version:"46.20.0",capturedAt:new Date().toISOString()};}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentOperatorConsolidationScorecardEngine;
++if(global)global.BlueCurrentOperatorConsolidationScorecardEngine=BlueCurrentOperatorConsolidationScorecardEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/operatorConsolidationScorecardCenter.js
++++ b/client/js/modules/operatorConsolidationScorecardCenter.js
+@@ -0,0 +1,6 @@
++(function(){"use strict";
++function createBlueCurrentOperatorConsolidationScorecardCenterModule(eventBus,appState){const root=document.getElementById("operatorConsolidationScorecardCenter");if(!root||!window.BlueCurrentOperatorConsolidationScorecardEngine)return null;const rational=window.BlueCurrentOperatorSurfaceRationalizationEngine?new window.BlueCurrentOperatorSurfaceRationalizationEngine({eventBus,appState}):null,flow=window.BlueCurrentOperatorServiceFlowEngine?new window.BlueCurrentOperatorServiceFlowEngine({eventBus,appState}):null,consolidation=window.BlueCurrentOperatorConsolidationEngine?new window.BlueCurrentOperatorConsolidationEngine({eventBus,appState,rationalizationEngine:rational}):null,e=new window.BlueCurrentOperatorConsolidationScorecardEngine({eventBus,appState,consolidationEngine:consolidation,rationalizationEngine:rational,flowEngine:flow}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++function render(s){$("ocsScore").textContent=`${s.score}%`;$("ocsGrade").textContent=s.grade;$("ocsDupNav").textContent=s.navigation.duplicateEntries;$("ocsCoverage").textContent=`${s.workflowCoverage.percent}%`;$("ocsHandoffs").textContent=s.handoffs.attention;$("ocsEvidence").textContent=s.evidenceEvents;$("ocsShortlist").textContent=s.shortlistEligible;$("ocsHeadline").textContent=`Consolidation ${s.grade} · ${s.navigation.duplicateEntries} duplicate navigation entries · ${s.workflowCoverage.percent}% primary workflow coverage · ${s.handoffs.attention} attention handoff(s).`;$("ocsNav").innerHTML=s.navigation.groups.map(x=>`<article><strong>${esc(x.href)} · ${x.count} entries</strong><span>${x.labels.map(esc).join(", ")}</span></article>`).join("")||"<p>No duplicate navigation entries detected.</p>";$("ocsRoles").innerHTML=(s.usageByRole||[]).map(x=>`<article><strong>${esc(x.role)} · ${x.events} event(s)</strong><span>${x.uniqueSurfaces} unique surface(s)</span></article>`).join("")||"<p>No role-use evidence recorded yet.</p>";$("ocsDeprecation").innerHTML=(s.deprecationShortlist||[]).slice(0,24).map(x=>`<article><strong>${esc(x.id)} · ${esc(x.shortlistStatus)}</strong><span>${x.usage.uses} observed use(s) · automatic deletion disabled</span></article>`).join("")||"<p>No deprecation candidates available.</p>";}
++function load(){render(e.score());}
++$("ocsRefresh")?.addEventListener("click",load);eventBus?.on?.("operator-use-evidence:recorded",load);eventBus?.on?.("operator-service-flow:updated",load);load();return{engine:e,load};}
++window.createBlueCurrentOperatorConsolidationScorecardCenterModule=createBlueCurrentOperatorConsolidationScorecardCenterModule;})();--- a/scripts/maintenance/test-operator-consolidation-scorecard.js
++++ b/scripts/maintenance/test-operator-consolidation-scorecard.js
+@@ -0,0 +1,24 @@
++"use strict";
++const assert=require("assert");
++global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
++const Flow=require("../../client/js/modules/operatorServiceFlowEngine");
++const Rational=require("../../client/js/modules/operatorSurfaceRationalizationEngine");
++const Consolidation=require("../../client/js/modules/operatorConsolidationEngine");
++const Scorecard=require("../../client/js/modules/operatorConsolidationScorecardEngine");
++const state={roleExperienceRole:"manager",guidedShift:{phase:{label:"Dinner"},focusScore:80},reservationYield:{headline:"Paced"},operationalDigitalTwin:{occupancy:82},occupancyPercent:82,kitchenThroughput:{throughput:50,headline:"Kitchen pressure"},laborDeployment:{headline:"Aligned"},guestRecovery:{open:1,headline:"One recovery"},shiftProfitPulse:{profitAtRisk:0,headline:"Margin protected"},operatorUseEvidence:[]};
++const appState={getState:()=>state,get:k=>state[k],update:o=>Object.assign(state,o)},eventBus={emit:()=>{},on:()=>()=>{}};
++const flow=new Flow({eventBus,appState}),rational=new Rational({eventBus,appState,flowEngine:flow}),consolidation=new Consolidation({eventBus,appState,rationalizationEngine:rational});
++consolidation.recordUse("reservationOperationsCenter","open");consolidation.recordUse("reservationOperationsCenter","open");consolidation.recordUse("commandActionInboxCenter","create-action");consolidation.recordUse("executiveBriefingCenter","open");
++const score=new Scorecard({eventBus,appState,consolidationEngine:consolidation,rationalizationEngine:rational,flowEngine:flow});
++const nav=[{href:"#a",label:"A"},{href:"#b",label:"B"},{href:"#a",label:"A2"},{href:"#c",label:"C"},{href:"#b",label:"B2"},{href:"#b",label:"B3"}];
++const ids=["executiveBriefingCenter","innovationCenter","enterpriseValuePlanCenter"];
++const s=score.score(nav,ids);
++assert.equal(s.navigation.entries,6);assert.equal(s.navigation.duplicateGroups,2);assert.equal(s.navigation.duplicateEntries,3);
++assert.equal(s.workflowCoverage.percent,100);assert.equal(s.workflowCoverage.covered,6);
++assert.equal(s.handoffs.total,5);assert.equal(s.handoffs.attention,4);
++assert.equal(s.clicksToAction.actionEvents,1);assert.equal(s.clicksToAction.openEvents,3);assert.equal(s.clicksToAction.clicksPerActionProxy,3);
++assert.equal(s.evidenceEvents,4);assert.ok(s.usageByRole.find(x=>x.role==="manager").events===4);
++const executive=s.deprecationShortlist.find(x=>x.id==="executiveBriefingCenter"),innovation=s.deprecationShortlist.find(x=>x.id==="innovationCenter");
++assert.equal(executive.shortlistStatus,"retain-observed-use");assert.equal(innovation.shortlistStatus,"eligible-for-deprecation-review");assert.equal(innovation.automaticDeletion,false);
++assert.equal(s.policy,"evidence-backed-review-no-automatic-deletion");
++console.log(JSON.stringify({ok:true,version:s.version,score:s.score,grade:s.grade,duplicateEntries:s.navigation.duplicateEntries,workflowCoverage:s.workflowCoverage.percent,attentionHandoffs:s.handoffs.attention,clicksPerActionProxy:s.clicksToAction.clicksPerActionProxy,evidenceEvents:s.evidenceEvents,shortlistEligible:s.shortlistEligible,policy:s.policy},null,2));
+--- a/README-APPLY-V46.20.0.md
++++ b/README-APPLY-V46.20.0.md
+@@ -0,0 +1,63 @@
++# APPLY BLUE CURRENT V46.20.0
++
++## Baseline
++Apply over the authoritative repository containing V46.15.0.
++
++## Important
++This patch does NOT contain:
++- `database/data/blue-current.json`
++- database `.tmp` files
++- database `.bak` files
++
++## Apply
++Extract `BLUE-CURRENT-V46.20.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-operator-consolidation-scorecard.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.20.0"
++```
++
++## Recommended Git staging
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/operatorConsolidationScorecardEngine.js
++git add client/js/modules/operatorConsolidationScorecardCenter.js
++git add scripts/maintenance/test-operator-consolidation-scorecard.js
++git add README-APPLY-V46.20.0.md
++git add V46.20.0-RELEASE.md
++git add V46.20.0-IMPLEMENTATION.patch
++```
++
++Inspect:
++
++```powershell
++git status
++git diff --cached
++```
++
++Commit example:
++
++```powershell
++git commit -m "V46.20.0 operator consolidation scorecard"
++git push origin live-service-timeline
++```
+--- a/V46.20.0-RELEASE.md
++++ b/V46.20.0-RELEASE.md
+@@ -0,0 +1,124 @@
++# BLUE CURRENT V46.20.0 — OPERATOR CONSOLIDATION SCORECARD
++
++## Release scope
++
++V46.16–V46.20 converts the fine-comb evidence model into a measurable operator-consolidation scorecard.
++
++This release does not delete modules automatically.
++
++### V46.16 — Navigation Duplication Measurement
++Measures duplicate navigation entry points within each navigation surface.
++
++Responsive desktop/mobile mirrors are not treated as duplicates merely because they point to the same destination.
++
++On the current authoritative baseline, the desktop navigation contains 5 excess duplicate entries:
++- Autonomous appears 3 times
++- Guests appears 2 times
++- AI Brain appears 2 times
++- Executive appears 2 times
++
++The mobile navigation has no internal duplicate entry points.
++
++### V46.17 — Primary Workflow Coverage
++Measures whether role-default navigation covers the six required operator stages:
++
++1. Reservations
++2. Floor
++3. Kitchen
++4. Staffing
++5. Guest Recovery
++6. Profit
++
++Manager role coverage is expected to remain 100%.
++
++### V46.18 — Handoff + Clicks-to-Action Score
++Adds:
++- unresolved/attention handoff count
++- clear-handoff percentage
++- operator-use evidence count
++- role-specific usage
++- clicks-to-action proxy from instrumented use events
++
++The clicks-to-action metric is explicitly labeled as an instrumentation proxy rather than a production analytics claim.
++
++### V46.19 — Evidence-Backed Deprecation Shortlist
++Deprecation candidates can now be classified as:
++- `eligible-for-deprecation-review`
++- `retain-observed-use`
++- `blocked-until-primary-coverage`
++
++Eligibility requires:
++- zero observed use for the candidate
++- 100% manager primary-workflow coverage
++
++Even an eligible candidate is review-only.
++
++### V46.20 — Consolidation Scorecard
++Adds a weighted score combining:
++- navigation duplication
++- primary workflow coverage
++- handoff health
++- operator-use evidence
++
++The scorecard returns:
++- numeric score
++- A–F grade
++- duplicate-navigation groups
++- workflow coverage
++- handoff health
++- usage by role
++- clicks-to-action proxy
++- evidence-backed deprecation shortlist
++
++Policy:
++
++`evidence-backed-review-no-automatic-deletion`
++
++## UI
++Adds the Operator Consolidation Scorecard center with:
++- score / grade
++- duplicate navigation count
++- workflow coverage
++- attention handoff count
++- use-evidence count
++- review-shortlist count
++- duplicate navigation detail
++- role usage detail
++- deprecation shortlist detail
++
++## Validation
++- `node scripts/maintenance/test-operator-consolidation-scorecard.js` passed.
++- Focused test validated:
++  - 3 excess duplicate navigation entries in the synthetic harness
++  - 100% primary workflow coverage
++  - 5 handoffs
++  - 4 attention handoffs
++  - 3-clicks-per-action proxy
++  - role-use evidence
++  - observed-use retention
++  - zero-use deprecation-review eligibility
++  - no automatic deletion
++- Real HTML navigation audit found 5 excess duplicates in desktop navigation and 0 internal mobile-navigation duplicates.
++- `npm run check` passed:
++  - 824 JavaScript files
++  - 706 client scripts
++  - 5,264 unique HTML IDs
++- Server startup passed as V46.20.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Safety / fine-comb policy
++- No working module was deleted.
++- No live-execution behavior changed.
++- The scorecard is advisory.
++- A shortlist item cannot delete itself.
++- Runtime database is not included in this patch.
++
++## Next fine-comb milestone
++The next wave should begin applying the scorecard to the actual interface:
++- remove duplicate desktop navigation entries
++- route merge candidates into one primary entry point
++- add task-completion instrumentation, not only open-event evidence
++- establish minimum evidence thresholds
++- create a human-approved deprecation manifest
++- optionally hide approved deprecation candidates behind a reversible feature flag before deleting code

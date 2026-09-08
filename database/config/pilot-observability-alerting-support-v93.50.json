@@ -1,0 +1,28 @@
+{
+  "version": "93.50.0",
+  "phase": "D",
+  "gate": "PILOT_OBSERVABILITY_ALERTING_AND_SUPPORT_READINESS",
+  "signals": {
+    "runtimeMetrics": true,
+    "incidentTimeline": true,
+    "severityLevels": [
+      "INFO",
+      "WARNING",
+      "HIGH",
+      "CRITICAL"
+    ]
+  },
+  "criticalIncident": {
+    "pauseActivePilot": true,
+    "humanAcknowledgement": true,
+    "humanEscalation": true,
+    "recoveryVerification": true
+  },
+  "support": {
+    "humanOwnershipRequired": true,
+    "resolutionEvidenceRequired": true,
+    "automaticRemediation": false,
+    "automaticResolution": false
+  },
+  "nextGate": "PILOT_SECURITY_ACCESS_AND_AUDIT_READINESS"
+}

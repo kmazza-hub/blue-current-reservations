@@ -1,0 +1,577 @@
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/README-APPLY-V44.12.0.md bc_next/blue-current-reservations/README-APPLY-V44.12.0.md
+--- bc_orig/blue-current-reservations/README-APPLY-V44.12.0.md	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/README-APPLY-V44.12.0.md	2026-08-08 12:38:03.540222825 +0000
+@@ -0,0 +1,44 @@
++# Apply Blue Current V44.12.0
++
++1. Stop Blue Current before applying the patch.
++
++```powershell
++taskkill /F /IM node.exe
++```
++
++2. Extract `BLUE-CURRENT-V44.12.0-PATCH.zip` over the authoritative `blue-current-reservations` repository, preserving folders and replacing changed files when prompted.
++
++3. Do **not** replace `database/data/blue-current.json`. It is intentionally absent from this patch.
++
++4. Validate syntax and duplicate checks:
++
++```powershell
++npm run check
++```
++
++Expected version: `V44.12.0`.
++
++5. Run the focused orchestration test:
++
++```powershell
++node scripts/maintenance/test-aip-multi-agent-orchestration.js
++```
++
++Expected result includes `"ok": true` and approval scope `governed-dry-run-only`.
++
++6. Start Blue Current:
++
++```powershell
++npm run start
++```
++
++7. In another PowerShell window, verify health:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected health version: `44.12.0`.
++
++## Important
++V44.12.0 introduces governed orchestration only. Approval does not authorize live restaurant mutation; multi-agent execution remains dry-run isolated.
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/V44.12.0-IMPLEMENTATION.patch bc_next/blue-current-reservations/V44.12.0-IMPLEMENTATION.patch
+--- bc_orig/blue-current-reservations/V44.12.0-IMPLEMENTATION.patch	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/V44.12.0-IMPLEMENTATION.patch	2026-08-08 12:38:03.585158390 +0000
+@@ -0,0 +1,48 @@
++diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/README-APPLY-V44.12.0.md bc_next/blue-current-reservations/README-APPLY-V44.12.0.md
++--- bc_orig/blue-current-reservations/README-APPLY-V44.12.0.md	1970-01-01 00:00:00.000000000 +0000
+++++ bc_next/blue-current-reservations/README-APPLY-V44.12.0.md	2026-08-08 12:38:03.540222825 +0000
++@@ -0,0 +1,44 @@
+++# Apply Blue Current V44.12.0
+++
+++1. Stop Blue Current before applying the patch.
+++
+++```powershell
+++taskkill /F /IM node.exe
+++```
+++
+++2. Extract `BLUE-CURRENT-V44.12.0-PATCH.zip` over the authoritative `blue-current-reservations` repository, preserving folders and replacing changed files when prompted.
+++
+++3. Do **not** replace `database/data/blue-current.json`. It is intentionally absent from this patch.
+++
+++4. Validate syntax and duplicate checks:
+++
+++```powershell
+++npm run check
+++```
+++
+++Expected version: `V44.12.0`.
+++
+++5. Run the focused orchestration test:
+++
+++```powershell
+++node scripts/maintenance/test-aip-multi-agent-orchestration.js
+++```
+++
+++Expected result includes `"ok": true` and approval scope `governed-dry-run-only`.
+++
+++6. Start Blue Current:
+++
+++```powershell
+++npm run start
+++```
+++
+++7. In another PowerShell window, verify health:
+++
+++```powershell
+++curl.exe -s http://localhost:8787/api/health
+++```
+++
+++Expected health version: `44.12.0`.
+++
+++## Important
+++V44.12.0 introduces governed orchestration only. Approval does not authorize live restaurant mutation; multi-agent execution remains dry-run isolated.
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/V44.12.0-RELEASE.md bc_next/blue-current-reservations/V44.12.0-RELEASE.md
+--- bc_orig/blue-current-reservations/V44.12.0-RELEASE.md	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/V44.12.0-RELEASE.md	2026-08-08 12:38:03.539540024 +0000
+@@ -0,0 +1,46 @@
++# Blue Current V44.12.0 — Multi-Agent Orchestration
++
++## Scope
++
++This release advances Operation V / V44 AIP from persistent single-agent runtime controls into governed, server-backed multi-agent coordination.
++
++### V44.8 — Multi-Agent Planning
++- Converts an existing persistent AIP run into a durable orchestration.
++- Decomposes the compiled plan into agent-owned tasks.
++- Retains execution mode, approval requirements, dependencies, and shared instruction context.
++
++### V44.9 — Durable Task Delegation & Handoffs
++- Persists task ownership and sequential dependencies server-side.
++- Records agent-to-agent handoffs as durable artifacts.
++- Carries only governed dry-run context between agents.
++
++### V44.10 — Orchestration Lifecycle
++- Adds start, advance, checkpoint, pause, resume, recover, complete, and cancel controls.
++- Persists orchestration checkpoints separately from persistent agent-run checkpoints.
++- Recovery restores task position/status from the latest orchestration checkpoint.
++
++### V44.11 — Human Approval Orchestration
++- Approval-gated orchestrations cannot start without an explicit recorded human decision.
++- Approval and rejection decisions are audit-recorded.
++- Approval scope is explicitly `governed-dry-run-only`.
++- Approval never sets `liveExecutionAllowed` to true.
++
++### V44.12 — Coordination Readiness
++- Adds readiness checks for multi-agent planning, durable delegation, handoffs, checkpoints, approval orchestration, approval scope, and no-live-mutation safety.
++
++## New APIs
++- `GET/POST /api/aip/orchestrations`
++- `GET /api/aip/orchestration-context`
++- `POST /api/aip/orchestration-control`
++- `GET/POST /api/aip/approvals`
++- `GET /api/aip/coordination-readiness`
++
++## Safety boundary
++This release does not introduce live restaurant mutation. Multi-agent workflows remain `governed-dry-run`; approvals authorize only that dry-run coordination scope.
++
++## Validation
++- `npm run check` passed: 800 JavaScript files, 682 client scripts, 5,099 unique HTML IDs.
++- `node scripts/maintenance/test-aip-multi-agent-orchestration.js` passed.
++- Server startup passed.
++- `/api/health` returned HTTP 200 with version `44.12.0`.
++- Runtime database SHA-256 remained unchanged after validation startup.
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/client/index.html bc_next/blue-current-reservations/client/index.html
+--- bc_orig/blue-current-reservations/client/index.html	2026-08-08 12:30:54.000000000 +0000
++++ bc_next/blue-current-reservations/client/index.html	2026-08-08 12:36:56.804415986 +0000
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="44.7.0">
++  <meta name="blue-current-build" content="44.12.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -8574,7 +8574,9 @@
+ <section class="v432-center v438-center v4316-center" id="aipExecutionSandboxCenter"><header><div><small>V44.2 · Governed Execution Sandbox</small><strong>Rehearse compiled AI workflows against policy and approval boundaries.</strong><span>Simulation is isolated from live restaurant state.</span></div><div class="v4316-actions"><button id="aesRefresh" type="button">Refresh</button><button id="aesRun" type="button">Run latest simulation</button></div></header><div class="v432-kpis"><article><small>Sandbox runs</small><strong id="aesCount">0</strong></article><article><small>Latest status</small><strong id="aesStatus">—</strong></article><article><small>Blocked steps</small><strong id="aesBlocked">0</strong></article><article><small>Approval</small><strong id="aesApproval">NO</strong></article></div><div id="aesList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="aipPersistentAgentRuntimeCenter"><header><div><small>V44.4 · Persistent Agent Runtime</small><strong>Turn compiled AIP plans into durable, inspectable agent runs.</strong><span>Runs persist on the server and remain governed dry-runs; approval-gated plans cannot start.</span></div><div class="v4316-actions"><select id="aparAgentType"><option value="operations-optimizer">Operations Optimizer</option><option value="executive-analyst">Executive Analyst</option><option value="staffing-advisor">Staffing Advisor</option><option value="guest-experience-advisor">Guest Experience Advisor</option><option value="kitchen-flow-advisor">Kitchen Flow Advisor</option><option value="incident-coordinator">Incident Coordinator</option></select><button id="aparRefresh" type="button">Refresh</button><button id="aparCreate" type="button">Create run</button></div></header><div class="v432-kpis"><article><small>Runs</small><strong id="aparCount">0</strong></article><article><small>Status</small><strong id="aparStatus">—</strong></article><article><small>Agent</small><strong id="aparAgent">—</strong></article><article><small>Approval</small><strong id="aparApproval">NO</strong></article><article><small>Checkpoints</small><strong id="aparCheckpoints">0</strong></article></div><div class="v4316-answer" id="aparCurrent">Create a run from the latest compiled automation.</div><div id="aparList" class="v432-list"></div><pre class="v4316-answer" id="aparContext">Inspect a run to view its shared execution context.</pre></section>
+ <section class="v432-center v438-center v4316-center" id="aipRuntimeLifecycleCenter"><header><div><small>V44.5–V44.6 · Shared Context + Runtime Lifecycle</small><strong>Checkpoint, pause, resume, and recover persistent AIP work without permitting live execution.</strong><span>Every transition is server-persisted and audit-recorded.</span></div><button id="arlRefresh" type="button">Refresh lifecycle</button></header><div class="v432-kpis"><article><small>Run</small><strong id="arlRun">—</strong></article><article><small>Status</small><strong id="arlStatus">—</strong></article><article><small>Checkpoints</small><strong id="arlCheckpoints">0</strong></article><article><small>Live state</small><strong id="arlIsolation">ISOLATED</strong></article></div><div class="v4316-actions"><button type="button" data-runtime-action="start">Start dry-run</button><button type="button" data-runtime-action="checkpoint">Checkpoint</button><button type="button" data-runtime-action="pause">Pause</button><button type="button" data-runtime-action="resume">Resume</button><button type="button" data-runtime-action="recover">Recover</button><button type="button" data-runtime-action="complete">Complete</button><button type="button" data-runtime-action="cancel">Cancel</button></div><div class="v4316-answer" id="arlMessage">Lifecycle controls operate on the latest persistent agent run.</div><div id="arlList" class="v432-list"></div></section>
+-<section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · AIP Runtime Readiness II</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="aipMultiAgentOrchestrationCenter"><header><div><small>V44.8–V44.10 · Multi-Agent Orchestration</small><strong>Decompose a persistent AIP run into durable agent-owned tasks and governed handoffs.</strong><span>Task dependencies, handoffs, checkpoints, pause/resume, and recovery are server-persisted. No live restaurant execution is permitted.</span></div><div class="v4316-actions"><button id="amoRefresh" type="button">Refresh</button><button id="amoCreate" type="button">Plan multi-agent run</button></div></header><div class="v432-kpis"><article><small>Orchestrations</small><strong id="amoCount">0</strong></article><article><small>Status</small><strong id="amoStatus">—</strong></article><article><small>Tasks</small><strong id="amoTasks">0</strong></article><article><small>Handoffs</small><strong id="amoHandoffs">0</strong></article><article><small>Approval</small><strong id="amoApproval">—</strong></article></div><div class="v4316-answer" id="amoCurrent">Plan from the latest persistent agent run.</div><div class="v4316-actions"><button type="button" data-orch-action="start">Start dry-run</button><button type="button" data-orch-action="advance">Advance / handoff</button><button type="button" data-orch-action="checkpoint">Checkpoint</button><button type="button" data-orch-action="pause">Pause</button><button type="button" data-orch-action="resume">Resume</button><button type="button" data-orch-action="recover">Recover</button><button type="button" data-orch-action="cancel">Cancel</button></div><div id="amoList" class="v432-list"></div><pre class="v4316-answer" id="amoContext">Inspect an orchestration to view its shared coordination context.</pre></section>
++<section class="v432-center v432-cert v4316-center" id="aipApprovalOrchestrationCenter"><header><div><small>V44.11–V44.12 · Approval Orchestration + Coordination Readiness</small><strong>Require explicit human decisions for approval-gated multi-agent plans and certify coordination safety.</strong><span>An approval authorizes only governed dry-run coordination; it never grants live execution authority.</span></div><button id="aaoRefresh" type="button">Refresh approvals</button></header><textarea id="aaoNote" class="v4312-input" placeholder="Optional approval/rejection note"></textarea><div class="v432-kpis"><article><small>Pending</small><strong id="aaoPending">0</strong></article><article><small>Decisions</small><strong id="aaoDecisions">0</strong></article><article><small>Readiness</small><strong id="aaoScore">0%</strong></article><article><small>Status</small><strong id="aaoStatus">—</strong></article><article><small>Trusted</small><strong id="aaoTrusted">NO</strong></article></div><div class="v4316-answer" id="aaoMessage">Approval decisions are audit-recorded and dry-run scoped.</div><div id="aaoList" class="v432-list"></div><div id="aaoChecks" class="v432-list"></div></section>
++<section class="v432-center v432-cert v4316-center" id="aipRuntimeReadinessCenter"><header><div><small>V44.7 · Persistent Runtime Readiness</small><strong>Certify persistent agent execution, shared context, lifecycle recovery, and no-live-mutation boundaries.</strong></div><button id="arrRefresh" type="button">Run readiness</button></header><div class="v432-kpis"><article><small>Readiness</small><strong id="arrScore">0%</strong></article><article><small>Status</small><strong id="arrStatus">—</strong></article><article><small>Trusted</small><strong id="arrTrusted">NO</strong></article><article><small>Blockers</small><strong id="arrBlockers">0</strong></article></div><div id="arrChecks" class="v432-list"></div></section>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryEngineV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipCapabilityRegistryCenter" data-src="js/modules/aipCapabilityRegistryCenterV44.js?v=44.3.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipAutomationCompilerCenter" data-src="js/modules/aipAutomationCompilerEngine.js?v=44.3.0"></script>
+@@ -8587,6 +8589,10 @@
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipRuntimeLifecycleCenter" data-src="js/modules/aipRuntimeLifecycleCenter.js?v=44.7.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipRuntimeReadinessCenter" data-src="js/modules/aipRuntimeReadinessEngine.js?v=44.7.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipRuntimeReadinessCenter" data-src="js/modules/aipRuntimeReadinessCenter.js?v=44.7.0"></script>
+-<script src="js/startup-loader.js?v=44.7.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipMultiAgentOrchestrationCenter" data-src="js/modules/aipMultiAgentOrchestrationEngine.js?v=44.12.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipMultiAgentOrchestrationCenter" data-src="js/modules/aipMultiAgentOrchestrationCenter.js?v=44.12.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipApprovalOrchestrationCenter" data-src="js/modules/aipApprovalOrchestrationEngine.js?v=44.12.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="aip" data-pack-explicit="true" data-center="aipApprovalOrchestrationCenter" data-src="js/modules/aipApprovalOrchestrationCenter.js?v=44.12.0"></script>
++<script src="js/startup-loader.js?v=44.12.0"></script>
+ </body>
+ </html>
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/client/js/app-v15.1.3.js bc_next/blue-current-reservations/client/js/app-v15.1.3.js
+--- bc_orig/blue-current-reservations/client/js/app-v15.1.3.js	2026-08-08 12:30:54.000000000 +0000
++++ bc_next/blue-current-reservations/client/js/app-v15.1.3.js	2026-08-08 12:36:56.805513203 +0000
+@@ -1057,7 +1057,7 @@
+ document.documentElement.dataset.startupMode = safeStartup ? "safe" : "full";
+ window.BlueCurrentStartupMode = safeStartup ? "safe" : "full";
+ 
+-const platform = window.BlueCurrentPlatform.create({ build: "44.7.0-aip-persistent-agent-runtime", eventBus });
++const platform = window.BlueCurrentPlatform.create({ build: "44.12.0-aip-multi-agent-orchestration", eventBus });
+ const startupRegistry = platform.registry;
+ window.BlueCurrentStartupRegistry = startupRegistry;
+ window.BlueCurrentPlatformRuntime = platform;
+@@ -2439,6 +2439,8 @@
+ const aipPersistentAgentRuntimeCenterModule = startupRegistry.register("aipPersistentAgentRuntimeCenter",shouldInitializeCenter("aipPersistentAgentRuntimeCenter") ? window.createBlueCurrentAipPersistentAgentRuntimeCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipAutomationCompilerCenter","aipExecutionSandboxCenter"]);
+ const aipRuntimeLifecycleCenterModule = startupRegistry.register("aipRuntimeLifecycleCenter",shouldInitializeCenter("aipRuntimeLifecycleCenter") ? window.createBlueCurrentAipRuntimeLifecycleCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipPersistentAgentRuntimeCenter"]);
+ const aipRuntimeReadinessCenterModule = startupRegistry.register("aipRuntimeReadinessCenter",shouldInitializeCenter("aipRuntimeReadinessCenter") ? window.createBlueCurrentAipRuntimeReadinessCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipCapabilityRegistryCenter","aipAutomationCompilerCenter","aipExecutionSandboxCenter","aipPersistentAgentRuntimeCenter","aipRuntimeLifecycleCenter"]);
++const aipMultiAgentOrchestrationCenterModule = startupRegistry.register("aipMultiAgentOrchestrationCenter",shouldInitializeCenter("aipMultiAgentOrchestrationCenter") ? window.createBlueCurrentAipMultiAgentOrchestrationCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipPersistentAgentRuntimeCenter","aipRuntimeLifecycleCenter"]);
++const aipApprovalOrchestrationCenterModule = startupRegistry.register("aipApprovalOrchestrationCenter",shouldInitializeCenter("aipApprovalOrchestrationCenter") ? window.createBlueCurrentAipApprovalOrchestrationCenterModule?.(eventBus, appState) : null,["eventBus","appState","aipMultiAgentOrchestrationCenter"]);
+ 
+ 
+ const operationsWorkspaceCenterModule = startupRegistry.register(
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/client/js/modules/aipApprovalOrchestrationCenter.js bc_next/blue-current-reservations/client/js/modules/aipApprovalOrchestrationCenter.js
+--- bc_orig/blue-current-reservations/client/js/modules/aipApprovalOrchestrationCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/client/js/modules/aipApprovalOrchestrationCenter.js	2026-08-08 12:36:56.765782757 +0000
+@@ -0,0 +1,5 @@
++(function(){"use strict";
++function createBlueCurrentAipApprovalOrchestrationCenterModule(){const root=document.getElementById('aipApprovalOrchestrationCenter');if(!root||!window.BlueCurrentAipApprovalOrchestrationEngine)return null;const e=new window.BlueCurrentAipApprovalOrchestrationEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));let pending=[];
++async function load(){try{const x=await e.load();pending=(x.requests||[]).filter(o=>o.approvalStatus==='pending');$('aaoPending').textContent=x.pending||0;$('aaoDecisions').textContent=x.decisions||0;$('aaoList').innerHTML=(x.requests||[]).slice(0,30).map(o=>`<article><div><strong>${esc(o.id)} · ${esc(o.approvalStatus)}</strong><span>${esc(o.instruction)} · dry-run scope only</span></div>${o.approvalStatus==='pending'?`<div class="v4316-actions"><button type="button" data-approval-id="${esc(o.id)}" data-decision="approve">Approve dry-run</button><button type="button" data-approval-id="${esc(o.id)}" data-decision="reject">Reject</button></div>`:''}</article>`).join('')||'<p>No approval-gated orchestrations.</p>';const r=await e.readiness();$('aaoScore').textContent=`${r.score||0}%`;$('aaoStatus').textContent=r.status||'—';$('aaoTrusted').textContent=r.trusted?'YES':'NO';$('aaoChecks').innerHTML=(r.checks||[]).map(c=>`<article><div><strong>${c.pass?'PASS':'BLOCK'} · ${esc(c.label)}</strong><span>${esc(c.detail)}</span></div></article>`).join('');}catch(err){$('aaoMessage').textContent=err.message;}}
++root.addEventListener('click',async ev=>{const b=ev.target.closest('[data-approval-id]');if(!b)return;try{await e.decide(b.dataset.approvalId,b.dataset.decision,$('aaoNote')?.value||'');$('aaoMessage').textContent=`${b.dataset.decision} recorded. Approval scope remains governed dry-run only.`;await load();}catch(err){$('aaoMessage').textContent=err.message;}});$('aaoRefresh')?.addEventListener('click',load);load();return{engine:e,load};}
++window.createBlueCurrentAipApprovalOrchestrationCenterModule=createBlueCurrentAipApprovalOrchestrationCenterModule;})();
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/client/js/modules/aipApprovalOrchestrationEngine.js bc_next/blue-current-reservations/client/js/modules/aipApprovalOrchestrationEngine.js
+--- bc_orig/blue-current-reservations/client/js/modules/aipApprovalOrchestrationEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/client/js/modules/aipApprovalOrchestrationEngine.js	2026-08-08 12:36:56.765741576 +0000
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentAipApprovalOrchestrationEngine{constructor(){this.r=api();}load(){return this.r('/api/aip/approvals');}decide(orchestrationId,decision,note=''){return this.r('/api/aip/approvals',{method:'POST',body:JSON.stringify({orchestrationId,decision,note})});}readiness(){return this.r('/api/aip/coordination-readiness');}}
++window.BlueCurrentAipApprovalOrchestrationEngine=BlueCurrentAipApprovalOrchestrationEngine;})();
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationCenter.js bc_next/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationCenter.js
+--- bc_orig/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationCenter.js	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationCenter.js	2026-08-08 12:36:56.765696670 +0000
+@@ -0,0 +1,8 @@
++(function(){"use strict";
++function createBlueCurrentAipMultiAgentOrchestrationCenterModule(){const root=document.getElementById('aipMultiAgentOrchestrationCenter');if(!root||!window.BlueCurrentAipMultiAgentOrchestrationEngine)return null;const e=new window.BlueCurrentAipMultiAgentOrchestrationEngine(),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));let current=null;
++function render(o){current=o||null;$('amoStatus').textContent=o?.status||'—';$('amoTasks').textContent=o?.taskCount||0;$('amoHandoffs').textContent=o?.handoffCount||0;$('amoApproval').textContent=o?.approvalStatus||'—';$('amoCurrent').textContent=o?`${o.id} · ${o.executionMode} · ${o.completedTaskCount||0}/${o.taskCount||0} complete`:'Plan from the latest persistent agent run.';}
++async function load(){try{const x=await e.load(),rows=x.items||[];$('amoCount').textContent=x.count||0;render(rows[0]);$('amoList').innerHTML=rows.slice(0,20).map(o=>`<article><div><strong>${esc(o.status)} · ${esc(o.id)}</strong><span>${o.taskCount||0} tasks · ${o.handoffCount||0} handoffs · approval ${esc(o.approvalStatus||'—')}</span></div><button type="button" data-orch-id="${esc(o.id)}">Inspect</button></article>`).join('')||'<p>No multi-agent orchestrations yet.</p>';}catch(err){$('amoCurrent').textContent=err.message;}}
++async function create(){try{const x=await e.create();render(x.orchestration);await load();}catch(err){$('amoCurrent').textContent=err.message;}}
++root.addEventListener('click',async ev=>{const inspect=ev.target.closest('[data-orch-id]')?.dataset.orchId;if(inspect){try{const x=await e.context(inspect);render(x.orchestration);$('amoContext').textContent=JSON.stringify(x.context,null,2);}catch(err){$('amoContext').textContent=err.message;}return;}const action=ev.target.closest('[data-orch-action]')?.dataset.orchAction;if(action&&current){try{const x=await e.control(current.id,action);render(x.orchestration);await load();}catch(err){$('amoCurrent').textContent=err.message;}}});
++$('amoRefresh')?.addEventListener('click',load);$('amoCreate')?.addEventListener('click',create);load();return{engine:e,load,create,getCurrent:()=>current};}
++window.createBlueCurrentAipMultiAgentOrchestrationCenterModule=createBlueCurrentAipMultiAgentOrchestrationCenterModule;})();
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationEngine.js bc_next/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationEngine.js
+--- bc_orig/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationEngine.js	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/client/js/modules/aipMultiAgentOrchestrationEngine.js	2026-08-08 12:36:56.765609010 +0000
+@@ -0,0 +1,4 @@
++(function(){"use strict";
++function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
++class BlueCurrentAipMultiAgentOrchestrationEngine{constructor(){this.r=api();}load(){return this.r('/api/aip/orchestrations');}create(runId){return this.r('/api/aip/orchestrations',{method:'POST',body:JSON.stringify({runId})});}context(orchestrationId){return this.r(`/api/aip/orchestration-context${orchestrationId?`?orchestrationId=${encodeURIComponent(orchestrationId)}`:''}`);}control(orchestrationId,action){return this.r('/api/aip/orchestration-control',{method:'POST',body:JSON.stringify({orchestrationId,action})});}}
++window.BlueCurrentAipMultiAgentOrchestrationEngine=BlueCurrentAipMultiAgentOrchestrationEngine;})();
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/client/js/startup-loader.js bc_next/blue-current-reservations/client/js/startup-loader.js
+--- bc_orig/blue-current-reservations/client/js/startup-loader.js	2026-08-08 12:30:54.000000000 +0000
++++ bc_next/blue-current-reservations/client/js/startup-loader.js	2026-08-08 12:36:56.805675673 +0000
+@@ -4,7 +4,7 @@
+   const params = new URLSearchParams(window.location.search);
+   const fullStartup = params.get("full") === "1";
+   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
+-  const appSource = `js/app-v15.1.3.js?v=44.7.0`;
++  const appSource = `js/app-v15.1.3.js?v=44.12.0`;
+   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
+   const startedAt = performance.now();
+   const storageKey = "bluecurrent:last-good-startup";
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V44.7.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V44.12.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/package.json bc_next/blue-current-reservations/package.json
+--- bc_orig/blue-current-reservations/package.json	2026-08-08 12:30:54.000000000 +0000
++++ bc_next/blue-current-reservations/package.json	2026-08-08 12:36:56.765503664 +0000
+@@ -1,6 +1,6 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "44.7.0",
++  "version": "44.12.0",
+   "private": true,
+   "description": "Blue Current Hospitality OS \u2014 SLO Alerting & Automated Runbooks",
+   "scripts": {
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/scripts/maintenance/test-aip-multi-agent-orchestration.js bc_next/blue-current-reservations/scripts/maintenance/test-aip-multi-agent-orchestration.js
+--- bc_orig/blue-current-reservations/scripts/maintenance/test-aip-multi-agent-orchestration.js	1970-01-01 00:00:00.000000000 +0000
++++ bc_next/blue-current-reservations/scripts/maintenance/test-aip-multi-agent-orchestration.js	2026-08-08 12:36:56.806035337 +0000
+@@ -0,0 +1,7 @@
++"use strict";
++const assert=require("assert");const LiveIntegrationService=require("../../server/services/liveIntegrationService");
++class MemoryDatabase{constructor(seed){this.data=structuredClone(seed);}async read(){return structuredClone(this.data);}async mutate(fn){const r=fn(this.data);return structuredClone(r);}}
++(async()=>{const org="org-test";const draft={id:"D1",organizationId:org,instruction:"Prepare a governed staffing response",intent:"action",approvalRequired:true,capabilityIds:["executive.reasoning","executive.action-draft","executive.workflow"],steps:[{order:1,capabilityId:"executive.reasoning",mode:"read",risk:"medium",approvalRequired:false},{order:2,capabilityId:"executive.action-draft",mode:"write-draft",risk:"high",approvalRequired:true},{order:3,capabilityId:"executive.workflow",mode:"write-draft",risk:"high",approvalRequired:true}]};const run={id:"R1",organizationId:org,draftId:"D1",agentType:"operations-optimizer",instruction:draft.instruction,intent:"action",approvalRequired:true,executionMode:"governed-dry-run",status:"approval-pending",capabilityIds:draft.capabilityIds,liveStateChanged:false};const db=new MemoryDatabase({aipAutomationDrafts:{[org]:[draft]},aipAgentRuns:{[org]:[run]},aipSandboxRuns:{[org]:[{id:"S1",draftId:"D1",liveStateChanged:false}]},aipRunCheckpoints:{[org]:[{id:"CP1",runId:"R1",liveStateChanged:false}]}});const audits=[],events=[];const svc=new LiveIntegrationService(db,{record:async x=>audits.push(x)},{publish:(type,payload)=>events.push({type,payload})});
++const planned=await svc.aipMultiAgentOrchestrations(org,"Tester",{});assert.equal(planned.orchestration.status,"approval-pending");assert.equal(planned.orchestration.tasks.length,3);assert.equal(planned.orchestration.liveExecutionAllowed,false);await assert.rejects(()=>svc.aipOrchestrationControl(org,"Tester",{orchestrationId:planned.orchestration.id,action:"start"}),/explicit human approval/);
++const approved=await svc.aipApprovalOrchestration(org,"Approver",{orchestrationId:planned.orchestration.id,decision:"approve",note:"Dry-run approved"});assert.equal(approved.approval.scope,"governed-dry-run-only");assert.equal(approved.approval.liveExecutionAllowed,false);assert.equal(approved.orchestration.status,"ready");await svc.aipOrchestrationControl(org,"Tester",{orchestrationId:planned.orchestration.id,action:"start"});await svc.aipOrchestrationControl(org,"Tester",{orchestrationId:planned.orchestration.id,action:"checkpoint"});const advanced=await svc.aipOrchestrationControl(org,"Tester",{orchestrationId:planned.orchestration.id,action:"advance"});assert.equal(advanced.handoffs.length,1);assert.equal(advanced.handoffs[0].liveStateChanged,false);await svc.aipOrchestrationControl(org,"Tester",{orchestrationId:planned.orchestration.id,action:"pause"});await svc.aipOrchestrationControl(org,"Tester",{orchestrationId:planned.orchestration.id,action:"recover"});const ctx=await svc.aipOrchestrationContext(org,planned.orchestration.id);assert.equal(ctx.context.governance.liveExecutionAllowed,false);assert.ok(ctx.context.agents.length>=1);
++const rejectedDraft={...draft,id:"D2"};db.data.aipAutomationDrafts[org].unshift(rejectedDraft);db.data.aipAgentRuns[org].unshift({...run,id:"R2",draftId:"D2"});const p2=await svc.aipMultiAgentOrchestrations(org,"Tester",{runId:"R2"});const rejected=await svc.aipApprovalOrchestration(org,"Approver",{orchestrationId:p2.orchestration.id,decision:"reject"});assert.equal(rejected.orchestration.status,"rejected");await assert.rejects(()=>svc.aipOrchestrationControl(org,"Tester",{orchestrationId:p2.orchestration.id,action:"start"}));console.log(JSON.stringify({ok:true,orchestrationId:planned.orchestration.id,handoffs:advanced.handoffs.length,approvalScope:approved.approval.scope,audits:audits.length,events:events.length},null,2));})().catch(e=>{console.error(e);process.exit(1);});
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/server/api/router.js bc_next/blue-current-reservations/server/api/router.js
+--- bc_orig/blue-current-reservations/server/api/router.js	2026-08-08 12:30:54.000000000 +0000
++++ bc_next/blue-current-reservations/server/api/router.js	2026-08-08 12:36:56.765097482 +0000
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "44.7.0",
++        version: "44.12.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -502,6 +502,13 @@
+     if (url.pathname === "/api/aip/execution-context" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipExecutionContext(organizationId, url.searchParams.get("runId")));
+     if (url.pathname === "/api/aip/runtime-control" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipRuntimeLifecycle(organizationId, url.searchParams.get("runId")));
+     if (url.pathname === "/api/aip/runtime-control" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipAgentRunControl(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/aip/orchestrations" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipMultiAgentOrchestrations(organizationId));
++    if (url.pathname === "/api/aip/orchestrations" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipMultiAgentOrchestrations(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/aip/orchestration-context" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipOrchestrationContext(organizationId, url.searchParams.get("orchestrationId")));
++    if (url.pathname === "/api/aip/orchestration-control" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipOrchestrationControl(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/aip/approvals" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipApprovalOrchestration(organizationId));
++    if (url.pathname === "/api/aip/approvals" && request.method === "POST") return sendJson(response, 200, await liveIntegrationService.aipApprovalOrchestration(organizationId, auth.user.name, await readJson(request)));
++    if (url.pathname === "/api/aip/coordination-readiness" && request.method === "GET") return sendJson(response, 200, await liveIntegrationService.aipCoordinationReadiness(organizationId));
+ 
+ 
+     if (url.pathname === "/api/observability/snapshot" && request.method === "GET") {
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/server/server.js bc_next/blue-current-reservations/server/server.js
+--- bc_orig/blue-current-reservations/server/server.js	2026-08-08 12:30:54.000000000 +0000
++++ bc_next/blue-current-reservations/server/server.js	2026-08-08 12:36:56.765338419 +0000
+@@ -152,7 +152,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V44.7.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V44.12.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+diff -ruN '--exclude=blue-current.json' '--exclude=*.tmp' '--exclude=*.bak' bc_orig/blue-current-reservations/server/services/liveIntegrationService.js bc_next/blue-current-reservations/server/services/liveIntegrationService.js
+--- bc_orig/blue-current-reservations/server/services/liveIntegrationService.js	2026-08-08 12:30:54.000000000 +0000
++++ bc_next/blue-current-reservations/server/services/liveIntegrationService.js	2026-08-08 12:36:56.764412025 +0000
+@@ -2072,12 +2072,12 @@
+       { id:"live.operating-snapshot", name:"Live Operating Snapshot", domain:"live", mode:"read", risk:"low", approvalRequired:false, endpoint:"/api/live/operating-snapshot" },
+       { id:"live.reasoning-feed", name:"Reasoning Feed Gate", domain:"live", mode:"read", risk:"medium", approvalRequired:false, endpoint:"/api/live/reasoning-feed" }
+     ];
+-    return { organizationId, count:capabilities.length, writeCapable:capabilities.filter(x=>x.mode.startsWith("write")).length, approvalGated:capabilities.filter(x=>x.approvalRequired).length, capabilities, generatedAt:new Date().toISOString(), build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, count:capabilities.length, writeCapable:capabilities.filter(x=>x.mode.startsWith("write")).length, approvalGated:capabilities.filter(x=>x.approvalRequired).length, capabilities, generatedAt:new Date().toISOString(), build:"44.12.0-aip-multi-agent-orchestration" };
+   }
+ 
+   async aipAutomationCompiler(organizationId, actor = null, input = null) {
+     const db = await this.database.read();
+-    if (!input) return { organizationId, items:db.aipAutomationDrafts?.[organizationId] || [], build:"44.7.0-aip-persistent-agent-runtime" };
++    if (!input) return { organizationId, items:db.aipAutomationDrafts?.[organizationId] || [], build:"44.12.0-aip-multi-agent-orchestration" };
+     const instruction = String(input.instruction || "").trim().slice(0,700);
+     if (!instruction) throw new Error("Instruction is required.");
+     const [route, capabilities, reasoning] = await Promise.all([this.executiveIntentRouter(organizationId,{instruction}), this.aipCapabilityRegistry(organizationId), this.executiveReasoning(organizationId)]);
+@@ -2090,20 +2090,20 @@
+     const approvalRequired = route.approvalRequired || chosen.some(x=>x.approvalRequired);
+     const draft = { id:`AIP-${Date.now().toString(36).toUpperCase()}`, organizationId, instruction, intent:route.intent, owner:actor||"Operator", status:"draft", approvalRequired, confidence:Math.min(route.confidence||0, reasoning.confidence||0), capabilityIds:chosen.map(x=>x.id), steps:chosen.map((x,i)=>({order:i+1,capabilityId:x.id,mode:x.mode,risk:x.risk,approvalRequired:x.approvalRequired})), createdAt:new Date().toISOString() };
+     await this.database.mutate(data=>{data.aipAutomationDrafts ||= {}; const list=data.aipAutomationDrafts[organizationId] ||= []; list.unshift(draft); data.aipAutomationDrafts[organizationId]=list.slice(0,50); return draft;});
+-    return { organizationId, draft, build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, draft, build:"44.12.0-aip-multi-agent-orchestration" };
+   }
+ 
+   async aipExecutionSandbox(organizationId, actor = null, input = null) {
+     const db = await this.database.read();
+     const runs = db.aipSandboxRuns?.[organizationId] || [];
+-    if (!input) return { organizationId, count:runs.length, items:runs.slice(0,50), build:"44.7.0-aip-persistent-agent-runtime" };
++    if (!input) return { organizationId, count:runs.length, items:runs.slice(0,50), build:"44.12.0-aip-multi-agent-orchestration" };
+     const drafts = db.aipAutomationDrafts?.[organizationId] || [];
+     const draft = drafts.find(x=>x.id===input.draftId) || drafts[0];
+     if (!draft) throw new Error("Compile an AIP automation before running the sandbox.");
+     const blockedSteps = (draft.steps||[]).filter(step=>step.risk==="high" && step.approvalRequired).length;
+     const run = { id:`SBX-${Date.now().toString(36).toUpperCase()}`, organizationId, draftId:draft.id, owner:actor||"Operator", status:blockedSteps?"approval-required":"simulated", approvalRequired:blockedSteps>0, blockedSteps, simulatedSteps:(draft.steps||[]).map(step=>({...step,result:step.approvalRequired?"held-for-approval":"simulated"})), liveStateChanged:false, createdAt:new Date().toISOString() };
+     await this.database.mutate(data=>{data.aipSandboxRuns ||= {}; const list=data.aipSandboxRuns[organizationId] ||= []; list.unshift(run); data.aipSandboxRuns[organizationId]=list.slice(0,50); return run;});
+-    return { organizationId, run, build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, run, build:"44.12.0-aip-multi-agent-orchestration" };
+   }
+ 
+   async aipRuntimeReadiness(organizationId) {
+@@ -2125,14 +2125,14 @@
+       {id:"live-safety",label:"No automatic live execution",pass:sandboxRuns.every(x=>x.liveStateChanged===false)&&agentRuns.every(x=>x.liveStateChanged===false&&x.executionMode==="governed-dry-run"),detail:"Sandbox and persistent agent runs remain isolated from live state"}
+     ];
+     const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length); const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
+-    return { organizationId, score, status:score===100?"aip-runtime-ready":score>=60?"conditional":"blocked", trusted:score===100, blockers, checks, generatedAt:new Date().toISOString(), build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, score, status:score===100?"aip-runtime-ready":score>=60?"conditional":"blocked", trusted:score===100, blockers, checks, generatedAt:new Date().toISOString(), build:"44.12.0-aip-multi-agent-orchestration" };
+   }
+ 
+   async aipAgentRuns(organizationId, actor = null, input = null) {
+     const db = await this.database.read();
+     const runs = db.aipAgentRuns?.[organizationId] || [];
+     if (!input) {
+-      return { organizationId, count:runs.length, active:runs.filter(x=>["ready","running","paused","approval-pending"].includes(x.status)).length, items:runs.slice(0,100), build:"44.7.0-aip-persistent-agent-runtime" };
++      return { organizationId, count:runs.length, active:runs.filter(x=>["ready","running","paused","approval-pending"].includes(x.status)).length, items:runs.slice(0,100), build:"44.12.0-aip-multi-agent-orchestration" };
+     }
+     const drafts = db.aipAutomationDrafts?.[organizationId] || [];
+     const draft = drafts.find(x=>x.id===input.draftId) || drafts[0];
+@@ -2150,14 +2150,14 @@
+     await this.database.mutate(data=>{data.aipAgentRuns ||= {}; const list=data.aipAgentRuns[organizationId] ||= []; list.unshift(run); data.aipAgentRuns[organizationId]=list.slice(0,100); return run;});
+     await this.auditService.record({ organizationId, actor:actor||"Operator", action:`AIP persistent agent run created: ${run.id} (${run.agentType})`, category:"aip-runtime" });
+     this.realtimeHub.publish("aip-agent-run-updated", run);
+-    return { organizationId, run, build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, run, build:"44.12.0-aip-multi-agent-orchestration" };
+   }
+ 
+   async aipExecutionContext(organizationId, runId = null) {
+     const db = await this.database.read();
+     const runs = db.aipAgentRuns?.[organizationId] || [];
+     const run = (runId ? runs.find(x=>x.id===runId) : runs[0]) || null;
+-    if (!run) return { organizationId, run:null, context:null, build:"44.7.0-aip-persistent-agent-runtime" };
++    if (!run) return { organizationId, run:null, context:null, build:"44.12.0-aip-multi-agent-orchestration" };
+     const drafts = db.aipAutomationDrafts?.[organizationId] || [];
+     const sandboxRuns = db.aipSandboxRuns?.[organizationId] || [];
+     const draft = drafts.find(x=>x.id===run.draftId) || null;
+@@ -2171,7 +2171,7 @@
+       lifecycle:{currentStep:run.currentStep||0,stepCount:run.stepCount||0,checkpointCount:run.checkpointCount||0,lastCheckpointAt:run.lastCheckpointAt||null},
+       generatedAt:new Date().toISOString()
+     };
+-    return { organizationId, run, context, build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, run, context, build:"44.12.0-aip-multi-agent-orchestration" };
+   }
+ 
+   async aipAgentRunControl(organizationId, actor, input = {}) {
+@@ -2211,7 +2211,7 @@
+     });
+     await this.auditService.record({ organizationId, actor:actor||"Operator", action:`AIP agent run ${action}: ${runId}`, category:"aip-runtime" });
+     this.realtimeHub.publish("aip-agent-run-updated", result.run);
+-    return { organizationId, ...result, build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, ...result, build:"44.12.0-aip-multi-agent-orchestration" };
+   }
+ 
+   async aipRuntimeLifecycle(organizationId, runId = null) {
+@@ -2219,7 +2219,157 @@
+     const runs = db.aipAgentRuns?.[organizationId] || [];
+     const run = (runId ? runs.find(x=>x.id===runId) : runs[0]) || null;
+     const checkpoints = (db.aipRunCheckpoints?.[organizationId] || []).filter(x=>!run || x.runId===run.id).slice(0,50);
+-    return { organizationId, run, checkpointCount:checkpoints.length, checkpoints, safety:{liveExecutionAllowed:false,allCheckpointsIsolated:checkpoints.every(x=>x.liveStateChanged===false)}, build:"44.7.0-aip-persistent-agent-runtime" };
++    return { organizationId, run, checkpointCount:checkpoints.length, checkpoints, safety:{liveExecutionAllowed:false,allCheckpointsIsolated:checkpoints.every(x=>x.liveStateChanged===false)}, build:"44.12.0-aip-multi-agent-orchestration" };
++  }
++
++
++  async aipMultiAgentOrchestrations(organizationId, actor = null, input = null) {
++    const db = await this.database.read();
++    const orchestrations = db.aipOrchestrations?.[organizationId] || [];
++    if (!input) return { organizationId, count:orchestrations.length, active:orchestrations.filter(x=>["planned","ready","running","paused","approval-pending"].includes(x.status)).length, items:orchestrations.slice(0,100), build:"44.12.0-aip-multi-agent-orchestration" };
++    const runs = db.aipAgentRuns?.[organizationId] || [];
++    const run = runs.find(x=>x.id===input.runId) || runs[0];
++    if (!run) throw new Error("Create a persistent AIP agent run before composing multi-agent orchestration.");
++    const drafts = db.aipAutomationDrafts?.[organizationId] || [];
++    const draft = drafts.find(x=>x.id===run.draftId) || null;
++    const steps = draft?.steps || [];
++    const agentFor = (step)=>{
++      const id=String(step.capabilityId||"");
++      if(id.includes("risk")||id.includes("reasoning")||id.includes("live-brief")) return "executive-analyst";
++      if(id.includes("workflow")||id.includes("action-draft")) return "operations-optimizer";
++      if(id.includes("staff")) return "staffing-advisor";
++      if(id.includes("guest")) return "guest-experience-advisor";
++      if(id.includes("kitchen")) return "kitchen-flow-advisor";
++      return run.agentType||"operations-optimizer";
++    };
++    const createdAt=new Date().toISOString();
++    const orchestrationId=`AIP-ORCH-${Date.now().toString(36).toUpperCase()}`;
++    const tasks=steps.map((step,index)=>({
++      id:`${orchestrationId}-T${index+1}`, order:index+1, capabilityId:step.capabilityId, mode:step.mode, risk:step.risk,
++      approvalRequired:Boolean(step.approvalRequired), agentType:agentFor(step), status:index===0?"ready":"blocked",
++      dependsOn:index===0?[]:[`${orchestrationId}-T${index}`], executionMode:"governed-dry-run", liveStateChanged:false
++    }));
++    const approvalRequired=Boolean(run.approvalRequired || tasks.some(x=>x.approvalRequired));
++    const orchestration={
++      id:orchestrationId, organizationId, runId:run.id, draftId:run.draftId, instruction:run.instruction, intent:run.intent,
++      owner:actor||"Operator", version:1, executionMode:"governed-dry-run", liveExecutionAllowed:false,
++      approvalRequired, approvalStatus:approvalRequired?"pending":"not-required", status:approvalRequired?"approval-pending":"planned",
++      currentTaskIndex:0, taskCount:tasks.length, completedTaskCount:0, tasks, handoffCount:0, checkpointCount:0,
++      createdAt, updatedAt:createdAt, history:[{event:"planned",status:approvalRequired?"approval-pending":"planned",actor:actor||"Operator",at:createdAt}]
++    };
++    await this.database.mutate(data=>{data.aipOrchestrations ||= {}; const list=data.aipOrchestrations[organizationId] ||= []; list.unshift(orchestration); data.aipOrchestrations[organizationId]=list.slice(0,100); return orchestration;});
++    await this.auditService.record({organizationId,actor:actor||"Operator",action:`AIP multi-agent orchestration planned: ${orchestration.id}`,category:"aip-orchestration"});
++    this.realtimeHub.publish("aip-orchestration-updated",orchestration);
++    return {organizationId,orchestration,build:"44.12.0-aip-multi-agent-orchestration"};
++  }
++
++  async aipOrchestrationContext(organizationId, orchestrationId = null) {
++    const db=await this.database.read();
++    const items=db.aipOrchestrations?.[organizationId]||[];
++    const orchestration=(orchestrationId?items.find(x=>x.id===orchestrationId):items[0])||null;
++    if(!orchestration) return {organizationId,orchestration:null,context:null,build:"44.12.0-aip-multi-agent-orchestration"};
++    const handoffs=(db.aipAgentHandoffs?.[organizationId]||[]).filter(x=>x.orchestrationId===orchestration.id).slice(0,100);
++    const checkpoints=(db.aipOrchestrationCheckpoints?.[organizationId]||[]).filter(x=>x.orchestrationId===orchestration.id).slice(0,50);
++    return {organizationId,orchestration,context:{
++      id:`ORCH-CTX-${orchestration.id}`,runId:orchestration.runId,instruction:orchestration.instruction,version:orchestration.version||1,
++      agents:[...new Set((orchestration.tasks||[]).map(x=>x.agentType))],tasks:(orchestration.tasks||[]).map(x=>({...x})),handoffs,
++      governance:{approvalRequired:orchestration.approvalRequired,approvalStatus:orchestration.approvalStatus,liveExecutionAllowed:false,executionMode:"governed-dry-run"},
++      lifecycle:{status:orchestration.status,currentTaskIndex:orchestration.currentTaskIndex||0,completedTaskCount:orchestration.completedTaskCount||0,checkpointCount:checkpoints.length},
++      generatedAt:new Date().toISOString()
++    },checkpoints,build:"44.12.0-aip-multi-agent-orchestration"};
++  }
++
++  async aipOrchestrationControl(organizationId, actor, input={}) {
++    const orchestrationId=String(input.orchestrationId||"").trim();
++    const action=String(input.action||"").trim().toLowerCase();
++    if(!orchestrationId) throw new Error("orchestrationId is required.");
++    if(!["start","advance","checkpoint","pause","resume","recover","complete","cancel"].includes(action)) throw new Error("Unsupported AIP orchestration action.");
++    const now=new Date().toISOString();
++    const result=await this.database.mutate(db=>{
++      db.aipOrchestrations ||= {}; const list=db.aipOrchestrations[organizationId] ||= [];
++      const o=list.find(x=>x.id===orchestrationId); if(!o) throw new Error("AIP orchestration not found.");
++      db.aipAgentHandoffs ||= {}; const handoffs=db.aipAgentHandoffs[organizationId] ||= [];
++      db.aipOrchestrationCheckpoints ||= {}; const cps=db.aipOrchestrationCheckpoints[organizationId] ||= [];
++      const history=(event)=>{o.history ||= [];o.history.push({event,status:o.status,actor:actor||"Operator",at:now});o.history=o.history.slice(-150);};
++      if(action==="start"){
++        if(o.approvalRequired && o.approvalStatus!=="approved") throw new Error("This orchestration requires explicit human approval before it can start.");
++        if(!["planned","ready","paused","recovered"].includes(o.status)) throw new Error(`Orchestration cannot start from status ${o.status}.`);
++        o.status="running"; history("started");
++      } else if(action==="advance"){
++        if(o.status!=="running") throw new Error("Only a running orchestration can advance.");
++        const tasks=o.tasks||[]; const idx=Math.max(0,Number(o.currentTaskIndex)||0); const task=tasks[idx];
++        if(!task){o.status="completed";o.completedAt=now;history("completed");}
++        else {
++          task.status="completed";task.completedAt=now;task.liveStateChanged=false;o.completedTaskCount=(o.completedTaskCount||0)+1;
++          const next=tasks[idx+1];
++          if(next){
++            next.status="ready";o.currentTaskIndex=idx+1;
++            const handoff={id:`AIP-HO-${Date.now().toString(36).toUpperCase()}-${idx+1}`,organizationId,orchestrationId:o.id,fromTaskId:task.id,toTaskId:next.id,fromAgent:task.agentType,toAgent:next.agentType,context:{instruction:o.instruction,completedCapabilityId:task.capabilityId,nextCapabilityId:next.capabilityId},executionMode:"governed-dry-run",liveStateChanged:false,createdBy:actor||"Operator",createdAt:now};
++            handoffs.unshift(handoff);db.aipAgentHandoffs[organizationId]=handoffs.slice(0,500);o.handoffCount=(o.handoffCount||0)+1;history("handoff");
++          } else {o.status="completed";o.completedAt=now;history("completed");}
++        }
++      } else if(action==="checkpoint"){
++        if(["completed","cancelled"].includes(o.status)) throw new Error(`Checkpoint unavailable from status ${o.status}.`);
++        const cp={id:`AIP-OCP-${Date.now().toString(36).toUpperCase()}`,organizationId,orchestrationId:o.id,status:o.status,currentTaskIndex:o.currentTaskIndex||0,completedTaskCount:o.completedTaskCount||0,taskStatuses:(o.tasks||[]).map(x=>({id:x.id,status:x.status})),approvalStatus:o.approvalStatus,executionMode:"governed-dry-run",liveStateChanged:false,createdBy:actor||"Operator",createdAt:now};
++        cps.unshift(cp);db.aipOrchestrationCheckpoints[organizationId]=cps.slice(0,400);o.checkpointCount=(o.checkpointCount||0)+1;o.lastCheckpointId=cp.id;o.lastCheckpointAt=now;history("checkpoint");
++      } else if(action==="pause"){
++        if(o.status!=="running") throw new Error("Only a running orchestration can be paused.");o.status="paused";history("paused");
++      } else if(action==="resume"){
++        if(o.status!=="paused") throw new Error("Only a paused orchestration can be resumed.");o.status="running";history("resumed");
++      } else if(action==="recover"){
++        const cp=cps.find(x=>x.orchestrationId===o.id);if(!cp) throw new Error("Create an orchestration checkpoint before recovery.");
++        if(["completed","cancelled"].includes(o.status)) throw new Error(`Orchestration cannot recover from status ${o.status}.`);
++        o.currentTaskIndex=cp.currentTaskIndex||0;o.completedTaskCount=cp.completedTaskCount||0;(o.tasks||[]).forEach(t=>{const st=cp.taskStatuses.find(x=>x.id===t.id);if(st)t.status=st.status;});o.status="recovered";o.recoveredFromCheckpointId=cp.id;history("recovered");
++      } else if(action==="complete"){
++        if(o.status!=="running") throw new Error("Only a running orchestration can be completed.");o.status="completed";o.completedAt=now;history("completed");
++      } else if(action==="cancel"){
++        if(["completed","cancelled"].includes(o.status)) throw new Error(`Orchestration is already ${o.status}.`);o.status="cancelled";o.cancelledAt=now;history("cancelled");
++      }
++      o.updatedAt=now;o.liveExecutionAllowed=false;o.liveStateChanged=false;
++      return {orchestration:{...o},handoffs:handoffs.filter(x=>x.orchestrationId===o.id).slice(0,50),checkpoints:cps.filter(x=>x.orchestrationId===o.id).slice(0,25)};
++    });
++    await this.auditService.record({organizationId,actor:actor||"Operator",action:`AIP orchestration ${action}: ${orchestrationId}`,category:"aip-orchestration"});
++    this.realtimeHub.publish("aip-orchestration-updated",result.orchestration);
++    return {organizationId,...result,build:"44.12.0-aip-multi-agent-orchestration"};
++  }
++
++  async aipApprovalOrchestration(organizationId, actor=null, input=null) {
++    const db=await this.database.read();
++    const approvals=db.aipApprovals?.[organizationId]||[];
++    const orchestrations=db.aipOrchestrations?.[organizationId]||[];
++    if(!input) return {organizationId,pending:orchestrations.filter(x=>x.approvalRequired&&x.approvalStatus==="pending").length,decisions:approvals.length,items:approvals.slice(0,100),requests:orchestrations.filter(x=>x.approvalRequired).slice(0,100),build:"44.12.0-aip-multi-agent-orchestration"};
++    const orchestrationId=String(input.orchestrationId||"").trim(); const decision=String(input.decision||"").trim().toLowerCase();
++    if(!orchestrationId) throw new Error("orchestrationId is required."); if(!["approve","reject"].includes(decision)) throw new Error("decision must be approve or reject.");
++    const note=String(input.note||"").trim().slice(0,500); const now=new Date().toISOString();
++    const result=await this.database.mutate(data=>{
++      data.aipOrchestrations ||= {}; const list=data.aipOrchestrations[organizationId] ||= []; const o=list.find(x=>x.id===orchestrationId);if(!o) throw new Error("AIP orchestration not found.");
++      if(!o.approvalRequired) throw new Error("This orchestration does not require approval."); if(o.approvalStatus!=="pending") throw new Error(`Approval is already ${o.approvalStatus}.`);
++      data.aipApprovals ||= {}; const records=data.aipApprovals[organizationId] ||= [];
++      const record={id:`AIP-APR-${Date.now().toString(36).toUpperCase()}`,organizationId,orchestrationId:o.id,runId:o.runId,decision,scope:"governed-dry-run-only",liveExecutionAllowed:false,note,decidedBy:actor||"Operator",decidedAt:now};
++      records.unshift(record);data.aipApprovals[organizationId]=records.slice(0,300);o.approvalStatus=decision==="approve"?"approved":"rejected";o.status=decision==="approve"?"ready":"rejected";o.approvedBy=decision==="approve"?(actor||"Operator"):null;o.updatedAt=now;o.history ||= [];o.history.push({event:decision==="approve"?"approved":"rejected",status:o.status,actor:actor||"Operator",at:now});o.history=o.history.slice(-150);o.liveExecutionAllowed=false;o.liveStateChanged=false;
++      return {approval:record,orchestration:{...o}};
++    });
++    await this.auditService.record({organizationId,actor:actor||"Operator",action:`AIP orchestration ${decision}: ${orchestrationId}`,category:"aip-approval"});
++    this.realtimeHub.publish("aip-approval-decided",result);
++    return {organizationId,...result,build:"44.12.0-aip-multi-agent-orchestration"};
++  }
++
++  async aipCoordinationReadiness(organizationId) {
++    const db=await this.database.read();
++    const runtime=await this.aipRuntimeReadiness(organizationId);
++    const orchestrations=db.aipOrchestrations?.[organizationId]||[]; const handoffs=db.aipAgentHandoffs?.[organizationId]||[]; const approvals=db.aipApprovals?.[organizationId]||[]; const checkpoints=db.aipOrchestrationCheckpoints?.[organizationId]||[];
++    const checks=[
++      {id:"runtime",label:"Persistent AIP runtime",pass:(runtime.score||0)>=80,detail:`${runtime.score||0}% · ${runtime.status||"unknown"}`},
++      {id:"multi-agent",label:"Multi-agent orchestration",pass:orchestrations.length>0,detail:`${orchestrations.length} orchestration(s)`},
++      {id:"delegation",label:"Durable task delegation",pass:orchestrations.some(x=>(x.tasks||[]).length>0),detail:"Orchestration persists agent-owned task graph"},
++      {id:"handoff",label:"Agent-to-agent handoff",pass:handoffs.length>0,detail:`${handoffs.length} persisted handoff(s)`},
++      {id:"orchestration-checkpoint",label:"Orchestration recovery checkpoint",pass:checkpoints.length>0,detail:`${checkpoints.length} checkpoint(s)`},
++      {id:"approval",label:"Human approval orchestration",pass:approvals.length>0||orchestrations.some(x=>!x.approvalRequired),detail:`${approvals.length} recorded decision(s)`},
++      {id:"approval-scope",label:"Approval cannot authorize live execution",pass:approvals.every(x=>x.liveExecutionAllowed===false&&x.scope==="governed-dry-run-only"),detail:"Approval scope is dry-run only"},
++      {id:"live-safety",label:"Multi-agent execution remains isolated",pass:orchestrations.every(x=>x.liveExecutionAllowed===false&&x.liveStateChanged!==true)&&handoffs.every(x=>x.liveStateChanged===false),detail:"No coordination path mutates live restaurant state"}
++    ];
++    const score=Math.round(checks.reduce((a,c)=>a+(c.pass?100:0),0)/checks.length);const blockers=checks.filter(c=>!c.pass).map(c=>`${c.label}: ${c.detail}`);
++    return {organizationId,score,status:score===100?"aip-coordination-ready":score>=62?"conditional":"blocked",trusted:score===100,blockers,checks,generatedAt:new Date().toISOString(),build:"44.12.0-aip-multi-agent-orchestration"};
+   }
+ 
+   async operatingSnapshot(organizationId) {

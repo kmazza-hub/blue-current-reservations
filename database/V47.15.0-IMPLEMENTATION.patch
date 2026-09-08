@@ -1,0 +1,575 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "47.10.0",
++  "version": "47.15.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 owned hospitality action workspaces",
++  "description": "Blue Current Hospitality OS \u2014 action outcome measurement and realized impact",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -166,7 +166,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V47.10.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V47.15.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "47.10.0",
++        version: "47.15.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -207,6 +207,15 @@
+       const opportunity=performance.opportunities.find(x=>x.id===body.opportunityId);
+       if(!opportunity)return sendJson(response,404,{error:"Performance opportunity not found or no longer active."});
+       return sendJson(response,201,await hospitalityActionWorkspaceService.createFromOpportunity(auth.membership.organizationId,locationId,opportunity,body,auth.user.name));
++    }
++
++    if (url.pathname.startsWith("/api/hospitality-actions/") && url.pathname.endsWith("/remeasure") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Hospitality outcome permission required."});
++      const workspaceId=decodeURIComponent(url.pathname.split("/")[3]||"");
++      const body=await readJson(request);
++      const locationId=body.locationId || (auth.membership.locationIds || []).find(id => id !== "*") || "loc_marina";
++      try{return sendJson(response,200,await hospitalityActionWorkspaceService.remeasure(auth.membership.organizationId,locationId,workspaceId,auth.user.name));}
++      catch(error){return sendJson(response,/required|not found/i.test(error.message)?400:500,{error:error.message});}
+     }
+ 
+     if (url.pathname.startsWith("/api/hospitality-actions/") && request.method === "PATCH") {
+--- a/server/services/hospitalityPerformanceService.js
++++ b/server/services/hospitalityPerformanceService.js
+@@ -73,7 +73,7 @@
+     const totalImpact=ranked.filter(x=>!["dismissed","completed"].includes(x.lastDecision?.decision)).reduce((s,x)=>s+x.estimatedImpactDollars,0);
+     const categories={};for(const x of ranked)categories[x.category]=(categories[x.category]||0)+1;
+     return {
+-      version:"47.10.0",generatedAt:new Date().toISOString(),organizationId,locationId,
++      version:"47.15.0",generatedAt:new Date().toISOString(),organizationId,locationId,
+       headline:ranked[0]?`#1 opportunity: ${ranked[0].title}`:"No material performance opportunities are active.",
+       summary:{openOpportunities:ranked.length,totalEstimatedImpactDollars:totalImpact,highPriority:ranked.filter(x=>["critical","high"].includes(x.severity)).length,categories,readinessScore:command?.readiness?.score||null,portfolioRevenueTrend:executive?.portfolio?.revenueTrend||0},
+       opportunities:ranked.slice(0,12),decisions,
+--- a/server/services/hospitalityActionWorkspaceService.js
++++ b/server/services/hospitalityActionWorkspaceService.js
+@@ -5,24 +5,59 @@
+     Object.assign(this,{database,auditService,realtimeHub,hospitalityPerformanceService});
+   }
+   now(){return new Date().toISOString();}
++  clamp(n,min=0,max=1){return Math.max(min,Math.min(max,Number(n)||0));}
+   normalizeStatus(value){return new Set(["accepted","in_progress","blocked","completed","cancelled"]).has(value)?value:"in_progress";}
++  async liveOpportunity(organizationId,locationId,opportunityId){
++    const performance=await this.hospitalityPerformanceService.snapshot(organizationId,locationId);
++    return performance.opportunities.find(x=>x.id===opportunityId)||null;
++  }
++  measurementFrom(workspace,currentOpportunity,at=this.now()){
++    const expected=Math.max(0,Number(workspace.expectedImpactDollars||0));
++    const currentExposure=currentOpportunity?Math.max(0,Number(currentOpportunity.estimatedImpactDollars||0)):0;
++    const improvement=expected>0?this.clamp((expected-currentExposure)/expected):currentOpportunity?0:1;
++    const realized=Math.round(expected*improvement);
++    const startedAt=workspace.startedAt||workspace.createdAt;
++    const resolutionMinutes=Math.max(0,Math.round((new Date(at).getTime()-new Date(startedAt).getTime())/60000));
++    const targetMet=currentOpportunity===null || currentExposure<=expected*.25;
++    const outcomeStatus=targetMet?"improved":currentExposure<expected?"partial":"not-improved";
++    return {
++      capturedAt:at,
++      baselineExposureDollars:expected,
++      remainingExposureDollars:currentExposure,
++      improvementPercent:Math.round(improvement*100),
++      realizedImpactDollars:realized,
++      expectedImpactDollars:expected,
++      realizationRatePercent:expected?Math.round(realized/expected*100):0,
++      resolutionMinutes,
++      targetMet,
++      outcomeStatus,
++      currentOpportunity:currentOpportunity?{id:currentOpportunity.id,score:currentOpportunity.score,severity:currentOpportunity.severity,estimatedImpactDollars:currentExposure,metadata:currentOpportunity.metadata||{}}:null,
++      evidence:currentOpportunity?"The opportunity still exists in the live performance queue.":"The original opportunity is no longer present in the live performance queue."
++    };
++  }
+   async list(organizationId,locationId){
+     const db=await this.database.read();
+     const items=(db.hospitalityActionWorkspaces||[])
+       .filter(x=>x.organizationId===organizationId&&x.locationId===locationId)
+       .sort((a,b)=>new Date(b.updatedAt||b.createdAt)-new Date(a.updatedAt||a.createdAt));
+-    const active=items.filter(x=>!["completed","cancelled"].includes(x.status));
+-    const blocked=active.filter(x=>x.status==="blocked");
+-    const overdue=active.filter(x=>x.targetAt&&new Date(x.targetAt).getTime()<Date.now());
++    const active=items.filter(x=>!["completed","cancelled"].includes(x.status)),completed=items.filter(x=>x.status==="completed"),blocked=active.filter(x=>x.status==="blocked"),overdue=active.filter(x=>x.targetAt&&new Date(x.targetAt).getTime()<Date.now());
++    const measured=completed.filter(x=>x.outcomeMeasurement);
++    const expectedCompleted=measured.reduce((s,x)=>s+Number(x.outcomeMeasurement.expectedImpactDollars||0),0),realized=measured.reduce((s,x)=>s+Number(x.outcomeMeasurement.realizedImpactDollars||0),0);
+     return {
+-      version:"47.10.0",generatedAt:this.now(),organizationId,locationId,
++      version:"47.15.0",generatedAt:this.now(),organizationId,locationId,
+       summary:{
+         total:items.length,active:active.length,blocked:blocked.length,overdue:overdue.length,
+         expectedImpactDollars:active.reduce((s,x)=>s+Number(x.expectedImpactDollars||0),0),
+-        completed:items.filter(x=>x.status==="completed").length
++        completed:completed.length,measuredOutcomes:measured.length,
++        realizedImpactDollars:realized,
++        realizationRatePercent:expectedCompleted?Math.round(realized/expectedCompleted*100):0,
++        averageResolutionMinutes:measured.length?Math.round(measured.reduce((s,x)=>s+Number(x.outcomeMeasurement.resolutionMinutes||0),0)/measured.length):0,
++        improved:measured.filter(x=>x.outcomeMeasurement.outcomeStatus==="improved").length,
++        notImproved:measured.filter(x=>x.outcomeMeasurement.outcomeStatus==="not-improved").length
+       },
+       workspaces:items.slice(0,100),
+-      policy:{humanOwned:true,automaticExecution:false,outcomeMeasurement:"next-wave"}
++      outcomes:measured.map(x=>({workspaceId:x.id,title:x.title,category:x.category,owner:x.owner,...x.outcomeMeasurement})).slice(0,100),
++      policy:{humanOwned:true,automaticExecution:false,outcomeMeasurement:"live-opportunity-baseline-comparison",completionDoesNotImplySuccess:true}
+     };
+   }
+   async createFromOpportunity(organizationId,locationId,opportunity,input={},actor="Manager"){
+@@ -34,64 +69,53 @@
+       const existing=db.hospitalityActionWorkspaces.find(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.opportunityId===opportunity.id&&!["completed","cancelled"].includes(x.status));
+       if(existing){created=existing;return existing;}
+       created={
+-        id:`haw_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
+-        organizationId,locationId,opportunityId:opportunity.id,
+-        title:opportunity.title,category:opportunity.category,severity:opportunity.severity,
+-        owner:String(input.owner||opportunity.owner||actor||"Manager").slice(0,120),
+-        status:"accepted",
+-        why:opportunity.why,nextAction:opportunity.nextAction,
+-        expectedImpactDollars:Number(opportunity.estimatedImpactDollars||0),
+-        impactLabel:opportunity.impactLabel||"",
+-        confidence:Number(opportunity.confidence||0),
+-        targetMetric:String(input.targetMetric||this.defaultMetric(opportunity)).slice(0,240),
+-        targetValue:String(input.targetValue||this.defaultTarget(opportunity)).slice(0,120),
++        id:`haw_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId,opportunityId:opportunity.id,
++        title:opportunity.title,category:opportunity.category,severity:opportunity.severity,owner:String(input.owner||opportunity.owner||actor||"Manager").slice(0,120),
++        status:"accepted",why:opportunity.why,nextAction:opportunity.nextAction,expectedImpactDollars:Number(opportunity.estimatedImpactDollars||0),impactLabel:opportunity.impactLabel||"",confidence:Number(opportunity.confidence||0),
++        targetMetric:String(input.targetMetric||this.defaultMetric(opportunity)).slice(0,240),targetValue:String(input.targetValue||this.defaultTarget(opportunity)).slice(0,120),
+         targetAt:new Date(Date.now()+targetMinutes*60000).toISOString(),
+-        baseline:{capturedAt:now,score:opportunity.score,metadata:opportunity.metadata||{},estimatedImpactDollars:Number(opportunity.estimatedImpactDollars||0)},
++        baseline:{capturedAt:now,score:opportunity.score,severity:opportunity.severity,metadata:opportunity.metadata||{},estimatedImpactDollars:Number(opportunity.estimatedImpactDollars||0)},
+         updates:[{id:`hau_${Date.now()}`,status:"accepted",note:String(input.note||"Action accepted from Hospitality Performance Command").slice(0,500),actor,at:now}],
+-        createdBy:actor,createdAt:now,updatedAt:now,completedAt:null,
+-        realizedImpactDollars:null,outcomeNote:""
++        createdBy:actor,createdAt:now,updatedAt:now,startedAt:null,completedAt:null,outcomeMeasurement:null
+       };
+-      db.hospitalityActionWorkspaces.push(created);
+-      return created;
++      db.hospitalityActionWorkspaces.push(created);return created;
+     });
+     await this.auditService.record({organizationId,actor,action:`Hospitality action workspace created: ${created.id} · ${created.title}`,category:"hospitality_performance"});
+-    this.realtimeHub.publish("hospitality-action:created",created);
+-    return created;
++    this.realtimeHub.publish("hospitality-action:created",created);return created;
+   }
+-  defaultMetric(o){
+-    return ({kitchen:"Oldest delayed ticket / ticket recovery",reservations:"Unassigned parties / wait exposure",labor:"Labor coverage / labor cost",inventory:"Availability / food-cost variance",guests:"At-risk guest recovery",revenue:"Revenue pacing gap"})[o.category]||"Operating condition";
+-  }
+-  defaultTarget(o){
+-    const m=o.metadata||{};
+-    if(o.category==="kitchen")return "Return delayed tickets to service target";
+-    if(o.category==="reservations")return "Clear preventable assignment/wait exposure";
+-    if(o.category==="labor")return "Restore planned coverage and labor efficiency";
+-    if(o.category==="inventory")return "Resolve flagged availability or margin variance";
+-    if(o.category==="guests")return `Recover priority guest relationship`;
+-    if(o.category==="revenue")return "Reduce modeled revenue pacing gap";
+-    return "Resolve opportunity";
+-  }
++  defaultMetric(o){return ({kitchen:"Oldest delayed ticket / ticket recovery",reservations:"Unassigned parties / wait exposure",labor:"Labor coverage / labor cost",inventory:"Availability / food-cost variance",guests:"At-risk guest recovery",revenue:"Revenue pacing gap"})[o.category]||"Operating condition";}
++  defaultTarget(o){if(o.category==="kitchen")return "Return delayed tickets to service target";if(o.category==="reservations")return "Clear preventable assignment/wait exposure";if(o.category==="labor")return "Restore planned coverage and labor efficiency";if(o.category==="inventory")return "Resolve flagged availability or margin variance";if(o.category==="guests")return "Recover priority guest relationship";if(o.category==="revenue")return "Reduce modeled revenue pacing gap";return "Resolve opportunity";}
+   async update(organizationId,locationId,workspaceId,input,actor){
++    const db=await this.database.read(),existing=(db.hospitalityActionWorkspaces||[]).find(x=>x.id===workspaceId&&x.organizationId===organizationId&&x.locationId===locationId);
++    if(!existing)throw new Error("Hospitality action workspace not found.");
++    const status=this.normalizeStatus(input.status||existing.status),now=this.now();
++    let measurement=null;
++    if(status==="completed")measurement=this.measurementFrom(existing,await this.liveOpportunity(organizationId,locationId,existing.opportunityId),now);
+     let updated=null;
+-    await this.database.mutate(db=>{
+-      db.hospitalityActionWorkspaces||=[];
+-      const item=db.hospitalityActionWorkspaces.find(x=>x.id===workspaceId&&x.organizationId===organizationId&&x.locationId===locationId);
++    await this.database.mutate(data=>{
++      const item=(data.hospitalityActionWorkspaces||[]).find(x=>x.id===workspaceId&&x.organizationId===organizationId&&x.locationId===locationId);
+       if(!item)throw new Error("Hospitality action workspace not found.");
+-      const status=this.normalizeStatus(input.status||item.status),now=this.now();
+       if(input.owner!==undefined)item.owner=String(input.owner||item.owner).slice(0,120);
+       if(input.targetMetric!==undefined)item.targetMetric=String(input.targetMetric||item.targetMetric).slice(0,240);
+       if(input.targetValue!==undefined)item.targetValue=String(input.targetValue||item.targetValue).slice(0,120);
+       if(input.targetAt!==undefined&&input.targetAt)item.targetAt=new Date(input.targetAt).toISOString();
+       item.status=status;item.updatedAt=now;
+-      if(status==="completed"&&!item.completedAt)item.completedAt=now;
+-      if(status!=="completed")item.completedAt=null;
+-      item.updates||=[];
+-      item.updates.push({id:`hau_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,status,note:String(input.note||"Status updated").slice(0,500),actor,at:now});
++      if(status==="in_progress"&&!item.startedAt)item.startedAt=now;
++      if(status==="completed"){item.completedAt=now;item.outcomeMeasurement=measurement;}
++      else if(item.status!=="completed"){item.completedAt=null;}
++      item.updates||=[];item.updates.push({id:`hau_${Date.now()}_${Math.random().toString(36).slice(2,6)}`,status,note:String(input.note||"Status updated").slice(0,500),actor,at:now});
+       updated=item;return item;
+     });
+-    await this.auditService.record({organizationId,actor,action:`Hospitality action ${updated.status}: ${updated.id}`,category:"hospitality_performance"});
+-    this.realtimeHub.publish("hospitality-action:updated",updated);
+-    return updated;
++    await this.auditService.record({organizationId,actor,action:`Hospitality action ${updated.status}: ${updated.id}${measurement?` · ${measurement.outcomeStatus} · $${measurement.realizedImpactDollars} realized`:""}`,category:"hospitality_performance"});
++    this.realtimeHub.publish("hospitality-action:updated",updated);return updated;
++  }
++  async remeasure(organizationId,locationId,workspaceId,actor){
++    const db=await this.database.read(),existing=(db.hospitalityActionWorkspaces||[]).find(x=>x.id===workspaceId&&x.organizationId===organizationId&&x.locationId===locationId);
++    if(!existing||existing.status!=="completed")throw new Error("A completed hospitality action is required.");
++    const measurement=this.measurementFrom(existing,await this.liveOpportunity(organizationId,locationId,existing.opportunityId),this.now());
++    let updated=null;await this.database.mutate(data=>{const item=(data.hospitalityActionWorkspaces||[]).find(x=>x.id===workspaceId);item.outcomeMeasurement=measurement;item.updatedAt=this.now();updated=item;return item;});
++    await this.auditService.record({organizationId,actor,action:`Hospitality outcome remeasured: ${workspaceId} · ${measurement.outcomeStatus}`,category:"hospitality_performance"});
++    this.realtimeHub.publish("hospitality-outcome:measured",updated);return updated;
+   }
+ }
+ module.exports=HospitalityActionWorkspaceService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="47.10.0">
++  <meta name="blue-current-build" content="47.15.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -228,10 +228,16 @@
+     </section>
+     <section class="v432-center v438-center v4316-center" id="hospitalityActionWorkspace">
+       <header><div><small>V47.06–V47.10 · Action Workspace</small><strong>Turn a high-value opportunity into an owned operating action with a target, deadline, status, and decision history.</strong><span>Accepted actions stay human-owned. Blue Current tracks execution without automatically changing restaurant operations.</span></div><button id="hawRefresh" type="button">Refresh actions</button></header>
+-      <div class="v432-kpis"><article><small>Active actions</small><strong id="hawActive">0</strong></article><article><small>Blocked</small><strong id="hawBlocked">0</strong></article><article><small>Overdue</small><strong id="hawOverdue">0</strong></article><article><small>Expected impact</small><strong id="hawImpact">$0</strong></article><article><small>Completed</small><strong id="hawCompleted">0</strong></article></div>
++      <div class="v432-kpis"><article><small>Active actions</small><strong id="hawActive">0</strong></article><article><small>Blocked</small><strong id="hawBlocked">0</strong></article><article><small>Overdue</small><strong id="hawOverdue">0</strong></article><article><small>Expected impact</small><strong id="hawImpact">$0</strong></article><article><small>Completed</small><strong id="hawCompleted">0</strong></article><article><small>Realized impact</small><strong id="hawRealized">$0</strong></article><article><small>Realization rate</small><strong id="hawRate">0%</strong></article></div>
+       <div class="v4316-answer" id="hawHeadline">Loading owned actions…</div>
+       <div class="v4316-actions"><input id="hawOwner" class="v4312-input" placeholder="Update owner"><input id="hawNote" class="v4312-input" placeholder="Action update / blocker note"></div>
+       <div id="hawList" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="hospitalityOutcomeMeasurement">
++      <header><div><small>V47.11–V47.15 · Outcome Measurement</small><strong>Measure whether completed actions actually improved the restaurant, how long resolution took, and how much of the modeled opportunity was realized.</strong><span>Completion is not treated as success by itself. Blue Current compares the original exposure with the live opportunity state at completion and can remeasure later.</span></div></header>
++      <div class="v432-kpis"><article><small>Measured outcomes</small><strong id="homMeasured">0</strong></article><article><small>Improved</small><strong id="homImproved">0</strong></article><article><small>Not improved</small><strong id="homMissed">0</strong></article><article><small>Realized impact</small><strong id="homRealized">$0</strong></article><article><small>Realization rate</small><strong id="homRate">0%</strong></article><article><small>Avg resolution</small><strong id="homResolution">0m</strong></article></div>
++      <div class="v4316-answer" id="homHeadline">Waiting for completed actions with measured outcomes.</div>
++      <div id="homList" class="v432-list"></div>
+     </section>
+ 
+     <section class="command-center-section" id="command-center" aria-labelledby="commandCenterTitle">
+@@ -8658,6 +8664,7 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceEngine.js?v=47.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityPerformanceCommand" data-src="js/modules/hospitalityPerformanceCenter.js?v=47.5.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityActionWorkspace" data-src="js/modules/hospitalityActionWorkspace.js?v=47.10.0"></script>
+-<script src="js/startup-loader.js?v=47.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="hospitalityOutcomeMeasurement" data-src="js/modules/hospitalityOutcomeMeasurement.js?v=47.15.0"></script>
++<script src="js/startup-loader.js?v=47.15.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1224,6 +1224,7 @@
+ const v46ReleaseCertificationCenterModule = startupRegistry.register("v46ReleaseCertificationCenter", shouldInitializeCenter("v46ReleaseCertificationCenter") ? window.createBlueCurrentV46ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "selectedCandidatePreviewCenter"]);
+ const hospitalityPerformanceCommandModule = startupRegistry.register("hospitalityPerformanceCommand", shouldInitializeCenter("hospitalityPerformanceCommand") ? window.createBlueCurrentHospitalityPerformanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState"]);
+ const hospitalityActionWorkspaceModule = startupRegistry.register("hospitalityActionWorkspace", shouldInitializeCenter("hospitalityActionWorkspace") ? window.createBlueCurrentHospitalityActionWorkspaceModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityPerformanceCommand"]);
++const hospitalityOutcomeMeasurementModule = startupRegistry.register("hospitalityOutcomeMeasurement", shouldInitializeCenter("hospitalityOutcomeMeasurement") ? window.createBlueCurrentHospitalityOutcomeMeasurementModule?.(eventBus, appState) : null, ["eventBus", "appState", "hospitalityActionWorkspace"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V47.10.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V47.15.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/hospitalityPerformanceEngine.js
++++ b/client/js/modules/hospitalityPerformanceEngine.js
+@@ -7,6 +7,7 @@
+   async actions(){const r=await fetch(`/api/hospitality-actions?locationId=${encodeURIComponent(this.locationId())}`,{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Hospitality actions failed (${r.status})`);this.appState?.update?.({hospitalityActions:d});return d;}
+   async createAction(opportunityId,owner="",note="",targetMetric="",targetValue="",targetMinutes=60){const r=await fetch("/api/hospitality-actions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),opportunityId,owner,note,targetMetric,targetValue,targetMinutes})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Create action failed (${r.status})`);this.eventBus?.emit?.("hospitality-action:created",structuredClone(d));return d;}
+   async updateAction(workspaceId,status,note="",owner=""){const r=await fetch(`/api/hospitality-actions/${encodeURIComponent(workspaceId)}`,{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),status,note,owner})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Update action failed (${r.status})`);this.eventBus?.emit?.("hospitality-action:updated",structuredClone(d));return d;}
++  async remeasureAction(workspaceId){const r=await fetch(`/api/hospitality-actions/${encodeURIComponent(workspaceId)}/remeasure`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId()})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Remeasure failed (${r.status})`);this.eventBus?.emit?.("hospitality-outcome:measured",structuredClone(d));return d;}
+   async decide(opportunityId,decision,owner="",note=""){const r=await fetch(`/api/hospitality-performance/opportunities/${encodeURIComponent(opportunityId)}/decision`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${this.token()}`},body:JSON.stringify({locationId:this.locationId(),decision,owner,note})}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Performance decision failed (${r.status})`);this.eventBus?.emit?.("hospitality-performance:decision",structuredClone(d));return d;}
+ }
+ if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentHospitalityPerformanceEngine;
+--- a/client/js/modules/hospitalityActionWorkspace.js
++++ b/client/js/modules/hospitalityActionWorkspace.js
+@@ -1,9 +1,9 @@
+ (function(){"use strict";
+ function createBlueCurrentHospitalityActionWorkspaceModule(eventBus,appState){const root=document.getElementById("hospitalityActionWorkspace");if(!root||!window.BlueCurrentHospitalityPerformanceEngine)return null;const e=new window.BlueCurrentHospitalityPerformanceEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c])),money=n=>`$${Number(n||0).toLocaleString()}`;
+ function age(x){const ms=Date.now()-new Date(x.createdAt).getTime(),m=Math.max(0,Math.round(ms/60000));return m<60?`${m}m`:m<1440?`${Math.round(m/60)}h`:`${Math.round(m/1440)}d`;}
+-function render(s){$("hawActive").textContent=s.summary?.active||0;$("hawBlocked").textContent=s.summary?.blocked||0;$("hawOverdue").textContent=s.summary?.overdue||0;$("hawImpact").textContent=money(s.summary?.expectedImpactDollars||0);$("hawCompleted").textContent=s.summary?.completed||0;$("hawHeadline").textContent=s.summary?.active?`${s.summary.active} owned action${s.summary.active===1?" is":"s are"} moving through the operation.`:"No active actions. Own a Performance Command opportunity to start one.";
+-$("hawList").innerHTML=(s.workspaces||[]).map(x=>`<article class="haw-card" data-workspace="${esc(x.id)}"><div><span>${esc(x.category)}</span><b>${esc(x.status)}</b><small>${age(x)} old</small></div><strong>${esc(x.title)}</strong><p>${esc(x.why)}</p><p><b>Action:</b> ${esc(x.nextAction)}</p><div class="hpc-meta"><span>Owner: ${esc(x.owner)}</span><span>Target: ${esc(x.targetMetric)}</span><span>${esc(x.targetValue)}</span><span>${money(x.expectedImpactDollars)} expected</span></div><small>Target by ${new Date(x.targetAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})} · ${x.updates?.length||0} update(s)</small><div class="v4316-actions"><button type="button" data-haw-status="in_progress">Start</button><button type="button" data-haw-status="blocked">Block</button><button type="button" data-haw-status="completed">Complete</button><button type="button" data-haw-status="cancelled">Cancel</button></div></article>`).join("")||"<article><strong>No owned actions yet.</strong><span>Use Own Action in Hospitality Performance Command to create the first workspace.</span></article>";}
++function render(s){$("hawActive").textContent=s.summary?.active||0;$("hawBlocked").textContent=s.summary?.blocked||0;$("hawOverdue").textContent=s.summary?.overdue||0;$("hawImpact").textContent=money(s.summary?.expectedImpactDollars||0);$("hawCompleted").textContent=s.summary?.completed||0;$("hawRealized").textContent=money(s.summary?.realizedImpactDollars||0);$("hawRate").textContent=`${s.summary?.realizationRatePercent||0}%`;$("hawHeadline").textContent=s.summary?.active?`${s.summary.active} owned action${s.summary.active===1?" is":"s are"} moving through the operation.`:"No active actions. Own a Performance Command opportunity to start one.";
++$("hawList").innerHTML=(s.workspaces||[]).map(x=>`<article class="haw-card" data-workspace="${esc(x.id)}"><div><span>${esc(x.category)}</span><b>${esc(x.status)}</b><small>${age(x)} old</small></div><strong>${esc(x.title)}</strong><p>${esc(x.why)}</p><p><b>Action:</b> ${esc(x.nextAction)}</p><div class="hpc-meta"><span>Owner: ${esc(x.owner)}</span><span>Target: ${esc(x.targetMetric)}</span><span>${esc(x.targetValue)}</span><span>${money(x.expectedImpactDollars)} expected</span></div><small>Target by ${new Date(x.targetAt).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})} · ${x.updates?.length||0} update(s)</small>${x.outcomeMeasurement?`<div class="v4316-answer"><strong>${esc(x.outcomeMeasurement.outcomeStatus)}</strong> · ${x.outcomeMeasurement.improvementPercent}% improvement · ${money(x.outcomeMeasurement.realizedImpactDollars)} realized of ${money(x.outcomeMeasurement.expectedImpactDollars)} expected · ${x.outcomeMeasurement.resolutionMinutes} min to resolution</div>`:""}<div class="v4316-actions"><button type="button" data-haw-status="in_progress">Start</button><button type="button" data-haw-status="blocked">Block</button><button type="button" data-haw-status="completed">Complete</button><button type="button" data-haw-status="cancelled">Cancel</button>${x.status==="completed"?'<button type="button" data-haw-remeasure="true">Remeasure outcome</button>':""}</div></article>`).join("")||"<article><strong>No owned actions yet.</strong><span>Use Own Action in Hospitality Performance Command to create the first workspace.</span></article>";}
+ async function load(){try{render(await e.actions());}catch(err){$("hawHeadline").textContent=err.message;}}
+-root.addEventListener("click",async ev=>{const btn=ev.target.closest("[data-haw-status]"),card=ev.target.closest("[data-workspace]");if(!btn||!card)return;try{btn.disabled=true;await e.updateAction(card.dataset.workspace,btn.dataset.hawStatus,$("hawNote").value||"",$("hawOwner").value||"");await load();}catch(err){$("hawHeadline").textContent=err.message;}finally{btn.disabled=false;}});
++root.addEventListener("click",async ev=>{const statusBtn=ev.target.closest("[data-haw-status]"),remeasureBtn=ev.target.closest("[data-haw-remeasure]"),card=ev.target.closest("[data-workspace]");if(!card||(!statusBtn&&!remeasureBtn))return;const btn=statusBtn||remeasureBtn;try{btn.disabled=true;if(remeasureBtn)await e.remeasureAction(card.dataset.workspace);else await e.updateAction(card.dataset.workspace,statusBtn.dataset.hawStatus,$("hawNote").value||"",$("hawOwner").value||"");await load();}catch(err){$("hawHeadline").textContent=err.message;}finally{btn.disabled=false;}});
+ $("hawRefresh")?.addEventListener("click",load);eventBus?.on?.("hospitality-action:created",load);eventBus?.on?.("hospitality-action:updated",load);eventBus?.on?.("auth:restored",load);load();return{engine:e,load};}
+ window.createBlueCurrentHospitalityActionWorkspaceModule=createBlueCurrentHospitalityActionWorkspaceModule;})();--- a/client/js/modules/hospitalityOutcomeMeasurement.js
++++ b/client/js/modules/hospitalityOutcomeMeasurement.js
+@@ -0,0 +1,2 @@
++(function(){"use strict";
++function createBlueCurrentHospitalityOutcomeMeasurementModule(eventBus,appState){const root=document.getElementById("hospitalityOutcomeMeasurement");if(!root||!window.BlueCurrentHospitalityPerformanceEngine)return null;const e=new window.BlueCurrentHospitalityPerformanceEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c])),money=n=>`$${Number(n||0).toLocaleString()}`;function render(s){const m=s.summary||{};$("homMeasured").textContent=m.measuredOutcomes||0;$("homImproved").textContent=m.improved||0;$("homMissed").textContent=m.notImproved||0;$("homRealized").textContent=money(m.realizedImpactDollars||0);$("homRate").textContent=`${m.realizationRatePercent||0}%`;$("homResolution").textContent=`${m.averageResolutionMinutes||0}m`;$("homHeadline").textContent=m.measuredOutcomes?`${m.measuredOutcomes} completed action${m.measuredOutcomes===1?" has":"s have"} measured operating outcomes.`:"Complete an owned action to create the first measured outcome.";$("homList").innerHTML=(s.outcomes||[]).map(x=>`<article><strong>${esc(x.title)} · ${esc(x.outcomeStatus)}</strong><span>${x.improvementPercent}% improvement · ${money(x.realizedImpactDollars)} realized / ${money(x.expectedImpactDollars)} expected · ${x.realizationRatePercent}% realization · ${x.resolutionMinutes} min</span><small>${esc(x.evidence)} · Owner ${esc(x.owner)}</small></article>`).join("")||"<article><strong>No measured outcomes yet.</strong><span>Blue Current will populate this automatically when an action is completed.</span></article>";}async function load(){try{render(await e.actions());}catch(err){$("homHeadline").textContent=err.message;}}eventBus?.on?.("hospitality-action:updated",load);eventBus?.on?.("hospitality-outcome:measured",load);eventBus?.on?.("auth:restored",load);load();return{engine:e,load};}window.createBlueCurrentHospitalityOutcomeMeasurementModule=createBlueCurrentHospitalityOutcomeMeasurementModule;})();--- a/scripts/maintenance/test-v47.15-outcome-measurement.js
++++ b/scripts/maintenance/test-v47.15-outcome-measurement.js
+@@ -0,0 +1,32 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/hospitalityActionWorkspaceService");
++
++(async()=>{
++  const state={hospitalityActionWorkspaces:[]},audit=[],events=[];
++  let opportunity={id:"perf_test",category:"revenue",title:"Close revenue gap",why:"Gap",nextAction:"Act",owner:"GM",severity:"high",score:90,estimatedImpactDollars:1000,impactLabel:"$1,000 gap",confidence:90,metadata:{gap:1000}};
++  const performance={snapshot:async()=>({opportunities:opportunity?[opportunity]:[]})};
++  const svc=new Service({read:async()=>state,mutate:async fn=>fn(state)},{record:async x=>audit.push(x)},{publish:(n,p)=>events.push([n,p])},performance);
++  const ws=await svc.createFromOpportunity("org","loc",opportunity,{owner:"Keith"},"Tester");
++  await svc.update("org","loc",ws.id,{status:"in_progress",note:"Started"},"Tester");
++  opportunity={...opportunity,estimatedImpactDollars:400};
++  const partial=await svc.update("org","loc",ws.id,{status:"completed",note:"Done"},"Tester");
++  assert.equal(partial.outcomeMeasurement.outcomeStatus,"partial");
++  assert.equal(partial.outcomeMeasurement.realizedImpactDollars,600);
++  assert.equal(partial.outcomeMeasurement.realizationRatePercent,60);
++  assert.equal(partial.outcomeMeasurement.targetMet,false);
++
++  opportunity=null;
++  const improved=await svc.remeasure("org","loc",ws.id,"Tester");
++  assert.equal(improved.outcomeMeasurement.outcomeStatus,"improved");
++  assert.equal(improved.outcomeMeasurement.realizedImpactDollars,1000);
++  assert.equal(improved.outcomeMeasurement.realizationRatePercent,100);
++  assert.equal(improved.outcomeMeasurement.targetMet,true);
++
++  const list=await svc.list("org","loc");
++  assert.equal(list.summary.measuredOutcomes,1);
++  assert.equal(list.summary.realizedImpactDollars,1000);
++  assert.equal(list.summary.realizationRatePercent,100);
++  assert.equal(list.policy.completionDoesNotImplySuccess,true);
++  console.log(JSON.stringify({ok:true,version:"47.15.0",partialOutcomeMeasured:true,partialRealizedImpact:600,remeasuredOutcome:improved.outcomeMeasurement.outcomeStatus,realizedImpactDollars:list.summary.realizedImpactDollars,realizationRatePercent:list.summary.realizationRatePercent,completionDoesNotImplySuccess:list.policy.completionDoesNotImplySuccess,auditEvents:audit.length,realtimeEvents:events.length},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/README-APPLY-V47.15.0.md
++++ b/README-APPLY-V47.15.0.md
+@@ -0,0 +1,65 @@
++# APPLY BLUE CURRENT V47.15.0
++
++## Baseline
++
++Apply over the exact Blue Current V47.10.0 repository.
++
++This is a normal overlay patch. No files are deleted.
++
++## Apply
++
++Extract `BLUE-CURRENT-V47.15.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v47.15-outcome-measurement.js
++npm run start
++```
++
++Wait for:
++
++```text
++Blue Current Cloud V47.15.0 running at http://localhost:8787
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "47.15.0"
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++Press `Ctrl+F5`.
++
++The top operating flow is now:
++
++1. Hospitality Performance Command
++2. Action Workspace
++3. Outcome Measurement
++4. Restaurant Command Center
++
++When you complete an action, Blue Current immediately compares the original opportunity exposure with the current live opportunity.
++
++If the problem still exists, the system will say so.
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V47.15.0 add action outcome measurement"
++git push origin live-service-timeline
++```
+--- a/V47.15.0-RELEASE.md
++++ b/V47.15.0-RELEASE.md
+@@ -0,0 +1,156 @@
++# BLUE CURRENT V47.15.0 — OUTCOME MEASUREMENT
++
++## Scope
++
++V47.11–V47.15 closes the next loop in Hospitality Performance Command.
++
++V47.10 tracked whether a manager owned and completed an action.
++
++V47.15 now asks the more important question:
++
++`Did the operating problem actually improve?`
++
++Completion alone is no longer treated as success.
++
++## V47.11 — Start / Completion State Capture
++
++Action workspaces now distinguish:
++- created time
++- started time
++- completed time
++
++When an action reaches `in_progress`, Blue Current records its execution start.
++
++When an action reaches `completed`, Blue Current captures a fresh live Hospitality Performance snapshot for the original opportunity.
++
++## V47.12 — Baseline vs Live Exposure
++
++Each action already stores the expected-impact baseline from the opportunity at acceptance.
++
++At completion Blue Current compares:
++
++- original opportunity exposure
++- remaining live opportunity exposure
++
++If the original opportunity disappears from the live queue, the exposure is treated as resolved.
++
++If it remains, Blue Current measures how much exposure is still present.
++
++## V47.13 — Realized Impact
++
++Outcome measurement now calculates:
++
++- improvement percentage
++- realized impact dollars
++- expected impact dollars
++- realization rate
++- time-to-resolution
++- whether the target was met
++- outcome status
++
++Outcome states:
++
++- `improved`
++- `partial`
++- `not-improved`
++
++A completed action with no operating improvement is recorded as:
++
++`not-improved`
++
++It is not silently credited as a success.
++
++## V47.14 — Outcome Remeasurement
++
++Adds:
++
++`POST /api/hospitality-actions/:workspaceId/remeasure`
++
++A completed action can be measured again later.
++
++This is important because some restaurant interventions do not show their full result immediately.
++
++Remeasurement updates the current operating evidence and outcome result without changing the historical action timeline.
++
++## V47.15 — Outcome Measurement UI
++
++The Action Workspace now shows:
++- realized impact
++- realization rate
++- action-level outcome status
++- improvement percentage
++- realized vs expected impact
++- time-to-resolution
++- Remeasure Outcome control
++
++A new **Outcome Measurement** surface summarizes:
++- measured outcomes
++- improved actions
++- actions that did not improve
++- realized impact dollars
++- realization rate
++- average resolution time
++- per-action outcome evidence
++
++## Measurement policy
++
++`completionDoesNotImplySuccess: true`
++
++The current V47.15 model uses the original opportunity's modeled dollar exposure as the baseline and the live remaining opportunity exposure as the completion-state comparison.
++
++This is intentionally conservative.
++
++If the same opportunity remains at the same modeled exposure after a manager marks an action complete, Blue Current records:
++
++- 0% improvement
++- $0 realized impact
++- `not-improved`
++
++## Validation
++
++Focused outcome-measurement test passed:
++- partial improvement measured
++- $600 realized on a $1,000 baseline
++- 60% realization rate
++- later disappearance of the opportunity remeasured to:
++  - improved
++  - $1,000 realized
++  - 100% realization
++
++Authenticated integration validation passed against an isolated copy of the current Blue Current database.
++
++The integration test used the current food-cost variance opportunity:
++- expected impact: $1,523
++- manager action was started and completed
++- the live opportunity still existed at $1,523
++- Blue Current correctly recorded:
++  - 0% improvement
++  - $0 realized impact
++  - 0% realization
++  - `not-improved`
++
++This proves Blue Current is not simply rewarding a completed checkbox.
++
++Full repository validation:
++- 851 JavaScript files
++- 726 client scripts
++- 5,409 unique HTML IDs
++- server V47.15.0
++- `/api/health` HTTP 200
++- database connected
++- authentication enabled
++- authoritative database SHA-256 unchanged
++
++## Next milestone
++
++V47.16–V47.20 should build Service Profitability Intelligence:
++
++- contribution / profit signals by shift
++- covers and check average
++- table-turn productivity
++- labor cost
++- kitchen throughput
++- food-cost / inventory variance
++- lost demand / waitlist pressure
++- guest recovery exposure
++- identify the specific operating constraint currently costing the restaurant the most money

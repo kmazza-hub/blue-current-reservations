@@ -1,0 +1,23 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const router=read("server/api/router.js");
+const section=(start,end)=>router.slice(router.indexOf(start),router.indexOf(end,router.indexOf(start)));
+const operations=section('if (url.pathname === "/api/operations-feed"','if (url.pathname === "/api/bootstrap"');
+check("Core manager and command routes no longer silently default to Marina",!operations.includes('|| "loc_marina"'));
+check("Operations feed requires explicit location",operations.includes('/api/operations-feed')&&operations.includes('if (!locationId) return sendJson(response, 400'));
+check("Manager-action reads require explicit location",operations.includes('/api/manager-actions\" && request.method === \"GET')&&operations.includes('Location is required.'));
+check("Manager-action creation requires explicit location",operations.includes('/api/manager-actions\" && request.method === \"POST'));
+check("Service-exception synchronization requires explicit location",operations.includes('/api/manager-actions/service-exceptions'));
+check("Manager-action updates require explicit location",operations.includes('managerActionMatch && request.method === "PATCH"'));
+check("Manager-action deletes require explicit location",operations.includes('managerActionMatch && request.method === "DELETE"'));
+check("Command Center reads require explicit location",operations.includes('/api/command-center\" && request.method === \"GET'));
+check("Shift-handoff creation requires explicit location",operations.includes('/api/command-center/handoffs\" && request.method === \"POST'));
+check("All scoped routes retain authorization checks",(operations.match(/if \(!canAccessLocation\(locationId\)\)/g)||[]).length>=8);
+check("Handoff acknowledgement resolves the stored record",operations.includes('database.get("shiftHandoffs", handoffId)'));
+check("Handoff acknowledgement verifies tenant identity",operations.includes('existingHandoff.organizationId !== organizationId'));
+check("Handoff acknowledgement verifies location access",operations.includes('canAccessLocation(existingHandoff.locationId)'));
+check("No database payload is included by the release",!fs.existsSync(path.join(root,"database/data/V100.3.28.json")));
+console.log(`V100.3.28 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;

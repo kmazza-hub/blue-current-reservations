@@ -36,7 +36,7 @@
         }));
 
         const location = {
-          id: card.querySelector("button")?.dataset?.locationId || "loc_marina",
+          id: card.querySelector("button")?.dataset?.locationId || "",
           name: card.querySelector(".district-location-top strong")?.textContent?.trim() || "Location",
           health: Number.parseFloat(card.querySelector(".district-health-badge")?.textContent || "0") || 0,
           labor: Number.parseFloat(String(metricMap.labor || "0").replace("%", "")) || 0,
@@ -50,6 +50,7 @@
 
         return location;
       })
+      .filter(location => location.id)
       .sort((a, b) => b.risk - a.risk)[0];
   }
 
@@ -175,8 +176,9 @@
     renderList("executiveDailyWins", result.wins);
     renderList("executiveDailyWatch", result.watch);
 
-    byId("executiveDailyPriority").dataset.locationId =
-      result.priorityLocation?.id || "loc_marina";
+    const priority = byId("executiveDailyPriority");
+    priority.dataset.locationId = result.priorityLocation?.id || "";
+    priority.disabled = !result.priorityLocation?.id;
   }
 
   function bind() {
@@ -194,6 +196,7 @@
 
     byId("executiveDailyPriority")?.addEventListener("click", event => {
       const locationId = event.currentTarget.dataset.locationId;
+      if (!locationId) return;
       const target = [...document.querySelectorAll(".district-location-card")]
         .find(card => card.querySelector("button")?.dataset?.locationId === locationId);
 

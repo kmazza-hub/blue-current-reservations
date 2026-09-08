@@ -1,0 +1,21 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+let passed=0,total=0;
+function check(name,condition){total++;if(condition){passed++;console.log(`PASS ${total}: ${name}`)}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1}}
+const brain=read("client/js/modules/aiRestaurantBrain.js"),predictive=read("client/js/modules/predictiveOperations.js"),index=read("client/index.html");
+check("AI Brain uses shared location authority",brain.includes("BlueCurrentFrontlineLocation?.get?.()")&&brain.includes('|| "loc_marina"'));
+check("AI Brain reads selected restaurant",brain.includes("api.aiBrain(locationId())"));
+check("AI Brain refreshes selected restaurant",brain.includes("api.refreshAiBrain(locationId())"));
+check("AI Brain decisions write selected restaurant",brain.includes("locationId: locationId()"));
+check("AI Brain publishes selected restaurant identity",brain.includes('locationId: locationId(), count:'));
+check("AI Brain reloads when authority changes",brain.includes('"bluecurrent:frontline-location-changed", load'));
+check("Predictive actions use shared location authority",predictive.includes("BlueCurrentFrontlineLocation?.get?.()")&&predictive.match(/locationId: locationId\(\)/g)?.length===2);
+check("Predictive alert state is scoped by restaurant",predictive.includes("`${PREDICTIVE_ALERT_KEY_BASE}.${locationId()}`")&&predictive.includes("localStorage.setItem(predictiveAlertKey()"));
+check("Marina predictive alert migrates once",predictive.includes('locationId() === "loc_marina"')&&predictive.includes("localStorage.removeItem(PREDICTIVE_ALERT_KEY_BASE)"));
+check("Predictive view refreshes on authority change",predictive.includes('"bluecurrent:frontline-location-changed", renderPrediction'));
+check("No decision request retains a fixed Marina payload",!brain.includes('const locationId = "loc_marina"')&&!predictive.includes('locationId: "loc_marina"'));
+check("AI Brain cache key advances",index.includes("js/modules/aiRestaurantBrain.js?v=100.3.23"));
+check("Predictive Operations cache key advances",index.includes("js/modules/predictiveOperations.js?v=100.3.23"));
+check("Server authorization remains outside this client-only wave",!brain.includes("authorizedLocationIds")&&!predictive.includes("authorizedLocationIds"));
+console.log(`V100.3.23 validation ${passed}/${total}`);if(passed!==total)process.exitCode=1;

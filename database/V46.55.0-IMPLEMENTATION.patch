@@ -1,0 +1,397 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.50.0",
++  "version": "46.55.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 first authoritative module retirement with rollback certification",
++  "description": "Blue Current Hospitality OS \u2014 post-retirement assurance and next-candidate safety gate",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -33,6 +33,7 @@
+ const LiveIntegrationService = require("./services/liveIntegrationService");
+ const RepositoryImpactService = require("./services/repositoryImpactService");
+ const RepositoryRetirementRehearsalService = require("./services/repositoryRetirementRehearsalService");
++const RetirementAssuranceService = require("./services/retirementAssuranceService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -69,7 +70,8 @@
+ const commandCenterService = new CommandCenterService(database, operationsFeedService);
+ const repositoryImpactService = new RepositoryImpactService(ROOT);
+ const repositoryRetirementRehearsalService = new RepositoryRetirementRehearsalService(ROOT, repositoryImpactService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService });
++const retirementAssuranceService = new RetirementAssuranceService(ROOT, repositoryImpactService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -156,7 +158,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.50.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.55.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.50.0",
++        version: "46.55.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -88,6 +88,13 @@
+       if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Repository impact review permission required."});
+       const surfaceId = url.searchParams.get("surfaceId") || "";
+       return sendJson(response,200,repositoryImpactService.analyze(surfaceId));
++    }
++
++    if (url.pathname === "/api/operator-fine-comb/retirement-assurance" && request.method === "GET") {
++      const auth = await authService.authenticate(bearerToken(request));
++      if (!auth) return sendJson(response,401,{error:"Authentication required."});
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Retirement assurance permission required."});
++      return sendJson(response,200,retirementAssuranceService.snapshot());
+     }
+ 
+     if (url.pathname === "/api/operator-fine-comb/retirement-rehearsal" && request.method === "POST") {
+--- a/server/services/retirementAssuranceService.js
++++ b/server/services/retirementAssuranceService.js
+@@ -0,0 +1,32 @@
++"use strict";
++const fs=require("fs");
++const path=require("path");
++const crypto=require("crypto");
++
++class RetirementAssuranceService{
++  constructor(rootPath,impactService){this.rootPath=rootPath;this.impactService=impactService;this.ledgerDir=path.join(rootPath,"config","retirements");}
++  listLedgers(){if(!fs.existsSync(this.ledgerDir))return [];return fs.readdirSync(this.ledgerDir).filter(x=>x.endsWith(".json")).sort().map(name=>{try{return {name,...JSON.parse(fs.readFileSync(path.join(this.ledgerDir,name),"utf8"))};}catch(error){return {name,parseError:error.message};}});}
++  hash(file){return crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");}
++  verifyLedger(ledger){
++    if(ledger.parseError)return {name:ledger.name,surfaceId:null,status:"invalid-ledger",score:0,checks:[{id:"parse",pass:false,detail:ledger.parseError}],blockers:[ledger.parseError]};
++    const surfaceId=ledger.surfaceId||null,impact=surfaceId?this.impactService.analyze(surfaceId):null,retiredFiles=ledger.retiredFiles||[];
++    const checks=[
++      {id:"ledger-status",label:"Ledger records authoritative retirement",pass:ledger.status==="authoritatively-retired",detail:ledger.status||"missing"},
++      {id:"retired-files-absent",label:"Retired module files remain absent",pass:retiredFiles.length>0&&retiredFiles.every(rel=>!fs.existsSync(path.join(this.rootPath,rel))),detail:`${retiredFiles.filter(rel=>!fs.existsSync(path.join(this.rootPath,rel))).length}/${retiredFiles.length} absent`},
++      {id:"owned-runtime-files",label:"No owned runtime files reintroduced",pass:Boolean(impact)&&impact.graph.ownedFiles.length===0,detail:`${impact?.graph?.ownedFiles?.length??"?"} owned file(s)`},
++      {id:"startup-regression",label:"No startup dependency regression",pass:Boolean(impact)&&impact.graph.startupDependencies.length===0,detail:`${impact?.graph?.startupDependencies?.length??"?"} startup dependency(ies)`},
++      {id:"api-regression",label:"No API reference regression",pass:Boolean(impact)&&impact.graph.apiUsage.length===0,detail:`${impact?.graph?.apiUsage?.length??"?"} API reference(s)`},
++      {id:"operational-reference-regression",label:"No operational inbound references",pass:Boolean(impact)&&!impact.graph.inboundReferences.some(x=>["reference","startup-registry","html-registration"].includes(x.type)),detail:`${impact?.graph?.inboundReferences?.filter(x=>["reference","startup-registry","html-registration"].includes(x.type)).length??"?"} operational reference(s)`},
++      {id:"rollback-record",label:"Rollback evidence retained",pass:ledger.rollbackAvailable===true&&ledger.rollbackRequired===true,detail:`required=${Boolean(ledger.rollbackRequired)} · available=${Boolean(ledger.rollbackAvailable)}`},
++      {id:"baseline-hashes",label:"Baseline hash evidence retained",pass:ledger.baselineHashes&&Object.keys(ledger.baselineHashes).length>0,detail:`${Object.keys(ledger.baselineHashes||{}).length} baseline hash(es)`}
++    ];
++    const score=Math.round(checks.reduce((sum,x)=>sum+(x.pass?100:0),0)/checks.length),blockers=checks.filter(x=>!x.pass).map(x=>`${x.label}: ${x.detail}`);
++    return {name:ledger.name,surfaceId,status:score===100?"retirement-assured":"retirement-regression-detected",score,checks,blockers,retiredAt:ledger.retiredAt||null,policy:ledger.policy||null};
++  }
++  snapshot(){
++    const ledgers=this.listLedgers(),items=ledgers.map(x=>this.verifyLedger(x)),allAssured=items.length>0&&items.every(x=>x.score===100);
++    const digest=crypto.createHash("sha256").update(JSON.stringify(items.map(x=>({surfaceId:x.surfaceId,status:x.status,score:x.score})))).digest("hex");
++    return {version:"46.55.0",status:allAssured?"post-retirement-assurance-ready":items.length?"blocked":"no-retirements",trusted:allAssured,retirements:items.length,assured:items.filter(x=>x.score===100).length,regressions:items.filter(x=>x.score<100).length,items,digest,rollbackRegistry:{recorded:items.filter(x=>x.checks?.find(c=>c.id==="rollback-record")?.pass).length,total:items.length},nextCandidateGate:{eligible:allAssured,reason:allAssured?"All authoritative retirements remain regression-free.":"Resolve retirement regressions before nominating another permanent retirement."},safety:{liveExecutionChanged:false,automaticDeletion:false,codeDeletionEndpointAdded:false},generatedAt:new Date().toISOString()};
++  }
++}
++module.exports=RetirementAssuranceService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.50.0">
++  <meta name="blue-current-build" content="46.55.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -4140,6 +4140,7 @@
+ <section class="v432-center v438-center v4316-center" id="repositoryImpactCertificationCenter"><header><div><small>V46.31–V46.35 · Repository Impact Certification</small><strong>Trace dependencies, ownership, API/test impact, and rollback scope before a retirement candidate can receive human deletion-plan authorization.</strong><span>This wave generates and authorizes plans only. There is no delete endpoint and code deletion remains disabled.</span></div><button id="oricRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="oricSurface"></select><button id="oricAnalyze" type="button">Analyze repository impact</button><button id="oricPlan" type="button">Build deletion plan</button><input id="oricAuthorizer" class="v4312-input" placeholder="Deletion-plan authorizer"><input id="oricNote" class="v4312-input" placeholder="Authorization note"><button id="oricAuthorize" type="button">Authorize plan</button></div><div class="v432-kpis"><article><small>Plans</small><strong id="oricPlans">0</strong></article><article><small>Owned files</small><strong id="oricOwned">0</strong></article><article><small>Inbound refs</small><strong id="oricInbound">0</strong></article><article><small>Startup deps</small><strong id="oricStartup">0</strong></article><article><small>API refs</small><strong id="oricApi">0</strong></article><article><small>Test refs</small><strong id="oricTests">0</strong></article><article><small>Readiness</small><strong id="oricScore">0%</strong></article><article><small>Status</small><strong id="oricStatus">—</strong></article></div><div class="v4316-answer" id="oricHeadline">Select a certified retirement candidate and analyze repository impact.</div><div id="oricImpact" class="v432-list"></div><div id="oricChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="retirementRehearsalCenter"><header><div><small>V46.36–V46.40 · Disposable Retirement Rehearsal</small><strong>Apply the proposed retirement only to an isolated repository copy, validate the result, and generate rollback/change-set artifacts for human review.</strong><span>The authoritative repository is read-only to this workflow. No delete endpoint is introduced.</span></div><button id="orrRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="orrSurface"></select><button id="orrRun" type="button">Run disposable-copy rehearsal</button></div><div class="v432-kpis"><article><small>Rehearsals</small><strong id="orrRuns">0</strong></article><article><small>Simulated changes</small><strong id="orrChanges">0</strong></article><article><small>Rollback files</small><strong id="orrRollback">0</strong></article><article><small>Validation</small><strong id="orrValidation">—</strong></article><article><small>Readiness</small><strong id="orrScore">0%</strong></article><article><small>Status</small><strong id="orrStatus">—</strong></article></div><div class="v4316-answer" id="orrHeadline">Select a human-authorized deletion plan and run the disposable-copy rehearsal.</div><div id="orrArtifacts" class="v432-list"></div><div id="orrChecks" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="finalRetirementAuthorizationCenter"><header><div><small>V46.41–V46.45 · Final Retirement Authorization Gate</small><strong>Cryptographically bind the deletion plan, successful rehearsal, rollback archive, exact change set, and source-tree digest before a second human can authorize the final gate.</strong><span>This gate expires after 15 minutes and still does not permit code deletion. A verified Git checkpoint is required before any later authoritative retirement decision.</span></div><button id="fraRefresh" type="button">Refresh</button></header><div class="v4316-actions"><select id="fraSurface"></select><button id="fraCreate" type="button">Create final packet</button><input id="fraApprover" class="v4312-input" placeholder="Distinct second authorizer"><input id="fraNote" class="v4312-input" placeholder="Authorization note"><button id="fraAuthorize" type="button">Second-human authorize</button><button id="fraCheckpointBtn" type="button">Mark Git checkpoint verified</button></div><div class="v432-kpis"><article><small>Packets</small><strong id="fraPackets">0</strong></article><article><small>Expires</small><strong id="fraExpiry">—</strong></article><article><small>Second approver</small><strong id="fraSecond">—</strong></article><article><small>Git checkpoint</small><strong id="fraCheckpoint">PENDING</strong></article><article><small>Readiness</small><strong id="fraScore">0%</strong></article><article><small>Status</small><strong id="fraStatus">—</strong></article></div><div class="v4316-answer" id="fraHeadline">Create the final retirement authorization packet from a human-authorized plan and successful rehearsal.</div><div id="fraBinding" class="v432-list"></div><pre id="fraCommands" class="v4316-answer"></pre><div id="fraChecks" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="retirementAssuranceCenter"><header><div><small>V46.51–V46.55 · Post-Retirement Assurance</small><strong>Verify every authoritative retirement stays absent, dependency-clean, rollback-recorded, and regression-free before another permanent retirement can be nominated.</strong><span>This gate monitors retirement invariants only. It does not delete code and does not change restaurant execution behavior.</span></div><button id="raRefresh" type="button">Refresh assurance</button></header><div class="v432-kpis"><article><small>Retirements</small><strong id="raRetirements">0</strong></article><article><small>Assured</small><strong id="raAssured">0</strong></article><article><small>Regressions</small><strong id="raRegressions">0</strong></article><article><small>Rollback registry</small><strong id="raRollback">0/0</strong></article><article><small>Next candidate</small><strong id="raGate">BLOCKED</strong></article><article><small>Status</small><strong id="raStatus">—</strong></article></div><div class="v4316-answer" id="raHeadline">Evaluating retirement invariants…</div><p><strong>Assurance digest:</strong> <span id="raDigest">—</span></p><div id="raList" class="v432-list"></div></section>
+ <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+             <header class="guided-shift-header">
+               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
+@@ -8611,6 +8612,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementRehearsalCenter" data-src="js/modules/retirementRehearsalCenter.js?v=46.40.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalRetirementAuthorizationCenter" data-src="js/modules/finalRetirementAuthorizationEngine.js?v=46.45.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="finalRetirementAuthorizationCenter" data-src="js/modules/finalRetirementAuthorizationCenter.js?v=46.45.0"></script>
+-<script src="js/startup-loader.js?v=46.45.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementAssuranceCenter" data-src="js/modules/retirementAssuranceEngine.js?v=46.55.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementAssuranceCenter" data-src="js/modules/retirementAssuranceCenter.js?v=46.55.0"></script>
++<script src="js/startup-loader.js?v=46.55.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1218,6 +1218,7 @@
+ const repositoryImpactCertificationCenterModule = startupRegistry.register("repositoryImpactCertificationCenter", shouldInitializeCenter("repositoryImpactCertificationCenter") ? window.createBlueCurrentRepositoryImpactCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementCertificationCenter"]);
+ const retirementRehearsalCenterModule = startupRegistry.register("retirementRehearsalCenter", shouldInitializeCenter("retirementRehearsalCenter") ? window.createBlueCurrentRetirementRehearsalCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "repositoryImpactCertificationCenter"]);
+ const finalRetirementAuthorizationCenterModule = startupRegistry.register("finalRetirementAuthorizationCenter", shouldInitializeCenter("finalRetirementAuthorizationCenter") ? window.createBlueCurrentFinalRetirementAuthorizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementRehearsalCenter"]);
++const retirementAssuranceCenterModule = startupRegistry.register("retirementAssuranceCenter", shouldInitializeCenter("retirementAssuranceCenter") ? window.createBlueCurrentRetirementAssuranceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "finalRetirementAuthorizationCenter"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.50.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.55.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/retirementAssuranceEngine.js
++++ b/client/js/modules/retirementAssuranceEngine.js
+@@ -0,0 +1,10 @@
++(function(global){"use strict";
++class BlueCurrentRetirementAssuranceEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  async snapshot(){const r=await fetch("/api/operator-fine-comb/retirement-assurance",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Retirement assurance failed (${r.status})`);this.appState?.update?.({retirementAssurance:d});this.eventBus?.emit?.("retirement-assurance:updated",structuredClone(d));return d;}
++  nextCandidateReadiness(snapshot){const s=snapshot||this.appState?.getState?.().retirementAssurance||null;if(!s)return {eligible:false,reason:"Retirement assurance has not been evaluated."};return {eligible:s.nextCandidateGate?.eligible===true&&s.regressions===0&&s.trusted===true,reason:s.nextCandidateGate?.reason||"Unknown",assured:s.assured||0,retirements:s.retirements||0,digest:s.digest||null};}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentRetirementAssuranceEngine;
++if(global)global.BlueCurrentRetirementAssuranceEngine=BlueCurrentRetirementAssuranceEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/retirementAssuranceCenter.js
++++ b/client/js/modules/retirementAssuranceCenter.js
+@@ -0,0 +1,6 @@
++(function(){"use strict";
++function createBlueCurrentRetirementAssuranceCenterModule(eventBus,appState){const root=document.getElementById("retirementAssuranceCenter");if(!root||!window.BlueCurrentRetirementAssuranceEngine)return null;const e=new window.BlueCurrentRetirementAssuranceEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++function render(s){const gate=e.nextCandidateReadiness(s);$("raRetirements").textContent=s.retirements||0;$("raAssured").textContent=s.assured||0;$("raRegressions").textContent=s.regressions||0;$("raRollback").textContent=`${s.rollbackRegistry?.recorded||0}/${s.rollbackRegistry?.total||0}`;$("raGate").textContent=gate.eligible?"OPEN":"BLOCKED";$("raStatus").textContent=s.status||"—";$("raHeadline").textContent=gate.eligible?`All ${gate.assured} retirement(s) remain clean. Next-candidate nomination gate is open.`:`Next-candidate gate blocked: ${gate.reason}`;$("raDigest").textContent=s.digest||"—";$("raList").innerHTML=(s.items||[]).map(x=>`<article><strong>${esc(x.surfaceId)} · ${esc(x.status)} · ${x.score}%</strong><span>${x.blockers?.length?esc(x.blockers.join(" · ")):"No retirement regression detected."}</span><div>${(x.checks||[]).map(c=>`<small>${c.pass?"PASS":"BLOCK"} ${esc(c.id)} — ${esc(c.detail)}</small>`).join("")}</div></article>`).join("")||"<p>No authoritative retirements recorded.</p>";}
++async function load(){try{render(await e.snapshot());}catch(err){$("raHeadline").textContent=err.message;}}
++$("raRefresh")?.addEventListener("click",load);load();return{engine:e,load};}
++window.createBlueCurrentRetirementAssuranceCenterModule=createBlueCurrentRetirementAssuranceCenterModule;})();--- a/scripts/maintenance/test-post-retirement-assurance.js
++++ b/scripts/maintenance/test-post-retirement-assurance.js
+@@ -0,0 +1,36 @@
++"use strict";
++const assert=require("assert"),fs=require("fs"),path=require("path"),os=require("os");
++global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
++const Impact=require("../../server/services/repositoryImpactService");
++const Assurance=require("../../server/services/retirementAssuranceService");
++const Client=require("../../client/js/modules/retirementAssuranceEngine");
++
++const root=path.resolve(__dirname,"../.."),impact=new Impact(root),service=new Assurance(root,impact);
++const snap=service.snapshot();
++assert.equal(snap.version,"46.55.0");
++assert.equal(snap.status,"post-retirement-assurance-ready");
++assert.equal(snap.trusted,true);
++assert.equal(snap.retirements>=1,true);
++assert.equal(snap.regressions,0);
++assert.equal(snap.nextCandidateGate.eligible,true);
++const first=snap.items.find(x=>x.surfaceId==="enterpriseValuePlanCenter");
++assert.ok(first);
++assert.equal(first.score,100);
++for(const id of ["retired-files-absent","owned-runtime-files","startup-regression","api-regression","operational-reference-regression","rollback-record","baseline-hashes"])assert.equal(first.checks.find(x=>x.id===id).pass,true,id);
++
++const tmp=fs.mkdtempSync(path.join(os.tmpdir(),"bc-retirement-assurance-"));
++fs.mkdirSync(path.join(tmp,"config/retirements"),{recursive:true});fs.mkdirSync(path.join(tmp,"client/js/modules"),{recursive:true});fs.mkdirSync(path.join(tmp,"client/js"),{recursive:true});
++fs.writeFileSync(path.join(tmp,"client/js/modules/retiredThingCenter.js"),"window.retiredThingCenter=true;");
++fs.writeFileSync(path.join(tmp,"config/retirements/test.json"),JSON.stringify({surfaceId:"retiredThingCenter",status:"authoritatively-retired",retiredFiles:["client/js/modules/retiredThingCenter.js"],rollbackRequired:true,rollbackAvailable:true,baselineHashes:{a:"b"}}));
++fs.writeFileSync(path.join(tmp,"client/index.html"),"");
++fs.writeFileSync(path.join(tmp,"client/js/app-v15.1.3.js"),"");
++const negative=new Assurance(tmp,new Impact(tmp)).snapshot();
++assert.equal(negative.trusted,false);
++assert.equal(negative.regressions,1);
++assert.equal(negative.nextCandidateGate.eligible,false);
++
++const appState={data:{retirementAssurance:snap},getState(){return this.data;},update(o){Object.assign(this.data,o);}},client=new Client({appState,eventBus:{emit:()=>{}}});
++assert.equal(client.nextCandidateReadiness(snap).eligible,true);
++assert.equal(client.nextCandidateReadiness(negative).eligible,false);
++
++console.log(JSON.stringify({ok:true,version:snap.version,retirements:snap.retirements,assured:snap.assured,regressions:snap.regressions,assuranceDigest:snap.digest.slice(0,12),firstRetirement:first.surfaceId,firstScore:first.score,nextCandidateGate:snap.nextCandidateGate.eligible,negativeRegressionDetected:negative.regressions===1,automaticDeletion:snap.safety.automaticDeletion},null,2));
+--- a/README-APPLY-V46.55.0.md
++++ b/README-APPLY-V46.55.0.md
+@@ -0,0 +1,54 @@
++# APPLY BLUE CURRENT V46.55.0
++
++## Baseline
++Apply over the authoritative repository containing V46.50.0.
++
++This is a normal overlay patch. V46.55 does not delete files.
++
++## Apply
++Extract `BLUE-CURRENT-V46.55.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-post-retirement-assurance.js
++npm run start
++```
++
++In another PowerShell window:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.55.0"
++```
++
++## Recommended Git staging
++```powershell
++git add package.json
++git add server/server.js
++git add server/api/router.js
++git add server/services/retirementAssuranceService.js
++git add client/index.html
++git add client/js/app-v15.1.3.js
++git add client/js/startup-loader.js
++git add client/js/modules/retirementAssuranceEngine.js
++git add client/js/modules/retirementAssuranceCenter.js
++git add scripts/maintenance/test-post-retirement-assurance.js
++git add README-APPLY-V46.55.0.md
++git add V46.55.0-RELEASE.md
++git add V46.55.0-IMPLEMENTATION.patch
++```
++
++Then:
++```powershell
++git status
++git diff --cached
++git commit -m "V46.55.0 post-retirement assurance"
++git push origin live-service-timeline
++```
+--- a/V46.55.0-RELEASE.md
++++ b/V46.55.0-RELEASE.md
+@@ -0,0 +1,117 @@
++# BLUE CURRENT V46.55.0 — POST-RETIREMENT ASSURANCE
++
++## Release scope
++
++V46.51–V46.55 adds a persistent assurance gate after Blue Current's first authoritative module retirement.
++
++The purpose is to make permanent cleanup observable and regression-resistant before another module can enter the retirement pipeline.
++
++### V46.51 — Retirement Ledger Integrity
++Adds a server-side assurance service that reads every JSON retirement ledger under:
++
++`config/retirements/`
++
++Each ledger is parsed and evaluated independently.
++
++### V46.52 — Retired-Surface Regression Watch
++For every retired surface, Blue Current verifies:
++- retired files remain absent
++- owned runtime files have not reappeared
++- startup dependencies remain at zero
++- API references remain at zero
++- operational inbound references remain at zero
++
++Documentation, tests, and retirement audit evidence remain allowed.
++
++### V46.53 — Rollback Evidence Registry
++Assurance verifies that every authoritative retirement still records:
++- rollback required
++- rollback available
++- baseline SHA-256 evidence
++
++The gate does not assume the local external rollback folder will always be mounted into the runtime; it verifies the committed retirement evidence that survives with the repository.
++
++### V46.54 — Regression Fail-Closed Behavior
++A deliberate negative harness reintroduces a retired module into a disposable repository.
++
++Expected behavior:
++- retirement assurance becomes untrusted
++- regression count increases
++- next-candidate gate closes
++
++This passed.
++
++### V46.55 — Next-Candidate Safety Gate
++Adds:
++
++`GET /api/operator-fine-comb/retirement-assurance`
++
++The endpoint returns:
++- number of authoritative retirements
++- assured retirements
++- detected regressions
++- per-retirement checks
++- rollback-registry coverage
++- SHA-256 assurance digest
++- next-candidate eligibility
++
++The next permanent-retirement nomination gate opens only when all recorded authoritative retirements remain fully assured.
++
++## Current authoritative result
++
++For `enterpriseValuePlanCenter`:
++
++- retirement score: 100%
++- retired files absent: PASS
++- owned runtime files: 0
++- startup regressions: 0
++- API regressions: 0
++- operational inbound regressions: 0
++- rollback record: PASS
++- baseline hash evidence: PASS
++
++Overall:
++
++`post-retirement-assurance-ready`
++
++Next-candidate nomination gate:
++
++`OPEN`
++
++## UI
++Adds the Post-Retirement Assurance center with:
++- retirement count
++- assured count
++- regression count
++- rollback registry coverage
++- next-candidate gate state
++- assurance digest
++- per-retirement invariant checks
++
++## Safety
++- No module is deleted in V46.55.
++- Automatic deletion remains disabled.
++- No authoritative delete endpoint is added.
++- Live restaurant execution behavior is unchanged.
++
++## Validation
++- `node scripts/maintenance/test-post-retirement-assurance.js` passed.
++- Real V46.50 retirement assurance scored 100%.
++- Negative retired-module reintroduction was detected.
++- Negative regression closed the next-candidate gate.
++- `npm run check` passed:
++  - 837 JavaScript files
++  - 716 client scripts
++  - 5,333 unique HTML IDs
++- Server startup passed as V46.55.0.
++- `/api/health` returned HTTP 200 with database connected and authentication enabled.
++- Authoritative runtime database SHA-256 remained unchanged.
++
++## Next milestone
++The next wave can now safely begin **Next Candidate Selection** rather than deleting another module immediately:
++- rank deprecation candidates
++- exclude primary/merge/diagnostic surfaces
++- combine operator-use evidence with repository-impact cost
++- estimate consolidation value
++- identify the top 3 retirement candidates
++- require explicit selection of one candidate before restarting the preview/certification pipeline

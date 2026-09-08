@@ -1,0 +1,726 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.05.0",
++  "version": "51.10.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 restaurant pilot readiness baseline",
++  "description": "Blue Current Hospitality OS \u2014 restaurant day lifecycle rehearsal and certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -61,6 +61,7 @@
+ const ProductionCorrectiveActionGovernanceService = require("./services/productionCorrectiveActionGovernanceService");
+ const V50ReleaseCertificationService = require("./services/v50ReleaseCertificationService");
+ const PilotOperationalReadinessService = require("./services/pilotOperationalReadinessService");
++const RestaurantDayLifecycleService = require("./services/restaurantDayLifecycleService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -125,7 +126,8 @@
+ const productionCorrectiveActionGovernanceService = new ProductionCorrectiveActionGovernanceService(database, auditService, realtimeHub, productionRecoveryReviewService, productionIncidentCommandService);
+ const v50ReleaseCertificationService = new V50ReleaseCertificationService(database, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService);
+ const pilotOperationalReadinessService = new PilotOperationalReadinessService(database, v49ReleaseCertificationService, v50ReleaseCertificationService, technicalActivationReadinessService, pilotProofProgramService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService });
++const restaurantDayLifecycleService = new RestaurantDayLifecycleService(database, auditService, realtimeHub, pilotOperationalReadinessService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -212,7 +214,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.05.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.10.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.05.0",
++        version: "51.10.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,26 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/restaurant-day-lifecycle" && request.method === "GET") {
++      return sendJson(response,200,await restaurantDayLifecycleService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/restaurant-day-lifecycle/locations/") && url.pathname.endsWith("/start") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required to start a restaurant-day rehearsal."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const body=await readJson(request);
++      try{return sendJson(response,201,await restaurantDayLifecycleService.start(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/restaurant-day-lifecycle/sessions/") && url.pathname.endsWith("/checkpoint") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required to record a restaurant-day checkpoint."});
++      const sessionId=decodeURIComponent(url.pathname.split("/")[4]||"");
++      const body=await readJson(request);
++      try{return sendJson(response,201,await restaurantDayLifecycleService.checkpoint(auth.membership.organizationId,auth.membership.locationIds||[],sessionId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/pilot-operational-readiness" && request.method === "GET") {
+       return sendJson(response,200,await pilotOperationalReadinessService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/restaurantDayLifecycleService.js
++++ b/server/services/restaurantDayLifecycleService.js
+@@ -0,0 +1,201 @@
++"use strict";
++
++class RestaurantDayLifecycleService {
++  constructor(database,auditService,realtimeHub,pilotOperationalReadinessService){
++    Object.assign(this,{database,auditService,realtimeHub,pilotOperationalReadinessService});
++    this.stageOrder=[
++      "OPENING","PRE_SHIFT","RESERVATIONS","SEATING",
++      "ACTIVE_SERVICE","KITCHEN_COORDINATION","GUEST_RECOVERY","CLOSING"
++    ];
++  }
++  now(){return new Date().toISOString();}
++  allowed(locationId,allowed=[]){return allowed.includes("*")||allowed.includes(locationId);}
++  async sessions(organizationId){
++    const db=await this.database.read();
++    return (db.restaurantDayLifecycleSessions||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
++  }
++  counts(db,organizationId,locationId){
++    const location=(db.locations||[]).find(x=>x.organizationId===organizationId&&x.id===locationId)||null;
++    const tables=(db.tables||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const sections=(db.sections||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const reservations=(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const activePeople=[
++      ...(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.status==="active"),
++      ...(db.employees||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.status==="active")
++    ];
++    const kitchenStations=(db.kitchenStations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
++    const memberships=(db.memberships||[]).filter(x=>x.organizationId===organizationId&&((x.locationIds||[]).includes("*")||(x.locationIds||[]).includes(locationId)));
++    const connectors=(db.liveConnectors||[]).filter(x=>x.organizationId===organizationId&&(!x.locationId||x.locationId===locationId));
++    const configuredConnectors=connectors.filter(x=>String(x.status||"").toLowerCase()!=="not-configured");
++    return {location,tables,sections,reservations,activePeople,kitchenStations,memberships,configuredConnectors};
++  }
++  stageChecks(db,organizationId,locationId,stage,baselineLocation){
++    const c=this.counts(db,organizationId,locationId);
++    const reservationPath=c.reservations.length>0||c.configuredConnectors.some(x=>x.type==="reservations");
++    const kitchenPath=c.kitchenStations.length>0||c.configuredConnectors.some(x=>x.type==="kitchen");
++    const workforcePath=c.activePeople.length>0||c.configuredConnectors.some(x=>x.type==="labor");
++    const common={locationName:c.location?.name||c.location?.displayName||locationId};
++    const map={
++      OPENING:[
++        {id:"location",label:"Restaurant record available",passed:!!c.location,actual:c.location?.id||"missing"},
++        {id:"floor",label:"Tables and sections loaded for opening",passed:c.tables.length>0&&c.sections.length>0,actual:`${c.tables.length} tables · ${c.sections.length} sections`},
++        {id:"access",label:"Authorized operating access exists",passed:c.memberships.length>0,actual:`${c.memberships.length} membership(s)`}
++      ],
++      PRE_SHIFT:[
++        {id:"workforce",label:"Active workforce is available for pre-shift",passed:workforcePath,actual:`${c.activePeople.length} active people`},
++        {id:"sections",label:"Section model is available for assignments",passed:c.sections.length>0,actual:`${c.sections.length} sections`},
++        {id:"baseline",label:"Restaurant is present in V51 pilot baseline",passed:!!baselineLocation,actual:baselineLocation?`${baselineLocation.readinessPercent}% baseline`:"missing"}
++      ],
++      RESERVATIONS:[
++        {id:"reservation-path",label:"Reservation operating path is available",passed:reservationPath,actual:`${c.reservations.length} reservations · ${c.configuredConnectors.filter(x=>x.type==="reservations").length} connector(s)`},
++        {id:"floor-link",label:"Floor model is available to receive reservations",passed:c.tables.length>0,actual:`${c.tables.length} tables`}
++      ],
++      SEATING:[
++        {id:"floor",label:"Floor/table model is active for seating",passed:c.tables.length>0&&c.sections.length>0,actual:`${c.tables.length} tables · ${c.sections.length} sections`},
++        {id:"reservation-context",label:"Reservation context is available at the host stand",passed:reservationPath,actual:`${c.reservations.length} reservations`}
++      ],
++      ACTIVE_SERVICE:[
++        {id:"floor",label:"Dining-room model is available during service",passed:c.tables.length>0,actual:`${c.tables.length} tables`},
++        {id:"workforce",label:"Active service workforce is available",passed:workforcePath,actual:`${c.activePeople.length} active people`},
++        {id:"sections",label:"Service sections are configured",passed:c.sections.length>0,actual:`${c.sections.length} sections`}
++      ],
++      KITCHEN_COORDINATION:[
++        {id:"kitchen",label:"Kitchen stations or kitchen connector are available",passed:kitchenPath,actual:`${c.kitchenStations.length} stations · ${c.configuredConnectors.filter(x=>x.type==="kitchen").length} connector(s)`},
++        {id:"service-context",label:"Restaurant service context exists",passed:c.tables.length>0&&workforcePath,actual:`${c.tables.length} tables · ${c.activePeople.length} active people`}
++      ],
++      GUEST_RECOVERY:[
++        {id:"guest-context",label:"Guest/reservation context is available for recovery",passed:reservationPath,actual:`${c.reservations.length} reservations`},
++        {id:"operator-access",label:"Authorized operator access exists for recovery documentation",passed:c.memberships.length>0,actual:`${c.memberships.length} membership(s)`}
++      ],
++      CLOSING:[
++        {id:"restaurant-context",label:"Restaurant operating context remains available for closeout",passed:!!c.location,actual:c.location?.id||"missing"},
++        {id:"workforce-context",label:"Workforce context is available for closing verification",passed:workforcePath,actual:`${c.activePeople.length} active people`}
++      ]
++    };
++    return {checks:map[stage]||[],...common};
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [db,baseline,sessions]=await Promise.all([
++      this.database.read(),
++      this.pilotOperationalReadinessService.snapshot(organizationId,allowedLocationIds),
++      this.sessions(organizationId)
++    ]);
++    const baselineMap=new Map((baseline.locations||[]).map(x=>[x.locationId,x]));
++    const inScope=(db.locations||[]).filter(x=>x.organizationId===organizationId&&this.allowed(x.id,allowedLocationIds));
++    const locations=inScope.map(loc=>{
++      const session=sessions.find(x=>x.locationId===loc.id&&x.status==="ACTIVE")||
++        sessions.find(x=>x.locationId===loc.id)||null;
++      const checkpoints=session?.checkpoints||[];
++      const completed=new Set(checkpoints.filter(x=>x.status==="COMPLETED").map(x=>x.stage));
++      const stages=this.stageOrder.map((stage,index)=>{
++        const evaluated=this.stageChecks(db,organizationId,loc.id,stage,baselineMap.get(loc.id));
++        const prerequisitesPassed=evaluated.checks.every(x=>x.passed);
++        const priorStage=index===0?null:this.stageOrder[index-1];
++        const previousComplete=!priorStage||completed.has(priorStage);
++        const checkpoint=checkpoints.filter(x=>x.stage===stage).slice(-1)[0]||null;
++        const complete=checkpoint?.status==="COMPLETED";
++        return {
++          stage,index:index+1,label:stage.replaceAll("_"," "),
++          prerequisitesPassed,previousComplete,
++          state:complete?"COMPLETED":!session?"SESSION_REQUIRED":previousComplete&&prerequisitesPassed?"READY_FOR_CHECKPOINT":previousComplete?"BLOCKED":"WAITING_FOR_PRIOR_STAGE",
++          checks:evaluated.checks,
++          blockerCount:evaluated.checks.filter(x=>!x.passed).length,
++          checkpoint
++        };
++      });
++      const completedCount=stages.filter(x=>x.state==="COMPLETED").length;
++      const nextStage=stages.find(x=>x.state!=="COMPLETED")||null;
++      return {
++        locationId:loc.id,locationName:loc.name||loc.displayName||loc.id,
++        pilotBaseline:baselineMap.get(loc.id)||null,
++        session,
++        stages,
++        completedStages:completedCount,totalStages:this.stageOrder.length,
++        lifecyclePercent:Math.round(completedCount/this.stageOrder.length*100),
++        nextStage:nextStage?.stage||null,
++        lifecycleState:completedCount===this.stageOrder.length?"DAY_LIFECYCLE_COMPLETE":session?.status==="ACTIVE"?"DAY_LIFECYCLE_ACTIVE":"DAY_LIFECYCLE_NOT_STARTED"
++      };
++    });
++    return {
++      version:"51.10.0",generatedAt:this.now(),
++      status:locations.length===0?"restaurant-required":locations.every(x=>x.lifecycleState==="DAY_LIFECYCLE_COMPLETE")?"restaurant-day-certified":locations.some(x=>x.lifecycleState==="DAY_LIFECYCLE_ACTIVE")?"restaurant-day-in-progress":"restaurant-day-ready-for-rehearsal",
++      headline:locations.length===0?"No authorized restaurant locations are available for day-lifecycle testing.":`${locations.filter(x=>x.lifecycleState==="DAY_LIFECYCLE_COMPLETE").length}/${locations.length} restaurant day lifecycle(s) have completed all eight human-recorded checkpoints.`,
++      stageOrder:this.stageOrder,
++      locations,
++      baselineStatus:baseline.status,
++      policy:{
++        rehearsalAllowedBeforePilotGo:true,
++        checkpointEvidenceHumanRecorded:true,
++        stageOrderEnforced:true,
++        prerequisiteOverrideRequiresReason:true,
++        operationalModulesNotMutated:true,
++        automaticStageCompletion:false,
++        automaticOperationalActions:false,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async start(organizationId,allowedLocationIds,locationId,input,actor){
++    if(!this.allowed(locationId,allowedLocationIds))throw new Error("Location is outside your authorized scope.");
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Restaurant location not found.");
++    if(loc.session?.status==="ACTIVE")throw new Error("An active restaurant-day lifecycle session already exists.");
++    const now=this.now();
++    const record={
++      id:`rdl_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,locationId,locationName:loc.locationName,
++      mode:loc.pilotBaseline?.pilotReady===true?"PILOT_OPERATING_REHEARSAL":"PILOT_READINESS_REHEARSAL",
++      status:"ACTIVE",startedAt:now,startedBy:actor,
++      serviceDate:String(input.serviceDate||now.slice(0,10)).slice(0,20),
++      shiftLabel:String(input.shiftLabel||"Dinner").trim().slice(0,80),
++      manager:String(input.manager||actor||"").trim().slice(0,160),
++      note:String(input.note||"").trim().slice(0,1000),
++      checkpoints:[]
++    };
++    await this.database.mutate(db=>{db.restaurantDayLifecycleSessions||=[];db.restaurantDayLifecycleSessions.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Restaurant-day lifecycle rehearsal started for ${locationId}: ${record.shiftLabel}`,category:"pilot_operations"});
++    this.realtimeHub.publish("restaurant-day:started",{id:record.id,organizationId,locationId,mode:record.mode});
++    return record;
++  }
++  async checkpoint(organizationId,allowedLocationIds,sessionId,input,actor){
++    const stage=String(input.stage||"").toUpperCase();
++    if(!this.stageOrder.includes(stage))throw new Error("Invalid restaurant-day lifecycle stage.");
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const loc=snap.locations.find(x=>x.session?.id===sessionId);
++    if(!loc)throw new Error("Active restaurant-day lifecycle session not found.");
++    if(loc.session.status!=="ACTIVE")throw new Error("Restaurant-day lifecycle session is not active.");
++    const stageState=loc.stages.find(x=>x.stage===stage);
++    if(stageState.state==="COMPLETED")throw new Error(`${stage} is already complete.`);
++    if(!stageState.previousComplete)throw new Error(`${stage} cannot be completed before the prior lifecycle stage.`);
++    const overrideReason=String(input.overrideReason||"").trim().slice(0,1500);
++    if(!stageState.prerequisitesPassed&&!overrideReason)throw new Error(`${stage} has open prerequisites. A documented rehearsal override reason is required.`);
++    const evidence=String(input.evidence||"").trim().slice(0,1800);
++    if(!evidence)throw new Error("Human-recorded checkpoint evidence is required.");
++    const now=this.now();
++    const record={
++      id:`rdc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      stage,status:"COMPLETED",completedAt:now,completedBy:actor,
++      evidence,
++      overrideUsed:!stageState.prerequisitesPassed,overrideReason,
++      prerequisiteSnapshot:{passed:stageState.checks.filter(x=>x.passed).length,total:stageState.checks.length,checks:stageState.checks},
++      operationalMutationPerformed:false
++    };
++    const updated=await this.database.mutate(db=>{
++      const session=(db.restaurantDayLifecycleSessions||[]).find(x=>x.id===sessionId&&x.organizationId===organizationId);
++      if(!session)return null;
++      session.checkpoints||=[];session.checkpoints.push(record);
++      if(stage==="CLOSING"){
++        session.status="COMPLETED";session.completedAt=now;session.completedBy=actor;
++      }
++      return {...session};
++    });
++    if(!updated)throw new Error("Restaurant-day lifecycle session not found.");
++    await this.auditService.record({organizationId,actor,action:`Restaurant-day checkpoint ${stage} completed for ${updated.locationId}${record.overrideUsed?" with documented rehearsal override":""}`,category:"pilot_operations"});
++    this.realtimeHub.publish("restaurant-day:checkpoint",{sessionId,organizationId,locationId:updated.locationId,stage,overrideUsed:record.overrideUsed});
++    return record;
++  }
++}
++module.exports=RestaurantDayLifecycleService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.05.0">
++  <meta name="blue-current-build" content="51.10.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -365,6 +365,14 @@
+       <p id="porUpstream">Loading upstream certification state…</p>
+       <p><strong>Restaurant readiness</strong></p><div id="porLocations" class="v432-list"></div>
+       <p><strong>Required blockers</strong></p><div id="porBlockerList" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="restaurantDayLifecycle">
++      <header><div><small>V51.06–V51.10 · Restaurant Day Lifecycle</small><strong>Operate one restaurant day as a controlled sequence instead of disconnected screens.</strong><span>Opening, pre-shift, reservations, seating, active service, kitchen coordination, guest recovery, and closing now form one rehearsal/certification workflow. Each checkpoint requires human evidence. Open prerequisites stay visible and require an explicit rehearsal override rather than being silently ignored.</span></div><button id="rdlRefresh" type="button">Refresh day lifecycle</button></header>
++      <div class="v432-kpis"><article><small>Lifecycle status</small><strong id="rdlStatus">—</strong></article><article><small>Active rehearsals</small><strong id="rdlActive">0</strong></article><article><small>Completed days</small><strong id="rdlComplete">0</strong></article><article><small>Stages completed</small><strong id="rdlStages">0/0</strong></article></div>
++      <div class="v4316-answer" id="rdlHeadline">Restaurant day lifecycle ready for rehearsal.</div>
++      <div class="v4316-actions"><input id="rdlServiceDate" class="v4312-input" type="date"><input id="rdlShift" class="v4312-input" value="Dinner" placeholder="Shift label"><input id="rdlManager" class="v4312-input" placeholder="Manager / rehearsal lead"><input id="rdlNote" class="v4312-input" placeholder="Session note"></div>
++      <div class="v4316-actions"><input id="rdlEvidence" class="v4312-input" placeholder="Human checkpoint evidence"><input id="rdlOverride" class="v4312-input" placeholder="Rehearsal override reason (only if prerequisites are open)"></div>
++      <p><strong>Restaurant-day operating sequence</strong></p><div id="rdlLocations" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8911,6 +8919,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationCenter.js?v=50.30.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessEngine.js?v=51.05.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotOperationalReadiness" data-src="js/modules/pilotOperationalReadinessCenter.js?v=51.05.0"></script>
+-<script src="js/startup-loader.js?v=51.05.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantDayLifecycle" data-src="js/modules/restaurantDayLifecycleEngine.js?v=51.10.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="restaurantDayLifecycle" data-src="js/modules/restaurantDayLifecycleCenter.js?v=51.10.0"></script>
++<script src="js/startup-loader.js?v=51.10.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1248,6 +1248,7 @@
+ const productionCorrectiveActionGovernanceModule = startupRegistry.register("productionCorrectiveActionGovernance", shouldInitializeCenter("productionCorrectiveActionGovernance") ? window.createBlueCurrentProductionCorrectiveActionGovernanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionRecoveryReview"]);
+ const v50ReleaseCertificationModule = startupRegistry.register("v50ReleaseCertification", shouldInitializeCenter("v50ReleaseCertification") ? window.createBlueCurrentV50ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionCorrectiveActionGovernance"]);
+ const pilotOperationalReadinessModule = startupRegistry.register("pilotOperationalReadiness", shouldInitializeCenter("pilotOperationalReadiness") ? window.createBlueCurrentPilotOperationalReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "v50ReleaseCertification"]);
++const restaurantDayLifecycleModule = startupRegistry.register("restaurantDayLifecycle", shouldInitializeCenter("restaurantDayLifecycle") ? window.createBlueCurrentRestaurantDayLifecycleCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotOperationalReadiness"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.05.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.10.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/restaurantDayLifecycleEngine.js
++++ b/client/js/modules/restaurantDayLifecycleEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentRestaurantDayLifecycleEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/restaurant-day-lifecycle",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Restaurant day lifecycle failed (${r.status})`);this.appState?.update?.({restaurantDayLifecycle:d});return d;}
++  async start(locationId,payload={}){const r=await fetch(`/api/restaurant-day-lifecycle/locations/${encodeURIComponent(locationId)}/start`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Restaurant day start failed (${r.status})`);this.eventBus?.emit?.("restaurant-day:started",structuredClone(d));return d;}
++  async checkpoint(sessionId,payload={}){const r=await fetch(`/api/restaurant-day-lifecycle/sessions/${encodeURIComponent(sessionId)}/checkpoint`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Restaurant day checkpoint failed (${r.status})`);this.eventBus?.emit?.("restaurant-day:checkpoint",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentRestaurantDayLifecycleEngine;
++if(global)global.BlueCurrentRestaurantDayLifecycleEngine=BlueCurrentRestaurantDayLifecycleEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/restaurantDayLifecycleCenter.js
++++ b/client/js/modules/restaurantDayLifecycleCenter.js
+@@ -0,0 +1,34 @@
++(function(){"use strict";
++function createBlueCurrentRestaurantDayLifecycleCenterModule(eventBus,appState){
++  const root=document.getElementById("restaurantDayLifecycle");
++  if(!root||!window.BlueCurrentRestaurantDayLifecycleEngine)return null;
++  const e=new window.BlueCurrentRestaurantDayLifecycleEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("rdlStatus").textContent=s.status||"—";
++    $("rdlActive").textContent=locs.filter(x=>x.lifecycleState==="DAY_LIFECYCLE_ACTIVE").length;
++    $("rdlComplete").textContent=locs.filter(x=>x.lifecycleState==="DAY_LIFECYCLE_COMPLETE").length;
++    $("rdlStages").textContent=`${locs.reduce((n,x)=>n+x.completedStages,0)}/${locs.reduce((n,x)=>n+x.totalStages,0)}`;
++    $("rdlHeadline").textContent=s.headline||"Restaurant day lifecycle unavailable.";
++    $("rdlLocations").innerHTML=locs.map(x=>`<article data-rdl-location="${esc(x.locationId)}"${x.session?` data-rdl-session="${esc(x.session.id)}"`:""}><div><strong>${esc(x.locationName)}</strong><span>${esc(x.lifecycleState)} · ${x.completedStages}/${x.totalStages} stages · ${x.lifecyclePercent}%${x.session?` · ${esc(x.session.mode)}`:""}</span></div>${!x.session||x.session.status!=="ACTIVE"?`<div class="v4316-actions"><button type="button" data-rdl-start="true">Start day rehearsal</button></div>`:""}<div class="v432-list">${(x.stages||[]).map(st=>`<article data-rdl-stage="${esc(st.stage)}"><strong>${esc(st.state)} · ${esc(st.label)}</strong><span>${st.checks.filter(c=>c.passed).length}/${st.checks.length} prerequisites${st.blockerCount?` · ${st.blockerCount} open`:""}</span>${st.state==="READY_FOR_CHECKPOINT"||st.state==="BLOCKED"?'<button type="button" data-rdl-checkpoint="true">Record checkpoint</button>':""}</article>`).join("")}</div></article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("rdlHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const loc=ev.target.closest("[data-rdl-location]");
++    if(!loc)return;
++    if(ev.target.closest("[data-rdl-start]")){
++      try{await e.start(loc.dataset.rdlLocation,{serviceDate:$("rdlServiceDate").value,shiftLabel:$("rdlShift").value,manager:$("rdlManager").value,note:$("rdlNote").value});await load();}catch(err){$("rdlHeadline").textContent=err.message;}return;
++    }
++    const stageCard=ev.target.closest("[data-rdl-stage]");
++    if(ev.target.closest("[data-rdl-checkpoint]")&&stageCard&&loc.dataset.rdlSession){
++      try{await e.checkpoint(loc.dataset.rdlSession,{stage:stageCard.dataset.rdlStage,evidence:$("rdlEvidence").value,overrideReason:$("rdlOverride").value});await load();}catch(err){$("rdlHeadline").textContent=err.message;}
++    }
++  });
++  $("rdlRefresh")?.addEventListener("click",load);
++  ["restaurant-day:started","restaurant-day:checkpoint","auth:restored","pilot-proof:configured","technical-activation:authorized"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentRestaurantDayLifecycleCenterModule=createBlueCurrentRestaurantDayLifecycleCenterModule;
++})();--- a/scripts/maintenance/test-v51.10-restaurant-day-lifecycle.js
++++ b/scripts/maintenance/test-v51.10-restaurant-day-lifecycle.js
+@@ -0,0 +1,99 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/restaurantDayLifecycleService");
++
++(async()=>{
++  const state={
++    locations:[{id:"loc1",organizationId:"org",name:"Pilot Restaurant"}],
++    tables:[{id:"t1",organizationId:"org",locationId:"loc1"}],
++    sections:[{id:"s1",organizationId:"org",locationId:"loc1"}],
++    reservations:[{id:"r1",organizationId:"org",locationId:"loc1"}],
++    staff:[{id:"st1",organizationId:"org",locationId:"loc1",status:"active"}],
++    employees:[],
++    kitchenStations:[{id:"k1",organizationId:"org",locationId:"loc1"}],
++    memberships:[{id:"m1",organizationId:"org",locationIds:["loc1"]}],
++    liveConnectors:[{id:"c1",organizationId:"org",locationId:"loc1",type:"reservations",status:"connected"}],
++    restaurantDayLifecycleSessions:[]
++  };
++  const audits=[],events=[];
++  const baseline={
++    status:"PILOT-BASELINE-GO",
++    locations:[{locationId:"loc1",locationName:"Pilot Restaurant",pilotReady:true,readinessPercent:100}]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audits.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>baseline}
++  );
++
++  let snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.10.0");
++  assert.equal(snap.status,"restaurant-day-ready-for-rehearsal");
++  assert.equal(snap.locations[0].stages[0].state,"SESSION_REQUIRED");
++  assert.equal(snap.policy.stageOrderEnforced,true);
++
++  const session=await svc.start("org",["loc1"],"loc1",{
++    serviceDate:"2026-08-09",shiftLabel:"Dinner",manager:"GM",note:"Full day rehearsal"
++  },"Tester");
++  assert.equal(session.status,"ACTIVE");
++  assert.equal(session.mode,"PILOT_OPERATING_REHEARSAL");
++
++  let orderBlocked=false;
++  try{
++    await svc.checkpoint("org",["loc1"],session.id,{stage:"RESERVATIONS",evidence:"Reservation path checked."},"Tester");
++  }catch(e){orderBlocked=/prior lifecycle stage/i.test(e.message);}
++  assert(orderBlocked);
++
++  const stages=["OPENING","PRE_SHIFT","RESERVATIONS","SEATING","ACTIVE_SERVICE","KITCHEN_COORDINATION","GUEST_RECOVERY","CLOSING"];
++  for(const stage of stages){
++    const cp=await svc.checkpoint("org",["loc1"],session.id,{
++      stage,evidence:`${stage} exercised and verified by restaurant operator.`
++    },"Tester");
++    assert.equal(cp.status,"COMPLETED");
++    assert.equal(cp.operationalMutationPerformed,false);
++    assert.equal(cp.overrideUsed,false);
++  }
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.status,"restaurant-day-certified");
++  assert.equal(snap.locations[0].completedStages,8);
++  assert.equal(snap.locations[0].lifecyclePercent,100);
++  assert.equal(snap.locations[0].lifecycleState,"DAY_LIFECYCLE_COMPLETE");
++  assert.equal(state.restaurantDayLifecycleSessions[0].status,"COMPLETED");
++  assert.equal(audits.length,9);
++  assert.equal(events.length,9);
++
++  // Prove prerequisite override requires a documented reason.
++  state.kitchenStations=[];
++  state.liveConnectors=[];
++  const second=await svc.start("org",["loc1"],"loc1",{shiftLabel:"Stress rehearsal"},"Tester");
++  for(const stage of ["OPENING","PRE_SHIFT","RESERVATIONS","SEATING","ACTIVE_SERVICE"]){
++    await svc.checkpoint("org",["loc1"],second.id,{stage,evidence:`${stage} verified.`},"Tester");
++  }
++  let overrideBlocked=false;
++  try{
++    await svc.checkpoint("org",["loc1"],second.id,{stage:"KITCHEN_COORDINATION",evidence:"Kitchen gap observed."},"Tester");
++  }catch(e){overrideBlocked=/override reason/i.test(e.message);}
++  assert(overrideBlocked);
++  const overridden=await svc.checkpoint("org",["loc1"],second.id,{
++    stage:"KITCHEN_COORDINATION",
++    evidence:"Kitchen coordination workflow rehearsed against the known missing station model.",
++    overrideReason:"Intentional pilot-readiness rehearsal of the missing kitchen prerequisite."
++  },"Tester");
++  assert.equal(overridden.overrideUsed,true);
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.10.0",
++    orderedRestaurantDay:true,
++    stages:8,
++    humanCheckpointEvidence:true,
++    priorStageGuard:true,
++    prerequisiteOverrideGuard:true,
++    rehearsalBeforePilotGo:true,
++    operationalModulesNotMutated:true,
++    automaticStageCompletion:false,
++    automaticOperationalActions:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.10.0-RELEASE.md
++++ b/V51.10.0-RELEASE.md
+@@ -0,0 +1,171 @@
++# BLUE CURRENT V51.10.0 — RESTAURANT DAY LIFECYCLE
++
++V51.06–V51.10 turns Blue Current's existing restaurant capabilities into one ordered restaurant-day rehearsal and certification workflow.
++
++## Lifecycle
++
++1. OPENING
++2. PRE_SHIFT
++3. RESERVATIONS
++4. SEATING
++5. ACTIVE_SERVICE
++6. KITCHEN_COORDINATION
++7. GUEST_RECOVERY
++8. CLOSING
++
++The sequence is enforced.
++
++A later stage cannot be completed before the prior stage.
++
++## Human checkpoint evidence
++
++Each lifecycle checkpoint requires human-recorded evidence.
++
++Blue Current does not infer that a stage is complete because modules exist or because data looks plausible.
++
++Each checkpoint records:
++
++- stage
++- actor
++- timestamp
++- evidence
++- prerequisite snapshot
++- override state
++- override reason when used
++- `operationalMutationPerformed: false`
++
++## Operational prerequisites
++
++Each stage reuses the existing authoritative restaurant model.
++
++### Opening
++- restaurant record
++- tables and sections
++- authorized operating access
++
++### Pre-shift
++- active workforce / labor path
++- sections available
++- restaurant present in the V51 pilot baseline
++
++### Reservations
++- reservation data or reservation connector
++- floor available to receive reservations
++
++### Seating
++- floor/table model
++- reservation context
++
++### Active service
++- dining room
++- active workforce
++- sections
++
++### Kitchen coordination
++- kitchen stations or kitchen connector
++- restaurant service context
++
++### Guest recovery
++- reservation/guest context
++- authorized operator access
++
++### Closing
++- restaurant operating context
++- workforce context
++
++## Rehearsal before pilot GO
++
++V51 intentionally allows `PILOT_READINESS_REHEARSAL` before the V51.05 baseline reaches GO.
++
++That lets the team exercise and expose broken workflows while the restaurant is still being prepared.
++
++A baseline-ready location uses:
++
++`PILOT_OPERATING_REHEARSAL`
++
++A location with open pilot gates uses:
++
++`PILOT_READINESS_REHEARSAL`
++
++Neither mode is a production go-live authorization.
++
++## Open prerequisites
++
++If a stage has missing prerequisites, it remains `BLOCKED`.
++
++A human can continue an intentional rehearsal only by entering a documented override reason.
++
++The missing prerequisite remains visible in the captured checkpoint snapshot.
++
++## Current authenticated Chefs runtime
++
++Current lifecycle state:
++
++- baseline: `PILOT-BASELINE-NO-GO`
++- lifecycle: `restaurant-day-ready-for-rehearsal`
++- completed lifecycle sessions: 0
++
++All five in-scope restaurants are available for controlled rehearsal.
++
++Marina Grille:
++- OPENING prerequisites: 3/3
++- opening blockers: 0
++
++Harbor House:
++- opening blocker: floor model
++
++River & Rail:
++- opening blocker: floor model
++
++The Cabin:
++- opening blocker: floor model
++
++Garden Social:
++- opening blocker: floor model
++
++This is useful operational evidence: Marina Grille can begin the day-flow rehearsal immediately while the other locations expose setup gaps at the first operating checkpoint.
++
++## Safety policy
++
++- rehearsal before pilot GO allowed
++- checkpoint evidence human recorded
++- stage order enforced
++- prerequisite override requires reason
++- operational modules not mutated
++- automatic stage completion false
++- automatic operational actions false
++- autonomous production changes false
++
++## Validation
++
++- V51.10 focused lifecycle PASS
++- all 8 stages exercised PASS
++- stage-order guard PASS
++- human checkpoint evidence PASS
++- prerequisite override guard PASS
++- V51.05 regression PASS
++- authenticated lifecycle GET PASS
++- authoritative DB unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 923 JavaScript files
++- 774 client scripts
++- 5,772 unique HTML IDs
++
++## Next
++
++V51.11–V51.15 — Peak-Service Stress & Failure Testing
++
++- reservation bursts
++- simultaneous operational events
++- high occupancy / seating pressure
++- rapid table turns
++- staff changes
++- kitchen pressure
++- delayed requests
++- API failure
++- reconnect/retry
++- partial service degradation
++- recovery verification
++- no synthetic pass conditions
+--- a/README-APPLY-V51.10.0.md
++++ b/README-APPLY-V51.10.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V51.10.0
++
++Baseline: exact V51.05.0 repository.
++
++Extract `BLUE-CURRENT-V51.10.0-RESTAURANT-DAY-LIFECYCLE.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.10-restaurant-day-lifecycle.js
++node scripts/maintenance/test-v51.05-pilot-operational-readiness.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.10.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Restaurant Day Lifecycle** surface appears immediately after Restaurant Pilot Readiness Baseline.
++
++Important:
++
++- this is a rehearsal/certification workflow, not a production go-live action
++- stages must be completed in order
++- every completed stage requires human evidence
++- missing prerequisites require a documented rehearsal override
++- Blue Current does not mutate the reservation/floor/staff/kitchen modules simply because a checkpoint is completed
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.10.0 add restaurant day lifecycle"
++git push origin live-service-timeline
++```

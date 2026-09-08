@@ -1,0 +1,639 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "50.20.0",
++  "version": "50.25.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 production recovery verification and post-incident review",
++  "description": "Blue Current Hospitality OS \u2014 production learning and corrective action governance",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -58,6 +58,7 @@
+ const ProductionHealthSupportService = require("./services/productionHealthSupportService");
+ const ProductionIncidentCommandService = require("./services/productionIncidentCommandService");
+ const ProductionRecoveryReviewService = require("./services/productionRecoveryReviewService");
++const ProductionCorrectiveActionGovernanceService = require("./services/productionCorrectiveActionGovernanceService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -119,7 +120,8 @@
+ const productionHealthSupportService = new ProductionHealthSupportService(database, auditService, realtimeHub, productionOperationsHandoffService, reliabilityAutomationService, telemetryService, multiLocationPerformanceService);
+ const productionIncidentCommandService = new ProductionIncidentCommandService(database, auditService, realtimeHub, productionHealthSupportService, reliabilityAutomationService, telemetryService);
+ const productionRecoveryReviewService = new ProductionRecoveryReviewService(database, auditService, realtimeHub, productionIncidentCommandService, productionHealthSupportService, reliabilityAutomationService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService });
++const productionCorrectiveActionGovernanceService = new ProductionCorrectiveActionGovernanceService(database, auditService, realtimeHub, productionRecoveryReviewService, productionIncidentCommandService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -206,7 +208,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V50.20.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V50.25.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "50.20.0",
++        version: "50.25.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,30 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/production-corrective-action-governance" && request.method === "GET") {
++      return sendJson(response,200,await productionCorrectiveActionGovernanceService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++
++    if (url.pathname.startsWith("/api/production-corrective-action-governance/reviews/") && url.pathname.endsWith("/verify") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"admin")) return sendJson(response,403,{error:"Write permission required to verify corrective-action evidence."});
++      const parts=url.pathname.split("/");
++      const reviewId=decodeURIComponent(parts[4]||"");
++      const actionId=decodeURIComponent(parts[6]||"");
++      const body=await readJson(request);
++      try{return sendJson(response,201,await productionCorrectiveActionGovernanceService.verify(auth.membership.organizationId,auth.membership.locationIds||[],reviewId,actionId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
++
++    if (url.pathname.startsWith("/api/production-corrective-action-governance/reviews/") && url.pathname.endsWith("/accept-completion") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required to accept corrective-action completion."});
++      const parts=url.pathname.split("/");
++      const reviewId=decodeURIComponent(parts[4]||"");
++      const actionId=decodeURIComponent(parts[6]||"");
++      const body=await readJson(request);
++      try{return sendJson(response,200,await productionCorrectiveActionGovernanceService.acceptCompletion(auth.membership.organizationId,auth.membership.locationIds||[],reviewId,actionId,body,auth.user.name));}
++      catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/production-recovery-review" && request.method === "GET") {
+       return sendJson(response,200,await productionRecoveryReviewService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/productionCorrectiveActionGovernanceService.js
++++ b/server/services/productionCorrectiveActionGovernanceService.js
+@@ -0,0 +1,157 @@
++"use strict";
++
++class ProductionCorrectiveActionGovernanceService {
++  constructor(database,auditService,realtimeHub,productionRecoveryReviewService,productionIncidentCommandService){
++    Object.assign(this,{database,auditService,realtimeHub,productionRecoveryReviewService,productionIncidentCommandService});
++  }
++  now(){return new Date().toISOString();}
++  ageDays(dueDate,now=new Date()){
++    if(!dueDate)return null;
++    const d=new Date(`${dueDate}T23:59:59.999Z`);
++    if(!Number.isFinite(d.getTime()))return null;
++    return Math.floor((now-d)/86400000);
++  }
++  async evidence(organizationId){
++    const db=await this.database.read();
++    return (db.productionCorrectiveActionEvidence||[])
++      .filter(x=>x.organizationId===organizationId)
++      .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++  }
++  async snapshot(organizationId,allowedLocationIds){
++    const [recovery,incident,evidence]=await Promise.all([
++      this.productionRecoveryReviewService.snapshot(organizationId,allowedLocationIds),
++      this.productionIncidentCommandService.snapshot(organizationId,allowedLocationIds),
++      this.evidence(organizationId)
++    ]);
++    const incidentById=new Map((incident.commandHistory||[]).map(x=>[x.id,x]));
++    const evidenceByKey=new Map();
++    for(const e of evidence){
++      const k=`${e.reviewId}:${e.actionId}`;
++      if(!evidenceByKey.has(k))evidenceByKey.set(k,[]);
++      evidenceByKey.get(k).push(e);
++    }
++    const now=new Date();
++    const actions=[];
++    for(const review of recovery.reviewHistory||[]){
++      const incidentRecord=incidentById.get(review.incidentId)||{};
++      for(const action of review.correctiveActions||[]){
++        const key=`${review.id}:${action.id}`;
++        const actionEvidence=evidenceByKey.get(key)||[];
++        const latest=actionEvidence[0]||null;
++        const overdueDays=this.ageDays(action.dueDate,now);
++        const completed=latest?.status==="COMPLETION_ACCEPTED";
++        const verified=completed||latest?.status==="RISK_REDUCTION_VERIFIED";
++        const repeatLinks=(incident.commandHistory||[]).filter(x=>
++          x.id!==review.incidentId &&
++          x.createdAt>review.createdAt &&
++          (x.affectedDomains||[]).some(d=>(incidentRecord.affectedDomains||[]).includes(d))
++        ).map(x=>({incidentId:x.id,title:x.title,severity:x.severity,createdAt:x.createdAt}));
++        actions.push({
++          reviewId:review.id,incidentId:review.incidentId,incidentTitle:review.incidentTitle,
++          incidentSeverity:incidentRecord.severity||"unknown",
++          repeatRisk:review.repeatRisk,
++          actionId:action.id,action:action.action,owner:action.owner,dueDate:action.dueDate||null,
++          ageDaysPastDue:overdueDays,
++          overdue:!completed&&overdueDays!==null&&overdueDays>0,
++          highRisk:["high","critical"].includes(review.repeatRisk),
++          status:completed?"COMPLETED_ACCEPTED":verified?"RISK_REDUCTION_VERIFIED":"OPEN",
++          executionState:action.executionState||"NOT_EXECUTED_BY_BLUE_CURRENT",
++          latestEvidence:latest,
++          evidenceHistory:actionEvidence,
++          repeatIncidentLinks:repeatLinks
++        });
++      }
++    }
++    const ownerMap=new Map();
++    for(const a of actions){
++      if(!ownerMap.has(a.owner))ownerMap.set(a.owner,{owner:a.owner,total:0,open:0,overdue:0,highRisk:0,verified:0,completed:0});
++      const x=ownerMap.get(a.owner);x.total++;
++      if(a.status==="OPEN")x.open++;
++      if(a.overdue)x.overdue++;
++      if(a.highRisk&&a.status!=="COMPLETED_ACCEPTED")x.highRisk++;
++      if(a.status==="RISK_REDUCTION_VERIFIED")x.verified++;
++      if(a.status==="COMPLETED_ACCEPTED")x.completed++;
++    }
++    const open=actions.filter(x=>x.status!=="COMPLETED_ACCEPTED");
++    return {
++      version:"50.25.0",generatedAt:this.now(),
++      status:actions.length===0?"corrective-actions-required":
++        open.some(x=>x.overdue&&x.highRisk)?"corrective-governance-critical":
++        open.some(x=>x.overdue||x.highRisk)?"corrective-governance-attention":
++        open.length?"corrective-governance-active":"corrective-governance-complete",
++      headline:actions.length===0?"Accepted post-incident reviews with corrective actions are required before governance begins.":`${actions.filter(x=>x.status==="COMPLETED_ACCEPTED").length}/${actions.length} corrective action(s) have human-accepted completion.`,
++      totals:{
++        actions:actions.length,
++        open:open.length,
++        overdue:actions.filter(x=>x.overdue).length,
++        highRiskOpen:actions.filter(x=>x.highRisk&&x.status!=="COMPLETED_ACCEPTED").length,
++        riskReductionVerified:actions.filter(x=>x.status==="RISK_REDUCTION_VERIFIED").length,
++        completedAccepted:actions.filter(x=>x.status==="COMPLETED_ACCEPTED").length,
++        repeatIncidentLinks:actions.reduce((n,x)=>n+x.repeatIncidentLinks.length,0)
++      },
++      actions,
++      ownerAccountability:[...ownerMap.values()].sort((a,b)=>(b.overdue+b.highRisk)-(a.overdue+a.highRisk)||b.open-a.open),
++      evidenceHistory:evidence,
++      policy:{
++        actionExecutionHumanOwned:true,
++        verificationEvidenceHumanRecorded:true,
++        completionAcceptanceHumanRequired:true,
++        repeatIncidentLinkageAdvisory:true,
++        automaticCorrectiveActionExecution:false,
++        automaticCompletion:false,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async verify(organizationId,allowedLocationIds,reviewId,actionId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const action=snap.actions.find(x=>x.reviewId===reviewId&&x.actionId===actionId);
++    if(!action)throw new Error("Corrective action not found.");
++    const evidence=String(input.evidence||"").trim().slice(0,1800);
++    if(!evidence)throw new Error("Human-recorded risk-reduction evidence is required.");
++    const verification=String(input.verification||"").trim().slice(0,1200);
++    if(!verification)throw new Error("Verification method/result is required.");
++    const now=this.now();
++    const record={
++      id:`cae_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,reviewId,incidentId:action.incidentId,actionId,
++      action:action.action,owner:action.owner,
++      status:"RISK_REDUCTION_VERIFIED",
++      evidence,verification,
++      repeatRiskAtVerification:action.repeatRisk,
++      repeatIncidentLinksAtVerification:action.repeatIncidentLinks,
++      createdBy:actor,createdAt:now,
++      correctiveActionExecutedBySystem:false,
++      runtimeMutationPerformed:false
++    };
++    await this.database.mutate(db=>{db.productionCorrectiveActionEvidence||=[];db.productionCorrectiveActionEvidence.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Risk-reduction evidence verified for corrective action ${reviewId}/${actionId}; execution remains human-owned`,category:"production_learning"});
++    this.realtimeHub.publish("production-learning:action-verified",{id:record.id,organizationId,reviewId,actionId});
++    return record;
++  }
++  async acceptCompletion(organizationId,allowedLocationIds,reviewId,actionId,input,actor){
++    const snap=await this.snapshot(organizationId,allowedLocationIds);
++    const action=snap.actions.find(x=>x.reviewId===reviewId&&x.actionId===actionId);
++    if(!action)throw new Error("Corrective action not found.");
++    if(action.status!=="RISK_REDUCTION_VERIFIED")throw new Error("Risk-reduction evidence must be verified before completion can be accepted.");
++    const approver=String(input.approver||actor||"").trim().slice(0,160);
++    const note=String(input.note||"").trim().slice(0,1500);
++    if(!approver)throw new Error("Completion approver is required.");
++    if(!note)throw new Error("Human completion acceptance note is required.");
++    const now=this.now();
++    const record={
++      id:`cae_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId,reviewId,incidentId:action.incidentId,actionId,
++      action:action.action,owner:action.owner,
++      status:"COMPLETION_ACCEPTED",
++      approver,note,createdBy:actor,createdAt:now,
++      correctiveActionExecutedBySystem:false,
++      runtimeMutationPerformed:false
++    };
++    await this.database.mutate(db=>{db.productionCorrectiveActionEvidence||=[];db.productionCorrectiveActionEvidence.push(record);return record;});
++    await this.auditService.record({organizationId,actor,action:`Corrective action completion accepted for ${reviewId}/${actionId} by ${approver}; Blue Current did not execute the action`,category:"production_learning"});
++    this.realtimeHub.publish("production-learning:action-completed",{id:record.id,organizationId,reviewId,actionId,approver});
++    return record;
++  }
++}
++module.exports=ProductionCorrectiveActionGovernanceService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="50.20.0">
++  <meta name="blue-current-build" content="50.25.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -340,6 +340,14 @@
+       <div class="v4316-actions"><input id="prrAction" class="v4312-input" placeholder="Corrective action"><input id="prrActionOwner" class="v4312-input" placeholder="Corrective action owner"><input id="prrActionDue" class="v4312-input" placeholder="Due date"><input id="prrApprover" class="v4312-input" placeholder="Lessons approver"><input id="prrClosure" class="v4312-input" placeholder="Closure / lessons accepted note"></div>
+       <p><strong>Resolved incidents & recovery state</strong></p><div id="prrIncidents" class="v432-list"></div>
+       <p><strong>Post-incident review history</strong></p><div id="prrHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="productionCorrectiveActionGovernance">
++      <header><div><small>V50.21–V50.25 · Production Learning & Corrective Action Governance</small><strong>Turn post-incident lessons into an accountable corrective-action register without letting Blue Current execute the work.</strong><span>Blue Current rolls corrective actions across incidents into one owner/due-date view, flags overdue and high-repeat-risk work, links later incidents sharing affected domains, stores human risk-reduction evidence, and requires executive acceptance before completion.</span></div><button id="pcagRefresh" type="button">Refresh corrective governance</button></header>
++      <div class="v432-kpis"><article><small>Governance status</small><strong id="pcagStatus">—</strong></article><article><small>Open actions</small><strong id="pcagOpen">0</strong></article><article><small>Overdue</small><strong id="pcagOverdue">0</strong></article><article><small>High-risk open</small><strong id="pcagHighRisk">0</strong></article></div>
++      <div class="v4316-answer" id="pcagHeadline">Accepted post-incident corrective actions are required before governance begins.</div>
++      <div class="v4316-actions"><input id="pcagEvidence" class="v4312-input" placeholder="Risk-reduction evidence"><input id="pcagVerification" class="v4312-input" placeholder="Verification method / result"><input id="pcagApprover" class="v4312-input" placeholder="Completion approver"><input id="pcagCompletionNote" class="v4312-input" placeholder="Human completion acceptance note"></div>
++      <p><strong>Executive owner accountability</strong></p><div id="pcagOwners" class="v432-list"></div>
++      <p><strong>Corrective-action register</strong></p><div id="pcagActions" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8880,6 +8888,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionIncidentCommand" data-src="js/modules/productionIncidentCommandCenter.js?v=50.15.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewEngine.js?v=50.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewCenter.js?v=50.20.0"></script>
+-<script src="js/startup-loader.js?v=50.20.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceEngine.js?v=50.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceCenter.js?v=50.25.0"></script>
++<script src="js/startup-loader.js?v=50.25.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1245,6 +1245,7 @@
+ const productionHealthSupportModule = startupRegistry.register("productionHealthSupport", shouldInitializeCenter("productionHealthSupport") ? window.createBlueCurrentProductionHealthSupportCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionOperationsHandoff"]);
+ const productionIncidentCommandModule = startupRegistry.register("productionIncidentCommand", shouldInitializeCenter("productionIncidentCommand") ? window.createBlueCurrentProductionIncidentCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionHealthSupport"]);
+ const productionRecoveryReviewModule = startupRegistry.register("productionRecoveryReview", shouldInitializeCenter("productionRecoveryReview") ? window.createBlueCurrentProductionRecoveryReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionIncidentCommand"]);
++const productionCorrectiveActionGovernanceModule = startupRegistry.register("productionCorrectiveActionGovernance", shouldInitializeCenter("productionCorrectiveActionGovernance") ? window.createBlueCurrentProductionCorrectiveActionGovernanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionRecoveryReview"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V50.20.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V50.25.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/productionCorrectiveActionGovernanceEngine.js
++++ b/client/js/modules/productionCorrectiveActionGovernanceEngine.js
+@@ -0,0 +1,12 @@
++(function(global){"use strict";
++class BlueCurrentProductionCorrectiveActionGovernanceEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/production-corrective-action-governance",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Corrective action governance failed (${r.status})`);this.appState?.update?.({productionCorrectiveActionGovernance:d});return d;}
++  async verify(reviewId,actionId,payload={}){const r=await fetch(`/api/production-corrective-action-governance/reviews/${encodeURIComponent(reviewId)}/actions/${encodeURIComponent(actionId)}/verify`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Corrective action verification failed (${r.status})`);this.eventBus?.emit?.("production-learning:action-verified",structuredClone(d));return d;}
++  async acceptCompletion(reviewId,actionId,payload={}){const r=await fetch(`/api/production-corrective-action-governance/reviews/${encodeURIComponent(reviewId)}/actions/${encodeURIComponent(actionId)}/accept-completion`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Corrective action completion acceptance failed (${r.status})`);this.eventBus?.emit?.("production-learning:action-completed",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentProductionCorrectiveActionGovernanceEngine;
++if(global)global.BlueCurrentProductionCorrectiveActionGovernanceEngine=BlueCurrentProductionCorrectiveActionGovernanceEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/productionCorrectiveActionGovernanceCenter.js
++++ b/client/js/modules/productionCorrectiveActionGovernanceCenter.js
+@@ -0,0 +1,33 @@
++(function(){"use strict";
++function createBlueCurrentProductionCorrectiveActionGovernanceCenterModule(eventBus,appState){
++  const root=document.getElementById("productionCorrectiveActionGovernance");
++  if(!root||!window.BlueCurrentProductionCorrectiveActionGovernanceEngine)return null;
++  const e=new window.BlueCurrentProductionCorrectiveActionGovernanceEngine({eventBus,appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("pcagStatus").textContent=s.status||"—";
++    $("pcagOpen").textContent=s.totals?.open||0;
++    $("pcagOverdue").textContent=s.totals?.overdue||0;
++    $("pcagHighRisk").textContent=s.totals?.highRiskOpen||0;
++    $("pcagHeadline").textContent=s.headline||"Corrective action governance unavailable.";
++    $("pcagOwners").innerHTML=(s.ownerAccountability||[]).map(x=>`<article><strong>${esc(x.owner)}</strong><span>${x.open} open · ${x.overdue} overdue · ${x.highRisk} high-risk · ${x.completed} completed</span></article>`).join("")||"<article><strong>No corrective-action owners yet.</strong></article>";
++    $("pcagActions").innerHTML=(s.actions||[]).map(x=>`<article data-pcag-review="${esc(x.reviewId)}" data-pcag-action="${esc(x.actionId)}"><div><strong>${esc(x.status)} · ${esc(x.action)}</strong><span>${esc(x.owner)}${x.dueDate?` · due ${esc(x.dueDate)}`:""}${x.overdue?` · ${x.ageDaysPastDue} day(s) overdue`:""} · repeat risk ${esc(x.repeatRisk)}</span></div><p>Incident: ${esc(x.incidentTitle)}${x.repeatIncidentLinks.length?` · repeat links ${x.repeatIncidentLinks.length}`:""}</p><p>Execution: <strong>${esc(x.executionState)}</strong></p>${x.latestEvidence?`<p><strong>Latest evidence:</strong> ${esc(x.latestEvidence.evidence||x.latestEvidence.note||"completion accepted")}</p>`:""}<div class="v4316-actions">${x.status==="OPEN"?'<button type="button" data-pcag-verify="true">Verify risk reduction</button>':""}${x.status==="RISK_REDUCTION_VERIFIED"?'<button type="button" data-pcag-complete="true">Accept completion</button>':""}</div></article>`).join("")||"<article><strong>No corrective actions available.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("pcagHeadline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const card=ev.target.closest("[data-pcag-review]"); if(!card)return;
++    const reviewId=card.dataset.pcagReview,actionId=card.dataset.pcagAction;
++    if(ev.target.closest("[data-pcag-verify]")){
++      try{await e.verify(reviewId,actionId,{evidence:$("pcagEvidence").value,verification:$("pcagVerification").value});await load();}catch(err){$("pcagHeadline").textContent=err.message;}return;
++    }
++    if(ev.target.closest("[data-pcag-complete]")){
++      try{await e.acceptCompletion(reviewId,actionId,{approver:$("pcagApprover").value,note:$("pcagCompletionNote").value});await load();}catch(err){$("pcagHeadline").textContent=err.message;}
++    }
++  });
++  $("pcagRefresh")?.addEventListener("click",load);
++  ["production-recovery:review-created","production-recovery:lessons-accepted","production-learning:action-verified","production-learning:action-completed","production-incident:created","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentProductionCorrectiveActionGovernanceCenterModule=createBlueCurrentProductionCorrectiveActionGovernanceCenterModule;
++})();--- a/scripts/maintenance/test-v50.25-production-corrective-action-governance.js
++++ b/scripts/maintenance/test-v50.25-production-corrective-action-governance.js
+@@ -0,0 +1,84 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/productionCorrectiveActionGovernanceService");
++
++(async()=>{
++  const state={productionCorrectiveActionEvidence:[]},audit=[],events=[];
++  const recovery={
++    reviewHistory:[{
++      id:"r1",incidentId:"i1",incidentTitle:"Reservation outage",repeatRisk:"high",createdAt:"2026-08-01T10:00:00.000Z",
++      correctiveActions:[
++        {id:"ca_1",action:"Recalibrate connector saturation alert",owner:"Platform Lead",dueDate:"2026-08-05",executionState:"NOT_EXECUTED_BY_BLUE_CURRENT"},
++        {id:"ca_2",action:"Run dinner failover drill",owner:"Ops Lead",dueDate:"2099-01-01",executionState:"NOT_EXECUTED_BY_BLUE_CURRENT"}
++      ]
++    }]
++  };
++  const incident={
++    commandHistory:[
++      {id:"i1",title:"Reservation outage",severity:"critical",createdAt:"2026-08-01T09:00:00.000Z",affectedDomains:["reservations","api"]},
++      {id:"i2",title:"Reservation latency repeat",severity:"warning",createdAt:"2026-08-08T09:00:00.000Z",affectedDomains:["reservations"]}
++    ]
++  };
++  const svc=new Service(
++    {read:async()=>state,mutate:async fn=>fn(state)},
++    {record:async x=>audit.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    {snapshot:async()=>recovery},
++    {snapshot:async()=>incident}
++  );
++
++  let snap=await svc.snapshot("org",["*"]);
++  assert.equal(snap.version,"50.25.0");
++  assert.equal(snap.actions.length,2);
++  assert.equal(snap.actions[0].highRisk,true);
++  assert.equal(snap.actions[0].repeatIncidentLinks.length,1);
++  assert.equal(snap.policy.automaticCorrectiveActionExecution,false);
++
++  let blocked=false;
++  try{await svc.verify("org",["*"],"r1","ca_1",{evidence:"",verification:"reviewed"},"Tester");}
++  catch(e){blocked=/evidence is required/i.test(e.message);}
++  assert(blocked);
++
++  const verification=await svc.verify("org",["*"],"r1","ca_1",{
++    evidence:"Alert threshold was recalibrated by the platform team and validated during peak-load replay.",
++    verification:"Peak-load replay no longer breached the saturation threshold."
++  },"Tester");
++  assert.equal(verification.status,"RISK_REDUCTION_VERIFIED");
++  assert.equal(verification.correctiveActionExecutedBySystem,false);
++
++  snap=await svc.snapshot("org",["*"]);
++  const verified=snap.actions.find(x=>x.actionId==="ca_1");
++  assert.equal(verified.status,"RISK_REDUCTION_VERIFIED");
++
++  const completed=await svc.acceptCompletion("org",["*"],"r1","ca_1",{
++    approver:"VP Operations",
++    note:"Evidence accepted; corrective action is complete."
++  },"Tester");
++  assert.equal(completed.status,"COMPLETION_ACCEPTED");
++  assert.equal(completed.runtimeMutationPerformed,false);
++
++  snap=await svc.snapshot("org",["*"]);
++  const done=snap.actions.find(x=>x.actionId==="ca_1");
++  assert.equal(done.status,"COMPLETED_ACCEPTED");
++  assert.equal(done.executionState,"NOT_EXECUTED_BY_BLUE_CURRENT");
++  assert.equal(snap.totals.completedAccepted,1);
++  assert.equal(snap.ownerAccountability.find(x=>x.owner==="Platform Lead").completed,1);
++  assert.equal(audit.length,2);
++  assert.equal(events.length,2);
++
++  console.log(JSON.stringify({
++    ok:true,version:"50.25.0",
++    crossIncidentRegister:true,
++    ownerDueDateAging:true,
++    overdueAndHighRisk:true,
++    repeatIncidentLinkage:true,
++    riskReductionEvidence:true,
++    executiveAccountability:true,
++    humanVerification:true,
++    humanCompletionAcceptance:true,
++    executionState:"NOT_EXECUTED_BY_BLUE_CURRENT",
++    automaticCorrectiveActionExecution:false,
++    automaticCompletion:false,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V50.25.0-RELEASE.md
++++ b/V50.25.0-RELEASE.md
+@@ -0,0 +1,140 @@
++# BLUE CURRENT V50.25.0 — PRODUCTION LEARNING & CORRECTIVE ACTION GOVERNANCE
++
++V50.21–V50.25 turns post-incident corrective work into one cross-incident governance register.
++
++## Corrective-action register
++
++Blue Current now aggregates corrective actions from post-incident reviews across incidents.
++
++Each action includes:
++
++- incident / review
++- action
++- owner
++- due date
++- age past due
++- overdue state
++- repeat-risk level
++- execution state
++- verification evidence
++- completion state
++- repeat-incident linkage
++
++## Owner / due-date accountability
++
++The governance layer calculates:
++
++- open actions
++- overdue actions
++- high-risk open actions
++- verified risk reduction
++- accepted completion
++- owner-level totals
++- owner-level overdue count
++- owner-level high-risk count
++
++## Repeat-incident linkage
++
++Later incidents sharing an affected operational domain with the source incident are surfaced as advisory repeat links.
++
++Blue Current does not assert causation.
++
++The linkage is explicitly advisory.
++
++## Risk-reduction verification
++
++Adds:
++
++POST `/api/production-corrective-action-governance/reviews/:reviewId/actions/:actionId/verify`
++
++Verification requires:
++
++- human-recorded risk-reduction evidence
++- human-recorded verification method/result
++
++The verification record explicitly states:
++
++- `status: RISK_REDUCTION_VERIFIED`
++- `correctiveActionExecutedBySystem: false`
++- `runtimeMutationPerformed: false`
++
++## Human completion acceptance
++
++Adds:
++
++POST `/api/production-corrective-action-governance/reviews/:reviewId/actions/:actionId/accept-completion`
++
++Completion requires:
++
++1. risk-reduction evidence already verified
++2. executive/admin permission
++3. named completion approver
++4. human completion acceptance note
++
++Accepted action state:
++
++`COMPLETED_ACCEPTED`
++
++The underlying corrective action continues to retain:
++
++`executionState: NOT_EXECUTED_BY_BLUE_CURRENT`
++
++## Safety policy
++
++- `actionExecutionHumanOwned: true`
++- `verificationEvidenceHumanRecorded: true`
++- `completionAcceptanceHumanRequired: true`
++- `repeatIncidentLinkageAdvisory: true`
++- `automaticCorrectiveActionExecution: false`
++- `automaticCompletion: false`
++- `autonomousProductionChanges: false`
++
++## Current authenticated runtime
++
++The untouched Chefs runtime does not yet contain accepted post-incident corrective actions.
++
++V50.25 therefore correctly reports:
++
++- status: `corrective-actions-required`
++- corrective actions: 0
++- automatic corrective-action execution: false
++- automatic completion: false
++- autonomous production changes: false
++
++The current demo owner account does not hold the admin permission required for corrective-action completion acceptance, and the attempted acceptance correctly returns HTTP 403.
++
++## Validation
++
++- V50.25 Production Learning & Corrective Action Governance lifecycle PASS
++- cross-incident corrective-action register PASS
++- owner / due-date aging PASS
++- overdue and high-risk classification PASS
++- repeat-incident advisory linkage PASS
++- risk-reduction evidence PASS
++- executive accountability rollup PASS
++- human verification PASS
++- human completion acceptance PASS
++- execution remains NOT_EXECUTED_BY_BLUE_CURRENT PASS
++- V50.20 Production Recovery regression PASS
++- authenticated governance GET PASS
++- admin completion-acceptance boundary PASS
++- authoritative database unchanged
++- npm run check PASS
++- 914 JavaScript files
++- 768 client scripts
++- 5,737 unique HTML IDs
++
++## Next
++
++V50.26–V50.30 should close and certify V50:
++
++- production handoff contract
++- production health/support contract
++- incident-command contract
++- recovery/post-incident contract
++- corrective-action governance contract
++- all human-control boundaries
++- full V50 regression
++- startup/UI/API certification
++- authoritative DB integrity
++- final V50 release certification
+--- a/README-APPLY-V50.25.0.md
++++ b/README-APPLY-V50.25.0.md
+@@ -0,0 +1,47 @@
++# APPLY BLUE CURRENT V50.25.0
++
++Baseline: exact V50.20.0 repository.
++
++Extract `BLUE-CURRENT-V50.25.0-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v50.25-production-corrective-action-governance.js
++node scripts/maintenance/test-v50.20-production-recovery-review.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "50.25.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Production Learning & Corrective Action Governance** surface appears after Production Recovery & Post-Incident Review.
++
++Important:
++
++- action execution remains human-owned
++- repeat-incident linkage is advisory, not causal attribution
++- risk-reduction evidence is human-recorded
++- completion requires executive/admin acceptance
++- Blue Current does not execute corrective actions or alter production automatically
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V50.25.0 add production learning and corrective action governance"
++git push origin live-service-timeline
++```

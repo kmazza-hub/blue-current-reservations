@@ -1,0 +1,8 @@
+(function(){"use strict";
+class BlueCurrentPortfolioCoordinationPlanEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4117:portfolio-coordination";}
+ read(k,f=[]){try{return JSON.parse(localStorage.getItem(k)||"null")??f;}catch{return f;}}
+ build(owner="Portfolio leader"){const p=this.read("bluecurrent:v4115:portfolio-reasoning",[])[0],l=this.read("bluecurrent:v4116:decision-leverage",[])[0],b=this.read("bluecurrent:v4114:executive-reasoning-brief",[])[0];const blockers=[];if(!p)blockers.push("Run portfolio reasoning.");if(!l)blockers.push("Rank decision leverage.");if(!b)blockers.push("Build an executive reasoning brief.");const steps=[{order:1,title:"Confirm the highest-risk location",owner},{order:2,title:l?.top?.description||"Select the highest-leverage intervention",owner:l?.top?.owner||owner},{order:3,title:"Coordinate dependencies and required approvals",owner},{order:4,title:"Capture outcomes and compare locations",owner}];const plan={id:`COORD-${Date.now()}`,owner,status:blockers.length?"conditional":"ready",blockers,location:p?.highestRisk?.name||null,portfolioScore:p?.portfolioScore??null,decisionId:l?.top?.id||null,steps,createdAt:new Date().toISOString()};const h=this.read(this.key,[]);h.unshift(plan);localStorage.setItem(this.key,JSON.stringify(h.slice(0,20)));this.eventBus?.emit?.("aip:portfolio-coordination-planned",plan);return plan;}
+ history(){return this.read(this.key,[]);}
+}
+window.BlueCurrentPortfolioCoordinationPlanEngine=BlueCurrentPortfolioCoordinationPlanEngine;})();

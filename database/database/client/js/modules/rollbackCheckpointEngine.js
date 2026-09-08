@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentRollbackCheckpointEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;setTimeout(()=>this.publish("initial"),520);}
+ snapshot(reason="manual"){const s=this.appState.getState();return{id:`CHK-${Date.now()}`,capturedAt:new Date().toISOString(),reason,build:document.querySelector('meta[name="blue-current-build"]')?.content||"unknown",startupProfile:window.BlueCurrentBootGuard?.lastGood||"focused",runtimeScore:Number(s.productionRuntime?.score||0),baselineScore:Number(s.performanceBaseline?.score||0),candidateId:s.releaseCandidate?.candidateId||null,stateDigest:{restaurantPerformance:s.restaurantPerformance?.rpi||null,signalQuality:s.signalQuality?.score||null,integrationReadiness:s.integrationControl?.score||null}};}
+ publish(reason="manual"){const current=this.snapshot(reason),history=[...(this.appState.get("rollbackCheckpoints")||[]),current].slice(-12);this.appState.update({rollbackCheckpoint:current,rollbackCheckpoints:history});this.eventBus.emit("rollback-checkpoint:updated",structuredClone({current,history}));return{current,history};}
+ markVerified(id){const history=(this.appState.get("rollbackCheckpoints")||[]).map(x=>x.id===id?{...x,verifiedAt:new Date().toISOString()}:x);this.appState.update({rollbackCheckpoints:history,rollbackCheckpoint:history.at(-1)||null});this.eventBus.emit("rollback-checkpoint:updated",structuredClone({current:history.at(-1)||null,history}));return{current:history.at(-1)||null,history};}
+ export(){const data=this.publish("export"),blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`blue-current-rollback-checkpoints-${Date.now()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),0);return data;}
+}
+window.BlueCurrentRollbackCheckpointEngine=BlueCurrentRollbackCheckpointEngine;})();

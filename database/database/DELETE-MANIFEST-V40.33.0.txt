@@ -1,0 +1,9 @@
+Delete this inactive embedded repository snapshot:
+
+Blue-Current-v32.2.3-auth-startup-order-hotfix/
+
+Use the included PowerShell script from the repository root:
+
+powershell -ExecutionPolicy Bypass -File .\scripts\maintenance\remove-v32-snapshot.ps1
+
+The script verifies the active application files before deleting the legacy folder.

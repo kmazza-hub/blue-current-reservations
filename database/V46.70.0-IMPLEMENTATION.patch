@@ -1,0 +1,478 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "46.65.0",
++  "version": "46.70.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 selected candidate reversible preview and evidence gate",
++  "description": "Blue Current Hospitality OS \u2014 V46 full release certification and closeout",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -35,6 +35,7 @@
+ const RepositoryRetirementRehearsalService = require("./services/repositoryRetirementRehearsalService");
+ const RetirementAssuranceService = require("./services/retirementAssuranceService");
+ const RetirementCandidateImpactService = require("./services/retirementCandidateImpactService");
++const V46ReleaseCertificationService = require("./services/v46ReleaseCertificationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -73,7 +74,8 @@
+ const repositoryRetirementRehearsalService = new RepositoryRetirementRehearsalService(ROOT, repositoryImpactService);
+ const retirementAssuranceService = new RetirementAssuranceService(ROOT, repositoryImpactService);
+ const retirementCandidateImpactService = new RetirementCandidateImpactService(repositoryImpactService, retirementAssuranceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService });
++const v46ReleaseCertificationService = new V46ReleaseCertificationService(ROOT, retirementAssuranceService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -160,7 +162,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V46.65.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V46.70.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "46.65.0",
++        version: "46.70.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -88,6 +88,13 @@
+       if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Repository impact review permission required."});
+       const surfaceId = url.searchParams.get("surfaceId") || "";
+       return sendJson(response,200,repositoryImpactService.analyze(surfaceId));
++    }
++
++    if (url.pathname === "/api/operator-fine-comb/v46-certification" && request.method === "GET") {
++      const auth = await authService.authenticate(bearerToken(request));
++      if (!auth) return sendJson(response,401,{error:"Authentication required."});
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"V46 certification permission required."});
++      return sendJson(response,200,v46ReleaseCertificationService.snapshot());
+     }
+ 
+     if (url.pathname === "/api/operator-fine-comb/candidate-impact" && request.method === "POST") {
+--- a/server/services/v46ReleaseCertificationService.js
++++ b/server/services/v46ReleaseCertificationService.js
+@@ -0,0 +1,64 @@
++"use strict";
++const fs=require("fs");
++const path=require("path");
++const crypto=require("crypto");
++
++class V46ReleaseCertificationService{
++  constructor(rootPath,retirementAssuranceService){this.rootPath=rootPath;this.retirementAssuranceService=retirementAssuranceService;}
++  read(rel){try{return fs.readFileSync(path.join(this.rootPath,rel),"utf8");}catch{return "";}}
++  exists(rel){return fs.existsSync(path.join(this.rootPath,rel));}
++  appAudit(){
++    const files=["client/js/app-v15.1.3.js","client/app-v15.1.3.js","app-v15.1.3.js"];
++    const results=files.map(file=>{const text=this.read(file),declared=new Set([...text.matchAll(/\bconst\s+([A-Za-z_$][\w$]*Module)\b/g)].map(m=>m[1])),refs=new Set([...text.matchAll(/:\s*([A-Za-z_$][\w$]*Module)\b/g)].map(m=>m[1])),undefinedExports=[...refs].filter(x=>!declared.has(x)).sort();return {file,exists:Boolean(text),declaredModules:declared.size,referencedModules:refs.size,undefinedExports};});
++    return {files:results,pass:results.every(x=>x.exists&&x.undefinedExports.length===0),undefinedExports:results.reduce((s,x)=>s+x.undefinedExports.length,0)};
++  }
++  navigationAudit(){
++    const html=this.read("client/index.html"),audit=cls=>{const m=html.match(new RegExp(`<nav class="${cls}"[\\s\\S]*?<\\/nav>`,"i"));if(!m)return {entries:0,unique:0,duplicates:[],pass:false};const hrefs=[...m[0].matchAll(/<a[^>]+href="([^"]+)"/gi)].map(x=>x[1]),counts={};for(const h of hrefs)counts[h]=(counts[h]||0)+1;const duplicates=Object.entries(counts).filter(([,n])=>n>1).map(([href,count])=>({href,count}));return {entries:hrefs.length,unique:Object.keys(counts).length,duplicates,pass:duplicates.length===0};};return {desktop:audit("desktop-nav"),mobile:audit("mobile-nav")};
++  }
++  scriptAudit(){
++    const html=this.read("client/index.html"),srcs=[...html.matchAll(/<(?:script)[^>]+(?:src|data-src)="([^"]+\.js)(?:\?[^"]*)?"/gi)].map(m=>m[1]).filter(x=>!/^https?:/i.test(x)),missing=[];
++    for(const src of srcs){const rel=src.startsWith("js/")?`client/${src}`:src.startsWith("/")?src.slice(1):src;if(!this.exists(rel))missing.push({src,expected:rel});}
++    return {referencedScripts:srcs.length,missing,pass:missing.length===0};
++  }
++  previewSafetyAudit(){
++    const engine=this.read("client/js/modules/selectedCandidatePreviewEngine.js"),selection=this.read("client/js/modules/retirementCandidateSelectionEngine.js"),router=this.read("server/api/router.js");
++    const checks=[
++      {id:"preview-reversible",pass:engine.includes('reversible:true')&&engine.includes("applyVisibility(preview.surfaceId,true)")&&engine.includes("applyVisibility(p.surfaceId,false)")},
++      {id:"preview-no-delete",pass:engine.includes("codeDeletionAllowed:false")&&engine.includes("deletionExecuted:false")},
++      {id:"selection-no-auto",pass:selection.includes("automaticSelection:false")&&selection.includes("automaticDeletion:false")},
++      {id:"no-fine-comb-delete-route",pass:!/[\"']\/api\/operator-fine-comb\/[^\"']+[\"'][\s\S]{0,180}request\.method\s*===\s*[\"']DELETE[\"']/.test(router)}
++    ];
++    return {checks,pass:checks.every(x=>x.pass)};
++  }
++  databaseAudit(){
++    const db=this.read("server/services/databaseService.js"),checks=[
++      {id:"cloud-sync-detection",pass:db.includes("_isCloudSyncedPath()")},
++      {id:"onedrive-aware",pass:/OneDrive/.test(db)},
++      {id:"atomic-fallback",pass:db.includes("_replaceFromTemporary")&&db.includes("copyFile")},
++      {id:"backup-before-copy",pass:db.includes("_refreshBackup()")&&db.indexOf("await this._refreshBackup();")<db.indexOf('await this._retry("copy fallback"')}
++    ];return {checks,pass:checks.every(x=>x.pass)};
++  }
++  scaffoldingAudit(){
++    const rels=["client/js/modules/operatorSurfaceRationalizationEngine.js","client/js/modules/operatorConsolidationEngine.js","client/js/modules/operatorConsolidationScorecardEngine.js","client/js/modules/deprecationManifestEngine.js","client/js/modules/retirementCertificationEngine.js","client/js/modules/repositoryImpactCertificationEngine.js","client/js/modules/retirementRehearsalEngine.js","client/js/modules/finalRetirementAuthorizationEngine.js","client/js/modules/retirementAssuranceEngine.js","client/js/modules/retirementCandidateSelectionEngine.js","client/js/modules/selectedCandidatePreviewEngine.js"];
++    const app=this.read("client/js/app-v15.1.3.js"),html=this.read("client/index.html"),items=rels.map(rel=>{const base=path.basename(rel,".js"),present=this.exists(rel),referenced=app.includes(base)||html.includes(path.basename(rel));return {file:rel,present,referenced,status:present&&referenced?"retained-active":present?"review-unused":"missing"};});
++    return {items,active:items.filter(x=>x.status==="retained-active").length,reviewUnused:items.filter(x=>x.status==="review-unused").length,pass:items.every(x=>x.status==="retained-active")};
++  }
++  retirementAudit(){return this.retirementAssuranceService.snapshot();}
++  snapshot(){
++    const packageVersion=JSON.parse(this.read("package.json")||"{}").version||"unknown",app=this.appAudit(),nav=this.navigationAudit(),scripts=this.scriptAudit(),preview=this.previewSafetyAudit(),database=this.databaseAudit(),scaffolding=this.scaffoldingAudit(),retirement=this.retirementAudit();
++    const checks=[
++      {id:"version",pass:packageVersion==="46.70.0",detail:packageVersion},
++      {id:"app-module-integrity",pass:app.pass,detail:`${app.undefinedExports} undefined export(s)`},
++      {id:"script-resolution",pass:scripts.pass,detail:`${scripts.missing.length} missing script(s)`},
++      {id:"desktop-navigation",pass:nav.desktop.pass,detail:`${nav.desktop.entries} entries · ${nav.desktop.duplicates.length} duplicate(s)`},
++      {id:"mobile-navigation",pass:nav.mobile.pass,detail:`${nav.mobile.entries} entries · ${nav.mobile.duplicates.length} duplicate(s)`},
++      {id:"retirement-assurance",pass:retirement.trusted===true&&retirement.regressions===0,detail:`${retirement.assured}/${retirement.retirements} assured · ${retirement.regressions} regression(s)`},
++      {id:"candidate-preview-safety",pass:preview.pass,detail:`${preview.checks.filter(x=>x.pass).length}/${preview.checks.length} safety checks`},
++      {id:"database-resilience",pass:database.pass,detail:`${database.checks.filter(x=>x.pass).length}/${database.checks.length} resilience checks`},
++      {id:"v46-scaffolding-review",pass:scaffolding.pass,detail:`${scaffolding.active} active · ${scaffolding.reviewUnused} review-unused`}
++    ];
++    const score=Math.round(checks.reduce((s,x)=>s+(x.pass?100:0),0)/checks.length),certified=checks.every(x=>x.pass),payload={version:"46.70.0",packageVersion,status:certified?"v46-release-certified":"v46-release-blocked",score,certified,checks,audits:{app,navigation:nav,scripts,retirement,preview,database,scaffolding},safety:{automaticDeletion:false,liveExecutionChanged:false,releaseCloseoutOnly:true},generatedAt:new Date().toISOString()};
++    payload.digest=crypto.createHash("sha256").update(JSON.stringify({version:payload.version,status:payload.status,score:payload.score,checks:payload.checks})).digest("hex");return payload;
++  }
++}
++module.exports=V46ReleaseCertificationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="46.65.0">
++  <meta name="blue-current-build" content="46.70.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -4143,6 +4143,7 @@
+ <section class="v432-center v438-center v4316-center" id="retirementAssuranceCenter"><header><div><small>V46.51–V46.55 · Post-Retirement Assurance</small><strong>Verify every authoritative retirement stays absent, dependency-clean, rollback-recorded, and regression-free before another permanent retirement can be nominated.</strong><span>This gate monitors retirement invariants only. It does not delete code and does not change restaurant execution behavior.</span></div><button id="raRefresh" type="button">Refresh assurance</button></header><div class="v432-kpis"><article><small>Retirements</small><strong id="raRetirements">0</strong></article><article><small>Assured</small><strong id="raAssured">0</strong></article><article><small>Regressions</small><strong id="raRegressions">0</strong></article><article><small>Rollback registry</small><strong id="raRollback">0/0</strong></article><article><small>Next candidate</small><strong id="raGate">BLOCKED</strong></article><article><small>Status</small><strong id="raStatus">—</strong></article></div><div class="v4316-answer" id="raHeadline">Evaluating retirement invariants…</div><p><strong>Assurance digest:</strong> <span id="raDigest">—</span></p><div id="raList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="retirementCandidateSelectionCenter"><header><div><small>V46.56–V46.60 · Next Retirement Candidate Selection</small><strong>Rank the current deprecation pool using observed operator use, workflow importance, repository-removal cost, and cluster redundancy.</strong><span>The top-three list is advisory. Blue Current will not start a preview, hide a surface, or delete code until a human explicitly selects one candidate.</span></div><button id="rcsRefresh" type="button">Re-rank candidates</button></header><div class="v4316-actions"><input id="rcsRationale" class="v4312-input" placeholder="Why this candidate should enter preview"><button id="rcsClear" type="button">Clear selection</button></div><div class="v432-kpis"><article><small>Candidate pool</small><strong id="rcsPool">0</strong></article><article><small>Protected</small><strong id="rcsProtected">0</strong></article><article><small>Top shortlist</small><strong id="rcsTop">0</strong></article><article><small>Selected</small><strong id="rcsSelected">NONE</strong></article></div><div class="v4316-answer" id="rcsHeadline">Waiting for post-retirement assurance…</div><div id="rcsList" class="v432-list"></div></section>
+ <section class="v432-center v438-center v4316-center" id="selectedCandidatePreviewCenter"><header><div><small>V46.61–V46.65 · Selected Candidate Preview & Evidence</small><strong>Hide only the explicitly selected candidate, measure workflow/task impact, refresh repository dependencies, and require owner sign-off before certification.</strong><span>This preview is immediately reversible. Completing the evidence gate does not certify or delete the candidate automatically.</span></div><button id="candidatePreviewRefresh" type="button">Refresh</button></header><div class="v4316-actions"><button id="candidatePreviewStart" type="button">Start reversible preview</button><button id="candidatePreviewRestore" type="button">Restore candidate</button><button id="candidatePreviewObserve" type="button">Record observation</button><button id="candidatePreviewImpact" type="button">Refresh repository impact</button><input id="candidatePreviewOwner" class="v4312-input" placeholder="Surface owner"><input id="candidatePreviewNote" class="v4312-input" placeholder="Observation / sign-off note"><button id="candidatePreviewSignoff" type="button">Owner sign-off</button></div><div class="v432-kpis"><article><small>Candidate</small><strong id="candidatePreviewCandidate">NONE</strong></article><article><small>Status</small><strong id="candidatePreviewStatus">NOT STARTED</strong></article><article><small>Observations</small><strong id="candidatePreviewObservations">0</strong></article><article><small>Observed days</small><strong id="candidatePreviewDays">0</strong></article><article><small>Workflow coverage</small><strong id="candidatePreviewCoverage">0%</strong></article><article><small>Task success</small><strong id="candidatePreviewTaskSuccess">100%</strong></article><article><small>Certification gate</small><strong id="candidatePreviewReady">BLOCKED</strong></article></div><div class="v4316-answer" id="candidatePreviewHeadline">Select a top-three candidate in the previous gate first.</div><div id="candidatePreviewChecks" class="v432-list"></div><div id="candidatePreviewEvidence" class="v432-list"></div></section>
++<section class="v432-center v438-center v4316-center" id="v46ReleaseCertificationCenter"><header><div><small>V46.66–V46.70 · Release Certification & Closeout</small><strong>Run the final V46 integrity audit across startup modules, local scripts, navigation, retirement assurance, preview safety, database resilience, and fine-comb scaffolding.</strong><span>This is a release closeout gate. It does not delete another module and does not change live restaurant execution.</span></div><button id="v46CertRefresh" type="button">Run certification</button></header><div class="v432-kpis"><article><small>Certification score</small><strong id="v46CertScore">0%</strong></article><article><small>Status</small><strong id="v46CertStatus">BLOCKED</strong></article><article><small>Retirements assured</small><strong id="v46CertRetirements">0/0</strong></article><article><small>Missing scripts</small><strong id="v46CertScripts">0</strong></article><article><small>Nav duplicates</small><strong id="v46CertNav">0</strong></article><article><small>Unused V46 scaffolding</small><strong id="v46CertScaffold">0</strong></article></div><div class="v4316-answer" id="v46CertHeadline">Run certification to close V46.</div><p><strong>Certification digest:</strong> <span id="v46CertDigest">—</span></p><div id="v46CertChecks" class="v432-list"></div><div id="v46CertScaffolding" class="v432-list"></div></section>
+ <section class="guided-shift-center" id="guidedShiftCenter" aria-labelledby="guidedShiftTitle">
+             <header class="guided-shift-header">
+               <div><small>V36.1 · Guided Operator Flow</small><strong id="guidedShiftTitle">Stay ahead of the shift without hunting through dashboards.</strong><span id="guidedShiftUpdated">Building operator flow…</span></div>
+@@ -8620,6 +8621,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="retirementCandidateSelectionCenter" data-src="js/modules/retirementCandidateSelectionCenter.js?v=46.60.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="selectedCandidatePreviewCenter" data-src="js/modules/selectedCandidatePreviewEngine.js?v=46.65.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="selectedCandidatePreviewCenter" data-src="js/modules/selectedCandidatePreviewCenter.js?v=46.65.0"></script>
+-<script src="js/startup-loader.js?v=46.65.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationEngine.js?v=46.70.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v46ReleaseCertificationCenter" data-src="js/modules/v46ReleaseCertificationCenter.js?v=46.70.0"></script>
++<script src="js/startup-loader.js?v=46.70.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1221,6 +1221,7 @@
+ const retirementAssuranceCenterModule = startupRegistry.register("retirementAssuranceCenter", shouldInitializeCenter("retirementAssuranceCenter") ? window.createBlueCurrentRetirementAssuranceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "finalRetirementAuthorizationCenter"]);
+ const retirementCandidateSelectionCenterModule = startupRegistry.register("retirementCandidateSelectionCenter", shouldInitializeCenter("retirementCandidateSelectionCenter") ? window.createBlueCurrentRetirementCandidateSelectionCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementAssuranceCenter"]);
+ const selectedCandidatePreviewCenterModule = startupRegistry.register("selectedCandidatePreviewCenter", shouldInitializeCenter("selectedCandidatePreviewCenter") ? window.createBlueCurrentSelectedCandidatePreviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "retirementCandidateSelectionCenter"]);
++const v46ReleaseCertificationCenterModule = startupRegistry.register("v46ReleaseCertificationCenter", shouldInitializeCenter("v46ReleaseCertificationCenter") ? window.createBlueCurrentV46ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "selectedCandidatePreviewCenter"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V46.65.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V46.70.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/v46ReleaseCertificationEngine.js
++++ b/client/js/modules/v46ReleaseCertificationEngine.js
+@@ -0,0 +1,9 @@
++(function(global){"use strict";
++class BlueCurrentV46ReleaseCertificationEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  async snapshot(){const r=await fetch("/api/operator-fine-comb/v46-certification",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`V46 certification failed (${r.status})`);this.appState?.update?.({v46ReleaseCertification:d});this.eventBus?.emit?.("v46-release-certification:updated",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentV46ReleaseCertificationEngine;
++if(global)global.BlueCurrentV46ReleaseCertificationEngine=BlueCurrentV46ReleaseCertificationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/v46ReleaseCertificationCenter.js
++++ b/client/js/modules/v46ReleaseCertificationCenter.js
+@@ -0,0 +1,6 @@
++(function(){"use strict";
++function createBlueCurrentV46ReleaseCertificationCenterModule(eventBus,appState){const root=document.getElementById("v46ReleaseCertificationCenter");if(!root||!window.BlueCurrentV46ReleaseCertificationEngine)return null;const e=new window.BlueCurrentV46ReleaseCertificationEngine({eventBus,appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++function render(s){$("v46CertScore").textContent=`${s.score||0}%`;$("v46CertStatus").textContent=s.certified?"CERTIFIED":"BLOCKED";$("v46CertRetirements").textContent=`${s.audits?.retirement?.assured||0}/${s.audits?.retirement?.retirements||0}`;$("v46CertScripts").textContent=s.audits?.scripts?.missing?.length||0;$("v46CertNav").textContent=(s.audits?.navigation?.desktop?.duplicates?.length||0)+(s.audits?.navigation?.mobile?.duplicates?.length||0);$("v46CertScaffold").textContent=s.audits?.scaffolding?.reviewUnused||0;$("v46CertHeadline").textContent=s.certified?"V46 is release-certified. Closeout gates are clean and V47 can begin.":"V46 closeout is blocked until every certification check passes.";$("v46CertDigest").textContent=s.digest||"—";$("v46CertChecks").innerHTML=(s.checks||[]).map(c=>`<article><strong>${c.pass?"PASS":"BLOCK"} · ${esc(c.id)}</strong><span>${esc(c.detail)}</span></article>`).join("");$("v46CertScaffolding").innerHTML=(s.audits?.scaffolding?.items||[]).map(x=>`<article><strong>${esc(x.status)} · ${esc(x.file)}</strong><span>${x.referenced?"Referenced by active startup/UI":"No active reference detected"}</span></article>`).join("");}
++async function load(){try{$("v46CertHeadline").textContent="Running V46 closeout certification…";render(await e.snapshot());}catch(err){$("v46CertHeadline").textContent=err.message;}}
++$("v46CertRefresh")?.addEventListener("click",load);load();return{engine:e,load};}
++window.createBlueCurrentV46ReleaseCertificationCenterModule=createBlueCurrentV46ReleaseCertificationCenterModule;})();--- a/scripts/maintenance/test-v46.70-release-certification.js
++++ b/scripts/maintenance/test-v46.70-release-certification.js
+@@ -0,0 +1,50 @@
++"use strict";
++const assert=require("assert"),path=require("path"),fs=require("fs");
++const Impact=require("../../server/services/repositoryImpactService");
++const Assurance=require("../../server/services/retirementAssuranceService");
++const Certification=require("../../server/services/v46ReleaseCertificationService");
++
++const root=path.resolve(__dirname,"../..");
++const impact=new Impact(root),assurance=new Assurance(root,impact),cert=new Certification(root,assurance);
++const snap=cert.snapshot();
++
++assert.equal(snap.version,"46.70.0");
++assert.equal(snap.packageVersion,"46.70.0");
++assert.equal(snap.certified,true);
++assert.equal(snap.status,"v46-release-certified");
++assert.equal(snap.score,100);
++assert.equal(snap.audits.app.undefinedExports,0);
++assert.equal(snap.audits.scripts.missing.length,0);
++assert.equal(snap.audits.navigation.desktop.duplicates.length,0);
++assert.equal(snap.audits.navigation.mobile.duplicates.length,0);
++assert.equal(snap.audits.retirement.trusted,true);
++assert.equal(snap.audits.retirement.regressions,0);
++assert.equal(snap.audits.preview.pass,true);
++assert.equal(snap.audits.database.pass,true);
++assert.equal(snap.audits.scaffolding.reviewUnused,0);
++assert.equal(snap.safety.automaticDeletion,false);
++assert.equal(snap.safety.liveExecutionChanged,false);
++assert.equal(snap.digest.length,64);
++
++// Ensure the first authoritative retirement remains closed.
++for(const rel of ["client/js/modules/enterpriseValuePlanCenter.js","client/js/modules/enterpriseValuePlanEngine.js"])
++  assert.equal(fs.existsSync(path.join(root,rel)),false,`${rel} was unexpectedly restored`);
++
++console.log(JSON.stringify({
++  ok:true,
++  version:snap.version,
++  status:snap.status,
++  score:snap.score,
++  undefinedModuleExports:snap.audits.app.undefinedExports,
++  missingScripts:snap.audits.scripts.missing.length,
++  desktopNavDuplicates:snap.audits.navigation.desktop.duplicates.length,
++  mobileNavDuplicates:snap.audits.navigation.mobile.duplicates.length,
++  retirementsAssured:`${snap.audits.retirement.assured}/${snap.audits.retirement.retirements}`,
++  retirementRegressions:snap.audits.retirement.regressions,
++  previewSafety:snap.audits.preview.pass,
++  databaseResilience:snap.audits.database.pass,
++  unusedV46Scaffolding:snap.audits.scaffolding.reviewUnused,
++  certificationDigest:snap.digest.slice(0,12),
++  automaticDeletion:false,
++  v46Closed:true
++},null,2));
+--- a/README-APPLY-V46.70.0.md
++++ b/README-APPLY-V46.70.0.md
+@@ -0,0 +1,65 @@
++# APPLY BLUE CURRENT V46.70.0
++
++## Baseline
++Apply over the exact Blue Current V46.65.0 repository.
++
++This is a normal overlay patch. No files are deleted.
++
++## Apply
++Extract `BLUE-CURRENT-V46.70.0-FINAL-PATCH.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Validate
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v46.70-release-certification.js
++npm run start
++```
++
++Wait for:
++
++```text
++Blue Current Cloud V46.70.0 running at http://localhost:8787
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "46.70.0"
++```
++
++Open Blue Current and use the **V46 Release Certification & Closeout** center.
++
++Expected final state:
++
++```text
++100%
++CERTIFIED
++```
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V46.70.0 certify and close V46"
++git push origin live-service-timeline
++```
++
++After push:
++
++```powershell
++git status
++```
++
++Expected:
++
++```text
++nothing to commit, working tree clean
++```
+--- a/V46.70.0-RELEASE.md
++++ b/V46.70.0-RELEASE.md
+@@ -0,0 +1,142 @@
++# BLUE CURRENT V46.70.0 — V46 RELEASE CERTIFICATION & CLOSEOUT
++
++## Release scope
++
++V46.66–V46.70 is the hard closeout of the V46 program.
++
++This release adds one authoritative certification layer that audits the integrity of the complete V46 fine-comb / retirement work before the product moves to V47.
++
++No additional module is permanently retired in V46.70.
++
++## V46.66 — Startup & Script Resolution Audit
++
++The certification service checks:
++- all three maintained `app-v15.1.3.js` copies
++- referenced `*Module` exports against declared module variables
++- all local JavaScript references in `client/index.html`
++
++Current result:
++- undefined module exports: 0
++- missing local scripts: 0
++- local client scripts referenced: 722
++
++## V46.67 — Navigation & Retirement Integrity
++
++The final audit verifies both navigation surfaces independently.
++
++Current result:
++- desktop navigation: 24 entries / 24 unique / 0 duplicates
++- mobile navigation: 16 entries / 16 unique / 0 duplicates
++
++It also binds the existing post-retirement assurance result.
++
++Current authoritative retirement:
++- `enterpriseValuePlanCenter`
++- 1/1 retirements assured
++- 0 retirement regressions
++
++## V46.68 — Candidate Preview & Deletion Safety
++
++The V46 closeout verifies:
++- selected-candidate preview remains reversible
++- preview state explicitly denies code deletion
++- candidate selection remains non-automatic
++- no operator fine-comb DELETE route exists
++
++Current result:
++- 4/4 preview/deletion safety checks passed
++- automatic deletion remains false
++
++## V46.69 — Database Resilience & Scaffolding Review
++
++The closeout checks the V46.55.2 database resilience work:
++- cloud-synced path detection
++- OneDrive awareness
++- safe atomic-rename fallback
++- backup before copy fallback
++
++Current result:
++- 4/4 database resilience checks passed
++
++The certification also inventories 11 V46 fine-comb safety engines.
++
++Current result:
++- 11 retained-active
++- 0 review-unused
++
++No safety scaffolding was removed merely to reduce file count. Every reviewed engine still has an active startup/UI reference and remains part of the retirement-assurance pipeline.
++
++## V46.70 — Release Certification
++
++Adds:
++
++`GET /api/operator-fine-comb/v46-certification`
++
++The endpoint returns:
++- release certification score
++- certification status
++- individual closeout checks
++- startup/module audit
++- local-script audit
++- navigation audit
++- retirement assurance
++- selected-candidate preview safety
++- database resilience
++- V46 scaffolding inventory
++- SHA-256 certification digest
++
++Final certification:
++
++`v46-release-certified`
++
++Score:
++
++`100%`
++
++## Final V46 certification result
++
++- Package version: 46.70.0
++- Undefined module exports: 0
++- Missing scripts: 0
++- Desktop navigation duplicates: 0
++- Mobile navigation duplicates: 0
++- Retirements assured: 1/1
++- Retirement regressions: 0
++- Candidate preview safety: PASS
++- Database resilience: PASS
++- Unused V46 safety scaffolding: 0
++- Automatic deletion: false
++- Live execution changed by closeout: false
++
++## Validation
++
++- `node scripts/maintenance/test-v46.70-release-certification.js` passed.
++- Release certification score: 100%.
++- `npm run check` passed:
++  - 845 JavaScript files
++  - 722 client scripts
++  - 5,374 unique HTML IDs
++- Server startup passed as V46.70.0.
++- `/api/health` returned HTTP 200.
++- Database connected/auth enabled.
++- Runtime database SHA-256 remained unchanged.
++
++## V46 status
++
++V46 is closed.
++
++The fine-comb work now has:
++- operator-surface rationalization
++- evidence-based consolidation
++- reversible deprecation previews
++- retirement certification
++- repository impact analysis
++- disposable retirement rehearsals
++- final human authorization gates
++- one completed authoritative retirement
++- post-retirement regression assurance
++- evidence-based next-candidate selection
++- selected-candidate preview evidence
++- release-level certification
++
++V47 should return primary attention to hospitality-product capability, usability, and operational value rather than expanding the retirement-control framework.

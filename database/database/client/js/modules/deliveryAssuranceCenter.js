@@ -1,0 +1,7 @@
+(function(){"use strict";
+function createBlueCurrentDeliveryAssuranceCenterModule(eventBus){
+const root=document.getElementById("deliveryAssuranceCenter");if(!root||!window.BlueCurrentDeliveryAssuranceEngine)return null;
+const e=new window.BlueCurrentDeliveryAssuranceEngine(eventBus),$=id=>document.getElementById(id),esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+async function render(){try{const r=await e.metrics(),t=r.totals||{};$("deliveryAccepted").textContent=t.accepted||0;$("deliveryDuplicates").textContent=t.duplicate||0;$("deliveryRejected").textContent=t.rejected||0;$("deliveryStatus").textContent=(t.openDeadLetters||0)?"Review":"Controlled";$("deliverySourceList").innerHTML=(r.sources||[]).map(x=>`<article><div><strong>${esc(x.name)}</strong><span>${x.accepted||0} accepted · ${x.duplicate||0} duplicate · ${x.rejected||0} rejected · ${x.openDeadLetters||0} open</span></div><b class="${x.status==="healthy"?"pass":"watch"}">${esc(x.status||"unknown")}</b></article>`).join("");}catch(err){$("deliveryStatus").textContent=err.message;}}
+$("deliveryRefresh")?.addEventListener("click",render);eventBus?.on?.("v42:adapter-event-ingested",render);eventBus?.on?.("v42:dead-letter-replayed",render);render();return{engine:e,render};}
+window.createBlueCurrentDeliveryAssuranceCenterModule=createBlueCurrentDeliveryAssuranceCenterModule;})();

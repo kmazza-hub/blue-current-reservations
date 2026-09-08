@@ -1,0 +1,11 @@
+(function(){"use strict";
+class BlueCurrentDecisionObjectEngine{
+ constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.key="bluecurrent:v411:decision-objects";this.items=this.read();}
+ read(){try{const v=JSON.parse(localStorage.getItem(this.key)||"[]");return Array.isArray(v)?v:[];}catch{return[];}}
+ save(){localStorage.setItem(this.key,JSON.stringify(this.items.slice(0,300)));}
+ snapshot(){const s=this.appState?.get?.()||this.appState?.state||{};return{occupancy:Number(s.occupancyPercent||s.occupancy||0),guestWait:Number(s.guestWaitMinutes||s.averageWaitMinutes||0),kitchenLoad:Number(s.kitchenLoad||s.kitchenPressure||0),labor:Number(s.laborPercent||s.laborPercentage||0),serviceQuality:Number(s.serviceQualityScore||0)};}
+ create(input={}){const title=String(input.title||"").trim();if(!title)throw new Error("Describe the operating decision.");const snap=this.snapshot();const evidence=Object.entries(snap).filter(([,v])=>Number.isFinite(v)&&v!==0).map(([key,value])=>({key,value}));const item={id:`DEC-${Date.now()}`,title,owner:String(input.owner||"Manager").trim(),decisionType:String(input.decisionType||"recommendation"),status:"proposed",approvalRequired:Boolean(input.approvalRequired),evidence,ontologyLinks:Array.from(new Set(String(input.links||"decision").split(",").map(x=>x.trim()).filter(Boolean))),expectedOutcome:String(input.outcome||"").trim(),createdAt:new Date().toISOString(),history:[{status:"proposed",at:new Date().toISOString()}]};this.items.unshift(item);this.save();this.eventBus?.emit?.("aip:decision-object-created",item);return item;}
+ transition(id,status){const d=this.items.find(x=>x.id===id);if(!d)return null;d.status=status;d.history.push({status,at:new Date().toISOString()});this.save();this.eventBus?.emit?.("aip:decision-object-updated",d);return d;}
+ summary(){return{total:this.items.length,proposed:this.items.filter(x=>x.status==="proposed").length,approved:this.items.filter(x=>x.status==="approved").length,closed:this.items.filter(x=>x.status==="closed").length};}
+}
+window.BlueCurrentDecisionObjectEngine=BlueCurrentDecisionObjectEngine;})();

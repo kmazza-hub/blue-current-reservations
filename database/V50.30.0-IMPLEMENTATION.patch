@@ -1,0 +1,473 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "50.25.0",
++  "version": "50.30.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 production learning and corrective action governance",
++  "description": "Blue Current Hospitality OS \u2014 V50 production operations release certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -59,6 +59,7 @@
+ const ProductionIncidentCommandService = require("./services/productionIncidentCommandService");
+ const ProductionRecoveryReviewService = require("./services/productionRecoveryReviewService");
+ const ProductionCorrectiveActionGovernanceService = require("./services/productionCorrectiveActionGovernanceService");
++const V50ReleaseCertificationService = require("./services/v50ReleaseCertificationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -121,7 +122,8 @@
+ const productionIncidentCommandService = new ProductionIncidentCommandService(database, auditService, realtimeHub, productionHealthSupportService, reliabilityAutomationService, telemetryService);
+ const productionRecoveryReviewService = new ProductionRecoveryReviewService(database, auditService, realtimeHub, productionIncidentCommandService, productionHealthSupportService, reliabilityAutomationService);
+ const productionCorrectiveActionGovernanceService = new ProductionCorrectiveActionGovernanceService(database, auditService, realtimeHub, productionRecoveryReviewService, productionIncidentCommandService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService });
++const v50ReleaseCertificationService = new V50ReleaseCertificationService(database, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -208,7 +210,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V50.25.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V50.30.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "50.25.0",
++        version: "50.30.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,10 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/v50-release-certification" && request.method === "GET") {
++      return sendJson(response,200,await v50ReleaseCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
+ 
+     if (url.pathname === "/api/production-corrective-action-governance" && request.method === "GET") {
+       return sendJson(response,200,await productionCorrectiveActionGovernanceService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/productionCorrectiveActionGovernanceService.js
++++ b/server/services/productionCorrectiveActionGovernanceService.js
+@@ -15,7 +15,14 @@
+     const db=await this.database.read();
+     return (db.productionCorrectiveActionEvidence||[])
+       .filter(x=>x.organizationId===organizationId)
+-      .sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
++      .sort((a,b)=>{
++        const timeDelta=new Date(b.createdAt)-new Date(a.createdAt);
++        if(timeDelta!==0)return timeDelta;
++        const rank={COMPLETION_ACCEPTED:2,RISK_REDUCTION_VERIFIED:1};
++        const statusDelta=(rank[b.status]||0)-(rank[a.status]||0);
++        if(statusDelta!==0)return statusDelta;
++        return String(b.id||"").localeCompare(String(a.id||""));
++      });
+   }
+   async snapshot(organizationId,allowedLocationIds){
+     const [recovery,incident,evidence]=await Promise.all([
+--- a/server/services/v50ReleaseCertificationService.js
++++ b/server/services/v50ReleaseCertificationService.js
+@@ -0,0 +1,44 @@
++"use strict";
++class V50ReleaseCertificationService {
++  constructor(database,productionOperationsHandoffService,productionHealthSupportService,productionIncidentCommandService,productionRecoveryReviewService,productionCorrectiveActionGovernanceService){
++    Object.assign(this,{database,productionOperationsHandoffService,productionHealthSupportService,productionIncidentCommandService,productionRecoveryReviewService,productionCorrectiveActionGovernanceService});
++  }
++  now(){return new Date().toISOString();}
++  async snapshot(organizationId,allowedLocationIds){
++    const [handoff,support,incident,recovery,governance]=await Promise.all([
++      this.productionOperationsHandoffService.snapshot(organizationId,allowedLocationIds),
++      this.productionHealthSupportService.snapshot(organizationId,allowedLocationIds),
++      this.productionIncidentCommandService.snapshot(organizationId,allowedLocationIds),
++      this.productionRecoveryReviewService.snapshot(organizationId,allowedLocationIds),
++      this.productionCorrectiveActionGovernanceService.snapshot(organizationId,allowedLocationIds)
++    ]);
++    const architectureContracts=[
++      {id:"handoff-human-control",label:"Production handoff is human/admin accepted and does not mutate runtime",passed:handoff.policy?.stableDeclarationRequired===true&&handoff.policy?.adminAcceptanceRequired===true&&handoff.policy?.supportOwnershipRequired===true&&handoff.policy?.acceptanceDoesNotModifyRuntime===true&&handoff.policy?.automaticAcceptance===false&&handoff.policy?.automaticRemediation===false&&handoff.policy?.autonomousProductionChanges===false},
++      {id:"support-human-control",label:"Production support actions and escalation remain human initiated",passed:support.policy?.supportActionsHumanInitiated===true&&support.policy?.escalationHumanInitiated===true&&support.policy?.incidentLinkageReadOnly===true&&support.policy?.automaticAcknowledgement===false&&support.policy?.automaticEscalation===false&&support.policy?.automaticRemediation===false&&support.policy?.autonomousProductionChanges===false},
++      {id:"incident-human-control",label:"Incident containment, recovery, communication, and resolution remain human directed",passed:incident.policy?.incidentCreationHumanInitiated===true&&incident.policy?.containmentHumanDirected===true&&incident.policy?.communicationHumanDirected===true&&incident.policy?.recoveryEvidenceHumanRecorded===true&&incident.policy?.resolutionHumanDeclared===true&&incident.policy?.automaticContainment===false&&incident.policy?.automaticRemediation===false&&incident.policy?.automaticResolution===false&&incident.policy?.autonomousProductionChanges===false},
++      {id:"recovery-human-control",label:"Post-incident root cause, corrective work, lessons, and closure remain human controlled",passed:recovery.policy?.recoveryVerificationReadOnly===true&&recovery.policy?.rootCauseHumanAuthored===true&&recovery.policy?.correctiveActionsHumanOwned===true&&recovery.policy?.lessonsAcceptanceHumanRequired===true&&recovery.policy?.automaticCorrectiveActionExecution===false&&recovery.policy?.automaticClosure===false&&recovery.policy?.autonomousProductionChanges===false},
++      {id:"governance-human-control",label:"Corrective-action verification and completion remain human governed",passed:governance.policy?.actionExecutionHumanOwned===true&&governance.policy?.verificationEvidenceHumanRecorded===true&&governance.policy?.completionAcceptanceHumanRequired===true&&governance.policy?.repeatIncidentLinkageAdvisory===true&&governance.policy?.automaticCorrectiveActionExecution===false&&governance.policy?.automaticCompletion===false&&governance.policy?.autonomousProductionChanges===false}
++    ];
++    const liveStateContracts=[
++      {id:"handoff-state",label:"At least one production handoff location exists",passed:(handoff.locations||[]).length>0,state:handoff.status},
++      {id:"support-state",label:"At least one accepted production location is in support command",passed:(support.locations||[]).length>0,state:support.status},
++      {id:"incident-state",label:"Production incident command has historical command evidence",passed:(incident.commandHistory||[]).length>0,state:incident.status},
++      {id:"recovery-state",label:"Resolved incident recovery review exists",passed:(recovery.incidents||[]).length>0,state:recovery.status},
++      {id:"governance-state",label:"Corrective-action governance has actions",passed:(governance.actions||[]).length>0,state:governance.status}
++    ];
++    const architecturePassed=architectureContracts.filter(x=>x.passed).length;
++    const liveStatePassed=liveStateContracts.filter(x=>x.passed).length;
++    const allCorrectiveComplete=(governance.actions||[]).length>0&&(governance.actions||[]).every(x=>x.status==="COMPLETED_ACCEPTED");
++    return {
++      version:"50.30.0",generatedAt:this.now(),
++      status:architecturePassed===architectureContracts.length?(liveStatePassed===liveStateContracts.length&&allCorrectiveComplete?"V50-CERTIFIED-LIVE":"V50-ARCHITECTURE-CERTIFIED"):"V50-CERTIFICATION-FAILED",
++      headline:architecturePassed===architectureContracts.length?(liveStatePassed===liveStateContracts.length&&allCorrectiveComplete?"V50 production-operations architecture and current live operations lifecycle are fully certified.":"V50 production-operations architecture is certified. Current live production evidence still has operational lifecycle steps open."):"One or more V50 production human-control architecture contracts failed certification.",
++      architectureContracts,architecturePassed,architectureTotal:architectureContracts.length,
++      liveStateContracts,liveStatePassed,liveStateTotal:liveStateContracts.length,
++      chain:[{stage:"HANDOFF",state:handoff.status},{stage:"SUPPORT",state:support.status},{stage:"INCIDENT",state:incident.status},{stage:"RECOVERY",state:recovery.status},{stage:"LEARNING",state:governance.status}],
++      totals:{productionLocations:(support.locations||[]).length,activeIncidentCommands:(incident.activeCommands||[]).length,resolvedIncidents:(recovery.incidents||[]).length,correctiveActions:(governance.actions||[]).length,correctiveActionsCompleted:(governance.actions||[]).filter(x=>x.status==="COMPLETED_ACCEPTED").length},
++      policy:{readOnlyCertification:true,automaticAcceptance:false,automaticAcknowledgement:false,automaticEscalation:false,automaticContainment:false,automaticRemediation:false,automaticResolution:false,automaticCorrectiveActionExecution:false,automaticCompletion:false,autonomousProductionChanges:false,humanProductionControl:true}
++    };
++  }
++}
++module.exports=V50ReleaseCertificationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="50.25.0">
++  <meta name="blue-current-build" content="50.30.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -348,6 +348,14 @@
+       <div class="v4316-actions"><input id="pcagEvidence" class="v4312-input" placeholder="Risk-reduction evidence"><input id="pcagVerification" class="v4312-input" placeholder="Verification method / result"><input id="pcagApprover" class="v4312-input" placeholder="Completion approver"><input id="pcagCompletionNote" class="v4312-input" placeholder="Human completion acceptance note"></div>
+       <p><strong>Executive owner accountability</strong></p><div id="pcagOwners" class="v432-list"></div>
+       <p><strong>Corrective-action register</strong></p><div id="pcagActions" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="v50ReleaseCertification">
++      <header><div><small>V50.26–V50.30 · Release Closure & Certification</small><strong>Certify the complete production-operations lifecycle before V50 is closed.</strong><span>This read-only certification verifies Production Handoff, Health & Support, Incident Command, Recovery Review, Corrective Action Governance, and every human-control boundary. Architecture certification is reported separately from real production evidence.</span></div><button id="v50certRefresh" type="button">Run V50 certification</button></header>
++      <div class="v432-kpis"><article><small>Release status</small><strong id="v50certStatus">—</strong></article><article><small>Architecture contracts</small><strong id="v50certArchitecture">0/0</strong></article><article><small>Live-state contracts</small><strong id="v50certLive">0/0</strong></article><article><small>Corrective completion</small><strong id="v50certCorrective">0/0</strong></article></div>
++      <div class="v4316-answer" id="v50certHeadline">Running V50 certification…</div>
++      <p><strong>Production operations chain</strong></p><div id="v50certChain" class="v432-list"></div>
++      <p><strong>Architecture / human-control contracts</strong></p><div id="v50certArchitectureChecks" class="v432-list"></div>
++      <p><strong>Current production evidence</strong></p><div id="v50certLiveChecks" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8890,6 +8898,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionRecoveryReview" data-src="js/modules/productionRecoveryReviewCenter.js?v=50.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceEngine.js?v=50.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="productionCorrectiveActionGovernance" data-src="js/modules/productionCorrectiveActionGovernanceCenter.js?v=50.25.0"></script>
+-<script src="js/startup-loader.js?v=50.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationEngine.js?v=50.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v50ReleaseCertification" data-src="js/modules/v50ReleaseCertificationCenter.js?v=50.30.0"></script>
++<script src="js/startup-loader.js?v=50.30.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1246,6 +1246,7 @@
+ const productionIncidentCommandModule = startupRegistry.register("productionIncidentCommand", shouldInitializeCenter("productionIncidentCommand") ? window.createBlueCurrentProductionIncidentCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionHealthSupport"]);
+ const productionRecoveryReviewModule = startupRegistry.register("productionRecoveryReview", shouldInitializeCenter("productionRecoveryReview") ? window.createBlueCurrentProductionRecoveryReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionIncidentCommand"]);
+ const productionCorrectiveActionGovernanceModule = startupRegistry.register("productionCorrectiveActionGovernance", shouldInitializeCenter("productionCorrectiveActionGovernance") ? window.createBlueCurrentProductionCorrectiveActionGovernanceCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionRecoveryReview"]);
++const v50ReleaseCertificationModule = startupRegistry.register("v50ReleaseCertification", shouldInitializeCenter("v50ReleaseCertification") ? window.createBlueCurrentV50ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "productionCorrectiveActionGovernance"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V50.25.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V50.30.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/v50ReleaseCertificationEngine.js
++++ b/client/js/modules/v50ReleaseCertificationEngine.js
+@@ -0,0 +1,9 @@
++(function(global){"use strict";
++class BlueCurrentV50ReleaseCertificationEngine{
++  constructor({appState}={}){this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  async snapshot(){const r=await fetch("/api/v50-release-certification",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`V50 certification failed (${r.status})`);this.appState?.update?.({v50ReleaseCertification:d});return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentV50ReleaseCertificationEngine;
++if(global)global.BlueCurrentV50ReleaseCertificationEngine=BlueCurrentV50ReleaseCertificationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/v50ReleaseCertificationCenter.js
++++ b/client/js/modules/v50ReleaseCertificationCenter.js
+@@ -0,0 +1,23 @@
++(function(){"use strict";
++function createBlueCurrentV50ReleaseCertificationCenterModule(eventBus,appState){
++  const root=document.getElementById("v50ReleaseCertification");
++  if(!root||!window.BlueCurrentV50ReleaseCertificationEngine)return null;
++  const e=new window.BlueCurrentV50ReleaseCertificationEngine({appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("v50certStatus").textContent=s.status||"—";
++    $("v50certArchitecture").textContent=`${s.architecturePassed||0}/${s.architectureTotal||0}`;
++    $("v50certLive").textContent=`${s.liveStatePassed||0}/${s.liveStateTotal||0}`;
++    $("v50certCorrective").textContent=`${s.totals?.correctiveActionsCompleted||0}/${s.totals?.correctiveActions||0}`;
++    $("v50certHeadline").textContent=s.headline||"V50 certification unavailable.";
++    $("v50certChain").innerHTML=(s.chain||[]).map(x=>`<article><strong>${esc(x.stage)}</strong><span>${esc(x.state)}</span></article>`).join("");
++    $("v50certArchitectureChecks").innerHTML=(s.architectureContracts||[]).map(x=>`<article><strong>${x.passed?"PASS":"FAIL"} · ${esc(x.label)}</strong></article>`).join("");
++    $("v50certLiveChecks").innerHTML=(s.liveStateContracts||[]).map(x=>`<article><strong>${x.passed?"PASS":"OPEN"} · ${esc(x.label)}</strong><span>${esc(x.state)}</span></article>`).join("");
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("v50certHeadline").textContent=err.message;}}
++  $("v50certRefresh")?.addEventListener("click",load);
++  ["production-operations:accepted","production-support:event-updated","production-incident:updated","production-recovery:lessons-accepted","production-learning:action-completed","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentV50ReleaseCertificationCenterModule=createBlueCurrentV50ReleaseCertificationCenterModule;
++})();--- a/scripts/maintenance/test-v50.30-release-certification.js
++++ b/scripts/maintenance/test-v50.30-release-certification.js
+@@ -0,0 +1,67 @@
++"use strict";
++const fs=require("fs"),assert=require("assert");
++const Service=require("../../server/services/v50ReleaseCertificationService");
++
++(async()=>{
++  const handoff={status:"production-handoff-complete",locations:[{locationId:"a"}],policy:{stableDeclarationRequired:true,adminAcceptanceRequired:true,supportOwnershipRequired:true,acceptanceDoesNotModifyRuntime:true,automaticAcceptance:false,automaticRemediation:false,autonomousProductionChanges:false}};
++  const support={status:"production-support-healthy",locations:[{locationId:"a"}],policy:{supportActionsHumanInitiated:true,escalationHumanInitiated:true,incidentLinkageReadOnly:true,automaticAcknowledgement:false,automaticEscalation:false,automaticRemediation:false,autonomousProductionChanges:false}};
++  const incident={status:"incident-command-clear",activeCommands:[],commandHistory:[{id:"i1",status:"resolved"}],policy:{incidentCreationHumanInitiated:true,containmentHumanDirected:true,communicationHumanDirected:true,recoveryEvidenceHumanRecorded:true,resolutionHumanDeclared:true,automaticContainment:false,automaticRemediation:false,automaticResolution:false,autonomousProductionChanges:false}};
++  const recovery={status:"post-incident-review-complete",incidents:[{incidentId:"i1"}],policy:{recoveryVerificationReadOnly:true,rootCauseHumanAuthored:true,correctiveActionsHumanOwned:true,lessonsAcceptanceHumanRequired:true,automaticCorrectiveActionExecution:false,automaticClosure:false,autonomousProductionChanges:false}};
++  const governance={status:"corrective-governance-complete",actions:[{status:"COMPLETED_ACCEPTED"}],policy:{actionExecutionHumanOwned:true,verificationEvidenceHumanRecorded:true,completionAcceptanceHumanRequired:true,repeatIncidentLinkageAdvisory:true,automaticCorrectiveActionExecution:false,automaticCompletion:false,autonomousProductionChanges:false}};
++
++  const svc=new Service({}, {snapshot:async()=>handoff},{snapshot:async()=>support},{snapshot:async()=>incident},{snapshot:async()=>recovery},{snapshot:async()=>governance});
++  const snap=await svc.snapshot("org",["*"]);
++
++  assert.equal(snap.version,"50.30.0");
++  assert.equal(snap.status,"V50-CERTIFIED-LIVE");
++  assert.equal(snap.architecturePassed,5);
++  assert.equal(snap.architectureTotal,5);
++  assert.equal(snap.liveStatePassed,5);
++  assert.equal(snap.liveStateTotal,5);
++  Object.entries({
++    readOnlyCertification:true,
++    automaticAcceptance:false,
++    automaticAcknowledgement:false,
++    automaticEscalation:false,
++    automaticContainment:false,
++    automaticRemediation:false,
++    automaticResolution:false,
++    automaticCorrectiveActionExecution:false,
++    automaticCompletion:false,
++    autonomousProductionChanges:false,
++    humanProductionControl:true
++  }).forEach(([k,v])=>assert.equal(snap.policy[k],v,k));
++
++  const router=fs.readFileSync("server/api/router.js","utf8");
++  [
++    "/api/production-operations-handoff",
++    "/api/production-health-support",
++    "/api/production-incident-command",
++    "/api/production-recovery-review",
++    "/api/production-corrective-action-governance",
++    "/api/v50-release-certification"
++  ].forEach(x=>assert(router.includes(x),`missing route ${x}`));
++
++  const html=fs.readFileSync("client/index.html","utf8");
++  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
++  assert.equal(new Set(ids).size,ids.length,"duplicate HTML ids");
++  [
++    "productionOperationsHandoff","productionHealthSupport","productionIncidentCommand",
++    "productionRecoveryReview","productionCorrectiveActionGovernance","v50ReleaseCertification"
++  ].forEach(x=>assert(html.includes(`id="${x}"`),`missing center ${x}`));
++
++  const app=fs.readFileSync("client/js/app-v15.1.3.js","utf8");
++  [
++    "productionOperationsHandoffModule","productionHealthSupportModule","productionIncidentCommandModule",
++    "productionRecoveryReviewModule","productionCorrectiveActionGovernanceModule","v50ReleaseCertificationModule"
++  ].forEach(x=>assert(app.includes(`const ${x} =`),`missing startup module ${x}`));
++
++  console.log(JSON.stringify({
++    ok:true,version:"50.30.0",status:snap.status,
++    architectureContracts:"5/5",liveStateContracts:"5/5",
++    routesCertified:6,duplicateHtmlIds:0,humanProductionControl:true,
++    automaticAcceptance:false,automaticAcknowledgement:false,automaticEscalation:false,
++    automaticContainment:false,automaticRemediation:false,automaticResolution:false,
++    automaticCorrectiveActionExecution:false,automaticCompletion:false,autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V50.30.0-RELEASE.md
++++ b/V50.30.0-RELEASE.md
+@@ -0,0 +1,115 @@
++# BLUE CURRENT V50.30.0 — V50 RELEASE CLOSURE & CERTIFICATION
++
++V50 is complete.
++
++## V50 production-operations chain
++
++HANDOFF → SUPPORT → INCIDENT → RECOVERY → LEARNING
++
++V50.30 adds one read-only certification surface for both architecture/human-control contracts and current real production evidence.
++
++## Closure hardening discovered during certification
++
++The final clean-baseline regression exposed a nondeterministic ordering edge case in V50.25 corrective-action evidence: verification and completion could be recorded within the same millisecond, allowing `RISK_REDUCTION_VERIFIED` to sort ahead of the newer `COMPLETION_ACCEPTED` state.
++
++V50.30 hardens evidence ordering with deterministic precedence:
++
++1. created timestamp
++2. completion status precedence
++3. record ID tie-break
++
++The full V50 suite was rerun after this fix on a clean exact V50.25 baseline.
++
++## Architecture certification contracts
++
++1. Production Handoff remains human/admin accepted and does not mutate runtime.
++2. Production Health & Support remains human acknowledged/escalated with read-only incident linkage.
++3. Production Incident Command keeps containment, communications, recovery, and resolution human directed.
++4. Production Recovery keeps root cause, corrective work, lessons, and closure human controlled.
++5. Corrective Action Governance keeps execution human owned, verification human recorded, and completion human accepted.
++
++## Certification states
++
++- `V50-CERTIFIED-LIVE`
++  - architecture contracts 5/5
++  - live-state contracts 5/5
++  - corrective actions human-completion accepted
++
++- `V50-ARCHITECTURE-CERTIFIED`
++  - architecture contracts pass
++  - real production lifecycle evidence is still incomplete
++
++- `V50-CERTIFICATION-FAILED`
++  - one or more architecture/human-control contracts fail
++
++## Current authenticated Chefs runtime
++
++Current untouched runtime:
++
++- certification: `V50-ARCHITECTURE-CERTIFIED`
++- architecture contracts: 5/5
++- live-state contracts: 0/5
++
++Chain:
++
++- HANDOFF → `stable-location-required`
++- SUPPORT → `production-acceptance-required`
++- INCIDENT → `incident-command-clear`
++- RECOVERY → `resolved-incident-required`
++- LEARNING → `corrective-actions-required`
++
++This is correct. Blue Current certifies the architecture without inventing production evidence.
++
++## Synthetic complete lifecycle
++
++Focused certification reaches:
++
++- `V50-CERTIFIED-LIVE`
++- architecture 5/5
++- live state 5/5
++
++## Safety closure
++
++- read-only certification
++- automatic acceptance false
++- automatic acknowledgment false
++- automatic escalation false
++- automatic containment false
++- automatic remediation false
++- automatic resolution false
++- automatic corrective-action execution false
++- automatic completion false
++- autonomous production changes false
++- human production control true
++
++## Full V50 regression
++
++- V50.05 PASS
++- V50.10 PASS
++- V50.15 PASS
++- V50.20 PASS
++- V50.25 PASS after deterministic ordering hardening
++- V50.30 PASS
++
++## Repository / UI certification
++
++- six V50 API surfaces present
++- six V50 UI centers present
++- six V50 startup modules present
++- undefined module exports across all maintained app copies: 0
++- duplicate HTML IDs: 0
++
++## Validation
++
++- 917 JavaScript files
++- 770 client scripts
++- 5,747 unique HTML IDs
++- npm run check PASS
++- authenticated certification endpoint PASS
++- authoritative database unchanged
++
++## Release status
++
++V50.30.0 is the hard-close checkpoint for V50.
++
++Begin new feature work in V51.
+--- a/README-APPLY-V50.30.0.md
++++ b/README-APPLY-V50.30.0.md
+@@ -0,0 +1,51 @@
++# APPLY BLUE CURRENT V50.30.0 — FINAL V50 WAVE
++
++Baseline: exact V50.25.0 repository.
++
++Extract `BLUE-CURRENT-V50.30.0-FINAL.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++This closure wave also includes a deterministic V50.25 corrective-action evidence ordering fix found during clean-baseline certification.
++
++Run:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v50.05-production-operations-handoff.js
++node scripts/maintenance/test-v50.10-production-health-support.js
++node scripts/maintenance/test-v50.15-production-incident-command.js
++node scripts/maintenance/test-v50.20-production-recovery-review.js
++node scripts/maintenance/test-v50.25-production-corrective-action-governance.js
++node scripts/maintenance/test-v50.30-release-certification.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "50.30.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++On untouched runtime data, expect:
++
++`V50-ARCHITECTURE-CERTIFIED`
++
++Do not expect `V50-CERTIFIED-LIVE` until the actual production lifecycle has been executed.
++
++Commit:
++
++```powershell
++git add -A
++git commit -m "V50.30.0 close and certify V50"
++git push origin live-service-timeline
++```
++
++After this commit, V50 is closed. Begin new feature work in V51.

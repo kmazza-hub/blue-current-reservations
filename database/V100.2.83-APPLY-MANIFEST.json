@@ -1,0 +1,6 @@
+{
+  "version": "100.2.83",
+  "type": "certification-only",
+  "runtimeFilesChanged": [],
+  "test": "scripts/maintenance/test-v100.2.83-inventory-rush-certification.js"
+}

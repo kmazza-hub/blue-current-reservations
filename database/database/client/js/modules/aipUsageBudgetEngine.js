@@ -1,0 +1,12 @@
+(function(){"use strict";
+class BlueCurrentAIPUsageBudgetEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4019:usage-budget";this.configKey="bluecurrent:v4019:usage-config";this.records=this.read(this.key,[]);this.config=this.read(this.configKey,{dailyRuns:150,dailyToolCalls:500,dailyDeepRoutes:40});this.bound=false;}
+ read(key,fallback){try{return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback));}catch{return fallback;}}
+ persist(){localStorage.setItem(this.key,JSON.stringify(this.records.slice(0,1000)));localStorage.setItem(this.configKey,JSON.stringify(this.config));}
+ today(){return new Date().toISOString().slice(0,10);}
+ record(kind,payload={}){const record={id:`USE-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,kind,profile:payload.profile||payload.route?.profile||"standard",agent:payload.agent||payload.agentId||"system",date:this.today(),createdAt:new Date().toISOString()};this.records.unshift(record);this.persist();this.eventBus?.emit?.("aip:usage-updated",this.snapshot());return record;}
+ bind(){if(this.bound||!this.eventBus?.on)return;this.bound=true;this.eventBus.on("aip:agent-response",x=>this.record("run",x||{}));this.eventBus.on("aip:tool-invoked",x=>this.record("tool",x||{}));this.eventBus.on("aip:routing-complete",x=>{if((x?.profile||x?.route?.profile)==="deep")this.record("deep",x||{});});}
+ setConfig(next){this.config={...this.config,...next};this.persist();return this.snapshot();}
+ snapshot(){const todays=this.records.filter(x=>x.date===this.today());const counts={runs:todays.filter(x=>x.kind==="run").length,toolCalls:todays.filter(x=>x.kind==="tool").length,deepRoutes:todays.filter(x=>x.kind==="deep").length};const ratios=[counts.runs/Math.max(1,this.config.dailyRuns),counts.toolCalls/Math.max(1,this.config.dailyToolCalls),counts.deepRoutes/Math.max(1,this.config.dailyDeepRoutes)];const utilization=Math.round(Math.max(...ratios)*100);return{config:{...this.config},counts,utilization,status:utilization>=100?"Blocked":utilization>=80?"Watch":"Healthy",remaining:{runs:Math.max(0,this.config.dailyRuns-counts.runs),toolCalls:Math.max(0,this.config.dailyToolCalls-counts.toolCalls),deepRoutes:Math.max(0,this.config.dailyDeepRoutes-counts.deepRoutes)}};}
+}
+window.BlueCurrentAIPUsageBudgetEngine=BlueCurrentAIPUsageBudgetEngine;})();

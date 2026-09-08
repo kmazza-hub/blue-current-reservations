@@ -1,0 +1,12 @@
+(function(){"use strict";
+const bytes=value=>new Blob([String(value??"")]).size;
+class BlueCurrentStorageFootprintEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.timer=setInterval(()=>this.publish("sample"),10000);setTimeout(()=>this.publish("initial"),25);}
+ storageSize(storage){let total=0,items=[];try{for(let i=0;i<storage.length;i++){const key=storage.key(i),size=bytes(key)+bytes(storage.getItem(key));total+=size;items.push({key,size});}}catch(error){}return{total,items:items.sort((a,b)=>b.size-a.size)};}
+ appStateSize(){let raw="";try{raw=JSON.stringify(this.appState.getState());}catch(error){raw="";}return bytes(raw);}
+ snapshot(reason="manual"){const local=this.storageSize(localStorage),session=this.storageSize(sessionStorage),stateBytes=this.appStateSize(),total=local.total+session.total+stateBytes;const mb=total/1048576;const score=Math.max(0,Math.round(100-Math.max(0,mb-1)*12-Math.max(0,stateBytes/1048576-0.75)*20));return{capturedAt:new Date().toISOString(),reason,score,status:score>=85?"healthy":score>=60?"watch":"critical",totalBytes:total,totalMb:Number(mb.toFixed(2)),appStateBytes:stateBytes,localBytes:local.total,sessionBytes:session.total,largest:[...local.items.map(x=>({...x,store:"local"})),...session.items.map(x=>({...x,store:"session"}))].sort((a,b)=>b.size-a.size).slice(0,8),nextAction:score<85?"Trim transient histories before loading more feature packs.":"Stored runtime evidence is inside the safe footprint."};}
+ trim(){const state=this.appState.getState(),changes={};Object.entries(state).forEach(([key,value])=>{if(Array.isArray(value)&&/(history|events|timeline|snapshots|records)$/i.test(key)&&value.length>20)changes[key]=value.slice(-20);});if(Object.keys(changes).length)this.appState.update(changes);this.eventBus.emit("storage-footprint:trimmed",{keys:Object.keys(changes),at:new Date().toISOString()});return this.publish("trim");}
+ publish(reason="manual"){const value=this.snapshot(reason);this.appState.update({storageFootprint:value});this.eventBus.emit("storage-footprint:updated",structuredClone(value));return value;}
+ destroy(){clearInterval(this.timer);}
+}
+window.BlueCurrentStorageFootprintEngine=BlueCurrentStorageFootprintEngine;})();

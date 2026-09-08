@@ -1,0 +1,33 @@
+{
+  "version": "94.0.0",
+  "phase": "D",
+  "gate": "PILOT_PERFORMANCE_CAPACITY_AND_RESILIENCE_READINESS",
+  "scenarios": [
+    "RESERVATION_BURST",
+    "HIGH_OCCUPANCY",
+    "RAPID_TABLE_TURNS",
+    "STAFF_CHANGE",
+    "KITCHEN_PRESSURE",
+    "DELAYED_REQUESTS",
+    "API_FAILURE",
+    "CONNECTOR_FAILURE",
+    "RECONNECT_RETRY",
+    "PARTIAL_DEGRADATION_RECOVERY"
+  ],
+  "thresholds": [
+    "HANDOFF_LATENCY",
+    "OPERATOR_WORKLOAD",
+    "KITCHEN_CONGESTION",
+    "FLOOR_CONGESTION",
+    "RECOVERY_TIME",
+    "SERVICE_COMPLETION",
+    "NO_HIGH_CRITICAL_FINDINGS"
+  ],
+  "decision": {
+    "humanObservationRequired": true,
+    "humanReadyDegradedHoldRequired": true,
+    "automaticOperationalMutation": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_DEVICE_NETWORK_AND_ONSITE_CONTINUITY_READINESS"
+}

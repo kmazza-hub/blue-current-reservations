@@ -1,0 +1,279 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "48.25.0",
++  "version": "48.30.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 expansion readiness and staged rollout scope",
++  "description": "Blue Current Hospitality OS \u2014 V48 commercial proof release certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -47,6 +47,7 @@
+ const ExecutivePilotReviewService = require("./services/executivePilotReviewService");
+ const PilotDecisionLedgerService = require("./services/pilotDecisionLedgerService");
+ const ExpansionReadinessService = require("./services/expansionReadinessService");
++const V48ReleaseCertificationService = require("./services/v48ReleaseCertificationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -97,7 +98,8 @@
+ const executivePilotReviewService = new ExecutivePilotReviewService(database, auditService, realtimeHub, pilotProofProgramService);
+ const pilotDecisionLedgerService = new PilotDecisionLedgerService(database, auditService, realtimeHub, executivePilotReviewService);
+ const expansionReadinessService = new ExpansionReadinessService(database, auditService, realtimeHub, pilotDecisionLedgerService, executivePilotReviewService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService });
++const v48ReleaseCertificationService = new V48ReleaseCertificationService(database, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -184,7 +186,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V48.25.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V48.30.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "48.25.0",
++        version: "48.30.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,10 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/v48-release-certification" && request.method === "GET") {
++      return sendJson(response,200,await v48ReleaseCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
+ 
+     if (url.pathname === "/api/expansion-readiness" && request.method === "GET") { return sendJson(response,200,await expansionReadinessService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[])); }
+     if (url.pathname === "/api/expansion-readiness/draft" && request.method === "POST") {
+--- a/server/services/v48ReleaseCertificationService.js
++++ b/server/services/v48ReleaseCertificationService.js
+@@ -0,0 +1,39 @@
++"use strict";
++class V48ReleaseCertificationService {
++  constructor(database,pilotValueScorecardService,pilotProofProgramService,executivePilotReviewService,pilotDecisionLedgerService,expansionReadinessService){
++    Object.assign(this,{database,pilotValueScorecardService,pilotProofProgramService,executivePilotReviewService,pilotDecisionLedgerService,expansionReadinessService});
++  }
++  now(){return new Date().toISOString();}
++  async snapshot(organizationId,allowedLocationIds){
++    const [scorecard,proof,review,ledger,expansion]=await Promise.all([
++      this.pilotValueScorecardService.snapshot(organizationId,allowedLocationIds),
++      this.pilotProofProgramService.snapshot(organizationId,allowedLocationIds),
++      this.executivePilotReviewService.snapshot(organizationId,allowedLocationIds),
++      this.pilotDecisionLedgerService.snapshot(organizationId,allowedLocationIds),
++      this.expansionReadinessService.snapshot(organizationId,allowedLocationIds)
++    ]);
++    const contracts=[
++      {id:"baseline",label:"Pilot value baseline",passed:scorecard.status!=="baseline-required"},
++      {id:"proof",label:"Proof program",passed:proof.status==="proof-program-active"},
++      {id:"review",label:"Executive review packet",passed:!!review.packet},
++      {id:"decision-boundary",label:"Human decision boundary",passed:ledger.policy?.automaticApproval===false&&ledger.policy?.automaticExpansion===false},
++      {id:"activation-boundary",label:"Human activation boundary",passed:expansion.policy?.automaticActivation===false&&expansion.policy?.automaticExpansion===false}
++    ];
++    const passed=contracts.filter(x=>x.passed).length;
++    return {
++      version:"48.30.0",generatedAt:this.now(),status:passed===contracts.length?"V48-CERTIFIED":"V48-OPERATIONAL-WITH-OPEN-PILOT-STATE",
++      headline:passed===contracts.length?"V48 commercial proof architecture is certified across the complete pilot-to-expansion decision chain.":"V48 code and safety contracts are operational; current pilot state still has prerequisite evidence or decisions open.",
++      contracts,passed,total:contracts.length,
++      chain:[
++        {stage:"BASELINE",state:scorecard.status},
++        {stage:"PROVE",state:proof.status},
++        {stage:"REVIEW",state:review.status},
++        {stage:"DECIDE",state:ledger.latestDecision?.decision||"UNSIGNED"},
++        {stage:"PLAN",state:expansion.status}
++      ],
++      evidence:{verifiedRealizedImpactDollars:review.packet?.evidence?.verifiedRealizedImpactDollars||0,locationsReviewed:review.packet?.locationReview?.length||0,exceptions:review.packet?.exceptions?.length||0},
++      policy:{readOnlyCertification:true,automaticAttribution:false,automaticApproval:false,automaticExpansion:false,automaticActivation:false,humanCommercialControl:true}
++    };
++  }
++}
++module.exports=V48ReleaseCertificationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="48.25.0">
++  <meta name="blue-current-build" content="48.30.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -245,6 +245,13 @@
+       <div class="v4316-answer" id="v4825Headline">A signed human EXPAND decision is required before rollout planning.</div>
+       <div class="v4316-actions"><input id="v4825Owner" class="v4312-input" placeholder="Rollout owner"><input id="v4825WaveSize" class="v4312-input" type="number" min="1" value="1" placeholder="Locations per wave"><input id="v4825Cadence" class="v4312-input" type="number" min="1" value="7" placeholder="Days between waves"><input id="v4825Floor" class="v4312-input" type="number" min="0" max="100" value="70" placeholder="Readiness floor"><input id="v4825Conditions" class="v4312-input" placeholder="Rollout conditions"><button id="v4825Draft" type="button">Draft rollout plan</button></div>
+       <p><strong>Signed rollout scope</strong></p><div id="v4825Locations" class="v432-list"></div><p><strong>Planned waves — activation remains off</strong></p><div id="v4825Waves" class="v432-list"></div><p><strong>Plan history</strong></p><div id="v4825History" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="v48ReleaseCertification">
++      <header><div><small>V48.26–V48.30 · Release Closure & Certification</small><strong>V48 Commercial Proof Chain Certification</strong><span>One read-only certification surface verifies the complete baseline → proof → review → human decision → rollout-plan chain and its non-automation safety boundaries.</span></div><button id="v48certRefresh" type="button">Run V48 certification</button></header>
++      <div class="v432-kpis"><article><small>Release status</small><strong id="v48certStatus">—</strong></article><article><small>Contracts</small><strong id="v48certContracts">0/0</strong></article><article><small>Verified value</small><strong id="v48certValue">$0</strong></article><article><small>Locations reviewed</small><strong id="v48certLocations">0</strong></article></div>
++      <div class="v4316-answer" id="v48certHeadline">Running V48 certification…</div>
++      <p><strong>Commercial proof chain</strong></p><div id="v48certChain" class="v432-list"></div>
++      <p><strong>Certification contracts</strong></p><div id="v48certChecks" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8763,6 +8770,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDecisionLedger" data-src="js/modules/pilotDecisionLedgerCenter.js?v=48.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessEngine.js?v=48.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="expansionReadiness" data-src="js/modules/expansionReadinessCenter.js?v=48.25.0"></script>
+-<script src="js/startup-loader.js?v=48.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationEngine.js?v=48.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v48ReleaseCertification" data-src="js/modules/v48ReleaseCertificationCenter.js?v=48.30.0"></script>
++<script src="js/startup-loader.js?v=48.30.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1234,6 +1234,7 @@
+ const executivePilotReviewModule = startupRegistry.register("executivePilotReview", shouldInitializeCenter("executivePilotReview") ? window.createBlueCurrentExecutivePilotReviewCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotProofProgram"]);
+ const pilotDecisionLedgerModule = startupRegistry.register("pilotDecisionLedger", shouldInitializeCenter("pilotDecisionLedger") ? window.createBlueCurrentPilotDecisionLedgerCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "executivePilotReview"]);
+ const expansionReadinessModule = startupRegistry.register("expansionReadiness", shouldInitializeCenter("expansionReadiness") ? window.createBlueCurrentExpansionReadinessCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDecisionLedger"]);
++const v48ReleaseCertificationModule = startupRegistry.register("v48ReleaseCertification", shouldInitializeCenter("v48ReleaseCertification") ? window.createBlueCurrentV48ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "expansionReadiness"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V48.25.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V48.30.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/v48ReleaseCertificationEngine.js
++++ b/client/js/modules/v48ReleaseCertificationEngine.js
+@@ -0,0 +1 @@
++(function(global){"use strict";class BlueCurrentV48ReleaseCertificationEngine{constructor({appState}={}){this.appState=appState;}token(){return localStorage.getItem("blueCurrentV3230Token")||"";}async snapshot(){const r=await fetch("/api/v48-release-certification",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`V48 certification failed (${r.status})`);this.appState?.update?.({v48ReleaseCertification:d});return d;}}if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentV48ReleaseCertificationEngine;if(global)global.BlueCurrentV48ReleaseCertificationEngine=BlueCurrentV48ReleaseCertificationEngine;})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/v48ReleaseCertificationCenter.js
++++ b/client/js/modules/v48ReleaseCertificationCenter.js
+@@ -0,0 +1 @@
++(function(){"use strict";function createBlueCurrentV48ReleaseCertificationCenterModule(eventBus,appState){const root=document.getElementById("v48ReleaseCertification");if(!root||!window.BlueCurrentV48ReleaseCertificationEngine)return null;const e=new window.BlueCurrentV48ReleaseCertificationEngine({appState}),$=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));function render(s){$("v48certStatus").textContent=s.status||"—";$("v48certContracts").textContent=`${s.passed||0}/${s.total||0}`;$("v48certValue").textContent=`$${Number(s.evidence?.verifiedRealizedImpactDollars||0).toLocaleString()}`;$("v48certLocations").textContent=s.evidence?.locationsReviewed||0;$("v48certHeadline").textContent=s.headline||"";$("v48certChain").innerHTML=(s.chain||[]).map(x=>`<article><strong>${esc(x.stage)}</strong><span>${esc(x.state)}</span></article>`).join("");$("v48certChecks").innerHTML=(s.contracts||[]).map(x=>`<article><strong>${x.passed?"PASS":"OPEN"} · ${esc(x.label)}</strong></article>`).join("");}async function load(){try{render(await e.snapshot());}catch(err){$("v48certHeadline").textContent=err.message;}}$("v48certRefresh")?.addEventListener("click",load);["pilot-value:checkpoint","pilot-proof:configured","pilot-review:archived","pilot-decision:signed","expansion-readiness:drafted","auth:restored"].forEach(x=>eventBus?.on?.(x,load));load();return{engine:e,load};}window.createBlueCurrentV48ReleaseCertificationCenterModule=createBlueCurrentV48ReleaseCertificationCenterModule;})();--- a/scripts/maintenance/test-v48.30-release-certification.js
++++ b/scripts/maintenance/test-v48.30-release-certification.js
+@@ -0,0 +1,13 @@
++"use strict";
++const assert=require("assert"),Service=require("../../server/services/v48ReleaseCertificationService");
++(async()=>{
++ const svc=new Service({}, {snapshot:async()=>({status:"active"})},
++ {snapshot:async()=>({status:"proof-program-active"})},
++ {snapshot:async()=>({status:"review-ready",packet:{evidence:{verifiedRealizedImpactDollars:1200},locationReview:[{},{}],exceptions:[]}})},
++ {snapshot:async()=>({latestDecision:{decision:"EXPAND"},policy:{automaticApproval:false,automaticExpansion:false}})},
++ {snapshot:async()=>({status:"plan-drafted",policy:{automaticActivation:false,automaticExpansion:false}})});
++ const s=await svc.snapshot("org",["*"]);
++ assert.equal(s.version,"48.30.0");assert.equal(s.status,"V48-CERTIFIED");assert.equal(s.passed,5);assert.equal(s.total,5);
++ assert.equal(s.policy.automaticAttribution,false);assert.equal(s.policy.automaticApproval,false);assert.equal(s.policy.automaticExpansion,false);assert.equal(s.policy.automaticActivation,false);
++ console.log(JSON.stringify({ok:true,version:s.version,status:s.status,contracts:`${s.passed}/${s.total}`,automaticAttribution:false,automaticApproval:false,automaticExpansion:false,automaticActivation:false},null,2));
++})().catch(e=>{console.error(e);process.exit(1);});--- a/V48.30.0-RELEASE.md
++++ b/V48.30.0-RELEASE.md
+@@ -0,0 +1,52 @@
++# BLUE CURRENT V48.30.0 — V48 RELEASE CLOSURE & CERTIFICATION
++
++V48 is complete.
++
++## V48 commercial proof chain
++BASELINE → PROVE → REVIEW → DECIDE → PLAN
++
++The final certification surface aggregates the complete V48 chain without mutating pilot data.
++
++### Certification contracts
++1. Pilot value baseline exists.
++2. Proof program is active.
++3. Executive review packet exists.
++4. Human-decision boundary prevents automatic approval/expansion.
++5. Human-activation boundary prevents automatic rollout activation.
++
++The first three contracts reflect live pilot state. The final two are architecture/safety contracts.
++
++## Safety closure
++- read-only certification
++- no automatic attribution
++- no automatic approval
++- no automatic expansion
++- no automatic activation
++- human commercial control preserved
++
++## Current authenticated Chefs state
++The current authoritative data has not yet established a pilot baseline, so the runtime correctly reports:
++- `V48-OPERATIONAL-WITH-OPEN-PILOT-STATE`
++- contracts currently satisfied: 2/5
++- baseline: required
++- proof: baseline required
++- executive review: baseline required
++- decision: unsigned
++- expansion plan: not authorized
++
++This does NOT mean V48 code failed certification. It means the V48 architecture is operational while the real pilot evidence workflow has not yet been executed. The synthetic full-chain certification test reaches `V48-CERTIFIED` at 5/5 contracts.
++
++## Validation
++- V48 final certification test PASS at 5/5
++- V48.20 decision-ledger regression PASS
++- V48.25 expansion-readiness regression PASS
++- authenticated V48 certification endpoint PASS
++- authoritative database unchanged
++- automatic attribution/approval/expansion/activation all FALSE
++- npm run check PASS
++- 881 JavaScript files
++- 746 client scripts
++- 5,558 unique HTML IDs
++
++## Release status
++V48.30.0 is the planned V48 closure point. New feature work should begin in V49 rather than extending V48.
+--- a/README-APPLY-V48.30.0.md
++++ b/README-APPLY-V48.30.0.md
+@@ -0,0 +1,29 @@
++# APPLY BLUE CURRENT V48.30.0 — FINAL V48 WAVE
++
++Baseline: exact V48.25.0 repository.
++
++Extract `BLUE-CURRENT-V48.30.0-FINAL.zip` into the repository root, preserving directories and replacing matching files.
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v48.20-pilot-decision-ledger.js
++node scripts/maintenance/test-v48.25-expansion-readiness.js
++node scripts/maintenance/test-v48.30-release-certification.js
++npm run start
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected version: `48.30.0`.
++
++Then `Ctrl+F5`.
++
++The **V48 Release Closure & Certification** surface is read-only. It reports both architecture contracts and current real pilot state.
++
++```powershell
++git add -A
++git commit -m "V48.30.0 close and certify V48"
++git push origin live-service-timeline
++```
++
++After this commit, V48 is closed. Begin new feature work in V49.

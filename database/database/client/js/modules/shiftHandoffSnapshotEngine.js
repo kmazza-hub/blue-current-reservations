@@ -1,0 +1,9 @@
+(function(){"use strict";
+class BlueCurrentShiftHandoffSnapshotEngine{
+ constructor({eventBus,appState}){this.eventBus=eventBus;this.appState=appState;this.off=[eventBus.on("action-ownership:updated",()=>this.eventBus.emit("shift-handoff-snapshot:updated",this.snapshot())),eventBus.on("shift-intelligence:updated",()=>this.eventBus.emit("shift-handoff-snapshot:updated",this.snapshot()))];}
+ ownership(){try{return JSON.parse(localStorage.getItem("bluecurrent:operations-action-ownership")||"{}");}catch{return {};}}
+ snapshot(){const shift=this.appState.get("shiftIntelligence")||{},items=shift.recommendations||[],saved=this.ownership(),merged=items.map((x,i)=>({...x,...(saved[String(x.id||`priority-${i}`)]||{}),id:String(x.id||`priority-${i}`)}));const open=merged.filter(x=>x.status!=="done"),done=merged.filter(x=>x.status==="done"),next=open[0]||null;const lines=[`Shift score: ${shift.score??"—"} (${shift.status||"unknown"})`,`Open priorities: ${open.length}`,`Completed priorities: ${done.length}`,next?`Next action: ${next.title} — Owner: ${next.assignedOwner||next.owner||"Manager"}`:"Next action: None",`Kitchen load: ${Math.round(Number(shift.kitchenLoad)||0)}% · Guest wait: ${Math.round(Number(shift.guestWait)||0)} min`];return{capturedAt:new Date().toISOString(),score:shift.score??null,status:shift.status||"unknown",open,done,next,summary:lines.join("\n")};}
+ export(){const v=this.snapshot(),blob=new Blob([JSON.stringify(v,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`blue-current-handoff-${new Date().toISOString().slice(0,19).replace(/[:T]/g,"-")}.json`;a.click();URL.revokeObjectURL(a.href);return v;}
+ destroy(){this.off.forEach(fn=>fn?.());}
+}
+window.BlueCurrentShiftHandoffSnapshotEngine=BlueCurrentShiftHandoffSnapshotEngine;})();

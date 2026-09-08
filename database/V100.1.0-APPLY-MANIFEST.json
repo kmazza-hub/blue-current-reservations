@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "repair": "V100.1.0 Operator Shell Stabilization",
+  "authoritativeBaseline": "V100.0.0",
+  "packageVersionPreserved": "100.0.0",
+  "scope": "P0 operator-shell stabilization only",
+  "files": [
+    {
+      "path": "client/js/modules/hospitalityOsShell.js",
+      "sha256": "b0cdbe518b101aba3d13fd41be09aafc1052b63869f93f32f9b00ee7ee3ae845",
+      "baselineSha256": "c23a6c47ef2ec3f8b637712f858ae078b1124ed32e590424bc4fb31a7ea3e7fa"
+    },
+    {
+      "path": "client/js/workflow-reduction-v64.50.js",
+      "sha256": "b1b7cb1e09cca14dcc8b50b69b0efc71f9f1c48fca46a1d80259612489560a1c",
+      "baselineSha256": "4fa34cbcac36a1392388d676096001ae98259ae0de5bda5de60b6bc940409200"
+    },
+    {
+      "path": "client/index.html",
+      "sha256": "865a5ee2f17b59ff8ae397aae079e294d409baa071c8e766fb600bd7c38961b9",
+      "baselineSha256": "795e785a25543e5757005eab8bdc3e1dda0b7d6fca97b635f0ef553622587a1e"
+    },
+    {
+      "path": "client/styles.css",
+      "sha256": "4e6bd4dca2b4eb28f07ec1dd1f968e428743a18a22aa41f506369eea9186c768",
+      "baselineSha256": "a6b98269a0388afcd4bdbaab330148e0f834e14d85abec015b6834c91e82468c"
+    },
+    {
+      "path": "scripts/maintenance/test-v100.1-operator-shell-stabilization.js",
+      "sha256": "d4d09ff9704060e58d4ce4506953352b27c90e145e4e4f981aae2f87d74d1a9f"
+    },
+    {
+      "path": "V100.1.0-RELEASE.md",
+      "sha256": "1a4e8faca0878fc0fca79e3e857df12a01daf4fe98a9e485adf4a40b74e12abe"
+    },
+    {
+      "path": "README-APPLY-V100.1.0.md",
+      "sha256": "7e22fc1e15693b0acebeef4cc84baa16cc971493217d8792b4a0b91483ac342b"
+    }
+  ],
+  "validation": {
+    "npmRunCheck": "PASS \u2014 1166 JavaScript files, 869 client scripts, 6676 unique HTML ids",
+    "v100CommercialCertification": "PASS",
+    "v1001OperatorShellRegression": "PASS",
+    "cleanStartup": "PASS",
+    "health": "PASS \u2014 HTTP 200, database connected, auth enabled"
+  }
+}

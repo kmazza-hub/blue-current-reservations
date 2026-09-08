@@ -1,0 +1,12 @@
+"use strict";
+const fs=require("fs"),path=require("path"),crypto=require("crypto");
+const rel="client/js/floor-reservations-v62.0.js";
+const before="35e658b4b0cf76cf19ee34cb05ce9a59e0317774bcdc16ecc2654e23c4b7179b";
+const after="526d152c4f0010b449760937119eeb13cea5a93fdbbad1dea10e1b7f3226862b";
+const dst=path.join(process.cwd(),rel),src=path.join(__dirname,"patches",rel);
+const sha=file=>crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");
+if(!fs.existsSync(dst))throw new Error(`Missing ${rel}`);
+const current=sha(dst);
+if(current!==before&&current!==after)throw new Error(`Refusing unexpected ${rel} SHA256: ${current}`);
+if(current===before)fs.copyFileSync(src,dst);
+console.log(current===after?"V100.2.96 already applied.":"Applied V100.2.96 — iPad Host Repeat-Tap Integrity.");

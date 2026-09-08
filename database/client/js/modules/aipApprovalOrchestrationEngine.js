@@ -1,0 +1,4 @@
+(function(){"use strict";
+function api(){const t=localStorage.getItem("blueCurrentV3230Token")||"";return async(p,o={})=>{const h={"Content-Type":"application/json"};if(t)h.Authorization=`Bearer ${t}`;const r=await fetch(p,{...o,headers:{...h,...(o.headers||{})}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Request failed (${r.status})`);return d;};}
+class BlueCurrentAipApprovalOrchestrationEngine{constructor(){this.r=api();}load(){return this.r('/api/aip/approvals');}decide(orchestrationId,decision,note=''){return this.r('/api/aip/approvals',{method:'POST',body:JSON.stringify({orchestrationId,decision,note})});}readiness(){return this.r('/api/aip/coordination-readiness');}}
+window.BlueCurrentAipApprovalOrchestrationEngine=BlueCurrentAipApprovalOrchestrationEngine;})();

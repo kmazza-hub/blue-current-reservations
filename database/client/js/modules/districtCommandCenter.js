@@ -41,8 +41,13 @@
 
   const state = {
     sort: "risk",
-    selectedLocationId: "loc_marina"
+    selectedLocationId: ""
   };
+
+  function visibleLocations() {
+    const authorized = window.BlueCurrentFrontlineLocation?.authorized?.() || [];
+    return authorized.length ? locations.filter(location => authorized.includes(location.id)) : [...locations];
+  }
 
   function toneFor(location) {
     if (location.health < 78 || location.alerts >= 3) return "risk";
@@ -51,7 +56,7 @@
   }
 
   function sortedLocations() {
-    const rows = [...locations];
+    const rows = visibleLocations();
 
     if (state.sort === "health") rows.sort((a, b) => b.health - a.health);
     if (state.sort === "revenue") rows.sort((a, b) => b.revenue - a.revenue);
@@ -69,14 +74,15 @@
   }
 
   function renderKPIs() {
-    const totalRevenue = locations.reduce((sum, location) => sum + location.revenue, 0);
-    const totalGuests = locations.reduce((sum, location) => sum + location.guests, 0);
-    const totalAlerts = locations.reduce((sum, location) => sum + location.alerts, 0);
+    const rows = visibleLocations();
+    const totalRevenue = rows.reduce((sum, location) => sum + location.revenue, 0);
+    const totalGuests = rows.reduce((sum, location) => sum + location.guests, 0);
+    const totalAlerts = rows.reduce((sum, location) => sum + location.alerts, 0);
     const averageHealth = Math.round(
-      locations.reduce((sum, location) => sum + location.health, 0) / locations.length
+      rows.reduce((sum, location) => sum + location.health, 0) / Math.max(1, rows.length)
     );
     const weightedLabor =
-      locations.reduce((sum, location) => sum + location.labor * location.revenue, 0) /
+      rows.reduce((sum, location) => sum + location.labor * location.revenue, 0) /
       Math.max(1, totalRevenue);
 
     byId("districtPortfolioHealth").textContent = String(averageHealth);
@@ -99,6 +105,17 @@
 
     if (!banner || !title || !detail || !button) return;
 
+    if (!highestRisk) {
+      banner.dataset.tone = "normal";
+      title.textContent = "No authorized district locations available";
+      detail.textContent = "Verified portfolio data will appear when an authorized restaurant is available.";
+      button.dataset.locationId = "";
+      button.disabled = true;
+      return;
+    }
+
+    button.disabled = false;
+
     const tone = toneFor(highestRisk);
     banner.dataset.tone = tone === "stable" ? "normal" : tone;
     title.textContent =
@@ -119,7 +136,7 @@
   function selectLocation(locationId) {
     state.selectedLocationId = locationId;
 
-    const location = locations.find(item => item.id === locationId);
+    const location = visibleLocations().find(item => item.id === locationId);
     if (!location) return;
 
     window.dispatchEvent(new CustomEvent("bluecurrent:location-selected", {
@@ -194,8 +211,18 @@
     });
 
     byId("districtAlertFocus")?.addEventListener("click", event => {
-      selectLocation(event.currentTarget.dataset.locationId || "loc_marina");
+      const locationId = event.currentTarget.dataset.locationId;
+      if (locationId) selectLocation(locationId);
     });
+
+    window.addEventListener("bluecurrent:frontline-location-changed", () => {
+      state.selectedLocationId = window.BlueCurrentFrontlineLocation?.get?.() || "";
+      renderKPIs();
+      renderLocations();
+      renderDistrictAlert();
+    });
+
+    state.selectedLocationId = window.BlueCurrentFrontlineLocation?.get?.() || visibleLocations()[0]?.id || "";
 
     renderKPIs();
     renderLocations();

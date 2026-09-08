@@ -1,0 +1,8 @@
+(function(){"use strict";
+class BlueCurrentDecisionTradeoffEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4128:decision-tradeoffs";}
+ read(k,f=[]){try{return JSON.parse(localStorage.getItem(k)||"null")??f;}catch{return f;}}
+ latest(k){const v=this.read(k,[]);return Array.isArray(v)?v[0]||null:v||null;}
+ analyze(owner){const strategy=this.latest("bluecurrent:v4127:adaptive-strategies");if(!strategy)return null;const options=strategy.strategies.map((s,i)=>{const guest=Math.max(20,Math.min(95,s.value+(s.name==="Aggressive"?8:s.name==="Conservative"?-6:2)));const labor=Math.max(15,Math.min(95,100-(s.risk==="high"?64:s.risk==="medium"?46:28)));const stability=Math.max(20,Math.min(98,s.confidence+(s.risk==="low"?8:s.risk==="high"?-12:0)));const score=Math.round(guest*.4+labor*.25+stability*.35);return{...s,guestValue:guest,laborProtection:labor,stability,score,rank:i+1};}).sort((a,b)=>b.score-a.score).map((x,i)=>({...x,rank:i+1}));const result={id:`V41-TRADEOFF-${Date.now()}`,owner:String(owner||"Executive sponsor").trim(),strategyId:strategy.id,recommendedId:options[0]?.id||null,recommendedName:options[0]?.name||"—",options,createdAt:new Date().toISOString()};const h=this.read(this.key,[]);h.unshift(result);localStorage.setItem(this.key,JSON.stringify(h.slice(0,30)));this.eventBus?.emit?.("decision-tradeoff:analyzed",result);return result;}
+ history(){return this.read(this.key,[]);}}
+window.BlueCurrentDecisionTradeoffEngine=BlueCurrentDecisionTradeoffEngine;})();

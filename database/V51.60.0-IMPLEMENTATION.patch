@@ -1,0 +1,734 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "51.55.0",
++  "version": "51.60.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 pilot launch control and human launch authorization",
++  "description": "Blue Current Hospitality OS \u2014 pilot execution and observation control",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -71,6 +71,7 @@
+ const ManagementExecutiveAccuracyService = require("./services/managementExecutiveAccuracyService");
+ const PilotDeploymentPackageService = require("./services/pilotDeploymentPackageService");
+ const PilotLaunchControlService = require("./services/pilotLaunchControlService");
++const PilotExecutionObservationService = require("./services/pilotExecutionObservationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -145,7 +146,8 @@
+ const managementExecutiveAccuracyService = new ManagementExecutiveAccuracyService(database, auditService, realtimeHub, executiveCommandCenterService, liveFloorServiceCertificationService);
+ const pilotDeploymentPackageService = new PilotDeploymentPackageService(database, auditService, realtimeHub, managementExecutiveAccuracyService);
+ const pilotLaunchControlService = new PilotLaunchControlService(database, auditService, realtimeHub, pilotDeploymentPackageService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService });
++const pilotExecutionObservationService = new PilotExecutionObservationService(database, auditService, realtimeHub, pilotLaunchControlService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -232,7 +234,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V51.55.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V51.60.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService, productionOperationsHandoffService, productionHealthSupportService, productionIncidentCommandService, productionRecoveryReviewService, productionCorrectiveActionGovernanceService, v50ReleaseCertificationService, pilotOperationalReadinessService, restaurantDayLifecycleService, peakServiceStressTestService, dataIntegrityRecoveryService, rolePermissionCertificationService, operatorUxHardeningService, reservationGuestJourneyCertificationService, liveFloorServiceCertificationService, managementExecutiveAccuracyService, pilotDeploymentPackageService, pilotLaunchControlService, pilotExecutionObservationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "51.55.0",
++        version: "51.60.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,30 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/pilot-execution-observation" && request.method === "GET") {
++      return sendJson(response,200,await pilotExecutionObservationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
++    if (url.pathname.startsWith("/api/pilot-execution-observation/locations/") && url.pathname.endsWith("/start") && request.method === "POST") {
++      if (!authService.can(auth,"admin") && !authService.can(auth,"write")) return sendJson(response,403,{error:"Administrative/manager permission required to record pilot start."});
++      const locationId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotExecutionObservationService.start(auth.membership.organizationId,auth.membership.locationIds||[],locationId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
++    if (url.pathname.startsWith("/api/pilot-execution-observation/sessions/") && url.pathname.endsWith("/milestone") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"write_operations") && !authService.can(auth,"write_reservations")) return sendJson(response,403,{error:"Operational write permission required to confirm pilot milestones."});
++      const sessionId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotExecutionObservationService.confirmMilestone(auth.membership.organizationId,auth.membership.locationIds||[],sessionId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
++    if (url.pathname.startsWith("/api/pilot-execution-observation/sessions/") && url.pathname.endsWith("/observe") && request.method === "POST") {
++      if (!authService.can(auth,"write") && !authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Operations write permission required to record pilot health observations."});
++      const sessionId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotExecutionObservationService.observe(auth.membership.organizationId,auth.membership.locationIds||[],sessionId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
++    if (url.pathname.startsWith("/api/pilot-execution-observation/sessions/") && url.pathname.endsWith("/decision") && request.method === "POST") {
++      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Executive/admin permission required for CONTINUE/HOLD/ROLLBACK decisions."});
++      const sessionId=decodeURIComponent(url.pathname.split("/")[4]||""); const body=await readJson(request);
++      try{return sendJson(response,201,await pilotExecutionObservationService.decide(auth.membership.organizationId,auth.membership.locationIds||[],sessionId,body,auth.user.name));}catch(error){return sendJson(response,400,{error:error.message});}
++    }
+ 
+     if (url.pathname === "/api/pilot-launch-control" && request.method === "GET") {
+       return sendJson(response,200,await pilotLaunchControlService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/pilotExecutionObservationService.js
++++ b/server/services/pilotExecutionObservationService.js
+@@ -0,0 +1,185 @@
++"use strict";
++
++class PilotExecutionObservationService {
++  constructor(database,auditService,realtimeHub,pilotLaunchControlService){
++    Object.assign(this,{database,auditService,realtimeHub,pilotLaunchControlService});
++    this.milestones=[
++      "PILOT_START",
++      "FIRST_OPERATOR_LOGIN",
++      "FIRST_RESERVATION_WORKFLOW",
++      "FIRST_SEATING_WORKFLOW",
++      "FIRST_SERVICE_FLOW",
++      "FIRST_KITCHEN_WORKFLOW",
++      "SUPPORT_BRIDGE_ACTIVE"
++    ];
++  }
++  now(){return new Date().toISOString();}
++  allowed(id,allowed=[]){return allowed.includes("*")||allowed.includes(id);}
++  async sessions(org){
++    const db=await this.database.read();
++    return (db.pilotExecutionSessions||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.startedAt)-new Date(a.startedAt));
++  }
++  async observations(org){
++    const db=await this.database.read();
++    return (db.pilotExecutionObservations||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.observedAt)-new Date(a.observedAt));
++  }
++  async decisions(org){
++    const db=await this.database.read();
++    return (db.pilotExecutionDecisions||[]).filter(x=>x.organizationId===org).sort((a,b)=>new Date(b.decidedAt)-new Date(a.decidedAt));
++  }
++  async snapshot(org,allowed){
++    const [launch,sessions,observations,decisions]=await Promise.all([
++      this.pilotLaunchControlService.snapshot(org,allowed),
++      this.sessions(org),this.observations(org),this.decisions(org)
++    ]);
++    const locations=(launch.locations||[]).map(loc=>{
++      const session=sessions.find(x=>x.locationId===loc.locationId&&x.status==="ACTIVE")||sessions.find(x=>x.locationId===loc.locationId)||null;
++      const history=observations.filter(x=>x.locationId===loc.locationId);
++      const latest=history[0]||null;
++      const decision=decisions.find(x=>x.locationId===loc.locationId)||null;
++      const completed=new Set(session?.milestones?.filter(x=>x.status==="CONFIRMED").map(x=>x.milestone)||[]);
++      const milestoneState=this.milestones.map(m=>({milestone:m,status:completed.has(m)?"CONFIRMED":"OPEN"}));
++      const incidents=history.filter(x=>["high","critical"].includes(x.severity));
++      const latestHealthy=!!latest&&Object.values(latest.health||{}).every(Boolean);
++      const allMilestones=milestoneState.every(x=>x.status==="CONFIRMED");
++      return {
++        locationId:loc.locationId,locationName:loc.locationName,
++        launchAuthorization:loc.authorization||null,
++        launchReady:loc.launchReady,
++        session,milestones:milestoneState,
++        confirmedMilestones:milestoneState.filter(x=>x.status==="CONFIRMED").length,
++        totalMilestones:this.milestones.length,
++        observations:history,latestObservation:latest,
++        highCriticalIncidents:incidents.length,
++        currentDecision:decision,
++        executionReady:loc.authorization?.status==="PILOT_LAUNCH_AUTHORIZED",
++        continueEligible:!!session&&session.status==="ACTIVE"&&allMilestones&&latestHealthy&&incidents.length===0,
++        executionState:decision?.decision||session?.status||"NOT_STARTED"
++      };
++    });
++    return {
++      version:"51.60.0",generatedAt:this.now(),
++      status:locations.some(x=>x.session?.status==="ACTIVE")?"pilot-execution-observing":locations.some(x=>x.currentDecision?.decision==="CONTINUE")?"pilot-execution-continue-approved":"pilot-execution-awaiting-start",
++      headline:`${locations.filter(x=>x.session?.status==="ACTIVE").length} active pilot execution session(s); ${locations.reduce((n,x)=>n+x.highCriticalIncidents,0)} high/critical incident observation(s).`,
++      locations,
++      policy:{
++        launchAuthorizationRequired:true,
++        explicitHumanStartRecordRequired:true,
++        milestoneEvidenceRequired:true,
++        liveHealthObservationRequired:true,
++        humanContinueHoldRollbackDecisionRequired:true,
++        decisionDoesNotExecuteRollback:true,
++        noAutonomousPilotExecution:true,
++        noAutomaticGuestActions:true,
++        noAutomaticOperationalMutation:true,
++        autonomousProductionChanges:false
++      }
++    };
++  }
++  async start(org,allowed,locationId,input,actor){
++    if(!this.allowed(locationId,allowed))throw new Error("Location is outside your authorized scope.");
++    const snap=await this.snapshot(org,allowed);
++    const loc=snap.locations.find(x=>x.locationId===locationId);
++    if(!loc)throw new Error("Pilot location not found.");
++    if(loc.launchAuthorization?.status!=="PILOT_LAUNCH_AUTHORIZED")throw new Error("Human pilot launch authorization is required before execution can start.");
++    if(loc.session?.status==="ACTIVE")throw new Error("An active pilot execution session already exists.");
++    const evidence=String(input.evidence||"").trim().slice(0,3000);
++    if(!evidence)throw new Error("Human pilot-start evidence is required.");
++    const now=this.now();
++    const record={
++      id:`pes_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId:org,locationId,locationName:loc.locationName,
++      status:"ACTIVE",startedAt:now,startedBy:actor,
++      launchAuthorizationId:loc.launchAuthorization.id,
++      launchOwner:String(input.launchOwner||loc.launchAuthorization.launchOwner||actor).trim().slice(0,160),
++      supportBridge:String(input.supportBridge||"").trim().slice(0,240),
++      evidence,note:String(input.note||"").trim().slice(0,1800),
++      milestones:[{milestone:"PILOT_START",status:"CONFIRMED",confirmedAt:now,confirmedBy:actor,evidence}],
++      runtimeStartedByService:false,guestActionPerformed:false,operationalMutationPerformed:false
++    };
++    await this.database.mutate(db=>{db.pilotExecutionSessions||=[];db.pilotExecutionSessions.push(record);return record;});
++    await this.auditService.record({organizationId:org,actor,action:`Pilot execution start recorded for ${locationId}; Blue Current did not start runtime or perform guest/operational actions`,category:"pilot_execution"});
++    this.realtimeHub.publish("pilot-execution:started",{organizationId:org,locationId,id:record.id});
++    return record;
++  }
++  async confirmMilestone(org,allowed,sessionId,input,actor){
++    const milestone=String(input.milestone||"").toUpperCase();
++    if(!this.milestones.includes(milestone)||milestone==="PILOT_START")throw new Error("Invalid pilot execution milestone.");
++    const snap=await this.snapshot(org,allowed);
++    const loc=snap.locations.find(x=>x.session?.id===sessionId);
++    if(!loc||loc.session.status!=="ACTIVE")throw new Error("Active pilot execution session not found.");
++    const evidence=String(input.evidence||"").trim().slice(0,2600);
++    if(!evidence)throw new Error("Human milestone evidence is required.");
++    if(loc.session.milestones?.some(x=>x.milestone===milestone&&x.status==="CONFIRMED"))throw new Error(`${milestone} is already confirmed.`);
++    const order=this.milestones.indexOf(milestone);
++    const prior=this.milestones[order-1];
++    if(prior&&!loc.session.milestones?.some(x=>x.milestone===prior&&x.status==="CONFIRMED"))throw new Error(`${milestone} cannot be confirmed before ${prior}.`);
++    const record={id:`pem_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,milestone,status:"CONFIRMED",confirmedAt:this.now(),confirmedBy:actor,evidence,systemActionPerformed:false};
++    await this.database.mutate(db=>{const s=(db.pilotExecutionSessions||[]).find(x=>x.id===sessionId&&x.organizationId===org);if(!s)return null;s.milestones||=[];s.milestones.push(record);return record;});
++    await this.auditService.record({organizationId:org,actor,action:`Pilot execution milestone ${milestone} confirmed for ${loc.locationId}`,category:"pilot_execution"});
++    this.realtimeHub.publish("pilot-execution:milestone",{organizationId:org,locationId:loc.locationId,sessionId,milestone});
++    return record;
++  }
++  async observe(org,allowed,sessionId,input,actor){
++    const snap=await this.snapshot(org,allowed);
++    const loc=snap.locations.find(x=>x.session?.id===sessionId);
++    if(!loc||loc.session.status!=="ACTIVE")throw new Error("Active pilot execution session not found.");
++    const severity=String(input.severity||"none").toLowerCase();
++    if(!["none","low","medium","high","critical"].includes(severity))throw new Error("Severity must be none, low, medium, high, or critical.");
++    const health={
++      apiHealthy:input.apiHealthy===true,
++      authenticationHealthy:input.authenticationHealthy===true,
++      reservationHealthy:input.reservationHealthy===true,
++      floorHealthy:input.floorHealthy===true,
++      kitchenHealthy:input.kitchenHealthy===true,
++      supportBridgeHealthy:input.supportBridgeHealthy===true
++    };
++    const incident=String(input.incident||"").trim().slice(0,2200);
++    if(["high","critical"].includes(severity)&&!incident)throw new Error("High/Critical observation requires an incident description.");
++    const record={
++      id:`peo_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId:org,locationId:loc.locationId,locationName:loc.locationName,sessionId,
++      observedAt:this.now(),observedBy:actor,severity,health,incident,
++      note:String(input.note||"").trim().slice(0,1800),
++      automaticMitigationPerformed:false,rollbackExecuted:false
++    };
++    await this.database.mutate(db=>{db.pilotExecutionObservations||=[];db.pilotExecutionObservations.push(record);return record;});
++    await this.auditService.record({organizationId:org,actor,action:`Pilot execution health observation for ${loc.locationId}: ${severity}`,category:"pilot_execution"});
++    this.realtimeHub.publish("pilot-execution:observed",{organizationId:org,locationId:loc.locationId,sessionId,severity});
++    return record;
++  }
++  async decide(org,allowed,sessionId,input,actor){
++    const snap=await this.snapshot(org,allowed);
++    const loc=snap.locations.find(x=>x.session?.id===sessionId);
++    if(!loc||loc.session.status!=="ACTIVE")throw new Error("Active pilot execution session not found.");
++    const decision=String(input.decision||"").toUpperCase();
++    if(!["CONTINUE","HOLD","ROLLBACK"].includes(decision))throw new Error("Decision must be CONTINUE, HOLD, or ROLLBACK.");
++    const evidence=String(input.evidence||"").trim().slice(0,3200);
++    if(!evidence)throw new Error("Human pilot execution decision evidence is required.");
++    const reason=String(input.reason||"").trim().slice(0,2200);
++    if(["HOLD","ROLLBACK"].includes(decision)&&!reason)throw new Error(`${decision} requires a documented human reason.`);
++    if(decision==="CONTINUE"&&!loc.continueEligible&&!reason)throw new Error("CONTINUE with open milestones, unhealthy latest observation, or high/critical incidents requires a documented executive reason.");
++    const record={
++      id:`ped_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,
++      organizationId:org,locationId:loc.locationId,locationName:loc.locationName,sessionId,
++      decision,decidedAt:this.now(),decidedBy:actor,evidence,reason,
++      milestoneSnapshot:{confirmed:loc.confirmedMilestones,total:loc.totalMilestones},
++      latestObservationId:loc.latestObservation?.id||null,
++      highCriticalIncidents:loc.highCriticalIncidents,
++      automaticActionPerformed:false,
++      rollbackExecuted:false,
++      autonomousProductionChanges:false
++    };
++    await this.database.mutate(db=>{
++      db.pilotExecutionDecisions||=[];db.pilotExecutionDecisions.push(record);
++      const s=(db.pilotExecutionSessions||[]).find(x=>x.id===sessionId&&x.organizationId===org);
++      if(s&&["HOLD","ROLLBACK"].includes(decision)){s.status=decision==="HOLD"?"HELD":"ROLLBACK_RECOMMENDED";s.decisionAt=record.decidedAt;}
++      if(s&&decision==="CONTINUE"){s.lastContinueAt=record.decidedAt;}
++      return record;
++    });
++    await this.auditService.record({organizationId:org,actor,action:`Pilot execution decision ${decision} recorded for ${loc.locationId}; no automatic rollback or operational action executed`,category:"pilot_execution"});
++    this.realtimeHub.publish("pilot-execution:decision",{organizationId:org,locationId:loc.locationId,sessionId,decision});
++    return record;
++  }
++}
++module.exports=PilotExecutionObservationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="51.55.0">
++  <meta name="blue-current-build" content="51.60.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -452,6 +452,15 @@
+       <div class="v4316-actions"><textarea id="v5155Roster" class="v4312-input" placeholder="Confirmed pilot operators, comma or line separated"></textarea><textarea id="v5155BlockerInput" class="v4312-input" placeholder="Optional launch blockers, one per line"></textarea><input id="v5155PrelaunchEvidence" class="v4312-input" placeholder="Human pre-launch verification evidence"><input id="v5155Note" class="v4312-input" placeholder="Launch-control note"></div>
+       <div class="v4316-actions"><input id="v5155Resolution" class="v4312-input" placeholder="Human blocker-resolution evidence"><input id="v5155AuthorizationEvidence" class="v4312-input" placeholder="Human launch-authorization evidence"><input id="v5155AuthorizationNote" class="v4312-input" placeholder="Launch-authorization note"></div>
+       <p><strong>Pilot launch locations</strong></p><div id="v5155Locations" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="v5160PilotExecutionObservation">
++      <header><div><small>V51.56–V51.60 · Pilot Execution & Observation Control</small><strong>Record the first live pilot actions and health observations without letting Blue Current autonomously execute the pilot.</strong><span>Execution begins only after human launch authorization. Seven ordered milestones cover pilot start, first operator login, first reservation, seating, service-flow and kitchen workflows, plus support-bridge activation. Health observations and human CONTINUE / HOLD / ROLLBACK decisions are recorded separately from execution.</span></div><button id="v5160Refresh" type="button">Refresh pilot execution</button></header>
++      <div class="v432-kpis"><article><small>Execution status</small><strong id="v5160Status">—</strong></article><article><small>Active sessions</small><strong id="v5160Active">0</strong></article><article><small>Milestones confirmed</small><strong id="v5160Milestones">0/0</strong></article><article><small>High/Critical incidents</small><strong id="v5160Incidents">0</strong></article></div>
++      <div class="v4316-answer" id="v5160Headline">Pilot execution observation ready.</div>
++      <div class="v4316-actions"><input id="v5160LaunchOwner" class="v4312-input" placeholder="Launch owner"><input id="v5160SupportBridge" class="v4312-input" placeholder="Live support bridge"><input id="v5160StartEvidence" class="v4312-input" placeholder="Human pilot-start evidence"><input id="v5160Note" class="v4312-input" placeholder="Pilot-start note"><input id="v5160MilestoneEvidence" class="v4312-input" placeholder="Human milestone evidence"></div>
++      <div class="v4316-actions"><select id="v5160Severity" class="v4312-input"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option></select><label><input id="v5160Api" type="checkbox" checked> API healthy</label><label><input id="v5160Auth" type="checkbox" checked> Auth healthy</label><label><input id="v5160Reservation" type="checkbox" checked> Reservations healthy</label><label><input id="v5160Floor" type="checkbox" checked> Floor healthy</label><label><input id="v5160Kitchen" type="checkbox" checked> Kitchen healthy</label><label><input id="v5160Support" type="checkbox" checked> Support bridge healthy</label></div>
++      <div class="v4316-actions"><input id="v5160Incident" class="v4312-input" placeholder="Incident description if needed"><input id="v5160ObservationNote" class="v4312-input" placeholder="Health observation note"><input id="v5160DecisionEvidence" class="v4312-input" placeholder="Human CONTINUE / HOLD / ROLLBACK evidence"><input id="v5160DecisionReason" class="v4312-input" placeholder="Decision reason / executive override"></div>
++      <p><strong>Pilot execution locations</strong></p><div id="v5160Locations" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -9018,6 +9027,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotDeploymentPackage" data-src="js/modules/pilotDeploymentPackageCenter.js?v=51.50.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLaunchControlV5155" data-src="js/modules/pilotLaunchControlEngine.js?v=51.55.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotLaunchControlV5155" data-src="js/modules/pilotLaunchControlCenter.js?v=51.55.0"></script>
+-<script src="js/startup-loader.js?v=51.55.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotExecutionObservationV5160" data-src="js/modules/pilotExecutionObservationEngine.js?v=51.60.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="pilotExecutionObservationV5160" data-src="js/modules/pilotExecutionObservationCenter.js?v=51.60.0"></script>
++<script src="js/startup-loader.js?v=51.60.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1258,6 +1258,7 @@
+ const managementExecutiveAccuracyModule = startupRegistry.register("managementExecutiveAccuracy", shouldInitializeCenter("managementExecutiveAccuracy") ? window.createBlueCurrentManagementExecutiveAccuracyCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "liveFloorServiceCertification"]);
+ const pilotDeploymentPackageModule = startupRegistry.register("pilotDeploymentPackage", shouldInitializeCenter("pilotDeploymentPackage") ? window.createBlueCurrentPilotDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "managementExecutiveAccuracy"]);
+ const pilotLaunchControlV5155Module = startupRegistry.register("pilotLaunchControlV5155", shouldInitializeCenter("pilotLaunchControlV5155") ? window.createBlueCurrentPilotLaunchControlCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotDeploymentPackage"]);
++const pilotExecutionObservationV5160Module = startupRegistry.register("pilotExecutionObservationV5160", shouldInitializeCenter("pilotExecutionObservationV5160") ? window.createBlueCurrentPilotExecutionObservationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "pilotLaunchControlV5155"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V51.55.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V51.60.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/pilotExecutionObservationEngine.js
++++ b/client/js/modules/pilotExecutionObservationEngine.js
+@@ -0,0 +1,14 @@
++(function(global){"use strict";
++class BlueCurrentPilotExecutionObservationEngine{
++  constructor({eventBus,appState}={}){this.eventBus=eventBus;this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  headers(){return {Authorization:`Bearer ${this.token()}`};}
++  async snapshot(){const r=await fetch("/api/pilot-execution-observation",{headers:this.headers()}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot execution observation failed (${r.status})`);this.appState?.update?.({pilotExecutionObservation:d});return d;}
++  async start(locationId,payload={}){const r=await fetch(`/api/pilot-execution-observation/locations/${encodeURIComponent(locationId)}/start`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot start record failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:started",structuredClone(d));return d;}
++  async milestone(sessionId,payload={}){const r=await fetch(`/api/pilot-execution-observation/sessions/${encodeURIComponent(sessionId)}/milestone`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot milestone failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:milestone",structuredClone(d));return d;}
++  async observe(sessionId,payload={}){const r=await fetch(`/api/pilot-execution-observation/sessions/${encodeURIComponent(sessionId)}/observe`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot health observation failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:observed",structuredClone(d));return d;}
++  async decide(sessionId,payload={}){const r=await fetch(`/api/pilot-execution-observation/sessions/${encodeURIComponent(sessionId)}/decision`,{method:"POST",headers:{...this.headers(),"Content-Type":"application/json"},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`Pilot execution decision failed (${r.status})`);this.eventBus?.emit?.("pilot-execution:decision",structuredClone(d));return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentPilotExecutionObservationEngine;
++if(global)global.BlueCurrentPilotExecutionObservationEngine=BlueCurrentPilotExecutionObservationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/pilotExecutionObservationCenter.js
++++ b/client/js/modules/pilotExecutionObservationCenter.js
+@@ -0,0 +1,44 @@
++(function(){"use strict";
++function createBlueCurrentPilotExecutionObservationCenterModule(eventBus,appState){
++  const root=document.getElementById("v5160PilotExecutionObservation");
++  if(!root||!window.BlueCurrentPilotExecutionObservationEngine)return null;
++  const e=new window.BlueCurrentPilotExecutionObservationEngine({eventBus,appState}),$=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    const locs=s.locations||[];
++    $("v5160Status").textContent=s.status||"—";
++    $("v5160Active").textContent=locs.filter(x=>x.session?.status==="ACTIVE").length;
++    $("v5160Milestones").textContent=`${locs.reduce((n,x)=>n+x.confirmedMilestones,0)}/${locs.reduce((n,x)=>n+x.totalMilestones,0)}`;
++    $("v5160Incidents").textContent=locs.reduce((n,x)=>n+x.highCriticalIncidents,0);
++    $("v5160Headline").textContent=s.headline||"Pilot execution observation unavailable.";
++    $("v5160Locations").innerHTML=locs.map(x=>`<article data-v5160-location="${esc(x.locationId)}"${x.session?` data-v5160-session="${esc(x.session.id)}"`:""}><div><strong>${esc(x.locationName)}</strong><span>${esc(x.executionState)} · ${x.confirmedMilestones}/${x.totalMilestones} milestones · high/critical ${x.highCriticalIncidents}</span></div>${!x.executionReady?'<p>Human launch authorization required before pilot execution can start.</p>':""}${x.executionReady&&!x.session?'<button type="button" data-v5160-start="true">Record pilot start</button>':""}${x.session?.status==="ACTIVE"?`<div class="v432-list">${x.milestones.map(m=>`<article data-v5160-milestone="${esc(m.milestone)}"><strong>${esc(m.status)} · ${esc(m.milestone.replaceAll("_"," "))}</strong>${m.status==="OPEN"&&m.milestone!=="PILOT_START"?'<button type="button" data-v5160-confirm="true">Confirm milestone</button>':""}</article>`).join("")}</div><div class="v4316-actions"><button type="button" data-v5160-observe="true">Record health observation</button><button type="button" data-v5160-continue="true">CONTINUE</button><button type="button" data-v5160-hold="true">HOLD</button><button type="button" data-v5160-rollback="true">ROLLBACK</button></div>`:""}${x.latestObservation?`<p>Latest health: ${Object.values(x.latestObservation.health||{}).filter(Boolean).length}/${Object.keys(x.latestObservation.health||{}).length} · severity ${esc(x.latestObservation.severity)}</p>`:""}</article>`).join("")||"<article><strong>No in-scope restaurants.</strong></article>";
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("v5160Headline").textContent=err.message;}}
++  root.addEventListener("click",async ev=>{
++    const loc=ev.target.closest("[data-v5160-location]");if(!loc)return;
++    try{
++      if(ev.target.closest("[data-v5160-start]")){
++        await e.start(loc.dataset.v5160Location,{launchOwner:$("v5160LaunchOwner").value,supportBridge:$("v5160SupportBridge").value,evidence:$("v5160StartEvidence").value,note:$("v5160Note").value});
++      }else if(ev.target.closest("[data-v5160-observe]")&&loc.dataset.v5160Session){
++        await e.observe(loc.dataset.v5160Session,{severity:$("v5160Severity").value,apiHealthy:$("v5160Api").checked,authenticationHealthy:$("v5160Auth").checked,reservationHealthy:$("v5160Reservation").checked,floorHealthy:$("v5160Floor").checked,kitchenHealthy:$("v5160Kitchen").checked,supportBridgeHealthy:$("v5160Support").checked,incident:$("v5160Incident").value,note:$("v5160ObservationNote").value});
++      }else if(ev.target.closest("[data-v5160-continue]")&&loc.dataset.v5160Session){
++        await e.decide(loc.dataset.v5160Session,{decision:"CONTINUE",evidence:$("v5160DecisionEvidence").value,reason:$("v5160DecisionReason").value});
++      }else if(ev.target.closest("[data-v5160-hold]")&&loc.dataset.v5160Session){
++        await e.decide(loc.dataset.v5160Session,{decision:"HOLD",evidence:$("v5160DecisionEvidence").value,reason:$("v5160DecisionReason").value});
++      }else if(ev.target.closest("[data-v5160-rollback]")&&loc.dataset.v5160Session){
++        await e.decide(loc.dataset.v5160Session,{decision:"ROLLBACK",evidence:$("v5160DecisionEvidence").value,reason:$("v5160DecisionReason").value});
++      }else{
++        const m=ev.target.closest("[data-v5160-milestone]");
++        if(m&&ev.target.closest("[data-v5160-confirm]")&&loc.dataset.v5160Session){
++          await e.milestone(loc.dataset.v5160Session,{milestone:m.dataset.v5160Milestone,evidence:$("v5160MilestoneEvidence").value});
++        }
++      }
++      await load();
++    }catch(err){$("v5160Headline").textContent=err.message;}
++  });
++  $("v5160Refresh")?.addEventListener("click",load);
++  ["pilot-execution:started","pilot-execution:milestone","pilot-execution:observed","pilot-execution:decision","pilot-launch:authorized","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentPilotExecutionObservationCenterModule=createBlueCurrentPilotExecutionObservationCenterModule;
++})();--- a/scripts/maintenance/test-v51.60-pilot-execution-observation.js
++++ b/scripts/maintenance/test-v51.60-pilot-execution-observation.js
+@@ -0,0 +1,116 @@
++"use strict";
++const assert=require("assert");
++const Service=require("../../server/services/pilotExecutionObservationService");
++
++(async()=>{
++  const state={pilotExecutionSessions:[],pilotExecutionObservations:[],pilotExecutionDecisions:[]};
++  const audits=[],events=[];
++  const launch={
++    snapshot:async()=>({
++      locations:[{
++        locationId:"loc1",locationName:"Pilot Restaurant",launchReady:true,
++        authorization:{id:"auth1",status:"PILOT_LAUNCH_AUTHORIZED",launchOwner:"GM"}
++      }]
++    })
++  };
++  const svc=new Service(
++    {read:async()=>JSON.parse(JSON.stringify(state)),mutate:async fn=>fn(state)},
++    {record:async x=>audits.push(x)},
++    {publish:(n,p)=>events.push([n,p])},
++    launch
++  );
++
++  let snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.version,"51.60.0");
++  assert.equal(snap.status,"pilot-execution-awaiting-start");
++  assert.equal(snap.locations[0].executionReady,true);
++
++  const session=await svc.start("org",["loc1"],"loc1",{
++    launchOwner:"GM",supportBridge:"Pilot bridge",
++    evidence:"Launch authorization confirmed and human pilot start recorded.",
++    note:"Controlled live pilot start."
++  },"Tester");
++  assert.equal(session.status,"ACTIVE");
++  assert.equal(session.runtimeStartedByService,false);
++  assert.equal(session.milestones[0].milestone,"PILOT_START");
++
++  let orderBlocked=false;
++  try{
++    await svc.confirmMilestone("org",["loc1"],session.id,{milestone:"FIRST_SEATING_WORKFLOW",evidence:"Seat done."},"Tester");
++  }catch(e){orderBlocked=/cannot be confirmed before/i.test(e.message);}
++  assert(orderBlocked);
++
++  for(const milestone of svc.milestones.slice(1)){
++    const m=await svc.confirmMilestone("org",["loc1"],session.id,{
++      milestone,evidence:`${milestone} manually observed and verified.`
++    },"Tester");
++    assert.equal(m.status,"CONFIRMED");
++    assert.equal(m.systemActionPerformed,false);
++  }
++
++  const obs=await svc.observe("org",["loc1"],session.id,{
++    severity:"none",
++    apiHealthy:true,authenticationHealthy:true,reservationHealthy:true,
++    floorHealthy:true,kitchenHealthy:true,supportBridgeHealthy:true,
++    note:"First live observation healthy."
++  },"Tester");
++  assert.equal(obs.automaticMitigationPerformed,false);
++  assert.equal(obs.rollbackExecuted,false);
++
++  snap=await svc.snapshot("org",["loc1"]);
++  assert.equal(snap.locations[0].confirmedMilestones,7);
++  assert.equal(snap.locations[0].continueEligible,true);
++
++  const decision=await svc.decide("org",["loc1"],session.id,{
++    decision:"CONTINUE",
++    evidence:"All first-live milestones and latest health observation are clean."
++  },"Tester");
++  assert.equal(decision.decision,"CONTINUE");
++  assert.equal(decision.automaticActionPerformed,false);
++  assert.equal(decision.rollbackExecuted,false);
++
++  // Critical observation requires incident description.
++  let incidentBlocked=false;
++  try{
++    await svc.observe("org",["loc1"],session.id,{
++      severity:"critical",apiHealthy:false,authenticationHealthy:true,reservationHealthy:true,
++      floorHealthy:true,kitchenHealthy:true,supportBridgeHealthy:true
++    },"Tester");
++  }catch(e){incidentBlocked=/requires an incident description/i.test(e.message);}
++  assert(incidentBlocked);
++
++  const incident=await svc.observe("org",["loc1"],session.id,{
++    severity:"critical",apiHealthy:false,authenticationHealthy:true,reservationHealthy:true,
++    floorHealthy:true,kitchenHealthy:true,supportBridgeHealthy:true,
++    incident:"API health failed during observation."
++  },"Tester");
++  assert.equal(incident.severity,"critical");
++
++  const rollback=await svc.decide("org",["loc1"],session.id,{
++    decision:"ROLLBACK",
++    evidence:"Critical API incident reviewed by human operator.",
++    reason:"Recommend manual rollback pending technical review."
++  },"Tester");
++  assert.equal(rollback.decision,"ROLLBACK");
++  assert.equal(rollback.rollbackExecuted,false);
++
++  console.log(JSON.stringify({
++    ok:true,version:"51.60.0",
++    explicitPilotStartRecord:true,
++    firstOperatorLogin:true,
++    firstReservationWorkflow:true,
++    firstSeatingWorkflow:true,
++    firstServiceFlow:true,
++    firstKitchenWorkflow:true,
++    supportBridgeStatus:true,
++    launchIncidentLog:true,
++    liveHealthObservation:true,
++    humanContinueHoldRollback:true,
++    milestoneOrderEnforced:true,
++    criticalIncidentEvidenceRequired:true,
++    noAutonomousPilotExecution:true,
++    noAutomaticRollback:true,
++    noAutomaticGuestActions:true,
++    autonomousProductionChanges:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V51.60.0-RELEASE.md
++++ b/V51.60.0-RELEASE.md
+@@ -0,0 +1,160 @@
++# BLUE CURRENT V51.60.0 — PILOT EXECUTION & OBSERVATION CONTROL
++
++V51.56–V51.60 adds the human-controlled execution/observation layer that sits after launch authorization.
++
++## Ordered first-live milestones
++
++1. PILOT_START
++2. FIRST_OPERATOR_LOGIN
++3. FIRST_RESERVATION_WORKFLOW
++4. FIRST_SEATING_WORKFLOW
++5. FIRST_SERVICE_FLOW
++6. FIRST_KITCHEN_WORKFLOW
++7. SUPPORT_BRIDGE_ACTIVE
++
++Milestones must be confirmed in order.
++
++Every milestone requires human evidence.
++
++Blue Current records the observation; it does not perform the underlying restaurant action.
++
++## Explicit pilot start
++
++A pilot execution session cannot begin until V51.55 has a:
++
++`PILOT_LAUNCH_AUTHORIZED`
++
++record.
++
++Starting the V51.60 session requires human start evidence.
++
++The start record explicitly states:
++
++- runtimeStartedByService: false
++- guestActionPerformed: false
++- operationalMutationPerformed: false
++
++## Health observation
++
++Live health observations cover:
++
++- API health
++- authentication health
++- reservation workflow health
++- floor workflow health
++- kitchen workflow health
++- support bridge health
++
++Severity:
++
++- none
++- low
++- medium
++- high
++- critical
++
++High/critical observations require an incident description.
++
++## Human operating decision
++
++The launch owner/executive can record:
++
++- CONTINUE
++- HOLD
++- ROLLBACK
++
++CONTINUE normally requires:
++
++- all seven first-live milestones
++- a fully healthy latest observation
++- zero high/critical incident observations
++
++An executive can still record CONTINUE with open criteria only with a documented reason.
++
++HOLD and ROLLBACK always require a human reason.
++
++## Important separation
++
++A ROLLBACK decision is a human recommendation/decision record.
++
++It does not execute rollback.
++
++V51.60 does not:
++
++- start the runtime
++- make the first reservation
++- seat a guest
++- advance service flow
++- change kitchen state
++- contact guests
++- automatically mitigate incidents
++- automatically roll back production
++
++## Current authenticated Chefs runtime
++
++Current untouched authoritative state:
++
++`pilot-execution-awaiting-start`
++
++All five locations currently show:
++
++- execution ready: false
++- milestones: 0/7
++- high/critical incidents: 0
++
++This is expected because V51.55 launch authorization has not yet been written to the authoritative database.
++
++## Safety policy
++
++- launch authorization required
++- explicit human start record required
++- milestone evidence required
++- live health observation required
++- human CONTINUE/HOLD/ROLLBACK decision required
++- decisions do not execute rollback
++- no autonomous pilot execution
++- no automatic guest actions
++- no automatic operational mutation
++- autonomous production changes false
++
++## Validation
++
++- V51.60 focused execution lifecycle PASS
++- explicit pilot-start record PASS
++- first operator login PASS
++- first reservation workflow PASS
++- first seating workflow PASS
++- first service-flow workflow PASS
++- first kitchen workflow PASS
++- support bridge status PASS
++- launch incident logging PASS
++- live health observation PASS
++- CONTINUE/HOLD/ROLLBACK decision flow PASS
++- milestone-order enforcement PASS
++- critical-incident evidence guard PASS
++- no automatic rollback PASS
++- V51.55 regression PASS
++- authenticated execution endpoint PASS
++- authoritative database unchanged
++- undefined module exports: 0
++- duplicate HTML IDs: 0
++- npm run check PASS
++- 953 JavaScript files
++- 794 client scripts
++- 5,945 unique HTML IDs
++
++## Next
++
++V51.61–V51.65 — Pilot Stabilization & Exit Criteria
++
++- repeated live-health observations
++- incident trend
++- operator confidence
++- workflow stability
++- guest-impact review
++- support load
++- data-integrity recheck
++- executive KPI trust recheck
++- stabilization window
++- explicit human STABLE / EXTEND / ROLLBACK decision
++- pilot-exit evidence
+--- a/README-APPLY-V51.60.0.md
++++ b/README-APPLY-V51.60.0.md
+@@ -0,0 +1,48 @@
++# APPLY BLUE CURRENT V51.60.0
++
++Baseline: exact V51.55.0 repository.
++
++Extract `BLUE-CURRENT-V51.60.0-PILOT-EXECUTION-OBSERVATION.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++Validate:
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v51.60-pilot-execution-observation.js
++node scripts/maintenance/test-v51.55-pilot-launch-control.js
++npm run start
++```
++
++Verify:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "51.60.0"
++```
++
++Open `http://localhost:8787/` and press `Ctrl+F5`.
++
++The new **Pilot Execution & Observation Control** surface appears after Pilot Launch Control.
++
++Important:
++
++- pilot execution cannot start without V51.55 human launch authorization
++- first-live milestones must be confirmed in order
++- high/critical health observations require an incident description
++- CONTINUE/HOLD/ROLLBACK are human records
++- ROLLBACK does not execute a rollback
++- the certification/control layer does not autonomously perform restaurant actions
++
++Git:
++
++```powershell
++git add -A
++git commit -m "V51.60.0 add pilot execution and observation control"
++git push origin live-service-timeline
++```

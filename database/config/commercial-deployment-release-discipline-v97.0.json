@@ -1,0 +1,13 @@
+{
+  "version": "97.0.0",
+  "gate": "COMMERCIAL_HARDENING_DEPLOYMENT_RELEASE_DISCIPLINE",
+  "releaseChecks": 8,
+  "policy": {
+    "humanReleaseApprovalRequired": true,
+    "approvalDoesNotDeploy": true,
+    "noAutomaticDeployment": true,
+    "noAutomaticRollback": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "LIVE_PILOT_EXECUTION_AND_FIELD_EVIDENCE"
+}

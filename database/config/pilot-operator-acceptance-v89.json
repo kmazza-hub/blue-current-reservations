@@ -1,0 +1,24 @@
+{
+  "version": "89.0.0",
+  "phase": "C",
+  "gate": "PILOT_OBSERVATION_AND_OPERATOR_ACCEPTANCE",
+  "dimensions": [
+    "clarity",
+    "usefulness",
+    "responseQuality",
+    "workflowFriction",
+    "exceptionHandling",
+    "serviceFit",
+    "trust"
+  ],
+  "minimumAverageScore": 3.5,
+  "everyDimensionRequired": true,
+  "unresolvedBlockersAllowed": false,
+  "humanAcceptanceRequired": true,
+  "simulationCannotSelfApprove": true,
+  "safety": {
+    "externalProviderWriteBack": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_READINESS_AND_LAUNCH_CONTROL"
+}

@@ -19,7 +19,7 @@
     const labor = Number.parseFloat((byId("districtLabor")?.textContent || "0").replace("%", "")) || 0;
 
     const locations = [...document.querySelectorAll(".district-location-card")].map(card => ({
-      id: card.querySelector("button")?.dataset?.locationId || "loc_marina",
+      id: card.querySelector("button")?.dataset?.locationId || "",
       name: card.querySelector(".district-location-top strong")?.textContent?.trim() || "Location",
       health: Number.parseFloat(card.querySelector(".district-health-badge")?.textContent || "0") || 0,
       labor: Number.parseFloat(
@@ -33,7 +33,7 @@
           ?.querySelector("strong")?.textContent || "0",
         10
       ) || 0
-    }));
+    })).filter(location => location.id);
 
     return { health, alerts, revenue, labor, locations };
   }
@@ -165,7 +165,8 @@
       detail.textContent = `Revenue, labor, health, and alerts remain within a manageable range over the last ${state.range} days.`;
     }
 
-    focus.dataset.locationId = result.priorityLocation?.id || "loc_marina";
+    focus.dataset.locationId = result.priorityLocation?.id || "";
+    focus.disabled = !result.priorityLocation?.id;
   }
 
   function bind() {
@@ -176,6 +177,7 @@
 
     byId("executiveAnalyticsFocus")?.addEventListener("click", event => {
       const locationId = event.currentTarget.dataset.locationId;
+      if (!locationId) return;
       const target = [...document.querySelectorAll(".district-location-card")]
         .find(card => card.querySelector("button")?.dataset?.locationId === locationId);
 

@@ -1,0 +1,28 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+let passed=0,total=0;
+function check(condition,name){total++;console.log(`${condition?"PASS":"FAIL"}: ${name}`);if(condition)passed++;else process.exitCode=1;}
+const root=process.cwd();
+const html=fs.readFileSync(path.join(root,"client","index.html"),"utf8");
+const css=fs.readFileSync(path.join(root,"client","styles.css"),"utf8");
+const marker="V100.2.95 · iPad Safe Area + Keyboard Viewport Integrity";
+const start=css.indexOf(marker),block=start>=0?css.slice(start):"";
+check(start>=0,"V100.2.95 safe-area foundation present");
+check(/name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/.test(html),"standalone viewport opts into safe-area geometry");
+check(block.includes("@supports (padding:env(safe-area-inset-bottom))"),"safe-area rules use feature detection");
+check(block.includes("@media (pointer:coarse) and (max-width:1366px)"),"changes remain scoped to coarse-pointer tablets");
+check(block.includes(".auth-overlay")&&block.includes(".bc-service-workspace-v251"),"full-screen operating overlays reserve safe edges");
+check(block.includes("safe-area-inset-top")&&block.includes("safe-area-inset-right")&&block.includes("safe-area-inset-bottom")&&block.includes("safe-area-inset-left"),"all four safe-area insets are represented");
+check(block.includes(".bc-host-dialog{")&&block.includes("100dvh"),"Host dialog follows the dynamic keyboard-reduced viewport");
+check(block.includes(".bc-host-dialog-card{")&&block.includes("overflow:auto !important"),"Host dialog content remains scrollable with keyboard open");
+check(block.includes("overscroll-behavior:contain")&&block.includes("-webkit-overflow-scrolling:touch"),"dialog retains contained native touch scrolling");
+check(block.includes(".bc-os-rail{")&&block.includes("height:calc(68px + env(safe-area-inset-bottom))"),"bottom navigation reserves Home-indicator height");
+check(block.includes("padding-bottom:calc(7px + env(safe-area-inset-bottom))"),"bottom navigation actions clear the Home indicator");
+check(block.includes(".bc-os-command{")&&block.includes("padding-bottom:calc(45px + env(safe-area-inset-bottom))"),"command content clears safe-area navigation");
+check(!block.includes("orientationchange")&&!block.includes("visualViewport"),"no new orientation or viewport JavaScript lifecycle added");
+check(!block.includes("position:fixed"),"no new fixed overlay introduced");
+check(!block.includes("touch-action:none"),"no touch scrolling suppression introduced");
+check(!block.includes("display:none"),"no tablet content hidden");
+check(css.includes("V100.2.93 · iPad Touch Target Foundation"),"V100.2.93 touch foundation preserved");
+console.log(`V100.2.95 validation ${passed}/${total}`);
+if(passed!==total)process.exitCode=1;

@@ -1,0 +1,25 @@
+{
+  "version": "91.0.0",
+  "phase": "D",
+  "gate": "FIELD_OPERATOR_WORKFLOW_POLISH",
+  "priorities": [
+    "stateAboveFold",
+    "singleNextAction",
+    "touchFriendlyControls",
+    "dangerousActionClarity",
+    "mobileTabletReadiness",
+    "liveFeedback"
+  ],
+  "highRiskActions": {
+    "STOP": "explicit confirmation + reason",
+    "PAUSE": "explicit confirmation + reason",
+    "START": "explicit confirmation"
+  },
+  "safety": {
+    "backendAuthorityUnchanged": true,
+    "existingRuntimeGuardrailsReused": true,
+    "automaticExpansion": false,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "COMMAND_INFORMATION_HIERARCHY_AND_ROLE_FOCUS"
+}

@@ -1,0 +1,48 @@
+/* V100.2.43 — Organic Collision-Safe Restaurant Floor */
+/* Restores the more natural, room-like composition while keeping guaranteed breathing room. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table { transform:translate(-50%,-50%) !important; }
+
+/* MAIN FLOOR — staggered around a central aisle and bar, not a rigid spreadsheet grid. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="1"]  { left:12% !important; top:24% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="3"]  { left:38% !important; top:23% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="4"]  { left:64% !important; top:27% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="9"]  { left:88% !important; top:24% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="2"]  { left:18% !important; top:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="5"]  { left:40% !important; top:43% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="7"]  { left:66% !important; top:45% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="6"]  { left:88% !important; top:44% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="10"] { left:12% !important; top:64% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="11"] { left:38% !important; top:63% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="12"] { left:64% !important; top:63% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="13"] { left:88% !important; top:64% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="15"] { left:18% !important; top:83% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="17"] { left:40% !important; top:82% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="19"] { left:66% !important; top:82% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="21"] { left:88% !important; top:83% !important; }
+
+/* WATERFRONT — staggered sightlines toward windows; service station kept clear. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="8"]  { left:14% !important; top:31% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="16"] { left:39% !important; top:29% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="24"] { left:64% !important; top:32% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="26"] { left:87% !important; top:31% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="28"] { left:20% !important; top:54% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="14"] { left:44% !important; top:55% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="30"] { left:68% !important; top:53% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="32"] { left:89% !important; top:55% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="34"] { left:14% !important; top:78% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="36"] { left:39% !important; top:80% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="38"] { left:64% !important; top:78% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="40"] { left:87% !important; top:80% !important; }
+
+/* PRIVATE DINING — banquet-room symmetry with generous event-space circulation. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="18"] { left:18% !important; top:40% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="20"] { left:41% !important; top:39% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="22"] { left:65% !important; top:41% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="42"] { left:86% !important; top:37% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="44"] { left:14% !important; top:72% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="46"] { left:38% !important; top:70% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="48"] { left:64% !important; top:71% !important; }
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table[data-table="50"] { left:87% !important; top:70% !important; }
+
+/* Keep selected state expressive without physically growing into a neighbor. */
+#hostFloorMap[data-bc-world-class-v100237="true"] .host-table.selected { transform:translate(-50%,-50%) scale(1.02) !important; }

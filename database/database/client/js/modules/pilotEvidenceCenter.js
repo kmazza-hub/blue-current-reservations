@@ -1,0 +1,5 @@
+(function(){"use strict";
+function createBlueCurrentPilotEvidenceCenterModule(eventBus,appState){const root=document.getElementById('pilotEvidenceCenter');if(!root||!window.BlueCurrentPilotEvidenceEngine)return null;const e=new window.BlueCurrentPilotEvidenceEngine({eventBus,appState}),$=id=>document.getElementById(id);
+ function render(s=e.snapshot()){$('pevScore').textContent=`${s.score}%`;$('pevStatus').textContent=s.status.replaceAll('-',' ');$('pevMissing').textContent=s.missing.length;$('pevHeadline').textContent=s.status==='evidence-complete'?'Pilot evidence package is complete and export-ready.':`Capture ${s.missing.length} remaining evidence item${s.missing.length===1?'':'s'}.`;$('pevChecks').innerHTML=s.evidence.map(x=>`<article data-pass="${x.ready}"><div><strong>${x.label}</strong><span>${x.value}</span></div><b>${x.ready?'READY':'MISSING'}</b></article>`).join('')}
+ $('pevRefresh').onclick=()=>render(e.refresh('manual'));$('pevExport').onclick=()=>e.export();eventBus.on('pilot-evidence:updated',render);render();return{engine:e,refresh:render}}
+window.createBlueCurrentPilotEvidenceCenterModule=createBlueCurrentPilotEvidenceCenterModule;})();

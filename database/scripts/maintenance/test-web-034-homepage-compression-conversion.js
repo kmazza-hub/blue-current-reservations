@@ -1,0 +1,12 @@
+"use strict";
+const fs=require("fs"),path=require("path"),assert=require("assert");
+const root=path.resolve(__dirname,"../..");
+const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
+const js=fs.readFileSync(path.join(root,"client/js/website-conversion-v34.js"),"utf8");
+for(const id of ["service-speed","profit-current","private-walkthrough","pilot"])assert(html.includes(`id="${id}"`),`missing ${id}`);
+for(const copy of ["The product should disappear into the shift.","Revenue opportunity","Operational drag","Bring one location. Bring one real service problem.","Schedule a private walkthrough"])assert(html.includes(copy),`missing ${copy}`);
+assert(html.includes("website-conversion-v34.js?v=34"));assert(css.includes(".buyer-outcome-strip"));assert(css.includes(".decision-cta-band"));assert(css.includes(".bc-conversion-float"));assert(js.includes("WEB-034"));
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);assert.equal(ids.length,new Set(ids).size,"duplicate ids");
+const targets=[...html.matchAll(/href="#([^"]+)"/g)].map(x=>x[1]),set=new Set(ids),missing=[...new Set(targets.filter(x=>!set.has(x)))];assert.equal(missing.length,0,`broken anchors: ${missing.join(", ")}`);
+console.log(JSON.stringify({ok:true,wave:"WEB-034",first60SecondsTightened:true,serviceSpeedCompressed:true,storySpacingCompressed:true,profitabilityOutcomeStrip:true,privateWalkthroughBridge:true,scrollConversionPrompt:true,pilotAwarePromptHide:true,duplicateHtmlIds:0,brokenHashTargets:0},null,2));

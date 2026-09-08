@@ -1,0 +1,8 @@
+(function(){"use strict";
+class BlueCurrentReasoningImprovementGateEngine{
+ constructor(eventBus){this.eventBus=eventBus;this.key="bluecurrent:v4126:reasoning-improvement-gates";}
+ read(k,f=[]){try{return JSON.parse(localStorage.getItem(k)||"null")??f;}catch{return f;}}
+ latest(k){const v=this.read(k,[]);return Array.isArray(v)?v[0]||null:v||null;}
+ run(owner){const cert=this.latest("bluecurrent:v4123:certifications"),bench=this.latest("bluecurrent:v4124:reasoning-benchmarks"),drift=this.latest("bluecurrent:v4125:reasoning-drift");const backlog=this.read("bluecurrent:v4030:improvement-backlog",[]);const checks=[{name:"V41 reasoning certified",pass:cert?.status==="certified"},{name:"Benchmark is controlled",pass:["production-grade","controlled"].includes(bench?.status)},{name:"Reasoning drift contained",pass:drift?.status!=="drift-detected"&&!!drift},{name:"Human improvement owner assigned",pass:!!String(owner||"").trim()},{name:"No unresolved critical improvement blockers",pass:!backlog.some(x=>x.priority==="critical"&&x.status!=="completed")}];const passed=checks.filter(x=>x.pass).length,score=Math.round(passed/checks.length*100),blockers=checks.length-passed;const result={id:`V41-IMPROVE-${Date.now()}`,owner:String(owner||"").trim(),score,blockers,status:blockers===0?"approved":score>=60?"conditional":"blocked",checks,benchmarkId:bench?.id||null,driftId:drift?.id||null,createdAt:new Date().toISOString()};const h=this.read(this.key,[]);h.unshift(result);localStorage.setItem(this.key,JSON.stringify(h.slice(0,20)));this.eventBus?.emit?.("reasoning:improvement-gated",result);return result;}
+ history(){return this.read(this.key,[]);}}
+window.BlueCurrentReasoningImprovementGateEngine=BlueCurrentReasoningImprovementGateEngine;})();

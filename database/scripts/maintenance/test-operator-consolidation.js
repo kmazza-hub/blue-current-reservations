@@ -1,0 +1,16 @@
+"use strict";
+const assert=require("assert");
+global.structuredClone=global.structuredClone||((x)=>JSON.parse(JSON.stringify(x)));
+const Rational=require("../../client/js/modules/operatorSurfaceRationalizationEngine");
+const Consolidation=require("../../client/js/modules/operatorConsolidationEngine");
+const state={roleExperienceRole:"manager",reservationOperations:{headline:"104 covers booked"},reservationYield:{headline:"Arrivals paced"},operationalDigitalTwin:{headline:"Floor balanced"},kitchenOperations:{headline:"Kitchen stable"},shiftProfitPulse:{headline:"Margin protected"},operatorUseEvidence:[]};
+const appState={getState:()=>state,get:k=>state[k],update:o=>Object.assign(state,o)};const eventBus={emit:()=>{},on:()=>()=>{}};
+const rational=new Rational({eventBus,appState});const e=new Consolidation({eventBus,appState,rationalizationEngine:rational});
+const nav=e.navigationModel();assert.equal(nav.role,"manager");assert.equal(nav.count,12);assert.ok(nav.defaultSurfaces.includes("reservationOperationsCenter"));
+const summary=e.mergedSummary("reservationOperationsCenter");assert.ok(summary.sources.includes("reservationYieldCenter"));assert.ok(summary.headline.includes("104 covers booked"));assert.ok(summary.headline.includes("Arrivals paced"));
+e.recordUse("reservationOperationsCenter","open");e.recordUse("reservationOperationsCenter","open");e.recordUse("executiveBriefingCenter","open");
+assert.equal(e.evidence().length,3);assert.equal(e.evidenceSummary(["reservationOperationsCenter"])[0].uses,2);
+const dep=e.deprecationEvidence(["executiveBriefingCenter","innovationCenter"]);const ex=dep.find(x=>x.id==="executiveBriefingCenter"),inn=dep.find(x=>x.id==="innovationCenter");assert.equal(ex.recommendation,"retain-until-more-evidence");assert.equal(inn.recommendation,"evidence-needed");
+state.roleExperienceRole="technical";const technical=e.navigationModel();assert.equal(technical.role,"technical");assert.ok(technical.defaultSurfaces.includes("operatorSurfaceRationalizationCenter"));
+state.roleExperienceRole="executive";const executive=e.navigationModel();assert.equal(executive.role,"executive");assert.ok(executive.defaultSurfaces.includes("shiftProfitPulseCenter"));
+console.log(JSON.stringify({ok:true,version:"46.15.0",managerDefaults:nav.count,mergedSources:summary.sources.length,useEvidence:e.evidence().length,executiveBriefingRecommendation:ex.recommendation,innovationRecommendation:inn.recommendation,technicalDefaults:technical.count,executiveDefaults:executive.count,policy:e.snapshot().policy},null,2));

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630">
+      <stop stop-color="#061A24"/>
+      <stop offset="1" stop-color="#0D3441"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="220" y1="130" x2="930" y2="500">
+      <stop stop-color="#82DFCF"/>
+      <stop offset="1" stop-color="#67AAF9"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1010" cy="90" r="250" fill="#67AAF9" opacity=".08"/>
+  <circle cx="160" cy="570" r="270" fill="#82DFCF" opacity=".07"/>
+  <path d="M175 342c145-215 318-250 520-110 91 63 165 148 250 246-155-93-290-88-407 7-136 111-246 103-363-143Z" fill="url(#wave)" opacity=".94"/>
+  <text x="110" y="155" fill="#E3BF6B" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="4">HOSPITALITY OPERATING SYSTEM</text>
+  <text x="110" y="245" fill="#F4FBFD" font-family="Georgia, serif" font-size="76">Blue Current</text>
+  <text x="110" y="535" fill="#B3C8D0" font-family="Arial, sans-serif" font-size="28">One intelligent operating current for modern hospitality.</text>
+</svg>

@@ -1,0 +1,602 @@
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "blue-current-cloud",
+-  "version": "49.25.0",
++  "version": "49.30.0",
+   "private": true,
+-  "description": "Blue Current Hospitality OS \u2014 launch stabilization, first-service verification, and human rollback decision control",
++  "description": "Blue Current Hospitality OS \u2014 V49 controlled rollout release certification",
+   "scripts": {
+     "start": "node server/server.js",
+     "check": "node scripts/validate.js"
+--- a/server/server.js
++++ b/server/server.js
+@@ -53,6 +53,7 @@
+ const LocationDeploymentPackageService = require("./services/locationDeploymentPackageService");
+ const GoLiveCommandService = require("./services/goLiveCommandService");
+ const LaunchStabilizationService = require("./services/launchStabilizationService");
++const V49ReleaseCertificationService = require("./services/v49ReleaseCertificationService");
+ const createRouter = require("./api/router");
+ 
+ const ROOT = path.resolve(__dirname, "..");
+@@ -109,7 +110,8 @@
+ const locationDeploymentPackageService = new LocationDeploymentPackageService(database, auditService, realtimeHub, technicalActivationReadinessService);
+ const goLiveCommandService = new GoLiveCommandService(database, auditService, realtimeHub, locationDeploymentPackageService, technicalActivationReadinessService);
+ const launchStabilizationService = new LaunchStabilizationService(database, auditService, realtimeHub, goLiveCommandService, multiLocationPerformanceService);
+-const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService });
++const v49ReleaseCertificationService = new V49ReleaseCertificationService(database, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService);
++const routeApi = createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService });
+ 
+ const MIME = {
+   ".html": "text/html; charset=utf-8",
+@@ -196,7 +198,7 @@
+ });
+ 
+ authService.initializePasswords().then(() => server.listen(PORT, () => {
+-  console.log(`Blue Current Cloud V49.25.0 running at http://localhost:${PORT}`);
++  console.log(`Blue Current Cloud V49.30.0 running at http://localhost:${PORT}`);
+   console.log(`Database: ${DB_PATH}`);
+ })).catch(error => {
+   console.error(error);
+--- a/server/api/router.js
++++ b/server/api/router.js
+@@ -58,7 +58,7 @@
+   return header.startsWith("Bearer ") ? header.slice(7) : null;
+ }
+ 
+-function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService }) {
++function createRouter({ database, auditService, idempotencyService, syncReconciliationService, telemetryService, reliabilityAutomationService, reservationService, realtimeHub, authService, floorService, reservationOperationsService, staffOperationsService, kitchenOperationsService, serviceCoordinationService, aiRestaurantBrainService, executiveCommandCenterService, autonomousOperationsService, guestIntelligenceService, workforceIntelligenceService, inventoryIntelligenceService, timeClockService, workforceFoundationService, schedulingService, employeePortalService, commandCenterService, operationsFeedService, actionListService, liveIntegrationService, repositoryImpactService, repositoryRetirementRehearsalService, retirementAssuranceService, retirementCandidateImpactService, v46ReleaseCertificationService, hospitalityPerformanceService, hospitalityActionWorkspaceService, serviceProfitabilityIntelligenceService, predictiveShiftControlService, managerOperatingRhythmService, multiLocationPerformanceService, pilotValueScorecardService, pilotProofProgramService, executivePilotReviewService, pilotDecisionLedgerService, expansionReadinessService, v48ReleaseCertificationService, rolloutActivationControlService, technicalActivationReadinessService, locationDeploymentPackageService, goLiveCommandService, launchStabilizationService, v49ReleaseCertificationService }) {
+   return async function route(request, response) {
+     const url = new URL(request.url, "http://localhost");
+ 
+@@ -74,7 +74,7 @@
+     if (url.pathname === "/api/health" && request.method === "GET") {
+       return sendJson(response, 200, {
+         ok: true,
+-        version: "49.25.0",
++        version: "49.30.0",
+         database: "connected",
+         auth: "enabled",
+         realtimeClients: realtimeHub.count(),
+@@ -198,6 +198,10 @@
+     const v47CanAccessLocation = locationId => v47AllowedLocations.includes("*") || v47AllowedLocations.includes(locationId);
+     const v47RejectLocation = (response, locationId) =>
+       v47CanAccessLocation(locationId) ? false : (sendJson(response,403,{error:"Location is outside your authorized scope."}), true);
++
++    if (url.pathname === "/api/v49-release-certification" && request.method === "GET") {
++      return sendJson(response,200,await v49ReleaseCertificationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
++    }
+ 
+     if (url.pathname === "/api/launch-stabilization" && request.method === "GET") {
+       return sendJson(response,200,await launchStabilizationService.snapshot(auth.membership.organizationId,auth.membership.locationIds||[]));
+--- a/server/services/v49ReleaseCertificationService.js
++++ b/server/services/v49ReleaseCertificationService.js
+@@ -0,0 +1,120 @@
++"use strict";
++
++class V49ReleaseCertificationService {
++  constructor(database,rolloutActivationControlService,technicalActivationReadinessService,locationDeploymentPackageService,goLiveCommandService,launchStabilizationService){
++    Object.assign(this,{database,rolloutActivationControlService,technicalActivationReadinessService,locationDeploymentPackageService,goLiveCommandService,launchStabilizationService});
++  }
++  now(){return new Date().toISOString();}
++  async snapshot(organizationId,allowedLocationIds){
++    const [activation,technical,deployment,command,stabilization]=await Promise.all([
++      this.rolloutActivationControlService.snapshot(organizationId,allowedLocationIds),
++      this.technicalActivationReadinessService.snapshot(organizationId,allowedLocationIds),
++      this.locationDeploymentPackageService.snapshot(organizationId,allowedLocationIds),
++      this.goLiveCommandService.snapshot(organizationId,allowedLocationIds),
++      this.launchStabilizationService.snapshot(organizationId,allowedLocationIds)
++    ]);
++
++    const architectureContracts=[
++      {
++        id:"activation-human-control",
++        label:"Activation approval remains human/admin controlled",
++        passed:activation.policy?.explicitHumanApprovalRequired===true&&
++          activation.policy?.automaticApproval===false&&
++          activation.policy?.automaticActivation===false&&
++          activation.policy?.automaticDeployment===false
++      },
++      {
++        id:"technical-human-control",
++        label:"Technical go-live authorization does not cut over production",
++        passed:technical.policy?.humanGoLiveAuthorizationRequired===true&&
++          technical.policy?.authorizationDoesNotDeploy===true&&
++          technical.policy?.automaticProvisioning===false&&
++          technical.policy?.automaticCutover===false&&
++          technical.policy?.automaticGoLive===false
++      },
++      {
++        id:"deployment-separation",
++        label:"Deployment package preparation remains separate from execution",
++        passed:deployment.policy?.packagePreparationDoesNotDeploy===true&&
++          deployment.policy?.deploymentExecutionSeparate===true&&
++          deployment.policy?.automaticProvisioning===false&&
++          deployment.policy?.automaticDeployment===false&&
++          deployment.policy?.automaticCutover===false
++      },
++      {
++        id:"manual-cutover",
++        label:"Production cutover remains manually executed and human recorded",
++        passed:command.policy?.explicitExecutionAuthorizationRequired===true&&
++          command.policy?.authorizationDoesNotExecuteDeployment===true&&
++          command.policy?.resultRecordingIsManual===true&&
++          command.policy?.automatedCutover===false&&
++          command.policy?.autonomousProductionDeployment===false
++      },
++      {
++        id:"stabilization-human-control",
++        label:"Stabilization and rollback remain human decisions",
++        passed:stabilization.policy?.observationIsHumanRecorded===true&&
++          stabilization.policy?.rollbackRecommendationIsAdvisory===true&&
++          stabilization.policy?.humanStabilizationDeclarationRequired===true&&
++          stabilization.policy?.autonomousRollback===false&&
++          stabilization.policy?.automaticStableDeclaration===false
++      }
++    ];
++
++    const liveStateContracts=[
++      {id:"activation-state",label:"Rollout activation review has locations",passed:(activation.locations||[]).length>0,state:activation.status},
++      {id:"technical-state",label:"Technical activation review has locations",passed:(technical.locations||[]).length>0,state:technical.status},
++      {id:"deployment-state",label:"Deployment-package review has locations",passed:(deployment.locations||[]).length>0,state:deployment.status},
++      {id:"cutover-state",label:"Go-Live Command has launched/cutover locations",passed:(command.locations||[]).length>0,state:command.status},
++      {id:"stabilization-state",label:"Launch Stabilization has launched locations",passed:(stabilization.locations||[]).length>0,state:stabilization.status}
++    ];
++
++    const architecturePassed=architectureContracts.filter(x=>x.passed).length;
++    const liveStatePassed=liveStateContracts.filter(x=>x.passed).length;
++    const fullyStabilized=(stabilization.locations||[]).length>0&&stabilization.locations.every(x=>x.declaration?.decision==="STABLE");
++
++    return {
++      version:"49.30.0",
++      generatedAt:this.now(),
++      status:architecturePassed===architectureContracts.length
++        ? (fullyStabilized?"V49-CERTIFIED-LIVE":"V49-ARCHITECTURE-CERTIFIED")
++        : "V49-CERTIFICATION-FAILED",
++      headline:architecturePassed===architectureContracts.length
++        ? (fullyStabilized
++          ?"V49 rollout architecture and the current live rollout state are fully certified through stabilization."
++          :"V49 rollout architecture is certified. Current live rollout state still has prerequisite execution/stabilization steps open.")
++        :"One or more V49 human-control architecture contracts failed certification.",
++      architectureContracts,
++      architecturePassed,
++      architectureTotal:architectureContracts.length,
++      liveStateContracts,
++      liveStatePassed,
++      liveStateTotal:liveStateContracts.length,
++      chain:[
++        {stage:"ACTIVATE",state:activation.status},
++        {stage:"TECHNICAL",state:technical.status},
++        {stage:"PACKAGE",state:deployment.status},
++        {stage:"CUTOVER",state:command.status},
++        {stage:"STABILIZE",state:stabilization.status}
++      ],
++      totals:{
++        activationLocations:(activation.locations||[]).length,
++        technicallyReady:(technical.locations||[]).filter(x=>x.technicallyReady).length,
++        packagesPrepared:(deployment.locations||[]).filter(x=>x.packageState==="READY_FOR_DEPLOYMENT_EXECUTION").length,
++        cutoverResults:(command.locations||[]).filter(x=>x.result).length,
++        stableDeclarations:(stabilization.locations||[]).filter(x=>x.declaration?.decision==="STABLE").length
++      },
++      policy:{
++        readOnlyCertification:true,
++        automaticApproval:false,
++        automaticProvisioning:false,
++        automaticDeployment:false,
++        automaticCutover:false,
++        automaticGoLive:false,
++        autonomousRollback:false,
++        humanRolloutControl:true
++      }
++    };
++  }
++}
++module.exports=V49ReleaseCertificationService;
+--- a/client/index.html
++++ b/client/index.html
+@@ -1,7 +1,7 @@
+ <!doctype html>
+ <html lang="en">
+ <head>
+-  <meta name="blue-current-build" content="49.25.0">
++  <meta name="blue-current-build" content="49.30.0">
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Blue Current | Hospitality That Answers</title>
+@@ -297,6 +297,14 @@
+       <div class="v4316-actions"><select id="lsDecision" class="v4312-input"><option value="STABLE">STABLE</option><option value="EXTEND">EXTEND</option><option value="ROLLBACK">ROLLBACK</option></select><input id="lsApprover" class="v4312-input" placeholder="Stabilization approver"><input id="lsReason" class="v4312-input" placeholder="Decision reason / override rationale"></div>
+       <p><strong>Launch stabilization locations</strong></p><div id="lsLocations" class="v432-list"></div>
+       <p><strong>Observation and decision history</strong></p><div id="lsHistory" class="v432-list"></div>
++    </section>
++    <section class="v432-center v438-center v4316-center" id="v49ReleaseCertification">
++      <header><div><small>V49.26–V49.30 · Release Closure & Certification</small><strong>Certify the complete controlled rollout chain before V49 is closed.</strong><span>This read-only certification verifies activation approval, technical readiness, deployment packaging, manual cutover, stabilization, and every human-control safety boundary. Live rollout state is reported separately from architecture certification.</span></div><button id="v49certRefresh" type="button">Run V49 certification</button></header>
++      <div class="v432-kpis"><article><small>Release status</small><strong id="v49certStatus">—</strong></article><article><small>Architecture contracts</small><strong id="v49certArchitecture">0/0</strong></article><article><small>Live-state contracts</small><strong id="v49certLive">0/0</strong></article><article><small>Stable locations</small><strong id="v49certStable">0</strong></article></div>
++      <div class="v4316-answer" id="v49certHeadline">Running V49 certification…</div>
++      <p><strong>Controlled rollout chain</strong></p><div id="v49certChain" class="v432-list"></div>
++      <p><strong>Architecture / human-control contracts</strong></p><div id="v49certArchitectureChecks" class="v432-list"></div>
++      <p><strong>Current live rollout state</strong></p><div id="v49certLiveChecks" class="v432-list"></div>
+     </section>
+ <section class="v432-center v438-center v4316-center" id="hospitalityPerformanceCommand">
+       <header>
+@@ -8827,6 +8835,8 @@
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="goLiveCommand" data-src="js/modules/goLiveCommandCenter.js?v=49.20.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationEngine.js?v=49.25.0"></script>
+ <script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="launchStabilization" data-src="js/modules/launchStabilizationCenter.js?v=49.25.0"></script>
+-<script src="js/startup-loader.js?v=49.25.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationEngine.js?v=49.30.0"></script>
++<script type="text/bluecurrent-deferred" data-pack="operations" data-pack-explicit="true" data-center="v49ReleaseCertification" data-src="js/modules/v49ReleaseCertificationCenter.js?v=49.30.0"></script>
++<script src="js/startup-loader.js?v=49.30.0"></script>
+ </body>
+ </html>
+--- a/client/js/app-v15.1.3.js
++++ b/client/js/app-v15.1.3.js
+@@ -1240,6 +1240,7 @@
+ const locationDeploymentPackageModule = startupRegistry.register("locationDeploymentPackage", shouldInitializeCenter("locationDeploymentPackage") ? window.createBlueCurrentLocationDeploymentPackageCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "technicalActivationReadiness"]);
+ const goLiveCommandModule = startupRegistry.register("goLiveCommand", shouldInitializeCenter("goLiveCommand") ? window.createBlueCurrentGoLiveCommandCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "locationDeploymentPackage"]);
+ const launchStabilizationModule = startupRegistry.register("launchStabilization", shouldInitializeCenter("launchStabilization") ? window.createBlueCurrentLaunchStabilizationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "goLiveCommand"]);
++const v49ReleaseCertificationModule = startupRegistry.register("v49ReleaseCertification", shouldInitializeCenter("v49ReleaseCertification") ? window.createBlueCurrentV49ReleaseCertificationCenterModule?.(eventBus, appState) : null, ["eventBus", "appState", "launchStabilization"]);
+ 
+ const operatorCopilotCenterModule = startupRegistry.register(
+   "operatorCopilotCenter",
+--- a/client/js/startup-loader.js
++++ b/client/js/startup-loader.js
+@@ -209,7 +209,7 @@
+       }));
+       const summary = document.getElementById("startupDiagnosticsSummary");
+       const dot = document.getElementById("startupDiagnosticsDot");
+-      if (summary) summary.textContent = `V49.25.0 ready · ${duration}ms`;
++      if (summary) summary.textContent = `V49.30.0 ready · ${duration}ms`;
+       if (dot) dot.className = "ok";
+       // Local development can be held open by optional third-party assets. Once the
+       // application is ready, stop those nonessential pending resource loads.
+--- a/client/js/modules/v49ReleaseCertificationEngine.js
++++ b/client/js/modules/v49ReleaseCertificationEngine.js
+@@ -0,0 +1,9 @@
++(function(global){"use strict";
++class BlueCurrentV49ReleaseCertificationEngine{
++  constructor({appState}={}){this.appState=appState;}
++  token(){return localStorage.getItem("blueCurrentV3230Token")||"";}
++  async snapshot(){const r=await fetch("/api/v49-release-certification",{headers:{Authorization:`Bearer ${this.token()}`}}),d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||`V49 certification failed (${r.status})`);this.appState?.update?.({v49ReleaseCertification:d});return d;}
++}
++if(typeof module!=="undefined"&&module.exports)module.exports=BlueCurrentV49ReleaseCertificationEngine;
++if(global)global.BlueCurrentV49ReleaseCertificationEngine=BlueCurrentV49ReleaseCertificationEngine;
++})(typeof window!=="undefined"?window:globalThis);--- a/client/js/modules/v49ReleaseCertificationCenter.js
++++ b/client/js/modules/v49ReleaseCertificationCenter.js
+@@ -0,0 +1,24 @@
++(function(){"use strict";
++function createBlueCurrentV49ReleaseCertificationCenterModule(eventBus,appState){
++  const root=document.getElementById("v49ReleaseCertification");
++  if(!root||!window.BlueCurrentV49ReleaseCertificationEngine)return null;
++  const e=new window.BlueCurrentV49ReleaseCertificationEngine({appState}),
++    $=id=>document.getElementById(id),
++    esc=v=>String(v??"").replace(/[&<>\"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'\"':"&quot;","'":"&#39;"}[c]));
++  function render(s){
++    $("v49certStatus").textContent=s.status||"—";
++    $("v49certArchitecture").textContent=`${s.architecturePassed||0}/${s.architectureTotal||0}`;
++    $("v49certLive").textContent=`${s.liveStatePassed||0}/${s.liveStateTotal||0}`;
++    $("v49certStable").textContent=s.totals?.stableDeclarations||0;
++    $("v49certHeadline").textContent=s.headline||"V49 certification unavailable.";
++    $("v49certChain").innerHTML=(s.chain||[]).map(x=>`<article><strong>${esc(x.stage)}</strong><span>${esc(x.state)}</span></article>`).join("");
++    $("v49certArchitectureChecks").innerHTML=(s.architectureContracts||[]).map(x=>`<article><strong>${x.passed?"PASS":"FAIL"} · ${esc(x.label)}</strong></article>`).join("");
++    $("v49certLiveChecks").innerHTML=(s.liveStateContracts||[]).map(x=>`<article><strong>${x.passed?"PASS":"OPEN"} · ${esc(x.label)}</strong><span>${esc(x.state)}</span></article>`).join("");
++  }
++  async function load(){try{render(await e.snapshot());}catch(err){$("v49certHeadline").textContent=err.message;}}
++  $("v49certRefresh")?.addEventListener("click",load);
++  ["rollout-activation:approved","technical-activation:authorized","location-deployment:package-prepared","go-live-command:result-recorded","launch-stabilization:declared","auth:restored"].forEach(x=>eventBus?.on?.(x,load));
++  load();return{engine:e,load};
++}
++window.createBlueCurrentV49ReleaseCertificationCenterModule=createBlueCurrentV49ReleaseCertificationCenterModule;
++})();--- a/scripts/maintenance/test-v49.30-release-certification.js
++++ b/scripts/maintenance/test-v49.30-release-certification.js
+@@ -0,0 +1,105 @@
++"use strict";
++const fs=require("fs"),assert=require("assert");
++const Service=require("../../server/services/v49ReleaseCertificationService");
++
++(async()=>{
++  const activation={
++    status:"activation-approvals-complete",
++    locations:[{locationId:"a",approval:{status:"APPROVED_FOR_ACTIVATION"}}],
++    policy:{explicitHumanApprovalRequired:true,automaticApproval:false,automaticActivation:false,automaticDeployment:false}
++  };
++  const technical={
++    status:"technical-readiness-complete",
++    locations:[{locationId:"a",technicallyReady:true}],
++    policy:{humanGoLiveAuthorizationRequired:true,authorizationDoesNotDeploy:true,automaticProvisioning:false,automaticCutover:false,automaticGoLive:false}
++  };
++  const deployment={
++    status:"deployment-package-review",
++    locations:[{locationId:"a",packageState:"READY_FOR_DEPLOYMENT_EXECUTION"}],
++    policy:{packagePreparationDoesNotDeploy:true,deploymentExecutionSeparate:true,automaticProvisioning:false,automaticDeployment:false,automaticCutover:false}
++  };
++  const command={
++    status:"cutover-results-complete",
++    locations:[{locationId:"a",result:{status:"CUTOVER_SUCCEEDED"}}],
++    policy:{explicitExecutionAuthorizationRequired:true,authorizationDoesNotExecuteDeployment:true,resultRecordingIsManual:true,automatedCutover:false,autonomousProductionDeployment:false}
++  };
++  const stabilization={
++    status:"stabilization-complete",
++    locations:[{locationId:"a",declaration:{decision:"STABLE"}}],
++    policy:{observationIsHumanRecorded:true,rollbackRecommendationIsAdvisory:true,humanStabilizationDeclarationRequired:true,autonomousRollback:false,automaticStableDeclaration:false}
++  };
++
++  const svc=new Service(
++    {},
++    {snapshot:async()=>activation},
++    {snapshot:async()=>technical},
++    {snapshot:async()=>deployment},
++    {snapshot:async()=>command},
++    {snapshot:async()=>stabilization}
++  );
++  const snap=await svc.snapshot("org",["*"]);
++  assert.equal(snap.version,"49.30.0");
++  assert.equal(snap.status,"V49-CERTIFIED-LIVE");
++  assert.equal(snap.architecturePassed,5);
++  assert.equal(snap.architectureTotal,5);
++  assert.equal(snap.liveStatePassed,5);
++  assert.equal(snap.policy.automaticApproval,false);
++  assert.equal(snap.policy.automaticProvisioning,false);
++  assert.equal(snap.policy.automaticDeployment,false);
++  assert.equal(snap.policy.automaticCutover,false);
++  assert.equal(snap.policy.automaticGoLive,false);
++  assert.equal(snap.policy.autonomousRollback,false);
++  assert.equal(snap.policy.humanRolloutControl,true);
++
++  const router=fs.readFileSync("server/api/router.js","utf8");
++  [
++    "/api/rollout-activation-control",
++    "/api/technical-activation-readiness",
++    "/api/location-deployment-package",
++    "/api/go-live-command",
++    "/api/launch-stabilization",
++    "/api/v49-release-certification"
++  ].forEach(x=>assert(router.includes(x),`missing ${x}`));
++
++  assert(router.includes('authService.can(auth,"admin")'),"admin permission boundaries missing");
++  assert(router.includes('error:"Location is outside your authorized scope."'),"location authorization boundary missing");
++
++  const html=fs.readFileSync("client/index.html","utf8");
++  const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(x=>x[1]);
++  assert.equal(new Set(ids).size,ids.length,"duplicate HTML ids");
++  [
++    "rolloutActivationControl",
++    "technicalActivationReadiness",
++    "locationDeploymentPackage",
++    "goLiveCommand",
++    "launchStabilization",
++    "v49ReleaseCertification"
++  ].forEach(x=>assert(html.includes(`id="${x}"`),`missing center ${x}`));
++
++  const app=fs.readFileSync("client/js/app-v15.1.3.js","utf8");
++  [
++    "rolloutActivationControlModule",
++    "technicalActivationReadinessModule",
++    "locationDeploymentPackageModule",
++    "goLiveCommandModule",
++    "launchStabilizationModule",
++    "v49ReleaseCertificationModule"
++  ].forEach(x=>assert(app.includes(`const ${x} =`),`missing startup module ${x}`));
++
++  console.log(JSON.stringify({
++    ok:true,
++    version:"49.30.0",
++    status:snap.status,
++    architectureContracts:"5/5",
++    liveStateContracts:"5/5",
++    routesCertified:6,
++    duplicateHtmlIds:0,
++    humanRolloutControl:true,
++    automaticApproval:false,
++    automaticProvisioning:false,
++    automaticDeployment:false,
++    automaticCutover:false,
++    automaticGoLive:false,
++    autonomousRollback:false
++  },null,2));
++})().catch(e=>{console.error(e);process.exit(1);});
+--- a/V49.30.0-RELEASE.md
++++ b/V49.30.0-RELEASE.md
+@@ -0,0 +1,145 @@
++# BLUE CURRENT V49.30.0 — V49 RELEASE CLOSURE & CERTIFICATION
++
++V49 is complete.
++
++## V49 controlled rollout chain
++
++ACTIVATE → TECHNICAL → PACKAGE → CUTOVER → STABILIZE
++
++V49.30 introduces one read-only certification surface that verifies both:
++
++1. the architecture / human-control contracts, and
++2. the current real rollout state.
++
++These are intentionally reported separately so Blue Current never presents an unexecuted rollout as a completed live deployment.
++
++## Architecture certification contracts
++
++### 1. Activation approval remains human controlled
++- explicit human approval required
++- automatic approval false
++- automatic activation false
++- automatic deployment false
++
++### 2. Technical go-live authorization remains separate from cutover
++- human go-live authorization required
++- authorization does not deploy
++- automatic provisioning false
++- automatic cutover false
++- automatic go-live false
++
++### 3. Deployment package remains separate from execution
++- package preparation does not deploy
++- deployment execution is separate
++- automatic provisioning false
++- automatic deployment false
++- automatic cutover false
++
++### 4. Production cutover remains manually controlled
++- explicit execution authorization required
++- authorization does not execute deployment
++- result recording is manual
++- automated cutover false
++- autonomous production deployment false
++
++### 5. Stabilization / rollback remain human decisions
++- observations are human recorded
++- rollback recommendation is advisory
++- human stabilization declaration required
++- autonomous rollback false
++- automatic stable declaration false
++
++## Certification states
++
++The certification endpoint can return:
++
++- `V49-CERTIFIED-LIVE`
++  - all architecture contracts pass
++  - current rollout reached a human STABLE declaration across launched locations
++
++- `V49-ARCHITECTURE-CERTIFIED`
++  - all architecture contracts pass
++  - the real rollout has not yet completed the full live chain
++
++- `V49-CERTIFICATION-FAILED`
++  - one or more human-control architecture contracts failed
++
++## Current authenticated Chefs runtime
++
++The untouched authoritative runtime currently reports:
++
++- certification: `V49-ARCHITECTURE-CERTIFIED`
++- architecture contracts: 5/5
++- live-state contracts: 0/5
++
++Current real chain:
++
++- ACTIVATE → `rollout-plan-required`
++- TECHNICAL → `activation-plan-required`
++- PACKAGE → `technical-plan-required`
++- CUTOVER → `deployment-package-required`
++- STABILIZE → `successful-cutover-required`
++
++This is the correct result. The code architecture is certified, but the real production rollout workflow has not been executed. Blue Current does not fabricate live deployment evidence.
++
++## API
++
++GET `/api/v49-release-certification`
++
++The endpoint is read-only.
++
++## Safety closure
++
++V49 closes with:
++
++- `readOnlyCertification: true`
++- `automaticApproval: false`
++- `automaticProvisioning: false`
++- `automaticDeployment: false`
++- `automaticCutover: false`
++- `automaticGoLive: false`
++- `autonomousRollback: false`
++- `humanRolloutControl: true`
++
++## Full V49 regression
++
++The final V49.30 release certification reruns every V49 wave:
++
++- V49.05 Rollout Activation Control PASS
++- V49.10 Technical Activation Readiness PASS
++- V49.15 Location Deployment Package PASS
++- V49.20 Go-Live Command PASS
++- V49.25 Launch Stabilization PASS
++- V49.30 Release Certification PASS
++
++Synthetic full-chain certification reaches:
++
++- `V49-CERTIFIED-LIVE`
++- architecture contracts 5/5
++- live-state contracts 5/5
++
++## Repository / UI certification
++
++- all six V49 API surfaces present
++- admin/write permission boundaries retained
++- location-scope guard retained
++- all six V49 UI centers present
++- all six V49 startup modules present
++- undefined module exports across all three maintained app copies: 0
++- duplicate HTML IDs: 0
++
++## Validation
++
++- 899 JavaScript files
++- 758 client scripts
++- 5,655 unique HTML IDs
++- npm run check PASS
++- authenticated V49 certification endpoint PASS
++- authoritative database SHA-256 unchanged
++- human-control architecture contracts 5/5
++
++## Release status
++
++V49.30.0 is the planned hard-close checkpoint for V49.
++
++New feature development should begin in V50 rather than extending V49.
+--- a/README-APPLY-V49.30.0.md
++++ b/README-APPLY-V49.30.0.md
+@@ -0,0 +1,53 @@
++# APPLY BLUE CURRENT V49.30.0 — FINAL V49 WAVE
++
++Baseline: exact V49.25.0 repository.
++
++Extract `BLUE-CURRENT-V49.30.0-FINAL.zip` into the root of `blue-current-reservations`, preserving directories and replacing matching files.
++
++## Full V49 validation
++
++```powershell
++taskkill /F /IM node.exe
++npm run check
++node scripts/maintenance/test-v49.05-rollout-activation-control.js
++node scripts/maintenance/test-v49.10-technical-activation-readiness.js
++node scripts/maintenance/test-v49.15-location-deployment-package.js
++node scripts/maintenance/test-v49.20-go-live-command.js
++node scripts/maintenance/test-v49.25-launch-stabilization.js
++node scripts/maintenance/test-v49.30-release-certification.js
++npm run start
++```
++
++Then:
++
++```powershell
++curl.exe -s http://localhost:8787/api/health
++```
++
++Expected:
++
++```json
++"version": "49.30.0"
++```
++
++Open:
++
++```text
++http://localhost:8787/
++```
++
++Press `Ctrl+F5`.
++
++The new **V49 Release Closure & Certification** surface is read-only.
++
++Do not expect `V49-CERTIFIED-LIVE` on untouched demo/runtime data. Until the real rollout chain is executed, the correct runtime state is `V49-ARCHITECTURE-CERTIFIED`.
++
++## Git
++
++```powershell
++git add -A
++git commit -m "V49.30.0 close and certify V49"
++git push origin live-service-timeline
++```
++
++After this commit, V49 is closed. Begin new feature development in V50.

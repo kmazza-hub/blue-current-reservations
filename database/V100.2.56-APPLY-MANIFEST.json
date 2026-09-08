@@ -1,0 +1,18 @@
+{
+  "version": "100.2.56",
+  "name": "Service Exception / Recovery Intelligence",
+  "baseline": "100.2.55",
+  "files": [
+    "APPLY-V100.2.56.js",
+    "README-APPLY-V100.2.56.md",
+    "V100.2.56-RELEASE.md",
+    "V100.2.56-APPLY-MANIFEST.json",
+    "scripts/maintenance/test-v100.2.56-service-exception-recovery.js"
+  ],
+  "protected": [
+    "V100.2.47 Floor Layout Restoration and everything after its marker",
+    "existing Service lifecycle action handler",
+    "Host / Reservations / Waitlist / Guests"
+  ],
+  "scope": "Service First Priority exception/recovery intelligence only"
+}

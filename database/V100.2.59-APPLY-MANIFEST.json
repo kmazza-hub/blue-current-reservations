@@ -1,0 +1,9 @@
+{
+  "version": "100.2.59",
+  "wave": "Cross-Workspace Lifecycle Certification",
+  "requires": "V100.2.58",
+  "runtimeFilesModified": [],
+  "adds": [
+    "scripts/maintenance/test-v100.2.59-cross-workspace-lifecycle-certification.js"
+  ]
+}

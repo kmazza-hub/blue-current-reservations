@@ -1,0 +1,15 @@
+/* V100.2.34 — Zoned Host Floor Plans */
+#host-stand #hostFloorMap .host-table.bc-zone-hidden-v100-2-34 {
+  display:none !important;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="main"],
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"],
+#host-stand #hostFloorMap[data-bc-active-zone="private"] {
+  min-height:520px;
+}
+#host-stand .host-floor-toolbar [data-host-zone] {
+  white-space:nowrap;
+}
+#host-stand #hostFloorMap[data-bc-active-zone="waterfront"] .host-water-line {
+  display:block;
+}

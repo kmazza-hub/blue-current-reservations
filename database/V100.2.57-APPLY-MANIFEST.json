@@ -1,0 +1,14 @@
+{
+  "version": "100.2.57",
+  "wave": "Service Completion / Table Turn Handoff",
+  "baseline": "100.2.56",
+  "files": [
+    "client/js/floor-reservations-v62.0.js",
+    "client/index.html",
+    "client/js/service-table-lifecycle-v100.2.57.js",
+    "scripts/maintenance/test-v100.2.57-service-table-turn-handoff.js"
+  ],
+  "protected": ["V100.2.47 Floor Layout Restoration section"],
+  "tableTransition": "SEATED -> CLEANING",
+  "automaticOpen": false
+}

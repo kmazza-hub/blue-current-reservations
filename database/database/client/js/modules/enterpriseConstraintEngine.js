@@ -1,0 +1,10 @@
+(function(){"use strict";
+class BlueCurrentEnterpriseConstraintEngine{
+ constructor(eventBus,appState){this.eventBus=eventBus;this.appState=appState;this.key="bluecurrent:v4118:enterprise-constraints";}
+ read(k,f=[]){try{return JSON.parse(localStorage.getItem(k)||"null")??f;}catch{return f;}}
+ evaluate(){const s=this.appState?.getState?.()||{};const portfolio=this.read("bluecurrent:v4115:portfolio-reasoning",[])[0]||null;const deps=this.read("bluecurrent:v415:decision-dependencies",[]);const locations=portfolio?.locations||[{id:s.activeLocationId||"location-primary",name:s.activeLocationName||"Primary restaurant",risk:Math.round((Number(s.guestWaitMinutes||14)*2)+(Number(s.kitchenPressure||68)*.45)),status:"watch"}];
+ const constraints=[];locations.forEach(l=>{if(Number(l.guestWait||0)>=20)constraints.push({location:l.name,type:"guest-capacity",severity:"high",detail:`Guest wait is ${l.guestWait} minutes.`});if(Number(l.kitchen||0)>=80)constraints.push({location:l.name,type:"kitchen-capacity",severity:"high",detail:`Kitchen pressure is ${l.kitchen}%.`});if(Number(l.labor||0)>=33)constraints.push({location:l.name,type:"labor-boundary",severity:"medium",detail:`Labor is ${l.labor}%.`});});deps.filter(d=>d.risk==="high"&&!d.verified).forEach(d=>constraints.push({location:"Portfolio",type:"decision-dependency",severity:"high",detail:`Unverified dependency: ${d.effect||d.relationship||"downstream effect"}.`}));
+ const score=Math.max(0,100-(constraints.filter(x=>x.severity==="high").length*18)-(constraints.filter(x=>x.severity==="medium").length*8));const result={id:`ECM-${Date.now()}`,score,status:score>=85?"contained":score>=65?"controlled":"constrained",constraints,locations:locations.length,createdAt:new Date().toISOString()};const h=this.read(this.key,[]);h.unshift(result);localStorage.setItem(this.key,JSON.stringify(h.slice(0,20)));this.eventBus?.emit?.("aip:enterprise-constraints-evaluated",result);return result;}
+ history(){return this.read(this.key,[]);}
+}
+window.BlueCurrentEnterpriseConstraintEngine=BlueCurrentEnterpriseConstraintEngine;})();

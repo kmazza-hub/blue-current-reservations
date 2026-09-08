@@ -1,0 +1,22 @@
+{
+  "version": "97.50.0",
+  "gate": "PILOT_EVIDENCE_QUALITY_AND_OUTCOME_MEASUREMENT",
+  "minimumEvidenceCompletenessPercent": 95,
+  "requirements": [
+    "FIELD_EVIDENCE_BASELINE",
+    "EVIDENCE_COMPLETENESS_95",
+    "MULTI_SERVICE_NIGHT_EVIDENCE",
+    "CORE_CATEGORIES_REPRESENTED",
+    "MEASURABLE_OUTCOMES_AVAILABLE",
+    "EVIDENCE_VERIFICATION_PRESENT"
+  ],
+  "policy": {
+    "multipleServiceNightsRequired": true,
+    "humanVerificationRequired": true,
+    "metricTrendIsEvidenceNotCausation": true,
+    "noAutomaticCommercialClaim": true,
+    "noAutomaticProductChange": true,
+    "autonomousProductionChanges": false
+  },
+  "nextGate": "PILOT_VALUE_PROOF_AND_OPERATOR_ACCEPTANCE"
+}
