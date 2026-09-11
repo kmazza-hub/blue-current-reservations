@@ -20,7 +20,7 @@ check("Health is verified before and after restart",sourceText.includes("firstHe
 const missing=spawnSync(process.execPath,[script],{cwd:root,encoding:"utf8"});check("Missing source fails closed",missing.status!==0);
 const badDir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v350-")),bad=path.join(badDir,"bad.json");fs.writeFileSync(bad,"not json");const invalid=spawnSync(process.execPath,[script,"--source",bad],{cwd:root,encoding:"utf8"});check("Invalid source fails before startup",invalid.status!==0);fs.rmSync(badDir,{recursive:true,force:true});
 check("Hosted rehearsal command is registered",pkg.scripts["hosted:rehearse"]==="node scripts/hosted-rehearsal.js");
-check("Runtime identifies V100.3.50",pkg.version==="100.3.50");
+check("Runtime retains or advances beyond V100.3.50",(()=>{const [major,minor,patch]=pkg.version.split(".").map(Number);return major>100||(major===100&&(minor>3||(minor===3&&patch>=50)));})());
 const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.50-hosted-restart-rehearsal.js"),"--list"],{cwd:root,encoding:"utf8"}),manifest=listing.status===0?JSON.parse(listing.stdout):null;
 check("Certification includes provisioning and rehearsal",manifest?.gates.includes("test-v100.3.49-hosted-data-provisioning.js")&&manifest?.gates.includes("test-v100.3.50-hosted-restart-rehearsal.js"));
 check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.50.json")));

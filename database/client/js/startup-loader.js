@@ -4,7 +4,7 @@
   const params = new URLSearchParams(window.location.search);
   const fullStartup = params.get("full") === "1";
   const requestedPacks = new Set((params.get("pack") || "").split(",").map(v => v.trim()).filter(Boolean));
-  const appSource = `js/app-v15.1.3.js?v=44.17.0`;
+  const appSource = `js/app-v15.1.3.js?v=42.14.0`;
   const deferred = [...document.querySelectorAll('script[type="text/bluecurrent-deferred"][data-src]')];
   const startedAt = performance.now();
   const storageKey = "bluecurrent:last-good-startup";
@@ -16,7 +16,7 @@
     enterprise: /(crossLocationPulse|enterpriseOperations|weeklyProfitReview|executiveBriefing|portfolioPerformance|pilotRelease|pilotOperations|pilotReview|deploymentReadiness|postLaunchValue|expansionBenchmark|performanceGovernance|enterpriseValuePlan|pilotOnboarding|pilotLaunch|pilotEvidence|accessReadiness|releaseCertification)/i,
     aip: /(aipToolRegistry|aipAgentRuntime|aipPromptOrchestrator|aipGovernance|aipMissionControl|aipApprovalQueue|aipContextGraph|aipMemoryVault|aipScenarioLab|aipAgentBuilder|aipEvaluation|aipRunbookCompiler|aipPromptLibrary|aipDeploymentControl|aipObservability|aipKnowledgeSource|aipModelRouting|aipSafetyTest|aipImprovementBacklog|aipPromptExperiment|aipLearningReleaseGate|aipCommandConsole|aipExecutionPlan|aipOutcomeReview|aipPolicyComposer|aipToolGateway|aipRunScheduler|aipPolicyEnforcement|aipExecutionQueue|aipAutonomyBoundary|hospitalityOntology|decisionObject|causalDecisionTrace|operationalMemory|decisionHorizonForecast|executiveReasoningBrief|portfolioReasoning|decisionLeverage|portfolioCoordinationPlan|adaptiveStrategy|decisionTradeoff|executiveWorkspace|predictiveOptimization|agentNegotiation|v41ProductionReadiness)/i,
     integrations: /(integrationControl|signalQuality|pilotTelemetry|dataContract|connectorSync|reconciliation|connectorConfiguration|dataIntakeSandbox|pilotSignalBridge|canonicalMapping|ingestionQueue|sourcePromotion|trustedDataset|dataLineage|pilotSyncRehearsal)/i,
-    live: /(liveConnectorRuntime|canonicalEventGateway|liveSourceHealth|eventContractRegistry|eventRecovery|liveOperationsBridge|sourceAdapterRegistry|deliveryAssurance|ingestionObservability|sourceCheckpoint|replayWindow|reasoningFeedGate|streamReconciliation|connectorBackpressure|liveTwinSync|liveProvenance|sourceCutover|liveEvidenceCertification|locationSourceBinding|liveCoverageMatrix|enterpriseLiveReadiness|locationCutover|portfolioLiveTelemetry|enterprisePilotCutover|pilotSession|pilotSignalValidation|mvpReadiness|pilotSlo|pilotSupport|mvpGoLive)/i
+    live: /(liveConnectorRuntime|canonicalEventGateway|liveSourceHealth|eventContractRegistry|eventRecovery|liveOperationsBridge|sourceAdapterRegistry|deliveryAssurance|ingestionObservability|sourceCheckpoint|replayWindow|reasoningFeedGate|streamReconciliation|connectorBackpressure|liveTwinSync)/i
   };
 
   function inferPack(src) {
@@ -118,7 +118,7 @@
     document.querySelectorAll("[id$='Center'], [id$='center']").forEach((center) => {
       if (!center.id) return;
       const isEssential = [
-        "unifiedCommandCenter", "guidedShiftCenter", "operatorServiceFlowCenter", "operatorCopilotCenter",
+        "unifiedCommandCenter", "guidedShiftCenter", "operatorCopilotCenter",
         "roleExperienceCenter", "commandActionInboxCenter", "shiftProfitPulseCenter",
         "featurePackLoaderCenter", "bootRecoveryCenter"
       ].includes(center.id);
@@ -172,16 +172,9 @@
       const overlay = document.getElementById("authOverlay");
       const accountSection = document.getElementById("auth-organizations");
       if (readiness?.authenticated) {
-        if (window.BlueCurrentAuthOverlay && typeof window.BlueCurrentAuthOverlay.close === "function") {
-          window.BlueCurrentAuthOverlay.close();
-        } else if (overlay) {
-          const active=document.activeElement;
-          if(active && overlay.contains(active))active.blur?.();
-          overlay.classList.remove("open");
-          overlay.setAttribute("aria-hidden","true");
-          overlay.setAttribute("inert","");
-          document.body.classList.remove("auth-locked");
-        }
+        overlay?.classList.remove("open");
+        overlay?.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("auth-locked");
         if (accountSection) {
           accountSection.hidden = true;
           accountSection.setAttribute("aria-hidden", "true");
@@ -189,15 +182,10 @@
         }
       } else if (overlay) {
         if (accountSection) accountSection.hidden = true;
-        if (window.BlueCurrentAuthOverlay && typeof window.BlueCurrentAuthOverlay.open === "function") {
-          window.BlueCurrentAuthOverlay.open();
-        } else {
-          overlay.classList.add("open");
-          overlay.removeAttribute("aria-hidden");
-          overlay.removeAttribute("inert");
-          document.body.classList.add("auth-locked");
-          document.getElementById("authEmail")?.focus?.({preventScroll:true});
-        }
+        overlay.classList.add("open");
+        overlay.removeAttribute("aria-hidden");
+        document.body.classList.add("auth-locked");
+        document.getElementById("authEmail")?.focus?.();
       }
 
       window.clearTimeout(watchdog);
@@ -221,7 +209,7 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V100.0.0 ready · ${duration}ms`;
+      if (summary) summary.textContent = `V42.14.0 ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.

@@ -23,6 +23,22 @@
       return $("blueCurrentCommand");
     }
 
+    function protectedSurfaces() {
+      return [document.getElementById("main"), document.getElementById("top")].filter(Boolean);
+    }
+
+    function setProtectedSurfacesLocked(locked) {
+      protectedSurfaces().forEach(surface => {
+        if (locked) {
+          surface.setAttribute("aria-hidden", "true");
+          surface.setAttribute("inert", "");
+        } else {
+          surface.removeAttribute("aria-hidden");
+          surface.removeAttribute("inert");
+        }
+      });
+    }
+
     function moveFocusIntoAuth() {
       const active=document.activeElement;
       const shell=commandShell();
@@ -50,7 +66,9 @@
         shell.setAttribute("aria-hidden","true");
         shell.setAttribute("inert","");
       }
+      setProtectedSurfacesLocked(true);
       document.body.classList.add("auth-locked");
+      if ($("authPassword")) $("authPassword").value = "";
       moveFocusIntoAuth();
     }
 
@@ -66,6 +84,7 @@
         shell.removeAttribute("aria-hidden");
         shell.removeAttribute("inert");
       }
+      setProtectedSurfacesLocked(false);
       document.body.classList.remove("auth-locked");
       window.requestAnimationFrame(()=>$("bcCommandTitle")?.focus?.({preventScroll:true}));
     }
@@ -137,13 +156,23 @@
 
     $("authLoginForm")?.addEventListener("submit", async event => {
       event.preventDefault();
+      const email = $("authEmail")?.value.trim() || "";
+      const password = $("authPassword")?.value || "";
+      if (!email || !password) {
+        openAuth();
+        setMessage("Enter both your email and password.", true);
+        return;
+      }
       setMessage("Signing in…");
       try {
         validateApi();
         const session = await api.login({
-          email: $("authEmail").value.trim(),
-          password: $("authPassword").value
+          email,
+          password
         });
+        if (!session?.user || !session?.organizationId || !api.token) {
+          throw new Error("Blue Current could not verify this session.");
+        }
         sessionCoordinator?.authenticate?.(session, api);
         renderSession(session);
         closeAuth();

@@ -1,0 +1,28 @@
+"use strict";
+const fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8"),pkg=require(path.join(root,"package.json"));
+let passed=0,total=0;
+const check=(name,value)=>{total+=1;if(!value){console.error(`FAIL: ${name}`);process.exitCode=1;}else{passed+=1;console.log(`PASS: ${name}`);}};
+const html=read("client/index.html");
+const auth=read("client/js/modules/authOrganizations.js");
+const diagnostics=read("client/js/modules/startupDiagnostics.js");
+const loader=read("client/js/startup-loader.js");
+const shell=read("client/js/modules/hospitalityOsShell.js");
+const authority=read("client/js/frontline-location-authority-v100.3.17.js");
+const continuity=read("client/js/command-location-continuity-v100.3.20.js");
+
+check("Runtime identifies V100.3.52",pkg.version==="100.3.52"&&html.includes('content="100.3.52"'));
+check("Credentials are never prefilled in HTML",!/<input id="authEmail"[^>]*\bvalue=/.test(html)&&!/<input id="authPassword"[^>]*\bvalue=/.test(html));
+check("Demo selectors are explicit non-submit controls",html.includes('id="authDemoKeith" type="button"')&&html.includes('id="authDemoSarah" type="button"'));
+check("Empty authentication is rejected before transport",auth.includes('if (!email || !password)')&&auth.includes('Enter both your email and password.'));
+check("Authenticated response is verified before opening",auth.includes('!session?.user || !session?.organizationId || !api.token'));
+check("Authentication locks the complete application surface",auth.includes('document.getElementById("main")')&&auth.includes('setProtectedSurfacesLocked(true)')&&loader.includes('main.setAttribute("inert","")'));
+check("Diagnostics have an accessible control name",html.includes('aria-label="Open Blue Current system status"')&&html.includes('aria-controls="startupDiagnosticsPanel"'));
+check("Diagnostics use the authoritative build marker",diagnostics.includes('meta[name="blue-current-build"]')&&loader.includes('meta[name="blue-current-build"]'));
+check("Diagnostics expose counts instead of internal module names",diagnostics.includes('retired ${skipped.length}')&&diagnostics.includes('deferred ${blocked.length}')&&!diagnostics.includes('blocked ${blocked.join'));
+check("Wildcard permission scope never becomes a restaurant",authority.includes('next==="*"')&&authority.includes('wildcard(allowed)')&&continuity.includes('option.value==="*"'));
+check("Workspace transition exits focused overlays",shell.includes('prepareWorkspaceTransition(name)')&&shell.includes('BlueCurrentFocusedWorkspaces?.exit?.')&&shell.includes('BlueCurrentFocusedWorkspaces?.exitFloor?.'));
+check("Service, inventory, and integrations have distinct routes",shell.includes('service:["service-coordination"')&&shell.includes('inventory:["inventory-intelligence"]')&&shell.includes('integrations:["mission-control"]'));
+check("Social preview image is declared",html.includes('property="og:image"')&&html.includes('blue-current-pwa-512.png'));
+console.log(`V100.3.52 backend presentation stabilization ${passed}/${total}`);
+if(passed!==total)process.exitCode=1;

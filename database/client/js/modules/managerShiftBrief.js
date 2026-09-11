@@ -4,7 +4,6 @@
   const STORAGE_KEY = "blueCurrent.managerShift.started";
 
   const byId = id => document.getElementById(id);
-  const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
 
   function text(id, fallback = "—") {
     const node = byId(id);
@@ -242,7 +241,7 @@
 
     try {
       const action = await api.createManagerAction({
-        locationId: locationId(),
+        locationId: "loc_marina",
         title: recommendationTitle(recommendation),
         source: "AI Brief",
         priority: confidence === "High" ? "high" : "medium",
@@ -519,7 +518,7 @@
 
     try {
       const action = await api.createManagerAction({
-        locationId: locationId(),
+        locationId: "loc_marina",
         title: payload.title,
         source: payload.source,
         priority: payload.priority,
@@ -530,7 +529,7 @@
       if (payload.note && api?.hasCapability?.("updateManagerAction")) {
         try {
           await api.updateManagerAction(action.id, {
-            locationId: locationId(),
+            locationId: "loc_marina",
             noteUpdate: true,
             note: payload.note
           });

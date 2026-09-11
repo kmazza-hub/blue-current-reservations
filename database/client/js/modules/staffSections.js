@@ -5,7 +5,7 @@
   function createStaffSectionsModule(eventBus, appState, cloudFoundationModule, floorModule) {
     const api = cloudFoundationModule?.api || new window.BlueCurrentCloudApi("");
     const $ = id => document.getElementById(id);
-    const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
+    const locationId = "loc_marina";
     let state = { staff: [], sections: [], tables: [] };
     let selectedStaffId = null;
 
@@ -133,10 +133,10 @@
 
     async function load() {
       if (!api.token) return;
-      state = await api.staffOperations(locationId());
+      state = await api.staffOperations(locationId);
       if (!selectedStaffId && state.staff[0]) selectedStaffId = state.staff[0].id;
       renderAll();
-      eventBus.emit("staff:loaded", { count: state.staff.length, locationId: locationId() });
+      eventBus.emit("staff:loaded", { count: state.staff.length, locationId });
     }
 
     $("staffRoster")?.addEventListener("click", event => {

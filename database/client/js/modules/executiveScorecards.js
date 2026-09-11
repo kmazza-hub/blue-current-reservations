@@ -14,7 +14,7 @@
       }));
 
       return {
-        id: card.querySelector("button")?.dataset?.locationId || "",
+        id: card.querySelector("button")?.dataset?.locationId || "loc_marina",
         name: card.querySelector(".district-location-top strong")?.textContent?.trim() || "Location",
         city: card.querySelector(".district-location-top small")?.textContent?.trim() || "",
         health: Number.parseFloat(card.querySelector(".district-health-badge")?.textContent || "0") || 0,
@@ -22,7 +22,7 @@
         labor: Number.parseFloat(String(metricMap.labor || "0").replace("%", "")) || 0,
         alerts: Number.parseInt(metricMap.alerts || "0", 10) || 0
       };
-    }).filter(location => location.id);
+    });
   }
 
   function readEventMetrics() {
@@ -180,9 +180,7 @@
       list.append(row);
     });
 
-    const focus = byId("executiveScorecardFocus");
-    focus.dataset.locationId = ranked.at(-1)?.id || "";
-    focus.disabled = !ranked.at(-1)?.id;
+    byId("executiveScorecardFocus").dataset.locationId = ranked.at(-1)?.id || "loc_marina";
   }
 
   function render() {
@@ -211,7 +209,6 @@
 
     byId("executiveScorecardFocus")?.addEventListener("click", event => {
       const locationId = event.currentTarget.dataset.locationId;
-      if (!locationId) return;
       const target = [...document.querySelectorAll(".district-location-card")]
         .find(card => card.querySelector("button")?.dataset?.locationId === locationId);
       (target || byId("districtCommandCenter"))?.scrollIntoView({ behavior:"smooth", block:"center" });

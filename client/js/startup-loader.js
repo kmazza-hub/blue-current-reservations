@@ -180,6 +180,8 @@
           overlay.classList.remove("open");
           overlay.setAttribute("aria-hidden","true");
           overlay.setAttribute("inert","");
+          const main=document.getElementById("main");
+          if(main){main.removeAttribute("aria-hidden");main.removeAttribute("inert");}
           document.body.classList.remove("auth-locked");
         }
         if (accountSection) {
@@ -195,6 +197,8 @@
           overlay.classList.add("open");
           overlay.removeAttribute("aria-hidden");
           overlay.removeAttribute("inert");
+          const main=document.getElementById("main");
+          if(main){main.setAttribute("aria-hidden","true");main.setAttribute("inert","");}
           document.body.classList.add("auth-locked");
           document.getElementById("authEmail")?.focus?.({preventScroll:true});
         }
@@ -221,7 +225,8 @@
       }));
       const summary = document.getElementById("startupDiagnosticsSummary");
       const dot = document.getElementById("startupDiagnosticsDot");
-      if (summary) summary.textContent = `V100.0.0 ready · ${duration}ms`;
+      const build = document.querySelector('meta[name="blue-current-build"]')?.content || "unknown";
+      if (summary) summary.textContent = `V${build} ready · ${duration}ms`;
       if (dot) dot.className = "ok";
       // Local development can be held open by optional third-party assets. Once the
       // application is ready, stop those nonessential pending resource loads.

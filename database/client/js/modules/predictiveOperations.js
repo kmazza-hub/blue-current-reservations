@@ -2,7 +2,6 @@
   "use strict";
 
   const byId = id => document.getElementById(id);
-  const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
 
   function text(id, fallback = "") {
     return byId(id)?.textContent?.trim() || fallback;
@@ -105,24 +104,14 @@
     };
   }
 
-  const PREDICTIVE_ALERT_KEY_BASE = "blueCurrent.predictiveAlert.v34.1.0d";
-  const predictiveAlertKey = () => `${PREDICTIVE_ALERT_KEY_BASE}.${locationId()}`;
+  const PREDICTIVE_ALERT_KEY = "blueCurrent.predictiveAlert.v34.1.0d";
 
   function loadPredictiveAlertState() {
     try {
-      const key = predictiveAlertKey();
-      let raw = localStorage.getItem(key);
-      if (raw === null && locationId() === "loc_marina") {
-        raw = localStorage.getItem(PREDICTIVE_ALERT_KEY_BASE);
-        if (raw !== null) {
-          localStorage.setItem(key, raw);
-          localStorage.removeItem(PREDICTIVE_ALERT_KEY_BASE);
-        }
-      }
-      const value = JSON.parse(raw);
+      const value = JSON.parse(localStorage.getItem(PREDICTIVE_ALERT_KEY));
       if (!value || typeof value !== "object") return {};
       if (value.snoozedUntil && Date.now() >= new Date(value.snoozedUntil).getTime()) {
-        localStorage.removeItem(key);
+        localStorage.removeItem(PREDICTIVE_ALERT_KEY);
         return {};
       }
       return value;
@@ -133,7 +122,7 @@
 
   function savePredictiveAlertState(state) {
     try {
-      localStorage.setItem(predictiveAlertKey(), JSON.stringify(state));
+      localStorage.setItem(PREDICTIVE_ALERT_KEY, JSON.stringify(state));
     } catch (error) {
       console.warn("[PredictiveOperations] Alert state could not be saved.", error);
     }
@@ -241,7 +230,7 @@
 
     try {
       const action = await api.createManagerAction({
-        locationId: locationId(),
+        locationId: "loc_marina",
         title: result.risk.actionTitle,
         source: "Predictive Operations",
         priority: result.pressure[2] >= 82 ? "high" : "medium",
@@ -251,7 +240,7 @@
       if (api?.hasCapability?.("updateManagerAction")) {
         try {
           await api.updateManagerAction(action.id, {
-            locationId: locationId(),
+            locationId: "loc_marina",
             noteUpdate: true,
             note: result.risk.actionNote
           });
@@ -418,7 +407,6 @@
     byId("predictiveAcknowledgeAlert")?.addEventListener("click", acknowledgePredictiveAlert);
     byId("predictiveSnoozeAlert")?.addEventListener("click", snoozePredictiveAlert);
     byId("predictiveCreateAction")?.addEventListener("click", createPreventiveAction);
-    window.addEventListener("bluecurrent:frontline-location-changed", renderPrediction);
     renderPrediction();
     observe();
   }

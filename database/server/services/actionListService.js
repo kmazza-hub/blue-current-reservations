@@ -1,7 +1,5 @@
 "use strict";
 
-const crypto = require("crypto");
-
 class ActionListService {
   constructor(database, operationsFeedService) {
     this.database = database;
@@ -165,14 +163,11 @@ class ActionListService {
       }
 
       // Resolve automatic tasks when the underlying condition no longer exists.
-      // Each synchronizer may resolve only the source record types it owns.
-      const synchronizedTypes = new Set(["pto_request", "inventory_item", "maintenance_ticket", "shift_handoff"]);
       for (const action of db.managerActions) {
         if (
           action.organizationId === organizationId &&
           action.locationId === locationId &&
           action.automatic &&
-          synchronizedTypes.has(action.sourceRecordType) &&
           !desiredIds.has(action.id) &&
           !action.completed
         ) {
@@ -184,79 +179,6 @@ class ActionListService {
         }
       }
     });
-  }
-
-  async synchronizeServiceExceptions(organizationId, locationId, input, actor) {
-    const supplied = Array.isArray(input?.exceptions) ? input.exceptions.slice(0, 100) : [];
-    const desired = supplied.map(item => {
-      const exceptionKey = String(item?.exceptionKey || "").trim().slice(0, 240);
-      if (!exceptionKey) return null;
-      const sourceRecordId = crypto.createHash("sha256").update(`${organizationId}|${locationId}|${exceptionKey}`).digest("hex").slice(0, 24);
-      const guest = String(item?.guest || "Guest").trim().slice(0, 80) || "Guest";
-      const table = String(item?.table || "Assigned table").trim().slice(0, 40) || "Assigned table";
-      const reason = String(item?.reason || "Service recovery needed").trim().slice(0, 160);
-      const recoveryAction = String(item?.action || "Check the table now").trim().slice(0, 160);
-      const minutes = Math.max(1, Math.min(999, Number(item?.minutes) || 1));
-      return {
-        id: `action_${locationId}_service_${sourceRecordId}`,
-        organizationId,
-        locationId,
-        title: `Service recovery: ${guest} · ${table}`.slice(0, 140),
-        source: "Service",
-        priority: "high",
-        due: "Now",
-        completed: false,
-        automatic: true,
-        sourceRecordId,
-        sourceRecordType: "service_exception",
-        serviceContext: { guest, table, reason, recoveryAction, minutes },
-        createdAt: new Date().toISOString()
-      };
-    }).filter(Boolean);
-    const desiredIds = new Set(desired.map(item => item.id));
-    const transitions = await this.database.mutate(db => {
-      db.managerActions ||= [];
-      const changed = [];
-      for (const desiredAction of desired) {
-        const existing = db.managerActions.find(item => item.id === desiredAction.id);
-        if (!existing) {
-          db.managerActions.push(desiredAction);
-          changed.push({ type: "opened", action: desiredAction });
-          continue;
-        }
-        existing.title = desiredAction.title;
-        existing.priority = desiredAction.priority;
-        existing.due = desiredAction.due;
-        existing.serviceContext = desiredAction.serviceContext;
-        existing.updatedAt = new Date().toISOString();
-      }
-      for (const action of db.managerActions) {
-        if (action.organizationId === organizationId && action.locationId === locationId && action.sourceRecordType === "service_exception" && !desiredIds.has(action.id) && !action.completed) {
-          action.completed = true;
-          action.completedAt = new Date().toISOString();
-          action.completedBy = "Blue Current";
-          action.autoResolved = true;
-          action.updatedAt = new Date().toISOString();
-          changed.push({ type: "resolved", action });
-        }
-      }
-      return changed;
-    });
-    if (this.operationsFeedService) {
-      for (const transition of transitions) {
-        const opened = transition.type === "opened", action = transition.action;
-        await this.operationsFeedService.record({
-          organizationId,
-          locationId,
-          category: "service",
-          type: opened ? "service_exception_opened" : "service_exception_resolved",
-          title: opened ? action.title : `Service recovery cleared: ${action.serviceContext?.guest || "Guest"} · ${action.serviceContext?.table || "Table"}`,
-          detail: opened ? `${action.serviceContext?.reason || "Recovery needed"} · ${action.serviceContext?.recoveryAction || "Check the table"}` : "The underlying Service condition is no longer active.",
-          actor: opened ? (actor?.name || actor?.email || "Service") : "Blue Current"
-        });
-      }
-    }
-    return { exceptions: desired.length, transitions: transitions.length, synchronizedAt: new Date().toISOString() };
   }
 
   async list(organizationId, locationId) {

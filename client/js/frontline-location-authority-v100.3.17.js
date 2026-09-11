@@ -6,19 +6,27 @@
   const authorized=()=>{const rows=window.appState?.get?.("authorizedLocationIds");return Array.isArray(rows)?rows.map(clean).filter(Boolean):[];};
   const stored=()=>{try{return clean(localStorage.getItem(KEY));}catch{return "";}};
   const remember=value=>{try{localStorage.setItem(KEY,value);}catch{}return value;};
+  const known=()=>{const rows=window.appState?.get?.("cloudLocations");return Array.isArray(rows)?rows.map(row=>clean(row?.id||row?.locationId)).filter(Boolean):[];};
+  const wildcard=rows=>rows.includes("*");
   function resolve(){
     const allowed=authorized(),candidate=requested()||stored();
     if(allowed.length){
-      if(candidate&&allowed.includes(candidate))return remember(candidate);
+      if(wildcard(allowed)){
+        if(candidate&&candidate!=="*")return remember(candidate);
+        const firstKnown=known()[0];
+        return remember(firstKnown||FALLBACK);
+      }
+      if(candidate&&candidate!=="*"&&allowed.includes(candidate))return remember(candidate);
       if(allowed.includes(FALLBACK))return remember(FALLBACK);
-      return remember(allowed[0]);
+      return remember(allowed.find(id=>id!=="*")||FALLBACK);
     }
-    return candidate||FALLBACK;
+    return candidate&&candidate!=="*"?candidate:FALLBACK;
   }
   function select(value){
     const next=clean(value),allowed=authorized();
     if(!next)throw new Error("Location is required");
-    if(allowed.length&&!allowed.includes(next))throw new Error("Location is not authorized for this user");
+    if(next==="*")throw new Error("Choose a restaurant, not the portfolio scope");
+    if(allowed.length&&!wildcard(allowed)&&!allowed.includes(next))throw new Error("Location is not authorized for this user");
     remember(next);window.appState?.update?.({activeLocationId:next});
     window.dispatchEvent(new CustomEvent("bluecurrent:frontline-location-changed",{detail:{locationId:next}}));
     return next;

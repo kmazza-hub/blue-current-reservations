@@ -8,7 +8,6 @@
     const offlineSync = window.BlueCurrentOfflineSync || null;
     const auditLedger = window.BlueCurrentAuditLedger || null;
     const $ = id => document.getElementById(id);
-    const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
     let connected = false;
     let bootstrap = null;
     let bootstrapPromise = null;
@@ -157,7 +156,7 @@
       button.disabled = true;
       try {
         const reservation = await api.createReservation({
-          locationId: locationId(),
+          locationId: "loc_marina",
           guestName: `Cloud Guest ${Math.floor(Math.random() * 900 + 100)}`,
           partySize: Math.floor(Math.random() * 5) + 2,
           actor: "V22 Cloud Console"

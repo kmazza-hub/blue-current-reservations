@@ -53,6 +53,7 @@ function hideDeepSurfaces(){
 
 function activate(name,{scroll=true}={}){
   if(!labels[name])name="command";
+  prepareWorkspaceTransition(name);
   hideDeepSurfaces();
   document.querySelectorAll("[data-bc-workspace]").forEach(button=>{
     button.classList.toggle("is-active",button.dataset.bcWorkspace===name);
@@ -83,6 +84,18 @@ function activate(name,{scroll=true}={}){
   window.dispatchEvent(new CustomEvent("bluecurrent:workspace",{detail:{workspace:name,sections:sections.map(x=>x.id)}}));
 }
 
+function prepareWorkspaceTransition(name){
+  if(!labels[name])return;
+  try{
+    if(document.documentElement.classList.contains("bc-operator-focus-mode")){
+      window.BlueCurrentFocusedWorkspaces?.exit?.({returnHome:false});
+    }
+    if(document.documentElement.classList.contains("bc-ipad-floor-focus")){
+      window.BlueCurrentFocusedWorkspaces?.exitFloor?.({returnHome:false});
+    }
+  }catch{}
+}
+
 const el=id=>document.getElementById(id);
 const setText=(id,value)=>{const node=el(id);if(node)node.textContent=value??"—";};
 const money=value=>Number.isFinite(Number(value))?new Intl.NumberFormat([],{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(value)):"—";
@@ -106,6 +119,8 @@ function openAuthFallback(message="Sign in to continue."){
       overlay.removeAttribute("aria-hidden");
       overlay.removeAttribute("inert");
     }
+    const main=document.getElementById("main");
+    if(main){main.setAttribute("aria-hidden","true");main.setAttribute("inert","");}
     document.body.classList.add("auth-locked");
     window.requestAnimationFrame(()=>document.getElementById("authEmail")?.focus?.({preventScroll:true}));
   }
@@ -1056,7 +1071,7 @@ function init(){
     commandShell.scrollIntoView({block:"start",behavior:"auto"});
   }
   window.BlueCurrentHospitalityShell={
-    version:"100.2.0",
+    version:"100.3.52",
     activate:(workspace,options={})=>activate(workspace,options),
     current:()=>document.documentElement.dataset.bcWorkspace||"command",
     sections:workspace=>candidateSections(workspace).map(section=>section.id)

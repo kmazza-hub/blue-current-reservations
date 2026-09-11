@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="blue-current-build" content="100.3.50">
+  <meta name="blue-current-build" content="100.3.52">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,6 +20,8 @@
   <meta name="robots" content="index,follow,max-image-preview:large">
   <meta property="og:url" content="https://bluecurrentco.com/">
   <meta property="og:site_name" content="Blue Current">
+  <meta property="og:image" content="https://bluecurrentco.com/assets/blue-current-pwa-512.png">
+  <meta property="og:image:alt" content="Blue Current Hospitality OS">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Blue Current | The Hospitality Operating System">
   <meta name="twitter:description" content="Protect demand. Coordinate the shift. See pressure sooner. One intelligent operating current for modern hospitality groups.">
@@ -27,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=100.3.50">
+  <link rel="stylesheet" href="styles.css?v=100.3.52">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -62,9 +64,9 @@
 <body data-web-art-direction="35" data-web-certified="36" data-web-launch-face="37" class="app-high-contrast">
 
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
-  <button id="startupDiagnosticsToggle" aria-expanded="false">
+  <button id="startupDiagnosticsToggle" type="button" aria-label="Open Blue Current system status" aria-controls="startupDiagnosticsPanel" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V100.0</strong>
+    <strong>Blue Current V100.3.52</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -97,14 +99,14 @@
         <p>Use your Blue Current account to enter the protected Hospitality OS.</p>
       </div>
       <form id="authLoginForm">
-        <label>Email<input id="authEmail" type="email" value="keith@bluecurrent.demo" autocomplete="username" required></label>
-        <label>Password<input id="authPassword" type="password" value="BlueCurrent23!" autocomplete="current-password" required></label>
+        <label>Email<input id="authEmail" type="email" autocomplete="username" placeholder="name@restaurant.com" required></label>
+        <label>Password<input id="authPassword" type="password" autocomplete="current-password" placeholder="Password" required></label>
         <button class="button button-gold button-full" type="submit">Sign in</button>
         <p id="authMessage"></p>
       </form>
       <div class="auth-demo-accounts">
-        <button id="authDemoKeith"><strong>Owner account</strong><span>Keith · all Chefs locations</span></button>
-        <button id="authDemoSarah"><strong>Manager account</strong><span>Sarah · Marina Grille only</span></button>
+        <button id="authDemoKeith" type="button"><strong>Load owner demo</strong><span>Fictional portfolio access</span></button>
+        <button id="authDemoSarah" type="button"><strong>Load manager demo</strong><span>Fictional single-location access</span></button>
       </div>
     </section>
   </div>
@@ -9030,11 +9032,11 @@
   <script src="js/cloud/authSessionManager.js?v=34.2.1"></script>
   <script src="js/cloud/bootstrapStateHydrator.js?v=34.2.1"></script>
   <script src="js/modules/cloudFoundation.js?v=100.3.21"></script>
-  <script src="js/modules/startupDiagnostics.js?v=34.3.2"></script>
+  <script src="js/modules/startupDiagnostics.js?v=100.3.52"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/syncControlCenter.js?v=34.4.1"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/observabilityIncidentCommand.js?v=34.5.0"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/reliabilitySloRunbooks.js?v=34.5.1"></script>
-  <script src="js/modules/authOrganizations.js?v=38.5.5"></script>
+  <script src="js/modules/authOrganizations.js?v=100.3.52"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/liveFloorOperations.js?v=100.3.18"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/reservationOperations.js?v=100.3.18"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/staffSections.js?v=100.3.18"></script>
@@ -10015,8 +10017,8 @@
 <script type="text/bluecurrent-runtime-lazy" data-src="js/manager-operations-truth-v100.2.68.js?v=100.3.18" data-bc-runtime-group="manager"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/manager-action-ownership-v100.2.69.js?v=100.3.18" data-bc-runtime-group="manager"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/manager-action-followup-v100.2.71.js?v=100.2.71" data-bc-runtime-group="manager"></script>
-<script src="js/frontline-location-authority-v100.3.17.js?v=100.3.17"></script>
-<script src="js/command-location-continuity-v100.3.20.js?v=100.3.20"></script>
+<script src="js/frontline-location-authority-v100.3.17.js?v=100.3.52"></script>
+<script src="js/command-location-continuity-v100.3.20.js?v=100.3.52"></script>
 <script src="js/floor-reservations-v62.0.js?v=100.3.19"></script>
 <script src="js/service-table-lifecycle-v100.2.57.js?v=100.2.57"></script>
 <script src="js/completed-visit-turn-certification-v100.2.58.js?v=100.2.58"></script>
@@ -10051,6 +10053,7 @@
 <script src="js/startup-loader.js?v=67.0.0"></script>\n<script type="text/bluecurrent-runtime-lazy" data-src="js/inventory-truth-v100.2.80.js?v=100.3.18" data-bc-runtime-group="inventory"></script>
 <script src="js/pilot-physical-acceptance-v100.3.46.js?v=100.3.46"></script>
 <script src="js/pilot-setup-console-v100.3.47.js?v=100.3.47"></script>
+<script src="js/controlled-demonstration-v100.3.51.js?v=100.3.51"></script>
 <script src="js/runtime-performance-v100.2.70.js?v=100.2.70"></script>
 
   <dialog class="bc-host-dialog" id="bcHostDialog">
@@ -10061,7 +10064,7 @@
     </form>
   </dialog>
 
-<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=100.0.0"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=100.0.0" defer></script>
+<script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/modules/hospitalityOsShell.js?v=100.3.52"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=100.0.0" defer></script>
     <dialog class="bc-pilot-confirm" id="bcPilotConfirmDialog">
       <form method="dialog">
         <small id="bcPilotConfirmEyebrow">PILOT CONTROL</small>

@@ -2,7 +2,7 @@
   "use strict";
 
   function createStartupDiagnosticsModule(eventBus, appState) {
-    const BUILD = "100.0.0";
+    const BUILD = document.querySelector('meta[name="blue-current-build"]')?.content || "unknown";
     const $ = id => document.getElementById(id);
     const setText = (id, value) => { const el = $(id); if (el) el.textContent = String(value); };
     const setClass = (id, value) => { const el = $(id); if (el) el.className = value; };
@@ -40,8 +40,8 @@
         (pipeline ? ` · API ${pipeline.averageLatencyMs}ms avg · cache ${pipeline.cacheHitRatio}% · retries ${pipeline.retried} · active ${pipeline.activeRequests}` : "") +
         (offlineSync ? ` · sync queued ${offlineSync.queueDepth} · replayed ${offlineSync.metrics.replayed} · conflicts ${offlineSync.openConflicts}` : "") +
         (auditLedger ? ` · audit ${auditLedger.entries} entries · ${auditLedger.checkpoint.status} · failures ${auditLedger.metrics.integrityFailures}` : "") +
-        (skipped.length ? ` · retired ${skipped.join(", ")}` : "") +
-        (blocked.length ? ` · blocked ${blocked.join(", ")}` : ""));
+        (skipped.length ? ` · retired ${skipped.length}` : "") +
+        (blocked.length ? ` · deferred ${blocked.length}` : ""));
       lastReport = { build: BUILD, checks, startup, pipeline, offlineSync, auditLedger };
       eventBus?.emit("diagnostics:complete", lastReport);
       return JSON.parse(JSON.stringify(lastReport));
@@ -52,6 +52,7 @@
       if (!panel) return;
       const open = panel.classList.toggle("open");
       $("startupDiagnosticsToggle")?.setAttribute("aria-expanded", String(open));
+      $("startupDiagnosticsToggle")?.setAttribute("aria-label", `${open ? "Close" : "Open"} Blue Current system status`);
     });
     eventBus?.on?.("startup:complete", run);
     window.addEventListener("bluecurrent:boot-complete", () => setTimeout(run, 0));

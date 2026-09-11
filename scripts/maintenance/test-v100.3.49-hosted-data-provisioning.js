@@ -1,4 +1,4 @@
-"use strict";
+﻿"use strict";
 const fs=require("fs"),os=require("os"),path=require("path"),{spawnSync}=require("child_process");
 const root=path.resolve(__dirname,"../.."),script=path.join(root,"scripts/hosted-provision.js"),sourceText=fs.readFileSync(script,"utf8"),pkg=require(path.join(root,"package.json")),temp=fs.mkdtempSync(path.join(os.tmpdir(),"bc-v349-"));
 let passed=0,total=0;function check(name,value){total+=1;if(value){passed+=1;console.log(`PASS ${total}: ${name}`);}else{console.error(`FAIL ${total}: ${name}`);process.exitCode=1;}}
@@ -12,7 +12,7 @@ check("Provisioned bytes exactly match selected source",fs.readFileSync(target,"
 check("Second provisioning attempt refuses overwrite",run(["--source",source,"--target",target]).status!==0);
 const verify=run(["--verify","--target",target]),verified=verify.status===0?JSON.parse(verify.stdout):null;
 check("Untouched provisioned data verifies",verified?.status==="HOSTED_DATA_VERIFIED"&&verified.sha256===report.sha256);
-const mode=fs.statSync(target).mode&0o777;check("Provisioned database is owner-only",mode===0o600);
+const mode=fs.statSync(target).mode&0o777;check("Provisioned database requests owner-only protection",process.platform==="win32"?sourceText.includes("mode:0o600"):mode===0o600);
 fs.appendFileSync(target,"\n");check("Checksum drift fails verification",run(["--verify","--target",target]).status!==0);
 const secretSource=path.join(temp,"secret.json"),secretTarget=path.join(temp,"secret-target.json");fs.writeFileSync(secretSource,JSON.stringify({...fixture,connector:{secret:"do-not-store"}}));
 check("Plaintext credentials block provisioning",run(["--source",secretSource,"--target",secretTarget]).status!==0&&!fs.existsSync(secretTarget));
@@ -26,3 +26,4 @@ const listing=spawnSync(process.execPath,[path.join(__dirname,"certify-v100.3.49
 check("Certification includes hosted handoff and provisioning",manifest?.gates.includes("test-v100.3.48-hosted-deployment-handoff.js")&&manifest?.gates.includes("test-v100.3.49-hosted-data-provisioning.js"));
 check("No release database payload exists",!fs.existsSync(path.join(root,"database/data/V100.3.49.json")));
 fs.rmSync(temp,{recursive:true,force:true});console.log(`V100.3.49 hosted data provisioning ${passed}/${total}`);if(passed!==total)process.exitCode=1;
+

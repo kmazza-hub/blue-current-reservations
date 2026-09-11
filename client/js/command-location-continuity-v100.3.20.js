@@ -8,7 +8,7 @@
   function authority(){return window.BlueCurrentFrontlineLocation||null;}
   function allowed(){return authority()?.authorized?.()||[];}
   function locations(){const rows=window.appState?.get?.("cloudLocations");return Array.isArray(rows)?rows:[];}
-  function locationLabel(id){const row=locations().find(item=>String(item?.id||item?.locationId)===String(id));return clean(row?.name||row?.displayName||id)||"Active restaurant";}
+  function locationLabel(id){const safeId=id==="*"?(authority()?.get?.()||"loc_marina"):id;const row=locations().find(item=>String(item?.id||item?.locationId)===String(safeId));return clean(row?.name||row?.displayName||(safeId==="loc_marina"?"Marina Grille":safeId))||"Active restaurant";}
   function ensureOption(select,id){
     let option=Array.from(select.options).find(item=>item.value===id);
     if(!option){option=document.createElement("option");option.value=id;option.textContent=locationLabel(id);select.appendChild(option);}
@@ -26,7 +26,8 @@
     syncing=true;observer?.disconnect();
     try{
       const authorized=allowed(),active=source.get();
-      if(authorized.length){Array.from(select.options).forEach(option=>{if(!authorized.includes(option.value))option.remove();});}
+      if(authorized.length&&!authorized.includes("*")){Array.from(select.options).forEach(option=>{if(!authorized.includes(option.value))option.remove();});}
+      Array.from(select.options).forEach(option=>{if(option.value==="*")option.remove();});
       ensureOption(select,active);select.value=active;renderIdentity(active);
     }finally{observer?.observe(select,{childList:true});syncing=false;}
   }
