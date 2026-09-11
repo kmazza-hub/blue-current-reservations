@@ -1,4 +1,4 @@
-
+﻿
 (function () {
   "use strict";
 
@@ -109,7 +109,7 @@
       }
       const orgSelect = $("authOrganizationSelect");
       if (orgSelect) orgSelect.innerHTML = session.organizations.map(item =>
-        `<option value="${item.organizationId}" ${item.organizationId === session.organizationId ? "selected" : ""}>${item.organizationId === "org_chefs" ? "Chefs International" : "Blue Harbor Hospitality"} · ${item.role.replaceAll("_"," ")}</option>`
+        `<option value="${item.organizationId}" ${item.organizationId === session.organizationId ? "selected" : ""}>${item.organizationId === "org_chefs" ? "Chefs International" : "Blue Harbor Hospitality"} Â· ${item.role.replaceAll("_"," ")}</option>`
       ).join("");
       appState.update({
         authenticatedUser: session.user,
@@ -163,13 +163,14 @@
         setMessage("Enter both your email and password.", true);
         return;
       }
-      setMessage("Signing in…");
+      setMessage("Signing inâ€¦");
       try {
         validateApi();
         const session = await api.login({
           email,
           password
         });
+        api.setToken(session?.token || "");
         if (!session?.user || !session?.organizationId || !api.token) {
           throw new Error("Blue Current could not verify this session.");
         }
@@ -223,7 +224,7 @@
     $("authInviteForm")?.addEventListener("submit", async event => {
       event.preventDefault();
       const result = $("authInviteResult");
-      result.textContent = "Creating invitation…";
+      result.textContent = "Creating invitationâ€¦";
       try {
         const invitation = await api.createInvitation({
           email: $("authInviteEmail").value.trim(),
@@ -268,3 +269,4 @@
 
   window.createBlueCurrentAuthOrganizationsModule = createAuthOrganizationsModule;
 })();
+
