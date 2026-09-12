@@ -79,6 +79,19 @@ class FloorService {
       table.partySize = guest.partySize;
       table.seatedAt = guest.seatedAt;
 
+      database.serviceFlows ||= [];
+      let serviceFlow = database.serviceFlows.find(item => item.waitlistId === waitlistId && item.course !== "closed");
+      if (!serviceFlow) {
+        serviceFlow = {
+          id:`svc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId:table.locationId,waitlistId,tableId:table.id,tableName:table.name,
+          serverId:null,serverName:table.server||"Unassigned",guestName:guest.guestName,partySize:Number(guest.partySize||1),course:"seated",kitchenStatus:"not-fired",expoStatus:"waiting",risk:"normal",seatedAt:guest.seatedAt,updatedAt:guest.seatedAt,timeline:[{stage:"seated",at:guest.seatedAt}]
+        };
+        database.serviceFlows.push(serviceFlow);
+      }
+
+      database.operationalValueEvents ||= [];
+      database.operationalValueEvents.push({id:`value_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,organizationId,locationId:table.locationId,tableId:table.id,waitlistId,type:"waitlist-seated-linked",measuredMinutes:Math.max(0,Math.round((Date.now()-new Date(guest.createdAt||Date.now()).getTime())/60000)),linkedStepsCompleted:3,manualStepsAvoided:1,evidence:["waitlist cleared","table occupied","service flow opened"],attribution:"MEASURED_WORKFLOW_EVENT",createdAt:guest.seatedAt});
+
       database.seatingEvents ||= [];
       database.seatingEvents.push(models.operationalEvent({
         organizationId,
@@ -90,7 +103,7 @@ class FloorService {
         payload: { waitlistId, partySize: guest.partySize }
       }));
 
-      return { guest, table };
+      return { guest, table, serviceFlow };
     }).then(async result => {
       if (!result) return null;
       await this.auditService.record({
@@ -100,6 +113,7 @@ class FloorService {
         category: "floor"
       });
       this.realtimeHub.publish("floor:guest-seated", { ...result, organizationId });
+      this.realtimeHub.publish("service:guest-seated", result.serviceFlow);
       return result;
     });
   }

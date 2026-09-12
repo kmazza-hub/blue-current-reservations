@@ -93,7 +93,7 @@
           <label>Party size<input id="reservationPartySize" type="number" min="1" value="${reservation.partySize}"></label>
           <label>Time<input id="reservationTime" type="datetime-local" value="${reservation.reservationTime.slice(0,16)}"></label>
           <label>Status<select id="reservationStatus">
-            ${["confirmed","arrived","seated","completed","cancelled","no_show"].map(status => `<option value="${status}" ${status === reservation.status ? "selected" : ""}>${status.replace("_"," ")}</option>`).join("")}
+            ${["confirmed","arrived","seated","completed","cancelled","no-show"].map(status => `<option value="${status}" ${status === reservation.status ? "selected" : ""}>${status.replace("-"," ")}</option>`).join("")}
           </select></label>
           <label>Source<select id="reservationSource">
             ${["AI Concierge","Website","Phone","OpenTable","Host Stand"].map(source => `<option ${source === reservation.source ? "selected" : ""}>${source}</option>`).join("")}
@@ -110,15 +110,16 @@
         <div class="reservation-table-assignment">
           <small>Compatible tables</small>
           <div>
-            ${tables.length
+            ${reservation.status === "arrived" && tables.length
               ? tables.map(table => `<button data-reservation-table="${table.id}">${table.name}<span>${table.seats} seats</span></button>`).join("")
-              : "<p>No available table currently fits this party.</p>"}
+              : `<p>${reservation.status === "arrived" ? "No available table currently fits this party." : "Mark the party arrived before choosing a table."}</p>`}
           </div>
         </div>
 
         <div class="reservation-actions">
           <button class="button button-gold" id="reservationSave">Save reservation</button>
-          <button class="button button-light" id="reservationMarkArrived">Mark arrived</button>
+          ${reservation.status === "confirmed" ? '<button class="button button-light" id="reservationMarkArrived">Mark arrived</button>' : ""}
+          ${reservation.status === "seated" ? '<button class="button button-light" id="reservationCompleteService">Complete service</button>' : ""}
         </div>`;
     }
 
@@ -181,6 +182,13 @@
         return;
       }
 
+      if (event.target.closest("#reservationCompleteService")) {
+        await api.completeOperationalReservation(reservation.id);
+        await load();
+        floorModule?.reload?.();
+        return;
+      }
+
       if (event.target.closest("#reservationSave")) {
         await api.updateOperationalReservation(reservation.id, {
           guestName: $("reservationGuestName").value.trim(),
@@ -202,7 +210,7 @@
       const date = $("newReservationDate").value;
       const time = $("newReservationTime").value;
       await api.createOperationalReservation({
-        locationId,
+        locationId: locationId(),
         guestName: $("newReservationGuest").value,
         phone: $("newReservationPhone").value,
         partySize: Number($("newReservationParty").value),
@@ -215,7 +223,7 @@
       await load();
     });
 
-    ["reservation:created","reservation:updated","reservation:seated","floor:table-updated","floor:guest-seated"].forEach(type => {
+    ["reservation:created","reservation:updated","reservation:seated","reservation:completed","floor:table-updated","floor:guest-seated"].forEach(type => {
       eventBus.on?.(type, () => load());
     });
     eventBus.on?.("auth:signed-in", load);

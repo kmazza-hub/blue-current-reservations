@@ -10,6 +10,25 @@ class ReservationOperationsService {
     this.realtimeHub = realtimeHub;
   }
 
+  valueEvent(tx, input) {
+    const event = {
+      id: `value_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      organizationId: input.organizationId,
+      locationId: input.locationId,
+      reservationId: input.reservationId || null,
+      tableId: input.tableId || null,
+      type: input.type,
+      measuredMinutes: Number(input.measuredMinutes || 0),
+      linkedStepsCompleted: Number(input.linkedStepsCompleted || 0),
+      manualStepsAvoided: Number(input.manualStepsAvoided || 0),
+      evidence: input.evidence || [],
+      attribution: "MEASURED_WORKFLOW_EVENT",
+      createdAt: new Date().toISOString()
+    };
+    tx.create("operationalValueEvents", event);
+    return event;
+  }
+
   async list(locationId) {
     const database = await this.database.read();
     return (database.reservations || [])
@@ -55,9 +74,9 @@ class ReservationOperationsService {
         if(!table || table.organizationId!==organizationId || table.locationId!==current.locationId)return null;
       }
 
-      if(safePatch.status && String(safePatch.status).toLowerCase()!==String(current.status||"").toLowerCase()){
-        const from=String(current.status||"confirmed").toLowerCase();
-        const to=String(safePatch.status).toLowerCase();
+      const from=String(current.status||"confirmed").toLowerCase();
+      const to=String(safePatch.status||from).toLowerCase();
+      if(safePatch.status && to!==from){
         const allowedNext=transitions[from];
         if(!allowedNext || !allowedNext.has(to)){
           const error=new Error(`Invalid reservation transition: ${from} -> ${to}`);
@@ -68,6 +87,17 @@ class ReservationOperationsService {
       }
 
       const updated=tx.update("reservations",reservationId,safePatch);
+      let linkedWaitlist=null;
+      if(to==="arrived"&&from!=="arrived"){
+        const arrivedAt=new Date().toISOString();
+        updated.arrivedAt=arrivedAt;
+        linkedWaitlist=(tx.list("waitlist")||[]).find(item=>item.reservationId===reservationId&&item.status==="waiting")||null;
+        if(!linkedWaitlist){
+          linkedWaitlist={id:`wait_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,organizationId,locationId:updated.locationId,reservationId,guestName:updated.guestName,phone:updated.phone||"",partySize:Number(updated.partySize||1),quotedMinutes:0,status:"waiting",source:"Reservation arrival",vip:Boolean(updated.vip),notes:updated.notes||"",createdAt:arrivedAt};
+          tx.create("waitlist",linkedWaitlist);
+        }
+        this.valueEvent(tx,{organizationId,locationId:updated.locationId,reservationId,type:"reservation-arrival-linked",linkedStepsCompleted:2,manualStepsAvoided:1,evidence:["reservation status recorded","waitlist entry linked"]});
+      }
       const event=models.operationalEvent({
         organizationId,
         locationId:updated.locationId,
@@ -78,7 +108,7 @@ class ReservationOperationsService {
         payload:safePatch
       });
       tx.create("reservationEvents",event);
-      return {reservation:updated,event};
+      return {reservation:updated,event,linkedWaitlist};
     },{domain:"reservations",operation:"update",organizationId,reservationId});
 
     if(!result)return null;
@@ -89,6 +119,7 @@ class ReservationOperationsService {
       category:"reservation"
     });
     this.realtimeHub.publish("reservation:updated",{...result.reservation,organizationId});
+    if(result.linkedWaitlist)this.realtimeHub.publish("floor:waitlist-added",result.linkedWaitlist);
     return result.reservation;
   }
 
@@ -116,6 +147,15 @@ class ReservationOperationsService {
       table.reservationTime=reservation.reservationTime;
       table.updatedAt=seatedAt;
 
+      const linkedWaitlist=(tx.list("waitlist")||[]).find(item=>item.reservationId===reservationId&&item.status==="waiting")||null;
+      if(linkedWaitlist){linkedWaitlist.status="seated";linkedWaitlist.seatedAt=seatedAt;linkedWaitlist.tableId=table.id;}
+      let serviceFlow=(tx.list("serviceFlows")||[]).find(item=>item.reservationId===reservationId&&item.course!=="closed")||null;
+      if(!serviceFlow){
+        serviceFlow={id:`svc_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,organizationId,locationId:reservation.locationId,reservationId,tableId:table.id,tableName:table.name,serverId:null,serverName:table.server||"Unassigned",guestName:reservation.guestName,partySize:Number(reservation.partySize||1),course:"seated",kitchenStatus:"not-fired",expoStatus:"waiting",risk:"normal",seatedAt,updatedAt:seatedAt,timeline:[{stage:"seated",at:seatedAt}]};
+        tx.create("serviceFlows",serviceFlow);
+      }
+      const valueEvent=this.valueEvent(tx,{organizationId,locationId:reservation.locationId,reservationId,tableId,type:"reservation-seated-linked",linkedStepsCompleted:4,manualStepsAvoided:2,evidence:["reservation seated","waitlist cleared","table occupied","service flow opened"]});
+
       const event=models.operationalEvent({
         organizationId,
         locationId:reservation.locationId,
@@ -127,7 +167,7 @@ class ReservationOperationsService {
         payload:{partySize:reservation.partySize}
       });
       tx.create("reservationEvents",event);
-      return {reservation,table,event};
+      return {reservation,table,event,serviceFlow,valueEvent};
     },{domain:"reservations",operation:"seat",organizationId,reservationId,tableId});
 
     if(!result)return null;
@@ -138,7 +178,8 @@ class ReservationOperationsService {
       category:"reservation"
     });
     this.realtimeHub.publish("reservation:seated",{reservation:result.reservation,table:result.table,organizationId});
-    return {reservation:result.reservation,table:result.table};
+    this.realtimeHub.publish("service:guest-seated",result.serviceFlow);
+    return {reservation:result.reservation,table:result.table,serviceFlow:result.serviceFlow,valueEvent:result.valueEvent};
   }
 
   async complete(reservationId, actor, organizationId) {
@@ -156,13 +197,19 @@ class ReservationOperationsService {
       reservation.updatedAt=completedAt;
 
       if(table){
-        table.status="available";
+        table.status="cleaning";
         table.guestName="";
         table.partySize=0;
         table.seatedAt=null;
         table.reservationTime=null;
+        table.cleaningAt=completedAt;
         table.updatedAt=completedAt;
       }
+
+      const serviceFlow=(tx.list("serviceFlows")||[]).find(item=>item.reservationId===reservationId&&item.course!=="closed")||null;
+      if(serviceFlow){serviceFlow.course="closed";serviceFlow.risk="normal";serviceFlow.closedAt=completedAt;serviceFlow.updatedAt=completedAt;serviceFlow.timeline||=[];serviceFlow.timeline.push({stage:"closed",at:completedAt});}
+      const measuredMinutes=reservation.seatedAt?Math.max(0,Math.round((Date.now()-new Date(reservation.seatedAt).getTime())/60000)):0;
+      const valueEvent=this.valueEvent(tx,{organizationId,locationId:reservation.locationId,reservationId,tableId:table?.id||null,type:"service-completed-linked",measuredMinutes,linkedStepsCompleted:3,manualStepsAvoided:1,evidence:["reservation completed","service flow closed","table sent to cleaning"]});
 
       const event=models.operationalEvent({
         organizationId,
@@ -175,7 +222,7 @@ class ReservationOperationsService {
         payload:{completedAt}
       });
       tx.create("reservationEvents",event);
-      return {reservation,table,event};
+      return {reservation,table,event,serviceFlow,valueEvent};
     },{domain:"reservations",operation:"complete-service",organizationId,reservationId});
 
     if(!result)return null;
@@ -186,9 +233,9 @@ class ReservationOperationsService {
       category:"reservation"
     });
     this.realtimeHub.publish("reservation:completed",{
-      reservation:result.reservation,table:result.table,organizationId
+      reservation:result.reservation,table:result.table,serviceFlow:result.serviceFlow,organizationId
     });
-    return {reservation:result.reservation,table:result.table};
+    return {reservation:result.reservation,table:result.table,serviceFlow:result.serviceFlow,valueEvent:result.valueEvent};
   }
 
   async create(input, actor, organizationId) {

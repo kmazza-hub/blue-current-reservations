@@ -18,7 +18,8 @@
     expandedCompleted: false,
     loading: true,
     source: "local",
-    actions: []
+    actions: [],
+    valueProof: null
   };
 
   function apiClient() {
@@ -62,6 +63,7 @@
       try {
         const payload = await api.managerActions(locationId());
         state.actions = Array.isArray(payload.actions) ? payload.actions : [];
+        state.valueProof = payload.valueProof || null;
         state.source = "server";
         state.loading = false;
         render();
@@ -280,6 +282,24 @@
     render();
   }
 
+  async function decideAutomation(action, approvalDecision) {
+    if (state.source !== "server") return;
+    action.isSaving = true;
+    render();
+    try {
+      const updated = await apiClient().updateManagerAction(action.id, {
+        locationId: locationId(),
+        approvalDecision
+      });
+      Object.assign(action, updated, { isSaving:false });
+      setStatus(approvalDecision === "APPROVED" ? "Manager approval recorded. The action remains inside its configured policy boundary." : "Recommendation rejected and recorded.");
+    } catch (error) {
+      action.isSaving = false;
+      setStatus(error.message || "Could not record the manager decision.");
+    }
+    render();
+  }
+
   function setStatus(message) {
     const status = document.getElementById("managerActionStatus");
     if (status) status.textContent = message;
@@ -307,6 +327,13 @@
     copy.innerHTML = "<strong></strong><small></small>";
     copy.querySelector("strong").textContent = action.title;
     copy.querySelector("small").textContent = `${action.source} · ${action.due}${action.isSaving ? " · Saving…" : ""}`;
+
+    if (action.lifecycleContext?.detail) {
+      const detail = document.createElement("p");
+      detail.className = "manager-action-note";
+      detail.textContent = action.lifecycleContext.detail;
+      copy.append(detail);
+    }
 
     if (action.note) {
       const note = document.createElement("p");
@@ -343,6 +370,29 @@
     note.setAttribute("aria-label", `${action.note ? "Edit note for" : "Add note to"} ${action.title}`);
     note.addEventListener("click", () => updateActionNote(action));
     badges.append(note);
+
+    if (action.approvalRequired && action.automationStatus === "AWAITING_MANAGER") {
+      const approve = document.createElement("button");
+      approve.className = "manager-action-assign";
+      approve.type = "button";
+      approve.textContent = "Approve";
+      approve.disabled = Boolean(action.isSaving);
+      approve.setAttribute("aria-label", `Approve ${action.title}`);
+      approve.addEventListener("click", () => decideAutomation(action, "APPROVED"));
+      const reject = document.createElement("button");
+      reject.className = "manager-action-note-button";
+      reject.type = "button";
+      reject.textContent = "Reject";
+      reject.disabled = Boolean(action.isSaving);
+      reject.setAttribute("aria-label", `Reject ${action.title}`);
+      reject.addEventListener("click", () => decideAutomation(action, "REJECTED"));
+      badges.append(approve, reject);
+    } else if (action.automationStatus === "APPROVED") {
+      const approved = document.createElement("span");
+      approved.className = "manager-action-badge manager-action-assignee";
+      approved.textContent = "Manager approved";
+      badges.append(approved);
+    }
 
     const assign = document.createElement("button");
     assign.className = "manager-action-assign";
@@ -419,7 +469,9 @@
     progressPercent.textContent = `${percent}%`;
     completedCount.textContent = String(completed.length);
     if (status) {
-      status.textContent = `${open.length} action${open.length === 1 ? "" : "s"} remaining · ${state.source === "server" ? "Saved to Blue Current" : "Local preview"}`;
+      const proof=state.valueProof;
+      const proofText=proof?` · ${proof.manualStepsAvoided} manual steps avoided across ${proof.measuredEvents} measured events`:"";
+      status.textContent = `${open.length} action${open.length === 1 ? "" : "s"} remaining · ${state.source === "server" ? "Saved to Blue Current" : "Local preview"}${proofText}`;
     }
 
     list.replaceChildren();

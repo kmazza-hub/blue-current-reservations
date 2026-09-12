@@ -49,6 +49,26 @@ class ActionListService {
       ? Math.max(0, (Date.now() - new Date(latestHandoff.createdAt || Date.now()).getTime()) / 36e5)
       : null;
 
+    const reservations=(db.reservations||[]).filter(item=>item.organizationId===organizationId&&item.locationId===locationId);
+    const tables=(db.tables||[]).filter(item=>item.organizationId===organizationId&&item.locationId===locationId);
+    const serviceFlows=(db.serviceFlows||[]).filter(item=>item.organizationId===organizationId&&item.locationId===locationId&&item.course!=="closed");
+    const configuration=(db.restaurantConfigurations||{})[organizationId]||null;
+    const targetTurnMinutes=Math.max(30,Number(configuration?.targets?.targetTurnMinutes||90));
+    const now=Date.now();
+    const lifecycleExceptions=[];
+    for(const reservation of reservations.filter(item=>item.status==="arrived")){
+      const minutes=Math.max(0,Math.floor((now-new Date(reservation.arrivedAt||reservation.updatedAt||reservation.reservationTime||now).getTime())/60000));
+      if(minutes>=15)lifecycleExceptions.push({key:`arrival_${reservation.id}`,recordId:reservation.id,type:"arrival_wait",title:`Seat or update ${reservation.guestName}`,detail:`Arrived party of ${reservation.partySize} has waited ${minutes} minutes.`,minutes,priority:minutes>=30?"high":"medium",due:"Now"});
+    }
+    for(const table of tables.filter(item=>item.status==="seated"&&item.seatedAt)){
+      const minutes=Math.max(0,Math.floor((now-new Date(table.seatedAt||now).getTime())/60000));
+      if(minutes>=targetTurnMinutes)lifecycleExceptions.push({key:`turn_${table.id}`,recordId:table.id,type:"table_turn",title:`Review ${table.name} table turn`,detail:`Table has been occupied ${minutes} minutes against a ${targetTurnMinutes}-minute target.`,minutes,priority:minutes>=targetTurnMinutes+20?"high":"medium",due:"Now"});
+    }
+    for(const flow of serviceFlows){
+      const readyMinutes=flow.readyAt&&!flow.deliveredAt?Math.max(0,Math.floor((now-new Date(flow.readyAt).getTime())/60000)):0;
+      if(["high","critical"].includes(flow.risk)||readyMinutes>=5)lifecycleExceptions.push({key:`service_${flow.id}`,recordId:flow.id,type:"service_risk",title:`Recover ${flow.tableName} service`,detail:readyMinutes>=5?`Food has waited ${readyMinutes} minutes for delivery.`:`${flow.guestName} is marked ${flow.risk} risk.`,minutes:readyMinutes,priority:flow.risk==="critical"||readyMinutes>=10?"high":"medium",due:"Now"});
+    }
+
     return {
       db,
       employees,
@@ -56,7 +76,9 @@ class ActionListService {
       lowInventory,
       openMaintenance,
       latestHandoff,
-      handoffAgeHours
+      handoffAgeHours,
+      lifecycleExceptions,
+      configuration
     };
   }
 
@@ -134,6 +156,15 @@ class ActionListService {
       });
     }
 
+    for(const item of signals.lifecycleExceptions){
+      actions.push({
+        id:`action_${locationId}_lifecycle_${this.slug(item.key)}`,
+        organizationId,locationId,title:item.title,source:"Unified exceptions",priority:item.priority,due:item.due,completed:false,automatic:true,
+        approvalRequired:true,automationStatus:"AWAITING_MANAGER",automationMode:signals.configuration?.automationPolicy?.mode||"RECOMMEND_ONLY",
+        sourceRecordId:item.recordId,sourceRecordType:item.type,lifecycleContext:{detail:item.detail,minutes:item.minutes},createdAt:now
+      });
+    }
+
     return actions;
   }
 
@@ -166,7 +197,7 @@ class ActionListService {
 
       // Resolve automatic tasks when the underlying condition no longer exists.
       // Each synchronizer may resolve only the source record types it owns.
-      const synchronizedTypes = new Set(["pto_request", "inventory_item", "maintenance_ticket", "shift_handoff"]);
+      const synchronizedTypes = new Set(["pto_request", "inventory_item", "maintenance_ticket", "shift_handoff", "arrival_wait", "table_turn", "service_risk"]);
       for (const action of db.managerActions) {
         if (
           action.organizationId === organizationId &&
@@ -267,6 +298,15 @@ class ActionListService {
       item => item.organizationId === organizationId && item.locationId === locationId
     );
 
+    const db=await this.database.read();
+    const valueEvents=(db.operationalValueEvents||[]).filter(item=>item.organizationId===organizationId&&item.locationId===locationId);
+    const valueProof={
+      measuredEvents:valueEvents.length,
+      linkedStepsCompleted:valueEvents.reduce((sum,item)=>sum+Number(item.linkedStepsCompleted||0),0),
+      manualStepsAvoided:valueEvents.reduce((sum,item)=>sum+Number(item.manualStepsAvoided||0),0),
+      measuredServiceMinutes:valueEvents.reduce((sum,item)=>sum+Number(item.measuredMinutes||0),0),
+      methodology:"Counts are derived from persisted lifecycle events; no financial causation is claimed."
+    };
     return {
       actions: [...actions].sort((a, b) => {
         if (a.completed !== b.completed) return Number(a.completed) - Number(b.completed);
@@ -278,7 +318,8 @@ class ActionListService {
         return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
       }),
       generatedAt: new Date().toISOString(),
-      mode: "live-operational-actions"
+      mode: "live-operational-actions",
+      valueProof
     };
   }
 
@@ -427,6 +468,21 @@ class ActionListService {
       eventTitle = changes.note
         ? `Manager note added: ${current.title}`
         : `Manager note removed: ${current.title}`;
+    }
+
+    if(patch.approvalDecision){
+      const decision=String(patch.approvalDecision).toUpperCase();
+      if(!["APPROVED","REJECTED"].includes(decision)){
+        const error=new Error("approvalDecision must be APPROVED or REJECTED.");error.statusCode=400;throw error;
+      }
+      changes.automationStatus=decision;
+      changes.approvalRequired=false;
+      changes.approvedAt=decision==="APPROVED"?new Date().toISOString():null;
+      changes.approvedBy=decision==="APPROVED"?(actor?.name||actor?.email||"Manager"):null;
+      changes.rejectedAt=decision==="REJECTED"?new Date().toISOString():null;
+      changes.rejectedBy=decision==="REJECTED"?(actor?.name||actor?.email||"Manager"):null;
+      eventType=decision==="APPROVED"?"automation_approved":"automation_rejected";
+      eventTitle=`Manager ${decision.toLowerCase()} recommendation: ${current.title}`;
     }
 
     const updated = await this.database.update("managerActions", actionId, changes);

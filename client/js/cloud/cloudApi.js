@@ -472,6 +472,12 @@
         body: JSON.stringify(payload)
       });
     }
+    completeOperationalReservation(reservationId) {
+      return this.request("/api/reservation-operations/complete", {
+        method: "POST",
+        body: JSON.stringify({ reservationId })
+      });
+    }
 
     listReservations() { return this.request("/api/reservations"); }
     createReservation(payload) {

@@ -10,7 +10,7 @@
     let selectedTableId = null;
     let drag = null;
 
-    const statusOrder = ["available", "reserved", "seated", "cleaning", "blocked"];
+    const statusOrder = ["available", "reserved", "seated", "check", "cleaning", "blocked"];
 
     function selectedTable() {
       return state.tables.find(table => table.id === selectedTableId) || null;

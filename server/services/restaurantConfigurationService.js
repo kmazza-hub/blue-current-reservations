@@ -38,6 +38,12 @@ class RestaurantConfigurationService {
         targetPrimeCostPercent:null
       },
       integrationAssignments:[],
+      automationPolicy:{
+        mode:"RECOMMEND_ONLY",
+        managerApprovalRequired:true,
+        allowedInternalActions:["notify","draft-action","clear-clean-table"],
+        prohibitedActions:["provider-write","financial-write","staffing-change","price-change"]
+      },
       pilot:{
         enabled:true,
         mode:"PILOT",
@@ -82,6 +88,8 @@ class RestaurantConfigurationService {
     }
     if(cfg.pilot?.writeBackEnabled===true) errors.push("Pilot foundation cannot enable provider write-back.");
     if(cfg.pilot?.autonomousProductionChanges===true) errors.push("Autonomous production changes are prohibited.");
+    if(cfg.automationPolicy?.managerApprovalRequired!==true) errors.push("Manager approval must remain required during first-location setup.");
+    if(!["RECOMMEND_ONLY","MANAGER_APPROVED"].includes(cfg.automationPolicy?.mode)) errors.push("Automation mode must be RECOMMEND_ONLY or MANAGER_APPROVED.");
     if(cfg.pilot?.actualRestaurantDataConfirmed===true){
       if(!this.clean(cfg.pilot?.confirmedBy)) errors.push("pilot.confirmedBy is required when actual restaurant data is confirmed");
       if(!this.clean(cfg.pilot?.confirmationSource)) errors.push("pilot.confirmationSource is required when actual restaurant data is confirmed");
@@ -93,7 +101,8 @@ class RestaurantConfigurationService {
   async get(organizationId){
     const db=await this.database.read();
     const stored=(db.restaurantConfigurations||{})[organizationId];
-    const configuration=stored||this.defaults(organizationId);
+    const base=this.defaults(organizationId);
+    const configuration=stored?{...base,...stored,location:{...base.location,...(stored.location||{})},targets:{...base.targets,...(stored.targets||{})},pilot:{...base.pilot,...(stored.pilot||{})},automationPolicy:{...base.automationPolicy,...(stored.automationPolicy||{}),managerApprovalRequired:true}}:base;
     const validation=this.validate(configuration);
     return {
       version:"88.0.0",
@@ -139,6 +148,7 @@ class RestaurantConfigurationService {
     cfg.roles=Array.isArray(input.roles)?input.roles:base.roles;
     cfg.targets={...base.targets,...(input.targets||{})};
     cfg.integrationAssignments=Array.isArray(input.integrationAssignments)?input.integrationAssignments:[];
+    cfg.automationPolicy={...base.automationPolicy,...(input.automationPolicy||{}),managerApprovalRequired:true};
     cfg.updatedAt=this.now();
     cfg.updatedBy=actor||"admin";
     return cfg;
@@ -163,6 +173,48 @@ class RestaurantConfigurationService {
         at:this.now(),
         snapshot:configuration
       });
+      db.locations=db.locations||[];
+      const location={
+        id:configuration.location.id,
+        organizationId,
+        name:configuration.location.name,
+        timezone:configuration.location.timezone,
+        currency:configuration.location.currency||"USD",
+        locale:configuration.location.locale||"en-US",
+        configurationManaged:true,
+        updatedAt:this.now()
+      };
+      const existingLocation=db.locations.find(x=>x.id===location.id&&x.organizationId===organizationId);
+      if(existingLocation)Object.assign(existingLocation,location);else db.locations.push(location);
+
+      db.sections=db.sections||[];
+      for(const [index,area] of (configuration.diningAreas||[]).entries()){
+        const section={id:`${location.id}_${area.id}`,organizationId,locationId:location.id,name:area.name,enabled:area.enabled!==false,configurationManaged:true,sortOrder:index,updatedAt:this.now()};
+        const existing=db.sections.find(x=>x.id===section.id&&x.organizationId===organizationId);
+        if(existing)Object.assign(existing,section);else db.sections.push(section);
+      }
+
+      db.tables=db.tables||[];
+      for(const [index,inputTable] of (configuration.tables||[]).entries()){
+        const area=(configuration.diningAreas||[]).find(x=>x.id===inputTable.areaId)||(configuration.diningAreas||[])[0];
+        const table={
+          id:`${location.id}_${inputTable.id}`,
+          organizationId,
+          locationId:location.id,
+          name:inputTable.name,
+          seats:Number(inputTable.maxCovers||inputTable.capacity||4),
+          section:area?.name||"Main Dining Room",
+          sectionId:area?`${location.id}_${area.id}`:null,
+          status:"available",
+          shape:Number(inputTable.maxCovers||inputTable.capacity||4)>4?"rectangle":"round",
+          x:Number.isFinite(Number(inputTable.x))?Number(inputTable.x):10+(index%6)*15,
+          y:Number.isFinite(Number(inputTable.y))?Number(inputTable.y):12+Math.floor(index/6)*18,
+          configurationManaged:true,
+          updatedAt:this.now()
+        };
+        const existing=db.tables.find(x=>x.id===table.id&&x.organizationId===organizationId);
+        if(existing)Object.assign(existing,{...table,status:existing.status||"available",guestName:existing.guestName||"",partySize:Number(existing.partySize||0),seatedAt:existing.seatedAt||null});else db.tables.push(table);
+      }
       return true;
     });
     return this.get(organizationId);

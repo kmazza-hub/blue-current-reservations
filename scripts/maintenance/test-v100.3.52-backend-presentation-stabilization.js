@@ -11,11 +11,11 @@ const shell=read("client/js/modules/hospitalityOsShell.js");
 const authority=read("client/js/frontline-location-authority-v100.3.17.js");
 const continuity=read("client/js/command-location-continuity-v100.3.20.js");
 
-check("Runtime identifies V100.3.52",pkg.version==="100.3.52"&&html.includes('content="100.3.52"'));
+check("Runtime identifies V100.3.52 or later",/^100\.3\.(?:5[2-9]|[6-9]\d|\d{3,})$/.test(pkg.version)&&html.includes(`content="${pkg.version}"`));
 check("Credentials are never prefilled in HTML",!/<input id="authEmail"[^>]*\bvalue=/.test(html)&&!/<input id="authPassword"[^>]*\bvalue=/.test(html));
 check("Demo selectors are explicit non-submit controls",html.includes('id="authDemoKeith" type="button"')&&html.includes('id="authDemoSarah" type="button"'));
 check("Empty authentication is rejected before transport",auth.includes('if (!email || !password)')&&auth.includes('Enter both your email and password.'));
-check("Authenticated response is verified before opening",auth.includes('!session?.user || !session?.organizationId || !api.token'));
+check("Authenticated response is verified before opening",auth.includes('!session?.token || !session?.user || !session?.organizationId')&&auth.includes('api.setToken(session.token)'));
 check("Authentication locks the complete application surface",auth.includes('document.getElementById("main")')&&auth.includes('setProtectedSurfacesLocked(true)')&&loader.includes('main.setAttribute("inert","")'));
 check("Diagnostics have an accessible control name",html.includes('aria-label="Open Blue Current system status"')&&html.includes('aria-controls="startupDiagnosticsPanel"'));
 check("Diagnostics use the authoritative build marker",diagnostics.includes('meta[name="blue-current-build"]')&&loader.includes('meta[name="blue-current-build"]'));

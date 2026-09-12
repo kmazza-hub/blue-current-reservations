@@ -1,4 +1,4 @@
-﻿
+
 (function () {
   "use strict";
 
@@ -109,7 +109,7 @@
       }
       const orgSelect = $("authOrganizationSelect");
       if (orgSelect) orgSelect.innerHTML = session.organizations.map(item =>
-        `<option value="${item.organizationId}" ${item.organizationId === session.organizationId ? "selected" : ""}>${item.organizationId === "org_chefs" ? "Chefs International" : "Blue Harbor Hospitality"} Â· ${item.role.replaceAll("_"," ")}</option>`
+        `<option value="${item.organizationId}" ${item.organizationId === session.organizationId ? "selected" : ""}>${item.organizationId === "org_chefs" ? "Chefs International" : "Blue Harbor Hospitality"} · ${item.role.replaceAll("_"," ")}</option>`
       ).join("");
       appState.update({
         authenticatedUser: session.user,
@@ -163,18 +163,21 @@
         setMessage("Enter both your email and password.", true);
         return;
       }
-      setMessage("Signing inâ€¦");
+      setMessage("Signing in…");
       try {
         validateApi();
         const session = await api.login({
           email,
           password
         });
-        api.setToken(session?.token || "");
-        if (!session?.user || !session?.organizationId || !api.token) {
+        if (!session?.token || !session?.user || !session?.organizationId) {
           throw new Error("Blue Current could not verify this session.");
         }
+        api.setToken(session.token);
         sessionCoordinator?.authenticate?.(session, api);
+        if (!api.token) {
+          throw new Error("Blue Current could not store this session. Check browser storage permissions and try again.");
+        }
         renderSession(session);
         closeAuth();
         setMessage("");
@@ -224,7 +227,7 @@
     $("authInviteForm")?.addEventListener("submit", async event => {
       event.preventDefault();
       const result = $("authInviteResult");
-      result.textContent = "Creating invitationâ€¦";
+      result.textContent = "Creating invitation…";
       try {
         const invitation = await api.createInvitation({
           email: $("authInviteEmail").value.trim(),
@@ -269,4 +272,3 @@
 
   window.createBlueCurrentAuthOrganizationsModule = createAuthOrganizationsModule;
 })();
-
