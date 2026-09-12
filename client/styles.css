@@ -1735,15 +1735,12 @@ img,svg{display:block}
   color:#76898c;
   font-size:7px;
 }
-.analytics-heatmap button{
+.analytics-heatmap .heatmap-cell{
+  display:block;
   min-height:26px;
   border:0;
   border-radius:6px;
   background:rgba(47,112,117,var(--v));
-}
-.analytics-heatmap button:hover{
-  outline:2px solid rgba(47,112,117,.18);
-  transform:scale(1.04);
 }
 .channel-layout{
   display:grid;

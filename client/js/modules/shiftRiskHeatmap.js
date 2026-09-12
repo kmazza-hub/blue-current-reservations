@@ -4,6 +4,7 @@
   function init() {
     const root = document.getElementById("shiftRiskHeatmap");
     if (!root) return;
+    const createAction = document.getElementById("shiftRiskCreateAction");
 
     const periods = [
       ["Opening", "Low"],
@@ -24,6 +25,13 @@
       item.querySelector("small").textContent = label;
       item.querySelector("strong").textContent = risk;
       root.append(item);
+    });
+
+    createAction?.addEventListener("click", () => {
+      const authoritativeAction = document.getElementById("predictiveCreateAction");
+      if (!authoritativeAction) return;
+      authoritativeAction.click();
+      authoritativeAction.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   }
 
