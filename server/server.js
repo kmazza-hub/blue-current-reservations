@@ -6,6 +6,7 @@ const APP_VERSION = require("../package.json").version;
 const fs = require("fs");
 const path = require("path");
 const { createPersistence } = require("./persistence/persistenceFactory");
+const { prepareRuntimeDatabase } = require("./persistence/runtimeDatabase");
 const AuditService = require("./services/auditService");
 const IdempotencyService = require("./services/idempotencyService");
 const SyncReconciliationService = require("./services/syncReconciliationService");
@@ -196,7 +197,8 @@ const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
 const CLIENT_ROOT = path.join(ROOT, "client");
-const DB_PATH = process.env.BLUE_CURRENT_DB || path.join(ROOT, "database", "data", "blue-current.json");
+const RUNTIME_DATABASE = prepareRuntimeDatabase({ root: ROOT });
+const DB_PATH = RUNTIME_DATABASE.path;
 const PORT = Number(process.env.PORT || 8787);
 
 const database = createPersistence({
@@ -637,6 +639,7 @@ async function bootstrap() {
   server.listen(PORT, () => {
     console.log(`Blue Current Cloud V${APP_VERSION} running at http://localhost:${PORT}`);
     console.log(`Database: ${DB_PATH}`);
+    console.log(`Database authority: ${RUNTIME_DATABASE.source}${RUNTIME_DATABASE.initialized ? " (initialized from committed seed)" : ""}`);
     console.log(`Persistence: ${database.driver} (${database.topology})`);
     console.log(`Verified recovery backup: ${backupVerification.ok ? "available" : "unavailable"}`);
     console.log(`Session cleanup: ${sessionCleanup.removed} removed, ${sessionCleanup.after} retained`);

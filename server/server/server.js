@@ -5,6 +5,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const DatabaseService = require("./services/databaseService");
+const { prepareRuntimeDatabase } = require("../persistence/runtimeDatabase");
 const AuditService = require("./services/auditService");
 const ReservationService = require("./services/reservationService");
 const RealtimeHub = require("./realtime/realtimeHub");
@@ -28,7 +29,9 @@ const createRouter = require("./api/router");
 
 const ROOT = path.resolve(__dirname, "..");
 const CLIENT_ROOT = path.join(ROOT, "client");
-const DB_PATH = process.env.BLUE_CURRENT_DB || path.join(ROOT, "database", "data", "blue-current.json");
+const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const RUNTIME_DATABASE = prepareRuntimeDatabase({ root: PROJECT_ROOT });
+const DB_PATH = RUNTIME_DATABASE.path;
 const PORT = Number(process.env.PORT || 8787);
 
 const database = new DatabaseService(DB_PATH);
@@ -125,6 +128,7 @@ const server = http.createServer(async (request, response) => {
 authService.initializePasswords().then(() => server.listen(PORT, () => {
   console.log(`Blue Current Cloud V33.0.4b1 running at http://localhost:${PORT}`);
   console.log(`Database: ${DB_PATH}`);
+  console.log(`Database authority: ${RUNTIME_DATABASE.source}${RUNTIME_DATABASE.initialized ? " (initialized from committed seed)" : ""}`);
 })).catch(error => {
   console.error(error);
   process.exit(1);

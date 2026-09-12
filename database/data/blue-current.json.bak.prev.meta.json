@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "source": "previous-verified-backup",
-  "databaseFile": "blue-current.json",
-  "backupFile": "blue-current.json.bak.prev",
-  "sha256": "6d2133e7a2029b9bbf9182de0ef00f188a1c8f65dd735d055521b536ae40e267",
-  "bytes": 845677,
-  "createdAt": "2026-09-05T16:06:35.317Z"
-}

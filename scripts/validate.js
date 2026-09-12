@@ -29,7 +29,7 @@ for (const match of html.matchAll(/<script[^>]+src="([^"?]+)/g)) {
   if (!fs.existsSync(target)) throw new Error(`Missing script: ${match[1]}`);
 }
 
-JSON.parse(fs.readFileSync(path.join(root, "database", "data", "blue-current.json"), "utf8"));
+JSON.parse(fs.readFileSync(path.join(root, "database", "seed", "seed.json"), "utf8"));
 
 const scriptSources = [...html.matchAll(/<script[^>]+src="([^"?]+)/g)].map(match => match[1]);
 const duplicateScripts = scriptSources.filter((source, index) => scriptSources.indexOf(source) !== index);

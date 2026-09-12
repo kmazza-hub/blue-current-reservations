@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "source": "post-write",
-  "databaseFile": "blue-current.json",
-  "backupFile": "blue-current.json.bak",
-  "sha256": "ea16ee9a71198f2a25403d5dcee1ef8de5afdcf3e327d58265303fecd335f1f3",
-  "bytes": 845705,
-  "createdAt": "2026-09-05T16:06:35.367Z"
-}

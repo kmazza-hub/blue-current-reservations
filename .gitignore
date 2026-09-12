@@ -1,5 +1,6 @@
 
 # Blue Current runtime database artifacts
+database/data/blue-current.json
 database/data/blue-current.json.*.tmp
 database/data/blue-current.json.bak
 
@@ -20,3 +21,6 @@ database/data/*.corrupt.*.json
 database/data/*.tmp
 
 $Recycle.Bin/
+
+# Machine-local runtime database selection
+config/runtime-database.local.json

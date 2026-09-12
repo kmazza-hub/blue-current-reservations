@@ -1,0 +1,2 @@
+database/data/blue-current.json
+database/data/blue-current.json.bak.meta.json
