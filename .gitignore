@@ -18,3 +18,5 @@ database/data/*.bak.prev
 database/data/*.meta.json
 database/data/*.corrupt.*.json
 database/data/*.tmp
+
+$Recycle.Bin/
