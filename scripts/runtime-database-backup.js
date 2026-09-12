@@ -8,7 +8,17 @@ const root = path.resolve(__dirname, "..");
 const runtime = resolveRuntimeDatabase({ root });
 const retentionArgument = process.argv.find(argument => argument.startsWith("--retention="));
 const retention = retentionArgument ? Number(retentionArgument.split("=")[1]) : 14;
-const result = createBackup(runtime.path, { retention, source: "operator-command" });
+const scheduled = process.argv.includes("--scheduled");
+let result;
+try {
+  result = createBackup(runtime.path, { retention, source: scheduled ? "windows-scheduled-task" : "operator-command" });
+} catch (error) {
+  if (scheduled && error.code === "RUNTIME_DATABASE_ACTIVE") {
+    console.log("Scheduled backup skipped safely: Blue Current is running. No data changed.");
+    process.exit(0);
+  }
+  throw error;
+}
 
 console.log(`Runtime database: ${runtime.path}`);
 console.log(`Verified backup: ${result.path}`);

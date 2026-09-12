@@ -7,6 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const { createPersistence } = require("./persistence/persistenceFactory");
 const { prepareRuntimeDatabase } = require("./persistence/runtimeDatabase");
+const { claimRuntimeActivity, releaseRuntimeActivity } = require("./persistence/runtimeBackupManager");
 const AuditService = require("./services/auditService");
 const IdempotencyService = require("./services/idempotencyService");
 const SyncReconciliationService = require("./services/syncReconciliationService");
@@ -199,6 +200,7 @@ const ROOT = path.resolve(__dirname, "..");
 const CLIENT_ROOT = path.join(ROOT, "client");
 const RUNTIME_DATABASE = prepareRuntimeDatabase({ root: ROOT });
 const DB_PATH = RUNTIME_DATABASE.path;
+claimRuntimeActivity(DB_PATH);
 const PORT = Number(process.env.PORT || 8787);
 
 const database = createPersistence({
@@ -685,6 +687,8 @@ async function gracefulShutdown(signal) {
     process.exitCode = 1;
   }
 
+  releaseRuntimeActivity(DB_PATH);
+
   console.log("[shutdown] Blue Current shutdown complete.");
 }
 
@@ -696,6 +700,7 @@ process.once("SIGTERM", () => {
 });
 
 bootstrap().catch(error => {
+  releaseRuntimeActivity(DB_PATH);
   console.error("[startup] Blue Current failed recovery/readiness bootstrap:", error);
   process.exit(1);
 });

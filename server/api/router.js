@@ -3,6 +3,7 @@
 
 const { URL } = require("url");
 const APP_VERSION = require("../../package.json").version;
+const { backupHealth } = require("../persistence/runtimeBackupManager");
 
 async function sendJson(response, status, payload) {
   const context = response._writeContext;
@@ -309,9 +310,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       }
       const backups = await database.verifyBackups();
       return sendJson(response, 200, {
-        version: "68.50.0",
+        version: APP_VERSION,
         database: database.diagnostics(),
         backups,
+        managedBackupHealth: backupHealth(database.diagnostics().filePath),
         mutationIntegrity: await productionMutationIntegrityService.snapshot(writeOrganizationId)
       });
     }
