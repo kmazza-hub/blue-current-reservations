@@ -12,6 +12,7 @@ const esc=value=>String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt
 const minutes=value=>{const [h,m]=String(value||"00:00").split(":").map(Number);return h*60+m;};
 const isoLocal=date=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 let api=null,timer=null,loading=false,last=null;
+function liveApi(){api ||= new window.BlueCurrentCloudApi("");const token=localStorage.getItem("blueCurrentV3230Token")||"";if(api.token!==token)api.setToken(token);return api;}
 
 function ensureStyles(){
  if(byId("bcStaffAttendanceStylesV100266"))return;
@@ -81,9 +82,9 @@ function render(schedule,clock){
 async function load(){
  if(loading)return;loading=true;ensureStyles();host();
  try{
-   api ||= new window.BlueCurrentCloudApi("");
-   if(!api?.token){render({publication:null,shifts:[]},{active:[]});return;}
-   const [schedule,clock]=await Promise.all([api.scheduling(LOCATION_ID,""),api.timeClock(LOCATION_ID)]);
+   const client=liveApi();
+   if(!client?.token){render({publication:null,shifts:[]},{active:[]});return;}
+   const [schedule,clock]=await Promise.all([client.scheduling(LOCATION_ID,""),client.timeClock(LOCATION_ID)]);
    render(schedule||{},clock||{});
  }catch(error){
    const node=host();if(node)node.innerHTML=`<div class="bc-att-card"><div class="bc-att-head"><div><small>Attendance exceptions</small><strong>Attendance unavailable</strong></div><span>Source error</span></div><div class="bc-att-unavailable"><strong>Blue Current will not estimate around a missing source.</strong><div>${esc(error?.message||"Unable to load Scheduling or Time Clock.")}</div></div></div>`;
@@ -92,6 +93,7 @@ async function load(){
 function init(){
  if(!byId("workforce-intelligence"))return;
  ensureStyles();load();timer=setInterval(load,30000);
+ window.addEventListener("bluecurrent:auth-session-state",event=>{if(event.detail?.snapshot?.authenticated)load();});
  window.BlueCurrentStaffAttendanceV100_2_66={refresh:load,attendanceExceptions,getState:()=>last?JSON.parse(JSON.stringify(last)):null,destroy:()=>clearInterval(timer)};
 }
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init,{once:true}):init();
