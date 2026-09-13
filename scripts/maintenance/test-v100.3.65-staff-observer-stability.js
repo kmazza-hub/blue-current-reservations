@@ -1,0 +1,11 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),runtime=fs.readFileSync(path.join(root,"client/js/staff-workspace-runtime-v100.3.64.js"),"utf8"),index=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),pkg=require(path.join(root,"package.json"));
+const checks=[],check=(label,value)=>{assert.ok(value,label);checks.push(label);console.log(`PASS: ${label}`)};
+check("Punch button text changes only when its value differs",runtime.includes('button&&button.textContent!=="Review punches"'));
+check("Punch detail changes only when its value differs",runtime.includes("detail&&detail.textContent!==message"));
+check("Observer is scoped to Workforce Intelligence",runtime.includes('const staffRoot=byId("workforce-intelligence")'));
+check("Observer no longer watches the entire document body",!runtime.includes("observe(document.body"));
+check("Observer enhancement is scheduled outside its mutation callback",runtime.includes("requestAnimationFrame(enhancePunchReview)"));
+check("Stability hotfix advances the runtime marker",runtime.includes('bcStaffWorkspaceVersion="100.3.65"'));
+check("V100.3.65 is the active cache boundary",pkg.version==="100.3.65"&&index.includes('content="100.3.65"')&&index.includes("staff-workspace-runtime-v100.3.64.js?v=100.3.65"));
+console.log(`V100.3.65 staff observer stability ${checks.length}/${checks.length}`);
