@@ -24,3 +24,4 @@ $Recycle.Bin/
 
 # Machine-local runtime database selection
 config/runtime-database.local.json
+config/runtime-backup.local.json

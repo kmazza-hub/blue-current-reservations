@@ -14,8 +14,8 @@ try {
   result = createBackup(runtime.path, { retention, source: scheduled ? "windows-scheduled-task" : "operator-command" });
 } catch (error) {
   if (scheduled && error.code === "RUNTIME_DATABASE_ACTIVE") {
-    console.log("Scheduled backup skipped safely: Blue Current is running. No data changed.");
-    process.exit(0);
+    console.log("ACTIVE_RUNTIME: server coordination required.");
+    process.exit(3);
   }
   throw error;
 }

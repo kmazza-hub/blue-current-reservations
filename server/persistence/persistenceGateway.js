@@ -34,6 +34,14 @@ class PersistenceGateway {
   update(collection, id, patch) { return this.adapter.update(collection, id, patch); }
   delete(collection, id) { return this.adapter.delete(collection, id); }
   awaitIdle() { return this.adapter.awaitIdle(); }
+  snapshotForBackup() {
+    if (typeof this.adapter.snapshotForBackup !== "function") {
+      const error = new Error(`Persistence driver ${this.driver} does not expose serialized backup snapshots.`);
+      error.code = "PERSISTENCE_CAPABILITY_UNAVAILABLE";
+      throw error;
+    }
+    return this.adapter.snapshotForBackup();
+  }
   checkpointBackup(source) { return this.adapter.checkpointBackup(source); }
   verifyBackups() { return this.adapter.verifyBackups(); }
   recoverFromBackup(reason) {

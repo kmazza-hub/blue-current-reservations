@@ -287,6 +287,13 @@ class DatabaseService {
     }
   }
 
+  async snapshotForBackup() {
+    return this._enqueue(async () => {
+      const database = await this._loadSnapshot();
+      return JSON.stringify(database, null, 2);
+    });
+  }
+
   _enqueue(operation) {
     // A failed persistence operation must not poison every later database mutation.
     const run = () => Promise.resolve().then(operation);

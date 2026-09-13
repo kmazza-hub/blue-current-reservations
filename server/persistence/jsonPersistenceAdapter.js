@@ -39,6 +39,7 @@ class JsonPersistenceAdapter {
     };
   }
   awaitIdle() { return this.database.awaitIdle(); }
+  snapshotForBackup() { return this.database.snapshotForBackup(); }
   checkpointBackup(source) { return this.database.checkpointBackup(source); }
   verifyBackups() { return this.database.verifyBackups(); }
   recoverFromBackup(reason) { return this.database.recoverFromBackup(reason); }

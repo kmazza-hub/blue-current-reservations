@@ -147,6 +147,13 @@ function createBackup(databasePath, options = {}) {
     throw error;
   }
   const primary = readVerifiedJson(databasePath);
+  return createBackupFromContent(databasePath, primary.raw, options);
+}
+
+function createBackupFromContent(databasePath, raw, options = {}) {
+  if (!path.isAbsolute(databasePath)) throw new TypeError("Runtime database path must be absolute.");
+  JSON.parse(raw);
+  const primary = { raw, hash: sha256(raw), bytes: Buffer.byteLength(raw) };
   const directory = backupDirectory(databasePath);
   fs.mkdirSync(directory, { recursive: true });
   const name = backupName(options.now);
@@ -253,6 +260,7 @@ module.exports = {
   backupDirectory,
   claimRuntimeActivity,
   createBackup,
+  createBackupFromContent,
   inspectRuntimeActivity,
   listBackups,
   releaseRuntimeActivity,

@@ -8,6 +8,7 @@ const path = require("path");
 const { createPersistence } = require("./persistence/persistenceFactory");
 const { prepareRuntimeDatabase } = require("./persistence/runtimeDatabase");
 const { claimRuntimeActivity, releaseRuntimeActivity } = require("./persistence/runtimeBackupManager");
+const { RuntimeBackupCoordinator } = require("./persistence/runtimeBackupCoordinator");
 const AuditService = require("./services/auditService");
 const IdempotencyService = require("./services/idempotencyService");
 const SyncReconciliationService = require("./services/syncReconciliationService");
@@ -207,6 +208,7 @@ const database = createPersistence({
   driver: process.env.BLUE_CURRENT_PERSISTENCE_DRIVER || "json",
   databasePath: DB_PATH
 });
+const runtimeBackupCoordinator = new RuntimeBackupCoordinator({ root: ROOT, databasePath: DB_PATH, database });
 const realtimeHub = new RealtimeHub();
 const auditService = new AuditService(database);
 const idempotencyService = new IdempotencyService(database);
@@ -534,6 +536,10 @@ const server = http.createServer(async (request, response) => {
     return originalWriteHead(statusCode, ...args);
   };
   try {
+    if (runtimeBackupCoordinator.handles(request)) {
+      await runtimeBackupCoordinator.handle(request, response);
+      return;
+    }
     if (request.url === "/api/events" && request.method === "GET") {
       response.writeHead(200, {
         "Content-Type": "text/event-stream",
