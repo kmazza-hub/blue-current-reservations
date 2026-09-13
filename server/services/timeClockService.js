@@ -24,7 +24,10 @@ class TimeClockService {
     if (Array.isArray(db.locations) && !location) { const error = new Error("Location is not available to this organization."); error.statusCode = 404; throw error; }
     const now = new Date();
     const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0);
-    const employees = (db.employees || []).filter(item => item.organizationId === organizationId && item.locationId === locationId && item.status !== "inactive");
+    const portalEmployees = (db.employees || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
+    const workforceEmployees = (db.staff || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
+    const employees = [...portalEmployees, ...workforceEmployees.filter(item => !portalEmployees.some(existing => existing.id === item.id))]
+      .filter(item => !["inactive", "terminated"].includes(item.employmentStatus || item.status || "active"));
     const cards = (db.employeeTimecards || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
     const breaks = (db.employeeBreaks || []).filter(item => item.organizationId === organizationId && item.locationId === locationId);
     const policy = (db.timeClockPolicies || []).find(item => item.organizationId === organizationId && item.locationId === locationId) || { dailyOvertimeHours: 8, weeklyOvertimeHours: 40, breakReminderMinutes: 300 };
@@ -66,7 +69,7 @@ class TimeClockService {
   async clockIn(input, actor, organizationId) {
     let result;
     await this.database.mutate(db => {
-      const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
+      const employee = [...(db.employees || []), ...(db.staff || [])].find(item => item.id === input.employeeId && item.organizationId === organizationId);
       if (!employee) throw new Error("Employee not found");
       if (!input.locationId || input.locationId !== employee.locationId) throw new Error("Employee and location do not match");
       if (input.pin !== undefined && String(employee.pin) !== String(input.pin)) throw new Error("Invalid PIN");
@@ -81,7 +84,7 @@ class TimeClockService {
   async clockOut(input, actor, organizationId) {
     let result;
     await this.database.mutate(db => {
-      const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
+      const employee = [...(db.employees || []), ...(db.staff || [])].find(item => item.id === input.employeeId && item.organizationId === organizationId);
       if (!employee) throw new Error("Employee not found");
       const card = (db.employeeTimecards || []).find(item => item.employeeId === input.employeeId && item.organizationId === organizationId && item.locationId === employee.locationId && item.status === "active" && !item.clockOut);
       if (!card) throw new Error("No active timecard");
@@ -96,7 +99,7 @@ class TimeClockService {
   async startBreak(input, actor, organizationId) {
     let result;
     await this.database.mutate(db => {
-      const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
+      const employee = [...(db.employees || []), ...(db.staff || [])].find(item => item.id === input.employeeId && item.organizationId === organizationId);
       if (!employee) throw new Error("Employee not found");
       const card = (db.employeeTimecards || []).find(item => item.employeeId === input.employeeId && item.organizationId === organizationId && item.locationId === employee.locationId && item.status === "active" && !item.clockOut);
       if (!card) throw new Error("No active timecard");
@@ -111,7 +114,7 @@ class TimeClockService {
   async endBreak(input, actor, organizationId) {
     let result;
     await this.database.mutate(db => {
-      const employee = (db.employees || []).find(item => item.id === input.employeeId && item.organizationId === organizationId);
+      const employee = [...(db.employees || []), ...(db.staff || [])].find(item => item.id === input.employeeId && item.organizationId === organizationId);
       if (!employee) throw new Error("Employee not found");
       const item = (db.employeeBreaks || []).find(entry => entry.employeeId === input.employeeId && entry.organizationId === organizationId && entry.locationId === employee.locationId && entry.status === "active" && !entry.end);
       if (!item) throw new Error("No active break");

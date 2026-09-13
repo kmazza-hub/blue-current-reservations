@@ -1,0 +1,31 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../.."),Workforce=require(path.join(root,"server/services/workforceFoundationService")),TimeClock=require(path.join(root,"server/services/timeClockService"));
+const now=new Date(),date=now.toISOString().slice(0,10),iso=minutes=>new Date(now.getTime()+minutes*60000).toISOString();
+const data={locations:[{id:"loc",organizationId:"org"}],employees:[{id:"legacy",organizationId:"org",locationId:"loc",name:"Maria",role:"Server",status:"active",pin:"1111"}],staff:[{id:"new",organizationId:"org",locationId:"loc",name:"Keith",role:"Server",employmentStatus:"active",pin:"2222"}],ptoRequests:[{id:"pto1",employeeId:"legacy",requestType:"sick",startDate:date,endDate:date,status:"pending",createdAt:iso(-10)}],employeeTimecards:[{id:"tc1",organizationId:"org",locationId:"loc",employeeId:"new",clockIn:iso(-120),clockOut:null,status:"needs_review"}],scheduleShifts:[{id:"shift1",organizationId:"org",locationId:"loc",employeeId:"new",date,startTime:new Date(now.getTime()-125*60000).toTimeString().slice(0,5),endTime:new Date(now.getTime()-65*60000).toTimeString().slice(0,5),status:"published"}],employeeBreaks:[],timeClockCorrections:[]};
+const database={async read(){return data},async get(collection,id){return(data[collection]||[]).find(x=>x.id===id)||null},async create(collection,row){data[collection]||=[];data[collection].push(row);return row},async update(collection,id,patch){const row=(data[collection]||[]).find(x=>x.id===id);if(!row)return null;Object.assign(row,patch);return row},async mutate(fn){return fn(data)}};
+const audits=[],audit={async record(row){audits.push(row);return row}},events=[],hub={publish(type,payload){events.push({type,payload})}};
+const check=(label,condition)=>{assert.ok(condition,label);console.log(`PASS: ${label}`)};
+(async()=>{
+ const workforce=new Workforce(database,audit,hub),clock=new TimeClock(database,audit,hub);
+ const snapshot=await workforce.snapshot("org","loc");
+ check("Workforce snapshot unifies legacy and newly added staff",snapshot.employees.length===2);
+ const approved=await workforce.decidePto("pto1","approved","Approved","Manager","org");
+ check("Legacy employee PTO can be approved",approved.status==="approved"&&approved.decidedBy==="Manager");
+ let duplicate=false;try{await workforce.createEmployee({locationId:"loc",name:"Duplicate",role:"Host",pin:"2222"},"Manager","org")}catch(error){duplicate=/already in use/.test(error.message)}
+ check("Duplicate location PIN is rejected",duplicate);
+ const created=await workforce.createEmployee({locationId:"loc",name:"New Hire",role:"Host",department:"Service",hourlyRate:18,preferredHours:30,pin:"3333"},"Manager","org");
+ check("New employee keeps a manager-assigned clock PIN",created.pin==="3333");
+ const clockSnapshot=await clock.snapshot("org","loc");
+ check("Time Clock kiosk includes both employee sources",clockSnapshot.employees.some(x=>x.id==="legacy")&&clockSnapshot.employees.some(x=>x.id==="new")&&clockSnapshot.employees.some(x=>x.id===created.id));
+ await clock.correct("tc1",{clockOut:iso(-60),status:"completed",reason:"Manager completed open punch"},"Manager","org");
+ check("Corrected punch becomes a completed timecard",data.employeeTimecards[0].status==="completed"&&Boolean(data.employeeTimecards[0].clockOut));
+ check("Correction is retained in employee-linked audit records",data.timeClockCorrections.some(x=>x.employeeId==="new"&&x.timecardId==="tc1"));
+ const client=fs.readFileSync(path.join(root,"client/js/modules/workforceFoundation.js"),"utf8"),timeTruth=fs.readFileSync(path.join(root,"client/js/timeclock-truth-v100.2.76.js"),"utf8"),router=fs.readFileSync(path.join(root,"server/api/router.js"),"utf8"),index=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+ check("Empty Add Employee fields receive inline validation",client.includes("wff-field-error")&&client.includes('aria-invalid')&&client.includes("Complete the highlighted fields"));
+ check("Staff management exposes edit, PIN reset, termination, and reactivation",["data-edit-employee","data-reset-pin","data-terminate-employee","data-reactivate-employee"].every(x=>client.includes(x)));
+ check("Time correction captures clock-out and completion",timeTruth.includes('clockOut,status:"completed"'));
+ check("API accepts both staff sources for PTO and clock operations",router.includes('database.get("staff", requestRecord.employeeId)')&&router.includes('database.get("employees", requestRecord.employeeId)'));
+ check("V100.3.63-or-later cache boundary is active",/content="100\.3\.(?:63|64)"/.test(index)&&/runtime-performance-v100\.2\.70\.js\?v=100\.3\.(?:63|64)/.test(index));
+ console.log("V100.3.63 staff record management 12/12");
+})().catch(error=>{console.error(error);process.exit(1)});

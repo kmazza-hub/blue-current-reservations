@@ -11,13 +11,15 @@ class SchedulingService {
   constructor(database, auditService, realtimeHub) { this.database=database; this.auditService=auditService; this.realtimeHub=realtimeHub; }
 
   async requireLocation(organizationId,locationId){const location=locationId?await this.database.get("locations",locationId):null;if(!location||location.organizationId!==organizationId){const error=new Error("Location is not available to this organization.");error.statusCode=404;throw error;}return location;}
-  async requireEmployee(organizationId,locationId,employeeId){if(!employeeId)return null;const employee=await this.database.get("staff",employeeId);if(!employee||employee.organizationId!==organizationId||employee.locationId!==locationId){const error=new Error("Employee is not available at this location.");error.statusCode=400;throw error;}return employee;}
+  async requireEmployee(organizationId,locationId,employeeId){if(!employeeId)return null;const employee=await this.database.get("staff",employeeId)||await this.database.get("employees",employeeId);if(!employee||employee.organizationId!==organizationId||employee.locationId!==locationId||["inactive","terminated"].includes(employee.employmentStatus||employee.status||"active")){const error=new Error("Employee is not available at this location.");error.statusCode=400;throw error;}return employee;}
 
   async snapshot(organizationId, locationId, requestedWeek) {
     await this.requireLocation(organizationId,locationId);
     const weekStart=mondayOf(requestedWeek); const weekEnd=new Date(new Date(`${weekStart}T12:00:00`).getTime()+6*DAY_MS).toISOString().slice(0,10);
     const db=await this.database.read();
-    const employees=(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&(x.employmentStatus||"active")==="active");
+    const staff=(db.staff||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
+    const portal=(db.employees||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId);
+    const employees=[...staff,...portal.filter(item=>!staff.some(existing=>existing.id===item.id))].filter(x=>!["inactive","terminated"].includes(x.employmentStatus||x.status||"active"));
     const employeeIds=new Set(employees.map(x=>x.id));
     const shifts=(db.scheduleShifts||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.date>=weekStart&&x.date<=weekEnd).sort((a,b)=>`${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`));
     const publications=(db.schedulePublications||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId&&x.weekStart===weekStart);
@@ -28,7 +30,7 @@ class SchedulingService {
     const validations=this.validate(shifts,employees,db.employeeAvailability||[],db.ptoRequests||[]);
     const intelligence=this.intelligence({weekStart,weekEnd,shifts,employees,availability:db.employeeAvailability||[],ptoRequests:db.ptoRequests||[],reservations:(db.reservations||[]).filter(x=>x.organizationId===organizationId&&x.locationId===locationId)});
     const totalHours=shifts.reduce((s,x)=>s+durationHours(x),0); const projectedLabor=shifts.reduce((s,x)=>{const e=employees.find(p=>p.id===x.employeeId);return s+durationHours(x)*Number(e?.hourlyRate||0)},0);
-    return {weekStart,weekEnd,employees,shifts,validations,intelligence,publication,summary:{totalShifts:shifts.length,openShifts:shifts.filter(x=>!x.employeeId).length,totalHours:Number(totalHours.toFixed(1)),projectedLabor:Math.round(projectedLabor),conflicts:validations.filter(x=>x.severity==="error").length,warnings:validations.filter(x=>x.severity==="warning").length},generatedAt:new Date().toISOString()};
+    return {weekStart,weekEnd,employees,shifts,validations,intelligence,publication,availability:(db.employeeAvailability||[]).filter(x=>employeeIds.has(x.employeeId)),ptoRequests:(db.ptoRequests||[]).filter(x=>employeeIds.has(x.employeeId)&&x.status==="approved"),summary:{totalShifts:shifts.length,openShifts:shifts.filter(x=>!x.employeeId).length,totalHours:Number(totalHours.toFixed(1)),projectedLabor:Math.round(projectedLabor),conflicts:validations.filter(x=>x.severity==="error").length,warnings:validations.filter(x=>x.severity==="warning").length},generatedAt:new Date().toISOString()};
   }
 
   validate(shifts,employees,availability,ptoRequests){
