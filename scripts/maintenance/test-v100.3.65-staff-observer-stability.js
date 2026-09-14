@@ -7,5 +7,5 @@ check("Observer is scoped to Workforce Intelligence",runtime.includes('const sta
 check("Observer no longer watches the entire document body",!runtime.includes("observe(document.body"));
 check("Observer enhancement is scheduled outside its mutation callback",runtime.includes("requestAnimationFrame(enhancePunchReview)"));
 check("Stability hotfix advances the runtime marker",runtime.includes('bcStaffWorkspaceVersion="100.3.65"'));
-check("V100.3.65 is the active cache boundary",pkg.version==="100.3.65"&&index.includes('content="100.3.65"')&&index.includes("staff-workspace-runtime-v100.3.64.js?v=100.3.65"));
+check("V100.3.65-or-later cache boundary is active",["100.3.65","100.3.66"].includes(pkg.version)&&/content="100\.3\.(?:65|66)"/.test(index)&&index.includes("staff-workspace-runtime-v100.3.64.js?v=100.3.65"));
 console.log(`V100.3.65 staff observer stability ${checks.length}/${checks.length}`);

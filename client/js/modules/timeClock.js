@@ -5,6 +5,7 @@
     const byId = id => document.getElementById(id);
     const locationId = () => window.BlueCurrentFrontlineLocation?.get?.() || "loc_marina";
     const money = value => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(value || 0));
+    const stamp = value => value ? new Date(value).toLocaleString([], { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "Active";
     let state = { summary: {}, employees: [], active: [], timecards: [], corrections: [] };
 
     function render() {
@@ -13,7 +14,7 @@
       Object.entries(values).forEach(([id, value]) => { if (byId(id)) byId(id).textContent = value ?? "—"; });
       if (byId("tcEmployee")) byId("tcEmployee").innerHTML = state.employees.map(employee => `<option value="${employee.id}">${employee.name} · ${employee.role}</option>`).join("");
       if (byId("tcActive")) byId("tcActive").innerHTML = state.active.map(item => `<article class="${item.onBreak ? "on-break" : ""}"><div><strong>${item.employeeName}</strong><span>${item.role} · ${item.department}</span></div><div><b>${item.workedHours}h</b><span>${money(item.laborCost)}</span></div><div>${item.onBreak ? `<button data-tc="break-end" data-employee="${item.employeeId}">End break</button>` : `<button data-tc="break-start" data-employee="${item.employeeId}">Start break</button>`}<button data-tc="clock-out" data-employee="${item.employeeId}">Clock out</button></div></article>`).join("") || "<p>No employees currently clocked in.</p>";
-      if (byId("tcTimecards")) byId("tcTimecards").innerHTML = state.timecards.map(item => `<article><div><strong>${state.employees.find(employee => employee.id === item.employeeId)?.name || item.employeeId}</strong><span>${new Date(item.clockIn).toLocaleTimeString()} → ${item.clockOut ? new Date(item.clockOut).toLocaleTimeString() : "Active"}</span></div><b>${item.status}</b><button data-correct="${item.id}">Correct</button></article>`).join("");
+      if (byId("tcTimecards")) byId("tcTimecards").innerHTML = state.timecards.map(item => `<article><div><strong>${state.employees.find(employee => employee.id === item.employeeId)?.name || item.employeeId}</strong><span>${stamp(item.clockIn)} → ${stamp(item.clockOut)}</span></div><b>${item.status}</b><button data-correct="${item.id}">Correct</button></article>`).join("");
       if (byId("tcCorrections")) byId("tcCorrections").innerHTML = state.corrections.map(item => `<article><strong>${item.reason}</strong><span>${item.actor}</span><small>${new Date(item.createdAt).toLocaleString()}</small></article>`).join("") || "<p>No manager corrections.</p>";
       if (byId("tcUpdated")) byId("tcUpdated").textContent = state.generatedAt ? new Date(state.generatedAt).toLocaleTimeString() : "—";
       appState.update({ employeesWorking: summary.employeesWorking || 0, employeesOnBreak: summary.onBreak || 0, laborHoursToday: summary.laborHours || 0, laborCostToday: summary.laborCost || 0, overtimeRisk: summary.overtimeRisk || 0 });

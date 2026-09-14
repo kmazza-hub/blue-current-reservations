@@ -100,6 +100,7 @@ class WorkforceFoundationService {
       skills: Array.isArray(input.skills) ? input.skills : String(input.skills || "").split(",").map(v => v.trim()).filter(Boolean),
       certifications: Array.isArray(input.certifications) ? input.certifications : [],
       preferredHours: Math.max(0, Number(input.preferredHours || 0)),
+      birthday: String(input.birthday || "").trim(),
       pin,
       createdAt: new Date().toISOString()
     });
@@ -114,7 +115,7 @@ class WorkforceFoundationService {
     let existing = await this.database.get(collection, id);
     if (!existing) { collection = "employees"; existing = await this.database.get(collection, id); }
     if (!existing || existing.organizationId !== organizationId) return null;
-    const allowed = ["name","email","phone","role","department","hourlyRate","employmentStatus","skills","certifications","preferredHours","pin"];
+    const allowed = ["name","email","phone","role","department","hourlyRate","employmentStatus","skills","certifications","preferredHours","birthday","pin"];
     const clean = Object.fromEntries(Object.entries(patch || {}).filter(([key]) => allowed.includes(key)));
     if (clean.hourlyRate !== undefined) clean.hourlyRate = Math.max(0, Number(clean.hourlyRate || 0));
     if (clean.pin !== undefined) {

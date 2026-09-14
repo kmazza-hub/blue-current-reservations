@@ -6,7 +6,7 @@
 const LOCATION_ID=window.BlueCurrentFrontlineLocation?.reference||"loc_marina";
 const byId=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const fmtTime=value=>{if(!value)return "—";const d=new Date(value);return Number.isNaN(d.getTime())?"—":d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})};
+const fmtTime=value=>{if(!value)return "—";const d=new Date(value);return Number.isNaN(d.getTime())?"—":d.toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})};
 let api=null,state=null,loading=false,activated=false;
 function liveApi(){api ||= new window.BlueCurrentCloudApi("");const token=localStorage.getItem("blueCurrentV3230Token")||"";if(api.token!==token)api.setToken(token);return api;}
 function ensureStyles(){
