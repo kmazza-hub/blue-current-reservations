@@ -1,0 +1,61 @@
+services:
+  - type: web
+    name: blue-current-pilot
+    runtime: docker
+    repo: https://github.com/kmazza-hub/blue-current-reservations
+    branch: live-service-timeline
+    region: virginia
+    plan: 0.5c-512mb
+    numInstances: 1
+    autoDeployTrigger: off
+    dockerfilePath: ./deploy/hosted-pilot/Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    maxShutdownDelaySeconds: 30
+    disk:
+      name: blue-current-pilot-data
+      mountPath: /var/lib/blue-current
+      sizeGB: 1
+    envVars:
+      - key: BLUE_CURRENT_ENV
+        value: production
+      - key: NODE_ENV
+        value: production
+      - key: BLUE_CURRENT_PUBLIC_URL
+        value: https://app.bluecurrentco.com
+      - key: BLUE_CURRENT_ALLOWED_ORIGINS
+        value: https://app.bluecurrentco.com
+      - key: BLUE_CURRENT_PERSISTENCE_DRIVER
+        value: json
+      - key: BLUE_CURRENT_DB
+        value: /var/lib/blue-current/blue-current.json
+      - key: BLUE_CURRENT_INSTANCE_COUNT
+        value: "1"
+      - key: BLUE_CURRENT_PROVISIONING_MODE
+        sync: false
+      - key: BLUE_CURRENT_MAX_BODY_BYTES
+        value: "1000000"
+      - key: BLUE_CURRENT_RATE_WINDOW_MS
+        value: "60000"
+      - key: BLUE_CURRENT_RATE_LIMIT
+        value: "600"
+      - key: BLUE_CURRENT_AUTH_RATE_LIMIT
+        value: "20"
+      - key: BLUE_CURRENT_WEBHOOK_RATE_LIMIT
+        value: "180"
+      - key: BLUE_CURRENT_SESSION_HOURS
+        value: "12"
+      - key: BLUE_CURRENT_SESSION_IDLE_MINUTES
+        value: "120"
+      - key: BLUE_CURRENT_SESSION_TOUCH_MINUTES
+        value: "5"
+      - key: BLUE_CURRENT_MAX_ACTIVE_SESSIONS
+        value: "10"
+      - key: BLUE_CURRENT_FAILED_LOGIN_WINDOW_MINUTES
+        value: "15"
+      - key: BLUE_CURRENT_FAILED_LOGIN_THRESHOLD
+        value: "5"
+      - key: BLUE_CURRENT_LOGIN_LOCK_MINUTES
+        value: "15"
+      - key: BLUE_CURRENT_REVOKED_SESSION_RETENTION_HOURS
+        value: "168"

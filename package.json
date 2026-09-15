@@ -1,19 +1,20 @@
 {
   "name": "blue-current-cloud",
-  "version": "100.3.70",
+  "version": "100.3.71",
   "private": true,
   "description": "Blue Current Hospitality OS \u2014 Commercial V1 certification baseline",
   "scripts": {
     "start": "node server/server.js",
     "check": "node scripts/validate.js",
-    "certify:pilot": "node scripts/maintenance/certify-v100.3.70-post-login-connectivity.js",
+    "certify:pilot": "node scripts/maintenance/certify-v100.3.71-render-provisioning-gate.js",
     "database:backup": "node scripts/runtime-database-backup.js",
     "database:restore": "node scripts/runtime-database-restore.js",
     "database:backup-health": "node scripts/runtime-database-backup-health.js",
     "pilot:lan": "node scripts/pilot-lan.js",
     "hosted:preflight": "node scripts/hosted-preflight.js",
     "hosted:provision": "node scripts/hosted-provision.js",
-    "hosted:rehearse": "node scripts/hosted-rehearsal.js"
+    "hosted:rehearse": "node scripts/hosted-rehearsal.js",
+    "hosted:start": "node scripts/hosted-start.js"
   },
   "engines": {
     "node": ">=18"
