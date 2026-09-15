@@ -13,6 +13,6 @@ check("Timecard correction uses an in-app manager dialog",runtime.includes('titl
 check("Clock PIN changes use an in-app validated dialog",runtime.includes('id="bcChangePinDialogV100366"')&&runtime.includes('target.matches("[data-reset-pin]")'));
 check("Staff write actions disable duplicate clicks",runtime.includes('button.setAttribute("aria-busy","true")')&&runtime.includes('if(button.disabled)return null'));
 check("Timecards display date and time",clock.includes('month:"short",day:"numeric",hour:"numeric",minute:"2-digit"'));
-check("V100.3.66 runtime is cache advanced",["100.3.66","100.3.67","100.3.68","100.3.69"].includes(pkg.version)&&/content="100\.3\.(?:66|67|68|68|69)"/.test(index)&&/staff-reliability-runtime-v100\.3\.66\.js\?v=100\.3\.(?:66|67|68|68|69)/.test(index));
+check("V100.3.66 runtime is cache advanced",["100.3.66","100.3.67","100.3.68","100.3.69","100.3.70"].includes(pkg.version)&&/content="100\.3\.(?:66|67|68|69|70)"/.test(index)&&/staff-reliability-runtime-v100\.3\.66\.js\?v=100\.3\.(?:66|67|68|69|70)/.test(index));
 check("Existing workforce and time-clock API boundaries remain intact",workforce.includes("createWorkforceEmployee")&&clock.includes("correctTimecard"));
 console.log(`V100.3.66 staff reliability ${checks.length}/${checks.length}`);

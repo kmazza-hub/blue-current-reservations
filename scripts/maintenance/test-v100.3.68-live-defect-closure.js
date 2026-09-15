@@ -7,5 +7,5 @@ check("Add Employee validation takes first capture ownership",runtime.includes('
 check("All employee setup fields receive inline validation",["wffName","wffRole","wffDepartment","wffRate","wffPreferredHours","wffBirthday","wffPin"].every(id=>runtime.includes(id)));
 check("Employee validation gives a readable summary",runtime.includes("Complete the highlighted fields."));
 check("Invalid fields are focused and marked accessibly",runtime.includes('aria-invalid')&&runtime.includes("first.focus()"));
-check("V100.3.68 assets are cache advanced",["100.3.68","100.3.69"].includes(pkg.version)&&index.includes('content="100.3.69"')&&index.includes('live-defect-closure-v100.3.68.js?v=100.3.69'));
+check("V100.3.68 assets are cache advanced",["100.3.68","100.3.69","100.3.70"].includes(pkg.version)&&/content="100\.3\.(?:69|70)"/.test(index)&&/live-defect-closure-v100\.3\.68\.js\?v=100\.3\.(?:69|70)/.test(index));
 console.log(`V100.3.68 live defect closure ${checks.length}/${checks.length}`);

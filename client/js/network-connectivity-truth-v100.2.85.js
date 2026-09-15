@@ -1,11 +1,11 @@
 (function(){
 "use strict";
-const HEALTH_PATH="/api/health";
-let state="unknown",lastCheckedAt=null,lastConnectedAt=null,lastError=null,requestId=0;
+const HEALTH_PATH="/api/health",VERSION="100.3.70";
+let state="unknown",lastCheckedAt=null,lastConnectedAt=null,lastError=null,requestId=0,authRecheckTimer=null;
 
 function snapshot(){
   return Object.freeze({
-    version:"100.2.85",
+    version:VERSION,
     state,
     browserOnline:navigator.onLine,
     serverVerified:state==="connected",
@@ -47,6 +47,13 @@ function ready(fn){document.readyState==="loading"?document.addEventListener("DO
 window.addEventListener("offline",()=>{requestId++;publish("offline",{reason:"browser-offline"});});
 window.addEventListener("online",()=>verify("browser-online"));
 window.addEventListener("bluecurrent:connectivity-retry",()=>verify("operator-retry"));
+window.addEventListener("bluecurrent:auth-session-state",event=>{
+  if(event.detail?.snapshot?.authenticated!==true)return;
+  clearTimeout(authRecheckTimer);
+  // Authentication and Cloud bootstrap both begin work on this event. Recheck
+  // after that handoff so a failed startup probe cannot remain authoritative.
+  authRecheckTimer=setTimeout(()=>verify("authentication-complete"),250);
+});
 ready(()=>verify("startup"));
-window.BlueCurrentConnectivityTruth={version:"100.2.85",snapshot,verify};
+window.BlueCurrentConnectivityTruth={version:VERSION,snapshot,verify};
 })();

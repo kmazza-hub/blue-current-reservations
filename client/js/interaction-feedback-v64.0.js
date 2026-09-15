@@ -34,6 +34,7 @@ ready(()=>{
    return item;
  }
  window.BlueCurrentFeedback={toast};
+ let connectivityToast=null;
 
  // ----- Network write feedback -----
  // Preserve fetch semantics. Only mutating requests generate automatic success/error feedback.
@@ -61,10 +62,14 @@ ready(()=>{
  // emits verified server-reachability state before operator-facing recovery copy.
  window.addEventListener("bluecurrent:connectivity-state",event=>{
    const state=event.detail?.state;
-   if(state==="offline")toast("Connection lost. Live updates are paused until you’re back online.","warning",0);
-   else if(state==="checking")toast("Network available. Verifying Blue Current…","info",1800);
-   else if(state==="connected")toast("Connection verified. Live updates can resume.","success",3000);
-   else if(state==="unreachable")toast("Network is available, but Blue Current is not reachable yet.","warning",0);
+   // Connectivity is one current condition, not a notification history. Remove
+   // the previous state before reporting the newest verified result.
+   connectivityToast?.remove?.();
+   connectivityToast=null;
+   if(state==="offline")connectivityToast=toast("Connection lost. Live updates are paused until you’re back online.","warning",0);
+   else if(state==="checking")connectivityToast=toast("Network available. Verifying Blue Current…","info",1800);
+   else if(state==="connected")connectivityToast=toast("Connection verified. Live updates can resume.","success",3000);
+   else if(state==="unreachable")connectivityToast=toast("Network is available, but Blue Current is not reachable yet.","warning",0);
  });
 
  // ----- Prevent accidental duplicate form submissions -----

@@ -11,5 +11,5 @@ check("Only one Smart Fill request can be in flight",ui.includes('dialog.dataset
 check("Smart Fill uses inline status instead of a browser alert",!ui.includes("alert(error.message")&&ui.includes("Unable to apply staffing match. Nothing was changed."));
 check("Dialog close handler is single-use",ui.includes('{once:true}'));
 check("Stale recommendations return a readable client error",fs.readFileSync(path.join(root,"server/services/schedulingService.js"),"utf8").includes("This staffing recommendation is no longer current."));
-check("V100.3.69 assets are cache advanced",pkg.version==="100.3.69"&&index.includes('content="100.3.69"')&&index.includes('staff-workspace-runtime-v100.3.64.js?v=100.3.69'));
+check("V100.3.69 assets are cache advanced",["100.3.69","100.3.70"].includes(pkg.version)&&/content="100\.3\.(?:69|70)"/.test(index)&&/staff-workspace-runtime-v100\.3\.64\.js\?v=100\.3\.(?:69|70)/.test(index));
 console.log(`V100.3.69 Smart Fill single-action reliability ${checks}/${checks}`);})().catch(error=>{console.error(error);process.exit(1)});
