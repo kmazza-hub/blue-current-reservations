@@ -9,7 +9,7 @@ const workspaceMap={
   inventory:["inventory-intelligence"],
   performance:["profit-current","hospitality-analytics"],
   executive:["executive-command-center","portfolio-mode"],
-  integrations:["mission-control"],
+  integrations:["bcIntegrationsWorkspace"],
   system:["production-readiness","cloud-foundation"]
 };
 
@@ -20,6 +20,15 @@ const labels={
 };
 
 let commandState={loading:false,locationId:null,lastLoadedAt:null,currentData:null,actionsLoading:false,outcomesLoading:false,playbooksLoading:false,shiftMemoryLoading:false,authRequired:false,transportBackoffUntil:0,lastRequestAt:0};
+
+function ensureIntegrationsWorkspace(){
+  const main=document.getElementById("main"),control=document.getElementById("integrationControlCenter");
+  if(!main||!control)return;
+  let workspace=document.getElementById("bcIntegrationsWorkspace");
+  if(!workspace){workspace=document.createElement("section");workspace.id="bcIntegrationsWorkspace";workspace.className="section-shell bc-integrations-workspace";main.appendChild(workspace);}
+  control.classList.remove("bc-legacy-development-surface","bc-ai-advanced-surface");
+  if(control.parentElement!==workspace)workspace.appendChild(control);
+}
 
 function claimCommandShellOwnership(){
   const shell=document.getElementById("blueCurrentCommand");
@@ -76,7 +85,7 @@ function activate(name,{scroll=true}={}){
     if(active)active.textContent=labels[name];
     if(scroll){
       const first=sections[0]||returnBar;
-      setTimeout(()=>first?.scrollIntoView({behavior:"smooth",block:"start"}),30);
+      setTimeout(()=>first?.scrollIntoView({behavior:"auto",block:"start"}),0);
     }
   }
   document.documentElement.dataset.bcWorkspace=name;
@@ -1027,6 +1036,7 @@ function startCommandAfterAuth(){
 }
 
 function init(){
+  ensureIntegrationsWorkspace();
   claimCommandShellOwnership();
   document.body.classList.add("bc-hospitality-os","bc-consolidated-product-surface");
   const advanced=new URLSearchParams(window.location.search).get("advanced")==="1";
@@ -1038,7 +1048,8 @@ function init(){
     }
   });
   document.querySelectorAll("[data-bc-workspace]").forEach(button=>{
-    button.addEventListener("click",()=>activate(button.dataset.bcWorkspace));
+    if(button.closest(".bc-os-nav"))button.addEventListener("pointerdown",()=>activate(button.dataset.bcWorkspace,{scroll:false}));
+    button.addEventListener("click",()=>{if(document.documentElement.dataset.bcWorkspace!==button.dataset.bcWorkspace)activate(button.dataset.bcWorkspace);});
   });
   el("bcCommandSignIn")?.addEventListener("click",()=>{
     openAuthFallback("Sign in to load Blue Current Command.");

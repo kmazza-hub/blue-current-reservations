@@ -1,0 +1,15 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),Scheduling=require(path.join(root,"server/services/schedulingService"));
+const ui=fs.readFileSync(path.join(root,"client/js/staff-workspace-runtime-v100.3.64.js"),"utf8"),index=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),pkg=require(path.join(root,"package.json"));let checks=0;const check=(name,value)=>{assert.ok(value,name);checks++;console.log(`PASS: ${name}`)};
+const data={locations:[{id:"loc",organizationId:"org"}],staff:[{id:"staff1",organizationId:"org",locationId:"loc",name:"Marcus Lee",role:"Server",employmentStatus:"active"}],employees:[],scheduleShifts:[{id:"shift1",organizationId:"org",locationId:"loc",date:"2026-09-16",startTime:"16:00",endTime:"23:00",employeeId:null,role:"Server",department:"Service",status:"draft"}],schedulePublications:[],employeeAvailability:[],ptoRequests:[],reservations:[]};
+const database={async read(){return data},async get(collection,id){return(data[collection]||[]).find(x=>x.id===id)||null},async update(collection,id,patch){const row=(data[collection]||[]).find(x=>x.id===id);Object.assign(row,patch);return row},async mutate(fn){return fn(data)}};const audit={async record(){return{}}},hub={publish(){}};
+(async()=>{const service=new Scheduling(database,audit,hub),first=await service.smartFill({shiftId:"shift1",employeeId:"staff1"},"Manager","org"),second=await service.smartFill({shiftId:"shift1",employeeId:"staff1"},"Manager","org");
+check("First Smart Fill request assigns the recommended employee",first.shift.employeeId==="staff1"&&!first.alreadyApplied);
+check("Repeated identical Smart Fill request is idempotent",second.shift.employeeId==="staff1"&&second.alreadyApplied===true);
+check("Smart Fill listener is initialized only once",ui.includes("bcStaffWorkspaceBound")&&ui.includes("function initOnce"));
+check("Only one Smart Fill request can be in flight",ui.includes('dialog.dataset.applying==="true"')&&ui.includes("confirm.disabled=true"));
+check("Smart Fill uses inline status instead of a browser alert",!ui.includes("alert(error.message")&&ui.includes("Unable to apply staffing match. Nothing was changed."));
+check("Dialog close handler is single-use",ui.includes('{once:true}'));
+check("Stale recommendations return a readable client error",fs.readFileSync(path.join(root,"server/services/schedulingService.js"),"utf8").includes("This staffing recommendation is no longer current."));
+check("V100.3.69 assets are cache advanced",pkg.version==="100.3.69"&&index.includes('content="100.3.69"')&&index.includes('staff-workspace-runtime-v100.3.64.js?v=100.3.69'));
+console.log(`V100.3.69 Smart Fill single-action reliability ${checks}/${checks}`);})().catch(error=>{console.error(error);process.exit(1)});

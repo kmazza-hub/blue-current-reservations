@@ -95,8 +95,9 @@ class SchedulingService {
 
   async smartFill(input,actor,organizationId){
     const shift=await this.database.get('scheduleShifts',input.shiftId); if(!shift||shift.organizationId!==organizationId)return null;
+    if(shift.employeeId&&shift.employeeId===input.employeeId){const employee=await this.requireEmployee(organizationId,shift.locationId,shift.employeeId);return {shift,candidate:{employeeId:employee.id,name:employee.name,role:employee.role},alreadyApplied:true};}
     const snapshot=await this.snapshot(organizationId,shift.locationId,shift.date); const recommendation=snapshot.intelligence.recommendations.find(x=>x.shiftId===shift.id&&x.candidates?.length);
-    const candidate=input.employeeId?recommendation?.candidates.find(x=>x.employeeId===input.employeeId):recommendation?.candidates[0]; if(!candidate)throw new Error('No eligible smart-fill candidate is available.');
+    const candidate=input.employeeId?recommendation?.candidates.find(x=>x.employeeId===input.employeeId):recommendation?.candidates[0]; if(!candidate)throw invalidRequest('This staffing recommendation is no longer current. Refresh the schedule and try again.');
     const result=await this.update(shift.id,{employeeId:candidate.employeeId},actor,organizationId); await this.record(organizationId,actor,`AI Smart Fill assigned ${candidate.name} to ${shift.role} shift`); this.realtimeHub.publish('scheduling:ai-applied',{shiftId:shift.id,employeeId:candidate.employeeId}); return {shift:result,candidate};
   }
   record(organizationId,actor,action){return this.auditService.record({organizationId,actor,action,category:"scheduling"});}

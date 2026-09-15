@@ -125,6 +125,8 @@ ready(()=>{
  function closeDialog(){if(typeof dialog.close==="function")dialog.close();else dialog.removeAttribute("open");}
  document.getElementById("bcHostDialogClose")?.addEventListener("click",closeDialog);
  document.getElementById("bcHostDialogCancel")?.addEventListener("click",closeDialog);
+ dialog?.addEventListener("invalid",event=>{const input=event.target;if(!input?.matches?.("input,select,textarea"))return;input.setAttribute("aria-invalid","true");let error=input.parentElement?.querySelector(".bc-inline-field-error");if(!error){error=document.createElement("small");error.className="bc-inline-field-error";input.insertAdjacentElement("afterend",error);}error.textContent=`${input.closest("label")?.querySelector("span")?.textContent||"This field"} is required.`;},true);
+ dialog?.addEventListener("input",event=>{const input=event.target;if(input?.matches?.("input,select,textarea")&&String(input.value||"").trim()){input.removeAttribute("aria-invalid");input.parentElement?.querySelector(".bc-inline-field-error")?.remove();}});
 
  function addWalkin(name,party,preference,wait){
    const list=document.getElementById("waitlistQueue");if(!list)return;
