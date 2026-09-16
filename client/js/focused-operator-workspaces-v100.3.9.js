@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const VERSION="100.3.78";
+const VERSION="100.3.79";
 const q=id=>document.getElementById(id);
 const JOBS={
   guests:{title:"Find guest",subtitle:"Search tonight's guests and recent profiles."},

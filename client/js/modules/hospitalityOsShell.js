@@ -97,24 +97,33 @@ function installPrimaryNavigation(){
   const navigation=document.querySelector(".bc-os-nav");
   if(!navigation)return;
   let navigationSequence=0;
+  let pointerCommit={name:null,at:0};
   const commit=name=>{
     const sequence=++navigationSequence;
+    document.documentElement.dataset.bcWorkspaceIntent=name;
     activate(name,{scroll:true});
-    requestAnimationFrame(()=>{
+    const settle=()=>{
       if(sequence!==navigationSequence)return;
       if(document.documentElement.dataset.bcWorkspace!==name)activate(name,{scroll:true});
-    });
-    setTimeout(()=>{
-      if(sequence!==navigationSequence)return;
-      if(document.documentElement.dataset.bcWorkspace!==name)activate(name,{scroll:true});
-    },180);
+    };
+    requestAnimationFrame(settle);
+    [80,320,900,1800].forEach(delay=>setTimeout(settle,delay));
   };
-  navigation.addEventListener("click",event=>{
+  const requestedWorkspace=event=>{
     const button=event.target?.closest?.("[data-bc-workspace]");
-    if(!button||!navigation.contains(button))return;
+    return button&&navigation.contains(button)?button.dataset.bcWorkspace:null;
+  };
+  navigation.addEventListener("pointerdown",event=>{
+    const name=requestedWorkspace(event);if(!name)return;
+    pointerCommit={name,at:Date.now()};
+    commit(name);
+  },true);
+  navigation.addEventListener("click",event=>{
+    const name=requestedWorkspace(event);if(!name)return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    commit(button.dataset.bcWorkspace);
+    if(pointerCommit.name===name&&Date.now()-pointerCommit.at<900&&document.documentElement.dataset.bcWorkspace===name)return;
+    commit(name);
   },true);
 }
 
@@ -131,12 +140,17 @@ function prepareWorkspaceTransition(name){
 }
 
 function retainedCertifiedReadiness(){
+  try{
+    const retained=document.documentElement.dataset.bcCertifiedReadiness;
+    if(retained)return JSON.parse(retained);
+  }catch{}
   if(window.BlueCurrentCertifiedPilotReadiness)return window.BlueCurrentCertifiedPilotReadiness;
   try{return JSON.parse(sessionStorage.getItem("bluecurrent.certifiedPilotReadiness")||"null");}catch{return null;}
 }
 
 function publishCertifiedReadiness(readiness){
   window.BlueCurrentCertifiedPilotReadiness=readiness;
+  document.documentElement.dataset.bcCertifiedReadiness=JSON.stringify(readiness);
   try{sessionStorage.setItem("bluecurrent.certifiedPilotReadiness",JSON.stringify(readiness));}catch{}
   window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:readiness}));
 }
@@ -1133,7 +1147,7 @@ function init(){
     commandShell.scrollIntoView({block:"start",behavior:"auto"});
   }
   window.BlueCurrentHospitalityShell={
-    version:"100.3.78",
+    version:"100.3.79",
     activate:(workspace,options={})=>activate(workspace,options),
     current:()=>document.documentElement.dataset.bcWorkspace||"command",
     readiness:()=>retainedCertifiedReadiness(),

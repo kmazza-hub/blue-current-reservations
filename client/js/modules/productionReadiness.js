@@ -57,9 +57,15 @@
     const $ = (id) => document.getElementById(id);
     const hasProductionUi = Boolean($("production-readiness") || $("prodOrganizationName"));
     let state = load();
-    const retainedReadiness=()=>window.BlueCurrentHospitalityShell?.readiness?.()||window.BlueCurrentCertifiedPilotReadiness||(()=>{
+    const retainedReadiness=()=>{
+      try{
+        const retained=document.documentElement.dataset.bcCertifiedReadiness;
+        if(retained)return JSON.parse(retained);
+      }catch{}
+      if(window.BlueCurrentHospitalityShell?.readiness)return window.BlueCurrentHospitalityShell.readiness();
+      if(window.BlueCurrentCertifiedPilotReadiness)return window.BlueCurrentCertifiedPilotReadiness;
       try{return JSON.parse(sessionStorage.getItem("bluecurrent.certifiedPilotReadiness")||"null");}catch{return null;}
-    })();
+    };
     let certifiedPilotReadiness = retainedReadiness();
 
     function clone(value) {
@@ -134,6 +140,11 @@
       certifiedPilotReadiness=retainedReadiness();
       renderSummary();
     });
+    new MutationObserver(records=>{
+      if(!records.some(record=>record.attributeName==="data-bc-certified-readiness"))return;
+      certifiedPilotReadiness=retainedReadiness();
+      renderSummary();
+    }).observe(document.documentElement,{attributes:true,attributeFilter:["data-bc-certified-readiness"]});
 
     function renderOnboarding() {
       setText("prodOnboardingProgress", `${state.onboardingProgress}% complete`);
