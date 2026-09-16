@@ -96,12 +96,25 @@ function activate(name,{scroll=true}={}){
 function installPrimaryNavigation(){
   const navigation=document.querySelector(".bc-os-nav");
   if(!navigation)return;
+  let navigationSequence=0;
+  const commit=name=>{
+    const sequence=++navigationSequence;
+    activate(name,{scroll:true});
+    requestAnimationFrame(()=>{
+      if(sequence!==navigationSequence)return;
+      if(document.documentElement.dataset.bcWorkspace!==name)activate(name,{scroll:true});
+    });
+    setTimeout(()=>{
+      if(sequence!==navigationSequence)return;
+      if(document.documentElement.dataset.bcWorkspace!==name)activate(name,{scroll:true});
+    },180);
+  };
   navigation.addEventListener("click",event=>{
     const button=event.target?.closest?.("[data-bc-workspace]");
     if(!button||!navigation.contains(button))return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    activate(button.dataset.bcWorkspace,{scroll:true});
+    commit(button.dataset.bcWorkspace);
   },true);
 }
 
@@ -433,6 +446,7 @@ function renderPostShiftReview(review){
 function renderCommand(data){
   commandState.currentData=data;
   renderLocations(data);
+  renderSourceTruth(data);
   const s=data.service||{},n=data.next30Minutes||{},f=data.financial||{},inv=data.inventory||{};
 
   setText("bcCommandContext",`${data.location?.name||"Restaurant"} · Operating Command · ${data.dataMode==="historical-demo"?"Demo snapshot":"Live state"}`);
@@ -870,12 +884,14 @@ async function refreshPilotCommand(){
     if(state){state.textContent=String(data.status||"UNKNOWN").replaceAll("_"," ");state.dataset.tone=data.tone||"neutral";}
     setText("bcPilotReadiness",String(data.readiness?.decision||"UNKNOWN").replaceAll("_"," "));
     setText("bcPilotReadinessDetail",data.readiness?.explicitHold?"Explicit launch hold is active.":data.readiness?.currentApproval?"Human launch approval is current.":`${data.readiness?.blocking?.length||0} readiness blocker(s).`);
-    window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:{
+    const certifiedReadiness={
       decision:data.readiness?.decision||"UNKNOWN",
       blockers:data.readiness?.blocking?.length||0,
       explicitHold:Boolean(data.readiness?.explicitHold),
       health:data.health?.state||null
-    }}));
+    };
+    window.BlueCurrentCertifiedPilotReadiness=certifiedReadiness;
+    window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:certifiedReadiness}));
     setText("bcPilotSession",data.session?String(data.session.state||"ACTIVE").replaceAll("_"," "):"No active session");
     setText("bcPilotSessionDetail",data.session?.label||"Controlled start required");
     setText("bcPilotHealth",data.health?.state||"—");
