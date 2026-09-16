@@ -37,11 +37,19 @@ function processIsActive(pid, processProbe = process.kill) {
   }
 }
 
+function runtimeInstanceId(environment = process.env) {
+  return String(environment.RENDER_INSTANCE_ID || "").trim();
+}
+
 function inspectRuntimeActivity(databasePath, options = {}) {
   const markerPath = runtimeMarkerPath(databasePath);
   if (!fs.existsSync(markerPath)) return { active: false, markerPath, reason: "marker-absent" };
   try {
     const marker = JSON.parse(fs.readFileSync(markerPath, "utf8"));
+    const instanceId = options.instanceId === undefined ? runtimeInstanceId() : String(options.instanceId || "").trim();
+    if (instanceId && marker.instanceId !== instanceId) {
+      return { active: false, markerPath, marker, reason: marker.instanceId ? "stale-instance-marker" : "legacy-instance-marker" };
+    }
     const active = processIsActive(marker.pid, options.processProbe);
     return { active, markerPath, marker, reason: active ? "runtime-active" : "stale-marker" };
   } catch (error) {
@@ -49,15 +57,16 @@ function inspectRuntimeActivity(databasePath, options = {}) {
   }
 }
 
-function claimRuntimeActivity(databasePath) {
+function claimRuntimeActivity(databasePath, options = {}) {
   const markerPath = runtimeMarkerPath(databasePath);
-  const current = inspectRuntimeActivity(databasePath);
+  const current = inspectRuntimeActivity(databasePath, options);
   if (current.active && Number(current.marker?.pid) !== process.pid) {
     const error = new Error(`Runtime database is already owned by process ${current.marker?.pid || "unknown"}.`);
     error.code = "RUNTIME_DATABASE_ACTIVE";
     throw error;
   }
-  const marker = { version: 1, pid: process.pid, startedAt: new Date().toISOString(), databasePath };
+  const instanceId = options.instanceId === undefined ? runtimeInstanceId() : String(options.instanceId || "").trim();
+  const marker = { version: 2, pid: process.pid, instanceId: instanceId || null, startedAt: new Date().toISOString(), databasePath };
   fs.writeFileSync(markerPath, JSON.stringify(marker, null, 2), "utf8");
   return marker;
 }
@@ -67,6 +76,8 @@ function releaseRuntimeActivity(databasePath) {
   try {
     const marker = JSON.parse(fs.readFileSync(markerPath, "utf8"));
     if (Number(marker.pid) !== process.pid) return false;
+    const instanceId = runtimeInstanceId();
+    if (instanceId && marker.instanceId && marker.instanceId !== instanceId) return false;
     fs.unlinkSync(markerPath);
     return true;
   } catch {
@@ -264,6 +275,7 @@ module.exports = {
   inspectRuntimeActivity,
   listBackups,
   releaseRuntimeActivity,
+  runtimeInstanceId,
   runtimeMarkerPath,
   restoreBackup
 };

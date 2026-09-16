@@ -13,5 +13,5 @@ check("Integration Control is moved intact rather than cloned",shell.includes('w
 check("Required fields receive readable inline validation",runtime.includes('document.addEventListener("invalid"')&&runtime.includes('is required.'));
 check("Validation clears after the operator fixes the field",runtime.includes('document.addEventListener("input"')&&runtime.includes('removeAttribute("aria-invalid")'));
 check("Host forms provide the same inline feedback",host.includes('dialog?.addEventListener("invalid"')&&host.includes('bc-inline-field-error'));
-check("V100.3.68 assets are cache advanced",["100.3.68","100.3.69","100.3.70","100.3.71","100.3.72"].includes(pkg.version)&&/content="100\.3\.(?:69|70|71|72)"/.test(index)&&/workspace-reliability-runtime-v100\.3\.67\.js\?v=100\.3\.(?:69|70|71|72)/.test(index));
+check("V100.3.68 assets are cache advanced",["100.3.68","100.3.69","100.3.70","100.3.71","100.3.72","100.3.73"].includes(pkg.version)&&/content="100\.3\.(?:69|70|71|72|73)"/.test(index)&&/workspace-reliability-runtime-v100\.3\.67\.js\?v=100\.3\.(?:69|70|71|72|73)/.test(index));
 console.log(`V100.3.67 workspace reliability ${checks.length}/${checks.length}`);
