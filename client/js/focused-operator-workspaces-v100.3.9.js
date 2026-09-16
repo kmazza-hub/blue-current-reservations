@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const VERSION="100.3.77";
+const VERSION="100.3.78";
 const q=id=>document.getElementById(id);
 const JOBS={
   guests:{title:"Find guest",subtitle:"Search tonight's guests and recent profiles."},
@@ -183,14 +183,10 @@ function bind(){
   document.addEventListener("click",e=>{
     const workspaceButton=e.target.closest?.(".bc-os-nav [data-bc-workspace]");
     if(workspaceButton){
-      const requested=workspaceButton.dataset.bcWorkspace;
       if(currentJob)exitOperatorFocus({returnHome:false});
       if(document.documentElement.classList.contains("bc-ipad-floor-focus"))exitFloor({returnHome:false});
-      const commit=()=>window.BlueCurrentHospitalityShell?.activate?.(requested,{scroll:true});
-      queueMicrotask(commit);
-      [60,220].forEach(ms=>setTimeout(()=>{
-        if(window.BlueCurrentHospitalityShell?.current?.()!==requested)commit();
-      },ms));
+      // Cleanup belongs here; workspace selection belongs exclusively to the
+      // shell navigation owner. Competing commits created the live Team race.
       return;
     }
     const rush=e.target.closest("[data-rush-job]")?.dataset.rushJob;

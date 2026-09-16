@@ -130,6 +130,17 @@ function prepareWorkspaceTransition(name){
   }catch{}
 }
 
+function retainedCertifiedReadiness(){
+  if(window.BlueCurrentCertifiedPilotReadiness)return window.BlueCurrentCertifiedPilotReadiness;
+  try{return JSON.parse(sessionStorage.getItem("bluecurrent.certifiedPilotReadiness")||"null");}catch{return null;}
+}
+
+function publishCertifiedReadiness(readiness){
+  window.BlueCurrentCertifiedPilotReadiness=readiness;
+  try{sessionStorage.setItem("bluecurrent.certifiedPilotReadiness",JSON.stringify(readiness));}catch{}
+  window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:readiness}));
+}
+
 const el=id=>document.getElementById(id);
 const setText=(id,value)=>{const node=el(id);if(node)node.textContent=value??"—";};
 const money=value=>Number.isFinite(Number(value))?new Intl.NumberFormat([],{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Number(value)):"—";
@@ -890,9 +901,7 @@ async function refreshPilotCommand(){
       explicitHold:Boolean(data.readiness?.explicitHold),
       health:data.health?.state||null
     };
-    window.BlueCurrentCertifiedPilotReadiness=certifiedReadiness;
-    try{sessionStorage.setItem("bluecurrent.certifiedPilotReadiness",JSON.stringify(certifiedReadiness));}catch{}
-    window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:certifiedReadiness}));
+    publishCertifiedReadiness(certifiedReadiness);
     setText("bcPilotSession",data.session?String(data.session.state||"ACTIVE").replaceAll("_"," "):"No active session");
     setText("bcPilotSessionDetail",data.session?.label||"Controlled start required");
     setText("bcPilotHealth",data.health?.state||"—");
@@ -1124,9 +1133,10 @@ function init(){
     commandShell.scrollIntoView({block:"start",behavior:"auto"});
   }
   window.BlueCurrentHospitalityShell={
-    version:"100.3.52",
+    version:"100.3.78",
     activate:(workspace,options={})=>activate(workspace,options),
     current:()=>document.documentElement.dataset.bcWorkspace||"command",
+    readiness:()=>retainedCertifiedReadiness(),
     sections:workspace=>candidateSections(workspace).map(section=>section.id)
   };
   startCommandAfterAuth();

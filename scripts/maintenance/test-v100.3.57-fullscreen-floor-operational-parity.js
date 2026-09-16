@@ -29,6 +29,6 @@ check("Existing seating still enforces table capacity and availability", floor.i
 check("Existing table lifecycle still requires staff-confirmed cleaning and reset", floor.includes("primary.textContent = 'Party left'") && floor.includes("primary.textContent = 'Mark table open'"));
 check("Service completion still sends the linked table to cleaning", service.includes('table.classList.add("cleaning")') && service.includes('bc:host-table-cleaning'));
 check("Completing a seating flow keeps the operator on the functional full-screen floor", focus.includes('panel.dataset.bcFocusReason="operating"') && focus.includes('reason:"seating-complete"') && !focus.includes('"bc:host-guest-seated",()=>setTimeout(()=>exitFloor'));
-check("V100.3.57 floor assets are cache-advanced", /styles\.css\?v=100\.3\.(?:57|74|75|76|77)/.test(html) && html.includes('fullscreen-floor-clarity-v100.3.10.js?v=100.3.57') && /focused-operator-workspaces-v100\.3\.9\.js\?v=100\.3\.(?:57|77)/.test(html));
+check("V100.3.57 floor assets are cache-advanced", /styles\.css\?v=100\.3\.(?:57|74|75|76|77|78)/.test(html) && html.includes('fullscreen-floor-clarity-v100.3.10.js?v=100.3.57') && /focused-operator-workspaces-v100\.3\.9\.js\?v=100\.3\.(?:57|77|78)/.test(html));
 
 console.log(`V100.3.57 full-screen floor operational parity ${checks.length}/${checks.length}`);

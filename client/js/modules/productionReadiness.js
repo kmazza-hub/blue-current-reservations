@@ -57,9 +57,10 @@
     const $ = (id) => document.getElementById(id);
     const hasProductionUi = Boolean($("production-readiness") || $("prodOrganizationName"));
     let state = load();
-    let certifiedPilotReadiness = window.BlueCurrentCertifiedPilotReadiness || (()=>{
+    const retainedReadiness=()=>window.BlueCurrentHospitalityShell?.readiness?.()||window.BlueCurrentCertifiedPilotReadiness||(()=>{
       try{return JSON.parse(sessionStorage.getItem("bluecurrent.certifiedPilotReadiness")||"null");}catch{return null;}
     })();
+    let certifiedPilotReadiness = retainedReadiness();
 
     function clone(value) {
       return JSON.parse(JSON.stringify(value));
@@ -103,6 +104,7 @@
     }
 
     function renderSummary() {
+      certifiedPilotReadiness=retainedReadiness()||certifiedPilotReadiness;
       const enabled = Object.values(state.features).filter(Boolean).length;
       setText("prodOrganizationName", state.organization);
       setText("prodLocationCount", state.locations);
@@ -125,6 +127,11 @@
 
     window.addEventListener("bluecurrent:pilot-readiness",event=>{
       certifiedPilotReadiness=event.detail||null;
+      renderSummary();
+    });
+    window.addEventListener("bluecurrent:workspace",event=>{
+      if(event.detail?.workspace!=="system")return;
+      certifiedPilotReadiness=retainedReadiness();
       renderSummary();
     });
 

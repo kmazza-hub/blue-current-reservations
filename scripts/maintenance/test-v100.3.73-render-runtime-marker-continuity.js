@@ -20,6 +20,6 @@ try{
   manager.claimRuntimeActivity(databasePath,{instanceId:"render-new",processProbe:()=>false});
   const claimed=JSON.parse(fs.readFileSync(markerPath,"utf8"));
   check("New hosted ownership records the unique Render instance",claimed.version===2&&claimed.instanceId==="render-new"&&claimed.pid===process.pid);
-  check("Build retains V100.3.73 or later",["100.3.73","100.3.74","100.3.75","100.3.76","100.3.77"].includes(pkg.version));
+  check("Build retains V100.3.73 or later",["100.3.73","100.3.74","100.3.75","100.3.76","100.3.77","100.3.78"].includes(pkg.version));
   console.log(`V100.3.73 Render runtime marker continuity ${passed}/${passed}`);
 }finally{fs.rmSync(temp,{recursive:true,force:true});}

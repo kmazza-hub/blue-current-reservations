@@ -16431,9 +16431,12 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
 #bcManagerActionList>p{margin:0;color:#7799a1;font-size:.68rem}
 .bc-manager-action{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;border:1px solid rgba(255,255,255,.07);border-radius:10px;background:rgba(255,255,255,.03)}
 .bc-manager-action>div:first-child{display:grid;gap:3px}.bc-manager-action strong{color:#fff;font-size:.73rem}.bc-manager-action small{color:#82a4ab;font-size:.61rem}
-.bc-manager-action>div:last-child{display:flex;gap:5px}.bc-manager-action button{min-height:31px;padding:0 9px;border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.05);color:#cde5e9;font-size:.61rem;font-weight:800;cursor:pointer}
+.bc-manager-action>div:last-child{display:flex;gap:5px}.bc-manager-action button{min-height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.10);border-radius:8px;background:rgba(255,255,255,.05);color:#cde5e9;font-size:.61rem;font-weight:800;cursor:pointer}
 .bc-manager-action button:last-child{border-color:rgba(84,230,199,.20);color:#78e4d0}
-@media(max-width:620px){.bc-action-controls{display:grid}.bc-action-controls button{min-height:46px}.bc-manager-action{align-items:flex-start;display:grid}.bc-manager-action>div:last-child{justify-content:flex-start}.bc-manager-action button{min-height:40px}}
+@media(max-width:620px){.bc-action-controls{display:grid}.bc-action-controls button{min-height:46px}.bc-manager-action{align-items:flex-start;display:grid}.bc-manager-action>div:last-child{justify-content:flex-start}.bc-manager-action button{min-height:44px}}
+
+/* V100.3.78 live-audit closure: every persistent diagnostic control is touch-safe. */
+#startupDiagnosticsToggle{min-height:44px!important}
 
 
 /* V77.50 — closed-loop outcome verification */
