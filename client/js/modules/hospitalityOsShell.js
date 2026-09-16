@@ -55,8 +55,16 @@ function candidateSections(name){
 }
 
 function hideDeepSurfaces(){
-  document.querySelectorAll("#main > section:not(.bc-os-shell)").forEach(section=>{
+  document.querySelectorAll("#main > section.bc-workspace-visible").forEach(section=>{
     section.classList.remove("bc-workspace-visible");
+  });
+}
+
+function claimWorkspaceIntent(name){
+  document.documentElement.dataset.bcWorkspaceIntent=name;
+  document.documentElement.dataset.bcWorkspace=name;
+  document.querySelectorAll(".bc-os-nav [data-bc-workspace]").forEach(button=>{
+    button.classList.toggle("is-active",button.dataset.bcWorkspace===name);
   });
 }
 
@@ -64,9 +72,7 @@ function activate(name,{scroll=true}={}){
   if(!labels[name])name="command";
   prepareWorkspaceTransition(name);
   hideDeepSurfaces();
-  document.querySelectorAll("[data-bc-workspace]").forEach(button=>{
-    button.classList.toggle("is-active",button.dataset.bcWorkspace===name);
-  });
+  claimWorkspaceIntent(name);
 
   const shell=document.getElementById("blueCurrentCommand");
   const returnBar=document.getElementById("bcWorkspaceReturn");
@@ -104,13 +110,15 @@ function installPrimaryNavigation(){
   let pointerCommit={name:null,at:0};
   const commit=name=>{
     const sequence=++navigationSequence;
-    document.documentElement.dataset.bcWorkspaceIntent=name;
-    activate(name,{scroll:true});
+    claimWorkspaceIntent(name);
+    requestAnimationFrame(()=>{
+      if(sequence!==navigationSequence)return;
+      activate(name,{scroll:true});
+    });
     const settle=()=>{
       if(sequence!==navigationSequence)return;
       if(document.documentElement.dataset.bcWorkspace!==name)activate(name,{scroll:true});
     };
-    requestAnimationFrame(settle);
     [80,320,900,1800].forEach(delay=>setTimeout(settle,delay));
   };
   const requestedWorkspace=event=>{

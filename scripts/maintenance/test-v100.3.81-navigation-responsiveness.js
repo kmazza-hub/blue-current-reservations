@@ -1,0 +1,21 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+const shell=read("client/js/modules/hospitalityOsShell.js"),html=read("client/index.html"),pkg=require(path.join(root,"package.json"));
+let passed=0;
+function check(name,value){assert.ok(value,name);passed++;console.log(`PASS: ${name}`);}
+const navigation=shell.match(/function installPrimaryNavigation\(\)[\s\S]*?\n\}/)?.[0]||"";
+const claim=shell.match(/function claimWorkspaceIntent\(name\)[\s\S]*?\n\}/)?.[0]||"";
+const hide=shell.match(/function hideDeepSurfaces\(\)[\s\S]*?\n\}/)?.[0]||"";
+check("Build advances to V100.3.81",pkg.version==="100.3.81"&&html.includes('content="100.3.81"'));
+check("Navigation remains owned by persistent document capture",/document\.addEventListener\("pointerdown"/.test(navigation)&&/document\.addEventListener\("click"/.test(navigation));
+check("Intent claim immediately records requested workspace",/dataset\.bcWorkspaceIntent=name/.test(claim)&&/dataset\.bcWorkspace=name/.test(claim));
+check("Intent claim immediately updates only primary navigation",/\.bc-os-nav \[data-bc-workspace\]/.test(claim)&&/classList\.toggle\("is-active"/.test(claim));
+check("Heavy activation moves to the next animation frame",/claimWorkspaceIntent\(name\);[\s\S]*requestAnimationFrame\(\(\)=>\{[\s\S]*activate\(name/.test(navigation));
+check("Superseded deferred navigation cannot activate",/sequence!==navigationSequence/.test(navigation));
+check("Settlement lease still repairs later workspace reclamation",/\[80,320,900,1800\][\s\S]*setTimeout\(settle,delay\)/.test(navigation));
+check("Cleanup touches only currently visible sections",/#main > section\.bc-workspace-visible/.test(hide)&&!/:not\(\.bc-os-shell\)/.test(hide));
+check("Activation reuses the immediate intent claim",/function activate\(name,[\s\S]*claimWorkspaceIntent\(name\)/.test(shell));
+check("System readiness remains shell-authoritative",/if\(name==="system"\)[\s\S]*renderSystemReadinessAuthority\(\)/.test(shell));
+check("HOLD still renders with certified blocker count",/held\?"Readiness hold"/.test(shell)&&/certified readiness blocker\(s\) remain/.test(shell));
+check("Changed shell crosses the V100.3.81 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.81"));
+console.log(`V100.3.81 navigation responsiveness ${passed}/${passed}`);

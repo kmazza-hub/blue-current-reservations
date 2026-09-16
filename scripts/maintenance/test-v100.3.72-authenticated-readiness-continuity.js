@@ -40,8 +40,8 @@ class TestCustomEvent extends Event{constructor(type,options={}){super(type);thi
   const signedOut=await coordinator.whenReady();
   check("Readiness follows an explicit sign-out",signedOut.status==="anonymous"&&!signedOut.authenticated);
   const pkg=require(path.join(root,"package.json")),html=fs.readFileSync(path.join(root,"client/index.html"),"utf8"),blueprint=fs.readFileSync(path.join(root,"render.yaml"),"utf8");
-  check("Build retains V100.3.72 or later",["100.3.72","100.3.73","100.3.74","100.3.75","100.3.76","100.3.77","100.3.78","100.3.80"].includes(pkg.version)&&/content="100\.3\.(?:72|73|74|75|76|77|78|79|80)"/.test(html));
-  check("Corrected session authority is cache advanced",/authSessionManager\.js\?v=100\.3\.(?:72|73|74|75|76|77|78|79|80)/.test(html));
+  check("Build retains V100.3.72 or later",["100.3.72","100.3.73","100.3.74","100.3.75","100.3.76","100.3.77","100.3.78","100.3.81"].includes(pkg.version)&&/content="100\.3\.(?:72|73|74|75|76|77|78|79|80|81)"/.test(html));
+  check("Corrected session authority is cache advanced",/authSessionManager\.js\?v=100\.3\.(?:72|73|74|75|76|77|78|79|80|81)/.test(html));
   check("Render preserves both certified and pilot origins",blueprint.includes("value: https://app.bluecurrentco.com,https://blue-current-pilot.onrender.com"));
   check("Render Blueprint omits the disk-incompatible shutdown option",!blueprint.includes("maxShutdownDelaySeconds"));
   console.log(`V100.3.72 authenticated readiness continuity ${passed}/${passed}`);
