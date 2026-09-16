@@ -23,7 +23,7 @@ services:
       - key: BLUE_CURRENT_PUBLIC_URL
         value: https://app.bluecurrentco.com
       - key: BLUE_CURRENT_ALLOWED_ORIGINS
-        value: https://app.bluecurrentco.com
+        value: https://app.bluecurrentco.com,https://blue-current-pilot.onrender.com
       - key: BLUE_CURRENT_PERSISTENCE_DRIVER
         value: json
       - key: BLUE_CURRENT_DB

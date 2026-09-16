@@ -6,11 +6,11 @@ const blueprint=read("render.yaml"),docker=read("deploy/hosted-pilot/Dockerfile"
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function request(port,url){return new Promise((resolve,reject)=>{const req=http.get({hostname:"127.0.0.1",port,path:url},response=>{let raw="";response.on("data",chunk=>raw+=chunk);response.on("end",()=>resolve({status:response.statusCode,body:raw}))});req.on("error",reject)});}
 (async()=>{
- check("Build advances to V100.3.71",pkg.version==="100.3.71");
+ check("Build retains V100.3.71 or later",["100.3.71","100.3.72"].includes(pkg.version));
  check("Render uses the certified Git branch and Docker build",blueprint.includes("branch: live-service-timeline")&&blueprint.includes("runtime: docker")&&blueprint.includes("dockerfilePath: ./deploy/hosted-pilot/Dockerfile"));
  check("Render is pinned to one manually deployed instance",blueprint.includes("numInstances: 1")&&blueprint.includes("autoDeployTrigger: off"));
  check("Render mounts one persistent pilot disk",blueprint.includes("mountPath: /var/lib/blue-current")&&blueprint.includes("sizeGB: 1"));
- check("Render health and graceful shutdown contracts are explicit",blueprint.includes("healthCheckPath: /api/health")&&blueprint.includes("maxShutdownDelaySeconds: 30"));
+ check("Render health remains explicit without the disk-incompatible shutdown setting",blueprint.includes("healthCheckPath: /api/health")&&!blueprint.includes("maxShutdownDelaySeconds"));
  check("Production database path is on the mounted disk",blueprint.includes("value: /var/lib/blue-current/blue-current.json"));
  check("Initial provisioning mode requires a human-supplied value",/key: BLUE_CURRENT_PROVISIONING_MODE\s+sync: false/.test(blueprint));
  check("Docker starts through the hosted safety gate",docker.includes('CMD ["node","scripts/hosted-start.js"]'));

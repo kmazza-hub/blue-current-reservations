@@ -54,7 +54,8 @@
     }
 
     async restore(api) {
-      if (this.restorePromise) return this.restorePromise;
+      if (this.status === "authenticated" && this.session) return this.snapshot();
+      if (this.restorePromise && (this.status === "initializing" || this.status === "restoring")) return this.restorePromise;
 
       this.restorePromise = (async () => {
         const token = localStorage.getItem(TOKEN_KEY) || "";
@@ -84,11 +85,16 @@
         }
       })();
 
-      return this.restorePromise;
+      try {
+        return await this.restorePromise;
+      } finally {
+        this.restorePromise = null;
+      }
     }
 
     whenReady() {
-      return this.readyPromise;
+      if (this.status === "initializing" || this.status === "restoring") return this.readyPromise;
+      return Promise.resolve(this.snapshot());
     }
 
     authenticate(session, api) {
@@ -132,5 +138,5 @@
   }
 
   window.BlueCurrentAuthSession = new AuthSessionCoordinator();
-  window.BLUE_CURRENT_AUTH_SESSION_VERSION = "34.2.0";
+  window.BLUE_CURRENT_AUTH_SESSION_VERSION = "100.3.72";
 })();
