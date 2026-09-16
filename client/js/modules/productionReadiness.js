@@ -57,6 +57,7 @@
     const $ = (id) => document.getElementById(id);
     const hasProductionUi = Boolean($("production-readiness") || $("prodOrganizationName"));
     let state = load();
+    let certifiedPilotReadiness = null;
 
     function clone(value) {
       return JSON.parse(JSON.stringify(value));
@@ -105,17 +106,25 @@
       setText("prodLocationCount", state.locations);
       setText("prodUserCount", state.users.length);
       setText("prodFeatureCount", enabled);
-      setText("prodHealthScore", calculateHealth());
-      setText("prodDeploymentStatus", state.mode === "live" ? "Live controls armed" : "Pilot ready");
-      setClass("prodDeploymentStatus", `production-status ${state.mode === "live" ? "watch" : "ready"}`);
-      setText("prodLaunchBrief", state.mode === "live"
-        ? "Live data mode is selected. External actions remain governed by feature flags and connector permissions."
-        : "Configuration is complete. Demo data is active and the environment is ready for a controlled pilot.");
+      const held=certifiedPilotReadiness && (certifiedPilotReadiness.explicitHold || certifiedPilotReadiness.decision!=="READY");
+      setText("prodHealthScore", certifiedPilotReadiness?.health ? certifiedPilotReadiness.health : "—");
+      setText("prodDeploymentStatus", held ? "Readiness hold" : certifiedPilotReadiness?.decision==="READY" ? "Pilot ready" : "Readiness pending");
+      setClass("prodDeploymentStatus", `production-status ${held ? "watch" : certifiedPilotReadiness?.decision==="READY" ? "ready" : "watch"}`);
+      setText("prodLaunchBrief", held
+        ? `${certifiedPilotReadiness.blockers||0} certified readiness blocker(s) remain. Complete the Command readiness gates before launch approval.`
+        : certifiedPilotReadiness?.decision==="READY"
+          ? "The certified Command readiness gate is ready for controlled pilot approval."
+          : "Run the certified Command readiness gate before treating this environment as pilot-ready.");
       document.querySelectorAll("[data-prod-mode]").forEach(button => button.classList.toggle("active", button.dataset.prodMode === state.mode));
       setText("prodModeDescription", state.mode === "live"
         ? "Live data is enabled. Connector permissions and audit controls remain active."
         : "Safe simulated data is active. Connectors cannot perform external actions.");
     }
+
+    window.addEventListener("bluecurrent:pilot-readiness",event=>{
+      certifiedPilotReadiness=event.detail||null;
+      renderSummary();
+    });
 
     function renderOnboarding() {
       setText("prodOnboardingProgress", `${state.onboardingProgress}% complete`);

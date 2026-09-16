@@ -93,6 +93,18 @@ function activate(name,{scroll=true}={}){
   window.dispatchEvent(new CustomEvent("bluecurrent:workspace",{detail:{workspace:name,sections:sections.map(x=>x.id)}}));
 }
 
+function installPrimaryNavigation(){
+  const navigation=document.querySelector(".bc-os-nav");
+  if(!navigation)return;
+  navigation.addEventListener("click",event=>{
+    const button=event.target?.closest?.("[data-bc-workspace]");
+    if(!button||!navigation.contains(button))return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    activate(button.dataset.bcWorkspace,{scroll:true});
+  },true);
+}
+
 function prepareWorkspaceTransition(name){
   if(!labels[name])return;
   try{
@@ -332,6 +344,12 @@ function renderSourceTruth(data={}){
   const truth=data.sourceTruth||null;
   const label=el("bcSourceTruthLabel");
   if(!label)return;
+
+  if(data.dataMode==="historical-demo"){
+    label.textContent="Demo snapshot";
+    label.title="Historical seed data is displayed for demonstration; it is not live telemetry.";
+    return;
+  }
 
   if(!truth){
     label.textContent=data.dataMode==="historical-demo"?"Historical data":"Local data";
@@ -852,6 +870,12 @@ async function refreshPilotCommand(){
     if(state){state.textContent=String(data.status||"UNKNOWN").replaceAll("_"," ");state.dataset.tone=data.tone||"neutral";}
     setText("bcPilotReadiness",String(data.readiness?.decision||"UNKNOWN").replaceAll("_"," "));
     setText("bcPilotReadinessDetail",data.readiness?.explicitHold?"Explicit launch hold is active.":data.readiness?.currentApproval?"Human launch approval is current.":`${data.readiness?.blocking?.length||0} readiness blocker(s).`);
+    window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:{
+      decision:data.readiness?.decision||"UNKNOWN",
+      blockers:data.readiness?.blocking?.length||0,
+      explicitHold:Boolean(data.readiness?.explicitHold),
+      health:data.health?.state||null
+    }}));
     setText("bcPilotSession",data.session?String(data.session.state||"ACTIVE").replaceAll("_"," "):"No active session");
     setText("bcPilotSessionDetail",data.session?.label||"Controlled start required");
     setText("bcPilotHealth",data.health?.state||"—");
@@ -1047,9 +1071,10 @@ function init(){
       setCommandAccessState("auth","Signing in… Blue Current will load Command after authentication completes.");
     }
   });
+  installPrimaryNavigation();
   document.querySelectorAll("[data-bc-workspace]").forEach(button=>{
-    if(button.closest(".bc-os-nav"))button.addEventListener("pointerdown",()=>activate(button.dataset.bcWorkspace,{scroll:false}));
-    button.addEventListener("click",()=>{if(document.documentElement.dataset.bcWorkspace!==button.dataset.bcWorkspace)activate(button.dataset.bcWorkspace);});
+    if(button.closest(".bc-os-nav"))return;
+    button.addEventListener("click",()=>activate(button.dataset.bcWorkspace));
   });
   el("bcCommandSignIn")?.addEventListener("click",()=>{
     openAuthFallback("Sign in to load Blue Current Command.");

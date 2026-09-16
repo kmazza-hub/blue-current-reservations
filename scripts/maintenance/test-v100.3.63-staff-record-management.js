@@ -26,6 +26,6 @@ const check=(label,condition)=>{assert.ok(condition,label);console.log(`PASS: ${
  check("Staff management exposes edit, PIN reset, termination, and reactivation",["data-edit-employee","data-reset-pin","data-terminate-employee","data-reactivate-employee"].every(x=>client.includes(x)));
  check("Time correction captures clock-out and completion",timeTruth.includes('clockOut,status:"completed"'));
  check("API accepts both staff sources for PTO and clock operations",router.includes('database.get("staff", requestRecord.employeeId)')&&router.includes('database.get("employees", requestRecord.employeeId)'));
-check("V100.3.63-or-later cache boundary is active",/content="100\.3\.(?:63|64|65|66|67|68|69|70|71|72|73|74)"/.test(index)&&/runtime-performance-v100\.2\.70\.js\?v=100\.3\.(?:63|64|65|66|67|68|69|70|71|72|73|74)/.test(index));
+check("V100.3.63-or-later cache boundary is active",/content="100\.3\.(?:63|64|65|66|67|68|69|70|71|72|73|74|75)"/.test(index)&&/runtime-performance-v100\.2\.70\.js\?v=100\.3\.(?:63|64|65|66|67|68|69|70|71|72|73|74|75)/.test(index));
  console.log("V100.3.63 staff record management 12/12");
 })().catch(error=>{console.error(error);process.exit(1)});
