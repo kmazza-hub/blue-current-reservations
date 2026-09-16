@@ -19,7 +19,7 @@ function check(name, condition) {
   console.log(`PASS: ${name}`);
 }
 
-check("Build retains V100.3.75 audit closure", ["100.3.75","100.3.76"].includes(pkg.version) && html.includes('content="100.3.76"'));
+check("Build retains V100.3.75 audit closure", ["100.3.75","100.3.76","100.3.77"].includes(pkg.version) && html.includes('content="100.3.77"'));
 check("Primary sidebar navigation has one delegated click owner", /function installPrimaryNavigation\(\)[\s\S]*\.bc-os-nav[\s\S]*addEventListener\("click"[\s\S]*stopImmediatePropagation\(\)[\s\S]*activate\(button\.dataset\.bcWorkspace/.test(shell));
 check("Competing sidebar pointerdown activation is removed", !/closest\("\.bc-os-nav"\)\)button\.addEventListener\("pointerdown"/.test(shell));
 check("Repeated selection always reactivates the requested workspace", /if\(button\.closest\("\.bc-os-nav"\)\)return;[\s\S]*button\.addEventListener\("click",\(\)=>activate/.test(shell));
@@ -28,8 +28,8 @@ check("Command publishes the certified pilot readiness result", /blockers:data\.
 check("System readiness consumes the Command readiness result", /addEventListener\("bluecurrent:pilot-readiness"[\s\S]*certifiedPilotReadiness=event\.detail/.test(readiness));
 check("System no longer claims pilot-ready before certified evidence", html.includes('id="prodDeploymentStatus">Readiness pending</span>') && html.includes('id="prodHealthScore">—</strong>'));
 check("Readiness hold and blockers are rendered from the certified result", /held \? "Readiness hold"/.test(readiness) && /certifiedPilotReadiness\.blockers/.test(readiness));
-check("Core operator controls meet a 44px target", /\.bc-os-nav button,\.bc-manager-action-card button,#bcPilotControls button[\s\S]*min-height:44px/.test(css));
+check("Core operator controls meet a 44px target", /\.bc-os-nav button,\.bc-manager-action button,#bcPilotControls button[\s\S]*min-height:44px/.test(css));
 check("Rush dock reserves content clearance on desktop and mobile", /\.bc-rush-mode \.bc-os-command\{padding-bottom:126px\}/.test(css) && /\.bc-rush-mode \.bc-os-command\{padding-bottom:168px\}/.test(css));
-check("Updated shell, readiness, and style assets cross a fresh cache boundary", html.includes("styles.css?v=100.3.76") && html.includes("hospitalityOsShell.js?v=100.3.76") && html.includes("productionReadiness.js?v=100.3.76"));
+check("Updated shell, readiness, and style assets cross a fresh cache boundary", html.includes("styles.css?v=100.3.77") && html.includes("hospitalityOsShell.js?v=100.3.77") && html.includes("productionReadiness.js?v=100.3.77"));
 
 console.log(`V100.3.75 workspace and operating-truth continuity ${passed}/${passed}`);

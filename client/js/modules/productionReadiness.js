@@ -57,7 +57,9 @@
     const $ = (id) => document.getElementById(id);
     const hasProductionUi = Boolean($("production-readiness") || $("prodOrganizationName"));
     let state = load();
-    let certifiedPilotReadiness = window.BlueCurrentCertifiedPilotReadiness || null;
+    let certifiedPilotReadiness = window.BlueCurrentCertifiedPilotReadiness || (()=>{
+      try{return JSON.parse(sessionStorage.getItem("bluecurrent.certifiedPilotReadiness")||"null");}catch{return null;}
+    })();
 
     function clone(value) {
       return JSON.parse(JSON.stringify(value));

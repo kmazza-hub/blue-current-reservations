@@ -16182,7 +16182,7 @@ body.bc-hospitality-os #main>.bc-os-shell~section.bc-workspace-visible{display:b
 .bc-os-nav button:hover,.bc-os-nav button:focus-visible{background:rgba(255,255,255,.06);color:#fff;outline:none;border-color:rgba(255,255,255,.08)}
 .bc-os-nav button.is-active{background:linear-gradient(90deg,rgba(46,218,188,.17),rgba(46,218,188,.06));border-color:rgba(63,225,196,.2);color:#fff}
 .bc-os-nav button.is-active span{color:#5de7cd}
-.bc-os-nav button,.bc-manager-action-card button,#bcPilotControls button,.production-actions button,.production-tabs button{min-height:44px}
+.bc-os-nav button,.bc-manager-action button,#bcPilotControls button,.production-actions button,.production-tabs button{min-height:44px}
 .bc-os-account{margin-top:auto;padding:14px 8px 12px;display:grid;gap:10px;border-top:1px solid rgba(255,255,255,.08)}
 .bc-os-account div{display:grid;gap:3px;min-width:0}.bc-os-account small{color:#789aa2;font-size:.61rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.bc-os-account strong{overflow:hidden;color:#fff;font-size:.76rem;text-overflow:ellipsis;white-space:nowrap}
 .bc-os-account button{min-height:42px;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,255,255,.14);border-radius:10px;background:rgba(255,255,255,.055);color:#e9f4f6;font:inherit;font-size:.76rem;font-weight:850;cursor:pointer}

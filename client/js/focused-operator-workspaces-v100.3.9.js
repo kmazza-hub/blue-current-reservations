@@ -1,6 +1,6 @@
 (function(){
 "use strict";
-const VERSION="100.3.13";
+const VERSION="100.3.77";
 const q=id=>document.getElementById(id);
 const JOBS={
   guests:{title:"Find guest",subtitle:"Search tonight's guests and recent profiles."},
@@ -181,6 +181,18 @@ function bind(){
   const timer=setInterval(()=>{enhanceWorkflow();addFloorControls();if(window.BlueCurrentWorkflows?.__focusedWorkspacesV10039||++attempts>50)clearInterval(timer);},125);
   // Only provide a direct-click fallback when the workflow wrapper is not yet installed.
   document.addEventListener("click",e=>{
+    const workspaceButton=e.target.closest?.(".bc-os-nav [data-bc-workspace]");
+    if(workspaceButton){
+      const requested=workspaceButton.dataset.bcWorkspace;
+      if(currentJob)exitOperatorFocus({returnHome:false});
+      if(document.documentElement.classList.contains("bc-ipad-floor-focus"))exitFloor({returnHome:false});
+      const commit=()=>window.BlueCurrentHospitalityShell?.activate?.(requested,{scroll:true});
+      queueMicrotask(commit);
+      [60,220].forEach(ms=>setTimeout(()=>{
+        if(window.BlueCurrentHospitalityShell?.current?.()!==requested)commit();
+      },ms));
+      return;
+    }
     const rush=e.target.closest("[data-rush-job]")?.dataset.rushJob;
     if(rush&&JOBS[rush]&&!window.BlueCurrentWorkflows?.__focusedWorkspacesV10039)setTimeout(()=>focusOperatorJob(rush),40);
     const seat=e.target.closest("button");if(seat){const text=(seat.textContent||"").replace(/\s+/g," ").trim().toLowerCase();if(text==="seat")setTimeout(()=>focusFloor("seating"),60);}

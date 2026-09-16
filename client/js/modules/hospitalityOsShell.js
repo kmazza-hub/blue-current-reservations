@@ -891,6 +891,7 @@ async function refreshPilotCommand(){
       health:data.health?.state||null
     };
     window.BlueCurrentCertifiedPilotReadiness=certifiedReadiness;
+    try{sessionStorage.setItem("bluecurrent.certifiedPilotReadiness",JSON.stringify(certifiedReadiness));}catch{}
     window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:certifiedReadiness}));
     setText("bcPilotSession",data.session?String(data.session.state||"ACTIVE").replaceAll("_"," "):"No active session");
     setText("bcPilotSessionDetail",data.session?.label||"Controlled start required");
