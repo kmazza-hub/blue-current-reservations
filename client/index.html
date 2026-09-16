@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta name="blue-current-build" content="100.3.73">
+<meta name="blue-current-build" content="100.3.74">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=100.3.57">
+  <link rel="stylesheet" href="styles.css?v=100.3.74">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -66,7 +66,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" type="button" aria-label="Open Blue Current system status" aria-controls="startupDiagnosticsPanel" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V100.3.73</strong>
+    <strong>Blue Current V100.3.74</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -239,7 +239,11 @@
       <button type="button" data-bc-workspace="integrations"><span>⌁</span>Integrations</button>
       <button type="button" data-bc-workspace="system"><span>⚙</span>System</button>
     </nav>
-    <div class="bc-os-rail-foot"><span class="bc-live-dot"></span><div><strong>Blue Current live</strong><small>Local development</small></div></div>
+    <div class="bc-os-account" aria-label="Signed-in account">
+      <div><small>Signed in as</small><strong id="bcShellUser">Blue Current user</strong></div>
+      <button type="button" id="bcShellSignOut" aria-label="Sign out of Blue Current"><span aria-hidden="true">&#x21AA;</span>Sign out</button>
+    </div>
+    <div class="bc-os-rail-foot"><span class="bc-live-dot"></span><div><strong>Blue Current live</strong><small>Protected connection</small></div></div>
   </aside>
 
   <div class="bc-os-command">
@@ -9029,14 +9033,14 @@
   <script src="js/cloud/offlineSyncManager.js?v=34.3.2"></script>
   <script src="js/cloud/auditReconciliationLedger.js?v=34.3.2"></script>
   <script src="js/cloud/cloudApi.js?v=100.3.56"></script>
-  <script src="js/cloud/authSessionManager.js?v=100.3.73"></script>
+  <script src="js/cloud/authSessionManager.js?v=100.3.74"></script>
   <script src="js/cloud/bootstrapStateHydrator.js?v=34.2.1"></script>
   <script src="js/modules/cloudFoundation.js?v=100.3.21"></script>
   <script src="js/modules/startupDiagnostics.js?v=100.3.53"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/syncControlCenter.js?v=34.4.1"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/observabilityIncidentCommand.js?v=34.5.0"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/reliabilitySloRunbooks.js?v=34.5.1"></script>
-  <script src="js/modules/authOrganizations.js?v=100.3.54"></script>
+  <script src="js/modules/authOrganizations.js?v=100.3.74"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/liveFloorOperations.js?v=100.3.56"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/reservationOperations.js?v=100.3.56"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/staffSections.js?v=100.3.18"></script>
@@ -10023,11 +10027,11 @@
 <script src="js/service-table-lifecycle-v100.2.57.js?v=100.2.57"></script>
 <script src="js/completed-visit-turn-certification-v100.2.58.js?v=100.2.58"></script>
 <script src="js/staff-kitchen-service-v62.50.js?v=62.50.0"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-truth-v100.2.64.js?v=100.3.73" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-role-coverage-v100.2.65.js?v=100.3.73" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-attendance-v100.2.66.js?v=100.3.73" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/scheduling-truth-v100.2.73.js?v=100.3.73" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/timeclock-truth-v100.2.76.js?v=100.3.73" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-truth-v100.2.64.js?v=100.3.74" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-role-coverage-v100.2.65.js?v=100.3.74" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-attendance-v100.2.66.js?v=100.3.74" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/scheduling-truth-v100.2.73.js?v=100.3.74" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/timeclock-truth-v100.2.76.js?v=100.3.74" data-bc-runtime-group="staff"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/kitchen-truth-v100.2.60.js?v=100.3.19" data-bc-runtime-group="kitchen"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/kitchen-service-handoff-v100.2.61.js?v=100.2.61" data-bc-runtime-group="kitchen"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/kitchen-priority-v100.2.62.js?v=100.2.62" data-bc-runtime-group="kitchen"></script>

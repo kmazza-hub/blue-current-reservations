@@ -19,6 +19,6 @@ const audit={async record(){}},hub={publish(){}};
  check("Schedule employee choices filter role, availability, PTO, and overlaps",["roleMatch","state.availability","ptoRequests","state.shifts"].every(token=>scheduling.includes(token)));
  check("Smart Fill uses an in-app confirmation dialog",runtime.includes("bcSmartFillDialog")&&runtime.includes("showModal")&&!runtime.includes("confirm("));
  check("Existing missed-punch priority remains connected to Time Clock",staff.includes("Review missed punches")&&staff.includes("data-bc-open-timeclock"));
- check("V100.3.64-or-later runtime is cache advanced",["100.3.64","100.3.65","100.3.66","100.3.67","100.3.68","100.3.69","100.3.70","100.3.71","100.3.72","100.3.73"].includes(pkg.version)&&/staff-workspace-runtime-v100\.3\.64\.js\?v=100\.3\.(?:64|65|69|70|71|72|73)/.test(index)&&/content="100\.3\.(?:64|65|66|67|68|69|70|71|72|73)"/.test(index));
+ check("V100.3.64-or-later runtime is cache advanced",["100.3.64","100.3.65","100.3.66","100.3.67","100.3.68","100.3.69","100.3.70","100.3.71","100.3.72","100.3.73","100.3.74"].includes(pkg.version)&&/staff-workspace-runtime-v100\.3\.64\.js\?v=100\.3\.(?:64|65|69|70|71|72|73|74)/.test(index)&&/content="100\.3\.(?:64|65|66|67|68|69|70|71|72|73|74)"/.test(index));
  console.log(`V100.3.64 team scheduling usability ${checks.length}/${checks.length}`);
 })().catch(error=>{console.error(error);process.exit(1)});

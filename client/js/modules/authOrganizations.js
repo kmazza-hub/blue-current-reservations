@@ -101,6 +101,7 @@
     function renderSession(session) {
       current = session;
       if ($("authUserName")) $("authUserName").textContent = session.user.name;
+      if ($("bcShellUser")) $("bcShellUser").textContent = session.user.name || session.user.email || "Blue Current user";
       if ($("authUserRole")) $("authUserRole").textContent = String(session.role).replaceAll("_", " ");
       if ($("authUserEmail")) $("authUserEmail").textContent = session.user.email;
       if ($("authSessionStatus")) {
@@ -198,14 +199,40 @@
       $("authPassword").value = "Manager23!";
     });
 
-    $("authLogout")?.addEventListener("click", async () => {
-      try { await api.logout(); } catch (_) {}
-      sessionCoordinator?.signOut?.(api);
-      current = null;
-      appState.update({ authenticatedUser: null, activeOrganizationId: null, activeRole: null });
-      eventBus.emit("auth:signed-out", {});
-      openAuth();
-    });
+    let signOutInProgress = false;
+    async function signOut() {
+      if (signOutInProgress) return;
+      signOutInProgress = true;
+      const controls = [$("authLogout"), $("bcShellSignOut")].filter(Boolean);
+      controls.forEach(control => {
+        control.disabled = true;
+        control.setAttribute("aria-busy", "true");
+      });
+      try {
+        try { await api.logout(); } catch (_) {}
+        sessionCoordinator?.signOut?.(api);
+        current = null;
+        if ($("bcShellUser")) $("bcShellUser").textContent = "Blue Current user";
+        appState.update({
+          authenticatedUser: null,
+          activeOrganizationId: null,
+          activeRole: null,
+          authorizedLocationIds: []
+        });
+        eventBus.emit("auth:signed-out", {});
+        openAuth();
+        setMessage("You have been signed out safely.");
+      } finally {
+        signOutInProgress = false;
+        controls.forEach(control => {
+          control.disabled = false;
+          control.removeAttribute("aria-busy");
+        });
+      }
+    }
+
+    $("authLogout")?.addEventListener("click", signOut);
+    $("bcShellSignOut")?.addEventListener("click", signOut);
 
     $("authOrganizationSelect")?.addEventListener("change", async event => {
       try {
