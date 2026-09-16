@@ -19,9 +19,9 @@ function check(name, condition) {
   console.log(`PASS: ${name}`);
 }
 
-check("Build retains V100.3.75 audit closure", ["100.3.75","100.3.76","100.3.77","100.3.78","100.3.79"].includes(pkg.version) && html.includes('content="100.3.79"'));
+check("Build retains V100.3.75 audit closure", ["100.3.75","100.3.76","100.3.77","100.3.78","100.3.80"].includes(pkg.version) && html.includes('content="100.3.80"'));
 check("Primary sidebar navigation has one delegated shell owner", /function installPrimaryNavigation\(\)[\s\S]*\.bc-os-nav[\s\S]*addEventListener\("click"[\s\S]*stopImmediatePropagation\(\)[\s\S]*commit\(name\)/.test(shell));
-check("Pointerdown navigation remains inside the same delegated shell owner", /function installPrimaryNavigation\(\)[\s\S]*navigation\.addEventListener\("pointerdown"[\s\S]*commit\(name\)/.test(shell));
+check("Pointerdown navigation remains inside the same delegated shell owner", /function installPrimaryNavigation\(\)[\s\S]*document\.addEventListener\("pointerdown"[\s\S]*commit\(name\)/.test(shell));
 check("Repeated selection always reactivates the requested workspace", /if\(button\.closest\("\.bc-os-nav"\)\)return;[\s\S]*button\.addEventListener\("click",\(\)=>activate/.test(shell));
 check("Historical data settles to an explicit demo snapshot label", /data\.dataMode==="historical-demo"[\s\S]*label\.textContent="Demo snapshot"/.test(shell));
 check("Command publishes the certified pilot readiness result", /blockers:data\.readiness\?\.blocking\?\.length[\s\S]*publishCertifiedReadiness\(certifiedReadiness\)/.test(shell) && /function publishCertifiedReadiness\(readiness\)[\s\S]*CustomEvent\("bluecurrent:pilot-readiness"/.test(shell));
@@ -30,6 +30,6 @@ check("System no longer claims pilot-ready before certified evidence", html.incl
 check("Readiness hold and blockers are rendered from the certified result", /held \? "Readiness hold"/.test(readiness) && /certifiedPilotReadiness\.blockers/.test(readiness));
 check("Core operator controls meet a 44px target", /\.bc-os-nav button,\.bc-manager-action button,#bcPilotControls button[\s\S]*min-height:44px/.test(css));
 check("Rush dock reserves content clearance on desktop and mobile", /\.bc-rush-mode \.bc-os-command\{padding-bottom:126px\}/.test(css) && /\.bc-rush-mode \.bc-os-command\{padding-bottom:168px\}/.test(css));
-check("Updated shell, readiness, and style assets cross a fresh cache boundary", html.includes("styles.css?v=100.3.79") && html.includes("hospitalityOsShell.js?v=100.3.79") && html.includes("productionReadiness.js?v=100.3.79"));
+check("Updated shell, readiness, and style assets cross a fresh cache boundary", html.includes("styles.css?v=100.3.80") && html.includes("hospitalityOsShell.js?v=100.3.80") && html.includes("productionReadiness.js?v=100.3.80"));
 
 console.log(`V100.3.75 workspace and operating-truth continuity ${passed}/${passed}`);

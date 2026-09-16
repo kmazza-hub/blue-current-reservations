@@ -19,7 +19,7 @@ function check(name, condition) {
   console.log(`PASS: ${name}`);
 }
 
-check("Build retains certified V100.3.74 behavior", ["100.3.74","100.3.75","100.3.76","100.3.77","100.3.78","100.3.79"].includes(pkg.version) && html.includes('content="100.3.79"'));
+check("Build retains certified V100.3.74 behavior", ["100.3.74","100.3.75","100.3.76","100.3.77","100.3.78","100.3.80"].includes(pkg.version) && html.includes('content="100.3.80"'));
 check("The persistent application shell exposes one sign-out control", (html.match(/id="bcShellSignOut"/g) || []).length === 1);
 check("The shell identifies the signed-in user", html.includes('id="bcShellUser"'));
 check("Desktop sign-out is located in the persistent account area", /class="bc-os-account"[\s\S]*id="bcShellSignOut"/.test(html));
@@ -30,6 +30,6 @@ check("Sign-out clears user, organization, role, and location state", /authentic
 check("Sign-out returns focus to the protected login overlay", /eventBus\.emit\("auth:signed-out"[\s\S]*openAuth\(\)/.test(auth));
 check("Both legacy and shell controls share the certified sign-out path", /\$\("authLogout"\)\?\.addEventListener\("click", signOut\)[\s\S]*\$\("bcShellSignOut"\)\?\.addEventListener\("click", signOut\)/.test(auth));
 check("The logout API remains a protected POST route", /pathname === "\/api\/auth\/logout" && request\.method === "POST"[\s\S]*authService\.authenticate\(token\)[\s\S]*authService\.logout\(token\)/.test(router));
-check("Updated authentication assets cross a fresh cache boundary", html.includes("styles.css?v=100.3.79") && html.includes("authOrganizations.js?v=100.3.79"));
+check("Updated authentication assets cross a fresh cache boundary", html.includes("styles.css?v=100.3.80") && html.includes("authOrganizations.js?v=100.3.80"));
 
 console.log(`V100.3.74 visible sign-out compatibility ${passed}/${passed}`);

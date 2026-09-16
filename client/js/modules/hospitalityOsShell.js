@@ -91,11 +91,15 @@ function activate(name,{scroll=true}={}){
   document.documentElement.dataset.bcWorkspace=name;
   try{sessionStorage.setItem("bluecurrent.workspace",name)}catch{}
   window.dispatchEvent(new CustomEvent("bluecurrent:workspace",{detail:{workspace:name,sections:sections.map(x=>x.id)}}));
+  if(name==="system"){
+    renderSystemReadinessAuthority();
+    requestAnimationFrame(renderSystemReadinessAuthority);
+  }
 }
 
 function installPrimaryNavigation(){
-  const navigation=document.querySelector(".bc-os-nav");
-  if(!navigation)return;
+  if(document.documentElement.dataset.bcPrimaryNavigationOwner==="hospitality-shell")return;
+  document.documentElement.dataset.bcPrimaryNavigationOwner="hospitality-shell";
   let navigationSequence=0;
   let pointerCommit={name:null,at:0};
   const commit=name=>{
@@ -111,14 +115,15 @@ function installPrimaryNavigation(){
   };
   const requestedWorkspace=event=>{
     const button=event.target?.closest?.("[data-bc-workspace]");
-    return button&&navigation.contains(button)?button.dataset.bcWorkspace:null;
+    return button&&button.closest?.(".bc-os-nav")?button.dataset.bcWorkspace:null;
   };
-  navigation.addEventListener("pointerdown",event=>{
+  document.addEventListener("pointerdown",event=>{
     const name=requestedWorkspace(event);if(!name)return;
+    event.stopImmediatePropagation();
     pointerCommit={name,at:Date.now()};
     commit(name);
   },true);
-  navigation.addEventListener("click",event=>{
+  document.addEventListener("click",event=>{
     const name=requestedWorkspace(event);if(!name)return;
     event.preventDefault();
     event.stopImmediatePropagation();
@@ -153,6 +158,26 @@ function publishCertifiedReadiness(readiness){
   document.documentElement.dataset.bcCertifiedReadiness=JSON.stringify(readiness);
   try{sessionStorage.setItem("bluecurrent.certifiedPilotReadiness",JSON.stringify(readiness));}catch{}
   window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness",{detail:readiness}));
+}
+
+function renderSystemReadinessAuthority(){
+  const readiness=retainedCertifiedReadiness();
+  const status=document.getElementById("prodDeploymentStatus");
+  const brief=document.getElementById("prodLaunchBrief");
+  const score=document.getElementById("prodHealthScore");
+  if(!status&&!brief&&!score)return;
+  const held=Boolean(readiness&&(readiness.explicitHold||readiness.decision!=="READY"));
+  const ready=readiness?.decision==="READY"&&!held;
+  if(status){
+    status.textContent=held?"Readiness hold":ready?"Pilot ready":"Readiness pending";
+    status.className=`production-status ${ready?"ready":"watch"}`;
+  }
+  if(score)score.textContent=readiness?.health!=null&&Number.isFinite(Number(readiness.health))?String(readiness.health):"—";
+  if(brief)brief.textContent=held
+    ?`${Number(readiness?.blockers)||0} certified readiness blocker(s) remain. Complete the Command readiness gates before launch approval.`
+    :ready
+      ?"The certified Command readiness gate is ready for controlled pilot approval."
+      :"Run the certified Command readiness gate before treating this environment as pilot-ready.";
 }
 
 const el=id=>document.getElementById(id);

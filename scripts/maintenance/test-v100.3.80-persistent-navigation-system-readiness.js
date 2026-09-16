@@ -1,0 +1,20 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+const shell=read("client/js/modules/hospitalityOsShell.js"),html=read("client/index.html"),pkg=require(path.join(root,"package.json"));
+let passed=0;
+function check(name,value){assert.ok(value,name);passed++;console.log(`PASS: ${name}`);}
+const navigation=shell.match(/function installPrimaryNavigation\(\)[\s\S]*?\n\}/)?.[0]||"";
+const system=shell.match(/function renderSystemReadinessAuthority\(\)[\s\S]*?\n\}/)?.[0]||"";
+check("Build advances to V100.3.80",pkg.version==="100.3.80"&&html.includes('content="100.3.80"'));
+check("Navigation ownership survives sidebar replacement",/document\.addEventListener\("pointerdown"/.test(navigation)&&/document\.addEventListener\("click"/.test(navigation));
+check("Only the primary sidebar is captured",/button\.closest\?\.\("\.bc-os-nav"\)/.test(navigation));
+check("Pointer ownership blocks older downstream handlers",/pointerdown[\s\S]*stopImmediatePropagation\(\)/.test(navigation));
+check("Click ownership blocks older downstream handlers",/click[\s\S]*preventDefault\(\)[\s\S]*stopImmediatePropagation\(\)/.test(navigation));
+check("Keyboard click remains a supported commit path",/navigation\.addEventListener/.test(navigation)===false&&/commit\(name\)/.test(navigation));
+check("Duplicate installation is guarded",/bcPrimaryNavigationOwner/.test(navigation));
+check("System activation invokes shell readiness rendering",/if\(name==="system"\)[\s\S]*renderSystemReadinessAuthority\(\)/.test(shell));
+check("System reads retained certified authority",/retainedCertifiedReadiness\(\)/.test(system));
+check("HOLD renders as Readiness hold",/held\?"Readiness hold"/.test(system));
+check("Blocker count is rendered into the launch brief",/certified readiness blocker\(s\) remain/.test(system));
+check("Changed shell crosses the V100.3.80 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.80"));
+console.log(`V100.3.80 persistent navigation and System readiness ${passed}/${passed}`);
