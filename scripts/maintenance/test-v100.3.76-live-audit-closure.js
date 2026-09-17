@@ -5,8 +5,8 @@ const root=path.resolve(__dirname,"../.."),read=file=>fs.readFileSync(path.join(
 const shell=read("client/js/modules/hospitalityOsShell.js"),readiness=read("client/js/modules/productionReadiness.js"),css=read("client/styles.css"),html=read("client/index.html"),pkg=require(path.join(root,"package.json"));
 let passed=0;function check(name,condition){assert.ok(condition,name);passed++;console.log(`PASS: ${name}`)}
 
-check("Build retains V100.3.76 live-audit closure",["100.3.76","100.3.77","100.3.78","100.3.81"].includes(pkg.version)&&html.includes('content="100.3.81"'));
-check("Sidebar navigation retains one delegated event owner",/function installPrimaryNavigation\(\)[\s\S]*document\.addEventListener\("click"[\s\S]*stopImmediatePropagation/.test(shell));
+check("Build retains V100.3.76 live-audit closure",["100.3.76","100.3.77","100.3.78","100.3.82"].includes(pkg.version)&&html.includes('content="100.3.82"'));
+check("Sidebar navigation retains one delegated event owner",/function installPrimaryNavigation\(\)[\s\S]*window\.addEventListener\("click"[\s\S]*stopImmediatePropagation/.test(shell));
 check("A navigation sequence reasserts the requested destination after focus cleanup",/let navigationSequence=0[\s\S]*requestAnimationFrame\(\(\)=>\{[\s\S]*activate\(name[\s\S]*\[80,320,900,1800\][\s\S]*setTimeout\(settle,delay\)/.test(shell));
 check("Stale navigation work cannot override a newer operator request",(shell.match(/sequence!==navigationSequence/g)||[]).length>=1);
 check("Loaded Command data always renders authoritative source truth",/function renderCommand\(data\)[\s\S]*renderLocations\(data\);[\s\S]*renderSourceTruth\(data\);/.test(shell));
@@ -15,6 +15,6 @@ check("Pilot readiness is retained for late-loading consumers",/window\.BlueCurr
 check("System initializes from the retained certified readiness",/const retainedReadiness=\(\)=>\{[\s\S]*dataset\.bcCertifiedReadiness[\s\S]*BlueCurrentHospitalityShell\?\.readiness/.test(readiness) && /sessionStorage\.getItem\("bluecurrent\.certifiedPilotReadiness"\)/.test(readiness));
 check("System continues to consume later readiness updates",/addEventListener\("bluecurrent:pilot-readiness"/.test(readiness));
 check("Private walkthrough meets the 44px touch target",/\.bc-conversion-float a\{min-height:44px/.test(css));
-check("Changed runtime assets cross the V100.3.76 cache boundary",html.includes("styles.css?v=100.3.81")&&html.includes("hospitalityOsShell.js?v=100.3.81")&&html.includes("productionReadiness.js?v=100.3.81"));
+check("Changed runtime assets cross the V100.3.76 cache boundary",html.includes("styles.css?v=100.3.82")&&html.includes("hospitalityOsShell.js?v=100.3.82")&&html.includes("productionReadiness.js?v=100.3.82"));
 
 console.log(`V100.3.76 live audit closure ${passed}/${passed}`);

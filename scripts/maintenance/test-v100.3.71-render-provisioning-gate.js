@@ -6,7 +6,7 @@ const blueprint=read("render.yaml"),docker=read("deploy/hosted-pilot/Dockerfile"
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function request(port,url){return new Promise((resolve,reject)=>{const req=http.get({hostname:"127.0.0.1",port,path:url},response=>{let raw="";response.on("data",chunk=>raw+=chunk);response.on("end",()=>resolve({status:response.statusCode,body:raw}))});req.on("error",reject)});}
 (async()=>{
- check("Build retains V100.3.71 or later",["100.3.71","100.3.72","100.3.73","100.3.74","100.3.75","100.3.76","100.3.77","100.3.78","100.3.81"].includes(pkg.version));
+ check("Build retains V100.3.71 or later",["100.3.71","100.3.72","100.3.73","100.3.74","100.3.75","100.3.76","100.3.77","100.3.78","100.3.82"].includes(pkg.version));
  check("Render uses the certified Git branch and Docker build",blueprint.includes("branch: live-service-timeline")&&blueprint.includes("runtime: docker")&&blueprint.includes("dockerfilePath: ./deploy/hosted-pilot/Dockerfile"));
  check("Render is pinned to one manually deployed instance",blueprint.includes("numInstances: 1")&&blueprint.includes("autoDeployTrigger: off"));
  check("Render mounts one persistent pilot disk",blueprint.includes("mountPath: /var/lib/blue-current")&&blueprint.includes("sizeGB: 1"));

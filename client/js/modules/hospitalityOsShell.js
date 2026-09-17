@@ -125,13 +125,13 @@ function installPrimaryNavigation(){
     const button=event.target?.closest?.("[data-bc-workspace]");
     return button&&button.closest?.(".bc-os-nav")?button.dataset.bcWorkspace:null;
   };
-  document.addEventListener("pointerdown",event=>{
+  window.addEventListener("pointerdown",event=>{
     const name=requestedWorkspace(event);if(!name)return;
     event.stopImmediatePropagation();
     pointerCommit={name,at:Date.now()};
     commit(name);
   },true);
-  document.addEventListener("click",event=>{
+  window.addEventListener("click",event=>{
     const name=requestedWorkspace(event);if(!name)return;
     event.preventDefault();
     event.stopImmediatePropagation();

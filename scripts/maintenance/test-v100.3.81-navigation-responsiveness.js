@@ -6,8 +6,8 @@ function check(name,value){assert.ok(value,name);passed++;console.log(`PASS: ${n
 const navigation=shell.match(/function installPrimaryNavigation\(\)[\s\S]*?\n\}/)?.[0]||"";
 const claim=shell.match(/function claimWorkspaceIntent\(name\)[\s\S]*?\n\}/)?.[0]||"";
 const hide=shell.match(/function hideDeepSurfaces\(\)[\s\S]*?\n\}/)?.[0]||"";
-check("Build advances to V100.3.81",pkg.version==="100.3.81"&&html.includes('content="100.3.81"'));
-check("Navigation remains owned by persistent document capture",/document\.addEventListener\("pointerdown"/.test(navigation)&&/document\.addEventListener\("click"/.test(navigation));
+check("Build advances to V100.3.82",pkg.version==="100.3.82"&&html.includes('content="100.3.82"'));
+check("Navigation remains owned by persistent window capture",/window\.addEventListener\("pointerdown"/.test(navigation)&&/window\.addEventListener\("click"/.test(navigation));
 check("Intent claim immediately records requested workspace",/dataset\.bcWorkspaceIntent=name/.test(claim)&&/dataset\.bcWorkspace=name/.test(claim));
 check("Intent claim immediately updates only primary navigation",/\.bc-os-nav \[data-bc-workspace\]/.test(claim)&&/classList\.toggle\("is-active"/.test(claim));
 check("Heavy activation moves to the next animation frame",/claimWorkspaceIntent\(name\);[\s\S]*requestAnimationFrame\(\(\)=>\{[\s\S]*activate\(name/.test(navigation));
@@ -17,5 +17,5 @@ check("Cleanup touches only currently visible sections",/#main > section\.bc-wor
 check("Activation reuses the immediate intent claim",/function activate\(name,[\s\S]*claimWorkspaceIntent\(name\)/.test(shell));
 check("System readiness remains shell-authoritative",/if\(name==="system"\)[\s\S]*renderSystemReadinessAuthority\(\)/.test(shell));
 check("HOLD still renders with certified blocker count",/held\?"Readiness hold"/.test(shell)&&/certified readiness blocker\(s\) remain/.test(shell));
-check("Changed shell crosses the V100.3.81 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.81"));
-console.log(`V100.3.81 navigation responsiveness ${passed}/${passed}`);
+check("Changed shell crosses the V100.3.82 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.82"));
+console.log(`V100.3.82 navigation responsiveness ${passed}/${passed}`);
