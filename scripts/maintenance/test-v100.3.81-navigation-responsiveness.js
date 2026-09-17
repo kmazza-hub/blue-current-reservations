@@ -6,7 +6,7 @@ function check(name,value){assert.ok(value,name);passed++;console.log(`PASS: ${n
 const navigation=shell.match(/function installPrimaryNavigation\(\)[\s\S]*?\n\}/)?.[0]||"";
 const claim=shell.match(/function claimWorkspaceIntent\(name\)[\s\S]*?\n\}/)?.[0]||"";
 const hide=shell.match(/function hideDeepSurfaces\(\)[\s\S]*?\n\}/)?.[0]||"";
-check("Build advances to V100.3.82",pkg.version==="100.3.82"&&html.includes('content="100.3.82"'));
+check("Build advances to V100.3.83",pkg.version==="100.3.83"&&html.includes('content="100.3.83"'));
 check("Navigation remains owned by persistent window capture",/window\.addEventListener\("pointerdown"/.test(navigation)&&/window\.addEventListener\("click"/.test(navigation));
 check("Intent claim immediately records requested workspace",/dataset\.bcWorkspaceIntent=name/.test(claim)&&/dataset\.bcWorkspace=name/.test(claim));
 check("Intent claim immediately updates only primary navigation",/\.bc-os-nav \[data-bc-workspace\]/.test(claim)&&/classList\.toggle\("is-active"/.test(claim));
@@ -17,5 +17,5 @@ check("Cleanup touches only currently visible sections",/#main > section\.bc-wor
 check("Activation reuses the immediate intent claim",/function activate\(name,[\s\S]*claimWorkspaceIntent\(name\)/.test(shell));
 check("System readiness remains shell-authoritative",/if\(name==="system"\)[\s\S]*renderSystemReadinessAuthority\(\)/.test(shell));
 check("HOLD still renders with certified blocker count",/held\?"Readiness hold"/.test(shell)&&/certified readiness blocker\(s\) remain/.test(shell));
-check("Changed shell crosses the V100.3.82 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.82"));
-console.log(`V100.3.82 navigation responsiveness ${passed}/${passed}`);
+check("Changed shell crosses the V100.3.83 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.83"));
+console.log(`V100.3.83 navigation responsiveness ${passed}/${passed}`);

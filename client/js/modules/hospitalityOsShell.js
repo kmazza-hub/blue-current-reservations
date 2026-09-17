@@ -945,10 +945,13 @@ async function refreshPilotCommand(){
     const certifiedReadiness={
       decision:data.readiness?.decision||"UNKNOWN",
       blockers:data.readiness?.blocking?.length||0,
+      blocking:Array.isArray(data.readiness?.blocking)?[...data.readiness.blocking]:[],
       explicitHold:Boolean(data.readiness?.explicitHold),
       health:data.health?.state||null
     };
     publishCertifiedReadiness(certifiedReadiness);
+    window.BlueCurrentPilotReadinessClosure?.render?.(data.readiness||{});
+    window.dispatchEvent(new CustomEvent("bluecurrent:pilot-readiness-detail",{detail:data.readiness||{}}));
     setText("bcPilotSession",data.session?String(data.session.state||"ACTIVE").replaceAll("_"," "):"No active session");
     setText("bcPilotSessionDetail",data.session?.label||"Controlled start required");
     setText("bcPilotHealth",data.health?.state||"—");

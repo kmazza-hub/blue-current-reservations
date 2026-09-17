@@ -5,7 +5,7 @@ let passed=0;
 function check(name,value){assert.ok(value,name);passed++;console.log(`PASS: ${name}`);}
 const navigation=shell.match(/function installPrimaryNavigation\(\)[\s\S]*?\n\}/)?.[0]||"";
 const system=shell.match(/function renderSystemReadinessAuthority\(\)[\s\S]*?\n\}/)?.[0]||"";
-check("Build advances to V100.3.82",pkg.version==="100.3.82"&&html.includes('content="100.3.82"'));
+check("Build advances to V100.3.83",pkg.version==="100.3.83"&&html.includes('content="100.3.83"'));
 check("Navigation ownership survives sidebar replacement",/window\.addEventListener\("pointerdown"/.test(navigation)&&/window\.addEventListener\("click"/.test(navigation));
 check("Only the primary sidebar is captured",/button\.closest\?\.\("\.bc-os-nav"\)/.test(navigation));
 check("Pointer ownership blocks older downstream handlers",/pointerdown[\s\S]*stopImmediatePropagation\(\)/.test(navigation));
@@ -16,5 +16,5 @@ check("System activation invokes shell readiness rendering",/if\(name==="system"
 check("System reads retained certified authority",/retainedCertifiedReadiness\(\)/.test(system));
 check("HOLD renders as Readiness hold",/held\?"Readiness hold"/.test(system));
 check("Blocker count is rendered into the launch brief",/certified readiness blocker\(s\) remain/.test(system));
-check("Changed shell crosses the V100.3.82 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.82"));
-console.log(`V100.3.82 persistent navigation and System readiness ${passed}/${passed}`);
+check("Changed shell crosses the V100.3.83 cache boundary",html.includes("hospitalityOsShell.js?v=100.3.83"));
+console.log(`V100.3.83 persistent navigation and System readiness ${passed}/${passed}`);
