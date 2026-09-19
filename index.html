@@ -405,7 +405,7 @@
               <button class="host-add-button" type="button" id="addWalkIn">+ Add walk-in</button>
             </aside>
 
-            <main class="host-main">
+            <div class="host-main" role="region" aria-label="Host stand demonstration">
               <div class="host-topbar">
                 <div>
                   <small>Marina Grille · Waterfront dining</small>
@@ -551,7 +551,7 @@
                   <div><small>6:31 PM</small><strong>Table 8 seated</strong></div>
                 </div>
               </div>
-            </main>
+            </div>
           </div>
         </div>
 
@@ -1050,19 +1050,19 @@
                 <div class="heatmap-label">9 PM</div>
 
                 <div class="heatmap-label">Mon</div>
-                <button style="--v:.15"></button><button style="--v:.28"></button><button style="--v:.48"></button><button style="--v:.35"></button><button style="--v:.18"></button>
+                <span class="heatmap-cell" style="--v:.15" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.28" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.48" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.35" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.18" aria-hidden="true"></span>
                 <div class="heatmap-label">Tue</div>
-                <button style="--v:.18"></button><button style="--v:.32"></button><button style="--v:.53"></button><button style="--v:.39"></button><button style="--v:.19"></button>
+                <span class="heatmap-cell" style="--v:.18" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.32" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.53" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.39" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.19" aria-hidden="true"></span>
                 <div class="heatmap-label">Wed</div>
-                <button style="--v:.21"></button><button style="--v:.4"></button><button style="--v:.62"></button><button style="--v:.44"></button><button style="--v:.25"></button>
+                <span class="heatmap-cell" style="--v:.21" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.4" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.62" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.44" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.25" aria-hidden="true"></span>
                 <div class="heatmap-label">Thu</div>
-                <button style="--v:.27"></button><button style="--v:.51"></button><button style="--v:.74"></button><button style="--v:.58"></button><button style="--v:.31"></button>
+                <span class="heatmap-cell" style="--v:.27" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.51" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.74" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.58" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.31" aria-hidden="true"></span>
                 <div class="heatmap-label">Fri</div>
-                <button style="--v:.41"></button><button style="--v:.69"></button><button style="--v:1"></button><button style="--v:.83"></button><button style="--v:.52"></button>
+                <span class="heatmap-cell" style="--v:.41" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.69" aria-hidden="true"></span><span class="heatmap-cell" style="--v:1" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.83" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.52" aria-hidden="true"></span>
                 <div class="heatmap-label">Sat</div>
-                <button style="--v:.5"></button><button style="--v:.78"></button><button style="--v:.94"></button><button style="--v:.88"></button><button style="--v:.61"></button>
+                <span class="heatmap-cell" style="--v:.5" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.78" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.94" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.88" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.61" aria-hidden="true"></span>
                 <div class="heatmap-label">Sun</div>
-                <button style="--v:.31"></button><button style="--v:.55"></button><button style="--v:.71"></button><button style="--v:.49"></button><button style="--v:.28"></button>
+                <span class="heatmap-cell" style="--v:.31" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.55" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.71" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.49" aria-hidden="true"></span><span class="heatmap-cell" style="--v:.28" aria-hidden="true"></span>
               </div>
             </section>
 
@@ -1804,6 +1804,30 @@
       </div>
     </section>
 
+
+    <section class="value-proof-section" id="value-proof" aria-labelledby="valueProofTitle">
+      <div class="container">
+        <div class="value-proof-intro reveal">
+          <p class="eyebrow"><span></span> Measured operating value</p>
+          <h2 id="valueProofTitle">Make every saved minute show up in dollars.</h2>
+          <p>
+            Blue Current establishes the restaurant’s baseline first, then measures what changes during the pilot.
+            Owners see where time, demand, food cost, and service recovery improve—before any automation expands.
+          </p>
+        </div>
+        <div class="value-proof-grid">
+          <article><span>01</span><h3>Hours returned</h3><p>Measure reservation handling, guest lookup, manager follow-up, and shift-handoff time before and during the pilot.</p><strong>Minutes saved × weekly volume × loaded labor rate</strong></article>
+          <article><span>02</span><h3>Revenue recovered</h3><p>Track after-hours calls, declined-time alternatives, waitlist saves, private-event leads, and missed follow-up.</p><strong>Recovered demand × average guest value</strong></article>
+          <article><span>03</span><h3>Cost leaks surfaced</h3><p>Expose labor variance, over-par inventory, waste signals, slow turns, and recurring service bottlenecks.</p><strong>Preventable variance before and after action</strong></article>
+          <article><span>04</span><h3>Mistakes prevented</h3><p>Record missed callbacks, incomplete handoffs, unowned exceptions, guest-note misses, and delayed recovery.</p><strong>Every intervention keeps a human owner and audit trail</strong></article>
+        </div>
+        <div class="value-proof-equation" role="note">
+          <strong>Pilot value proof</strong>
+          <span>Verified savings + recovered revenue − pilot cost</span>
+          <small>Targets are agreed with the operator. Demonstration figures are illustrative until a restaurant baseline is established.</small>
+        </div>
+      </div>
+    </section>
 
     <section class="pilot-section container" id="pilot">
       <div class="pilot-card reveal">

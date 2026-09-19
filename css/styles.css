@@ -1735,15 +1735,11 @@ img,svg{display:block}
   color:#76898c;
   font-size:7px;
 }
-.analytics-heatmap button{
+.analytics-heatmap .heatmap-cell{
   min-height:26px;
   border:0;
   border-radius:6px;
   background:rgba(47,112,117,var(--v));
-}
-.analytics-heatmap button:hover{
-  outline:2px solid rgba(47,112,117,.18);
-  transform:scale(1.04);
 }
 .channel-layout{
   display:grid;
@@ -2422,3 +2418,26 @@ img,svg{display:block}
   .floor-detail{grid-template-columns:repeat(2,1fr)}.decision-stack,.twin-story{grid-template-columns:1fr}
   .twin-timeline{grid-template-columns:1fr}.timeline-labels{grid-column:1;margin-top:-12px}
 }
+
+
+/* V100.3.86 — customer launch value proof and accessibility */
+.value-proof-section{padding:110px 0;background:linear-gradient(180deg,#f7f4ec 0%,#eef4f1 100%)}
+.value-proof-intro{max-width:780px}
+.value-proof-intro h2{max-width:760px;margin:16px 0 20px;color:#082f3a;font-family:"Playfair Display",serif;font-size:clamp(42px,6vw,78px);line-height:.98}
+.value-proof-intro>p:last-child{max-width:720px;color:#526d70;font-size:18px;line-height:1.7}
+.value-proof-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:48px}
+.value-proof-grid article{display:flex;min-height:290px;flex-direction:column;padding:28px;border:1px solid rgba(8,47,58,.12);border-radius:24px;background:rgba(255,255,255,.78);box-shadow:0 18px 50px rgba(8,47,58,.07)}
+.value-proof-grid article>span{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:#0a3945;color:#f5c86a;font-weight:700}
+.value-proof-grid h3{margin:26px 0 12px;color:#082f3a;font-size:24px}
+.value-proof-grid p{margin:0;color:#5d7477;line-height:1.6}
+.value-proof-grid strong{display:block;margin-top:auto;padding-top:24px;color:#166e72;font-size:14px;line-height:1.45}
+.value-proof-equation{display:grid;grid-template-columns:auto 1fr;gap:8px 24px;align-items:center;margin-top:22px;padding:24px 28px;border-radius:20px;background:#082f3a;color:#fff}
+.value-proof-equation strong{color:#f5c86a;text-transform:uppercase;letter-spacing:.12em}
+.value-proof-equation span{font-size:20px;font-weight:700}
+.value-proof-equation small{grid-column:1/-1;color:#b9ccca;line-height:1.5}
+.desktop-nav a,.footer-links a,.text-link{display:inline-flex;min-height:44px;align-items:center}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #e3b75f;outline-offset:3px}
+.analytics-heatmap .heatmap-cell{display:block;min-height:26px;border-radius:6px;background:rgba(47,112,117,var(--v))}
+@media (pointer:coarse),(max-width:900px){button,a.button,input:not([type="hidden"]),select,textarea,[role="button"]{min-height:44px}}
+@media (max-width:1050px){.value-proof-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.value-proof-section{padding:76px 0}.value-proof-grid{grid-template-columns:1fr}.value-proof-grid article{min-height:250px}.value-proof-equation{grid-template-columns:1fr}}
