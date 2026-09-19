@@ -104,38 +104,62 @@ function activate(name,{scroll=true}={}){
 }
 
 function installPrimaryNavigation(){
-  if(document.documentElement.dataset.bcPrimaryNavigationOwner==="hospitality-shell")return;
-  document.documentElement.dataset.bcPrimaryNavigationOwner="hospitality-shell";
+  document.documentElement.dataset.bcPrimaryNavigationOwner="hospitality-shell-v100.3.86";
   let navigationSequence=0;
   let pointerCommit={name:null,at:0};
+
   const commit=name=>{
+    if(!labels[name])return;
     const sequence=++navigationSequence;
-    claimWorkspaceIntent(name);
-    requestAnimationFrame(()=>{
-      if(sequence!==navigationSequence)return;
-      activate(name,{scroll:true});
-    });
+
+    // V100.3.86: activate during the originating interaction. Deferring the
+    // only activation to requestAnimationFrame allowed later shell owners to
+    // settle the interface back on Command.
+    activate(name,{scroll:true});
+
     const settle=()=>{
       if(sequence!==navigationSequence)return;
-      if(document.documentElement.dataset.bcWorkspace!==name)activate(name,{scroll:true});
+      const shell=document.getElementById("blueCurrentCommand");
+      const expectedOpen=name!=="command";
+      const activeButton=document.querySelector(`.bc-os-nav [data-bc-workspace="${name}"]`);
+      const settled=
+        document.documentElement.dataset.bcWorkspace===name &&
+        Boolean(shell?.classList.contains("bc-shell-workspace-open"))===expectedOpen &&
+        Boolean(activeButton?.classList.contains("is-active"));
+      if(!settled)activate(name,{scroll:false});
     };
-    [80,320,900,1800].forEach(delay=>setTimeout(settle,delay));
+    [0,80,320,900].forEach(delay=>setTimeout(settle,delay));
   };
+
   const requestedWorkspace=event=>{
     const button=event.target?.closest?.("[data-bc-workspace]");
     return button&&button.closest?.(".bc-os-nav")?button.dataset.bcWorkspace:null;
   };
+
   window.addEventListener("pointerdown",event=>{
     const name=requestedWorkspace(event);if(!name)return;
+    event.preventDefault();
     event.stopImmediatePropagation();
     pointerCommit={name,at:Date.now()};
     commit(name);
   },true);
+
   window.addEventListener("click",event=>{
     const name=requestedWorkspace(event);if(!name)return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    if(pointerCommit.name===name&&Date.now()-pointerCommit.at<900&&document.documentElement.dataset.bcWorkspace===name)return;
+    if(pointerCommit.name===name&&Date.now()-pointerCommit.at<900){
+      if(document.documentElement.dataset.bcWorkspace!==name)commit(name);
+      return;
+    }
+    commit(name);
+  },true);
+
+  window.addEventListener("keydown",event=>{
+    if(!["Enter"," "].includes(event.key))return;
+    const name=requestedWorkspace(event);if(!name)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
     commit(name);
   },true);
 }
@@ -1135,7 +1159,27 @@ function startCommandAfterAuth(){
   }
 }
 
+function installLaunchHardeningStyles(){
+  if(document.getElementById("bcLaunchHardeningV100386"))return;
+  const style=document.createElement("style");
+  style.id="bcLaunchHardeningV100386";
+  style.textContent=`
+    body.bc-hospitality-os button,
+    body.bc-hospitality-os [role="button"],
+    body.bc-hospitality-os select,
+    body.bc-hospitality-os input:not([type="hidden"]){
+      min-height:44px;
+    }
+    .bc-os-nav [data-bc-workspace]:focus-visible{
+      outline:3px solid #79d6ce;
+      outline-offset:3px;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 function init(){
+  installLaunchHardeningStyles();
   ensureIntegrationsWorkspace();
   claimCommandShellOwnership();
   document.body.classList.add("bc-hospitality-os","bc-consolidated-product-surface");
@@ -1183,7 +1227,7 @@ function init(){
     commandShell.scrollIntoView({block:"start",behavior:"auto"});
   }
   window.BlueCurrentHospitalityShell={
-    version:"100.3.79",
+    version:"100.3.86",
     activate:(workspace,options={})=>activate(workspace,options),
     current:()=>document.documentElement.dataset.bcWorkspace||"command",
     readiness:()=>retainedCertifiedReadiness(),
