@@ -821,6 +821,21 @@ $("#addWalkIn")?.addEventListener("click", () => {
       const detailText = row.querySelector('small')?.textContent?.trim() || 'Waitlist';
       results.push({ name, detail: detailText, status: 'Waiting' });
     });
+
+    // V100.3.87: Command and Host Stand must share the same guest truth.
+    // Surface named guests from verified Command reservation signals without
+    // writing to the restaurant database or inventing lifecycle state.
+    document.querySelectorAll('#blueCurrentCommand button[title]').forEach((signal) => {
+      const title = signal.getAttribute('title') || '';
+      const match = title.match(/([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)\s+is in the active reservation queue/);
+      const name = match?.[1]?.trim();
+      if (!name || results.some((guest) => guest.name.toLowerCase() === name.toLowerCase())) return;
+      results.push({
+        name,
+        detail:'Active reservation queue · Command verified',
+        status:'Reservation'
+      });
+    });
     return results;
   };
 

@@ -1,0 +1,23 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../..");
+const pkg=require(path.join(root,"package.json"));
+const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+const app=fs.readFileSync(path.join(root,"client/js/app-v15.1.3.js"),"utf8");
+const journey=fs.readFileSync(path.join(root,"client/js/modules/guestJourney.js"),"utf8");
+const runtime=fs.readFileSync(path.join(root,"client/js/single-ipad-mock-trial-v100.3.87.js"),"utf8");
+let passed=0;
+function check(name,value){assert.ok(value,name);passed++;console.log(`PASS: ${name}`);}
+check("Build advances to V100.3.87",pkg.version==="100.3.87");
+check("HTML publishes V100.3.87",html.includes('name="blue-current-build" content="100.3.87"'));
+check("Guest journey is loaded before application startup",html.indexOf('<script src="js/modules/guestJourney.js?v=100.3.87"></script>')>=0&&html.indexOf('<script src="js/modules/guestJourney.js?v=100.3.87"></script>')<html.indexOf('<script src="js/startup-loader.js'));
+check("Guest journey is no longer deferred",!html.includes('text/bluecurrent-deferred" data-src="js/modules/guestJourney.js'));
+check("Single-iPad runtime is published",html.includes('single-ipad-mock-trial-v100.3.87.js?v=100.3.87'));
+check("Journey advances eight observable stages",journey.includes('followup:scheduled')&&journey.includes('guestJourneyProgress'));
+check("Journey sandbox performs no fetch",!journey.includes("fetch(")&&!runtime.includes("fetch("));
+check("Journey sandbox performs no storage writes",!journey.includes("localStorage")&&!journey.includes("sessionStorage")&&!runtime.includes("localStorage")&&!runtime.includes("sessionStorage"));
+check("Journey sandbox declares presentation-only mode",runtime.includes('mode:"presentation-only"')&&runtime.includes("persistentWrites:false"));
+check("Command guests join Host Stand search truth",app.includes("Active reservation queue · Command verified"));
+check("Command guest discovery is data-driven",app.includes("is in the active reservation queue"));
+check("Remaining acknowledgement target reaches 44px",runtime.includes('style.minHeight="44px"'));
+console.log(`V100.3.87 single-iPad mock trial ${passed}/${passed}`);
