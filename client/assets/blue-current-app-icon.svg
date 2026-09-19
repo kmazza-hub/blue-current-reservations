@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Blue Current</title>
+  <desc id="description">Two hospitality currents crossing beneath a warm sunrise.</desc>
+  <defs>
+    <linearGradient id="ocean" x1="64" y1="40" x2="448" y2="472" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#061923"/>
+      <stop offset="0.55" stop-color="#0a3341"/>
+      <stop offset="1" stop-color="#0b5360"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(384 118) rotate(135) scale(176)">
+      <stop stop-color="#f4a340" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#f4a340" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#ocean)"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+  <circle cx="386" cy="116" r="31" fill="#f4a340"/>
+  <path fill="none" stroke="#8fd7dc" stroke-opacity="0.12" stroke-width="9" d="M-42 424c106-81 199-91 281-28 78 59 165 56 315-42"/>
+  <path fill="#f7f1e7" d="M72 255c60-120 151-148 249-85 31 20 56 50 75 88-61-42-119-47-176-15-52 30-101 51-148 12Z"/>
+  <path fill="#f7f1e7" d="M96 322c64 38 128 33 191-13 42-31 79-40 125-16-42 77-100 119-174 119-61 0-108-30-142-90Z"/>
+</svg>
