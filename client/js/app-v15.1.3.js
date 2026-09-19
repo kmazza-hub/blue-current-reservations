@@ -3554,9 +3554,8 @@ const missionControlModule = fullPlatformStartup
   ? window.createBlueCurrentMissionControlModule?.(eventBus, appState, motionEngine)
   : null;
 
-const guestJourneyModule = fullPlatformStartup
-  ? window.createBlueCurrentGuestJourneyModule?.(eventBus, appState)
-  : null;
+// V100.3.88: the presentation-only rehearsal is part of focused startup.
+const guestJourneyModule = window.createBlueCurrentGuestJourneyModule?.(eventBus, appState) || null;
 
 const timeMachineModule = fullPlatformStartup
   ? window.createBlueCurrentTimeMachineModule?.(eventBus, appState)

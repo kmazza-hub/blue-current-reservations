@@ -1,0 +1,22 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path");
+const root=path.resolve(__dirname,"../..");
+const pkg=require(path.join(root,"package.json"));
+const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+const app=fs.readFileSync(path.join(root,"client/js/app-v15.1.3.js"),"utf8");
+const loader=fs.readFileSync(path.join(root,"client/js/startup-loader.js"),"utf8");
+const runtime=fs.readFileSync(path.join(root,"client/js/single-ipad-mock-trial-v100.3.88.js"),"utf8");
+let passed=0;
+function check(name,value){assert.ok(value,name);passed++;console.log(`PASS: ${name}`);}
+check("Build advances to V100.3.88",pkg.version==="100.3.88");
+check("HTML publishes V100.3.88",html.includes('name="blue-current-build" content="100.3.88"'));
+check("Focused startup initializes Guest Journey",app.includes("const guestJourneyModule = window.createBlueCurrentGuestJourneyModule?.(eventBus, appState) || null;"));
+check("Legacy full-startup gate is removed",!app.includes("const guestJourneyModule = fullPlatformStartup"));
+check("Application bundle cache key advances",loader.includes("js/app-v15.1.3.js?v=100.3.88"));
+check("V100.3.88 runtime is published",html.includes("single-ipad-mock-trial-v100.3.88.js?v=100.3.88"));
+check("System exposes one obvious rehearsal action",runtime.includes("Run single-iPad rehearsal")&&runtime.includes("prodRunReadiness"));
+check("Rehearsal opens and runs from one action",runtime.includes("trigger.click()")&&runtime.includes("exposeAndRun"));
+check("Sandbox performs no API or storage writes",!runtime.includes("fetch(")&&!runtime.includes("localStorage")&&!runtime.includes("sessionStorage"));
+check("Safety copy is visible",runtime.includes("no restaurant records are saved"));
+check("Touch target remains at least 44px",runtime.includes('style.minHeight="44px"'));
+console.log(`V100.3.88 focused mock trial ${passed}/${passed}`);
