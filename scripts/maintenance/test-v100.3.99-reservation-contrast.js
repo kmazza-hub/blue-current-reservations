@@ -1,0 +1,14 @@
+"use strict";
+const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../..");
+const pkg=JSON.parse(fs.readFileSync(path.join(root,"package.json"),"utf8"));
+const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
+const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
+assert.equal(pkg.version,"100.3.99");
+assert(html.includes('content="100.3.99"'),"HTML build marker must be V100.3.99");
+assert(css.includes("V100.3.99 — holiday reservation toolbar contrast"));
+assert(css.includes("-webkit-text-fill-color:#102f3f!important"),"date control text must remain visible on Safari");
+assert(css.includes("color-scheme:light!important"),"native date controls must use the light scheme");
+assert(css.includes("outline:3px solid #20a9d2!important"),"keyboard focus must be visible");
+assert(css.includes("background:#075f7a!important")&&css.includes("color:#fff!important"),"print action must have strong contrast");
+assert(css.includes("@media(max-width:640px)")&&css.includes("grid-template-columns:1fr!important"),"mobile toolbar must collapse to one column");
+console.log("V100.3.99 reservation toolbar contrast checks passed.");

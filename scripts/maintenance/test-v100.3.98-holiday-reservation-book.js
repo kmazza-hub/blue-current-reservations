@@ -6,7 +6,7 @@ const service=fs.readFileSync(path.join(root,"server/services/reservationOperati
 assert(html.includes('id="bcReservationBookDate"'),"date selector missing");
 assert(html.includes('id="bcReservationBookEvent"'),"event selector missing");
 assert(html.includes('id="bcPrintReservationBook"'),"print backup action missing");
-assert(html.includes('holiday-reservation-book-v100.3.98.js?v=100.3.98'),"holiday runtime not loaded");
+assert(/holiday-reservation-book-v100\.3\.98\.js\?v=100\.3\.\d+/.test(html),"holiday runtime not loaded");
 for(const field of ["reservationDate","phone","holidayEvent"])assert(client.includes(`name=\"${field}\"`),`${field} entry missing`);
 for(const behavior of ["Phone reservation","DUPLICATE_RESERVATION","seatingPreference"])assert(client.includes(behavior)||service.includes(behavior),`${behavior} behavior missing`);
 assert(client.includes('method:"PATCH"')&&client.includes('status:"arrived"'),"arrival lifecycle missing");
