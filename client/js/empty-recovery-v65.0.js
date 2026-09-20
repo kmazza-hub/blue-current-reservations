@@ -90,15 +90,32 @@ ready(()=>{
 
  // First-use orientation: one concise explanation, never a tour that blocks service.
  const KEY="bcFirstUseV65";
- if(!localStorage.getItem(KEY)){
+ let firstUseSeen=false;
+ try{firstUseSeen=localStorage.getItem(KEY)==="seen";}catch(_error){firstUseSeen=false;}
+ if(!firstUseSeen){
    const utility=document.getElementById("bcOperatorUtilityBar");
    if(utility&&!document.getElementById("bcFirstUseHint")){
      const hint=document.createElement("div");
      hint.id="bcFirstUseHint";
      hint.className="bc-first-use-hint";
-     hint.innerHTML=`<div><small>NEW HERE?</small><strong>Start with Live. Use Quick Jobs when you know what you need to do.</strong><span>Blue Current keeps deeper tools out of the way until you need them.</span></div><button type="button">Got it</button>`;
+     hint.innerHTML=`<div><small>NEW HERE?</small><strong>Start with Live. Use Quick Jobs when you know what you need to do.</strong><span>Blue Current keeps deeper tools out of the way until you need them.</span></div><button type="button" aria-label="Dismiss getting started guidance">Got it</button>`;
      utility.insertAdjacentElement("afterend",hint);
-     hint.querySelector("button").addEventListener("click",()=>{localStorage.setItem(KEY,"seen");hint.remove();});
+     const acknowledgement=hint.querySelector("button");
+     let dismissed=false;
+     const dismiss=()=>{
+       if(dismissed)return;
+       dismissed=true;
+       // Complete the visible action before persistence. Safari can reject
+       // localStorage writes in restricted/private contexts; dismissal must
+       // never depend on that optional preference write succeeding.
+       hint.remove();
+       try{localStorage.setItem(KEY,"seen");}catch(_error){}
+       document.documentElement.dataset.bcFirstUseDismissed="true";
+     };
+     acknowledgement.addEventListener("click",dismiss);
+     acknowledgement.addEventListener("pointerup",event=>{
+       if(event.pointerType==="touch")dismiss();
+     });
    }
  }
 

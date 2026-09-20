@@ -14077,19 +14077,19 @@ dialog:focus-visible{outline:none!important}
 .bc-first-use-hint{
  width:min(1180px,calc(100% - 28px));margin:10px auto 0;padding:12px 14px;
  display:flex;align-items:center;justify-content:space-between;gap:14px;
+ position:relative;z-index:9100;isolation:isolate;pointer-events:auto;
  border:1px solid rgba(8,126,164,.18);border-radius:15px;background:#eff9fc;color:#102838
 }
 .bc-first-use-hint>div{display:grid;gap:2px}
 .bc-first-use-hint small{font-size:.64rem;font-weight:900;letter-spacing:.12em;color:#08708f}
 .bc-first-use-hint strong{font-size:.84rem;color:#102838}
 .bc-first-use-hint span{font-size:.73rem;color:#587182}
-.bc-first-use-hint button{min-height:40px!important;white-space:nowrap}
+.bc-first-use-hint button{position:relative;z-index:1;min-height:48px!important;white-space:nowrap;pointer-events:auto;touch-action:manipulation;cursor:pointer}
 
 @media(max-width:700px){
  .bc-recovery-banner,.bc-first-use-hint{align-items:stretch;flex-direction:column}
  .bc-recovery-banner button,.bc-first-use-hint button{width:100%}
 }
-
 
 /* ==========================================================================
    V65.50 · Rush-hour speed & service compression
@@ -19912,4 +19912,18 @@ html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-f
 @media(max-width:900px){
   html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]{grid-template-rows:auto auto minmax(390px,1fr)!important}
   html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]>#hostFloorMap{min-height:390px!important}
+}
+
+/* ==========================================================================
+   V100.3.97 · iPhone first-use and responsive interaction integrity
+   ========================================================================== */
+@media (display-mode:standalone) and (pointer:coarse){
+  body{padding-top:env(safe-area-inset-top,0px)}
+  .bc-rush-mode body{padding-bottom:calc(126px + env(safe-area-inset-bottom,0px))!important}
+  .bc-rush-dock{bottom:max(7px,env(safe-area-inset-bottom,0px))!important}
+}
+@media(max-width:760px){
+  .bc-first-use-hint{
+    width:calc(100% - 24px);box-sizing:border-box;
+  }
 }
