@@ -39,7 +39,8 @@ class ReservationOperationsService {
   async update(reservationId, patch, actor, organizationId) {
     const allowed = [
       "status", "tableId", "guestName", "phone", "partySize",
-      "reservationTime", "vip", "accessibility", "notes", "source"
+      "reservationTime", "vip", "accessibility", "notes", "source",
+      "holidayEvent", "seatingPreference"
     ];
     const safePatch = {};
     for (const key of allowed) {
@@ -253,6 +254,8 @@ class ReservationOperationsService {
       vip: Boolean(input.vip),
       accessibility: String(input.accessibility || ""),
       notes: String(input.notes || ""),
+      holidayEvent: String(input.holidayEvent || "").trim(),
+      seatingPreference: String(input.seatingPreference || "Flexible").trim(),
       createdAt: new Date().toISOString()
     };
     if (!reservation.guestName || !reservation.reservationTime) {
@@ -271,6 +274,23 @@ class ReservationOperationsService {
       if(!table || table.organizationId!==organizationId || table.locationId!==reservation.locationId){
         const error=new Error("Table is not available for this reservation.");
         error.statusCode=400;
+        throw error;
+      }
+    }
+
+    const normalizedPhone=reservation.phone.replace(/\D/g,"");
+    if(normalizedPhone){
+      const duplicate=(await this.database.list("reservations",item=>
+        item.organizationId===organizationId &&
+        item.locationId===reservation.locationId &&
+        String(item.phone||"").replace(/\D/g,"")===normalizedPhone &&
+        String(item.reservationTime||"")===String(reservation.reservationTime||"") &&
+        !["cancelled","canceled"].includes(String(item.status||"").toLowerCase())
+      ))[0];
+      if(duplicate){
+        const error=new Error("A reservation already exists for this phone number at that time.");
+        error.statusCode=409;
+        error.code="DUPLICATE_RESERVATION";
         throw error;
       }
     }

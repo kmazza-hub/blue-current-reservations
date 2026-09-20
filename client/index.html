@@ -1,16 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta name="blue-current-build" content="100.3.97">
+<meta name="blue-current-build" content="100.3.98">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Blue Current">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="manifest" href="/manifest.webmanifest?v=100.3.97">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/blue-current-apple-touch-180.png?v=100.3.97">
-    <link rel="icon" sizes="32x32" href="/assets/blue-current-app-32.png?v=100.3.97" type="image/png">
+    <link rel="manifest" href="/manifest.webmanifest?v=100.3.98">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/blue-current-apple-touch-180.png?v=100.3.98">
+    <link rel="icon" sizes="32x32" href="/assets/blue-current-app-32.png?v=100.3.98" type="image/png">
   <title>Blue Current</title>
   <meta name="description" content="Blue Current is the hospitality operating system for modern restaurant groups—connecting guest demand, reservations, the dining room, staff, kitchen, service coordination, AI intelligence, profitability signals, and multi-location leadership in one operating current.">
   <meta name="theme-color" content="#082632">
@@ -26,11 +26,11 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Blue Current | The Hospitality Operating System">
   <meta name="twitter:description" content="Protect demand. Coordinate the shift. See pressure sooner. One intelligent operating current for modern hospitality groups.">
-  <link rel="icon" href="assets/favicon.svg?v=100.3.97" type="image/svg+xml">
+  <link rel="icon" href="assets/favicon.svg?v=100.3.98" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=100.3.97">
+  <link rel="stylesheet" href="styles.css?v=100.3.98">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -67,7 +67,7 @@
 <div class="startup-diagnostics" id="startupDiagnostics" aria-live="polite">
   <button id="startupDiagnosticsToggle" type="button" aria-label="Open Blue Current system status" aria-controls="startupDiagnosticsPanel" aria-expanded="false">
     <span id="startupDiagnosticsDot"></span>
-    <strong>Blue Current V100.3.97</strong>
+    <strong>Blue Current V100.3.98</strong>
     <small id="startupDiagnosticsSummary">Starting modules…</small>
   </button>
   <div class="startup-diagnostics-panel" id="startupDiagnosticsPanel">
@@ -2997,8 +2997,15 @@
               
               <section class="bc-host-view-panel" id="bcHostReservationsPanel" data-host-panel="reservations" hidden>
                 <div class="bc-host-panel-head">
-                  <div><small>RESERVATIONS · TONIGHT</small><strong>Next arrivals</strong><span>See who is coming, what matters, and what needs preparation.</span></div>
+                  <div><small>RESERVATION BOOK</small><strong>Holiday reservations</strong><span>Take the call once. Save the guest directly into the operating system.</span></div>
                   <button type="button" id="bcReservationQuickAdd">+ Reservation</button>
+                </div>
+                <div class="bc-holiday-book-tools" id="bcHolidayBookTools">
+                  <label><span>Reservation date</span><input id="bcReservationBookDate" type="date"></label>
+                  <label><span>Event</span><select id="bcReservationBookEvent"><option value="">All reservations</option><option>Thanksgiving</option><option>Christmas Eve</option><option>Christmas Day</option><option>New Year's Eve</option><option>New Year's Day</option></select></label>
+                  <div class="bc-holiday-book-totals" aria-live="polite"><span><b id="bcHolidayReservationCount">0</b> reservations</span><span><b id="bcHolidayCoverCount">0</b> covers</span></div>
+                  <button type="button" id="bcPrintReservationBook">Print backup</button>
+                  <p id="bcHolidayBookStatus" role="status" aria-live="polite">Choose a date to open the reservation book.</p>
                 </div>
                 <div class="bc-reservation-list" id="bcReservationList">
                   <article data-reservation-name="Melissa Grant"><time>7:15</time><div><strong>Melissa Grant</strong><span>Party of 2 · Anniversary</span></div><b>Arrived</b><button type="button" data-reservation-action="details">Details</button></article>
@@ -9018,7 +9025,7 @@
   <script type="text/bluecurrent-deferred" data-src="js/modules/certificationRenewalMonitor.js?v=34.1.12"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/complianceEvidenceVault.js?v=34.1.12"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/operationalIntelligence.js?v=33.0.3"></script>
-  <script src="js/modules/guestJourney.js?v=100.3.97"></script>
+  <script src="js/modules/guestJourney.js?v=100.3.98"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/timeMachine.js?v=33.0.3"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/portfolioMode.js?v=33.0.3"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/blueCurrentLive.js?v=33.0.3"></script>
@@ -9027,21 +9034,21 @@
   <script type="text/bluecurrent-deferred" data-src="js/modules/workforceFoundation.js?v=100.3.21"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/scheduling.js?v=100.3.18"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/workforceIntelligence.js?v=100.3.22"></script>
-  <script type="text/bluecurrent-deferred" data-src="js/modules/productionReadiness.js?v=100.3.97"></script>
+  <script type="text/bluecurrent-deferred" data-src="js/modules/productionReadiness.js?v=100.3.98"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/executiveCommandCenter.js?v=33.0.3"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/inventoryIntelligence.js?v=100.3.21"></script>
   <script src="js/cloud/requestPipeline.js?v=34.3.2"></script>
   <script src="js/cloud/offlineSyncManager.js?v=34.3.2"></script>
   <script src="js/cloud/auditReconciliationLedger.js?v=34.3.2"></script>
   <script src="js/cloud/cloudApi.js?v=100.3.56"></script>
-  <script src="js/cloud/authSessionManager.js?v=100.3.97"></script>
+  <script src="js/cloud/authSessionManager.js?v=100.3.98"></script>
   <script src="js/cloud/bootstrapStateHydrator.js?v=34.2.1"></script>
   <script src="js/modules/cloudFoundation.js?v=100.3.21"></script>
   <script src="js/modules/startupDiagnostics.js?v=100.3.53"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/syncControlCenter.js?v=34.4.1"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/observabilityIncidentCommand.js?v=34.5.0"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/reliabilitySloRunbooks.js?v=34.5.1"></script>
-  <script src="js/modules/authOrganizations.js?v=100.3.97"></script>
+  <script src="js/modules/authOrganizations.js?v=100.3.98"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/liveFloorOperations.js?v=100.3.56"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/reservationOperations.js?v=100.3.56"></script>
   <script type="text/bluecurrent-deferred" data-src="js/modules/staffSections.js?v=100.3.18"></script>
@@ -10028,11 +10035,11 @@
 <script src="js/service-table-lifecycle-v100.2.57.js?v=100.2.57"></script>
 <script src="js/completed-visit-turn-certification-v100.2.58.js?v=100.2.58"></script>
 <script src="js/staff-kitchen-service-v62.50.js?v=62.50.0"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-truth-v100.2.64.js?v=100.3.97" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-role-coverage-v100.2.65.js?v=100.3.97" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-attendance-v100.2.66.js?v=100.3.97" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/scheduling-truth-v100.2.73.js?v=100.3.97" data-bc-runtime-group="staff"></script>
-<script type="text/bluecurrent-runtime-lazy" data-src="js/timeclock-truth-v100.2.76.js?v=100.3.97" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-truth-v100.2.64.js?v=100.3.98" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-role-coverage-v100.2.65.js?v=100.3.98" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/staff-attendance-v100.2.66.js?v=100.3.98" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/scheduling-truth-v100.2.73.js?v=100.3.98" data-bc-runtime-group="staff"></script>
+<script type="text/bluecurrent-runtime-lazy" data-src="js/timeclock-truth-v100.2.76.js?v=100.3.98" data-bc-runtime-group="staff"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/kitchen-truth-v100.2.60.js?v=100.3.19" data-bc-runtime-group="kitchen"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/kitchen-service-handoff-v100.2.61.js?v=100.2.61" data-bc-runtime-group="kitchen"></script>
 <script type="text/bluecurrent-runtime-lazy" data-src="js/kitchen-priority-v100.2.62.js?v=100.2.62" data-bc-runtime-group="kitchen"></script>
@@ -10040,13 +10047,13 @@
 <script src="js/system-usability-v63.50.js?v=63.50.0"></script>
 <script src="js/interaction-feedback-v64.0.js?v=100.3.73"></script>
 <script src="js/workflow-reduction-v64.50.js?v=64.50.0"></script>
-<script src="js/empty-recovery-v65.0.js?v=100.3.97"></script>
+<script src="js/empty-recovery-v65.0.js?v=100.3.98"></script>
 <script src="js/network-connectivity-truth-v100.2.85.js?v=100.3.73"></script>
 <script src="js/ipad-resume-truth-v100.2.86.js?v=100.2.86"></script>
 <script src="js/rush-hour-v65.50.js?v=65.50.0"></script>
 <script src="js/staff-workspace-runtime-v100.3.64.js?v=100.3.73"></script>
 <script src="js/staff-reliability-runtime-v100.3.66.js?v=100.3.73"></script>
-<script src="js/focused-operator-workspaces-v100.3.9.js?v=100.3.97"></script>
+<script src="js/focused-operator-workspaces-v100.3.9.js?v=100.3.98"></script>
 <script src="js/fullscreen-floor-clarity-v100.3.10.js?v=100.3.57"></script>
 <script src="js/fullscreen-floor-zone-controls-v100.3.10.3.js?v=100.3.10.3"></script>
 <script src="js/floor-lifecycle-certification-v100.3.11.js?v=100.3.11"></script>
@@ -10057,7 +10064,7 @@
 <script src="js/website-conversion-v34.js?v=34"></script>
 <script src="js/website-certification-v36.js?v=36"></script>
 <script src="js/website-launch-face-v37.js?v=37"></script>
-<script src="js/startup-loader.js?v=100.3.97"></script>\n<script type="text/bluecurrent-runtime-lazy" data-src="js/inventory-truth-v100.2.80.js?v=100.3.18" data-bc-runtime-group="inventory"></script>
+<script src="js/startup-loader.js?v=100.3.98"></script>\n<script type="text/bluecurrent-runtime-lazy" data-src="js/inventory-truth-v100.2.80.js?v=100.3.18" data-bc-runtime-group="inventory"></script>
 <script src="js/pilot-physical-acceptance-v100.3.46.js?v=100.3.46"></script>
 <script src="js/pilot-setup-console-v100.3.47.js?v=100.3.56"></script>
 <script src="js/controlled-demonstration-v100.3.51.js?v=100.3.51"></script>
@@ -10073,7 +10080,15 @@
     </form>
   </dialog>
 
-<script src="js/single-ipad-mock-trial-v100.3.93.js?v=100.3.97"></script><script src="js/host-navigation-truth-v100.3.93.js?v=100.3.97"></script><script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/pilot-readiness-closure-v100.3.83.js?v=100.3.97"></script><script src="js/pilot-readiness-evidence-v100.3.94.js?v=100.3.97"></script><script src="js/modules/hospitalityOsShell.js?v=100.3.97"></script><script src="js/guest-host-route-v100.3.93.js?v=100.3.97"></script><script src="js/accessibility-state-continuity-v100.3.93.js?v=100.3.97"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=100.0.0" defer></script>
+  <dialog class="bc-host-dialog" id="bcHolidayReservationDialog">
+    <form method="dialog" class="bc-host-dialog-card">
+      <header><div><small>RESERVATION BOOK</small><strong id="bcHolidayReservationTitle">Reservation details</strong></div><button value="close" aria-label="Close">×</button></header>
+      <div id="bcHolidayReservationBody"></div>
+      <footer><button value="close">Close</button><button type="button" class="primary" id="bcHolidayMarkArrived">Mark arrived</button></footer>
+    </form>
+  </dialog>
+
+<script src="js/single-ipad-mock-trial-v100.3.93.js?v=100.3.98"></script><script src="js/host-navigation-truth-v100.3.93.js?v=100.3.98"></script><script src="js/modules/operatorRoleFocus.js?v=74.50.0"></script><script src="js/pilot-readiness-closure-v100.3.83.js?v=100.3.98"></script><script src="js/pilot-readiness-evidence-v100.3.94.js?v=100.3.98"></script><script src="js/modules/hospitalityOsShell.js?v=100.3.98"></script><script src="js/guest-host-route-v100.3.93.js?v=100.3.98"></script><script src="js/accessibility-state-continuity-v100.3.93.js?v=100.3.98"></script>  <script src="./js/modules/lightSurfaceContrastGuard.js?v=100.0.0" defer></script>
     <dialog class="bc-pilot-confirm" id="bcPilotConfirmDialog">
       <form method="dialog">
         <small id="bcPilotConfirmEyebrow">PILOT CONTROL</small>
@@ -10091,5 +10106,6 @@
 
     <dialog class="bc-pilot-confirm bc-incident-dialog" id="bcIncidentActionDialog"><form method="dialog"><small>SERVICE EXCEPTION</small><h3 id="bcIncidentActionTitle">Update incident</h3><p id="bcIncidentActionCopy">Record the human action taken during service recovery.</p><label id="bcIncidentActionLabel">Note<textarea id="bcIncidentActionNote" rows="3"></textarea></label><div class="bc-pilot-confirm-actions"><button value="cancel" type="submit">Cancel</button><button value="confirm" type="submit" id="bcIncidentActionSubmit">Confirm</button></div></form></dialog>
 
+<script src="js/holiday-reservation-book-v100.3.98.js?v=100.3.98"></script>
 </body>
 </html>

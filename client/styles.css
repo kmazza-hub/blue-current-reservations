@@ -19913,7 +19913,6 @@ html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-f
   html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]{grid-template-rows:auto auto minmax(390px,1fr)!important}
   html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-focus-reason="seating"]>#hostFloorMap{min-height:390px!important}
 }
-
 /* ==========================================================================
    V100.3.97 · iPhone first-use and responsive interaction integrity
    ========================================================================== */
@@ -19927,3 +19926,9 @@ html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-f
     width:calc(100% - 24px);box-sizing:border-box;
   }
 }
+
+/* V100.3.98 — phone-first holiday reservation book */
+.bc-holiday-book-tools{display:grid;grid-template-columns:minmax(170px,.8fr) minmax(190px,1fr) auto auto;gap:12px;align-items:end;margin:0 0 16px;padding:14px;border:1px solid #d4e3ea;border-radius:16px;background:#f4f9fb;color:#17384a}
+.bc-holiday-book-tools label{display:grid;gap:6px;font-weight:850;font-size:.74rem}.bc-holiday-book-tools input,.bc-holiday-book-tools select{min-height:44px;padding:0 11px;border:1px solid #b7ccd6;border-radius:10px;background:#fff;color:#17384a;font:inherit}.bc-holiday-book-tools>button{min-height:44px;padding:0 14px;border:1px solid #0b6078;border-radius:10px;background:#fff;color:#0b6078;font-weight:850}.bc-holiday-book-totals{display:flex;gap:12px;min-height:44px;align-items:center}.bc-holiday-book-totals span{white-space:nowrap}.bc-holiday-book-totals b{font-size:1.15rem}.bc-holiday-book-tools p{grid-column:1/-1;margin:0;color:#526b7c;font-size:.78rem}.bc-reservation-list .bc-holiday-event{display:inline-block;margin-top:4px;color:#8a5b08;font-size:.7rem;font-weight:850}.bc-reservation-list .bc-reservation-phone{display:block;margin-top:3px;color:#526b7c;font-size:.72rem}
+@media(max-width:800px){.bc-holiday-book-tools{grid-template-columns:1fr 1fr}.bc-holiday-book-totals{grid-column:1/-1}.bc-holiday-book-tools>button{grid-column:1/-1}}
+@media print{body *{visibility:hidden!important}#bcHostReservationsPanel,#bcHostReservationsPanel *{visibility:visible!important}#bcHostReservationsPanel{position:absolute!important;inset:0!important;background:#fff!important;color:#000!important}.bc-holiday-book-tools button,#bcReservationQuickAdd,.bc-reservation-list button{display:none!important}}
