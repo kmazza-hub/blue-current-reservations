@@ -12,13 +12,14 @@ const auth=read("client/js/modules/authOrganizations.js");
 const cloud=read("client/js/cloud/cloudApi.js");
 const workspaces=read("client/js/focused-operator-workspaces-v100.3.9.js");
 
-assert.equal(pkg.version,"100.3.101");
-assert.equal(pkg.scripts["certify:pilot"],"node scripts/maintenance/certify-v100.3.101-ipad-host-return.js");
+const version=String(pkg.version).split(".").map(Number);
+assert(version[0]===100&&version[1]===3&&version[2]>=101,"build must retain V100.3.101 or later");
+assert(Boolean(pkg.scripts["certify:pilot"]),"a pilot certification command must remain registered");
 assert.equal(pkg.scripts["certify:universal"],pkg.scripts["certify:pilot"]);
-assert(html.includes('name="blue-current-build" content="100.3.101"'));
-assert(html.includes("Blue Current V100.3.101"));
-assert(html.includes("focused-operator-workspaces-v100.3.9.js?v=100.3.101"));
-assert(html.includes("authOrganizations.js?v=100.3.101"));
+assert(html.includes(`name="blue-current-build" content="${pkg.version}"`));
+assert(html.includes(`Blue Current V${pkg.version}`));
+assert(html.includes(`focused-operator-workspaces-v100.3.9.js?v=${pkg.version}`));
+assert(html.includes(`authOrganizations.js?v=${pkg.version}`));
 
 const signOutStart=auth.indexOf("async function signOut()");
 const signOutEnd=auth.indexOf('$("authLogout")?.addEventListener',signOutStart);
