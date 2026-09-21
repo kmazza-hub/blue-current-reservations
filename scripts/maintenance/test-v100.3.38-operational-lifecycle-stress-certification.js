@@ -126,7 +126,7 @@ async function mutation(pathname, token, body, idempotencyKey, method="POST") {
 
   const completed = await mutation("/api/reservation-operations/complete", firstToken, { reservationId }, "v338-reservation-complete");
   check("Reservation service completes", completed.status === 200 && completed.payload.reservation.status === "completed");
-  check("Completion releases the table", completed.payload.table.status === "available" && completed.payload.table.guestName === "");
+  check("Completion sends the table to cleaning", completed.payload.table.status === "cleaning" && completed.payload.table.guestName === "");
 
   const waitlist = await mutation("/api/floor/waitlist", firstToken, { locationId:"loc_marina",guestName:"V338 Walk In",partySize:2,quotedMinutes:15 }, "v338-waitlist-create");
   check("Walk-in joins the waitlist", waitlist.status === 201 && waitlist.payload.status === "waiting");
@@ -153,7 +153,7 @@ async function mutation(pathname, token, body, idempotencyKey, method="POST") {
   const floorAfterRestart = await request("/api/floor?locationId=loc_marina", { token:restartToken });
   const releasedTable = floorAfterRestart.payload.tables.find(item => item.id === "tbl_1");
   const waitlistTable = floorAfterRestart.payload.tables.find(item => item.id === "tbl_2");
-  check("Released table survives restart", releasedTable?.status === "available" && releasedTable?.guestName === "");
+  check("Cleaning table survives restart", releasedTable?.status === "cleaning" && releasedTable?.guestName === "");
   check("Waitlist seating survives restart", waitlistTable?.status === "seated" && waitlistTable?.guestName === "V338 Walk In");
   const timeClockAfterRestart = await request("/api/timeclock?locationId=loc_marina", { token:restartToken });
   check("Completed timecard survives restart", timeClockAfterRestart.status === 200 && timeClockAfterRestart.payload.timecards.some(item => item.id === clockIn.payload.id && item.clockOut));

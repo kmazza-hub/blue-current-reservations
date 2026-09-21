@@ -3,8 +3,9 @@ const assert=require("assert"),fs=require("fs"),path=require("path"),root=path.r
 const pkg=JSON.parse(fs.readFileSync(path.join(root,"package.json"),"utf8"));
 const html=fs.readFileSync(path.join(root,"client/index.html"),"utf8");
 const css=fs.readFileSync(path.join(root,"client/styles.css"),"utf8");
-assert.equal(pkg.version,"100.3.99");
-assert(html.includes('content="100.3.99"'),"HTML build marker must be V100.3.99");
+const version=String(pkg.version).split(".").map(Number);
+assert(version[0]===100&&version[1]===3&&version[2]>=99,"build must retain V100.3.99 or later");
+assert(html.includes(`content="${pkg.version}"`),"HTML build marker must match the package version");
 assert(css.includes("V100.3.99 — holiday reservation toolbar contrast"));
 assert(css.includes("-webkit-text-fill-color:#102f3f!important"),"date control text must remain visible on Safari");
 assert(css.includes("color-scheme:light!important"),"native date controls must use the light scheme");

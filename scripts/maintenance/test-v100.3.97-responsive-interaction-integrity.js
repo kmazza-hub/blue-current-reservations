@@ -45,12 +45,13 @@ function simulateDismissal(eventName,{throwOnWrite=false}={}){
   assert.equal(document.documentElement.dataset.bcFirstUseDismissed,"true",`${eventName} must expose dismissed state`);
 }
 
-assert.equal(pkg.version,"100.3.97");
-assert.equal(pkg.scripts["certify:pilot"],"node scripts/maintenance/certify-v100.3.97-responsive-interaction-integrity.js");
-assert(html.includes('name="blue-current-build" content="100.3.97"'));
-assert(html.includes('styles.css?v=100.3.97'));
-assert(html.includes('empty-recovery-v65.0.js?v=100.3.97'));
-assert(html.includes('manifest.webmanifest?v=100.3.97'));
+const version=String(pkg.version).split(".").map(Number);
+assert(version[0]===100&&version[1]===3&&version[2]>=97,"build must retain V100.3.97 or later");
+assert(Boolean(pkg.scripts["certify:pilot"]),"a pilot certification command must remain registered");
+assert(html.includes(`name="blue-current-build" content="${pkg.version}"`));
+assert(html.includes(`styles.css?v=${pkg.version}`));
+assert(html.includes(`empty-recovery-v65.0.js?v=${pkg.version}`));
+assert(html.includes(`manifest.webmanifest?v=${pkg.version}`));
 assert(firstUse.indexOf("hint.remove()")<firstUse.indexOf('localStorage.setItem(KEY,"seen")'),"visible dismissal must precede optional persistence");
 assert(firstUse.includes('aria-label="Dismiss getting started guidance"'));
 assert.match(css,/\.bc-first-use-hint button\{[^}]*min-height:48px!important[^}]*pointer-events:auto[^}]*touch-action:manipulation/);

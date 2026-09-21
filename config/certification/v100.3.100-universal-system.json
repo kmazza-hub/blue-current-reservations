@@ -1,0 +1,64 @@
+{
+  "release": "100.3.100",
+  "designation": "UNIVERSAL_CURRENT_SYSTEM_CERTIFICATION",
+  "scope": "Every supported current restaurant workflow, current client asset, frontline API, security boundary, persistence path, and restart contract.",
+  "blockingTests": [
+    "scripts/maintenance/test-v100.3.97-responsive-interaction-integrity.js",
+    "scripts/maintenance/test-v100.3.98-holiday-reservation-book.js",
+    "scripts/maintenance/test-v100.3.99-reservation-contrast.js",
+    "scripts/maintenance/test-v100.3.38-operational-lifecycle-stress-certification.js",
+    "scripts/maintenance/test-v100.3.39-frontline-failure-rush-stress-certification.js",
+    "scripts/maintenance/test-v100.3.55-first-class-operating-lifecycle.js",
+    "scripts/maintenance/test-v100.3.100-holiday-reservation-runtime.js",
+    "scripts/maintenance/test-v100.3.100-frontline-api-performance.js",
+    "scripts/maintenance/test-v100.3.100-historical-test-classification.js",
+    "scripts/maintenance/test-v100.3.100-universal-system-certification.js"
+  ],
+  "frontlineEndpoints": [
+    "/api/health",
+    "/api/floor",
+    "/api/reservation-operations",
+    "/api/reservations",
+    "/api/service-coordination",
+    "/api/kitchen-operations",
+    "/api/staff-operations",
+    "/api/workforce-foundation",
+    "/api/scheduling",
+    "/api/timeclock",
+    "/api/inventory-intelligence",
+    "/api/workforce-intelligence",
+    "/api/guest-intelligence",
+    "/api/operations-feed",
+    "/api/manager-actions",
+    "/api/ai-brain",
+    "/api/executive-command",
+    "/api/command-center",
+    "/api/observability/snapshot",
+    "/api/system/deployment-readiness"
+  ],
+  "performance": {
+    "frontlineResponseTargetMs": 1500,
+    "serverErrorsAllowed": 0,
+    "timeoutsAllowed": 0
+  },
+  "historicalEvidencePolicy": {
+    "classification": "NON_BLOCKING_RELEASE_SNAPSHOT",
+    "reason": "Tests outside blockingTests preserve exact historical version, asset, markup, or gate evidence and are not current release contracts.",
+    "mustRemainDiscoverable": true,
+    "mustNotOverrideCurrentBehavior": true
+  },
+  "legacyReadinessEndpointFamilies": [
+    "/api/commercial-hardening/",
+    "/api/commercial-release/",
+    "/api/expansion/",
+    "/api/live/",
+    "/api/pilot/"
+  ],
+  "safety": {
+    "disposableDatabaseRequired": true,
+    "liveDatabaseProhibited": true,
+    "humanPilotApprovalRequired": true,
+    "physicalDeviceSignoffRequired": true,
+    "certificationDoesNotDeploy": true
+  }
+}
