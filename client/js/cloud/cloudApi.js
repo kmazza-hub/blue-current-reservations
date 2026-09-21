@@ -94,7 +94,7 @@
       const isPublicRequest = publicPaths.has(path);
       const coordinator = window.BlueCurrentAuthSession;
 
-      if (!isPublicRequest && coordinator?.whenReady) {
+      if (!isPublicRequest && !options.skipAuthReadiness && coordinator?.whenReady) {
         const readiness = await coordinator.whenReady();
         if (!readiness.authenticated) {
           const error = new Error("Authentication required.");
@@ -320,7 +320,17 @@
     acknowledgeShiftHandoff(id) { return this.request(`/api/command-center/handoffs/${encodeURIComponent(id)}/acknowledge`, { method: "PATCH", body: JSON.stringify({}) }); }
 
     login(payload) { return this.request("/api/auth/login", { method: "POST", body: JSON.stringify(payload) }); }
-    logout() { return this.request("/api/auth/logout", { method: "POST" }); }
+    logout() {
+      const token = this.token;
+      return this.request("/api/auth/logout", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        skipAuthReadiness: true,
+        priority: "critical",
+        timeoutMs: 2500,
+        retries: 0
+      });
+    }
     me() { return this.request("/api/auth/me"); }
     switchOrganization(organizationId) {
       return this.request("/api/auth/switch-organization", { method: "POST", body: JSON.stringify({ organizationId }) });

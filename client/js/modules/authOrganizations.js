@@ -209,7 +209,10 @@
         control.setAttribute("aria-busy", "true");
       });
       try {
-        try { await api.logout(); } catch (_) {}
+        // Capture and start server revocation first, then lock the local session
+        // immediately. The host should never wait on restaurant Wi-Fi to see
+        // the signed-out screen.
+        const remoteSignOut = api.logout().catch(() => null);
         sessionCoordinator?.signOut?.(api);
         current = null;
         if ($("bcShellUser")) $("bcShellUser").textContent = "Blue Current user";
@@ -222,6 +225,7 @@
         eventBus.emit("auth:signed-out", {});
         openAuth();
         setMessage("You have been signed out safely.");
+        void remoteSignOut;
       } finally {
         signOutInProgress = false;
         controls.forEach(control => {

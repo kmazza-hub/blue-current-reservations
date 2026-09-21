@@ -195,13 +195,8 @@ function bind(){
   },true);
   window.addEventListener("bc:host-guest-seated",()=>setTimeout(()=>{
     if(!document.documentElement.classList.contains("bc-ipad-floor-focus"))return;
-    const panel=floorPanel();
-    if(panel)panel.dataset.bcFocusReason="operating";
-    const map=q("hostFloorMap");
-    if(map){map.hidden=false;map.removeAttribute("aria-hidden");map.style.removeProperty("display");}
-    try{window.__bcHostZonesV100_2_34?.show?.(window.__bcHostZonesV100_2_34?.active?.()||"main");}catch{}
-    window.BlueCurrentFloorClarityV100310?.refresh?.();
-    window.dispatchEvent(new CustomEvent("bc:fullscreen-floor-ready",{detail:{reason:"seating-complete",version:"100.3.57"}}));
+    exitFloor({returnHome:true});
+    window.dispatchEvent(new CustomEvent("bc:seating-returned-home",{detail:{reason:"seating-complete",version:"100.3.101"}}));
   },120));
   document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(currentJob)exitOperatorFocus({returnHome:true});else if(document.documentElement.classList.contains("bc-ipad-floor-focus"))exitFloor({returnHome:true});});
   window.BlueCurrentFocusedWorkspaces={version:VERSION,focus:focusOperatorJob,exit:exitOperatorFocus,focusFloor,exitFloor,targetFor,snapshot:workspaceSnapshot};
