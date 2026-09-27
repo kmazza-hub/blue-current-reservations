@@ -157,6 +157,7 @@ class ProductionBoundaryService {
       "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
       "Cross-Origin-Opener-Policy": "same-origin",
       "Cross-Origin-Resource-Policy": api ? "same-site" : "same-origin",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
       "Content-Security-Policy": "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; form-action 'self'; img-src 'self' data:; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; connect-src 'self' https: wss:",
       ...(api ? { "Cache-Control": "no-store" } : {})
     };
