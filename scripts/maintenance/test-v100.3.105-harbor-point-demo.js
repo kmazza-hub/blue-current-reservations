@@ -2,7 +2,7 @@
 const assert=require("assert/strict"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const html=read("client/index.html"),js=read("client/js/harbor-point-floor-demo-v100.3.105.js"),css=read("client/styles.css"),pkg=JSON.parse(read("package.json"));
-assert(["100.3.105","100.3.106","100.3.107"].includes(pkg.version));
+assert(["100.3.105","100.3.106","100.3.107","100.3.108"].includes(pkg.version));
 assert(html.includes('id="bcHarborPointDemoOpen"'));
 assert(html.includes(pkg.version==="100.3.105"?'js/harbor-point-floor-demo-v100.3.105.js?v=100.3.105':`js/harbor-point-operations-v100.3.106.js?v=${pkg.version}`));
 assert(js.includes('name:"Inlet Room",prefix:"I",count:6'));

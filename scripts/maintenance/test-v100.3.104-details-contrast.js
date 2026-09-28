@@ -11,7 +11,7 @@ const html=read("client/index.html");
 const css=read("client/styles.css");
 const reservations=read("client/js/holiday-reservation-book-v100.3.98.js");
 
-assert(["100.3.104","100.3.105","100.3.106","100.3.107"].includes(pkg.version));
+assert(["100.3.104","100.3.105","100.3.106","100.3.107","100.3.108"].includes(pkg.version));
 assert(html.includes(`name="blue-current-build" content="${pkg.version}"`));
 assert(html.includes(`Blue Current V${pkg.version}`));
 assert(html.includes(`styles.css?v=${pkg.version}`));

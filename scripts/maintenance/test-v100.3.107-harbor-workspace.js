@@ -1,11 +1,11 @@
 "use strict";
 const assert=require("assert/strict"),fs=require("fs"),os=require("os"),path=require("path"),crypto=require("crypto"),{spawn}=require("child_process");
 const root=path.resolve(__dirname,"../.."),read=p=>fs.readFileSync(path.join(root,p),"utf8"),pkg=JSON.parse(read("package.json"));
-assert.equal(pkg.version,"100.3.107");const html=read("client/harbor-point.html"),js=read("client/harbor-point-workspace-v100.3.107.js"),css=read("client/harbor-point-workspace-v100.3.107.css"),app=read("client/index.html");
+assert(["100.3.107","100.3.108"].includes(pkg.version));const html=read("client/harbor-point.html"),js=read("client/harbor-point-workspace-v100.3.107.js"),css=read("client/harbor-point-workspace-v100.3.107.css"),app=read("client/index.html");
 for(const label of ["Book","Arrivals","Floor","Manager"])assert(html.includes(label));
 assert(html.includes('id="loginForm"')&&html.includes('id="signOut"'));
 assert(app.includes('data-destination="/harbor-point.html"'));
-assert(app.includes('js/harbor-point-operations-v100.3.106.js?v=100.3.107'));
+assert(app.includes(`js/harbor-point-operations-v100.3.106.js?v=${pkg.version}`));
 assert(js.includes('data-job="manager"')&&js.includes('me.permissions.includes("write")'));
 assert(css.includes('@media(max-width:440px)'));
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-harbor-107-")),primary=path.join(dir,"primary.json"),seed=JSON.parse(read("database/seed/seed.json")),port=23000+Math.floor(Math.random()*1000),base=`http://127.0.0.1:${port}`;
