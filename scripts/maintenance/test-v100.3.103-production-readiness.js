@@ -11,11 +11,12 @@ const isolation=read("client/js/auth-modal-isolation-v100.3.103.js");
 const boundary=read("server/services/productionBoundaryService.js");
 const packageJson=JSON.parse(read("package.json"));
 
-assert.equal(packageJson.version,"100.3.103","package version must be V100.3.103");
-assert.match(html,/meta name="blue-current-build" content="100\.3\.103"/);
+const version=String(packageJson.version).split(".").map(Number);
+assert(version[0]===100&&version[1]===3&&version[2]>=103,"build must retain V100.3.103 or later");
+assert.match(html,new RegExp(`meta name="blue-current-build" content="${packageJson.version.replaceAll(".","\\.")}"`));
 assert.match(html,/id="authOverlay"[^>]+aria-labelledby="authSignInTitle"/);
 assert.match(html,/id="authSignInTitle">Sign in to Blue Current/);
-assert.match(html,/auth-modal-isolation-v100\.3\.103\.js\?v=100\.3\.103/);
+assert(html.includes(`auth-modal-isolation-v100.3.103.js?v=${packageJson.version}`));
 
 assert.match(isolation,/document\.body\.children/);
 assert.match(isolation,/surface\.setAttribute\("inert",""\)/);
