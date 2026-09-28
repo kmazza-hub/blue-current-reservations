@@ -2,9 +2,9 @@
 const assert=require("assert/strict"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const html=read("client/index.html"),js=read("client/js/harbor-point-floor-demo-v100.3.105.js"),css=read("client/styles.css"),pkg=JSON.parse(read("package.json"));
-assert.equal(pkg.version,"100.3.105");
+assert(["100.3.105","100.3.106"].includes(pkg.version));
 assert(html.includes('id="bcHarborPointDemoOpen"'));
-assert(html.includes('js/harbor-point-floor-demo-v100.3.105.js?v=100.3.105'));
+assert(html.includes(pkg.version==="100.3.105"?'js/harbor-point-floor-demo-v100.3.105.js?v=100.3.105':'js/harbor-point-operations-v100.3.106.js?v=100.3.106'));
 assert(js.includes('name:"Inlet Room",prefix:"I",count:6'));
 assert(js.includes('name:"Sunset Ballroom",prefix:"S",count:12'));
 assert(js.includes('dialog.showModal()')&&js.includes('dialog.close()'));
