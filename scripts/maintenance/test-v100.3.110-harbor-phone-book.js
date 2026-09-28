@@ -1,0 +1,36 @@
+"use strict";
+const assert=require("node:assert/strict"),fs=require("node:fs"),os=require("node:os"),path=require("node:path"),vm=require("node:vm");
+const {HarborPointDemoService}=require("../../server/services/harborPointDemoService");
+const root=path.resolve(__dirname,"../.."),dir=fs.mkdtempSync(path.join(os.tmpdir(),"bc-harbor-phone-book-"));
+(async()=>{try{
+ const service=new HarborPointDemoService(path.join(dir,"fictional-demo.json"));
+ let state=await service.snapshot();
+ async function book(guestName,phone,time,event="Thanksgiving") {const saved=await service.create({version:state.version,guestName,phone,time,holidayEvent:event,partySize:2});state=await service.snapshot();return saved.result;}
+ const alice=await book("Demo Alice","732-555-0101","17:30");
+ const bob=await book("Demo Bob","732-555-0102","17:30");
+ const carol=await book("Demo Carol","732-555-0101","18:00");
+ assert.equal(state.reservations.length,3,"multiple distinct fictional bookings are saved");
+ assert.equal(carol.phone,alice.phone,"same phone at a different time is permitted");
+ await assert.rejects(()=>book("Demo Copy","732-555-0101","17:30"),e=>e.statusCode===409);
+ await service.action({version:state.version,reservationId:bob.id,action:"cancel"});state=await service.snapshot();
+ await book("Demo Replacement","732-555-0102","17:30");
+ assert.equal((await new HarborPointDemoService(path.join(dir,"fictional-demo.json")).snapshot()).reservations.length,4,"bookings survive service restart");
+ const ids=["loginForm","loginPanel","signOut","operatorName","workspace","jobs","message","bookingForm","guestSearch","bookingList","rooms","floorMap","seatPrompt","managerSummary","readinessList"];
+ const elements=Object.fromEntries(ids.map(id=>[id,{value:"",dataset:{},handlers:{},addEventListener(type,fn){this.handlers[type]=fn;},querySelector(){return {hidden:false,textContent:""};},querySelectorAll(){return [];},setAttribute(){}}]));
+ elements.guestSearch.value="";elements.bookingForm.elements={holidayEvent:{addEventListener(){}},date:{value:"2026-11-26"},guestName:{value:"Demo New"},phone:{value:"732-555-0104"},notes:{value:"Test note"}};
+ elements.loginForm.formData={email:"host@bluecurrent.demo",password:"fictional"};
+ const tokenStore=new Map(),demoState={version:1,reservations:[{id:"a",guestName:"Demo Alice",phone:"7325550101",date:"2026-11-26",time:"17:30",partySize:2,holidayEvent:"Thanksgiving",status:"confirmed"},{id:"b",guestName:"Demo Bob",phone:"7325550102",date:"2026-11-26",time:"17:30",partySize:2,holidayEvent:"Thanksgiving",status:"confirmed"}],tables:[]};
+ let rejectBooking=false;const context={document:{getElementById:id=>elements[id],querySelectorAll:()=>[],visibilityState:"visible"},localStorage:{getItem:k=>tokenStore.get(k),setItem:(k,v)=>tokenStore.set(k,v),removeItem:k=>tokenStore.delete(k)},FormData:class{constructor(form){this.data=form.formData||{guestName:elements.bookingForm.elements.guestName.value,phone:elements.bookingForm.elements.phone.value,notes:elements.bookingForm.elements.notes.value};}get(k){return this.data[k];}*[Symbol.iterator](){yield* Object.entries(this.data);}},fetch:async (url,options)=>{if(url==="/api/harbor-point-demo/reservations"&&options?.method==="POST"){if(rejectBooking)return {ok:false,status:409,json:async()=>({error:"Duplicate booking"})};demoState.version++;return {ok:true,json:async()=>({version:demoState.version})};}return {ok:true,json:async()=>url==="/api/auth/login"?{token:"demo-token"}:url==="/api/auth/me"?{permissions:["write_reservations"],user:{name:"Demo Host"},role:"host"}:demoState};},setInterval:()=>1,clearInterval:()=>{}};
+ vm.runInNewContext(fs.readFileSync(path.join(root,"client/harbor-point-workspace-v100.3.107.js"),"utf8"),context);
+ await elements.loginForm.handlers.submit({preventDefault(){},currentTarget:elements.loginForm});
+ assert(elements.bookingList.innerHTML.includes("Demo Alice")&&elements.bookingList.innerHTML.includes("Demo Bob"));
+ elements.guestSearch.value="Alice";elements.guestSearch.handlers.input();assert(elements.bookingList.innerHTML.includes("Demo Alice")&&!elements.bookingList.innerHTML.includes("Demo Bob"),"name search excludes unrelated phone results");
+ elements.guestSearch.value="0102";elements.guestSearch.handlers.input();assert(elements.bookingList.innerHTML.includes("Demo Bob")&&!elements.bookingList.innerHTML.includes("Demo Alice"),"phone search finds the matching booking");
+ elements.guestSearch.value="Missing";elements.guestSearch.handlers.input();assert(elements.bookingList.innerHTML.includes("No matching bookings"));
+ await elements.bookingForm.handlers.submit({preventDefault(){},currentTarget:elements.bookingForm});
+ assert.equal(elements.bookingForm.elements.guestName.value,"");assert.equal(elements.bookingForm.elements.phone.value,"");assert.equal(elements.bookingForm.elements.notes.value,"");assert.equal(elements.bookingForm.elements.date.value,"2026-11-26","date stays selected for the next call");
+ elements.bookingForm.elements.guestName.value="Demo Retry";elements.bookingForm.elements.phone.value="732-555-0105";rejectBooking=true;
+ await elements.bookingForm.handlers.submit({preventDefault(){},currentTarget:elements.bookingForm});
+ assert.equal(elements.bookingForm.elements.guestName.value,"Demo Retry","failed save keeps entered details");assert.equal(elements.bookingForm.elements.phone.value,"732-555-0105");
+ console.log("V100.3.110 Harbor Point phone book passed: multiple saves, duplicate guard, cancellation reuse, persistence, name and phone search.");
+}finally{fs.rmSync(dir,{recursive:true,force:true});}})().catch(e=>{console.error(e);process.exitCode=1});
