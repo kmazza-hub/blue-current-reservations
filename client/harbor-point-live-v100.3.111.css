@@ -1,0 +1,4 @@
+/* The focused live workspace uses the certified Harbor Point visual system. */
+#cancelEdit{margin-top:12px;background:#fff;color:#075f7a;border-color:#075f7a}
+#printBookings{margin-top:12px;background:#fff;color:#075f7a;border-color:#075f7a}
+@media print{body{background:#fff;color:#000}.top{background:#fff;color:#000;padding:8px 0}.top small,.top p,.account,nav,#message,#holdPanel,#loginPanel,#printBookings,#bookingForm,#cancelEdit,[data-panel="floor"],[data-panel="book"]{display:none!important}main{max-width:none;padding:0}#workspace,[data-panel="arrivals"]{display:block!important}.job{box-shadow:none;border:0;padding:0}#bookingList{display:block}.card{break-inside:avoid;border:1px solid #777;margin:8px 0;padding:8px}.actions{display:none}}
