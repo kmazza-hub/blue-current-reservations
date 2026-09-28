@@ -349,6 +349,10 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
           return sendJson(response,200,{mode:state.mode,version:state.version,reservations:state.reservations.length,arrived:state.reservations.filter(r=>r.status==="arrived").length,seated:state.reservations.filter(r=>r.status==="seated").length,availableTables:state.tables.filter(t=>t.status==="available").length,readiness:"HOLD",awaiting:["Approved event model and service dates","Venue floor and table capacities","Booking and arrival policies","Staff access and device acceptance","Printed backup and recovery rehearsal","Harbor Point manager approval"]});
         }
         if (url.pathname==="/api/harbor-point-demo/reservations"&&request.method==="POST") return sendJson(response,201,await harborDemo.create(await readJson(request)));
+        if (url.pathname==="/api/harbor-point-demo/clear-history"&&request.method==="POST") {
+          if (!authService.can(auth,"write")) return sendJson(response,403,{error:"Manager access required."});
+          return sendJson(response,200,await harborDemo.clearHistory(await readJson(request)));
+        }
         if (url.pathname==="/api/harbor-point-demo/actions"&&request.method==="POST") return sendJson(response,200,await harborDemo.action(await readJson(request)));
         if (url.pathname==="/api/harbor-point-demo/ready"&&request.method==="POST") return sendJson(response,200,await harborDemo.ready(await readJson(request)));
         return sendJson(response,404,{error:"Demo endpoint not found."});

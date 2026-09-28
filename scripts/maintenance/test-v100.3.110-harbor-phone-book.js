@@ -15,7 +15,7 @@ const root=path.resolve(__dirname,"../.."),dir=fs.mkdtempSync(path.join(os.tmpdi
  await service.action({version:state.version,reservationId:bob.id,action:"cancel"});state=await service.snapshot();
  await book("Demo Replacement","732-555-0102","17:30");
  assert.equal((await new HarborPointDemoService(path.join(dir,"fictional-demo.json")).snapshot()).reservations.length,4,"bookings survive service restart");
- const ids=["loginForm","loginPanel","signOut","operatorName","workspace","jobs","message","bookingForm","guestSearch","bookingList","rooms","floorMap","seatPrompt","managerSummary","readinessList"];
+ const ids=["loginForm","loginPanel","signOut","operatorName","workspace","jobs","message","bookingForm","guestSearch","bookingList","rooms","floorMap","seatPrompt","managerSummary","readinessList","clearDemoHistory"];
  const elements=Object.fromEntries(ids.map(id=>[id,{value:"",dataset:{},handlers:{},addEventListener(type,fn){this.handlers[type]=fn;},querySelector(){return {hidden:false,textContent:""};},querySelectorAll(){return [];},setAttribute(){}}]));
  elements.guestSearch.value="";elements.bookingForm.elements={holidayEvent:{addEventListener(){}},date:{value:"2026-11-26"},guestName:{value:"Demo New"},phone:{value:"732-555-0104"},notes:{value:"Test note"}};
  elements.loginForm.formData={email:"host@bluecurrent.demo",password:"fictional"};
