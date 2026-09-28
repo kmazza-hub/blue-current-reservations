@@ -312,10 +312,15 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const writeOrganizationId = organizationId;
 
     if (url.pathname.startsWith("/api/harbor-point-demo")) {
-      if (!authService.can(auth,"admin")) return sendJson(response,403,{error:"Demo manager access required."});
+      if (!authService.can(auth,"write_reservations")) return sendJson(response,403,{error:"Host or manager access required."});
       try {
         const harborDemo=harborDemoFor(organizationId);
         if (url.pathname==="/api/harbor-point-demo"&&request.method==="GET") return sendJson(response,200,await harborDemo.snapshot());
+        if (url.pathname==="/api/harbor-point-demo/manager"&&request.method==="GET") {
+          if (!authService.can(auth,"write")) return sendJson(response,403,{error:"Manager access required."});
+          const state=await harborDemo.snapshot();
+          return sendJson(response,200,{mode:state.mode,version:state.version,reservations:state.reservations.length,arrived:state.reservations.filter(r=>r.status==="arrived").length,seated:state.reservations.filter(r=>r.status==="seated").length,availableTables:state.tables.filter(t=>t.status==="available").length,readiness:"HOLD",awaiting:["Approved event model and service dates","Venue floor and table capacities","Booking and arrival policies","Staff access and device acceptance","Printed backup and recovery rehearsal","Harbor Point manager approval"]});
+        }
         if (url.pathname==="/api/harbor-point-demo/reservations"&&request.method==="POST") return sendJson(response,201,await harborDemo.create(await readJson(request)));
         if (url.pathname==="/api/harbor-point-demo/actions"&&request.method==="POST") return sendJson(response,200,await harborDemo.action(await readJson(request)));
         if (url.pathname==="/api/harbor-point-demo/ready"&&request.method==="POST") return sendJson(response,200,await harborDemo.ready(await readJson(request)));
