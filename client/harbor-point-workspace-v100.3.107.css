@@ -4,3 +4,8 @@
 #bookingForm button[type="submit"]{appearance:none!important;-webkit-appearance:none!important;display:inline-flex;align-items:center;justify-content:center;min-height:52px!important;padding:12px 22px!important;border:2px solid #075f7a!important;border-radius:12px!important;background:#075f7a!important;color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;font-weight:900!important;box-shadow:0 3px 0 #043f51!important;cursor:pointer}
 #bookingForm button[type="submit"]:focus-visible{outline:3px solid #e59c2b!important;outline-offset:3px}
 #bookingForm button[type="submit"]:disabled{border-color:#446d7a!important;background:#446d7a!important;color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;box-shadow:none!important;cursor:wait}
+
+/* V100.3.109: explicit sign-in action contrast across tablet browsers. */
+#loginForm button[type="submit"]{appearance:none!important;-webkit-appearance:none!important;display:inline-flex;align-items:center;justify-content:center;min-height:52px!important;padding:12px 22px!important;border:2px solid #075f7a!important;border-radius:12px!important;background:#075f7a!important;color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;font-weight:900!important;box-shadow:0 3px 0 #043f51!important;cursor:pointer}
+#loginForm button[type="submit"]:focus-visible{outline:3px solid #e59c2b!important;outline-offset:3px}
+#loginForm button[type="submit"]:disabled{border-color:#446d7a!important;background:#446d7a!important;color:#fff!important;-webkit-text-fill-color:#fff!important;opacity:1!important;box-shadow:none!important;cursor:wait}

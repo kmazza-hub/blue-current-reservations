@@ -1,7 +1,7 @@
 "use strict";
 const assert=require("assert/strict"),fs=require("fs"),os=require("os"),path=require("path"),crypto=require("crypto"),{spawn}=require("child_process");
 const root=path.resolve(__dirname,"../.."),read=p=>fs.readFileSync(path.join(root,p),"utf8"),pkg=JSON.parse(read("package.json"));
-assert(["100.3.107","100.3.108"].includes(pkg.version));const html=read("client/harbor-point.html"),js=read("client/harbor-point-workspace-v100.3.107.js"),css=read("client/harbor-point-workspace-v100.3.107.css"),app=read("client/index.html");
+assert(["100.3.107","100.3.108","100.3.109"].includes(pkg.version));const html=read("client/harbor-point.html"),js=read("client/harbor-point-workspace-v100.3.107.js"),css=read("client/harbor-point-workspace-v100.3.107.css"),app=read("client/index.html");
 for(const label of ["Book","Arrivals","Floor","Manager"])assert(html.includes(label));
 assert(html.includes('id="loginForm"')&&html.includes('id="signOut"'));
 assert(app.includes('data-destination="/harbor-point.html"'));
