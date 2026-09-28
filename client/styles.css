@@ -20094,3 +20094,26 @@ html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-f
   #bcHolidayReservationDialog .bc-host-dialog-card>footer{display:grid;grid-template-columns:1fr}
   #bcHolidayReservationDialog .bc-host-dialog-card>footer button{width:100%}
 }
+
+/* V100.3.105 — isolated Harbor Point floor preview */
+.bc-harbor-demo{width:min(920px,calc(100vw - 20px));max-width:920px;max-height:calc(100dvh - 20px);padding:0;border:0;border-radius:22px;color:#123542;background:#f5f9fa;box-shadow:0 30px 100px #00192399}
+.bc-harbor-demo::backdrop{background:#001a25b8}
+.bc-harbor-shell{max-height:calc(100dvh - 20px);display:flex;flex-direction:column;overflow:auto}
+.bc-harbor-demo header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px;background:linear-gradient(135deg,#082d3b,#0b5368);color:#fff}
+.bc-harbor-demo header small{color:#91e3ed;font-weight:900;letter-spacing:.13em}
+.bc-harbor-demo h2{margin:7px 0;font-size:clamp(1.5rem,4vw,2rem);color:#fff}
+.bc-harbor-demo header p{margin:0;color:#d8eff3}
+.bc-harbor-demo button{cursor:pointer;min-height:44px;font:inherit;font-weight:800}
+.bc-harbor-demo header button,.bc-harbor-demo footer button{padding:9px 15px;border:2px solid #8dd7e6;border-radius:10px;background:#fff;color:#0a4559}
+.bc-harbor-demo button:focus-visible{outline:3px solid #e6b548;outline-offset:3px}
+.bc-harbor-notice{padding:14px 24px;background:#fff2d1;color:#5c3e05;font-weight:800;line-height:1.4}
+.bc-harbor-demo nav{display:flex;gap:10px;padding:16px 24px 0;flex-wrap:wrap}
+.bc-harbor-demo nav button{padding:8px 16px;border:2px solid #91b7c5;border-radius:10px;background:#fff;color:#123542}
+.bc-harbor-demo nav button[aria-pressed=true]{background:#075f7a;border-color:#075f7a;color:#fff}
+.bc-harbor-room{padding:12px 24px 20px}.bc-harbor-room-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.bc-harbor-room h3{margin:8px 0;color:#123542}.bc-harbor-room-head span{font-weight:800;color:#466b7b}
+.bc-harbor-map{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;min-height:300px;padding:28px;border:2px solid #a7c3cd;border-radius:18px;background:linear-gradient(155deg,#e7f2f4,#fff)}
+.bc-harbor-table{justify-self:center;width:min(100%,84px);aspect-ratio:1;border:3px solid #0d7892;border-radius:50%;background:#d5edf1;color:#123542;font-size:1.1rem!important;box-shadow:0 5px 0 #aacfd8}
+.bc-harbor-table[aria-pressed=true]{background:#075f7a;color:#fff;box-shadow:0 0 0 5px #b3e7ef}
+.bc-harbor-selection{min-height:24px;margin:14px 0 0;font-weight:800;color:#244c5c}
+.bc-harbor-demo footer{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:14px 24px calc(14px + env(safe-area-inset-bottom,0px));background:#e8f1f3;color:#244c5c;font-weight:700}
+@media(max-width:580px){.bc-harbor-demo header{padding:18px}.bc-harbor-notice{padding:12px 18px}.bc-harbor-demo nav{padding:14px 18px 0}.bc-harbor-room{padding:12px 18px}.bc-harbor-map{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px;min-height:240px}.bc-harbor-table{width:min(100%,70px)}.bc-harbor-demo footer{padding:14px 18px;flex-direction:column;align-items:stretch}.bc-harbor-demo footer button{width:100%}}

@@ -11,10 +11,10 @@ const html=read("client/index.html");
 const css=read("client/styles.css");
 const reservations=read("client/js/holiday-reservation-book-v100.3.98.js");
 
-assert.equal(pkg.version,"100.3.104");
-assert(html.includes('name="blue-current-build" content="100.3.104"'));
-assert(html.includes("Blue Current V100.3.104"));
-assert(html.includes("styles.css?v=100.3.104"));
+assert(["100.3.104","100.3.105"].includes(pkg.version));
+assert(html.includes(`name="blue-current-build" content="${pkg.version}"`));
+assert(html.includes(`Blue Current V${pkg.version}`));
+assert(html.includes(`styles.css?v=${pkg.version}`));
 assert(reservations.includes("data-holiday-details>Details</button>"),"holiday reservation Details action must remain rendered");
 assert(css.includes("V100.3.104 — holiday reservation Details action contrast"));
 assert(css.includes("button[data-holiday-details]"),"contrast rule must target the actual holiday Details attribute");

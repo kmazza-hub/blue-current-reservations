@@ -1,0 +1,14 @@
+"use strict";
+const assert=require("assert/strict"),fs=require("fs"),path=require("path"),root=path.resolve(__dirname,"../..");
+const read=file=>fs.readFileSync(path.join(root,file),"utf8");
+const html=read("client/index.html"),js=read("client/js/harbor-point-floor-demo-v100.3.105.js"),css=read("client/styles.css"),pkg=JSON.parse(read("package.json"));
+assert.equal(pkg.version,"100.3.105");
+assert(html.includes('id="bcHarborPointDemoOpen"'));
+assert(html.includes('js/harbor-point-floor-demo-v100.3.105.js?v=100.3.105'));
+assert(js.includes('name:"Inlet Room",prefix:"I",count:6'));
+assert(js.includes('name:"Sunset Ballroom",prefix:"S",count:12'));
+assert(js.includes('dialog.showModal()')&&js.includes('dialog.close()'));
+assert(js.includes('No live floor or reservations are changed.'));
+assert(!/fetch\(|localStorage|\.request\(|cloudApi/.test(js),"demo must not access the API or persistence");
+assert(css.includes('.bc-harbor-demo')&&css.includes('safe-area-inset-bottom'));
+console.log("V100.3.105 Harbor Point floor preview isolation passed.");
