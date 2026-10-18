@@ -21,7 +21,7 @@ function createTimeMachineModule(eventBus, appState) {
   );
 
   const anthony = {
-    guestName: "Anthony Russo",
+    guestName: "Frank",
     partySize: 4,
     time: "7:15 PM",
     occasion: "Birthday",
@@ -39,8 +39,8 @@ function createTimeMachineModule(eventBus, appState) {
       patch: { occupancyPercent: 58, reservationsToday: 211, callsAnswered: 166, estimatedRevenue: 29400, executiveBrief: "Waterfront demand is building while the dining room remains flexible." }
     },
     {
-      time: "6:42 PM", label: "Call answered", event: "Anthony Russo reaches the AI Concierge and is recognized instantly.", stage: "Call",
-      patch: { callsAnswered: 167, activeGuest: { ...anthony, tier: "Premier guest" }, activeCall: { status: "active", guestName: "Anthony Russo" }, executiveBrief: "A returning premier guest is active in the Concierge journey." }
+      time: "6:42 PM", label: "Call answered", event: "Frank reaches the AI Concierge and is recognized instantly.", stage: "Call",
+      patch: { callsAnswered: 167, activeGuest: { ...anthony, tier: "Premier guest" }, activeCall: { status: "active", guestName: "Frank" }, executiveBrief: "A returning premier guest is active in the Concierge journey." }
     },
     {
       time: "6:44 PM", label: "Table matched", event: "Table 14 is selected from constrained waterfront inventory.", stage: "Matched",
@@ -48,7 +48,7 @@ function createTimeMachineModule(eventBus, appState) {
     },
     {
       time: "6:45 PM", label: "Reservation confirmed", event: "Reservation confirmation updates every connected module.", stage: "Confirmed",
-      patch: { occupancyPercent: 64, reservationsToday: 212, estimatedRevenue: 29820, activeCall: null, executiveBrief: "Anthony Russo confirmed for Table 14 at 7:15 PM. Estimated revenue increased by $420." }
+      patch: { occupancyPercent: 64, reservationsToday: 212, estimatedRevenue: 29820, activeCall: null, executiveBrief: "Frank confirmed for Table 14 at 7:15 PM. Estimated revenue increased by $420." }
     },
     {
       time: "7:14 PM", label: "Guest arrives", event: "The host team receives a synchronized arrival alert.", stage: "Arrived",

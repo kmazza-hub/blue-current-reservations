@@ -7,7 +7,7 @@ function createDigitalTwinModule(eventBus, appState) {
   const selected = { tableNumber: 14 };
 
   const guestDirectory = {
-    14: { guestName: "Anthony Russo", partySize: 4, time: "7:15 PM", occasion: "Birthday", note: "Tree nut allergy", vip: true }
+    14: { guestName: "Frank", partySize: 4, time: "7:15 PM", occasion: "Birthday", note: "Tree nut allergy", vip: true }
   };
 
   const initialTables = floorTables.map((node) => {

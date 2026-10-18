@@ -297,7 +297,7 @@ ready(()=>{
  host.querySelectorAll("#bcReservationList article").forEach(wireReservation);
 
  const profileGuestData=[
-   {name:"Anthony Russo",detail:"7:30 PM · Party of 4 · Birthday",note:"Waterfront preference. Birthday dessert note is loaded.",source:"profile"},
+   {name:"Frank",detail:"7:30 PM · Party of 4 · Birthday",note:"Waterfront preference. Birthday dessert note is loaded.",source:"profile"},
    {name:"Melissa Grant",detail:"7:15 PM · Party of 2 · Anniversary",note:"Anniversary dinner. Guest has arrived.",source:"profile"},
    {name:"Daniel Cho",detail:"7:45 PM · Party of 6",note:"Large party. Confirm table combination before arrival.",source:"profile"},
    {name:"Alyssa Moore",detail:"8:00 PM · Party of 3 · High chair",note:"High chair requested. Confirm accessible path.",source:"profile"}

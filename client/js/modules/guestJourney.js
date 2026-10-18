@@ -47,7 +47,7 @@ function createGuestJourneyModule(eventBus, appState) {
   function addHistory(stageKey, payload = {}) {
     const stage = stages.find((item) => item.key === stageKey);
     if (!stage) return;
-    const guestName = payload.guestName || payload.reservation?.guestName || appState.get("activeGuest")?.guestName || "Anthony Russo";
+    const guestName = payload.guestName || payload.reservation?.guestName || appState.get("activeGuest")?.guestName || "Frank";
     const detailMap = {
       call: `${guestName}'s call was answered instantly.`,
       recognized: `${guestName}'s preferences and history were synchronized.`,
@@ -72,7 +72,7 @@ function createGuestJourneyModule(eventBus, appState) {
     renderStages();
     addHistory(stageKey, payload);
     const state = appState.getState();
-    const guest = payload.guestName || payload.reservation?.guestName || state.activeGuest?.guestName || "Anthony Russo";
+    const guest = payload.guestName || payload.reservation?.guestName || state.activeGuest?.guestName || "Frank";
     setText("guestJourneyGuest", guest);
     setText("guestJourneyCurrentStage", stages[currentIndex].label);
     setText("guestJourneyProgress", `${Math.round(((currentIndex + 1) / stages.length) * 100)}%`);
@@ -112,7 +112,7 @@ function createGuestJourneyModule(eventBus, appState) {
     // or #guestJourneyReset still owns focus.
     releaseJourneyFocus();
     reset();
-    const guest = { guestName: "Anthony Russo", tableNumber: 14 };
+    const guest = { guestName: "Frank", tableNumber: 14 };
     const sequence = [
       [0, "concierge:call-started", { ...guest, guestType: "returning" }],
       [900, "guest:recognized", { ...guest, tier: "Premier guest", preferences: ["Waterfront", "Quiet table"] }],

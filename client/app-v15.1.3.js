@@ -45,7 +45,7 @@ const scenes = [
   {
     status: "Conversation live",
     ai: "Absolutely. May I have the name for the reservation?",
-    guest: "Anthony Russo. We are celebrating my wife's birthday.",
+    guest: "Frank. We are celebrating my wife's birthday.",
     thinking: "Capturing guest details",
     timer: "00:12",
     eventLabel: "Guest context captured",
@@ -54,7 +54,7 @@ const scenes = [
   },
   {
     status: "Checking tables",
-    ai: "Thank you, Anthony. I have a waterfront table available at 7:30.",
+    ai: "Thank you, Frank. I have a waterfront table available at 7:30.",
     guest: "That would be perfect.",
     thinking: "Assigning table 14",
     timer: "00:24",
@@ -194,11 +194,11 @@ $$(".reveal").forEach((element) => observer.observe(element));
 
 const eveningScenes=[
 ["5:55 PM","Preparing for dinner","Before the doors open","The team begins with a clear view.","Managers see expected covers, special occasions, and reservation pacing before the first guest arrives.","☀","Service preparation","48 reservations · 184 guests expected","184","48","0","12%",[["Opening brief","Special occasions shared with host team"],["Dining room","Waterfront section prepared"],["Guest line","AI host ready"]]],
-["6:08 PM","Dinner service live","A meaningful detail","A birthday becomes part of the welcome.","The guest mentions a celebration during the call. Blue Current carries that context into the host team's view.","✦","Guest occasion captured","Birthday note added for Anthony Russo","188","49","0","34%",[["Guest profile","Birthday celebration added"],["Reservation","Party of 4 confirmed for 7:30 PM"],["Host team","Arrival note shared"]]],
+["6:08 PM","Dinner service live","A meaningful detail","A birthday becomes part of the welcome.","The guest mentions a celebration during the call. Blue Current carries that context into the host team's view.","✦","Guest occasion captured","Birthday note added for Frank","188","49","0","34%",[["Guest profile","Birthday celebration added"],["Reservation","Party of 4 confirmed for 7:30 PM"],["Host team","Arrival note shared"]]],
 ["6:21 PM","Waitlist beginning","The room starts filling","Demand rises without creating chaos.","The waitlist begins while incoming callers still receive immediate answers and clear expectations.","≋","Waitlist opened","3 parties waiting · 18 minute estimate","224","56","3","61%",[["Waitlist","Party of 3 added by phone"],["Guest message","Estimated wait sent by SMS"],["Manager view","Dining pace remains on target"]]],
 ["6:45 PM","Peak service","The dinner rush","The restaurant reaches capacity calmly.","Calls, guest expectations, and table availability remain synchronized during the busiest part of service.","●","Peak occupancy","Dining room at 96% · calls still answered","271","63","7","96%",[["Dining room","Peak capacity reached"],["Guest line","12 calls answered during rush"],["Waitlist","Average quoted wait: 24 minutes"]]],
 ["7:15 PM","Table opening","A new opportunity","An opening becomes a reservation.","A table turns over early. The operating view updates and the next suitable guest can be welcomed.","↗","Availability detected","Waterfront table open at 7:30 PM","286","64","5","88%",[["Table 14","Available for 7:30 PM"],["Guest line","Reservation opportunity offered"],["SMS","Confirmation delivered"]]],
-["8:00 PM","Guest arrival","The promise is delivered","The host already knows why tonight matters.","Anthony arrives for the birthday dinner. The seating preference and celebration note are already waiting.","✓","Guest checked in","Anthony Russo · Birthday · Table 14","318","69","2","91%",[["Guest arrival","Anthony Russo checked in"],["Host note","Birthday celebration acknowledged"],["Dining room","Waterfront table seated"]]]
+["8:00 PM","Guest arrival","The promise is delivered","The host already knows why tonight matters.","Frank arrives for the birthday dinner. The seating preference and celebration note are already waiting.","✓","Guest checked in","Frank · Birthday · Table 14","318","69","2","91%",[["Guest arrival","Frank checked in"],["Host note","Birthday celebration acknowledged"],["Dining room","Waterfront table seated"]]]
 ];
 let eveningIndex=0,eveningTimer;
 function renderEvening(i){const s=eveningScenes[i];eveningIndex=i;["#eveningTime","#eveningStatus","#eveningKicker","#eveningTitle","#eveningDescription","#eveningIcon","#eveningLabel","#eveningDetail","#eveningGuests","#eveningReservations","#eveningWaitlist","#eveningOccupancy","#eveningFeedTime"].forEach((id,n)=>$(id).textContent=[s[0],s[1],s[2],s[3],s[4],s[5],s[6],s[7],s[8],s[9],s[10],s[11],s[0]][n]);[["#feedOneLabel","#feedOneDetail"],["#feedTwoLabel","#feedTwoDetail"],["#feedThreeLabel","#feedThreeDetail"]].forEach((ids,n)=>{$(ids[0]).textContent=s[12][n][0];$(ids[1]).textContent=s[12][n][1]});$$(".evening-stop").forEach((b,n)=>b.classList.toggle("active",n===i))}
@@ -338,7 +338,7 @@ $("#assignTableButton")?.addEventListener("click", () => {
   table.querySelector("small").textContent = "7:30";
 
   $(".cleaning-chip").textContent = "Reserved";
-  $("#assignTableButton").textContent = "Assigned to Anthony";
+  $("#assignTableButton").textContent = "Assigned to Frank";
   $("#hostRecommendation").textContent = "Table 14 assigned for 7:30 PM";
   $("#cleaningCount").textContent = "0";
   $("#reservedCount").textContent = "6";
@@ -347,7 +347,7 @@ $("#assignTableButton")?.addEventListener("click", () => {
 const gs=document.getElementById('guestSearch');
 if(gs){
  gs.addEventListener('input',()=>{
-  const names=['Anthony Russo','Anthony Miller','Anthony Romano'];
+  const names=['Frank','Anthony Miller','Anthony Romano'];
   const q=gs.value.toLowerCase();
   document.getElementById('guestResults').innerHTML=
    names.filter(n=>n.toLowerCase().includes(q)).join('<br>');
@@ -567,10 +567,10 @@ const conciergeDemo = [
     updates: { status: "Collecting guest details" }
   },
   {
-    user: "Anthony Russo.",
-    assistant: "Welcome back, Anthony. I found your guest profile. What date and time would you prefer?",
+    user: "Frank.",
+    assistant: "Welcome back, Frank. I found your guest profile. What date and time would you prefer?",
     stage: 3,
-    updates: { guest: "Anthony Russo", memory: true }
+    updates: { guest: "Frank", memory: true }
   },
   {
     user: "This Friday at 7:30 PM for four people.",
@@ -586,7 +586,7 @@ const conciergeDemo = [
   },
   {
     user: "7:15 PM at Table 14 works.",
-    assistant: "Perfect. I have Anthony Russo for four guests this Friday at 7:15 PM at Table 14. I added the birthday note and your tree nut allergy. Shall I confirm it?",
+    assistant: "Perfect. I have Frank for four guests this Friday at 7:15 PM at Table 14. I added the birthday note and your tree nut allergy. Shall I confirm it?",
     stage: 5,
     updates: { time: "7:15 PM", availability: "Table 14 available", ready: true }
   }
@@ -602,7 +602,7 @@ function conciergeAddMessage(text, role) {
   const article = document.createElement("article");
   article.className = `message ${role === "user" ? "user-message" : "assistant-message"}`;
   article.innerHTML = `
-    <div class="message-avatar">${role === "user" ? "AR" : "BC"}</div>
+    <div class="message-avatar">${role === "user" ? "F" : "BC"}</div>
     <div class="message-bubble">
       <p>${text}</p>
       <span>${role === "user" ? "Guest" : "Blue Current Concierge"} • now</span>
@@ -642,7 +642,7 @@ function conciergeApplyUpdates(updates = {}) {
       <div class="guest-memory-icon">✦</div>
       <div>
         <small>Guest intelligence</small>
-        <strong>Anthony Russo • Premier Guest</strong>
+        <strong>Frank • Premier Guest</strong>
         <p>11 visits this year • Table 14 preferred • Tree nut allergy • Cabernet preference • Birthday celebration tonight</p>
       </div>
     `;
@@ -794,7 +794,7 @@ const twinState = {
 const twinEvents = [
   {
     time:"6:42", clock:"6:42 PM", title:"Concierge answered incoming call",
-    detail:"Anthony Russo requested a Friday reservation for four.",
+    detail:"Frank requested a Friday reservation for four.",
     type:"call", occupancy:"68%", guests:"74", wait:"12 min", calls:"1",
     journey:2, brief:"Blue Current is gathering the preferred time, party size, and occasion.",
     table14:"reserved"
@@ -803,7 +803,7 @@ const twinEvents = [
     time:"6:43", clock:"6:43 PM", title:"Guest profile matched",
     detail:"Premier guest recognized with 11 prior visits and a tree nut allergy.",
     type:"guest", occupancy:"68%", guests:"74", wait:"12 min", calls:"1",
-    journey:4, brief:"Guest Intelligence matched Anthony Russo and surfaced preferences before booking.",
+    journey:4, brief:"Guest Intelligence matched Frank and surfaced preferences before booking.",
     table14:"reserved"
   },
   {
@@ -828,7 +828,7 @@ const twinEvents = [
     table9:"available"
   },
   {
-    time:"7:08", clock:"7:08 PM", title:"Anthony Russo checked in",
+    time:"7:08", clock:"7:08 PM", title:"Frank checked in",
     detail:"Host greeted the party by name and confirmed the birthday note privately.",
     type:"guest", occupancy:"76%", guests:"82", wait:"14 min", calls:"2",
     journey:5, brief:"Guest recognition reached the host team before arrival.",
@@ -998,7 +998,7 @@ document.querySelectorAll(".floor-table").forEach(table=>{
       detail.children[2].querySelector("strong").textContent = status==="available" ? "No guest assigned" : "Current service party";
       detail.children[3].querySelector("strong").textContent = status==="available" ? "Ready for assignment" : "Service notes available";
     }else{
-      detail.children[2].querySelector("strong").textContent = "Anthony Russo · Party of 4";
+      detail.children[2].querySelector("strong").textContent = "Frank · Party of 4";
       detail.children[3].querySelector("strong").textContent = "Birthday · Tree nut allergy";
     }
   });
