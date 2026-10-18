@@ -34,7 +34,7 @@ setInterval(updateClock, 30000);
 const scenes = [
   {
     status: "Incoming call",
-    ai: "Good evening, thank you for calling Marina Grille. How may I help?",
+    ai: "Good evening, thank you for calling The Wharfside. How may I help?",
     guest: "A table for four around seven-thirty, preferably outside.",
     thinking: "Listening",
     timer: "00:03",
@@ -208,14 +208,14 @@ $$(".evening-stop").forEach(b=>b.addEventListener("click",()=>{renderEvening(Num
 
 // V5.2 — Operator dashboard interactions
 const operatorLocations = {
-  "Marina Grille": {
+  "The Wharfside": {
     guests: "318",
     reservations: "69",
     calls: "54",
     waitlist: "2",
     summary: "Dinner service is pacing ahead of last Friday. Call volume increased during the 6:30–7:00 rush, but every call was answered. Waterfront availability is limited through 8:30 PM."
   },
-  "The Wharfside": {
+  "Marina Grille": {
     guests: "284",
     reservations: "61",
     calls: "47",
@@ -362,26 +362,26 @@ const executiveRanges = {
     reservations: "220",
     calls: "176",
     revenue: "$31.8K",
-    summary: "Portfolio demand is strong and currently tracking above last Friday. Marina Grille is the only location approaching hard capacity, while Captain's Inn has additional room and may absorb overflow demand. Call coverage remains healthy across the group."
+    summary: "Portfolio demand is strong and currently tracking above last Friday. The Wharfside is the only location approaching hard capacity, while Captain's Inn has additional room and may absorb overflow demand. Call coverage remains healthy across the group."
   },
   "7 Days": {
     guests: "6,942",
     reservations: "1,486",
     calls: "1,208",
     revenue: "$218K",
-    summary: "Seven-day portfolio performance is ahead of the prior period. Weekend demand remains concentrated at Marina Grille and Rod's Tavern, while Captain's Inn has the greatest capacity for incremental reservations."
+    summary: "Seven-day portfolio performance is ahead of the prior period. Weekend demand remains concentrated at The Wharfside and Rod's Tavern, while Captain's Inn has the greatest capacity for incremental reservations."
   },
   "30 Days": {
     guests: "28,410",
     reservations: "6,172",
     calls: "4,936",
     revenue: "$891K",
-    summary: "Thirty-day demand is stable with improving call-to-reservation conversion. Guest celebrations and repeat-guest activity are strongest at Marina Grille. The largest growth opportunity is after-hours reservation capture."
+    summary: "Thirty-day demand is stable with improving call-to-reservation conversion. Guest celebrations and repeat-guest activity are strongest at The Wharfside. The largest growth opportunity is after-hours reservation capture."
   }
 };
 
 const executiveLocations = {
-  "Marina Grille": {
+  "The Wharfside": {
     status: "Healthy service",
     occupancy: "98%",
     reservations: "69",
@@ -389,7 +389,7 @@ const executiveLocations = {
     waitlist: "2",
     narrative: "Demand is concentrated between 7:00 and 8:30 PM. Waterfront inventory is the primary constraint, but current wait times remain within the operating target."
   },
-  "The Wharfside": {
+  "Marina Grille": {
     status: "Healthy service",
     occupancy: "84%",
     reservations: "61",
@@ -509,8 +509,8 @@ document.querySelectorAll(".analytics-period button").forEach((button) => {
 
 const analyticsLocationData = {
   "All locations": ["42.6%", "8 sec", "13 min", "31%"],
-  "Marina Grille": ["46.2%", "7 sec", "11 min", "36%"],
-  "The Wharfside": ["41.4%", "9 sec", "16 min", "29%"],
+  "The Wharfside": ["46.2%", "7 sec", "11 min", "36%"],
+  "Marina Grille": ["41.4%", "9 sec", "16 min", "29%"],
   "Rod's Tavern": ["39.8%", "8 sec", "8 min", "27%"],
   "Captain's Inn": ["43.1%", "9 sec", "0 min", "30%"]
 };
@@ -678,7 +678,7 @@ function conciergeReset() {
       <article class="message assistant-message">
         <div class="message-avatar">BC</div>
         <div class="message-bubble">
-          <p>Good evening. Thank you for calling Marina Grille. How may I help you tonight?</p>
+          <p>Good evening. Thank you for calling The Wharfside. How may I help you tonight?</p>
           <span>Blue Current Concierge • now</span>
         </div>
       </article>

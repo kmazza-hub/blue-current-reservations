@@ -62,7 +62,7 @@
       {
         id: "seed_2",
         time: new Date(Date.now() - 18 * 60000).toISOString(),
-        location: "Marina Grill",
+        location: "The Wharfside",
         category: "guests",
         severity: "warning",
         title: "Reservation pace increased",

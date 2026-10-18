@@ -7,7 +7,7 @@
   const HANDOFF_KEY="blueCurrent.serverHandoff.v35.1.0";
   const byId=id=>document.getElementById(id);
   const locations=[
-    {name:"Marina Grille",city:"Belmar",baseRevenue:18600},
+    {name:"The Wharfside",city:"Point Pleasant Beach",baseRevenue:18600},
     {name:"Asbury Boardwalk",city:"Asbury Park",baseRevenue:21400},
     {name:"Rooney's Oceanfront",city:"Long Branch",baseRevenue:23800},
     {name:"Stone House",city:"Warren",baseRevenue:17200}

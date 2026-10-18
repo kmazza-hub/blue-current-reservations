@@ -74,7 +74,7 @@
         id:"seed_regional_3",
         createdAt:new Date(Date.now()-41*60000).toISOString(),
         locationId:"loc_marina",
-        locationName:"Marina Grill",
+        locationName:"The Wharfside",
         severity:"info",
         title:"Portfolio health remains strong",
         detail:"Current location health and labor are within the expected operating range.",

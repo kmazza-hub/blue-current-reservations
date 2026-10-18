@@ -145,7 +145,7 @@
       window.dispatchEvent(new CustomEvent("bluecurrent:restaurant-opened", {
         detail: {
           locationId: "loc_marina",
-          locationName: "Marina Grill",
+          locationName: "The Wharfside",
           openedAt: new Date().toISOString()
         }
       }));

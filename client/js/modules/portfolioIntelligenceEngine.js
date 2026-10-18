@@ -2,8 +2,8 @@
   "use strict";
 
   const LOCATION_BLUEPRINTS = [
-    { id: "marina", name: "Marina Grille", market: "Belmar", offset: 0 },
-    { id: "wharfside", name: "The Wharfside", market: "Point Pleasant", offset: 9 },
+    { id: "marina", name: "The Wharfside", market: "Point Pleasant Beach", offset: 0 },
+    { id: "wharfside", name: "Marina Grille", market: "Belmar", offset: 9 },
     { id: "rods", name: "Rod's Tavern", market: "Sea Girt", offset: -7 },
     { id: "captains", name: "Captain's Inn", market: "Forked River", offset: 15 },
     { id: "oyster", name: "Oyster Creek", market: "Leeds Point", offset: 5 },

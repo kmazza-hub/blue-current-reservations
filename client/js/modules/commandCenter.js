@@ -120,7 +120,7 @@
 
   function render(snapshot) {
     const b=snapshot.business||{}, o=snapshot.operation||{}, r=snapshot.readiness||{};
-    text("commandCenterLocation", snapshot.location?.name || "Marina Grille");
+    text("commandCenterLocation", snapshot.location?.name || "Active restaurant");
     text("readinessScore", r.score);
     text("readinessStatus", r.status);
     const meter=byId("readinessMeterFill"); if(meter) meter.style.width=`${r.score || 0}%`;
@@ -199,7 +199,7 @@
   const ready = callback => document.readyState === "loading" ? document.addEventListener("DOMContentLoaded",callback,{once:true}) : callback();
   ready(() => {
     const dateLabel=byId("commandCenterDate");
-    if(dateLabel) dateLabel.innerHTML=`${new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date())} · <span id="commandCenterLocation">Marina Grille</span>`;
+    if(dateLabel) dateLabel.innerHTML=`${new Intl.DateTimeFormat("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date())} · <span id="commandCenterLocation">Active restaurant</span>`;
     const actions=[...document.querySelectorAll("[data-manager-action]")], progress=byId("managerActionProgress");
     const update=()=>{const done=actions.filter(x=>x.checked).length; actions.forEach(x=>x.closest("label")?.classList.toggle("is-complete",x.checked)); if(progress)progress.textContent=`${done} of ${actions.length} complete`;};
     actions.forEach(x=>x.addEventListener("change",update)); update();

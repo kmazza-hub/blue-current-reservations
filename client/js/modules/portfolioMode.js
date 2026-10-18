@@ -2,7 +2,7 @@
   "use strict";
 
   const LOCATIONS = [
-    { id: "marina", name: "Marina Grille", market: "Belmar", status: "healthy", statusLabel: "Healthy", occupancy: 91, revenue: 18240, guests: 482, health: 94, kitchen: 9, trend: "+14%", brief: "Operating above plan with strong guest flow and no immediate intervention required." },
+    { id: "marina", name: "The Wharfside", market: "Point Pleasant Beach", status: "healthy", statusLabel: "Healthy", occupancy: 91, revenue: 18240, guests: 482, health: 94, kitchen: 9, trend: "+14%", brief: "Operating above plan with strong guest flow and no immediate intervention required." },
     { id: "oyster", name: "Oyster Creek", market: "Leeds Point", status: "watch", statusLabel: "Watch", occupancy: 82, revenue: 11020, guests: 338, health: 86, kitchen: 12, trend: "+7%", brief: "Demand is healthy. Watch patio pacing as the next reservation wave approaches." },
     { id: "atlantic", name: "Atlantic Bar & Grill", market: "Seaside Park", status: "critical", statusLabel: "Action", occupancy: 98, revenue: 23400, guests: 596, health: 71, kitchen: 18, trend: "+19%", brief: "Kitchen ticket times are elevated. Pause walk-ins briefly and rebalance the next seating wave." },
     { id: "shipwreck", name: "Shipwreck Grill", market: "Brielle", status: "healthy", statusLabel: "Healthy", occupancy: 74, revenue: 10000, guests: 330, health: 91, kitchen: 8, trend: "+9%", brief: "Capacity remains available. Shift overflow demand here if neighboring locations tighten." }

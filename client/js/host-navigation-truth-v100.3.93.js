@@ -75,7 +75,7 @@
       setQueueView("arrivals");
       setTitle("Reservations", "Tonight's arrivals", "Who is coming, what matters, and who is ready to seat.");
       setText(heading, "Reservations");
-      setText(subtitle, "Tonight · Marina Grille");
+      setText(subtitle, "Tonight · Active restaurant");
       return;
     }
 
@@ -86,7 +86,7 @@
       setQueueView("waitlist");
       setTitle("Waitlist", "Who is waiting", "Seat the right party quickly. Nothing else competes for attention.");
       setText(heading, "Waitlist");
-      setText(subtitle, "Live front-door queue · Marina Grille");
+      setText(subtitle, "Live front-door queue · Active restaurant");
     }
   };
 

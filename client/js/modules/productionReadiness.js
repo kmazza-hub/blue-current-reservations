@@ -25,9 +25,9 @@
       locations: 4,
       users: [
         { name: "Keith Mazza", role: "Owner", location: "All locations", status: "Active" },
-        { name: "Sarah Morgan", role: "General Manager", location: "Marina Grille", status: "Active" },
-        { name: "Daniel Reed", role: "Kitchen Manager", location: "Marina Grille", status: "Active" },
-        { name: "Emily Hart", role: "Host", location: "Marina Grille", status: "Invited" }
+        { name: "Sarah Morgan", role: "General Manager", location: "The Wharfside", status: "Active" },
+        { name: "Daniel Reed", role: "Kitchen Manager", location: "The Wharfside", status: "Active" },
+        { name: "Emily Hart", role: "Host", location: "The Wharfside", status: "Invited" }
       ],
       configuration: {
         capacity: 188,
@@ -244,7 +244,7 @@
 
     $("prodInviteUser")?.addEventListener("click", () => {
       const number = state.users.length + 1;
-      state.users.push({ name: `Pilot User ${number}`, role: "Host", location: "Marina Grille", status: "Invited" });
+      state.users.push({ name: `Pilot User ${number}`, role: "Host", location: "The Wharfside", status: "Invited" });
       save();
       renderUsers();
       renderSummary();

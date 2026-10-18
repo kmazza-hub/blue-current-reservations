@@ -6,8 +6,8 @@
   const locations = [
     {
       id: "loc_marina",
-      name: "Marina Grill",
-      city: "Belmar",
+      name: "The Wharfside",
+      city: "Point Pleasant Beach",
       health: 92,
       revenue: 18420,
       labor: 26.1,

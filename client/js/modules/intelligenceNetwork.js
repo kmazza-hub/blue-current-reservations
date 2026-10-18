@@ -3,7 +3,7 @@
 
   function createIntelligenceNetworkModule(eventBus, appState) {
     const locations = [
-      { id:"marina", name:"Marina Grille", city:"Belmar", health:96, occupancy:91, kitchen:11.2, revenue:31800, guests:126, status:"healthy", conversion:94 },
+      { id:"marina", name:"The Wharfside", city:"Point Pleasant Beach", health:96, occupancy:91, kitchen:11.2, revenue:31800, guests:126, status:"healthy", conversion:94 },
       { id:"harbor", name:"Harbor House", city:"Point Pleasant", health:98, occupancy:87, kitchen:10.4, revenue:34620, guests:118, status:"healthy", conversion:96 },
       { id:"river", name:"River & Rail", city:"Red Bank", health:93, occupancy:84, kitchen:13.1, revenue:29450, guests:109, status:"healthy", conversion:91 },
       { id:"shore", name:"Shoreline Kitchen", city:"Asbury Park", health:91, occupancy:95, kitchen:16.8, revenue:32780, guests:142, status:"watch", conversion:89 },
@@ -12,7 +12,7 @@
     ];
     const knowledge = [
       { source:"Harbor House", situation:"Large-party arrival pressure", action:"Open overflow section 18 minutes early", result:"Wait reduced 8 minutes", confidence:93 },
-      { source:"Marina Grille", situation:"Kitchen ticket growth", action:"Assign manager to expo for 15 minutes", result:"Ticket time reduced 4.2 minutes", confidence:91 },
+      { source:"The Wharfside", situation:"Kitchen ticket growth", action:"Assign manager to expo for 15 minutes", result:"Ticket time reduced 4.2 minutes", confidence:91 },
       { source:"Garden Social", situation:"Low early occupancy", action:"Offer flexible callers a 6:45 PM slot", result:"Reservation conversion increased 11%", confidence:89 }
     ];
     let selectedId = appState.get("selectedLocationId") || "marina";

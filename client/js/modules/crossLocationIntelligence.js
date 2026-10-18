@@ -3,7 +3,7 @@
 
   const byId=id=>document.getElementById(id);
   const fallback=[
-    {id:"marina",name:"Marina Grill",city:"Belmar",health:92,revenue:18450,revenueTrend:8,occupancy:84,ticket:18,labor:24,alerts:1},
+    {id:"marina",name:"The Wharfside",city:"Point Pleasant Beach",health:92,revenue:18450,revenueTrend:8,occupancy:84,ticket:18,labor:24,alerts:1},
     {id:"dock",name:"The Dock Room",city:"Point Pleasant",health:71,revenue:13780,revenueTrend:-6,occupancy:91,ticket:31,labor:31,alerts:5},
     {id:"shoreline",name:"Shoreline Kitchen",city:"Asbury Park",health:79,revenue:15120,revenueTrend:2,occupancy:76,ticket:24,labor:28,alerts:3},
     {id:"harbor",name:"Harbor House",city:"Long Branch",health:88,revenue:16940,revenueTrend:5,occupancy:81,ticket:20,labor:25,alerts:1}
