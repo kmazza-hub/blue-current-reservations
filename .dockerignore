@@ -10,3 +10,11 @@ database/data
 .env
 .env.*
 !.env.example
+
+# Runtime data and local authority at any nesting depth
+**/database/data
+**/blue-current.json
+**/blue-current.json.*
+**/blue-current-runtime-*.json*
+**/runtime-database.local.json
+**/runtime-backup.local.json

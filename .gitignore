@@ -25,3 +25,11 @@ $Recycle.Bin/
 # Machine-local runtime database selection
 config/runtime-database.local.json
 config/runtime-backup.local.json
+
+# Runtime data and local authority at any nesting depth
+**/database/data
+**/blue-current.json
+**/blue-current.json.*
+**/blue-current-runtime-*.json*
+**/runtime-database.local.json
+**/runtime-backup.local.json

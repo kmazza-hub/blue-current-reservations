@@ -108,7 +108,7 @@ function readVerifiedJson(filePath, expectedHash = null) {
 }
 
 function writeExclusive(filePath, content) {
-  const handle = fs.openSync(filePath, "wx");
+  const handle = fs.openSync(filePath, "wx", 0o600);
   try {
     fs.writeFileSync(handle, content, "utf8");
     fs.fsyncSync(handle);

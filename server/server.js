@@ -9,6 +9,7 @@ const { createPersistence } = require("./persistence/persistenceFactory");
 const { prepareRuntimeDatabase } = require("./persistence/runtimeDatabase");
 const { claimRuntimeActivity, releaseRuntimeActivity } = require("./persistence/runtimeBackupManager");
 const { RuntimeBackupCoordinator } = require("./persistence/runtimeBackupCoordinator");
+const { RuntimeBackupSchedule } = require("./persistence/runtimeBackupSchedule");
 const AuditService = require("./services/auditService");
 const IdempotencyService = require("./services/idempotencyService");
 const SyncReconciliationService = require("./services/syncReconciliationService");
@@ -209,6 +210,7 @@ const database = createPersistence({
   databasePath: DB_PATH
 });
 const runtimeBackupCoordinator = new RuntimeBackupCoordinator({ root: ROOT, databasePath: DB_PATH, database });
+const runtimeBackupSchedule = new RuntimeBackupSchedule({ databasePath: DB_PATH, database });
 const realtimeHub = new RealtimeHub();
 const auditService = new AuditService(database);
 const idempotencyService = new IdempotencyService(database);
@@ -645,6 +647,8 @@ async function bootstrap() {
     console.warn(`[startup] Backup checkpoint warning: ${backupCheckpoint.error || backupCheckpoint.reason || "unknown"}`);
   }
 
+  await runtimeBackupSchedule.start();
+
   server.listen(PORT, () => {
     console.log(`Blue Current Cloud V${APP_VERSION} running at http://localhost:${PORT}`);
     console.log(`Database: ${DB_PATH}`);
@@ -678,6 +682,8 @@ async function gracefulShutdown(signal) {
   });
 
   await closeServer;
+
+  await runtimeBackupSchedule.stop();
 
   const idle = await database.awaitIdle();
   if (!idle.ok) {

@@ -4,13 +4,16 @@ ENV NODE_ENV=production \
     BLUE_CURRENT_ENV=production \
     BLUE_CURRENT_PERSISTENCE_DRIVER=json \
     BLUE_CURRENT_DB=/var/lib/blue-current/blue-current.json \
+    BLUE_CURRENT_MANAGED_BACKUPS=true \
+    BLUE_CURRENT_BACKUP_INTERVAL_HOURS=6 \
+    BLUE_CURRENT_BACKUP_RETENTION=28 \
     PORT=8787
 
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts
 COPY . .
-RUN mkdir -p /var/lib/blue-current && chown -R node:node /var/lib/blue-current /app
+RUN node scripts/check-release-data.js && mkdir -p /var/lib/blue-current && chown -R node:node /var/lib/blue-current /app
 
 USER node
 VOLUME ["/var/lib/blue-current"]

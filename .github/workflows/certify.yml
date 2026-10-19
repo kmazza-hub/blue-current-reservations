@@ -1,0 +1,27 @@
+name: Current release certification
+on:
+  push:
+    branches: [live-service-timeline, main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: certification-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BLUE_CURRENT_MANAGED_BACKUPS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run certify:universal
+      - name: Verify hosted image excludes runtime data
+        run: docker build --tag blue-current-certification --file deploy/hosted-pilot/Dockerfile .
