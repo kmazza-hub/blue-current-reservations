@@ -55,5 +55,23 @@ window.BlueCurrentResumeTruth.setInteractionGuard("blocked","manual-b");
 window.BlueCurrentResumeTruth.releaseInteractionGuard("manual-release");
 ok(!main.hasAttribute("inert"),"nested guard status changes do not invent inert ownership");
 ok(!main.hasAttribute("aria-busy"),"nested guard status changes do not invent busy ownership");
+
+// Authentication can release its lock during an in-flight resume refresh.
+let authOpen=true;
+document.body.classList={contains(name){return name==="auth-locked"&&authOpen}};
+main.setAttribute("inert","");
+window.BlueCurrentResumeTruth.setInteractionGuard("checking","auth-handoff");
+authOpen=false;
+main.removeAttribute("inert"); // Auth module closes its surface after successful sign-in.
+window.BlueCurrentResumeTruth.releaseInteractionGuard("fresh-state-rendered");
+ok(!main.hasAttribute("inert"),"completed sign-in lock is not resurrected by resume release");
+
+// A still-open auth surface must retain its lock even when resume releases.
+authOpen=true;main.setAttribute("inert","");
+window.BlueCurrentResumeTruth.setInteractionGuard("checking","auth-still-open");
+window.BlueCurrentResumeTruth.releaseInteractionGuard("fresh-state-rendered");
+ok(main.hasAttribute("inert"),"active authentication lock remains protected");
+authOpen=false;main.removeAttribute("inert");
+
 console.log(`V100.2.90 validation ${p}/${t}`);if(p!==t)process.exitCode=1;
 })().catch(e=>{console.error(e);process.exit(1)});

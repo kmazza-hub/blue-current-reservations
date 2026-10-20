@@ -39,18 +39,24 @@ function mainSurface(){
   return document.getElementById?.("main")||null;
 }
 
+function authSurfaceLocked(){
+  const overlay=document.getElementById?.("authOverlay");
+  return Boolean(document.body?.classList?.contains("auth-locked")||overlay?.classList?.contains("open"));
+}
+
 function captureGuardOwnership(){
   if(guardOwnership)return guardOwnership;
   const main=mainSurface();
   const root=document.documentElement||null;
   const mainHasInert=Boolean(main?.hasAttribute?.("inert"));
+  const authOwnedInert=mainHasInert&&authSurfaceLocked();
   const mainHasBusy=Boolean(main?.hasAttribute?.("aria-busy"));
   const mainBusy=mainHasBusy?main.getAttribute?.("aria-busy"):null;
   const mainDatasetHad=Boolean(main?.dataset&&Object.prototype.hasOwnProperty.call(main.dataset,"bcResumeGuard"));
   const mainDatasetValue=mainDatasetHad?main.dataset.bcResumeGuard:null;
   const rootHad=Boolean(root?.hasAttribute?.("data-bc-resume-guard"));
   const rootValue=rootHad?root.getAttribute?.("data-bc-resume-guard"):null;
-  guardOwnership={main,mainHasInert,mainHasBusy,mainBusy,mainDatasetHad,mainDatasetValue,root,rootHad,rootValue};
+  guardOwnership={main,mainHasInert,authOwnedInert,mainHasBusy,mainBusy,mainDatasetHad,mainDatasetValue,root,rootHad,rootValue};
   return guardOwnership;
 }
 
@@ -60,7 +66,9 @@ function restoreGuardOwnership(){
   if(!prior)return;
   const main=prior.main;
   if(main){
-    if(prior.mainHasInert)main.setAttribute?.("inert","");
+    // A completed sign-in has released its own lock; never resurrect it.
+    // Unrelated pre-existing locks and a still-open auth surface stay protected.
+    if(prior.mainHasInert&&(!prior.authOwnedInert||authSurfaceLocked()))main.setAttribute?.("inert","");
     else main.removeAttribute?.("inert");
     if(prior.mainHasBusy)main.setAttribute?.("aria-busy",prior.mainBusy??"");
     else main.removeAttribute?.("aria-busy");
