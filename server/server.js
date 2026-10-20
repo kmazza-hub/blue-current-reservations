@@ -475,7 +475,7 @@ const MIME = {
 
 function safeFilePath(requestPath) {
   const decoded = decodeURIComponent(requestPath.split("?")[0]);
-  const relative = decoded === "/" ? "index.html" : decoded.replace(/^\/+/, "");
+  const relative = decoded === "/" ? "working-shift-demo.html" : decoded.replace(/^\/+/, "");
   const resolved = path.resolve(CLIENT_ROOT, relative);
   return resolved.startsWith(CLIENT_ROOT) ? resolved : null;
 }

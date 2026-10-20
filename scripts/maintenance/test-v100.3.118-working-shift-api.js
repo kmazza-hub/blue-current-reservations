@@ -39,6 +39,8 @@ async function stop(){if(child&&child.exitCode===null){const exited=new Promise(
  assert.equal((await state(frank)).tasks.find(t=>t.id==="runner").done,true);
  assert.equal((await call("/api/auth/logout",frank,"POST",{})).status,200);
  assert.equal((await call(endpoint,frank)).status,401);
+ const landing=await fetch(base+"/");assert.equal(landing.status,200);const landingHtml=await landing.text();assert(landingHtml.includes("FICTIONAL WORKING DEMO"));assert(landingHtml.includes('href="/index.html"'));assert(landingHtml.includes('src="/working-shift-demo.js'));
+ const platform=await fetch(base+"/index.html");assert.equal(platform.status,200);assert((await platform.text()).includes('id="blueCurrentCommand"'));
  const page=await fetch(base+"/working-shift-demo.html");assert.equal(page.status,200);assert((await page.text()).includes("FICTIONAL WORKING DEMO"));
  console.log("V100.3.118 working shift API passed: auth, roles, org isolation, primary/demo isolation, HOLD, stale writes, restart and sign-out.");
 }finally{await stop();fs.rmSync(dir,{recursive:true,force:true});}})().catch(error=>{console.error(error);process.exitCode=1});
