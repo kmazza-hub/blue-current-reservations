@@ -7,6 +7,7 @@ const path = require("path");
 const crypto = require("crypto");
 const {HarborPointDemoService} = require("../services/harborPointDemoService");
 const {HarborPointLiveService} = require("../services/harborPointLiveService");
+const {WorkingShiftDemoService} = require("../services/workingShiftDemoService");
 const { backupHealth } = require("../persistence/runtimeBackupManager");
 
 async function sendJson(response, status, payload) {
@@ -145,6 +146,14 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
       harborDemos.set(organizationId,new HarborPointDemoService(path.join(parsed.dir,`${parsed.name}-${suffix}${parsed.ext||".json"}`)));
     }
     return harborDemos.get(organizationId);
+  };
+  const workingShifts=new Map();
+  const workingShiftFor=organizationId=>{
+    if(!workingShifts.has(organizationId)) {
+      const suffix=crypto.createHash("sha256").update(organizationId).digest("hex").slice(0,16);
+      workingShifts.set(organizationId,new WorkingShiftDemoService(path.join(path.dirname(primaryPath),`working-shift-demo-${suffix}.json`)));
+    }
+    return workingShifts.get(organizationId);
   };
   return async function route(request, response) {
     const url = new URL(request.url, "http://localhost");
@@ -312,6 +321,24 @@ function createRouter({ database, auditService, idempotencyService, syncReconcil
     const canWriteOperations = () =>
       authService.can(auth, "write") || authService.can(auth, "write_operations");
     const writeOrganizationId = organizationId;
+
+    if (url.pathname === "/api/working-shift-demo") {
+      if(!authService.can(auth,"write_reservations")&&!authService.can(auth,"write_operations")) return sendJson(response,403,{error:"Demo operating access required."});
+      try {
+        const demo=workingShiftFor(organizationId);
+        if(request.method==="GET") return sendJson(response,200,await demo.snapshot());
+        if(request.method==="POST") {
+          const input=await readJson(request);
+          const management=["team","receive","task","sync","reset"].includes(input.action);
+          const kitchen=["ticket_ready","serve"].includes(input.action);
+          if(management&&!authService.can(auth,"write")) return sendJson(response,403,{error:"Demo manager access required."});
+          if(kitchen&&!canWriteOperations()) return sendJson(response,403,{error:"Demo kitchen operating access required."});
+          if(!management&&!kitchen&&!authService.can(auth,"write_reservations")) return sendJson(response,403,{error:"Demo host access required."});
+          return sendJson(response,200,await demo.operate(input,auth.user.name));
+        }
+        return sendJson(response,405,{error:"Method not allowed."});
+      } catch(error) {return sendJson(response,error.statusCode||500,{error:error.statusCode?error.message:"Working shift demo unavailable."});}
+    }
 
     if (url.pathname.startsWith("/api/harbor-point-live")) {
       if (!authService.can(auth,"write_reservations")&&!authService.can(auth,"admin")) return sendJson(response,403,{error:"Harbor Point host access required."});

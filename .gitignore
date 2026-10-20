@@ -33,3 +33,6 @@ config/runtime-backup.local.json
 **/blue-current-runtime-*.json*
 **/runtime-database.local.json
 **/runtime-backup.local.json
+
+**/working-shift-demo*.json*
+**/harbor-point-demo*.json*

@@ -13,7 +13,7 @@ function findRuntimeArtifacts(root) {
       const runtime = /(^|\/)database\/data(?:\/|$)/.test(relative) ||
         /^(?:blue-current\.json(?:\..*)?|blue-current-runtime-.*\.json(?:\..*)?|runtime-(?:database|backup)\.local\.json)$/.test(entry.name) ||
         (/^\.env(?:\.|$)/.test(entry.name) && entry.name !== ".env.example");
-      if (runtime) found.push(relative);
+      if (runtime || /^(?:working-shift-demo|harbor-point-demo).*\.json(?:\..*)?$/.test(entry.name)) found.push(relative);
       else if (entry.isDirectory()) walk(full);
       else if (entry.isSymbolicLink()) found.push(relative + " (symlink requires review)");
     }
