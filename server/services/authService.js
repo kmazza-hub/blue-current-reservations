@@ -180,7 +180,11 @@ class AuthService {
   }
 
   async login(email, password, requestedOrganizationId = null) {
-    const normalizedEmail = this._normalizedEmail(email);
+    const requestedEmail = this._normalizedEmail(email);
+    // Meeting alias for one existing fictional demo identity only. Keep the
+    // canonical security key so aliases share password/lockout/session limits.
+    const meetingAlias = requestedEmail === "frank@bluecurrent.demo";
+    const normalizedEmail = meetingAlias ? "sarah@bluecurrent.demo" : requestedEmail;
     const security = await this._loginSecurityState(normalizedEmail);
     const now = Date.now();
 
@@ -195,7 +199,8 @@ class AuthService {
 
     const database = await this.database.read();
     const user = (database.users || []).find(item =>
-      this._normalizedEmail(item.email) === normalizedEmail && item.status === "active"
+      this._normalizedEmail(item.email) === normalizedEmail && item.status === "active" &&
+      (!meetingAlias || this.isMeetingDemoUser(item))
     );
 
     if (!user || !verifyPassword(password, user.passwordHash)) {
@@ -218,7 +223,7 @@ class AuthService {
     if (!membership) {
       await this._recordFailedLogin(normalizedEmail, "organization-access-denied");
       await this.auditService.record({
-        actor: user.name,
+        actor: this.publicUser(user).name,
         action: "Login rejected for unauthorized organization",
         category: "security"
       });
@@ -249,7 +254,7 @@ class AuthService {
 
     await this.auditService.record({
       organizationId: membership.organizationId,
-      actor: user.name,
+      actor: this.publicUser(user).name,
       action: "Signed in to Blue Current Cloud",
       category: "security"
     });
@@ -455,11 +460,17 @@ class AuthService {
     };
   }
 
+  isMeetingDemoUser(user) {
+    return user.id === "usr_sarah" && user.organizationId === "org_chefs" &&
+      this._normalizedEmail(user.email) === "sarah@bluecurrent.demo";
+  }
+
   publicUser(user) {
+    const meetingDemo = this.isMeetingDemoUser(user);
     return {
       id: user.id,
-      name: user.name,
-      email: user.email,
+      name: meetingDemo ? "Frank Koch" : user.name,
+      email: meetingDemo ? "frank@bluecurrent.demo" : user.email,
       status: user.status
     };
   }

@@ -195,7 +195,7 @@
     });
 
     $("authDemoSarah")?.addEventListener("click", () => {
-      $("authEmail").value = "sarah@bluecurrent.demo";
+      $("authEmail").value = "frank@bluecurrent.demo";
       $("authPassword").value = "Manager23!";
     });
 
