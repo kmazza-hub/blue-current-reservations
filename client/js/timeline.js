@@ -11,7 +11,7 @@ function createLiveServiceTimeline(eventBus) {
 
   const reservation = {
     id: "reservation-1048",
-    guestName: "Frank",
+    guestName: "Taylor Morgan",
     phoneNumber: "(732) 555-0148",
     partySize: 4,
     reservationDate: "Friday, July 24",

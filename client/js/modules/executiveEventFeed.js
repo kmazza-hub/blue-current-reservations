@@ -62,7 +62,7 @@
       {
         id: "seed_2",
         time: new Date(Date.now() - 18 * 60000).toISOString(),
-        location: "The Wharfside",
+        location: "Demo Restaurant",
         category: "guests",
         severity: "warning",
         title: "Reservation pace increased",
@@ -73,7 +73,7 @@
       {
         id: "seed_3",
         time: new Date(Date.now() - 34 * 60000).toISOString(),
-        location: "Lobster Shanty",
+        location: "Demo Restaurant",
         category: "operations",
         severity: "success",
         title: "Kitchen pressure alert resolved",

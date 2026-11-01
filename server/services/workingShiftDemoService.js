@@ -1,10 +1,10 @@
 "use strict";
-const { HarborPointDemoService } = require("./harborPointDemoService");
+const { ReservationDemoService } = require("./reservationDemoService");
 const fail = (message, statusCode = 409) => { throw Object.assign(new Error(message), { statusCode }); };
-class WorkingShiftDemoService extends HarborPointDemoService {
+class WorkingShiftDemoService extends ReservationDemoService {
   initial() {
     const s = super.initial();
-    s.shift = { name: "Wharfside · sample dinner shift", date: "2026-11-26", manager: "Frank Koch", venueApproved: false };
+    s.shift = { name: "Demo Restaurant · sample dinner shift", date: "2026-11-26", manager: "Demo Manager", venueApproved: false };
     s.team = [
       {id:"lead",name:"Demo Taylor",role:"Host lead",status:"working",section:"Welcome"},
       {id:"avery",name:"Demo Avery",role:"Server",status:"working",section:"Inlet Room"},
@@ -60,6 +60,14 @@ class WorkingShiftDemoService extends HarborPointDemoService {
       const received=s.receipts.filter(r=>r.itemId===item.id).reduce((sum,r)=>sum+r.quantity,0);
       return {...item,used,received,onHand:item.opening+received-used};
     });
+  }
+  async read() {
+    const state = await super.read();
+    const { neutralLabel } = require("./demoBranding");
+    if (state.shift) { state.shift.name = "Demo Restaurant · sample dinner shift"; state.shift.manager = "Demo Manager"; }
+    for (const task of state.tasks || []) if (task.actor) task.actor = neutralLabel(task.actor);
+    for (const event of state.events || []) { event.actor = neutralLabel(event.actor); event.text = neutralLabel(event.text); }
+    return state;
   }
   async snapshot() {
     const s=await super.snapshot(),stock=this.stock(s),active=s.reservations.filter(r=>r.status==="seated");

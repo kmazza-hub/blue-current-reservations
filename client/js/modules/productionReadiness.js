@@ -17,17 +17,17 @@
       if (target) target.className = value;
     }
 
-    const STORAGE_KEY = "blueCurrentV21Production";
+    const STORAGE_KEY = "blueCurrentV21ProductionGeneric";
     const defaultState = {
-      organization: "Chefs International",
+      organization: "Demo Hospitality Group",
       mode: "demo",
       onboardingProgress: 75,
       locations: 4,
       users: [
         { name: "Keith Mazza", role: "Owner", location: "All locations", status: "Active" },
-        { name: "Frank Koch", role: "General Manager", location: "The Wharfside", status: "Active" },
-        { name: "Daniel Reed", role: "Kitchen Manager", location: "The Wharfside", status: "Active" },
-        { name: "Emily Hart", role: "Host", location: "The Wharfside", status: "Invited" }
+        { name: "Demo Manager", role: "General Manager", location: "Demo Restaurant", status: "Active" },
+        { name: "Daniel Reed", role: "Kitchen Manager", location: "Demo Restaurant", status: "Active" },
+        { name: "Emily Hart", role: "Host", location: "Demo Restaurant", status: "Invited" }
       ],
       configuration: {
         capacity: 188,
@@ -50,7 +50,7 @@
       audit: [
         { time: new Date(Date.now() - 18 * 60000).toISOString(), actor: "System", action: "V21 production controls initialized", category: "system" },
         { time: new Date(Date.now() - 12 * 60000).toISOString(), actor: "Keith Mazza", action: "Enabled Autonomous Operations for pilot", category: "feature" },
-        { time: new Date(Date.now() - 6 * 60000).toISOString(), actor: "Frank Koch", action: "Updated occupancy threshold to 90%", category: "configuration" }
+        { time: new Date(Date.now() - 6 * 60000).toISOString(), actor: "Demo Manager", action: "Updated occupancy threshold to 90%", category: "configuration" }
       ]
     };
 
@@ -244,7 +244,7 @@
 
     $("prodInviteUser")?.addEventListener("click", () => {
       const number = state.users.length + 1;
-      state.users.push({ name: `Pilot User ${number}`, role: "Host", location: "The Wharfside", status: "Invited" });
+      state.users.push({ name: `Pilot User ${number}`, role: "Host", location: "Demo Restaurant", status: "Invited" });
       save();
       renderUsers();
       renderSummary();

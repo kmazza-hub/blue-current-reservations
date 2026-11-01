@@ -475,7 +475,9 @@ const MIME = {
 
 function safeFilePath(requestPath) {
   const decoded = decodeURIComponent(requestPath.split("?")[0]);
-  const relative = decoded === "/" ? "working-shift-demo.html" : decoded.replace(/^\/+/, "");
+  const requested = decoded === "/" ? "working-shift-demo.html" : decoded.replace(/^\/+/, "");
+  const demoAliases = {"harbor-point-workspace-v100.3.107.js": "host-workspace.js", "harbor-point-workspace-v100.3.107.css": "host-workspace.css", "harbor-point-live-v100.3.111.js": "pilot-setup.js", "frank-command.html": "manager-command.html", "frank-command.js": "manager-command.js", "frank-command.css": "manager-command.css", "harbor-point.html": "host-demo.html", "harbor-point-live.html": "pilot-setup.html", "harbor-point-live-v100.3.111.css": "pilot-setup.css", "js/harbor-point-floor-demo-v100.3.105.js": "js/reservation-floor-preview.js", "js/harbor-point-operations-v100.3.106.js": "js/reservation-rehearsal.js"};
+  const relative = demoAliases[requested] || requested;
   const resolved = path.resolve(CLIENT_ROOT, relative);
   return resolved.startsWith(CLIENT_ROOT) ? resolved : null;
 }
@@ -609,6 +611,7 @@ async function bootstrap() {
     .catch(error => ({ ok: false, error: error.message }));
   const mutationRecovery = await productionMutationIntegrityService.recoverStalePrepared({ force: true });
 
+  if (productionConfigurationService.mode === "production") await require("./services/demoBranding").migrateDemoLabels(database);
   await authService.initializePasswords();
   const sessionCleanup = await authService.cleanupSessions();
 

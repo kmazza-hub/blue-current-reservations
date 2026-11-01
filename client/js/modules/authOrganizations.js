@@ -110,7 +110,7 @@
       }
       const orgSelect = $("authOrganizationSelect");
       if (orgSelect) orgSelect.innerHTML = session.organizations.map(item =>
-        `<option value="${item.organizationId}" ${item.organizationId === session.organizationId ? "selected" : ""}>${item.organizationId === "org_chefs" ? "Chefs International" : "Blue Harbor Hospitality"} · ${item.role.replaceAll("_"," ")}</option>`
+        `<option value="${item.organizationId}" ${item.organizationId === session.organizationId ? "selected" : ""}>${item.organizationId === "org_chefs" ? "Demo Hospitality Group" : "Blue Harbor Hospitality"} · ${item.role.replaceAll("_"," ")}</option>`
       ).join("");
       appState.update({
         authenticatedUser: session.user,
@@ -195,7 +195,7 @@
     });
 
     $("authDemoSarah")?.addEventListener("click", () => {
-      $("authEmail").value = "frank@bluecurrent.demo";
+      $("authEmail").value = "manager@bluecurrent.demo";
       $("authPassword").value = "Manager23!";
     });
 

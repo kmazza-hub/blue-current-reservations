@@ -181,10 +181,10 @@ class AuthService {
 
   async login(email, password, requestedOrganizationId = null) {
     const requestedEmail = this._normalizedEmail(email);
-    // Meeting alias for one existing fictional demo identity only. Keep the
+    // Demo alias for one existing fictional demo identity only. Keep the
     // canonical security key so aliases share password/lockout/session limits.
-    const meetingAlias = requestedEmail === "frank@bluecurrent.demo";
-    const normalizedEmail = meetingAlias ? "sarah@bluecurrent.demo" : requestedEmail;
+    const demoAlias = requestedEmail === "manager@bluecurrent.demo";
+    const normalizedEmail = demoAlias ? "sarah@bluecurrent.demo" : requestedEmail;
     const security = await this._loginSecurityState(normalizedEmail);
     const now = Date.now();
 
@@ -200,7 +200,7 @@ class AuthService {
     const database = await this.database.read();
     const user = (database.users || []).find(item =>
       this._normalizedEmail(item.email) === normalizedEmail && item.status === "active" &&
-      (!meetingAlias || this.isMeetingDemoUser(item))
+      (!demoAlias || this.isDemoManagerUser(item))
     );
 
     if (!user || !verifyPassword(password, user.passwordHash)) {
@@ -460,17 +460,17 @@ class AuthService {
     };
   }
 
-  isMeetingDemoUser(user) {
+  isDemoManagerUser(user) {
     return user.id === "usr_sarah" && user.organizationId === "org_chefs" &&
       this._normalizedEmail(user.email) === "sarah@bluecurrent.demo";
   }
 
   publicUser(user) {
-    const meetingDemo = this.isMeetingDemoUser(user);
+    const demoManager = this.isDemoManagerUser(user);
     return {
       id: user.id,
-      name: meetingDemo ? "Frank Koch" : user.name,
-      email: meetingDemo ? "frank@bluecurrent.demo" : user.email,
+      name: demoManager ? "Demo Manager" : user.name,
+      email: demoManager ? "manager@bluecurrent.demo" : user.email,
       status: user.status
     };
   }

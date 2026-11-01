@@ -20095,7 +20095,7 @@ html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-f
   #bcHolidayReservationDialog .bc-host-dialog-card>footer button{width:100%}
 }
 
-/* V100.3.105 — isolated Harbor Point floor preview */
+/* V100.3.105 — isolated Demo Restaurant floor preview */
 .bc-harbor-demo{width:min(920px,calc(100vw - 20px));max-width:920px;max-height:calc(100dvh - 20px);padding:0;border:0;border-radius:22px;color:#123542;background:#f5f9fa;box-shadow:0 30px 100px #00192399}
 .bc-harbor-demo::backdrop{background:#001a25b8}
 .bc-harbor-shell{max-height:calc(100dvh - 20px);display:flex;flex-direction:column;overflow:auto}
@@ -20118,7 +20118,7 @@ html.bc-ipad-floor-focus #bcFloorFocusStage>.bc-ipad-floor-focus-panel[data-bc-f
 .bc-harbor-demo footer{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:14px 24px calc(14px + env(safe-area-inset-bottom,0px));background:#e8f1f3;color:#244c5c;font-weight:700}
 @media(max-width:580px){.bc-harbor-demo header{padding:18px}.bc-harbor-notice{padding:12px 18px}.bc-harbor-demo nav{padding:14px 18px 0}.bc-harbor-room{padding:12px 18px}.bc-harbor-map{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px;min-height:240px}.bc-harbor-table{width:min(100%,70px)}.bc-harbor-demo footer{padding:14px 18px;flex-direction:column;align-items:stretch}.bc-harbor-demo footer button{width:100%}}
 
-/* V100.3.106 — functional, isolated Harbor Point rehearsal */
+/* V100.3.106 — functional, isolated Demo Restaurant rehearsal */
 .bc-harbor-operating{width:min(1120px,calc(100vw - 16px));max-width:1120px}
 .bc-harbor-operating #bcHarborNotice{margin:0;padding:8px 24px;min-height:34px;background:#e8f4f6;color:#12546a;font-weight:800}.bc-harbor-operating #bcHarborNotice[data-error=true]{background:#ffeded;color:#8b2525}
 .bc-harbor-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px 24px;border-bottom:1px solid #c9dce2}

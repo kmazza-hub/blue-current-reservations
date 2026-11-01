@@ -6,7 +6,7 @@
   const locations = [
     {
       id: "loc_marina",
-      name: "The Wharfside",
+      name: "Demo Restaurant",
       city: "Point Pleasant Beach",
       health: 92,
       revenue: 18420,
@@ -28,7 +28,7 @@
     },
     {
       id: "loc_lobster",
-      name: "Lobster Shanty",
+      name: "Demo Restaurant",
       city: "Point Pleasant",
       health: 84,
       revenue: 17860,

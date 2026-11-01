@@ -34,7 +34,7 @@ setInterval(updateClock, 30000);
 const scenes = [
   {
     status: "Incoming call",
-    ai: "Good evening, thank you for calling The Wharfside. How may I help?",
+    ai: "Good evening, thank you for calling Demo Restaurant. How may I help?",
     guest: "A table for four around seven-thirty, preferably outside.",
     thinking: "Listening",
     timer: "00:03",
@@ -45,7 +45,7 @@ const scenes = [
   {
     status: "Conversation live",
     ai: "Absolutely. May I have the name for the reservation?",
-    guest: "Frank. We are celebrating my wife's birthday.",
+    guest: "Taylor Morgan. We are celebrating my wife's birthday.",
     thinking: "Capturing guest details",
     timer: "00:12",
     eventLabel: "Guest context captured",
@@ -54,7 +54,7 @@ const scenes = [
   },
   {
     status: "Checking tables",
-    ai: "Thank you, Frank. I have a waterfront table available at 7:30.",
+    ai: "Thank you, Taylor Morgan. I have a waterfront table available at 7:30.",
     guest: "That would be perfect.",
     thinking: "Assigning table 14",
     timer: "00:24",
@@ -194,11 +194,11 @@ $$(".reveal").forEach((element) => observer.observe(element));
 
 const eveningScenes=[
 ["5:55 PM","Preparing for dinner","Before the doors open","The team begins with a clear view.","Managers see expected covers, special occasions, and reservation pacing before the first guest arrives.","☀","Service preparation","48 reservations · 184 guests expected","184","48","0","12%",[["Opening brief","Special occasions shared with host team"],["Dining room","Waterfront section prepared"],["Guest line","AI host ready"]]],
-["6:08 PM","Dinner service live","A meaningful detail","A birthday becomes part of the welcome.","The guest mentions a celebration during the call. Blue Current carries that context into the host team's view.","✦","Guest occasion captured","Birthday note added for Frank","188","49","0","34%",[["Guest profile","Birthday celebration added"],["Reservation","Party of 4 confirmed for 7:30 PM"],["Host team","Arrival note shared"]]],
+["6:08 PM","Dinner service live","A meaningful detail","A birthday becomes part of the welcome.","The guest mentions a celebration during the call. Blue Current carries that context into the host team's view.","✦","Guest occasion captured","Birthday note added for Taylor Morgan","188","49","0","34%",[["Guest profile","Birthday celebration added"],["Reservation","Party of 4 confirmed for 7:30 PM"],["Host team","Arrival note shared"]]],
 ["6:21 PM","Waitlist beginning","The room starts filling","Demand rises without creating chaos.","The waitlist begins while incoming callers still receive immediate answers and clear expectations.","≋","Waitlist opened","3 parties waiting · 18 minute estimate","224","56","3","61%",[["Waitlist","Party of 3 added by phone"],["Guest message","Estimated wait sent by SMS"],["Manager view","Dining pace remains on target"]]],
 ["6:45 PM","Peak service","The dinner rush","The restaurant reaches capacity calmly.","Calls, guest expectations, and table availability remain synchronized during the busiest part of service.","●","Peak occupancy","Dining room at 96% · calls still answered","271","63","7","96%",[["Dining room","Peak capacity reached"],["Guest line","12 calls answered during rush"],["Waitlist","Average quoted wait: 24 minutes"]]],
 ["7:15 PM","Table opening","A new opportunity","An opening becomes a reservation.","A table turns over early. The operating view updates and the next suitable guest can be welcomed.","↗","Availability detected","Waterfront table open at 7:30 PM","286","64","5","88%",[["Table 14","Available for 7:30 PM"],["Guest line","Reservation opportunity offered"],["SMS","Confirmation delivered"]]],
-["8:00 PM","Guest arrival","The promise is delivered","The host already knows why tonight matters.","Frank arrives for the birthday dinner. The seating preference and celebration note are already waiting.","✓","Guest checked in","Frank · Birthday · Table 14","318","69","2","91%",[["Guest arrival","Frank checked in"],["Host note","Birthday celebration acknowledged"],["Dining room","Waterfront table seated"]]]
+["8:00 PM","Guest arrival","The promise is delivered","The host already knows why tonight matters.","Taylor Morgan arrives for the birthday dinner. The seating preference and celebration note are already waiting.","✓","Guest checked in","Taylor Morgan · Birthday · Table 14","318","69","2","91%",[["Guest arrival","Taylor Morgan checked in"],["Host note","Birthday celebration acknowledged"],["Dining room","Waterfront table seated"]]]
 ];
 let eveningIndex=0,eveningTimer;
 function renderEvening(i){const s=eveningScenes[i];eveningIndex=i;["#eveningTime","#eveningStatus","#eveningKicker","#eveningTitle","#eveningDescription","#eveningIcon","#eveningLabel","#eveningDetail","#eveningGuests","#eveningReservations","#eveningWaitlist","#eveningOccupancy","#eveningFeedTime"].forEach((id,n)=>$(id).textContent=[s[0],s[1],s[2],s[3],s[4],s[5],s[6],s[7],s[8],s[9],s[10],s[11],s[0]][n]);[["#feedOneLabel","#feedOneDetail"],["#feedTwoLabel","#feedTwoDetail"],["#feedThreeLabel","#feedThreeDetail"]].forEach((ids,n)=>{$(ids[0]).textContent=s[12][n][0];$(ids[1]).textContent=s[12][n][1]});$$(".evening-stop").forEach((b,n)=>b.classList.toggle("active",n===i))}
@@ -208,28 +208,28 @@ $$(".evening-stop").forEach(b=>b.addEventListener("click",()=>{renderEvening(Num
 
 // V5.2 — Operator dashboard interactions
 const operatorLocations = {
-  "The Wharfside": {
+  "Demo Restaurant": {
     guests: "318",
     reservations: "69",
     calls: "54",
     waitlist: "2",
     summary: "Dinner service is pacing ahead of last Friday. Call volume increased during the 6:30–7:00 rush, but every call was answered. Waterfront availability is limited through 8:30 PM."
   },
-  "Marina Grille": {
+  "Demo Restaurant": {
     guests: "284",
     reservations: "61",
     calls: "47",
     waitlist: "4",
     summary: "The dining room is pacing near forecast. Outdoor requests are elevated tonight, and the waitlist is averaging 16 minutes. No manager escalations are currently open."
   },
-  "Rod's Tavern": {
+  "Demo Tavern": {
     guests: "226",
     reservations: "48",
     calls: "39",
     waitlist: "1",
     summary: "Service is running smoothly with lighter-than-expected call volume. Two large parties are due within the next 30 minutes, and the main room remains on pace."
   },
-  "Captain's Inn": {
+  "Demo Inn": {
     guests: "198",
     reservations: "42",
     calls: "36",
@@ -333,8 +333,8 @@ $("#addWalkIn")?.addEventListener("click", () => {
 
 // V100.2.13 — Reservation Arrival & One-Tap Seating Flow
 (() => {
-  const guestName = "Frank";
-  const shortName = "Frank";
+  const guestName = "Taylor Morgan";
+  const shortName = "Taylor Morgan";
   const button = $("#assignTableButton");
   const detail = document.getElementById("hostTableDetail");
   if (!button || !detail) return;
@@ -886,7 +886,7 @@ $("#addWalkIn")?.addEventListener("click", () => {
       queuePanel.hidden = false;
       forceQueueView('arrivals');
       setTitleStrip('Reservations', "Tonight's arrivals", 'Who is coming, what matters, and who is ready to seat.');
-      setTopbar('Reservations', 'Tonight · The Wharfside');
+      setTopbar('Reservations', 'Tonight · Demo Restaurant');
       return;
     }
 
@@ -894,7 +894,7 @@ $("#addWalkIn")?.addEventListener("click", () => {
       queuePanel.hidden = false;
       forceQueueView('waitlist');
       setTitleStrip('Waitlist', 'Who is waiting', 'Seat the right party quickly. Nothing else competes for attention.');
-      setTopbar('Waitlist', 'Live front-door queue · The Wharfside');
+      setTopbar('Waitlist', 'Live front-door queue · Demo Restaurant');
       return;
     }
 
@@ -1961,7 +1961,7 @@ $("#addWalkIn")?.addEventListener("click", () => {
   });
 
   // Floor tables are neutral unless a guest workflow explicitly owns them.
-  // Capture prevents the older Frank-specific demo handler from leaking into generic operation.
+  // Capture prevents the older Taylor Morgan-specific demo handler from leaking into generic operation.
   floorMap.addEventListener('click', (event) => {
     const table = event.target.closest('.host-table');
     if (!table) return;
@@ -2821,7 +2821,7 @@ window.__bcHostRuntimeRecoveryV100_2_20 = { ok:true, observer:'guarded', seating
 const gs=document.getElementById('guestSearch');
 if(gs){
  gs.addEventListener('input',()=>{
-  const names=['Frank','Anthony Miller','Anthony Romano'];
+  const names=['Taylor Morgan','Anthony Miller','Anthony Romano'];
   const q=gs.value.toLowerCase();
   document.getElementById('guestResults').innerHTML=
    names.filter(n=>n.toLowerCase().includes(q)).join('<br>');
@@ -2836,26 +2836,26 @@ const executiveRanges = {
     reservations: "220",
     calls: "176",
     revenue: "$31.8K",
-    summary: "Portfolio demand is strong and currently tracking above last Friday. The Wharfside is the only location approaching hard capacity, while Captain's Inn has additional room and may absorb overflow demand. Call coverage remains healthy across the group."
+    summary: "Portfolio demand is strong and currently tracking above last Friday. Demo Restaurant is the only location approaching hard capacity, while Demo Inn has additional room and may absorb overflow demand. Call coverage remains healthy across the group."
   },
   "7 Days": {
     guests: "6,942",
     reservations: "1,486",
     calls: "1,208",
     revenue: "$218K",
-    summary: "Seven-day portfolio performance is ahead of the prior period. Weekend demand remains concentrated at The Wharfside and Rod's Tavern, while Captain's Inn has the greatest capacity for incremental reservations."
+    summary: "Seven-day portfolio performance is ahead of the prior period. Weekend demand remains concentrated at Demo Restaurant and Demo Tavern, while Demo Inn has the greatest capacity for incremental reservations."
   },
   "30 Days": {
     guests: "28,410",
     reservations: "6,172",
     calls: "4,936",
     revenue: "$891K",
-    summary: "Thirty-day demand is stable with improving call-to-reservation conversion. Guest celebrations and repeat-guest activity are strongest at The Wharfside. The largest growth opportunity is after-hours reservation capture."
+    summary: "Thirty-day demand is stable with improving call-to-reservation conversion. Guest celebrations and repeat-guest activity are strongest at Demo Restaurant. The largest growth opportunity is after-hours reservation capture."
   }
 };
 
 const executiveLocations = {
-  "The Wharfside": {
+  "Demo Restaurant": {
     status: "Healthy service",
     occupancy: "98%",
     reservations: "69",
@@ -2863,7 +2863,7 @@ const executiveLocations = {
     waitlist: "2",
     narrative: "Demand is concentrated between 7:00 and 8:30 PM. Waterfront inventory is the primary constraint, but current wait times remain within the operating target."
   },
-  "Marina Grille": {
+  "Demo Restaurant": {
     status: "Healthy service",
     occupancy: "84%",
     reservations: "61",
@@ -2871,7 +2871,7 @@ const executiveLocations = {
     waitlist: "4",
     narrative: "Demand is pacing close to forecast. Outdoor seating requests are elevated, and the current waitlist is averaging 16 minutes with no open escalations."
   },
-  "Rod's Tavern": {
+  "Demo Tavern": {
     status: "Watch call volume",
     occupancy: "91%",
     reservations: "48",
@@ -2879,7 +2879,7 @@ const executiveLocations = {
     waitlist: "1",
     narrative: "Dining-room performance is healthy, but incoming call volume is above the normal Friday pattern. Coverage remains intact and no calls are currently waiting."
   },
-  "Captain's Inn": {
+  "Demo Inn": {
     status: "Available capacity",
     occupancy: "76%",
     reservations: "42",
@@ -2983,10 +2983,10 @@ document.querySelectorAll(".analytics-period button").forEach((button) => {
 
 const analyticsLocationData = {
   "All locations": ["42.6%", "8 sec", "13 min", "31%"],
-  "The Wharfside": ["46.2%", "7 sec", "11 min", "36%"],
-  "Marina Grille": ["41.4%", "9 sec", "16 min", "29%"],
-  "Rod's Tavern": ["39.8%", "8 sec", "8 min", "27%"],
-  "Captain's Inn": ["43.1%", "9 sec", "0 min", "30%"]
+  "Demo Restaurant": ["46.2%", "7 sec", "11 min", "36%"],
+  "Demo Restaurant": ["41.4%", "9 sec", "16 min", "29%"],
+  "Demo Tavern": ["39.8%", "8 sec", "8 min", "27%"],
+  "Demo Inn": ["43.1%", "9 sec", "0 min", "30%"]
 };
 
 document.getElementById("analyticsLocation")?.addEventListener("change", (event) => {
@@ -3041,10 +3041,10 @@ const conciergeDemo = [
     updates: { status: "Collecting guest details" }
   },
   {
-    user: "Frank.",
-    assistant: "Welcome back, Frank. I found your guest profile. What date and time would you prefer?",
+    user: "Taylor Morgan.",
+    assistant: "Welcome back, Taylor Morgan. I found your guest profile. What date and time would you prefer?",
     stage: 3,
-    updates: { guest: "Frank", memory: true }
+    updates: { guest: "Taylor Morgan", memory: true }
   },
   {
     user: "This Friday at 7:30 PM for four people.",
@@ -3060,7 +3060,7 @@ const conciergeDemo = [
   },
   {
     user: "7:15 PM at Table 14 works.",
-    assistant: "Perfect. I have Frank for four guests this Friday at 7:15 PM at Table 14. I added the birthday note and your tree nut allergy. Shall I confirm it?",
+    assistant: "Perfect. I have Taylor Morgan for four guests this Friday at 7:15 PM at Table 14. I added the birthday note and your tree nut allergy. Shall I confirm it?",
     stage: 5,
     updates: { time: "7:15 PM", availability: "Table 14 available", ready: true }
   }
@@ -3116,7 +3116,7 @@ function conciergeApplyUpdates(updates = {}) {
       <div class="guest-memory-icon">✦</div>
       <div>
         <small>Guest intelligence</small>
-        <strong>Frank • Premier Guest</strong>
+        <strong>Taylor Morgan • Premier Guest</strong>
         <p>11 visits this year • Table 14 preferred • Tree nut allergy • Cabernet preference • Birthday celebration tonight</p>
       </div>
     `;
@@ -3152,7 +3152,7 @@ function conciergeReset() {
       <article class="message assistant-message">
         <div class="message-avatar">BC</div>
         <div class="message-bubble">
-          <p>Good evening. Thank you for calling The Wharfside. How may I help you tonight?</p>
+          <p>Good evening. Thank you for calling Demo Restaurant. How may I help you tonight?</p>
           <span>Blue Current Concierge • now</span>
         </div>
       </article>
@@ -3268,7 +3268,7 @@ const twinState = {
 const twinEvents = [
   {
     time:"6:42", clock:"6:42 PM", title:"Concierge answered incoming call",
-    detail:"Frank requested a Friday reservation for four.",
+    detail:"Taylor Morgan requested a Friday reservation for four.",
     type:"call", occupancy:"68%", guests:"74", wait:"12 min", calls:"1",
     journey:2, brief:"Blue Current is gathering the preferred time, party size, and occasion.",
     table14:"reserved"
@@ -3277,7 +3277,7 @@ const twinEvents = [
     time:"6:43", clock:"6:43 PM", title:"Guest profile matched",
     detail:"Premier guest recognized with 11 prior visits and a tree nut allergy.",
     type:"guest", occupancy:"68%", guests:"74", wait:"12 min", calls:"1",
-    journey:4, brief:"Guest Intelligence matched Frank and surfaced preferences before booking.",
+    journey:4, brief:"Guest Intelligence matched Taylor Morgan and surfaced preferences before booking.",
     table14:"reserved"
   },
   {
@@ -3302,7 +3302,7 @@ const twinEvents = [
     table9:"available"
   },
   {
-    time:"7:08", clock:"7:08 PM", title:"Frank checked in",
+    time:"7:08", clock:"7:08 PM", title:"Taylor Morgan checked in",
     detail:"Host greeted the party by name and confirmed the birthday note privately.",
     type:"guest", occupancy:"76%", guests:"82", wait:"14 min", calls:"2",
     journey:5, brief:"Guest recognition reached the host team before arrival.",
@@ -3472,7 +3472,7 @@ document.querySelectorAll(".floor-table").forEach(table=>{
       detail.children[2].querySelector("strong").textContent = status==="available" ? "No guest assigned" : "Current service party";
       detail.children[3].querySelector("strong").textContent = status==="available" ? "Ready for assignment" : "Service notes available";
     }else{
-      detail.children[2].querySelector("strong").textContent = "Frank · Party of 4";
+      detail.children[2].querySelector("strong").textContent = "Taylor Morgan · Party of 4";
       detail.children[3].querySelector("strong").textContent = "Birthday · Tree nut allergy";
     }
   });
