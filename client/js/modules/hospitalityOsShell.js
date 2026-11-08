@@ -1237,7 +1237,7 @@ function init(){
   setInterval(()=>{
     if(!commandState.authRequired && authenticatedAppState())refreshCommand();
   },30000);
-  activate("command",{scroll:false});
+  activate(window.location.hash === "#host-stand" ? "guests" : "command",{scroll:false});
 }
 
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init,{once:true}):init();
